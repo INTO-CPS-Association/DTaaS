@@ -6,8 +6,13 @@ from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
 
 COMPOSE_FILE = "docker-compose.yml"
+USERS_COMPOSE_FILE = "compose.users.yml"
 USER_FILES_DIR = "files"
 ENV_FILE = Path("config") / ".env"
+# files/ entries provided by the deployment template (shared workspace and the
+# per-user skeleton), as opposed to generated per-user directories. These are
+# kept by --remove-user-files so a later install can repopulate user dirs.
+SCAFFOLDING_ENTRIES = frozenset({"common", "template"})
 
 
 def _env_files(directory) -> list[ValidPath]:
@@ -24,6 +29,18 @@ def _client(directory):
         compose_files=[str(Path(directory) / COMPOSE_FILE)],
         compose_env_files=_env_files(directory),
     )
+
+
+def _users_client(directory):
+    """Return a DockerClient for the 'user add' compose file, or None if absent.
+
+    Users added via 'dtaas admin user add' run from compose.users.yml as a
+    separate compose project, so the main compose file does not know about them.
+    """
+    users_compose = Path(directory) / USERS_COMPOSE_FILE
+    if not users_compose.is_file():
+        return None
+    return DockerClient(compose_files=[str(users_compose)])
 
 
 def _toml_present(directory):
@@ -87,28 +104,81 @@ def _user_files_dir(directory):
     return files_dir
 
 
+def _remove_user_dirs(files_dir):
+    """Delete generated per-user directories, keeping template scaffolding.
+
+    Returns the names removed. The shared 'common' workspace and the per-user
+    'template' skeleton are preserved so a subsequent install can recreate the
+    user directories from them.
+    """
+    removed = []
+    for child in files_dir.iterdir():
+        if child.name in SCAFFOLDING_ENTRIES or not child.is_dir():
+            continue
+        if child.is_symlink():
+            continue
+        shutil.rmtree(child)
+        removed.append(child.name)
+    return removed
+
+
 def delete_user_files(directory):
-    """Delete the per-user workspace files directory. Return a status message."""
+    """Delete generated per-user workspace directories. Return a status message.
+
+    The deployment-provided scaffolding (files/common and files/template) is
+    kept so 'dtaas admin install' can repopulate the per-user directories.
+    """
     files_dir = _user_files_dir(directory)
     if files_dir is None:
         return f"No '{USER_FILES_DIR}' directory found; nothing to remove."
-    shutil.rmtree(files_dir)
+    removed = _remove_user_dirs(files_dir)
+    if not removed:
+        return f"No per-user directories found in '{files_dir}'; nothing to remove."
     return f"Removed user files at '{files_dir}'."
+
+
+def _down_user_containers(directory):
+    """Tear down containers added via 'dtaas admin user add', if any exist.
+
+    These live in compose.users.yml as a separate project, so the main
+    'compose down' would otherwise leave them running and hold the shared
+    network open.
+    """
+    client = _users_client(directory)
+    if client is not None:
+        client.compose.down(remove_orphans=True)
 
 
 def uninstall(directory=".", remove_user_files=False):
     """Tear the deployment down with 'docker compose down'.
 
     Requires a generated compose file in *directory* so that teardown and any
-    file removal act only on a real deployment. Returns a message about
-    removed files when *remove_user_files* is set, otherwise None. Raises
-    DockerException if compose itself fails.
+    file removal act only on a real deployment. User-added containers are torn
+    down first so the shared network is free when the main project is removed.
+    Returns a message about removed files when *remove_user_files* is set,
+    otherwise None. Raises DockerException if compose itself fails.
     """
     require_compose_file(directory)
+    _down_user_containers(directory)
     _client(directory).compose.down()
     if remove_user_files:
         return delete_user_files(directory)
     return None
+
+
+def installation_present(directory):
+    """True if any deployment or user-added containers exist for *directory*.
+
+    Lets a repeated uninstall report that nothing is installed instead of
+    claiming a successful teardown. Containers in any state count, since a
+    stopped container is still part of an installation.
+    """
+    if not (Path(directory) / COMPOSE_FILE).is_file():
+        return False
+    if _client(directory).compose.ps(all=True):
+        return True
+    client = _users_client(directory)
+    return client is not None and bool(client.compose.ps(all=True))
 
 
 def restart_service(directory, service):

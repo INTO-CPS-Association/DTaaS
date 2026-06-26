@@ -81,14 +81,21 @@ def _validate_staged(staged):
 
 
 def _backup_live(staged, certs_dir):
-    """Copy any existing live certificates aside so a failed swap can be undone."""
+    """Copy any existing live certificates aside so a failed swap can be undone.
+
+    Cleans up its own partial work if a copy fails, so no stray backups leak.
+    """
     backups = {}
-    for name in staged:
-        live = certs_dir / name
-        if live.exists():
-            backup = certs_dir / (name + BACKUP_SUFFIX)
-            shutil.copy2(live, backup)
-            backups[name] = backup
+    try:
+        for name in staged:
+            live = certs_dir / name
+            if live.exists():
+                backup = certs_dir / (name + BACKUP_SUFFIX)
+                shutil.copy2(live, backup)
+                backups[name] = backup
+    except OSError:
+        _drop_backups(backups)
+        raise
     return backups
 
 
@@ -99,29 +106,37 @@ def _restore_backups(backups, certs_dir):
 
 
 def _drop_backups(backups):
-    """Delete the backup copies once the swap has fully succeeded."""
+    """Delete the backup copies once they are no longer needed."""
     for backup in backups.values():
         backup.unlink(missing_ok=True)
 
 
-def _activate(staged, certs_dir):
-    """Swap the staged pair in, rolling back if either file cannot be replaced.
+def _rollback_swap(replaced, backups, certs_dir):
+    """Undo the certificates already replaced during a failed swap."""
+    for name in replaced:
+        backup = backups.get(name)
+        if backup is not None:
+            os.replace(backup, certs_dir / name)
+        else:
+            (certs_dir / name).unlink(missing_ok=True)
+    _drop_backups(backups)
 
-    The two files cannot be replaced in a single atomic step, so the live pair
-    is backed up first. If any replace fails (for example a file is still
-    locked on Windows), the originals are restored, so the deployment is never
-    left with a mismatched fullchain/privkey pair.
-    """
-    backups = _backup_live(staged, certs_dir)
+
+def _activate(staged, certs_dir):
+    """Back up the live pair and swap the staged pair in."""
+    backups = {}
+    replaced = []
     try:
+        backups = _backup_live(staged, certs_dir)
         for name, staged_path in staged.items():
             os.replace(staged_path, certs_dir / name)
+            replaced.append(name)
     except OSError:
-        _restore_backups(backups, certs_dir)
+        _rollback_swap(replaced, backups, certs_dir)
         _discard(staged)
         raise
-    _drop_backups(backups)
     secure_private_key(certs_dir / PRIVATE_KEY_NAME)
+    return backups
 
 
 def _wait_until_running(output_dir, service):
@@ -141,19 +156,35 @@ def _wait_until_running(output_dir, service):
     )
 
 
+def _rollback_live(output_dir, backups, certs_dir):
+    """Restore the previous certificate pair and restart Traefik."""
+    if not backups:
+        return
+    _restore_backups(backups, certs_dir)
+    deploy.restart_service(output_dir, TRAEFIK_SERVICE)
+
+
 def _swap_and_reload(output_dir, staged, certs_dir):
     """Stop Traefik, swap the validated pair in, then bring Traefik back up.
 
     Traefik is stopped first so nothing holds the certificate files open while
     they are replaced. It is always restarted, even when activation fails, so
-    the deployment is not left down; the restart is then checked for liveness.
+    the deployment is not left down. The previous certificates are kept as
+    backups until Traefik is confirmed healthy on the new pair; if it never
+    comes up, the old pair is rolled back in and Traefik restarted again.
     """
     deploy.stop_service(output_dir, TRAEFIK_SERVICE)
+    backups = {}
     try:
-        _activate(staged, certs_dir)
+        backups = _activate(staged, certs_dir)
     finally:
         deploy.restart_service(output_dir, TRAEFIK_SERVICE)
-    _wait_until_running(output_dir, TRAEFIK_SERVICE)
+    try:
+        _wait_until_running(output_dir, TRAEFIK_SERVICE)
+    except RuntimeError:
+        _rollback_live(output_dir, backups, certs_dir)
+        raise
+    _drop_backups(backups)
 
 
 def update_certs(output_dir):

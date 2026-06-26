@@ -1,7 +1,12 @@
 """Tests for the CLI helper functions in cmd_utils.py."""
 
-from unittest.mock import MagicMock
-from src.cmd_utils import VerticalChoicesCommand, _find_toml, _certs_src
+from unittest.mock import MagicMock, patch
+from src.cmd_utils import (
+    VerticalChoicesCommand,
+    _find_toml,
+    _certs_src,
+    provision_user_files,
+)
 
 
 def test_param_rows_skips_hidden_param():
@@ -35,3 +40,29 @@ def test_certs_src_handles_missing_section():
     assert _certs_src({}) == ""
     assert _certs_src({"common": {"security": "oops"}}) == ""
     assert _certs_src({"common": {"security": {"certs-src": " /x "}}}) == "/x"
+
+
+def test_provision_user_files_creates_dirs_and_sets_permissions(tmp_path):
+    """provision_user_files recreates per-user dirs from toml and fixes ownership."""
+    (tmp_path / "dtaas.toml").write_text(
+        '[users]\nadd = ["alice"]\n'
+    )
+    with patch("src.cmd_utils.projectPkg.create_user_dirs") as mock_create, patch(
+        "src.cmd_utils.projectPkg.set_files_permissions"
+    ) as mock_perms:
+        provision_user_files(str(tmp_path))
+
+    mock_create.assert_called_once_with(str(tmp_path), ["alice"])
+    mock_perms.assert_called_once_with(str(tmp_path))
+
+
+def test_provision_user_files_noop_without_toml(tmp_path, monkeypatch):
+    """provision_user_files does nothing when no dtaas.toml is present."""
+    monkeypatch.chdir(tmp_path)  # no dtaas.toml in output dir or cwd
+    with patch("src.cmd_utils.projectPkg.create_user_dirs") as mock_create, patch(
+        "src.cmd_utils.projectPkg.set_files_permissions"
+    ) as mock_perms:
+        provision_user_files(str(tmp_path))
+
+    mock_create.assert_not_called()
+    mock_perms.assert_not_called()

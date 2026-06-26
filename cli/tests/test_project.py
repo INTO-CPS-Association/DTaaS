@@ -202,6 +202,21 @@ def test_copy_example_files_raises_on_copy_failure(tmp_path):
             _copy_example_files(tmp_path)
 
 
+def test_set_files_permissions_chowns_and_chmods_files_dir(tmp_path):
+    """set_files_permissions sets ownership to 1000:100 then grants rwX on files/."""
+    files_dir = tmp_path / "files"
+    files_dir.mkdir()
+
+    with patch("src.pkg.project.subprocess.run") as mock_run:
+        set_files_permissions(str(tmp_path))
+
+    commands = [call.args[0] for call in mock_run.call_args_list]
+    assert commands == [
+        ["sudo", "chown", "-R", "1000:100", str(files_dir)],
+        ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
+    ]
+
+
 def test_set_files_permissions_ignores_missing_sudo(tmp_path):
     """set_files_permissions swallows FileNotFoundError when sudo is unavailable."""
     (tmp_path / "files").mkdir()

@@ -5,6 +5,8 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users
+from src.pkg import users_utils
+from tests.conftest import CONF_SERVER_CONTENT
 # pylint: disable=redefined-outer-name,unused-argument
 
 
@@ -180,6 +182,30 @@ def test_add_users_rejects_newline_in_email(
     assert err is not None and "newlines" in str(err)
 
 
+def test_add_users_writes_conf_server_before_starting_containers(
+    mock_config, mock_utils, mock_user_operations, tmp_path, monkeypatch
+):
+    """Forward-auth rules are written even when 'docker compose up' fails."""
+    conf = tmp_path / "config" / "conf.server"
+    conf.parent.mkdir()
+    conf.write_text(CONF_SERVER_CONTENT, encoding="utf-8")
+    monkeypatch.setattr(users_utils, "CONF_SERVER_PATH", conf)
+
+    mock_config.get_add_users_list.return_value = (["user3"], None)
+    mock_config.get_users.return_value = (
+        {"add": ["user3"], "user3": {"email": "user3@example.com"}},
+        None,
+    )
+    mock_user_operations["start"].return_value = Exception("compose up failed")
+
+    err = users.add_users(mock_config)
+
+    assert err is not None and "compose up failed" in str(err)
+    text = conf.read_text(encoding="utf-8")
+    assert "rule.onlyu3.rule=PathPrefix(`/user3`)" in text
+    assert "rule.onlyu3.whitelist=user3@example.com" in text
+
+
 @pytest.mark.parametrize("export_error", [False, True])
 def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error):
     """Test delete_user removes users from compose"""
@@ -190,6 +216,21 @@ def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error
 
     err = users.delete_user(mock_config)
     assert (err is not None) if export_error else err is None
+
+
+def test_delete_user_removes_conf_server_rules(
+    mock_config, mock_utils, mock_user_operations
+):
+    """delete_user removes each deleted user's forward-auth rule from conf.server."""
+    compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
+    mock_config.get_delete_users_list.return_value = (["user1"], None)
+    mock_utils["import"].return_value = (compose, None)
+
+    with patch("src.pkg.users.remove_conf_server_entry") as mock_remove:
+        err = users.delete_user(mock_config)
+
+    assert err is None
+    mock_remove.assert_called_once_with("user1")
 
 
 def test_delete_user_handles_none_compose(

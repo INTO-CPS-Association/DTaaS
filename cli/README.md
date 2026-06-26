@@ -174,6 +174,12 @@ dtaas admin install
 This runs `docker compose up -d` against the generated `docker-compose.yml` in
 the installation directory.
 
+Before starting the stack, the command ensures the per-user workspace
+directories listed in `[users].add` exist — recreating each from
+`files/template` if missing — and sets their ownership to `1000:100`. This
+means a fresh install, or a reinstall after `uninstall --remove-user-files`,
+does not leave Docker to auto-create empty, root-owned mount directories.
+
 **Options:**
 
 - `--output-dir` (default: `.`): Installation directory containing the
@@ -198,10 +204,13 @@ dtaas admin uninstall
 ```
 
 This runs `docker compose down`, stopping and removing the deployment's
-containers and networks. **Per-user workspace files are preserved by default.**
+containers and networks. Containers added with `admin user add` run as a
+separate Compose project, so they are torn down first; otherwise they would
+survive and hold the shared network open. If nothing is currently installed,
+the command reports that there is no existing installation rather than claiming
+a successful teardown. **Per-user workspace files are preserved by default.**
 
-To additionally delete the per-user workspace files (the `files/` directory
-created by `generate-deployment` and `admin user add`), pass
+To additionally delete the generated per-user workspace directories, pass
 `--remove-user-files`:
 
 ```bash
@@ -219,11 +228,14 @@ dtaas admin uninstall --remove-user-files --yes
 
 - `--output-dir` (default: `.`): Installation directory containing the
   generated deployment.
-- `--remove-user-files`: Also delete per-user workspace files. Opt-in to avoid
-  accidental data loss: it requires a generated deployment in `--output-dir`,
-  prompts for confirmation, deletes only `<output-dir>/files`, and refuses to
-  follow a symlinked `files/`. It does not protect against pointing
-  `--output-dir` at the wrong directory, so double-check the path.
+- `--remove-user-files`: Also delete the generated per-user workspace
+  directories. Opt-in to avoid accidental data loss: it requires a generated
+  deployment in `--output-dir`, prompts for confirmation, and refuses to follow
+  a symlinked `files/`. It removes only the per-user directories inside
+  `<output-dir>/files`, keeping the shared `files/common` and the
+  `files/template` skeleton so a later `admin install` can recreate the user
+  directories. It does not protect against pointing `--output-dir` at the wrong
+  directory, so double-check the path.
 - `--yes` / `-y`: Skip the confirmation prompt for `--remove-user-files`.
 
 ### 🔁 Update TLS Certificates

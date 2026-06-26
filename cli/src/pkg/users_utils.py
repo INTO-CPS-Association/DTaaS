@@ -22,14 +22,27 @@ def _conf_server_block(username, email, rule_num):
     )
 
 
+def _has_user_rule(text, username):
+    """True if conf.server already has a routing rule for username."""
+    return bool(
+        re.search(
+            rf"rule\.onlyu\d+\.rule=PathPrefix\(`/{re.escape(username)}`\)", text
+        )
+    )
+
+
 def add_conf_server_entry(username, email):
     """Append routing and whitelist rules for username to config/conf.server.
 
-    Skipped silently when conf.server does not exist or email is empty.
+    Skipped silently when conf.server does not exist, email is empty, or a rule
+    for username is already present, so re-adding a user (or adding one whose
+    rule was generated at deployment time) does not create duplicate rules.
     """
     if not CONF_SERVER_PATH.is_file() or not email:
         return
     text = CONF_SERVER_PATH.read_text(encoding="utf-8")
+    if _has_user_rule(text, username):
+        return
     rule_num = _next_rule_num(text)
     CONF_SERVER_PATH.write_text(
         text + _conf_server_block(username, email, rule_num), encoding="utf-8"

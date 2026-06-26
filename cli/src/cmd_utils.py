@@ -103,6 +103,18 @@ def _create_user_dirs(output_dir, toml_data):
         raise click.ClickException(f"Error creating user directories: {exc}") from exc
 
 
+def provision_user_files(output_dir):
+    """Ensure per-user workspace directories exist and are owned 1000:100."""
+    toml_path = _find_toml(output_dir)
+    if toml_path is None:
+        return
+    toml_data, err = utilsPkg.import_toml(str(toml_path))
+    if err is not None:
+        raise click.ClickException(f"Error reading dtaas.toml: {err}")
+    _create_user_dirs(output_dir, toml_data)
+    projectPkg.set_files_permissions(output_dir)
+
+
 def run_user_command(action, success_msg, error_prefix):
     """Run a user-management action against a fresh Config, mapping errors."""
     try:

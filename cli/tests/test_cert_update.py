@@ -201,3 +201,47 @@ def test_update_certs_rolls_back_on_partial_swap(tmp_path):
     assert not list(live.glob("*.new"))
     assert not list(live.glob("*.bak"))
     docker["restart"].assert_called_once_with(str(out), "traefik")
+
+
+def test_update_certs_first_time_partial_swap_leaves_no_mismatch(tmp_path):
+    """A failed second replace on a first-time install leaves no half-written pair."""
+    out, _ = _setup(tmp_path)  # no live certs seeded: first-time install
+    certs = out / "certs"
+    real_replace = os.replace
+
+    def flaky_replace(src, dst):
+        if str(src).endswith("privkey.pem" + cert_update.STAGE_SUFFIX):
+            raise PermissionError("file is locked")
+        return real_replace(src, dst)
+
+    with patch("src.pkg.cert_update.validate_cert_pair"), _mock_docker(), patch(
+        "src.pkg.cert_update.os.replace", side_effect=flaky_replace
+    ):
+        with pytest.raises(PermissionError):
+            cert_update.update_certs(str(out))
+
+    # The first file must be rolled back too: neither cert is left in place.
+    assert not (certs / "fullchain.pem").exists()
+    assert not (certs / "privkey.pem").exists()
+    assert not list(certs.glob("*.new"))
+    assert not list(certs.glob("*.bak"))
+
+
+def test_update_certs_rolls_back_when_traefik_rejects_new_certs(tmp_path):
+    """If Traefik fails liveness on the new pair, the old pair is restored."""
+    out, _ = _setup(tmp_path)
+    live = _seed_live_certs(out)
+    with patch("src.pkg.cert_update.validate_cert_pair"), patch(
+        "src.pkg.cert_update.deploy.stop_service"
+    ), patch("src.pkg.cert_update.deploy.restart_service") as restart, patch(
+        "src.pkg.cert_update.deploy.service_running", return_value=False
+    ), patch("src.pkg.cert_update.time.sleep"):
+        with pytest.raises(RuntimeError, match="not running"):
+            cert_update.update_certs(str(out))
+
+    assert (live / "fullchain.pem").read_text() == "OLD"
+    assert (live / "privkey.pem").read_text() == "OLDKEY"
+    assert not list(live.glob("*.new"))
+    assert not list(live.glob("*.bak"))
+    # Restarted once for the new pair, then again after rolling the old pair back.
+    assert restart.call_count == 2

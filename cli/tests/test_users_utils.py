@@ -43,6 +43,18 @@ def test_add_conf_server_entry_appends_block(tmp_path, monkeypatch):
     assert "rule.onlyu3.whitelist=alice@example.com" in result
 
 
+def test_add_conf_server_entry_skips_existing_user(tmp_path, monkeypatch):
+    """add_conf_server_entry does not duplicate a rule for a user already present"""
+    conf = tmp_path / "config" / "conf.server"
+    conf.parent.mkdir()
+    conf.write_text(CONF_SERVER_CONTENT, encoding="utf-8")
+    monkeypatch.setattr(users_utils, "CONF_SERVER_PATH", conf)
+
+    add_conf_server_entry("user1", "user1@example.com")
+
+    assert conf.read_text(encoding="utf-8") == CONF_SERVER_CONTENT
+
+
 def test_add_conf_server_entry_skips_when_no_email(tmp_path, monkeypatch):
     """add_conf_server_entry does nothing when email is empty"""
     conf = tmp_path / "config" / "conf.server"

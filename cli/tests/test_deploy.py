@@ -107,16 +107,39 @@ def test_user_files_dir_absent(tmp_path):
     assert deploy._user_files_dir(str(tmp_path)) is None
 
 
-def test_delete_user_files_removes_dir(tmp_path):
-    """delete_user_files removes the files/ directory and reports it."""
+def test_delete_user_files_removes_per_user_dir(tmp_path):
+    """delete_user_files removes a per-user directory and reports it."""
     (tmp_path / "files" / "alice").mkdir(parents=True)
     message = deploy.delete_user_files(str(tmp_path))
     assert "Removed user files" in message
-    assert not (tmp_path / "files").exists()
+    assert not (tmp_path / "files" / "alice").exists()
+    assert (tmp_path / "files").is_dir()
+
+
+def test_delete_user_files_keeps_scaffolding(tmp_path):
+    """delete_user_files keeps files/common and files/template for reinstall."""
+    files = tmp_path / "files"
+    (files / "alice").mkdir(parents=True)
+    (files / "common").mkdir()
+    (files / "template").mkdir()
+
+    deploy.delete_user_files(str(tmp_path))
+
+    assert not (files / "alice").exists()
+    assert (files / "common").is_dir()
+    assert (files / "template").is_dir()
+
+
+def test_delete_user_files_reports_when_only_scaffolding(tmp_path):
+    """With only scaffolding present there are no per-user dirs to remove."""
+    (tmp_path / "files" / "common").mkdir(parents=True)
+    (tmp_path / "files" / "template").mkdir()
+
+    assert "nothing to remove" in deploy.delete_user_files(str(tmp_path))
 
 
 def test_delete_user_files_absent(tmp_path):
-    """delete_user_files reports when there is nothing to remove."""
+    """delete_user_files reports when there is no files/ directory at all."""
     assert "nothing to remove" in deploy.delete_user_files(str(tmp_path))
 
 
@@ -137,14 +160,62 @@ def test_uninstall_requires_compose_file(tmp_path):
 
 
 def test_uninstall_removes_user_files(tmp_path):
-    """uninstall with remove_user_files deletes the files/ directory."""
+    """uninstall with remove_user_files deletes per-user directories."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
     (tmp_path / "files" / "bob").mkdir(parents=True)
     with patch("src.pkg.deploy._client"):
         message = deploy.uninstall(str(tmp_path), remove_user_files=True)
         assert message is not None
         assert "Removed user files" in message
-        assert not (tmp_path / "files").exists()
+        assert not (tmp_path / "files" / "bob").exists()
+        assert (tmp_path / "files").is_dir()
+
+
+def test_uninstall_downs_user_containers_then_main(tmp_path):
+    """uninstall tears down user-added containers before the main project."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._down_user_containers") as mock_down_users, patch(
+        "src.pkg.deploy._client"
+    ) as mock_client:
+        deploy.uninstall(str(tmp_path))
+    mock_down_users.assert_called_once_with(str(tmp_path))
+    mock_client.return_value.compose.down.assert_called_once_with()
+
+
+def test_down_user_containers_tears_down_user_compose(tmp_path):
+    """_down_user_containers downs compose.users.yml with --remove-orphans."""
+    (tmp_path / "compose.users.yml").write_text("services: {}")
+    with patch("src.pkg.deploy.DockerClient") as mock_docker:
+        deploy._down_user_containers(str(tmp_path))
+    mock_docker.return_value.compose.down.assert_called_once_with(remove_orphans=True)
+
+
+def test_down_user_containers_noop_without_user_compose(tmp_path):
+    """_down_user_containers does nothing when no user compose file exists."""
+    with patch("src.pkg.deploy.DockerClient") as mock_docker:
+        deploy._down_user_containers(str(tmp_path))
+    mock_docker.assert_not_called()
+
+
+def test_installation_present_true_when_main_has_containers(tmp_path):
+    """installation_present is True when the main project has any container."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        mock_client.return_value.compose.ps.return_value = [MagicMock()]
+        assert deploy.installation_present(str(tmp_path)) is True
+
+
+def test_installation_present_false_when_nothing_exists(tmp_path):
+    """installation_present is False when neither main nor user containers exist."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        mock_client.return_value.compose.ps.return_value = []
+        assert deploy.installation_present(str(tmp_path)) is False
+
+
+def test_installation_present_false_without_compose_file(tmp_path):
+    """installation_present is False when no deployment has been generated."""
+    assert deploy.installation_present(str(tmp_path)) is False
 
 
 def test_restart_service_force_recreates(tmp_path):

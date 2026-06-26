@@ -235,8 +235,17 @@ def mock_deploy_pkg():
     """Mock the deploy package handlers used by install/uninstall."""
     with patch("src.cmd.deployPkg.install") as mock_install, patch(
         "src.cmd.deployPkg.uninstall"
-    ) as mock_uninstall:
-        yield {"install": mock_install, "uninstall": mock_uninstall}
+    ) as mock_uninstall, patch(
+        "src.cmd.deployPkg.installation_present", return_value=True
+    ) as mock_present, patch(
+        "src.cmd.provision_user_files"
+    ) as mock_provision:
+        yield {
+            "install": mock_install,
+            "uninstall": mock_uninstall,
+            "present": mock_present,
+            "provision": mock_provision,
+        }
 
 
 def test_admin_install_success(runner, mock_deploy_pkg):
@@ -246,6 +255,7 @@ def test_admin_install_success(runner, mock_deploy_pkg):
     assert result.exit_code == 0
     assert "Deployment installed successfully" in result.output
     mock_deploy_pkg["install"].assert_called_once_with(".")
+    mock_deploy_pkg["provision"].assert_called_once_with(".")
 
 
 def test_admin_install_error(runner, mock_deploy_pkg):
@@ -312,6 +322,18 @@ def test_admin_uninstall_error(runner, mock_deploy_pkg):
 
     assert result.exit_code != 0
     assert "daemon down" in result.output
+
+
+def test_admin_uninstall_no_existing_installation(runner, mock_deploy_pkg):
+    """A repeated uninstall reports there is nothing installed, not success."""
+    mock_deploy_pkg["present"].return_value = False
+
+    result = runner.invoke(dtaas, ["admin", "uninstall"])
+
+    assert result.exit_code == 0
+    assert "no existing DTaaS / Workspace installation" in result.output
+    assert "uninstalled successfully" not in result.output
+    mock_deploy_pkg["uninstall"].assert_not_called()
 
 
 def test_admin_update_certs_success(runner):

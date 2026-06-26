@@ -190,7 +190,9 @@ def add_users(config_obj):
         config = {"server": server, "path": path, "resources": resources, "tls": tls}
         err = add_users_to_compose(user_list, compose, config)
         utils.check_error(err)
-        _finalize_compose(compose)
+        # Authorise each user in the forward-auth config before starting their
+        # container. Writing conf.server first means a later 'compose up'
+        # failure cannot leave the forward-auth rules stale.
         for username in user_list:
             section = (users_section or {}).get(username, {})
             email = str(
@@ -203,6 +205,7 @@ def add_users(config_obj):
                     f"Invalid user config for '{username}': username/email must not contain newlines"
                 )
             add_conf_server_entry(username, email)
+        _finalize_compose(compose)
     except Exception as e:
         return e
 
