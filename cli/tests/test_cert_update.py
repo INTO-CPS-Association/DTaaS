@@ -165,6 +165,31 @@ def test_stage_pair_discards_partial_on_missing(tmp_path):
     assert not list(certs_dir.glob("*.new"))
 
 
+def test_stage_one_copies_latest(tmp_path):
+    """_stage_one stages a present certificate into a .new file."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "fullchain.pem").write_text("fc")
+    certs_dir = tmp_path / "certs"
+    certs_dir.mkdir()
+
+    dest = cert_update._stage_one("fullchain.pem", src, certs_dir)
+
+    assert dest == certs_dir / ("fullchain.pem" + cert_update.STAGE_SUFFIX)
+    assert dest.read_text() == "fc"
+
+
+def test_stage_one_raises_when_missing(tmp_path):
+    """_stage_one raises OSError when the certificate is absent from source."""
+    src = tmp_path / "src"
+    src.mkdir()
+    certs_dir = tmp_path / "certs"
+    certs_dir.mkdir()
+
+    with pytest.raises(OSError, match="fullchain.pem"):
+        cert_update._stage_one("fullchain.pem", src, certs_dir)
+
+
 def test_update_certs_raises_when_traefik_stays_down(tmp_path):
     """If traefik never reports running, the update raises instead of succeeding."""
     out, _ = _setup(tmp_path)

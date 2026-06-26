@@ -104,6 +104,17 @@ def _user_files_dir(directory):
     return files_dir
 
 
+def _is_generated_user_dir(child):
+    """True if *child* is a generated per-user directory safe to delete.
+
+    Excludes the 'common' and 'template' scaffolding, any non-directory entry,
+    and symlinks (which could point outside the installation).
+    """
+    if child.name in SCAFFOLDING_ENTRIES:
+        return False
+    return child.is_dir() and not child.is_symlink()
+
+
 def _remove_user_dirs(files_dir):
     """Delete generated per-user directories, keeping template scaffolding.
 
@@ -113,9 +124,7 @@ def _remove_user_dirs(files_dir):
     """
     removed = []
     for child in files_dir.iterdir():
-        if child.name in SCAFFOLDING_ENTRIES or not child.is_dir():
-            continue
-        if child.is_symlink():
+        if not _is_generated_user_dir(child):
             continue
         shutil.rmtree(child)
         removed.append(child.name)

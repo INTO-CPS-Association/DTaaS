@@ -25,9 +25,7 @@ def _conf_server_block(username, email, rule_num):
 def _has_user_rule(text, username):
     """True if conf.server already has a routing rule for username."""
     return bool(
-        re.search(
-            rf"rule\.onlyu\d+\.rule=PathPrefix\(`/{re.escape(username)}`\)", text
-        )
+        re.search(rf"rule\.onlyu\d+\.rule=PathPrefix\(`/{re.escape(username)}`\)", text)
     )
 
 

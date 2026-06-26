@@ -237,9 +237,7 @@ def mock_deploy_pkg():
         "src.cmd.deployPkg.uninstall"
     ) as mock_uninstall, patch(
         "src.cmd.deployPkg.installation_present", return_value=True
-    ) as mock_present, patch(
-        "src.cmd.provision_user_files"
-    ) as mock_provision:
+    ) as mock_present, patch("src.cmd.provision_user_files") as mock_provision:
         yield {
             "install": mock_install,
             "uninstall": mock_uninstall,

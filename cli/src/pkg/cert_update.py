@@ -51,6 +51,21 @@ def _discard(staged):
         path.unlink(missing_ok=True)
 
 
+def _stage_one(name, source, certs_dir):
+    """Copy the newest *name* certificate from *source* into a staged file.
+
+    Returns the staged path. Raises OSError when *name* is missing from *source*.
+    """
+    latest = find_latest_cert(source, name[: -len(".pem")])
+    if latest is None:
+        raise OSError(f"'{name}' not found in certs-src ({source}).")
+    dest = certs_dir / (name + STAGE_SUFFIX)
+    shutil.copy2(latest, dest)
+    if name == PRIVATE_KEY_NAME:
+        secure_private_key(dest, warn=False)
+    return dest
+
+
 def _stage_pair(source, certs_dir):
     """Copy the newest fullchain/privkey from *source* into staged files.
 
@@ -59,15 +74,11 @@ def _stage_pair(source, certs_dir):
     """
     staged = {}
     for name in CERT_FILES:
-        latest = find_latest_cert(source, name[: -len(".pem")])
-        if latest is None:
+        try:
+            staged[name] = _stage_one(name, source, certs_dir)
+        except OSError:
             _discard(staged)
-            raise OSError(f"'{name}' not found in certs-src ({source}).")
-        dest = certs_dir / (name + STAGE_SUFFIX)
-        shutil.copy2(latest, dest)
-        if name == PRIVATE_KEY_NAME:
-            secure_private_key(dest, warn=False)
-        staged[name] = dest
+            raise
     return staged
 
 

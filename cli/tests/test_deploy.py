@@ -130,6 +130,26 @@ def test_delete_user_files_keeps_scaffolding(tmp_path):
     assert (files / "template").is_dir()
 
 
+def test_remove_user_dirs_skips_symlinks_and_files(tmp_path):
+    """_remove_user_dirs leaves symlinked dirs and plain files untouched."""
+    files = tmp_path / "files"
+    (files / "alice").mkdir(parents=True)
+    (files / "loose.txt").write_text("x")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    try:
+        (files / "link").symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink creation is not permitted on this platform")
+
+    removed = deploy._remove_user_dirs(files)
+
+    assert removed == ["alice"]
+    assert (files / "link").exists()
+    assert (files / "loose.txt").exists()
+    assert outside.is_dir()
+
+
 def test_delete_user_files_reports_when_only_scaffolding(tmp_path):
     """With only scaffolding present there are no per-user dirs to remove."""
     (tmp_path / "files" / "common").mkdir(parents=True)
