@@ -88,11 +88,16 @@ def _read_file_text(path):
 
 
 def _missing_placeholder_warnings(text, rel_path):
-    """Return warning strings for any secret placeholders found in text."""
+    """Return warning strings for any secret placeholders found in text.
+
+    Placeholders are matched on whole-word boundaries so that a real value
+    which merely contains a placeholder as a substring (for example
+    ``changemed`` containing ``changeme``) is not flagged as un-substituted.
+    """
     return [
         f"Warning: '{p}' not substituted in {rel_path}"
         for p in _SECRET_PLACEHOLDERS
-        if p in text
+        if re.search(rf"\b{re.escape(p)}\b", text)
     ]
 
 

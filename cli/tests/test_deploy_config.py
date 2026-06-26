@@ -164,6 +164,19 @@ def test_check_placeholders_returns_warning_for_unresolved(tmp_path):
     assert any("your_client_id_here" in w for w in warnings)
 
 
+def test_check_placeholders_ignores_placeholder_substring(tmp_path):
+    """A real value that merely contains a placeholder substring is not flagged."""
+    env = tmp_path / "config" / ".env"
+    env.parent.mkdir()
+    env.write_text("KEYCLOAK_ADMIN_PASSWORD=changemed\n")
+
+    warnings = check_placeholders(
+        str(tmp_path),
+        [("config/.env", "env", {"KEYCLOAK_ADMIN_PASSWORD": "changemed"})],
+    )
+    assert not warnings
+
+
 def test_check_placeholders_skips_missing_files(tmp_path):
     """check_placeholders ignores files that don't exist in dest_dir"""
     warnings = check_placeholders(

@@ -33,6 +33,29 @@ def test_require_deployment_toml_falls_back_to_cwd(tmp_path, monkeypatch):
     deploy._require_deployment(str(outdir))  # does not raise
 
 
+def test_env_files_returns_config_env_when_present(tmp_path):
+    """_env_files returns config/.env so compose loads it explicitly."""
+    (tmp_path / "config").mkdir()
+    env_file = tmp_path / "config" / ".env"
+    env_file.write_text("OAUTH_URL=https://gitlab.com\n")
+    assert deploy._env_files(str(tmp_path)) == [str(env_file)]
+
+
+def test_env_files_empty_when_no_config_env(tmp_path):
+    """_env_files is empty for deploy types that keep .env at the root."""
+    assert deploy._env_files(str(tmp_path)) == []
+
+
+def test_client_passes_env_files(tmp_path):
+    """_client forwards config/.env to the DockerClient as an env file."""
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / ".env").write_text("OAUTH_URL=https://gitlab.com\n")
+    with patch("src.pkg.deploy.DockerClient") as mock_docker:
+        deploy._client(str(tmp_path))
+    _, kwargs = mock_docker.call_args
+    assert kwargs["compose_env_files"] == [str(tmp_path / "config" / ".env")]
+
+
 def test_install_runs_compose_up(tmp_path):
     """install validates inputs and runs 'docker compose up' detached."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")

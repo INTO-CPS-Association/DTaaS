@@ -3,14 +3,27 @@
 import shutil
 from pathlib import Path
 from python_on_whales import DockerClient
+from python_on_whales.utils import ValidPath
 
 COMPOSE_FILE = "docker-compose.yml"
 USER_FILES_DIR = "files"
+ENV_FILE = Path("config") / ".env"
+
+
+def _env_files(directory) -> list[ValidPath]:
+    """Return the deployment's env file for compose, or an empty list."""
+    env_file = Path(directory) / ENV_FILE
+    if env_file.is_file():
+        return [str(env_file)]
+    return []
 
 
 def _client(directory):
     """Return a DockerClient bound to the deployment's compose file."""
-    return DockerClient(compose_files=[str(Path(directory) / COMPOSE_FILE)])
+    return DockerClient(
+        compose_files=[str(Path(directory) / COMPOSE_FILE)],
+        compose_env_files=_env_files(directory),
+    )
 
 
 def _toml_present(directory):

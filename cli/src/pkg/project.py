@@ -191,11 +191,15 @@ def create_user_dirs(dest_dir, usernames):
 
 
 def set_files_permissions(dest_dir):
-    """Grant read/write/execute on files/."""
+    """Set ownership to 1000:100 and grant read/write/execute on files/."""
     files_dir = Path(dest_dir) / "files"
     if not files_dir.is_dir():
         return
     try:
+        subprocess.run(
+            ["sudo", "chown", "-R", "1000:100", str(files_dir)],
+            check=True,
+        )
         subprocess.run(
             ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
             check=True,
