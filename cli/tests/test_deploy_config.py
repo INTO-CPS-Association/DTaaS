@@ -168,11 +168,11 @@ def test_check_placeholders_ignores_placeholder_substring(tmp_path):
     """A real value that merely contains a placeholder substring is not flagged."""
     env = tmp_path / "config" / ".env"
     env.parent.mkdir()
-    env.write_text("KEYCLOAK_ADMIN_PASSWORD=changemed\n")
+    env.write_text("KEYCLOAK_ADMIN_PASSWORD=changemed\n")  # NOSONAR
 
     warnings = check_placeholders(
         str(tmp_path),
-        [("config/.env", "env", {"KEYCLOAK_ADMIN_PASSWORD": "changemed"})],
+        [("config/.env", "env", {"KEYCLOAK_ADMIN_PASSWORD": "changemed"})],  # NOSONAR
     )
     assert not warnings
 
