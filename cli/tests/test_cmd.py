@@ -334,6 +334,26 @@ def test_admin_uninstall_no_existing_installation(runner, mock_deploy_pkg):
     mock_deploy_pkg["uninstall"].assert_not_called()
 
 
+def test_admin_uninstall_removes_files_when_nothing_running(runner, mock_deploy_pkg):
+    """--remove-user-files still deletes files when no containers are running."""
+    mock_deploy_pkg["present"].return_value = False
+
+    with patch("src.cmd.deployPkg.require_compose_file") as mock_require, patch(
+        "src.cmd.deployPkg.delete_user_files",
+        return_value="Removed user files at '/x/files'.",
+    ) as mock_delete:
+        result = runner.invoke(
+            dtaas, ["admin", "uninstall", "--remove-user-files", "--yes"]
+        )
+
+    assert result.exit_code == 0
+    assert "no existing DTaaS / Workspace installation" in result.output
+    assert "Removed user files" in result.output
+    mock_require.assert_called_once_with(".")
+    mock_delete.assert_called_once_with(".")
+    mock_deploy_pkg["uninstall"].assert_not_called()
+
+
 def test_admin_update_certs_success(runner):
     """update --certs forwards the output dir and echoes the result message."""
     with patch(

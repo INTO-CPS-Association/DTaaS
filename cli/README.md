@@ -208,7 +208,9 @@ containers and networks. Containers added with `admin user add` run as a
 separate Compose project, so they are torn down first; otherwise they would
 survive and hold the shared network open. If nothing is currently installed,
 the command reports that there is no existing installation rather than claiming
-a successful teardown. **Per-user workspace files are preserved by default.**
+a successful teardown, but `--remove-user-files` is still honoured, so you can
+clean up workspace files after a teardown. **Per-user workspace files are
+preserved by default.**
 
 To additionally delete the generated per-user workspace directories, pass
 `--remove-user-files`:

@@ -151,17 +151,20 @@ def install(output_dir):
 )
 def uninstall(output_dir, remove_user_files, yes):
     """Tear the deployment down with 'docker compose down'."""
+    confirm_remove_user_files(remove_user_files, yes)
     try:
-        if not deployPkg.installation_present(output_dir):
-            click.echo(NO_INSTALLATION_MESSAGE)
+        if deployPkg.installation_present(output_dir):
+            message = deployPkg.uninstall(output_dir, remove_user_files)
+            if message:
+                click.echo(message)
+            click.echo("Deployment uninstalled successfully")
             return
-        confirm_remove_user_files(remove_user_files, yes)
-        message = deployPkg.uninstall(output_dir, remove_user_files)
+        click.echo(NO_INSTALLATION_MESSAGE)
+        if remove_user_files:
+            deployPkg.require_compose_file(output_dir)
+            click.echo(deployPkg.delete_user_files(output_dir))
     except (OSError, DockerException) as exc:
         raise click.ClickException(str(exc)) from exc
-    if message:
-        click.echo(message)
-    click.echo("Deployment uninstalled successfully")
 
 
 @admin.command(name="update")

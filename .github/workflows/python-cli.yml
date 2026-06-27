@@ -53,11 +53,11 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: dtaas-cli
-          path: ./
+          path: dist/
 
       - name: Publish to PyPI
         # v1.14.0
         # yamllint disable-line rule:line-length
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
-          packages-dir: .
+          packages-dir: dist
