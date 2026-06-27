@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas-services"
-version = "0.4.2"
+version = "0.4.3"
 description = "DTaaS Platform Services Management CLI"
 authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"
