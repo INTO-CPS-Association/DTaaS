@@ -64,6 +64,8 @@ def test_server_dns_validation(base):
 
     assert collect_errors(with_common(base, **{"server-dns": "lossscalhost"})) == [msg]
     assert collect_errors(with_common(base, **{"server-dns": 123})) == [msg]
+    # A dotted-numeric value that is not a valid IP is rejected, not read as a host.
+    assert collect_errors(with_common(base, **{"server-dns": "999.999.999.999"})) == [msg]
     assert msg not in collect_errors(with_common(base, **{"server-dns": "localhost"}))
     assert msg not in collect_errors(with_common(base, **{"server-dns": "intocps.org"}))
     assert msg not in collect_errors(with_common(base, **{"server-dns": "192.168.1.1"}))

@@ -5,6 +5,7 @@ readable problems (empty when the value is acceptable); validate_config
 aggregates them so the user sees every issue at once rather than one at a time.
 """
 
+import ipaddress
 import re
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
@@ -23,6 +24,7 @@ FQDN_RE = re.compile(
 EMAIL_RE = re.compile(r"^[^@\s]+@[^\s@.]+(\.[^\s@.]+)+$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
 USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+NUMERIC_HOST_RE = re.compile(r"^[0-9.]+$")
 
 _SIZE_FIELDS = (("mem_limit", "4G"), ("shm_size", "512m"))
 _LIST_FIELDS = ("add", "delete")
@@ -41,17 +43,26 @@ def _is_url(value):
     return isinstance(value, str) and bool(URL_RE.match(value))
 
 
-def _is_host(value):
-    """True for 'localhost', an IP literal, or a dotted hostname (FQDN).
+def _is_ip(value):
+    """True when *value* is a valid IPv4 or IPv6 address."""
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except ValueError:
+        return False
 
-    A bare single-label name such as 'lossscalhost' is rejected: a server DNS
-    must be localhost or fully qualified, which always contains a dot.
+
+def _is_host(value):
+    """True for 'localhost', a valid IP literal, or a dotted hostname (FQDN).
+
+    A dotted-numeric value (e.g. '999.999.999.999') is validated as an IP, not
+    a hostname, so a malformed IP is rejected rather than read as four labels.
     """
     if not isinstance(value, str):
         return False
-    if value == "localhost":
-        return True
-    return bool(FQDN_RE.match(value))
+    if NUMERIC_HOST_RE.match(value):
+        return _is_ip(value)
+    return value == "localhost" or bool(FQDN_RE.match(value))
 
 
 def _is_abs_path(value):
@@ -116,32 +127,21 @@ def _check_git_repo(data):
 
 def _check_server_dns(data):
     """common.server-dns must be a hostname or IP."""
-    return _required(
-        data,
-        ("common", "server-dns"),
-        _is_host,
-        "common.server-dns must be a valid hostname or IP address",
-    )
+    message = "common.server-dns must be a valid hostname or IP address"
+    return _required(data, ("common", "server-dns"), _is_host, message)
 
 
 def _check_path(data):
     """common.path must be an absolute path to an existing directory."""
-    return _required(
-        data,
-        ("common", "path"),
-        _is_existing_dir,
-        "common.path must be an absolute path to an existing directory",
-    )
+    message = "common.path must be an absolute path to an existing directory"
+    return _required(data, ("common", "path"), _is_existing_dir, message)
 
 
 def _check_certs_src(data):
     """common.security.certs-src, when present, must be an existing directory."""
-    return _optional(
-        data,
-        ("common", "security", "certs-src"),
-        _is_existing_dir,
-        "common.security.certs-src must be an absolute path to an existing directory",
-    )
+    keys = ("common", "security", "certs-src")
+    message = "common.security.certs-src must be an absolute path to an existing directory"
+    return _optional(data, keys, _is_existing_dir, message)
 
 
 def _check_resources(data):
