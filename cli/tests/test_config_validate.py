@@ -92,33 +92,39 @@ def test_certs_src_optional_but_must_exist_when_present(base, tmp_path):
 
 
 def test_resource_validation(base):
-    """cpus/pids_limit must be ints; mem_limit/shm_size carry the right example."""
+    """cpus must be a number; pids_limit an int; mem/shm need a unit; shm missing."""
     broken = with_common(
         base,
         resources={
-            "cpus": "4",  # string, not int
+            "cpus": "4",  # a string is not a number
             "pids_limit": True,  # bool is rejected even though it subclasses int
-            "mem_limit": "abc",  # not a size string
+            "mem_limit": "4096",  # missing a unit
             # shm_size omitted -> missing
         },
     )
     errors = collect_errors(broken)
-    assert "common.resources.cpus must be an integer" in errors
+    assert "common.resources.cpus must be a positive number of CPU cores" in errors
     assert "common.resources.pids_limit must be an integer" in errors
-    assert "common.resources.mem_limit must be a size string like '4G'" in errors
+    assert "common.resources.mem_limit must include a unit, e.g. '4G'" in errors
     assert "common.resources.shm_size is missing" in errors
 
 
-def test_shm_size_message_uses_its_own_example(base):
-    """The shm_size message references '512m', not '4G'."""
-    broken = with_common(
-        base,
-        resources={"cpus": 4, "pids_limit": 4960, "mem_limit": "4G", "shm_size": "bad"},
-    )
-    assert (
-        "common.resources.shm_size must be a size string like '512m'"
-        in collect_errors(broken)
-    )
+def test_cpus_must_be_positive_number(base):
+    """cpus accepts fractional cores but rejects 0, bools and strings."""
+    msg = "common.resources.cpus must be a positive number of CPU cores"
+    res = base["common"]["resources"]
+    assert msg not in collect_errors(with_common(base, resources={**res, "cpus": 0.5}))
+    assert msg in collect_errors(with_common(base, resources={**res, "cpus": 0}))
+    assert msg in collect_errors(with_common(base, resources={**res, "cpus": True}))
+
+
+def test_size_unit_is_required(base):
+    """mem_limit/shm_size require a unit; '42s' and bare numbers are rejected."""
+    res = base["common"]["resources"]
+    bad = with_common(base, resources={**res, "mem_limit": "42s", "shm_size": "256"})
+    errors = collect_errors(bad)
+    assert "common.resources.mem_limit must include a unit, e.g. '4G'" in errors
+    assert "common.resources.shm_size must include a unit, e.g. '512m'" in errors
 
 
 def test_user_lists_validation(base):

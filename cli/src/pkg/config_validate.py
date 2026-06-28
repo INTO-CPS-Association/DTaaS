@@ -21,10 +21,9 @@ FQDN_RE = re.compile(
 )
 # Domain labels exclude the dot separator, so matching is linear (no ReDoS).
 EMAIL_RE = re.compile(r"^[^@\s]+@[^\s@.]+(\.[^\s@.]+)+$")
-SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)?$", re.IGNORECASE)
+SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
 USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
-_INT_FIELDS = ("cpus", "pids_limit")
 _SIZE_FIELDS = (("mem_limit", "4G"), ("shm_size", "512m"))
 _LIST_FIELDS = ("add", "delete")
 
@@ -72,8 +71,15 @@ def _is_int(value):
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+def _is_number(value):
+    """True when *value* is a positive number of cores (int or float, not bool)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    return value > 0
+
+
 def _is_size(value):
-    """True when *value* is a size string such as '4G' or '512m'."""
+    """True when *value* is a byte size with a required unit, e.g. '4G' or '512m'."""
     return isinstance(value, str) and bool(SIZE_RE.match(value))
 
 
@@ -139,13 +145,13 @@ def _check_certs_src(data):
 
 
 def _check_resources(data):
-    """cpus/pids_limit must be integers; mem_limit/shm_size must be size strings."""
-    errors = []
-    for field in _INT_FIELDS:
-        message = f"common.resources.{field} must be an integer"
-        errors += _required(data, ("common", "resources", field), _is_int, message)
+    """cpus is a positive number; pids_limit an integer; mem/shm are byte sizes."""
+    cpus_msg = "common.resources.cpus must be a positive number of CPU cores"
+    errors = _required(data, ("common", "resources", "cpus"), _is_number, cpus_msg)
+    pids_msg = "common.resources.pids_limit must be an integer"
+    errors += _required(data, ("common", "resources", "pids_limit"), _is_int, pids_msg)
     for field, example in _SIZE_FIELDS:
-        message = f"common.resources.{field} must be a size string like '{example}'"
+        message = f"common.resources.{field} must include a unit, e.g. '{example}'"
         errors += _required(data, ("common", "resources", field), _is_size, message)
     return errors
 

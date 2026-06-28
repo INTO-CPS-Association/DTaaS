@@ -407,8 +407,9 @@ directory) and reports every problem it finds at once. It checks:
 | `[common].server-dns` | must be `localhost`, an IP, or a dotted (fully qualified) hostname |
 | `[common].path` | must be an absolute path to a directory that exists |
 | `[common.security].certs-src` | when present, must be an absolute path to a directory that exists |
-| `[common.resources].cpus`, `pids_limit` | must be integers |
-| `[common.resources].mem_limit`, `shm_size` | must be size strings (e.g. `4G`, `512m`) |
+| `[common.resources].cpus` | must be a positive number of CPU cores (e.g. `4` or `0.5`) |
+| `[common.resources].pids_limit` | must be an integer |
+| `[common.resources].mem_limit`, `shm_size` | must be a byte size with a required unit (e.g. `4G`, `512m`) |
 | `[users].add`, `[users].delete` | when present, must be lists of strings |
 | `[users.<name>].email` | must be a valid email address |
 | deployment-section URLs | when present, must be `http(s)` URLs |
@@ -453,10 +454,10 @@ Adjust `[common.resources]` to match your hardware:
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `cpus` | `4` | Virtual CPUs per user container |
-| `mem_limit` | `"4G"` | Memory limit per container |
-| `pids_limit` | `4960` | Process limit per container |
-| `shm_size` | `"512m"` | Shared memory per container |
+| `cpus` | `4` | CPU cores per user container; may be fractional (e.g. `0.5`) |
+| `mem_limit` | `"4G"` | Memory limit per container; a byte size with a required unit |
+| `pids_limit` | `4960` | Process limit per container (integer) |
+| `shm_size` | `"512m"` | Shared memory per container; a byte size with a required unit |
 
 ### Deployment-specific credentials
 
