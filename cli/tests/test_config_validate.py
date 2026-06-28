@@ -68,7 +68,7 @@ def test_server_dns_validation(base):
     assert collect_errors(with_common(base, **{"server-dns": "999.999.999.999"})) == [msg]
     assert msg not in collect_errors(with_common(base, **{"server-dns": "localhost"}))
     assert msg not in collect_errors(with_common(base, **{"server-dns": "intocps.org"}))
-    assert msg not in collect_errors(with_common(base, **{"server-dns": "192.168.1.1"}))
+    assert msg not in collect_errors(with_common(base, **{"server-dns": "192.168.1.1"}))# NOSONAR
 
 
 def test_path_must_exist(base, tmp_path):

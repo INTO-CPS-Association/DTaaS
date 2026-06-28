@@ -58,7 +58,6 @@ def admin():
 @admin.group(name="config")
 def config():
     """configuration file commands"""
-    return
 
 
 @config.command(name="generate")
