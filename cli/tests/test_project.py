@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from src.pkg.project import (
     generate_project,
+    generate_config,
     generate_deploy_project,
     create_user_dirs,
     set_files_permissions,
@@ -16,6 +17,31 @@ from src.pkg.project import (
     DEPLOY_TYPES,
 )
 # pylint: disable=protected-access
+
+
+def test_generate_config_copies_only_toml(tmp_path):
+    """generate_config writes dtaas.toml and not the other project templates."""
+    generate_config(str(tmp_path))
+
+    assert (tmp_path / "dtaas.toml").is_file()
+    assert not (tmp_path / "users.server.yml").exists()
+
+
+def test_generate_config_skips_existing_without_force(tmp_path, capsys):
+    """An existing dtaas.toml is preserved and a skip message is printed."""
+    (tmp_path / "dtaas.toml").write_text("existing")
+
+    generate_config(str(tmp_path))
+
+    assert (tmp_path / "dtaas.toml").read_text() == "existing"
+    assert "'dtaas.toml' already exists, skipping" in capsys.readouterr().out
+
+
+def test_generate_config_raises_on_copy_failure(tmp_path):
+    """OSError is raised when the dtaas.toml copy fails."""
+    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
+        with pytest.raises(OSError, match="disk full"):
+            generate_config(str(tmp_path))
 
 
 def test_generate_project_skips_existing_file(tmp_path, capsys):

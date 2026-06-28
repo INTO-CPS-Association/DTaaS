@@ -221,6 +221,60 @@ def test_generate_deployment_cert_copy_error(runner):
     assert "Error copying certificates" in result.output
 
 
+def test_config_generate_success(runner):
+    """config generate forwards output-dir/force and reports success."""
+    with patch("src.cmd.projectPkg.generate_config") as mock_gen:
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
+
+    assert result.exit_code == 0
+    assert "Configuration file generated successfully" in result.output
+    mock_gen.assert_called_once_with(".", False)
+
+
+def test_config_generate_error(runner):
+    """config generate converts an OSError into a ClickException."""
+    with patch("src.cmd.projectPkg.generate_config", side_effect=OSError("disk full")):
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
+
+    assert result.exit_code != 0
+    assert "Error while generating config" in result.output
+
+
+def test_config_validate_valid(runner):
+    """config validate reports success when no problems are found."""
+    with patch("src.cmd.configValidatePkg.validate_config", return_value=[]):
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
+
+    assert result.exit_code == 0
+    assert "Configuration is valid" in result.output
+
+
+def test_config_validate_reports_problems(runner):
+    """config validate lists every problem and exits non-zero."""
+    with patch(
+        "src.cmd.configValidatePkg.validate_config",
+        return_value=["git-repo must be a valid URL", "common.path is missing"],
+    ):
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
+
+    assert result.exit_code != 0
+    assert "Invalid dtaas.toml" in result.output
+    assert "- git-repo must be a valid URL" in result.output
+    assert "- common.path is missing" in result.output
+
+
+def test_config_validate_missing_file(runner):
+    """A FileNotFoundError from validate_config surfaces as a ClickException."""
+    with patch(
+        "src.cmd.configValidatePkg.validate_config",
+        side_effect=FileNotFoundError("dtaas.toml not found"),
+    ):
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
+
+    assert result.exit_code != 0
+    assert "dtaas.toml not found" in result.output
+
+
 def test_add_users_config_error(runner):
     """add command raises ClickException when Config() fails"""
     with patch("src.cmd_utils.configPkg.Config", side_effect=RuntimeError("no config")):

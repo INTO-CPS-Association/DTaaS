@@ -78,6 +78,14 @@ def generate_project(dest_dir=".", force=False):
     _create_workspace_dirs(dest_dir)
 
 
+def generate_config(dest_dir=".", force=False):
+    """Copy only the dtaas.toml template into dest_dir for the user to fill in."""
+    _validate_project_inputs(dest_dir)
+    error = _try_copy_template("dtaas.toml", dest_dir, force)
+    if error:
+        raise OSError(error)
+
+
 def _copy_file(item, target, force):
     """Copy item to target, returning an error string or None."""
     if target.exists() and not force:

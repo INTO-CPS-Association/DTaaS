@@ -381,6 +381,59 @@ docker compose -f compose.server.yml --env-file .env up -d --force-recreate trae
   '.'s in them cannot be added properly through the CLI.
   This is an active issue that will be resolved in future releases.
 
+### 🛠️ Configuration File
+
+`dtaas.toml` can be generated and checked on its own, without the other project
+files produced by `generate-project`.
+
+To write a fresh `dtaas.toml` template to fill in:
+
+```bash
+dtaas admin config generate
+```
+
+Then, after editing it with your own values, check those values:
+
+```bash
+dtaas admin config validate
+```
+
+`validate` reads `dtaas.toml` (from `--output-dir` first, then the current
+directory) and reports every problem it finds at once. It checks:
+
+| Value | Rule |
+| --- | --- |
+| `git-repo` | must be an `http(s)` URL |
+| `[common].server-dns` | must be `localhost`, an IP, or a dotted (fully qualified) hostname |
+| `[common].path` | must be an absolute path to a directory that exists |
+| `[common.security].certs-src` | when present, must be an absolute path to a directory that exists |
+| `[common.resources].cpus`, `pids_limit` | must be integers |
+| `[common.resources].mem_limit`, `shm_size` | must be size strings (e.g. `4G`, `512m`) |
+| `[users].add`, `[users].delete` | when present, must be lists of strings |
+| `[users.<name>].email` | must be a valid email address |
+| deployment-section URLs | when present, must be `http(s)` URLs |
+| deployment-section `default-user` | when present, must be a valid username |
+
+The deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
+`auth-authority`, and `keycloak-issuer-url` across the `[frontend]`,
+`[localhost]`, `[insecure-server]`, `[secure-server]`, `[workspace-localhost]`,
+and `[workspace-secure-server]` sections; each is checked only when its section
+is present.
+
+`path` and `certs-src` are checked against the local filesystem, so run
+`validate` on the deployment host. A bare single-label `server-dns` (e.g.
+`myhost`) is rejected; use `localhost` or a fully qualified name. URL checking
+is strict, so unreplaced placeholders such as `https://your_server_dns/...`
+(an underscore is not a valid hostname) are reported until you fill them in.
+
+**Options (both commands):**
+
+- `--output-dir` (default: `.`): for `generate`, the target directory for the
+  new `dtaas.toml` (it must already exist); for `validate`, the directory to
+  look in first.
+- `--force` (`generate` only): overwrite an existing `dtaas.toml`. Without it,
+  an existing file is left untouched and a message is printed.
+
 ## ⚙️ Configure
 
 After running `dtaas generate-project`, open `dtaas.toml` and fill in the

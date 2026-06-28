@@ -55,6 +55,16 @@ The CLI has two layers of code:
   is responsible for. It also
   has helper functions that can be used across the CLI.
 
+The `admin config` commands are backed here: `generate_config` in
+_src/pkg/project.py_ copies just the `dtaas.toml` template (reusing the same
+helpers as `generate-project`), and _src/pkg/config_validate.py_ checks the
+values in an existing `dtaas.toml`. Each check in `config_validate.py` returns
+a list of human-readable problems (empty when the value is acceptable) and
+`validate_config` aggregates them so the user sees every issue at once. Most
+checks are syntactic, but `path` and `certs-src` are verified against the local
+filesystem (the directory must exist), so `validate` is expected to run on the
+deployment host.
+
 ### TOML File
 
 The base configuration file used by the CLI is the _dtaas.toml_ file.
@@ -64,7 +74,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.8.1"
+version="0.9.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```

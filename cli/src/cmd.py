@@ -6,6 +6,7 @@ from .pkg import users as userPkg
 from .pkg import project as projectPkg
 from .pkg import deploy as deployPkg
 from .pkg import cert_update as certUpdatePkg
+from .pkg import config_validate as configValidatePkg
 from .pkg.cert_validate import CertValidationError
 from .pkg.project import DEPLOY_TYPES
 from .cmd_utils import (
@@ -52,6 +53,48 @@ def generate_project(output_dir, force):
 def admin():
     """administration commands"""
     return
+
+
+@admin.group(name="config")
+def config():
+    """configuration file commands"""
+    return
+
+
+@config.command(name="generate")
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Target directory for the generated dtaas.toml.",
+)
+@click.option("--force", is_flag=True, help="Overwrite an existing dtaas.toml.")
+def config_generate(output_dir, force):
+    """Generate a dtaas.toml configuration template to fill in."""
+    try:
+        projectPkg.generate_config(output_dir, force)
+    except OSError as exc:
+        raise click.ClickException(f"Error while generating config: {exc}") from exc
+    click.echo("Configuration file generated successfully")
+
+
+@config.command(name="validate")
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Directory containing the dtaas.toml to validate.",
+)
+def config_validate(output_dir):
+    """Validate the values in dtaas.toml."""
+    try:
+        errors = configValidatePkg.validate_config(output_dir)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if errors:
+        listed = "\n".join(f"- {err}" for err in errors)
+        raise click.ClickException(f"Invalid dtaas.toml:\n{listed}")
+    click.echo("Configuration is valid")
 
 
 @dtaas.command(name="generate-deployment", cls=VerticalChoicesCommand)

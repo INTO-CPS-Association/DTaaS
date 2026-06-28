@@ -27,7 +27,7 @@ def test_import_toml():
 
     expected = {
         "name": "Digital Twin as a Service (DTaaS)",
-        "version": "0.8.1",
+        "version": "0.9.0",
         "owner": "The INTO-CPS-Association",
         "git-repo": "https://github.com/into-cps-association/DTaaS.git",
         "common": {
