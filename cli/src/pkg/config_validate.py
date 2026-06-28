@@ -19,7 +19,8 @@ FQDN_RE = re.compile(
     r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)"
     r"(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))+$"
 )
-EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+# Domain labels exclude the dot separator, so matching is linear (no ReDoS).
+EMAIL_RE = re.compile(r"^[^@\s]+@[^\s@.]+(\.[^\s@.]+)+$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)?$", re.IGNORECASE)
 USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
@@ -141,19 +142,11 @@ def _check_resources(data):
     """cpus/pids_limit must be integers; mem_limit/shm_size must be size strings."""
     errors = []
     for field in _INT_FIELDS:
-        errors += _required(
-            data,
-            ("common", "resources", field),
-            _is_int,
-            f"common.resources.{field} must be an integer",
-        )
+        message = f"common.resources.{field} must be an integer"
+        errors += _required(data, ("common", "resources", field), _is_int, message)
     for field, example in _SIZE_FIELDS:
-        errors += _required(
-            data,
-            ("common", "resources", field),
-            _is_size,
-            f"common.resources.{field} must be a size string like '{example}'",
-        )
+        message = f"common.resources.{field} must be a size string like '{example}'"
+        errors += _required(data, ("common", "resources", field), _is_size, message)
     return errors
 
 
@@ -166,12 +159,8 @@ def _check_user_lists(data):
     """users.add and users.delete, when present, must be lists of strings."""
     errors = []
     for field in _LIST_FIELDS:
-        errors += _optional(
-            data,
-            ("users", field),
-            _is_string_list,
-            f"users.{field} must be a list of strings",
-        )
+        message = f"users.{field} must be a list of strings"
+        errors += _optional(data, ("users", field), _is_string_list, message)
     return errors
 
 
