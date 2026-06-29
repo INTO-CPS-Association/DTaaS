@@ -317,10 +317,16 @@ dtaas admin update --config --output-dir ./my-server
 
 `--config` first **validates** `dtaas.toml` with the same checks as
 `dtaas admin config validate` and refuses to apply anything if it finds
-problems, reporting each field-level issue. It is **idempotent**: a second run
-with no `dtaas.toml` changes reports `No configuration changes` and restarts
+problems, reporting each field-level issue. After applying, it **reports any
+secrets still left as template placeholders** (e.g. an OIDC client id you have
+not filled in yet), so you know what remains. It is **idempotent**: a second
+run with no `dtaas.toml` changes reports `No configuration changes` and restarts
 nothing. It fails with a clear error if the deployment has not been generated,
 if `dtaas.toml` is missing or invalid, or if the restart fails.
+
+This makes `--config` the second step of the bootstrap flow for integrated
+GitLab/Keycloak deployments — see
+[Two-step bootstrap for integrated deployments](#two-step-bootstrap-for-integrated-deployments).
 
 **Options:**
 
@@ -550,3 +556,49 @@ Confidential ticked, scopes `openid profile read_user`):
 | `oauth-secret` | Random string for signing session cookies |
 | `client-id` | Frontend OAuth client ID |
 | `auth-authority` | Keycloak OIDC authority URL |
+
+### Two-step bootstrap for integrated deployments
+
+The `secure-server-gitlab` (bundled GitLab) and `workspace-secure-server`
+(bundled Keycloak) types have a chicken-and-egg problem: you cannot fill in the
+OAuth/OIDC client id and secret until the GitLab/Keycloak service is running,
+but those services are part of the deployment you are generating. Bootstrap
+them in two steps:
+
+1. **Generate and bring the stack up** with whatever you already know:
+
+   ```bash
+   dtaas generate-deployment --type secure-server-gitlab --force
+   dtaas admin install
+   ```
+
+   On first generation you will see warnings such as
+   `'your_client_id_here' not substituted in config/.env`. **This is
+   expected** — the OAuth/OIDC secrets do not exist yet, so the placeholders
+   remain.
+
+2. **Create the OIDC application, fill in `dtaas.toml`, and re-apply:**
+   open the now-running GitLab/Keycloak, create the OAuth/OIDC application, copy
+   its client id and secret into the matching `dtaas.toml` section (see
+   [Deployment-specific credentials](#deployment-specific-credentials)), then:
+
+   ```bash
+   dtaas admin update --config
+   ```
+
+   This substitutes the real secrets into the running deployment's config files
+   and restarts all services. If you missed a secret, it reports the remaining
+   placeholders so you can fill them and run `--config` again.
+
+**Checklist before step 2** — fill these `dtaas.toml` keys (they back the
+template placeholders, so anything left blank stays a placeholder):
+
+- `secure-server-gitlab`: `[secure-server-gitlab]` `oauth-client-id`,
+  `oauth-client-secret`, `oauth-secret`; `[frontend]` `react-app-client-id`,
+  `react-app-oauth-url`; plus `[common].server-dns` and the `[users]` entries.
+- `workspace-secure-server`: `[workspace-secure-server]`
+  `keycloak-client-secret`, `oauth-secret`, `keycloak-admin-password` (and the
+  other `keycloak-*` keys); plus `[common].server-dns` and `[users]`.
+
+Run `dtaas admin config validate` at any point to check these values before
+applying them.

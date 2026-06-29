@@ -55,11 +55,22 @@ def _validate(data):
         raise ValueError(f"Invalid dtaas.toml:\n{listed}")
 
 
-def _summary(deploy_type, changed, head, tail):
-    """Build the human-readable result or dry-run preview line."""
+_SECRETS_HINT = (
+    "Some secrets are still unset. Create the OAuth/OIDC application in your "
+    "GitLab/Keycloak, copy the client id and secret into the matching dtaas.toml "
+    "section, then re-run 'dtaas admin update --config'."
+)
+
+
+def _summary(deploy_type, changed, head, tail, warnings=()):
+    """Build the human-readable result or dry-run preview, plus any warnings."""
     if not changed:
-        return f"No configuration changes for '{deploy_type}'; nothing to update."
-    return f"{head} {', '.join(changed)}; {tail} all services."
+        base = f"No configuration changes for '{deploy_type}'; nothing to update."
+    else:
+        base = f"{head} {', '.join(changed)}; {tail} all services."
+    if warnings:
+        return "\n".join([base, *warnings, _SECRETS_HINT])
+    return base
 
 
 def update_config(output_dir, dry_run=False):
@@ -67,7 +78,9 @@ def update_config(output_dir, dry_run=False):
 
     A config change can affect any service (shared .env, routing, mounted
     files), so when anything changes every compose service is recreated rather
-    than guessing which ones are affected.
+    than guessing which ones are affected. After applying, any secrets still
+    left as template placeholders (e.g. an OIDC client id not yet filled in) are
+    reported, since those need a second pass once the OIDC app exists.
 
     Returns a status (or, with dry_run, a preview) message. Raises
     FileNotFoundError/ValueError for missing or invalid configuration, OSError
@@ -83,4 +96,5 @@ def update_config(output_dir, dry_run=False):
     deploy_config.apply_config(output_dir, specs)
     if changed:
         deploy.restart_all(output_dir)
-    return _summary(deploy_type, changed, "Updated", "restarted")
+    warnings = deploy_config.check_placeholders(output_dir, specs)
+    return _summary(deploy_type, changed, "Updated", "restarted", warnings)

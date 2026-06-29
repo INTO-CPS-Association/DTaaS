@@ -106,6 +106,35 @@ def test_update_config_idempotent_second_run(tmp_path):
     mock_restart.assert_not_called()
 
 
+GITLAB_SERVICES = ("traefik", "client", "libms", "traefik-forward-auth", "gitlab")
+PLACEHOLDER_ENV = "SERVER_DNS=localhost\nOAUTH_CLIENT_SECRET=your_client_secret_here\n"
+
+
+def test_update_config_warns_about_unfilled_secret(tmp_path):
+    """A secret still left as a template placeholder is reported after applying."""
+    base = _write_deployment(tmp_path, GITLAB_SERVICES, env_text=PLACEHOLDER_ENV)
+    with patch("src.pkg.config_update.deploy.restart_all"):
+        message = config_update.update_config(base, dry_run=False)
+    assert "your_client_secret_here" in message
+    assert "not substituted" in message
+    # The user is told where the value comes from and to re-run.
+    assert "GitLab/Keycloak" in message
+    assert "re-run 'dtaas admin update --config'" in message
+
+
+def test_update_config_no_warning_once_secret_filled(tmp_path):
+    """Filling the secret in dtaas.toml substitutes it and clears the warning."""
+    base = _write_deployment(tmp_path, GITLAB_SERVICES, env_text=PLACEHOLDER_ENV)
+    with open(tmp_path / "dtaas.toml", "a", encoding="utf-8") as toml:
+        toml.write('[secure-server-gitlab]\noauth-client-secret="realsecret"\n')
+    with patch("src.pkg.config_update.deploy.restart_all"):
+        message = config_update.update_config(base, dry_run=False)
+    assert "your_client_secret_here" not in message
+    assert "GitLab/Keycloak" not in message  # no leftover secrets, no hint
+    env_text = (tmp_path / "config" / ".env").read_text()
+    assert "OAUTH_CLIENT_SECRET=realsecret" in env_text
+
+
 def test_update_config_rejects_invalid_toml(tmp_path):
     """Invalid dtaas.toml is rejected before any file is touched."""
     base = _write_deployment(tmp_path, SERVER_SERVICES)

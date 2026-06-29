@@ -78,7 +78,7 @@ def test_server_dns_validation(base):
     assert msg not in collect_errors(with_common(base, **{"server-dns": "localhost"}))
     assert msg not in collect_errors(with_common(base, **{"server-dns": "intocps.org"}))
     assert msg not in collect_errors(
-        with_common(base, **{"server-dns": "192.168.1.1"}) # NOSONAR
+        with_common(base, **{"server-dns": "192.168.1.1"})  # NOSONAR
     )  # NOSONAR
 
 

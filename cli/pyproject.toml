@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas"
-version = "0.9.0"
+version = "0.9.1"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
