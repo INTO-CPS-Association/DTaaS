@@ -140,7 +140,9 @@ def _check_path(data):
 def _check_certs_src(data):
     """common.security.certs-src, when present, must be an existing directory."""
     keys = ("common", "security", "certs-src")
-    message = "common.security.certs-src must be an absolute path to an existing directory"
+    message = (
+        "common.security.certs-src must be an absolute path to an existing directory"
+    )
     return _optional(data, keys, _is_existing_dir, message)
 
 

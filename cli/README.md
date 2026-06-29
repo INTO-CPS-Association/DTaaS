@@ -272,8 +272,8 @@ error is raised. The command is safe to run repeatedly.
 
 **Options:**
 
-- `--certs`: Refresh the deployment's TLS certificates. Required; it is the
-  only update target today, and the `update` group leaves room for future ones.
+- `--certs`: Refresh the deployment's TLS certificates. Pass at least one of
+  `--certs` or `--config` (see below).
 - `--output-dir` (default: `.`): Installation directory containing the
   generated deployment (the `docker-compose.yml` and `certs/`). The CLI looks
   for `dtaas.toml` here first, then in the current directory. Keep
@@ -285,6 +285,61 @@ The command fails with a clear error if the deployment has not been generated
 (`docker-compose.yml` missing), if `certs-src` is unset or missing, if either
 certificate is absent from `certs-src`, if the Docker daemon is not reachable,
 or if `traefik` does not come back up after the swap.
+
+### 🧩 Update Service Configuration
+
+To re-apply the values in `dtaas.toml` to an already-installed deployment's
+service config files — without regenerating the project — use:
+
+```bash
+dtaas admin update --config
+```
+
+This treats `dtaas.toml` as the single source of truth, re-runs the same
+substitution as `generate-deployment` against the installed config files, and
+then restarts only the services whose config actually changed. The deployment
+type is **auto-detected** from the services in `docker-compose.yml`, so you do
+not pass `--type`.
+
+The config that backs each service:
+
+| Service | Backing config | Re-applied keys |
+| --- | --- | --- |
+| `client` | `config/client.js` (or `config/env.local.js`) + `SERVER_DNS` in `.env` | `REACT_APP_*` client id / authority / URLs |
+| `traefik-forward-auth` | `config/conf.server` + `OAUTH_*` in `.env` | per-user path rules and whitelists, OAuth provider |
+| `libms` | `SERVER_DNS` in `.env` (routing only; no own config file) | server hostname used in its route |
+| `traefik` | `SERVER_DNS` in `.env` (routing host; `tls.yml` is static) | server hostname used in routes |
+
+Because `libms` and `traefik` have no dedicated config file, they are restarted
+only when the shared `.env` changes; the restart set is intersected with the
+services that actually exist, so a deployment without (say) `libms` is
+unaffected. Examples:
+
+```bash
+# Preview what would change and which services would restart:
+dtaas admin update --config --dry-run
+
+# Apply the changes and restart the affected services:
+dtaas admin update --config
+
+# Update a deployment generated elsewhere:
+dtaas admin update --config --output-dir ./my-server
+```
+
+`--config` first **validates** `dtaas.toml` with the same checks as
+`dtaas admin config validate` and refuses to apply anything if it finds
+problems, reporting each field-level issue. It is **idempotent**: a second run
+with no `dtaas.toml` changes reports `No configuration changes` and restarts
+nothing. It fails with a clear error if the deployment has not been generated,
+if `dtaas.toml` is missing or invalid, or if a service restart fails.
+
+**Options:**
+
+- `--config`: Re-apply `dtaas.toml` to the installed services' config files.
+- `--dry-run`: With `--config`, report what would change and which services
+  would restart, without writing files or restarting anything.
+
+`--certs` and `--config` may be combined in a single invocation.
 
 ### 📁 Select Template
 

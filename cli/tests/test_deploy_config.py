@@ -11,6 +11,7 @@ from src.pkg.deploy_config import (
     build_file_specs,
     apply_config,
     check_placeholders,
+    diff_specs,
 )
 
 
@@ -199,3 +200,34 @@ def test_toml_lookup_user_collision_reserved_key():
     """email lookup is safe when a username collides with the 'add' key"""
     toml = {"users": {"add": ["add"]}}
     assert _toml_lookup(toml, "users.email1") == ""
+
+
+def test_diff_specs_reports_only_changed_files(tmp_path):
+    """diff_specs lists files a spec would change and omits no-op specs."""
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / ".env").write_text(ENV_TEXT)
+    (config_dir / "client.js").write_text(JS_TEXT)
+
+    changed = diff_specs(
+        str(tmp_path),
+        [
+            ("config/.env", "env", {"SERVER_DNS": "myserver.com"}),  # changes
+            ("config/client.js", "js", {"REACT_APP_CLIENT_ID": "your_client_id_here"}),
+        ],
+    )
+    assert changed == ["config/.env"]
+
+
+def test_diff_specs_does_not_write(tmp_path):
+    """diff_specs is read-only: it never edits the file it inspects."""
+    env = tmp_path / ".env"
+    env.write_text("SERVER_DNS=localhost\n")
+    before = env.read_text()
+    diff_specs(str(tmp_path), [(".env", "env", {"SERVER_DNS": "changed.com"})])
+    assert env.read_text() == before
+
+
+def test_diff_specs_skips_missing_files(tmp_path):
+    """A spec for a file absent from dest_dir counts as unchanged."""
+    assert not diff_specs(str(tmp_path), [("config/.env", "env", {"K": "v"})])

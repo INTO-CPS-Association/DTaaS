@@ -65,6 +65,23 @@ checks are syntactic, but `path` and `certs-src` are verified against the local
 filesystem (the directory must exist), so `validate` is expected to run on the
 deployment host.
 
+`admin update --config` is backed by _src/pkg/config_update.py_, which
+re-applies `dtaas.toml` to an installed deployment in place. It reuses the
+existing substitution engine rather than duplicating it:
+`config_validate.collect_errors` gates the run,
+`deploy_config.build_file_specs` produces the per-file specs,
+`deploy_config.diff_specs` previews which files a spec would change
+(read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
+writes them (idempotently — only changed files are touched). The deployment
+type is detected from the compose service names via `deploy.compose_services`
+(more robust than inspecting config-file names). A small `_FILE_SERVICES` map
+says which services consume each config file; the services to restart are that
+mapping for the changed files, intersected with the services actually present,
+then recreated through `deploy.restart_service`. `cmd_utils.run_config_update`
+adapts it to the CLI (mapping `OSError`/`ValueError`/`DockerException` to a
+`ClickException`), alongside `run_cert_update` and `require_update_flag` for
+the `update` group.
+
 ### TOML File
 
 The base configuration file used by the CLI is the _dtaas.toml_ file.
