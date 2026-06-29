@@ -18,6 +18,8 @@ click = "^8.4.2"
 tomlkit = "^0.15.0"
 python-on-whales = "^0.81.0"
 cryptography = "^49.0.0"
+email-validator = "^2.2.0"
+fqdn = "^1.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"

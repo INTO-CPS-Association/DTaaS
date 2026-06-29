@@ -154,6 +154,14 @@ def test_email_validation(base):
     assert "users.u2.email is not a valid email address" in errors
 
 
+def test_email_validation_rejects_malformed_addresses(base):
+    """email-validator catches cases a minimal regex would wrongly accept."""
+    for bad in ("foo@@bar.com", "foo@bar", "foo@.com", 123):
+        data = copy.deepcopy(base)
+        data["users"] = {"add": ["u1"], "u1": {"email": bad}}
+        assert "users.u1.email is not a valid email address" in collect_errors(data)
+
+
 def test_deploy_sections_are_optional(base):
     """Deployment sections are validated only when present."""
     assert collect_errors(base) == []  # base has no deployment sections

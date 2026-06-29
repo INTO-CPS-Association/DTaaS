@@ -1,27 +1,19 @@
 """Validate the values in a dtaas.toml configuration file.
 
 Used by 'dtaas admin config validate'. Each check returns a list of human
-readable problems (empty when the value is acceptable); validate_config
-aggregates them so the user sees every issue at once rather than one at a time.
+readable problems (empty when acceptable); validate_config aggregates them so
+the user sees every issue at once rather than one at a time.
 """
 
 import ipaddress
 import re
 from pathlib import Path, PurePosixPath, PureWindowsPath
-
+from email_validator import EmailNotValidError, validate_email
+from fqdn import FQDN
 from . import utils
 
-# Reject odd URLs (e.g. stray '@@' in the path): require http(s), a host, an
-# optional port, and a simple path made of safe characters only.
+
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")
-# A server DNS must be fully qualified, so require at least one dot. 'localhost'
-# is allowed separately; a bare single label (e.g. 'lossscalhost') is rejected.
-FQDN_RE = re.compile(
-    r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)"
-    r"(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))+$"
-)
-# Domain labels exclude the dot separator, so matching is linear (no ReDoS).
-EMAIL_RE = re.compile(r"^[^@\s]+@[^\s@.]+(\.[^\s@.]+)+$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
 USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 NUMERIC_HOST_RE = re.compile(r"^[0-9.]+$")
@@ -52,17 +44,21 @@ def _is_ip(value):
         return False
 
 
+def _is_fqdn(value):
+    """True when *value* is an RFC 1123 fully qualified domain name."""
+    return FQDN(value).is_valid
+
+
 def _is_host(value):
     """True for 'localhost', a valid IP literal, or a dotted hostname (FQDN).
 
-    A dotted-numeric value (e.g. '999.999.999.999') is validated as an IP, not
-    a hostname, so a malformed IP is rejected rather than read as four labels.
+    A dotted-numeric value is validated as an IP, not read as a hostname.
     """
     if not isinstance(value, str):
         return False
     if NUMERIC_HOST_RE.match(value):
         return _is_ip(value)
-    return value == "localhost" or bool(FQDN_RE.match(value))
+    return value == "localhost" or _is_fqdn(value)
 
 
 def _is_abs_path(value):
@@ -95,8 +91,12 @@ def _is_size(value):
 
 
 def _is_email(value):
-    """True when *value* looks like an email address."""
-    return isinstance(value, str) and bool(EMAIL_RE.match(value))
+    """True when *value* is a valid email address (no DNS lookup)."""
+    try:
+        validate_email(value, check_deliverability=False)
+        return True
+    except (EmailNotValidError, TypeError):  # TypeError: non-string value
+        return False
 
 
 def _is_username(value):

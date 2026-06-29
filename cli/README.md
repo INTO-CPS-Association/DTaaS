@@ -411,7 +411,7 @@ directory) and reports every problem it finds at once. It checks:
 | `[common.resources].pids_limit` | must be an integer |
 | `[common.resources].mem_limit`, `shm_size` | must be a byte size with a required unit (e.g. `4G`, `512m`) |
 | `[users].add`, `[users].delete` | when present, must be lists of strings |
-| `[users.<name>].email` | must be a valid email address |
+| `[users.<name>].email` | must be a valid email address (RFC 5321/5322, no DNS lookup) |
 | deployment-section URLs | when present, must be `http(s)` URLs |
 | deployment-section `default-user` | when present, must be a valid username |
 
