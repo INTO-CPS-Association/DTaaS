@@ -58,6 +58,13 @@ def test_git_repo_missing_and_invalid(base):
     assert "git-repo must be a valid URL" in collect_errors(bad)
 
 
+def test_url_scheme_is_case_insensitive(base):
+    """An upper-case scheme (HTTPS://) is still accepted as a valid URL."""
+    ok = copy.deepcopy(base)
+    ok["git-repo"] = "HTTPS://github.com/into-cps-association/DTaaS.git"
+    assert "git-repo must be a valid URL" not in collect_errors(ok)
+
+
 def test_server_dns_validation(base):
     """localhost, IPs and FQDNs pass; a bare single-label name is rejected."""
     msg = "common.server-dns must be a valid hostname or IP address"

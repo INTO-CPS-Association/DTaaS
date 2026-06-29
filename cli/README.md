@@ -485,8 +485,8 @@ is strict, so unreplaced placeholders such as `https://your_server_dns/...`
 **Options (both commands):**
 
 - `--output-dir` (default: `.`): for `generate`, the target directory for the
-  new `dtaas.toml` (it must already exist); for `validate`, the directory to
-  look in first.
+  new `dtaas.toml` (it is created if it does not exist); for `validate`, the
+  directory to look in first.
 - `--force` (`generate` only): overwrite an existing `dtaas.toml`. Without it,
   an existing file is left untouched and a message is printed.
 

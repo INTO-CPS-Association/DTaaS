@@ -10,7 +10,7 @@ import re
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from email_validator import EmailNotValidError, validate_email
 from fqdn import FQDN
-from . import utils
+from .import utils
 
 
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")
@@ -31,8 +31,8 @@ def _get(data, *keys):
 
 
 def _is_url(value):
-    """True when *value* is an http(s) URL with a host and a simple path."""
-    return isinstance(value, str) and bool(URL_RE.match(value))
+    """True when *value* is an http(s) URL (case-insensitive) with a host/path."""
+    return isinstance(value, str) and bool(URL_RE.match(value.lower()))
 
 
 def _is_ip(value):
@@ -50,10 +50,7 @@ def _is_fqdn(value):
 
 
 def _is_host(value):
-    """True for 'localhost', a valid IP literal, or a dotted hostname (FQDN).
-
-    A dotted-numeric value is validated as an IP, not read as a hostname.
-    """
+    """True for 'localhost', an IP literal, or a dotted FQDN (numeric => IP)."""
     if not isinstance(value, str):
         return False
     if NUMERIC_HOST_RE.match(value):

@@ -72,10 +72,11 @@ def config():
 def config_generate(output_dir, force):
     """Generate a dtaas.toml configuration template to fill in."""
     try:
-        projectPkg.generate_config(output_dir, force)
+        skipped = projectPkg.generate_config(output_dir, force)
     except OSError as exc:
         raise click.ClickException(f"Error while generating config: {exc}") from exc
-    click.echo("Configuration file generated successfully")
+    if not skipped:
+        click.echo("Configuration file generated successfully")
 
 
 @config.command(name="validate")

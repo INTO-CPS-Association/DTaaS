@@ -83,13 +83,22 @@ def test_generate_deployment_error(runner):
 
 
 def test_config_generate_success(runner):
-    """config generate forwards output-dir/force and reports success."""
-    with patch("src.cmd.projectPkg.generate_config") as mock_gen:
+    """config generate forwards output-dir/force and reports success when written."""
+    with patch("src.cmd.projectPkg.generate_config", return_value=False) as mock_gen:
         result = runner.invoke(dtaas, ["admin", "config", "generate"])
 
     assert result.exit_code == 0
     assert "Configuration file generated successfully" in result.output
     mock_gen.assert_called_once_with(".", False)
+
+
+def test_config_generate_skips_existing(runner):
+    """When the file already exists, no misleading success message is printed."""
+    with patch("src.cmd.projectPkg.generate_config", return_value=True):
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
+
+    assert result.exit_code == 0
+    assert "Configuration file generated successfully" not in result.output
 
 
 def test_config_generate_error(runner):
