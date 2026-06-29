@@ -103,7 +103,6 @@ def test_down_user_containers_tears_down_user_compose(tmp_path):
     mock_docker.return_value.compose.down.assert_called_once_with(remove_orphans=True)
 
 
-
 def test_installation_present_true_when_main_has_containers(tmp_path):
     """installation_present is True when the main project has any container."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
@@ -133,6 +132,22 @@ def test_restart_service_force_recreates(tmp_path):
         mock_client.return_value.compose.up.assert_called_once_with(
             services=["traefik"], force_recreate=True, detach=True
         )
+
+
+def test_restart_all_force_recreates_whole_project(tmp_path):
+    """restart_all recreates every service (no services filter), detached."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    with patch("src.pkg.deploy._client") as mock_client:
+        deploy.restart_all(str(tmp_path))
+        mock_client.return_value.compose.up.assert_called_once_with(
+            force_recreate=True, detach=True
+        )
+
+
+def test_restart_all_requires_compose_file(tmp_path):
+    """restart_all refuses to act without a generated deployment."""
+    with pytest.raises(OSError, match="docker-compose.yml"):
+        deploy.restart_all(str(tmp_path))
 
 
 def test_stop_service_stops_named_service(tmp_path):

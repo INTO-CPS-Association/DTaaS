@@ -297,29 +297,18 @@ dtaas admin update --config
 
 This treats `dtaas.toml` as the single source of truth, re-runs the same
 substitution as `generate-deployment` against the installed config files, and
-then restarts only the services whose config actually changed. The deployment
+if anything changed, recreates **all** the deployment's services with
+`docker compose up -d --force-recreate`. Because a config change can affect any
+service (the shared `.env`, routing, or a mounted config file), the whole stack
+is restarted rather than guessing which services are impacted. The deployment
 type is **auto-detected** from the services in `docker-compose.yml`, so you do
-not pass `--type`.
-
-The config that backs each service:
-
-| Service | Backing config | Re-applied keys |
-| --- | --- | --- |
-| `client` | `config/client.js` (or `config/env.local.js`) + `SERVER_DNS` in `.env` | `REACT_APP_*` client id / authority / URLs |
-| `traefik-forward-auth` | `config/conf.server` + `OAUTH_*` in `.env` | per-user path rules and whitelists, OAuth provider |
-| `libms` | `SERVER_DNS` in `.env` (routing only; no own config file) | server hostname used in its route |
-| `traefik` | `SERVER_DNS` in `.env` (routing host; `tls.yml` is static) | server hostname used in routes |
-
-Because `libms` and `traefik` have no dedicated config file, they are restarted
-only when the shared `.env` changes; the restart set is intersected with the
-services that actually exist, so a deployment without (say) `libms` is
-unaffected. Examples:
+not pass `--type`. Examples:
 
 ```bash
-# Preview what would change and which services would restart:
+# Preview what would change (no writes, no restart):
 dtaas admin update --config --dry-run
 
-# Apply the changes and restart the affected services:
+# Apply the changes and restart all services:
 dtaas admin update --config
 
 # Update a deployment generated elsewhere:
@@ -331,13 +320,13 @@ dtaas admin update --config --output-dir ./my-server
 problems, reporting each field-level issue. It is **idempotent**: a second run
 with no `dtaas.toml` changes reports `No configuration changes` and restarts
 nothing. It fails with a clear error if the deployment has not been generated,
-if `dtaas.toml` is missing or invalid, or if a service restart fails.
+if `dtaas.toml` is missing or invalid, or if the restart fails.
 
 **Options:**
 
 - `--config`: Re-apply `dtaas.toml` to the installed services' config files.
-- `--dry-run`: With `--config`, report what would change and which services
-  would restart, without writing files or restarting anything.
+- `--dry-run`: With `--config`, report what would change without writing files
+  or restarting anything.
 
 `--certs` and `--config` may be combined in a single invocation.
 

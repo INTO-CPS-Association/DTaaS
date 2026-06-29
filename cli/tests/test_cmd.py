@@ -36,7 +36,6 @@ def test_delete_user_success(runner, mock_user_pkg):
     mock_user_pkg["delete"].assert_called_once()
 
 
-
 def test_generate_project_success(runner):
     """Test successful project file generation with defaults"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
@@ -190,7 +189,6 @@ def test_admin_install_error(runner, mock_deploy_pkg):
     assert "not generated" in result.output
 
 
-
 def test_admin_uninstall_remove_user_files_with_yes(runner, mock_deploy_pkg):
     """--remove-user-files with --yes skips the prompt and reports removal."""
     mock_deploy_pkg["uninstall"].return_value = "Removed user files at '/x/files'."
@@ -249,7 +247,8 @@ def test_admin_update_certs_success(runner):
 def test_admin_update_config_success(runner):
     """update --config forwards the output dir (not dry-run) and echoes the result."""
     with patch(
-        "src.cmd_utils.configUpdatePkg.update_config", return_value="Updated config/.env."
+        "src.cmd_utils.configUpdatePkg.update_config",
+        return_value="Updated config/.env.",
     ) as mock_update:
         result = runner.invoke(dtaas, ["admin", "update", "--config"])
 

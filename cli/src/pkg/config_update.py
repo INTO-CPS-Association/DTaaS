@@ -14,16 +14,6 @@ _SERVICE_MARKERS = (
 )
 
 
-_FILE_SERVICES = {
-    "config/.env": ("traefik", "client", "libms", "traefik-forward-auth"),
-    ".env": ("traefik", "client", "libms", "traefik-forward-auth", "dex"),
-    "config/client.js": ("client",),
-    "config/env.local.js": ("client",),
-    "config/conf.server": ("traefik-forward-auth",),
-    "config/dex-config.yaml": ("dex",),
-}
-
-
 def _server_variant(output_dir):
     """secure-server when tls.yml is present, otherwise insecure-server."""
     tls = Path(output_dir) / "config" / "tls.yml"
@@ -65,40 +55,32 @@ def _validate(data):
         raise ValueError(f"Invalid dtaas.toml:\n{listed}")
 
 
-def _services_to_restart(output_dir, changed):
-    """Return the present services backed by any changed config file."""
-    wanted = set()
-    for rel_path in changed:
-        wanted.update(_FILE_SERVICES.get(rel_path, ()))
-    return sorted(wanted & deploy.compose_services(output_dir))
-
-
-def _summary(deploy_type, changed, services, head, tail):
+def _summary(deploy_type, changed, head, tail):
     """Build the human-readable result or dry-run preview line."""
     if not changed:
         return f"No configuration changes for '{deploy_type}'; nothing to update."
-    parts = [f"{head} {', '.join(changed)}"]
-    if services:
-        parts.append(f"{tail} {', '.join(services)}")
-    return "; ".join(parts) + "."
+    return f"{head} {', '.join(changed)}; {tail} all services."
 
 
 def update_config(output_dir, dry_run=False):
-    """Re-apply dtaas.toml config in place and restart affected services.
+    """Re-apply dtaas.toml config in place and restart the whole deployment.
+
+    A config change can affect any service (shared .env, routing, mounted
+    files), so when anything changes every compose service is recreated rather
+    than guessing which ones are affected.
 
     Returns a status (or, with dry_run, a preview) message. Raises
     FileNotFoundError/ValueError for missing or invalid configuration, OSError
-    for a missing deployment, and DockerException if a restart fails.
+    for a missing deployment, and DockerException if the restart fails.
     """
     deploy_type = detect_deploy_type(output_dir)
     data = _load_toml(output_dir)
     _validate(data)
     specs = deploy_config.build_file_specs(deploy_type, data)
     changed = deploy_config.diff_specs(output_dir, specs)
-    services = _services_to_restart(output_dir, changed)
     if dry_run:
-        return _summary(deploy_type, changed, services, "Would update", "would restart")
+        return _summary(deploy_type, changed, "Would update", "would restart")
     deploy_config.apply_config(output_dir, specs)
-    for service in services:
-        deploy.restart_service(output_dir, service)
-    return _summary(deploy_type, changed, services, "Updated", "restarted")
+    if changed:
+        deploy.restart_all(output_dir)
+    return _summary(deploy_type, changed, "Updated", "restarted")

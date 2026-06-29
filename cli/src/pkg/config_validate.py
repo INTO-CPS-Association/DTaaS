@@ -10,7 +10,7 @@ import re
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from email_validator import EmailNotValidError, validate_email
 from fqdn import FQDN
-from .import utils
+from . import utils
 
 
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")

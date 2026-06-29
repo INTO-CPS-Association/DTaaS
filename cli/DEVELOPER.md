@@ -74,13 +74,12 @@ existing substitution engine rather than duplicating it:
 (read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
 writes them (idempotently — only changed files are touched). The deployment
 type is detected from the compose service names via `deploy.compose_services`
-(more robust than inspecting config-file names). A small `_FILE_SERVICES` map
-says which services consume each config file; the services to restart are that
-mapping for the changed files, intersected with the services actually present,
-then recreated through `deploy.restart_service`. `cmd_utils.run_config_update`
-adapts it to the CLI (mapping `OSError`/`ValueError`/`DockerException` to a
-`ClickException`), alongside `run_cert_update` and `require_update_flag` for
-the `update` group.
+(more robust than inspecting config-file names). When any file changed, the
+whole stack is recreated through `deploy.restart_all`
+(`docker compose up -d --force-recreate`), since a config change can affect any
+service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
+`OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
+`run_cert_update` and `require_update_flag` for the `update` group.
 
 ### TOML File
 

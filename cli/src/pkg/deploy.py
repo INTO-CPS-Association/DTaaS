@@ -201,6 +201,16 @@ def restart_service(directory, service):
     _client(directory).compose.up(services=[service], force_recreate=True, detach=True)
 
 
+def restart_all(directory):
+    """Recreate every compose service so they pick up new configuration.
+
+    Mirrors 'docker compose up -d --force-recreate'. Raises OSError if the
+    deployment is missing, or DockerException if compose itself fails.
+    """
+    require_compose_file(directory)
+    _client(directory).compose.up(force_recreate=True, detach=True)
+
+
 def stop_service(directory, service):
     """Stop one compose service so its files can be safely replaced.
 

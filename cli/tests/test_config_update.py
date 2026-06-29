@@ -73,42 +73,34 @@ def test_validate_raises_with_field_messages():
     assert "common.server-dns is missing" in message
 
 
-def test_services_to_restart_intersects_with_present(tmp_path):
-    """Only services that both back a changed file and exist are restarted."""
-    base = _write_deployment(tmp_path, ("traefik", "client", "dex"))  # no libms
-    services = config_update._services_to_restart(base, [".env"])
-    assert services == ["client", "dex", "traefik"]  # libms/forward-auth absent
-
-
 def test_update_config_dry_run_previews_without_writing(tmp_path):
-    """Dry run reports would-be changes and restarts but edits nothing."""
+    """Dry run reports would-be changes and restart but edits nothing."""
     base = _write_deployment(tmp_path, SERVER_SERVICES)
     env_before = (tmp_path / "config" / ".env").read_text()
-    with patch("src.pkg.config_update.deploy.restart_service") as mock_restart:
+    with patch("src.pkg.config_update.deploy.restart_all") as mock_restart:
         message = config_update.update_config(base, dry_run=True)
     assert "Would update config/.env" in message
-    assert "would restart" in message
+    assert "would restart all services" in message
     mock_restart.assert_not_called()
     assert (tmp_path / "config" / ".env").read_text() == env_before
 
 
-def test_update_config_applies_and_restarts(tmp_path):
-    """A real run rewrites the changed file and restarts its backing services."""
+def test_update_config_applies_and_restarts_all(tmp_path):
+    """A real run rewrites the changed file and recreates the whole deployment."""
     base = _write_deployment(tmp_path, SERVER_SERVICES)
-    with patch("src.pkg.config_update.deploy.restart_service") as mock_restart:
+    with patch("src.pkg.config_update.deploy.restart_all") as mock_restart:
         message = config_update.update_config(base, dry_run=False)
     assert "SERVER_DNS=example.org" in (tmp_path / "config" / ".env").read_text()
-    assert "Updated config/.env" in message
-    restarted = {call.args[1] for call in mock_restart.call_args_list}
-    assert restarted == {"traefik", "client", "libms", "traefik-forward-auth"}
+    assert "Updated config/.env; restarted all services." == message
+    mock_restart.assert_called_once_with(base)
 
 
 def test_update_config_idempotent_second_run(tmp_path):
     """Re-running after the values are applied reports no changes and no restart."""
     base = _write_deployment(tmp_path, SERVER_SERVICES)
-    with patch("src.pkg.config_update.deploy.restart_service"):
+    with patch("src.pkg.config_update.deploy.restart_all"):
         config_update.update_config(base, dry_run=False)
-    with patch("src.pkg.config_update.deploy.restart_service") as mock_restart:
+    with patch("src.pkg.config_update.deploy.restart_all") as mock_restart:
         message = config_update.update_config(base, dry_run=False)
     assert "No configuration changes" in message
     mock_restart.assert_not_called()
