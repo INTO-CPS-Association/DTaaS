@@ -56,10 +56,10 @@ const Sidebar = ({
     return (
       <Grid
         container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
         sx={{
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
           padding: 2,
           height: '100%',
           maxWidth: '300px',
@@ -77,8 +77,8 @@ const Sidebar = ({
   return (
     <Grid
       container
-      direction="column"
       sx={{
+        flexDirection: 'column',
         padding: 2,
         height: '100%',
         maxWidth: '300px',

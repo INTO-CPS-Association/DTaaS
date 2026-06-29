@@ -3,10 +3,14 @@ import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { Remarkable } from 'remarkable';
 import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
-import * as RemarkableKatex from 'remarkable-katex';
+import RemarkableKatexModule from 'remarkable-katex';
 import { useSelector } from 'react-redux';
 import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
+
+const RemarkableKatex =
+  (RemarkableKatexModule as { default?: unknown }).default ??
+  RemarkableKatexModule;
 
 interface DetailsDialogProps {
   readonly showDialog: boolean;
@@ -41,7 +45,7 @@ function DetailsDialog({
   const md = new Remarkable({
     html: true,
     typographer: true,
-  }).use(RemarkableKatex);
+  }).use(RemarkableKatex as never);
 
   return (
     <Dialog open={showDialog} maxWidth="md">

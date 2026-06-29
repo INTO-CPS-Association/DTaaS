@@ -67,3 +67,45 @@ User accounts must be created in GitLab for all usernames chosen during
 installation. The _trial_ installation script includes two default
 usernames - _user1_ and _user2_. For all other installation scenarios,
 accounts with specific usernames must be created on GitLab.
+
+## Username claim resolution for OIDC providers
+
+DTaaS resolves the logged-in username from common OIDC claims so that
+multiple providers are supported (e.g., GitLab, Keycloak, Dex).
+
+The client checks claims in this order:
+
+1. `preferred_username`
+2. `username`
+3. `nickname`
+4. `login`
+5. local part of `email` (before `@`)
+6. local part of `upn` (before `@`)
+7. last path segment of `profile` URL (GitLab-compatible fallback)
+8. `sub`
+
+This order preserves existing GitLab behavior while allowing providers
+that do not expose `profile` URLs to authenticate correctly.
+
+The resolved username is restricted to a URL-path-safe character set
+(`A-Z a-z 0-9 . _ @ + -`, and never the `..` sequence). A claim that
+does not match is skipped in favour of the next claim in the order
+above. This is a safety measure because the username is later used,
+unencoded, as a path segment in backend GitLab URLs (see below).
+
+### Provider support versus backend account requirements
+
+The sign-in steps above are written for GitLab because the rest of the
+DTaaS platform (workspaces, digital twins, libraries) is backed by a
+GitLab instance. The username-resolution logic, however, is
+provider-agnostic and works with any OIDC provider that issues one of
+the claims listed above (for example Keycloak, Dex or GitHub).
+
+Authenticating with a non-GitLab provider only signs the user into the
+website. Backend features additionally require that the **resolved
+username matches an existing account (namespace) on the configured
+GitLab instance**, because requests are constructed as
+`{gitlab}/{group}/{username}/-/raw/...`. If no GitLab account with that
+username exists, sign-in succeeds but GitLab-backed operations fail.
+Administrators using an external identity provider must therefore keep
+the provider usernames aligned with the GitLab usernames.

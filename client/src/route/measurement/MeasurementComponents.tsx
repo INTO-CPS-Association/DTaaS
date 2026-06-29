@@ -105,7 +105,11 @@ export function ExecutionCard({ execution }: Readonly<ExecutionCardProps>) {
       <Typography variant="caption" sx={{ color: statusColor }}>
         {execution.status}
       </Typography>
-      <Typography variant="caption" display="block" color="text.secondary">
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ display: 'block' }}
+      >
         Runner: {execution.config['Runner tag']}
       </Typography>
     </Box>
@@ -164,8 +168,7 @@ function TrialHistoryTooltip({
         <Typography
           key={row.label}
           variant="caption"
-          display="block"
-          sx={{ color: row.color }}
+          sx={{ display: 'block', color: row.color }}
         >
           {row.label}
         </Typography>

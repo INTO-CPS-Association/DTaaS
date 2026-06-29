@@ -6,7 +6,7 @@ import 'test/__mocks__/global_mocks';
 import { TextEncoder, TextDecoder } from 'node:util';
 
 globalThis.TextEncoder = TextEncoder;
-globalThis.TextDecoder = TextDecoder as typeof globalThis.TextDecoder;
+globalThis.TextDecoder = TextDecoder;
 
 beforeEach(() => {
   jest.clearAllMocks();

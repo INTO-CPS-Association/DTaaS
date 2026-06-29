@@ -247,7 +247,7 @@ export const removeExecution =
           message: `Deleted entry ${formatTimestamp(execution.timestamp)} from ${formatName(execution.dtName)} execution history`,
           severity: 'warning',
           icon: 'ClearIcon',
-        } as ShowNotificationPayload,
+        },
       });
     } catch (error) {
       if (execution) {

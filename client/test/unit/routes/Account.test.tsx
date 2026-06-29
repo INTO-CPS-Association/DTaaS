@@ -147,4 +147,17 @@ describe('AccountTabs', () => {
       '<b>username</b> belongs to <b>g1</b>, <b>g2</b>, <b>g3</b>, <b>g4</b> and <b>g5</b> groups.',
     );
   });
+
+  test('renders AccountTabs with fallback text when OAuth provider exposes no profile URL', () => {
+    const userWithoutProfileUrl = {
+      ...accountMockUser,
+      profile: { ...accountMockUser.profile, profile: undefined },
+    };
+    (useAuth as jest.Mock).mockReturnValue({ user: userWithoutProfileUrl });
+    renderWithRouter(<Account />, { route: '/private' });
+
+    expect(
+      screen.getByText(/Your OAuth provider did not expose a profile URL/),
+    ).toBeInTheDocument();
+  });
 });

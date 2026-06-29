@@ -63,7 +63,7 @@ export const getValidationResults = async (): Promise<
         [key, await promise] as [string, ValidationType],
     ),
   );
-  return Object.fromEntries(resolvedEntries) as Record<string, ValidationType>;
+  return Object.fromEntries(resolvedEntries);
 };
 
 export async function retryFetch(

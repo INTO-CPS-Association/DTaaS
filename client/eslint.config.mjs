@@ -23,7 +23,7 @@ export default [
     ignores: [
       '**/api/',
       '**/build/',
-      'client/config/',
+      'config/**',
       '**/node_modules/',
       '**/script/',
       '**/coverage/',
@@ -73,7 +73,7 @@ export default [
 
     settings: {
       react: {
-        version: 'detect',
+        version: '19.2.0',
       },
 
       'import/resolver': {
@@ -175,7 +175,7 @@ export default [
     settings: {
       react: {
         pragma: 'React',
-        version: 'detect',
+        version: '19.2.0',
       },
     },
 

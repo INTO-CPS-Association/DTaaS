@@ -4,6 +4,7 @@
     "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
     "sourceMap": true, //generate .map files
     "target": "es6", //target es6
+    "lib": ["ES6", "DOM", "DOM.Iterable", "ES2022.Error"], //include ES2022.Error for ErrorOptions
     "jsx": "react-jsx", //use react jsx runtime (required for React 19)
     "types": ["react", "node", "jest"], //use react, node and jest types
     "module": "esnext", //use esnext modules

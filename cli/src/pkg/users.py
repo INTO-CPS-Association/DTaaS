@@ -2,10 +2,16 @@
 
 import subprocess
 import shutil
-import click
 from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
+from .users_utils import (
+    add_conf_server_entry,
+    remove_conf_server_entry,
+    categorize_users,
+    report_missing_users,
+    remove_users_from_compose,
+)
 
 
 def _build_config_mapping(user_config, resources):
@@ -172,6 +178,8 @@ def add_users(config_obj):
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         user_list, server, path, resources, tls = _get_add_users_config(config_obj)
+        users_section, err = config_obj.get_users()
+        utils.check_error(err)
     except Exception as e:
         return e
 
@@ -182,47 +190,26 @@ def add_users(config_obj):
         config = {"server": server, "path": path, "resources": resources, "tls": tls}
         err = add_users_to_compose(user_list, compose, config)
         utils.check_error(err)
+        # Authorise each user in the forward-auth config before starting their
+        # container. Writing conf.server first means a later 'compose up'
+        # failure cannot leave the forward-auth rules stale.
+        for username in user_list:
+            section = (users_section or {}).get(username, {})
+            email = str(
+                section.get("email", "") if isinstance(section, dict) else ""
+            ).strip()
+            if any(c in username for c in ("\n", "\r")) or any(
+                c in email for c in ("\n", "\r")
+            ):
+                raise ValueError(
+                    f"Invalid user config for '{username}': username/email must not contain newlines"
+                )
+            add_conf_server_entry(username, email)
         _finalize_compose(compose)
     except Exception as e:
         return e
 
     return None
-
-
-def _categorize_users(user_list, existing_services):
-    """Categorize users into existing and missing.
-
-    Args:
-        user_list: List of usernames to categorize
-        existing_services: Dict of existing services
-
-    Returns:
-        Tuple of (existing list, missing list)
-    """
-    existing, missing = [], []
-    for username in user_list:
-        if username in existing_services:
-            existing.append(username)
-        else:
-            missing.append(username)
-    return existing, missing
-
-
-def _report_missing_users(missing):
-    """Report users that don't exist.
-
-    Args:
-        missing: List of usernames that don't exist
-    """
-    for username in missing:
-        click.echo(f"'{username}' does not exist, skipping deletion")
-
-
-def _remove_users_from_compose(compose, user_list):
-    """Remove users from compose configuration."""
-    for username in user_list:
-        if "services" in compose and username in compose["services"]:
-            del compose["services"][username]
 
 
 def delete_user(config_obj):
@@ -235,14 +222,16 @@ def delete_user(config_obj):
         user_list, err = config_obj.get_delete_users_list()
         utils.check_error(err)
         existing_services = compose.get("services", {})
-        existing, missing = _categorize_users(user_list, existing_services)
-        _report_missing_users(missing)
+        existing, missing = categorize_users(user_list, existing_services)
+        report_missing_users(missing)
         if existing:
             err = stop_user_containers(existing)
             utils.check_error(err)
-        _remove_users_from_compose(compose, existing)
+        remove_users_from_compose(compose, existing)
         err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
+        for username in existing:
+            remove_conf_server_entry(username)
     except Exception as e:
         return e
 

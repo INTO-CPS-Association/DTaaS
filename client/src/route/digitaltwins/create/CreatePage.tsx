@@ -30,9 +30,11 @@ function DigitalTwinNameInput({
         label="Insert digital twin name"
         value={value}
         onChange={onChange}
-        inputProps={{
-          'data-logger-element': 'input',
-          'data-logger-label': 'Digital twin name input',
+        slotProps={{
+          htmlInput: {
+            'data-logger-element': 'input',
+            'data-logger-label': 'Digital twin name input',
+          },
         }}
       />
     </Box>

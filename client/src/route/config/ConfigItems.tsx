@@ -1,6 +1,6 @@
 import { ValidationType } from 'util/configUtil';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
 import { StatusCodes } from 'http-status-codes';
 
@@ -10,9 +10,9 @@ const ConfigIcon = (
 ): React.ReactElement => (
   <Tooltip
     title={toolTipTitle}
-    PopperProps={
+    slotProps={
       document.getElementById('root')
-        ? { container: document.getElementById('root') }
+        ? { popper: { container: document.getElementById('root') } }
         : undefined
     }
   >

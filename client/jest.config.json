@@ -8,7 +8,8 @@
         "tsconfig": {
           "jsx": "react-jsx",
           "noUnusedLocals": false,
-          "types": ["jest", "node", "react"]
+          "types": ["jest", "node", "react"],
+          "esModuleInterop": true
         }
       }
     ]

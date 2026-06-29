@@ -6,6 +6,7 @@ import {
 } from 'test/__mocks__/global_mocks';
 
 jest.mock('model/backend/fileHandler', () => ({
+  __esModule: true,
   default: jest.fn().mockImplementation(() => mockFileHandler),
 }));
 

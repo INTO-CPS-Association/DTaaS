@@ -25,6 +25,7 @@ globalThis.env ??= {} as typeof globalThis.env;
 globalThis.env.REACT_APP_AUTH_AUTHORITY ??= 'https://gitlab.example.com/';
 
 setSettingsStore({
-  getState: () =>
-    ({ settings: { ...DEFAULT_SETTINGS, ...DEFAULT_MEASUREMENT } }) as never,
+  getState: () => ({
+    settings: { ...DEFAULT_SETTINGS, ...DEFAULT_MEASUREMENT },
+  }),
 });

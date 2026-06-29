@@ -15,8 +15,7 @@ const DTappBar = () => (
         variant="h6"
         color="inherit"
         noWrap
-        textAlign="center"
-        sx={{ flexGrow: 1 }}
+        sx={{ textAlign: 'center', flexGrow: 1 }}
       >
         The Digital Twin as a Service
       </Typography>

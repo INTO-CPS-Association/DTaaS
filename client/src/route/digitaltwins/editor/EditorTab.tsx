@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
 import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
@@ -94,11 +94,14 @@ function EditorTab({
   setFileContent,
 }: EditorTabProps) {
   const [editorValue, setEditorValue] = useState(fileContent);
+  const [prevFileContent, setPrevFileContent] = useState(fileContent);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  // Adjusting state when a prop changes (preferred over useEffect in React docs)
+  if (prevFileContent !== fileContent) {
+    setPrevFileContent(fileContent);
     setEditorValue(fileContent);
-  }, [fileContent]);
+  }
 
   return (
     <div style={{ position: 'relative', height: '400px' }}>

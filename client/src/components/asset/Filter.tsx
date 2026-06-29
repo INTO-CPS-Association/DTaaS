@@ -26,9 +26,11 @@ const Filter: React.FC<FilterProps> = ({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         sx={{ maxWidth: 300 }}
-        inputProps={{
-          'data-logger-element': 'input',
-          'data-logger-label': 'Asset filter',
+        slotProps={{
+          htmlInput: {
+            'data-logger-element': 'input',
+            'data-logger-label': 'Asset filter',
+          },
         }}
       />
       {value && (

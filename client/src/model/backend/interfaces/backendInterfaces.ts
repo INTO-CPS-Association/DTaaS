@@ -193,9 +193,7 @@ interface LogProvider {
  * @extends LogProvider
  */
 export interface BackendInterface
-  extends ProjectProvider,
-    PipelineProvider,
-    LogProvider {
+  extends ProjectProvider, PipelineProvider, LogProvider {
   projectName: string;
   api: BackendAPI;
   logs: LogEntry[];

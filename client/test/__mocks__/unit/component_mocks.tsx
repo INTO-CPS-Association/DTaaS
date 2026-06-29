@@ -1,4 +1,5 @@
 jest.mock('components/LinkButtons', () => ({
+  __esModule: true,
   default: () => <div role="button">Button</div>,
 }));
 

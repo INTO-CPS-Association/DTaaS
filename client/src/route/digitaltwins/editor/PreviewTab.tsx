@@ -1,8 +1,12 @@
 import { Remarkable } from 'remarkable';
 import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
-import * as RemarkableKatex from 'remarkable-katex';
+import RemarkableKatexModule from 'remarkable-katex';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+
+const RemarkableKatex =
+  (RemarkableKatexModule as { default?: unknown }).default ??
+  RemarkableKatexModule;
 
 interface PreviewProps {
   readonly fileContent: string;
@@ -14,7 +18,7 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
     const md = new Remarkable({
       html: true,
       typographer: true,
-    }).use(RemarkableKatex);
+    }).use(RemarkableKatex as never);
 
     const renderedMarkdown = md.render(fileContent);
 

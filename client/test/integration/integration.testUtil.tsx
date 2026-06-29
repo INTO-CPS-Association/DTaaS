@@ -21,6 +21,7 @@ import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import executionHistoryReducer, {
   addExecutionHistoryEntry,
 } from 'model/backend/state/executionHistory.slice';
+import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 export const normalizer = getDefaultNormalizer({
   trim: false,
@@ -99,7 +100,7 @@ export async function setupIntegrationTest(
   if (returnedAuthState.isAuthenticated) {
     store.dispatch({
       type: 'auth/setUserName',
-      payload: returnedAuthState.user!.profile.profile!.split('/')[1],
+      payload: resolveOAuthUsername(returnedAuthState.user?.profile),
     });
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });

@@ -2,19 +2,19 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'store/store';
 import {
-  setGroupName,
-  setDTDirectory,
-  setCommonLibraryProjectName,
-  setRunnerTag,
   resetToDefaults,
   DEFAULT_SETTINGS,
   DEFAULT_MEASUREMENT,
   setBranchName,
-  setTrials,
-  setSecondaryRunnerTag,
+  setDTDirectory,
   setPrimaryDTName,
   setSecondaryDTName,
 } from 'store/settings.slice';
+import {
+  validateSettingsForm,
+  dispatchChangedSettings,
+  type FormValues,
+} from 'route/account/settingsFormActions';
 import {
   Button,
   Paper,
@@ -57,7 +57,7 @@ const SettingsForm: React.FC = () => {
   } = useSelector((state: RootState) => state.settings);
 
   // Local state for form values - prevents saving on each keystroke
-  const [formValues, setFormValues] = useState({
+  const [formValues, setFormValues] = useState<FormValues>({
     groupName: GROUP_NAME,
     dtDirectory: DT_DIRECTORY,
     commonLibraryProjectName: COMMON_LIBRARY_PROJECT_NAME,
@@ -95,14 +95,16 @@ const SettingsForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (twinsLoading) return;
-    const names = Object.keys(digitalTwins);
-    if (names.length === 0) return;
-    if (!names.includes(MEASUREMENT_PRIMARY_DT_NAME)) {
-      dispatch(setPrimaryDTName(names[0]));
-    }
-    if (!names.includes(MEASUREMENT_SECONDARY_DT_NAME)) {
-      dispatch(setSecondaryDTName(names[0]));
+    if (!twinsLoading) {
+      const names = Object.keys(digitalTwins);
+      if (names.length > 0) {
+        if (!names.includes(MEASUREMENT_PRIMARY_DT_NAME)) {
+          dispatch(setPrimaryDTName(names[0]));
+        }
+        if (!names.includes(MEASUREMENT_SECONDARY_DT_NAME)) {
+          dispatch(setSecondaryDTName(names[0]));
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [twinsLoading]);
@@ -170,101 +172,32 @@ const SettingsForm: React.FC = () => {
     setShowNotification(true);
   };
 
-  // Save all settings at once
   const handleSaveSettings = () => {
-    const requiredStringFields = [
-      'groupName',
-      'dtDirectory',
-      'commonLibraryProjectName',
-      'runnerTag',
-      'branchName',
-      'measurementSecondaryRunnerTag',
-      'measurementPrimaryDTName',
-      'measurementSecondaryDTName',
-    ] as const;
-
-    const errors: Record<string, boolean> = {};
-    for (const field of requiredStringFields) {
-      if (!formValues[field].trim()) {
-        errors[field] = true;
-      }
-    }
-
-    const trialsValue = Number.parseInt(formValues.measurementTrials, 10);
-    if (
-      !formValues.measurementTrials.trim() ||
-      Number.isNaN(trialsValue) ||
-      trialsValue < 1
-    ) {
-      errors.measurementTrials = true;
-    }
-
+    const errors = validateSettingsForm(formValues);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
 
-    const branchChanged = formValues.branchName !== BRANCH_NAME;
-    const directoryChanged = formValues.dtDirectory !== DT_DIRECTORY;
-    const groupChanged = formValues.groupName !== GROUP_NAME;
-    const commonLibraryChanged =
-      formValues.commonLibraryProjectName !== COMMON_LIBRARY_PROJECT_NAME;
-
-    if (formValues.groupName !== GROUP_NAME) {
-      dispatch(setGroupName(formValues.groupName));
-    }
-
-    if (formValues.dtDirectory !== DT_DIRECTORY) {
-      dispatch(setDTDirectory(formValues.dtDirectory));
-    }
-
-    if (formValues.commonLibraryProjectName !== COMMON_LIBRARY_PROJECT_NAME) {
-      dispatch(
-        setCommonLibraryProjectName(formValues.commonLibraryProjectName),
-      );
-    }
-
-    if (formValues.runnerTag !== RUNNER_TAG) {
-      dispatch(setRunnerTag(formValues.runnerTag));
-    }
-
-    if (branchChanged) {
-      dispatch(setBranchName(formValues.branchName));
-    }
-
-    if (trialsValue !== MEASUREMENT_TRIALS) {
-      dispatch(setTrials(trialsValue));
-    }
-
-    if (
-      formValues.measurementSecondaryRunnerTag !==
-      MEASUREMENT_SECONDARY_RUNNER_TAG
-    ) {
-      dispatch(setSecondaryRunnerTag(formValues.measurementSecondaryRunnerTag));
-    }
-
-    if (formValues.measurementPrimaryDTName !== MEASUREMENT_PRIMARY_DT_NAME) {
-      dispatch(setPrimaryDTName(formValues.measurementPrimaryDTName));
-    }
-
-    if (
-      formValues.measurementSecondaryDTName !== MEASUREMENT_SECONDARY_DT_NAME
-    ) {
-      dispatch(setSecondaryDTName(formValues.measurementSecondaryDTName));
-    }
-
+    const current = {
+      GROUP_NAME,
+      DT_DIRECTORY,
+      COMMON_LIBRARY_PROJECT_NAME,
+      RUNNER_TAG,
+      BRANCH_NAME,
+      MEASUREMENT_TRIALS,
+      MEASUREMENT_SECONDARY_RUNNER_TAG,
+      MEASUREMENT_PRIMARY_DT_NAME,
+      MEASUREMENT_SECONDARY_DT_NAME,
+    };
+    const needsRefresh = dispatchChangedSettings(dispatch, formValues, current);
     updateFrozenSettings();
 
     setNotificationMessage('Settings saved successfully!');
     setNotificationSeverity('success');
     setShowNotification(true);
 
-    if (
-      branchChanged ||
-      directoryChanged ||
-      groupChanged ||
-      commonLibraryChanged
-    ) {
+    if (needsRefresh) {
       dispatch(clearDigitalTwins());
       setTwinsLoading(true);
       fetchDigitalTwins(dispatch, () => {}).finally(() =>

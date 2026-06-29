@@ -39,7 +39,7 @@ export async function testToolbar() {
   );
   await testToolbarButton(
     'https://into-cps-association.github.io/DTaaS',
-    'HelpOutlineIcon',
+    'HelpOutlinedIcon',
   );
 }
 

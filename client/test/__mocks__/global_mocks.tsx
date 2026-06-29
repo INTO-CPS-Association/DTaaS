@@ -93,9 +93,14 @@ globalThis.env = {
   REACT_APP_GITLAB_SCOPES: mockGitLabScopes,
 };
 
-jest.mock('model/backend/gitlab/gitlabFactory', () => ({
-  createGitlabInstance: jest.fn(() => mockBackendInstance),
-}));
+jest.mock('model/backend/gitlab/gitlabFactory', () => {
+  const createGitlabInstance = jest.fn(() => mockBackendInstance);
+  return {
+    __esModule: true,
+    createGitlabInstance,
+    default: createGitlabInstance,
+  };
+});
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'test-uuid-1234'),
@@ -151,7 +156,7 @@ export const mockLibraryAsset: LibraryAsset = {
   libraryManager: mockLibraryManager,
   configFiles: [],
   ...createCommonMocks(),
-} as unknown as LibraryAsset;
+};
 
 /**
  * Creates a mock DigitalTwinData object for Redux state

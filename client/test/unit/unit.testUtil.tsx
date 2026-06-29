@@ -15,6 +15,10 @@ import { Store } from 'redux';
 import userEvent from '@testing-library/user-event';
 import routes from 'routes';
 import { mockUserType } from 'test/__mocks__/global_mocks';
+import {
+  resolveOAuthProfileUrl,
+  resolveOAuthUsername,
+} from 'util/auth/oauthUserProfile';
 
 type RouterOptions = {
   route?: string;
@@ -225,17 +229,19 @@ export function testStaticAccountProfile(mockUser: mockUserType) {
   expect(profilePicture).toBeInTheDocument();
   expect(profilePicture).toHaveAttribute('src', mockUser.profile.picture);
 
-  const username = screen.getAllByText(
-    `${mockUser.profile.preferred_username}`,
-  );
-  expect(username).not.toBeNull();
-  expect(username).toHaveLength(2);
+  const expectedUsername = resolveOAuthUsername(mockUser.profile);
+  const usernames = screen.getAllByText(expectedUsername);
+  expect(usernames).not.toBeNull();
+  expect(usernames).toHaveLength(2);
 
   const profileLink = screen.getByRole('link', {
     name: /SSO OAuth Provider/i,
   });
   expect(profileLink).toBeInTheDocument();
-  expect(profileLink).toHaveAttribute('href', mockUser.profile.profile);
+  expect(profileLink).toHaveAttribute(
+    'href',
+    resolveOAuthProfileUrl(mockUser.profile),
+  );
 }
 
 export async function testAccountSettings(mockUser: mockUserType) {
@@ -245,11 +251,12 @@ export async function testAccountSettings(mockUser: mockUserType) {
       screen.getByRole('heading', { level: 2, name: 'Settings' }),
     ).toBeInTheDocument();
 
+    const profileUrl = resolveOAuthProfileUrl(mockUser.profile);
     const settingsParagraph = screen.getByText(/Edit the profile on/);
-    expect(settingsParagraph).toHaveProperty(
-      'innerHTML',
-      `Edit the profile on <b><a href="${mockUser.profile.profile}">SSO OAuth Provider.</a></b>`,
-    );
+    const expectedInnerHTML = profileUrl
+      ? `Edit the profile on <b><a href="${profileUrl}">SSO OAuth Provider.</a></b>`
+      : 'Edit the profile on your SSO OAuth Provider account page.';
+    expect(settingsParagraph).toHaveProperty('innerHTML', expectedInnerHTML);
   });
 
   expect(screen.getByLabelText(/group name/i)).toBeInTheDocument();

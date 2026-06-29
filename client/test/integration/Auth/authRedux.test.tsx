@@ -6,6 +6,7 @@ import Library from 'route/library/Library';
 import authReducer from 'store/auth.slice';
 import { mockUser } from 'test/__mocks__/global_mocks';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 jest.mock('components/route/Snackbar', () => ({
   __esModule: true,
@@ -46,7 +47,7 @@ const setupTest = (authState: AuthState) => {
   if (authState.isAuthenticated) {
     store.dispatch({
       type: 'auth/setUserName',
-      payload: mockUser.profile.profile!.split('/')[1],
+      payload: resolveOAuthUsername(mockUser.profile),
     });
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });

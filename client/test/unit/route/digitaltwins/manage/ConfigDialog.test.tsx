@@ -16,9 +16,6 @@ import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import { selectModifiedFiles } from 'model/store/file.slice';
 import { selectModifiedLibraryFiles } from 'model/store/libraryConfigFiles.slice';
 
-import * as digitalTwinSlice from 'model/backend/state/digitalTwin.slice';
-import * as snackbarSlice from 'store/snackbar.slice';
-
 jest.mock('model/store/file.slice', () => {
   const actual = jest.requireActual('model/store/file.slice');
   return {
@@ -46,9 +43,6 @@ jest.mock('store/snackbar.slice', () => {
   };
 });
 
-(digitalTwinSlice.updateDescription as unknown as jest.Mock) = jest.fn();
-(snackbarSlice.showSnackbar as unknown as jest.Mock) = jest.fn();
-
 jest.mock('route/digitaltwins/editor/Sidebar', () => ({
   __esModule: true,
   default: () => <div>Sidebar</div>,
@@ -74,9 +68,7 @@ describe('ReconfigureDialog', () => {
 
   beforeEach(() => {
     const dispatch = jest.fn();
-    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
-      dispatch,
-    );
+    jest.mocked(useDispatch).mockReturnValue(dispatch);
 
     (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
       (selector: (state: RootState) => unknown) => {

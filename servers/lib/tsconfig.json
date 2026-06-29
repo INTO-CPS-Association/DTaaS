@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true, //allow default imports from modules with no default export
     "baseUrl": "./",
-    "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "6.0",
     "declaration": true, //generate declaration '.d.ts' files
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,

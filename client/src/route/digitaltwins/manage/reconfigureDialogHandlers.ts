@@ -1,4 +1,3 @@
-import { AlertColor } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { removeAllModifiedLibraryFiles } from 'model/store/libraryConfigFiles.slice';
 import {
@@ -104,7 +103,7 @@ export const showSuccessSnackbar = (
   dispatch(
     showSnackbar({
       message: `${formatName(name)} reconfigured successfully`,
-      severity: 'success' as AlertColor,
+      severity: 'success',
     }),
   );
 };

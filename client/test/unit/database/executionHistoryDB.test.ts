@@ -16,7 +16,7 @@ async function clearDatabase() {
       entries.map((entry) => indexedDBService.delete(entry.id)),
     );
   } catch (error) {
-    throw new Error(`Failed to clear database: ${error}`);
+    throw new Error(`Failed to clear database: ${error}`, { cause: error });
   }
 }
 

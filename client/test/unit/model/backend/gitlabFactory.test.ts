@@ -8,6 +8,7 @@ jest.mock('model/backend/gitlab/backend', () => ({
 }));
 
 jest.mock('model/backend/gitlab/gitlabFactory', () => ({
+  __esModule: true,
   ...jest.requireActual('model/backend/gitlab/gitlabFactory'),
 }));
 

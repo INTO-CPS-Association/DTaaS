@@ -13,12 +13,13 @@ import {
   selectExecutionHistoryLoading,
   selectExecutionHistoryError,
 } from 'model/backend/state/executionHistory.selectors';
-import { RootState } from 'store/store';
+import type { RootState } from 'store/store';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 describe('executionHistory slice - selectors', () => {
   let store: ReturnType<typeof setupStore>['store'];
+  let state: RootState;
 
   beforeEach(() => {
     ({ store } = setupStore());
@@ -32,57 +33,45 @@ describe('executionHistory slice - selectors', () => {
     store.dispatch(setSelectedExecutionId('2'));
     store.dispatch(setLoading(true));
     store.dispatch(setError('Test error'));
+    // qlty-ignore(eslint:@typescript-eslint/no-unnecessary-type-assertion): partial test store state
+    state = store.getState() as unknown as RootState;
   });
 
   it('should select all execution history entries', () => {
-    const entries = selectExecutionHistoryEntries(
-      store.getState() as unknown as RootState,
-    );
+    const entries = selectExecutionHistoryEntries(state);
     expect(entries.length).toBe(3);
   });
 
   it('should select execution history by DT name', () => {
-    const dt1Entries = selectExecutionHistoryByDTName('dt1')(
-      store.getState() as unknown as RootState,
-    );
+    const dt1Entries = selectExecutionHistoryByDTName('dt1')(state);
     expect(dt1Entries.length).toBe(2);
     expect(dt1Entries.every((e) => e.dtName === 'dt1')).toBe(true);
   });
 
   it('should select execution history by ID', () => {
-    const entry = selectExecutionHistoryById('2')(
-      store.getState() as unknown as RootState,
-    );
+    const entry = selectExecutionHistoryById('2')(state);
     expect(entry?.id).toBe('2');
     expect(entry?.dtName).toBe('dt2');
   });
 
   it('should select selected execution ID', () => {
-    const selectedId = selectSelectedExecutionId(
-      store.getState() as unknown as RootState,
-    );
+    const selectedId = selectSelectedExecutionId(state);
     expect(selectedId).toBe('2');
   });
 
   it('should select selected execution', () => {
-    const selectedExecution = selectSelectedExecution(
-      store.getState() as unknown as RootState,
-    );
+    const selectedExecution = selectSelectedExecution(state);
     expect(selectedExecution?.id).toBe('2');
     expect(selectedExecution?.dtName).toBe('dt2');
   });
 
   it('should select loading state', () => {
-    const loading = selectExecutionHistoryLoading(
-      store.getState() as unknown as RootState,
-    );
+    const loading = selectExecutionHistoryLoading(state);
     expect(loading).toBe(true);
   });
 
   it('should select error state', () => {
-    const error = selectExecutionHistoryError(
-      store.getState() as unknown as RootState,
-    );
+    const error = selectExecutionHistoryError(state);
     expect(error).toBe('Test error');
   });
 });

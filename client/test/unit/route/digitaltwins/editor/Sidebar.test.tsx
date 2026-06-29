@@ -4,13 +4,12 @@ import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
 import { Provider, useSelector } from 'react-redux';
 import store, { RootState } from 'store/store';
 import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
-import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
-import * as ReactRedux from 'react-redux';
 import useSidebarLoader from 'route/digitaltwins/editor/useSidebarLoader';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
+  useDispatch: jest.fn(),
 }));
 
 jest.mock('route/digitaltwins/editor/useSidebarLoader');
@@ -107,25 +106,13 @@ describe('Sidebar', () => {
     });
   });
 
-  it('handles assets in create mode', async () => {
-    const addOrUpdateLibraryFileSpy = jest.spyOn(ReactRedux, 'useDispatch');
-
+  it('renders library asset sections in create mode', async () => {
     await renderSidebar('create');
 
     await waitFor(() => {
-      expect(addOrUpdateLibraryFileSpy).toHaveBeenCalled();
-      mockLibraryAsset.configFiles.forEach((file) => {
-        expect(addOrUpdateLibraryFileSpy).toHaveBeenCalledWith(
-          addOrUpdateLibraryFile({
-            assetPath: mockLibraryAsset.path,
-            fileName: file,
-            fileContent: '',
-            isNew: true,
-            isModified: false,
-            isPrivate: mockLibraryAsset.isPrivate,
-          }),
-        );
-      });
+      expect(
+        screen.getByText(`${mockLibraryAsset.name} configuration`),
+      ).toBeInTheDocument();
     });
   });
 });

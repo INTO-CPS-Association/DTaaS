@@ -93,12 +93,12 @@ function StartButton({
   ]);
 
   return (
-    <Box display="flex" alignItems="center">
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {isLoading && (
-        <Box display="flex" alignItems="center" mr={1}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
           <CircularProgress size={22} data-testid="circular-progress" />
           {runningCount > 0 && (
-            <Box component="span" ml={0.5} fontSize="0.75rem">
+            <Box component="span" sx={{ ml: 0.5, fontSize: '0.75rem' }}>
               ({runningCount})
             </Box>
           )}

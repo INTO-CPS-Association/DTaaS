@@ -6,9 +6,8 @@ import {
   itHasCorrectTabNameinDTIframe,
 } from 'test/unit/unit.testUtil';
 
-jest.mock('components/tab/TabComponent', () => ({
-  ...jest.requireActual('components/tab/TabComponent'),
-}));
+// Hoisted by ts-jest above the imports, so DigitalTwins loads the real TabComponent.
+jest.unmock('components/tab/TabComponent');
 
 describe('Digital Twins', () => {
   const tabLabels: string[] = [];

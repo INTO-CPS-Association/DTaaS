@@ -1,5 +1,5 @@
 #! docker should be run from the root directory of the project
-FROM node:24.12.0-slim as build
+FROM node:24.12.0-slim AS build
 
 ARG REACT_APP_IS_DOCKER
 ENV REACT_APP_IS_DOCKER=$REACT_APP_IS_DOCKER

@@ -3,22 +3,11 @@
 This is a command-line tool for the
 INTO-CPS-Association Digital Twin as a Service platform.
 
-## 📋 Prerequisite
-
-The DTaaS application with base users and essential
-containers must be running before using the CLI.
-
 ## 📦 Installation
 
 Installation in a virtual environment is recommended.
 
 Steps to install:
-
-- Change the working folder:
-
-```bash
-cd <DTaaS-directory>/cli
-```
 
 - Create and activate a virtual environment.
 
@@ -39,8 +28,8 @@ working directory:
 dtaas generate-project
 ```
 
-By default, this creates files in the current directory and skips any that already exist.
-You can customize this behaviour with the following options:
+By default, this creates files in the current directory and skips any that
+already exist. You can customize this behaviour with the following options:
 
 ```bash
 # Generate files in a specific directory
@@ -54,15 +43,18 @@ dtaas generate-project --output-dir /path/to/target/dir --force
 ```
 
 **Options:**
-- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
-- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
+
+- `--output-dir` (default: `.`): Target directory for generated files.
+The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag,
+existing files are left untouched and a message is printed.
 
 This creates three configuration files and the workspace directory structure:
 
 | Item | Purpose |
 |------|---------|
 | `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
-| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
+| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments|
 | `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
 | `files/template/` | Template directory for user workspace initialization |
 
@@ -72,129 +64,227 @@ The `files/template/` directory is created if it does not exist.
 
 The generated `users.server.yml` and `users.server.secure.yml` files contain a
 pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
-This tag is baked into the templates at generation time and may become stale as the
-project evolves.
+This tag is baked into the templates at generation time and may become stale as
+the project evolves.
 
-**You should verify and update the Docker image tag** in these templates to use a current,
-stable version before deploying user workspaces. Check the available tags in the
-[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
-Docker registry to ensure you are using an up-to-date image version.
+**You should verify and update the Docker image tag** in these templates to use
+a current, stable version before deploying user workspaces.
+Check the available tags in the
+[INTO-CPS workspace repository](https://hub.docker.com/r/intocps/workspace/tags)
+or your Docker registry to ensure you are using an up-to-date image version.
 
-### Generate Project Files
+### Generate Deployment Project
 
-Before configuring the CLI, generate the required project files in your
-working directory:
+To generate the full project structure for a specific deployment scenario without
+downloading separate zip packages:
 
 ```bash
-dtaas generate-project
+dtaas generate-deployment --type <name>
 ```
 
-By default, this creates files in the current directory and skips any that already exist.
-You can customize this behaviour with the following options:
+**Available types:**
+
+| `--type` | Deployment scenario | Support level |
+|---|---|---|
+| `localhost` | Single-machine Docker deployment | dev/demo only |
+| `insecure-server` | Multi-user HTTP server deployment | insecure/demo only |
+| `secure-server` | Multi-user HTTPS/TLS server deployment | production-supported |
+| `secure-server-gitlab` | HTTPS/TLS server with integrated GitLab | production-supported |
+| `workspace-localhost` | Workspace service with Dex on localhost | dev/demo only |
+| `workspace-secure-server` | Workspace service with Keycloak in production | production-supported |
+
+> [!WARNING]
+> Templates labelled **dev/demo only** or **insecure/demo only** run over plain
+> HTTP and use default or static credentials. They are **not safe for
+> internet-facing or shared deployments**. Use a **production-supported** type
+> for any environment reachable from outside your local machine.
+>
+> Production-supported types still require manual hardening steps documented
+> inside each generated project (see the `README.md` and `CONFIGURATION.md`
+> shipped with the template).
+
+**Options:**
+
+- `--type` (required): Deployment scenario to generate.
+- `--output-dir` (default: `.`): Target directory for generated files.
+  The directory must already exist.
+- `--force`: Overwrite existing files. Without this flag, existing files are
+  left untouched and a message is printed.
+
+**Examples:**
 
 ```bash
-# Generate files in a specific directory
-dtaas generate-project --output-dir /path/to/target/dir
+# Generate a localhost deployment in the current directory
+dtaas generate-deployment --type localhost
 
-# Overwrite existing files
-dtaas generate-project --force
+# Generate a secure-server deployment in a specific directory
+dtaas generate-deployment --type secure-server --output-dir /path/to/project
 
-# Combine options
-dtaas generate-project --output-dir /path/to/target/dir --force
+# Regenerate, overwriting any existing files
+dtaas generate-deployment --type insecure-server --output-dir /path/to/project --force
+```
+
+Each type copies the relevant `docker-compose.yml`, configuration examples,
+and supporting files into the target directory, ready to be customised.
+
+#### Configuration substitution
+
+When `dtaas.toml` is present, `generate-deployment` reads deployment-specific
+values from it and substitutes them into the generated files, so you do not
+have to edit every placeholder by hand. The CLI looks for `dtaas.toml` in
+`--output-dir` first; if not found there, it falls back to the current
+working directory.
+
+Each `--type` reads from its matching top-level section in `dtaas.toml`.
+Values are written into the generated config files by key: dotenv files
+(`config/.env`, `config/conf.server`) line by line, and client website
+config files (`config/client.js`) via the object assigned to `window.env`.
+
+The `[frontend]` section holds the OAuth application for the DTaaS client
+website (React frontend): `react-app-client-id` and `react-app-oauth-url`
+are substituted as `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
+`config/client.js`. This is a separate OAuth application from the server
+one (traefik-forward-auth) configured by `oauth-client-id` and friends in
+the `[insecure-server]` and `[secure-server]` sections.
+
+The `[common]` section (`server-dns`) and the `[users]` section (usernames,
+paths, and emails) are substituted across all types where they appear.
+
+If `dtaas.toml` is not found in either location, a note is printed and the
+files keep their default placeholder values.
+
+#### TLS certificate placement
+
+For the TLS deployment types (`secure-server`, `secure-server-gitlab`,
+`workspace-secure-server`), `generate-deployment` also populates the
+generated `certs/` directory so the reverse proxy can find its certificates.
+It reads the source location from `[common.security].certs-src` in
+`dtaas.toml` and copies the latest `fullchain.pem` and `privkey.pem` into
+`<output-dir>/certs/`.
+
+### 🚀 Install Deployment
+
+Once a deployment has been generated (and `dtaas.toml` configured), bring it up
+with a single command:
+
+```bash
+dtaas admin install
+```
+
+This runs `docker compose up -d` against the generated `docker-compose.yml` in
+the installation directory.
+
+Before starting the stack, the command ensures the per-user workspace
+directories listed in `[users].add` exist — recreating each from
+`files/template` if missing — and sets their ownership to `1000:100`. This
+means a fresh install, or a reinstall after `uninstall --remove-user-files`,
+does not leave Docker to auto-create empty, root-owned mount directories.
+
+**Options:**
+
+- `--output-dir` (default: `.`): Installation directory containing the
+  generated deployment.
+
+The `docker-compose.yml` must live in `--output-dir`. The CLI looks for
+`dtaas.toml` in `--output-dir` first and, if not found there, falls back to the
+current working directory, so a single top-level `dtaas.toml` can serve a
+deployment generated into a subdirectory (e.g.
+`dtaas admin install --output-dir insecure`).
+
+The command fails with a clear error if the deployment has not been generated
+(`docker-compose.yml` missing), if `dtaas.toml` is missing from both locations,
+or if the Docker daemon is not reachable.
+
+### 🧹 Uninstall Deployment
+
+To tear the deployment down:
+
+```bash
+dtaas admin uninstall
+```
+
+This runs `docker compose down`, stopping and removing the deployment's
+containers and networks. Containers added with `admin user add` run as a
+separate Compose project, so they are torn down first; otherwise they would
+survive and hold the shared network open. If nothing is currently installed,
+the command reports that there is no existing installation rather than claiming
+a successful teardown, but `--remove-user-files` is still honoured, so you can
+clean up workspace files after a teardown. **Per-user workspace files are
+preserved by default.**
+
+To additionally delete the generated per-user workspace directories, pass
+`--remove-user-files`:
+
+```bash
+dtaas admin uninstall --remove-user-files
+```
+
+Because this is destructive, the command prompts for confirmation. Supply
+`--yes` (or `-y`) to skip the prompt in non-interactive scripts:
+
+```bash
+dtaas admin uninstall --remove-user-files --yes
 ```
 
 **Options:**
-- `--output-dir` (default: `.`): Target directory for generated files. The directory must already exist.
-- `--force`: Overwrite existing files. Without this flag, existing files are left untouched and a message is printed.
 
-This creates three configuration files and the workspace directory structure:
+- `--output-dir` (default: `.`): Installation directory containing the
+  generated deployment.
+- `--remove-user-files`: Also delete the generated per-user workspace
+  directories. Opt-in to avoid accidental data loss: it requires a generated
+  deployment in `--output-dir`, prompts for confirmation, and refuses to follow
+  a symlinked `files/`. It removes only the per-user directories inside
+  `<output-dir>/files`, keeping the shared `files/common` and the
+  `files/template` skeleton so a later `admin install` can recreate the user
+  directories. It does not protect against pointing `--output-dir` at the wrong
+  directory, so double-check the path.
+- `--yes` / `-y`: Skip the confirmation prompt for `--remove-user-files`.
 
-| Item | Purpose |
-|------|---------|
-| `dtaas.toml` | Main CLI configuration (server DNS, paths, resources, users) |
-| `users.server.yml` | Docker Compose user-workspace template for HTTP deployments |
-| `users.server.secure.yml` | Docker Compose user-workspace template for HTTPS/TLS deployments |
-| `files/template/` | Template directory for user workspace initialization |
+### 🔁 Update TLS Certificates
 
-The `files/template/` directory is created if it does not exist.
+To rotate the TLS certificates of a running deployment in place, without
+regenerating the project or copying files by hand:
 
-#### Important: Verify Docker Image Tag
-
-The generated `users.server.yml` and `users.server.secure.yml` files contain a
-pinned Docker image tag for the workspace container (e.g., `intocps/workspace:main-967bc10`).
-This tag is baked into the templates at generation time and may become stale as the
-project evolves.
-
-**You should verify and update the Docker image tag** in these templates to use a current,
-stable version before deploying user workspaces. Check the available tags in the
-[INTO-CPS workspace repository](https://github.com/into-cps-association/DTaaS) or your
-Docker registry to ensure you are using an up-to-date image version.
-
-### Configure
-
-The CLI uses _dtaas.toml_ as configuration file. A sample
-configuration file is given here.
-
-```toml
-# This is the config for DTaaS CLI
-
-name = "Digital Twin as a Service (DTaaS)"
-version = "0.2.2"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
-
-[common]
-# Server hostname either localhost or a valid hostname, ex: intocps.org
-# TODO : Update, we are now reusing hostname for this
-server-dns = "localhost"
-# absolute path to the DTaaS application directory
-# Specify the directory of DTaaS installation
-# Linux example
-path = "/Users/username/DTaaS"
-# Windows example
-#path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
-
-[common.security]
-# Enable HTTPS/TLS for secure server deployment
-# Set the tls flag to false to use the insecure user.server.yml, it is True by default
-# so the 'user.server.secure.yml' will be used
-tls = true
-
-[common.resources]
-# Default resource limits applied when creating user workspace containers.
-# Keys:
-# - cpus: integer count of virtual CPUs to allocate to the container
-# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
-# - pids_limit: maximum number of processes the container may create
-# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
-#
-# Adjust these values to match your host capacity and tenancy policy.
-cpus = 4
-mem_limit = "4G"
-pids_limit = 4960
-shm_size = "512m"
-
-# Example: Increase memory and lower CPU for heavier-memory workloads
-# cpus = 2
-# mem_limit = "8G"
-
-
-[users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"]
-delete = ["username2", "username3"]
-...
+```bash
+dtaas admin update --certs
 ```
 
-#### Notes
+This reads the certificate source from `[common.security].certs-src` in
+`dtaas.toml` (the same key used to seed `certs/` during
+`generate-deployment`), picks the newest `fullchain.pem` and `privkey.pem`
+there, and then:
 
-- Edits to `dtaas.toml` affect new user containers created after the change.
-- To apply updated limits to existing containers, recreate or restart
-  the user container(s) (for example by removing and re-adding the user
-  workspace via the CLI or by restarting the container in Docker Compose).
-- Use units (`M`, `G`) for memory and shared memory values.
+1. **Validates** the new pair before anything is replaced — it must be
+   parseable, the private key must match the certificate, and neither the leaf
+   nor any intermediate in the chain may already be expired.
+2. **Stops** the `traefik` service so nothing holds the certificate files open
+   while they are replaced.
+3. **Swaps** the validated files into `<output-dir>/certs/`, backing up the
+   live pair first and restoring it on any failure, so the deployment is never
+   left with a half-updated (mismatched) pair.
+4. **Restricts** the private key to `0600` on POSIX hosts; on Windows it prints
+   a warning instead, because file permissions cannot be enforced there.
+5. **Restarts** `traefik` and waits for it to come back up, so certificates the
+   proxy rejects are reported as a failure rather than a false success.
+
+If validation fails, the live certificates are left untouched and a clear
+error is raised. The command is safe to run repeatedly.
+
+**Options:**
+
+- `--certs`: Refresh the deployment's TLS certificates. Required; it is the
+  only update target today, and the `update` group leaves room for future ones.
+- `--output-dir` (default: `.`): Installation directory containing the
+  generated deployment (the `docker-compose.yml` and `certs/`). The CLI looks
+  for `dtaas.toml` here first, then in the current directory. Keep
+  `dtaas.toml` inside `--output-dir`: if it is absent there, `certs-src` is read
+  from the `dtaas.toml` in the directory you run the command from, which may
+  belong to a different deployment.
+
+The command fails with a clear error if the deployment has not been generated
+(`docker-compose.yml` missing), if `certs-src` is unset or missing, if either
+certificate is absent from `certs-src`, if the Docker daemon is not reachable,
+or if `traefik` does not come back up after the swap.
 
 ### 📁 Select Template
 
@@ -236,41 +326,20 @@ have the expected ownership rights, the command fails.
 
 This brings up the containers, without the AuthMS authentication.
 
-- Currently the _email_ fields for each user in
-  _dtaas.toml_ are not in use, and are not necessary
-  to fill in. These emails must be configured manually
-  for each user in the
-  deploy/docker/conf.server files and the _traefik-forward-auth_
-  container must be restarted. This is done as follows:
-
-- Go to the _docker_ directory
-
-```bash
-cd <DTaaS>/deploy/docker
-```
-
-- Add three lines to the `conf.server` file
-
-```txt
-rule.onlyu3.action=auth
-rule.onlyu3.rule=PathPrefix(`/user3`)
-rule.onlyu3.whitelist = user3@emailservice.com
-```
-
-- Run the command for these changes to take effect:
+When an `email` is provided for a user in `dtaas.toml`, the CLI automatically
+adds the traefik-forward-auth routing rule to `config/conf.server`. For the
+change to take effect, restart the `traefik-forward-auth` container:
 
 ```bash
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
-The new users are now added to the DTaaS
-instance, with authorization enabled.
+The new users are now added to the DTaaS instance, with authorization enabled.
 
 ### ➖ Delete Users
 
-- To delete existing users, fill in the _users.delete_ list in
-  _dtaas.toml_ with the Gitlab instance
-  usernames of the users to be deleted.
+To delete users, add their GitLab instance usernames to the _users.delete_
+list in _dtaas.toml_ file.
 
 ```toml
 [users]
@@ -278,7 +347,7 @@ instance, with authorization enabled.
 delete = ["username1","username2", "username3"]
 ```
 
-- Ensure the working directory is _cli_.
+- Ensure you are in the working directory where the _dtaas.toml_ file is.
 
 Then run:
 
@@ -286,8 +355,13 @@ Then run:
 dtaas admin user delete
 ```
 
-- Remember to remove the rules for deleted users
-  in _conf.server_.
+The CLI automatically removes the traefik-forward-auth routing rules for
+deleted users from `config/conf.server`. Restart `traefik-forward-auth`
+for the change to take effect:
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
 
 ### 📌 Additional Points
 
@@ -306,3 +380,75 @@ dtaas admin user delete
 - '.' is a special character. Currently, usernames which have
   '.'s in them cannot be added properly through the CLI.
   This is an active issue that will be resolved in future releases.
+
+## ⚙️ Configure
+
+After running `dtaas generate-project`, open `dtaas.toml` and fill in the
+values below. The `[users]`, `[frontend]`, and config-substitution behaviour
+are described in the command sections above.
+
+### `[common]`
+
+Set `server-dns` to your server's public hostname (`localhost` for a local
+deployment) and `path` to the absolute path of your DTaaS installation.
+Set `[common.security] tls = true` for HTTPS deployments.
+
+For TLS deployments, set `[common.security].certs-src` to the directory
+holding your `fullchain.pem` and `privkey.pem`.
+
+Adjust `[common.resources]` to match your hardware:
+
+| Key | Default | Description |
+| --- | --- | --- |
+| `cpus` | `4` | Virtual CPUs per user container |
+| `mem_limit` | `"4G"` | Memory limit per container |
+| `pids_limit` | `4960` | Process limit per container |
+| `shm_size` | `"512m"` | Shared memory per container |
+
+### Deployment-specific credentials
+
+Each section name matches a `--type` value for `dtaas generate-deployment`.
+
+**`[insecure-server]` and `[secure-server]`** GitLab OAuth app for
+traefik-forward-auth (Redirect URI `https://<server-dns>/_oauth`,
+Confidential ticked, scopes `openid profile read_user`):
+
+| Key | Description |
+| --- | --- |
+| `oauth-url` | Base URL of your GitLab instance |
+| `oauth-client-id` | Application ID |
+| `oauth-client-secret` | Application secret |
+| `oauth-secret` | Random string for signing session cookies |
+
+**`[secure-server-gitlab]`** same keys as above, without `oauth-url`
+(derived from the bundled GitLab service).
+
+**`[localhost]`** single-machine deployment with an external OIDC provider:
+
+| Key | Description |
+| --- | --- |
+| `default-user` | Username shown in the UI |
+| `client-id` | OAuth client ID |
+| `auth-authority` | OIDC provider URL |
+
+**`[workspace-localhost]`** workspace service with Dex on localhost:
+
+| Key | Description |
+| --- | --- |
+| `default-user` | Default workspace username |
+| `client-id` | Dex client ID |
+| `auth-authority` | Dex OIDC provider URL |
+
+**`[workspace-secure-server]`** workspace service with Keycloak in production:
+
+| Key | Description |
+| --- | --- |
+| `keycloak-admin` | Keycloak admin username |
+| `keycloak-admin-password` | Keycloak admin password |
+| `keycloak-realm` | Realm name (e.g. `dtaas`) |
+| `keycloak-issuer-url` | OIDC issuer URL of the realm |
+| `keycloak-client-id` | Client ID for the workspace service |
+| `keycloak-client-secret` | Client secret |
+| `oauth-secret` | Random string for signing session cookies |
+| `client-id` | Frontend OAuth client ID |
+| `auth-authority` | Keycloak OIDC authority URL |

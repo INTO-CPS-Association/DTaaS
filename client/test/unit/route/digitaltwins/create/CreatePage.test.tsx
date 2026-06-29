@@ -2,17 +2,17 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import CreatePage from 'route/digitaltwins/create/CreatePage';
 
 jest.mock('route/digitaltwins/editor/Editor', () => ({
-  _esModule: true,
+  __esModule: true,
   default: () => <div data-testid="editor" />,
 }));
 
 jest.mock('route/digitaltwins/create/CreateDialogs', () => ({
-  _esModule: true,
+  __esModule: true,
   default: () => <div data-testid="create-dialogs" />,
 }));
 
 jest.mock('components/route/Snackbar', () => ({
-  _esModule: true,
+  __esModule: true,
   default: () => <div data-testid="snackbar" />,
 }));
 

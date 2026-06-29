@@ -105,7 +105,8 @@ export async function initDigitalTwin(
     return new DigitalTwin(newDigitalTwinName, digitalTwinGitlabInstance);
   } catch (error) {
     throw new Error(
-      `Failed to initialize DigitalTwin for ${newDigitalTwinName}: ${error}`,
+      `Failed to initialize DigitalTwin for ${newDigitalTwinName}`,
+      { cause: error },
     );
   }
 }

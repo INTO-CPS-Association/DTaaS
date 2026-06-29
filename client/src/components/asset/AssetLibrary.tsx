@@ -47,9 +47,9 @@ function AssetLibrary({ pathToAssets, privateRepo }: AssetLibraryProps) {
     return (
       <Grid
         container
-        justifyContent="center"
-        alignItems="center"
         sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
           position: 'absolute',
           top: '50%',
           left: '50%',

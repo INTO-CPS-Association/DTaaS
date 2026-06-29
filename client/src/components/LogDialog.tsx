@@ -17,7 +17,6 @@ import { RootState } from 'store/store';
 import { selectExecutionHistoryByDTName } from 'route/digitaltwins/execution';
 import UnifiedDialog from 'components/logDialog/UnifiedDialog';
 import DeleteAllConfirmationDialog from 'components/logDialog/DeleteAllConfirmationDialog';
-import { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
 
 interface LogDialogProps {
   readonly showLog: boolean;
@@ -55,7 +54,7 @@ function LogDialog({ showLog, setShowLog, name }: LogDialogProps) {
           message:
             'Execution history is already empty or only has active entries',
           severity: 'info',
-        } as ShowNotificationPayload,
+        },
       });
       return;
     }

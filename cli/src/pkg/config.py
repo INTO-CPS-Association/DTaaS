@@ -1,7 +1,6 @@
 """This file supports the DTaaS config class"""
 
 from . import utils
-from typing import cast, Any
 
 
 class Config:
@@ -53,24 +52,22 @@ class Config:
 
     def get_string_list_from_users(self, key):
         """Gets the specific key as a list of strings from config.users"""
-        err = None
-        strings_list = None
-
         conf_users, err = self.get_users()
         if err is not None or not isinstance(conf_users, dict):
             return None, err
 
-        try:
-            strings_list = [str(x) for x in cast(list[Any], conf_users[key])]
-            if len(strings_list) == 0:
-                strings_list = None
-                raise ValueError
-        except KeyError:
-            err = Exception(f"Config file error: No {key} list in 'users' tag")
-        except ValueError:
-            err = Exception(f"Config file error: users.{key} list is empty")
+        if key not in conf_users:
+            return None, Exception(f"Config file error: No {key} list in 'users' tag")
 
-        return strings_list, err
+        value = conf_users[key]
+        if not isinstance(value, list):
+            return None, Exception(f"Config file error: users.{key} must be a list")
+
+        strings_list = [str(x) for x in value]
+        if not strings_list:
+            return None, Exception(f"Config file error: users.{key} list is empty")
+
+        return strings_list, None
 
     def get_path(self):
         """Gets the 'path' from config.common"""

@@ -46,9 +46,11 @@ const SidebarDialog = ({
         variant="outlined"
         value={newFileName}
         onChange={(e) => setNewFileName(e.target.value)}
-        inputProps={{
-          'data-logger-element': 'input',
-          'data-logger-label': 'Sidebar File Name Input',
+        slotProps={{
+          htmlInput: {
+            'data-logger-element': 'input',
+            'data-logger-label': 'Sidebar File Name Input',
+          },
         }}
       />
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}

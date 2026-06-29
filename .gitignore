@@ -233,6 +233,9 @@ deploy/dtaas/docker/secure-server/config/conf.server
 deploy/dtaas/docker/secure-server/certs/fullchain.pem
 deploy/dtaas/docker/secure-server/certs/privkey.pem
 
+# CLI deploy templates (generated at build/test time by src/pkg/build.py;
+cli/src/templates/deploy/
+
 # dtaas secure server with integrated gitlab
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/client.js

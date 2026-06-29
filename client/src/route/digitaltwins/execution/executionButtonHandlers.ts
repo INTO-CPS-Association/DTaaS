@@ -10,7 +10,7 @@ import {
 } from 'route/digitaltwins/execution/executionStatusHandlers';
 import { startPipelineStatusCheck } from 'route/digitaltwins/execution/executionStatusManager';
 import { stopPipelines } from 'model/backend/gitlab/execution/pipelineCore';
-import { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
+import type { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
 
 export type PipelineHandlerDispatch = ThunkDispatch<
   RootState,
@@ -89,13 +89,11 @@ export const handleStart = async (
   } else {
     setButtonText('Start');
 
-    dispatch({
-      type: 'snackbar/showSnackbar',
-      payload: {
-        message: `Stopping execution for ${formatName(digitalTwin.DTName)}...`,
-        severity: 'warning',
-      } as ShowNotificationPayload,
-    });
+    const payload: ShowNotificationPayload = {
+      message: `Stopping execution for ${formatName(digitalTwin.DTName)}...`,
+      severity: 'warning',
+    };
+    dispatch({ type: 'snackbar/showSnackbar', payload });
 
     if (executionId) {
       await handleStop(digitalTwin, setButtonText, dispatch, executionId);
@@ -121,22 +119,18 @@ export const handleStop = async (
   const result = await stopPipelines(digitalTwin, executionId);
 
   if (result.success) {
-    dispatch({
-      type: 'snackbar/showSnackbar',
-      payload: {
-        message: `Execution stopped successfully for ${formatName(
-          digitalTwin.DTName,
-        )}`,
-        severity: 'warning',
-      } as ShowNotificationPayload,
-    });
+    const payload: ShowNotificationPayload = {
+      message: `Execution stopped successfully for ${formatName(digitalTwin.DTName)}`,
+      severity: 'warning',
+    };
+    dispatch({ type: 'snackbar/showSnackbar', payload });
   } else {
     dispatch({
       type: 'snackbar/showSnackbar',
       payload: {
         message: `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
         severity: 'error',
-      } as ShowNotificationPayload,
+      },
     });
   }
 

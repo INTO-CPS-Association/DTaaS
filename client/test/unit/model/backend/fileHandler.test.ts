@@ -7,7 +7,7 @@ import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUt
 const mockApi = mockBackendAPI;
 
 const mockGitlabInstance = {
-  api: mockApi as unknown as GitlabInstance['api'],
+  api: mockApi,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
   getProjectId: jest.fn().mockReturnValue(1),

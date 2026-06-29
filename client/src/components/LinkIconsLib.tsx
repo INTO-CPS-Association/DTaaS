@@ -4,7 +4,7 @@ import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import TabIcon from '@mui/icons-material/Tab';
 import LibraryBooksOutlined from '@mui/icons-material/LibraryBooksOutlined';
 

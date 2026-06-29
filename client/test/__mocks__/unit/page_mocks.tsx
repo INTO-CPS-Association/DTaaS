@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 jest.mock('page/Layout', () => ({
+  __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),

@@ -27,7 +27,7 @@ export const mockUser: mockUserType = {
     groups: 'group-one',
     picture: 'pfp.jpg',
     preferred_username: 'username',
-    profile: 'example/username',
+    profile: 'https://example.com/username',
   },
 };
 

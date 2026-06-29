@@ -1,5 +1,6 @@
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -35,24 +36,39 @@ const menuItems: MenuItemEntry[] = [
   },
 ];
 
-function MenuItems() {
+function MenuItem({
+  item,
+  open,
+}: Readonly<{ item: MenuItemEntry; open: boolean }>) {
+  const isActive = globalThis.location.pathname === item.link;
+  return (
+    <Link to={item.link} style={tolinkStyle}>
+      <ListItemButton
+        sx={{ justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+        style={isActive ? { backgroundColor: 'lightgray' } : undefined}
+        data-logger-element="nav-link"
+        data-logger-label={item.name}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {item.icon}
+        </ListItemIcon>
+        <ListItemText primary={item.name} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </Link>
+  );
+}
+
+function MenuItems({ open }: Readonly<{ open: boolean }>) {
   return (
     <>
       {menuItems.map((item) => (
-        <Link to={item.link} style={tolinkStyle} key={item.index}>
-          <ListItemButton
-            style={
-              globalThis.location.pathname === item.link
-                ? { backgroundColor: 'lightgray' }
-                : undefined
-            }
-            data-logger-element="nav-link"
-            data-logger-label={item.name}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            {item.name}
-          </ListItemButton>
-        </Link>
+        <MenuItem key={item.index} item={item} open={open} />
       ))}
     </>
   );

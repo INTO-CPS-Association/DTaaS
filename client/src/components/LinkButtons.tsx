@@ -63,7 +63,7 @@ interface LinkButtonProps {
           <Tooltip
             key={index}
             title={button.link}
-            PopperProps={{ container: root }}
+            slotProps={{ popper: { container: root } }}
           >
             <IconLabel>
               <IconButton

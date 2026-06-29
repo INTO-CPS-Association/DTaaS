@@ -55,7 +55,7 @@ function DTSelectField({
   const field = (
     <TextField
       select
-      SelectProps={{ native: true }}
+      slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}
       fullWidth
       id={id}
       label={label}
@@ -65,7 +65,6 @@ function DTSelectField({
       disabled={disabled}
       error={hasError}
       helperText={helperText}
-      InputLabelProps={{ shrink: true }}
       sx={onRefresh ? { flex: 1 } : undefined}
     >
       {loading ? (
@@ -83,11 +82,12 @@ function DTSelectField({
   return (
     <Grid size={{ xs: 12, md: 6 }}>
       {onRefresh ? (
-        <Box display="flex" alignItems="flex-start" gap={1}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           {field}
           <Tooltip title="Refresh digital twins">
             <span>
               <IconButton
+                aria-label="Refresh digital twins"
                 onClick={onRefresh}
                 disabled={loading}
                 size="small"

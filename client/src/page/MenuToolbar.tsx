@@ -92,7 +92,10 @@ function MenuToolbar({
 
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0 }}>
           <LinkButtons buttons={toolbarLinkValues} size={2.5} />
-          <Tooltip title="Open settings" PopperProps={{ container: root }}>
+          <Tooltip
+            title="Open settings"
+            slotProps={{ popper: { container: root } }}
+          >
             <IconButton onClick={handleOpenUserMenu}>
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>

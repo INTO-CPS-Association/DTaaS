@@ -6,24 +6,28 @@ jest.mock('model/backend/util/digitalTwinUtils', () => ({
 
 const DigitalTwin = jest.fn();
 jest.mock('model/backend/digitalTwin', () => ({
+  __esModule: true,
   default: DigitalTwin,
 }));
 
 const mockGetLibrarySubfolders = jest.fn();
 const mockLibraryAsset = jest.fn();
 jest.mock('model/backend/libraryAsset', () => ({
+  __esModule: true,
   getLibrarySubfolders: mockGetLibrarySubfolders,
   default: mockLibraryAsset,
 }));
 
 const setAsset = jest.fn();
 jest.mock('model/store/assets.slice', () => ({
+  __esModule: true,
   setAsset,
   default: (state = {}) => state,
 }));
 
 const setDigitalTwin = jest.fn();
 jest.mock('model/backend/state/digitalTwin.slice', () => ({
+  __esModule: true,
   setDigitalTwin,
   default: (state = {}) => state,
 }));

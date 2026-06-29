@@ -6,7 +6,7 @@ import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 const mockApi = mockBackendAPI;
 
 const mockGitlabInstance = {
-  api: mockApi as unknown as GitlabInstance['api'],
+  api: mockApi,
   triggerToken: 'test-token',
   logs: [] as { jobName: string; log: string }[],
   getProjectId: jest.fn().mockReturnValue(1),

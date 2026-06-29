@@ -77,7 +77,10 @@ function Editor({
           setOpenChangeFileNameDialog={setOpenChangeFileNameDialog || undefined}
         />
 
-        <Grid container direction="column" sx={{ flexGrow: 1, padding: 2 }}>
+        <Grid
+          container
+          sx={{ flexDirection: 'column', flexGrow: 1, padding: 2 }}
+        >
           <Box
             sx={{
               display: 'flex',

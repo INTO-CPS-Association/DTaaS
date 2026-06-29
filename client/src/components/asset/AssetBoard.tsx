@@ -49,9 +49,7 @@ const AssetGridItem: React.FC<{
 const LoadingSpinner: React.FC = () => (
   <Grid
     container
-    justifyContent="center"
-    alignItems="center"
-    sx={{ minHeight: '10rem' }}
+    sx={{ justifyContent: 'center', alignItems: 'center', minHeight: '10rem' }}
   >
     <CircularProgress />
   </Grid>
@@ -70,10 +68,12 @@ const useFetchDigitalTwins = (
   shouldFetch: boolean,
   dispatch: ReturnType<typeof useDispatch>,
 ) => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(shouldFetch);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!shouldFetch) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -84,11 +84,7 @@ const useFetchDigitalTwins = (
       }
     };
 
-    if (shouldFetch) {
-      fetchData();
-    } else {
-      setLoading(false);
-    }
+    fetchData();
   }, [dispatch, shouldFetch]);
 
   return { loading, error };
