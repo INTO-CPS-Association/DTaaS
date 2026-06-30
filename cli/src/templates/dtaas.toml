@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="0.9.1"
+version="0.10.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -29,6 +29,9 @@ certs-src='/etc/letsencrypt/archive/intocps.org'
 #certs-src='C:/Certbot/archive/intocps.org'
 
 [common.resources]
+# Enforce the per-user container resource limits below. Set to false to create
+# users without any CPU/memory/process caps; the limit fields are then ignored.
+set_limits=true
 # These are the default resource limits for user containers.
 cpus=4 # Virtual CPU
 mem_limit="4G"

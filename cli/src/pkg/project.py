@@ -13,6 +13,7 @@ TEMPLATE_FILES = [
     "dtaas.toml",
     "users.server.yml",
     "users.server.secure.yml",
+    "users.resources.yml",
 ]
 
 DEPLOY_TYPES = {

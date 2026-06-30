@@ -55,6 +55,13 @@ def test_generate_project_skips_existing_file(tmp_path, capsys):
     assert "'dtaas.toml' already exists, skipping" in captured.out
 
 
+def test_generate_project_copies_resources_overlay(tmp_path):
+    """generate_project ships the users.resources.yml limits overlay."""
+    generate_project(str(tmp_path))
+
+    assert (tmp_path / "users.resources.yml").is_file()
+
+
 def test_generate_project_raises_on_copy_failure(tmp_path):
     """OSError is raised when a file copy fails."""
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):

@@ -6,10 +6,6 @@ volumes:
   - "${DTAAS_DIR}/files/${username}:/workspace"
 environment:
   - MAIN_USER=${username}
-shm_size: ${shm_size}
-cpus: ${cpus}
-mem_limit: ${mem_limit}
-pids_limit: ${pids_limit}
 labels:
   - "traefik.enable=true"
   - "traefik.http.routers.${username}.entryPoints=web-secure"

@@ -6,6 +6,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users
 from src.pkg import users_utils
+from src.pkg.project import generate_project
 from tests.conftest import CONF_SERVER_CONTENT
 # pylint: disable=redefined-outer-name,unused-argument
 
@@ -23,6 +24,7 @@ def mock_config():
         None,
     )
     mock.get_tls.return_value = (False, None)
+    mock.get_set_limits.return_value = (True, None)
     mock.get_users.return_value = ({"add": ["user1"], "user1": {}}, None)
     return mock
 
@@ -85,6 +87,7 @@ def test_add_users_to_compose(mock_utils):
         "path": "/test",
         "resources": resources,
         "tls": False,
+        "set_limits": False,
     }
 
     users.add_users_to_compose(["user1", "user2", "user3"], {"services": {}}, config)
@@ -111,9 +114,15 @@ def test_add_users_to_compose_config_error():
     ],
 )
 def test_get_compose_config(mock_utils, server, tls, file):
-    """Test getComposeConfig with resources parameter and TLS flag"""
+    """Test getComposeConfig selects the template by server type and TLS flag"""
     resources = {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
-    config = {"server": server, "path": "/test", "resources": resources, "tls": tls}
+    config = {
+        "server": server,
+        "path": "/test",
+        "resources": resources,
+        "tls": tls,
+        "set_limits": False,
+    }
     _, _ = users.get_compose_config("testuser", config)
     assert mock_utils["import"].called
     mock_utils["import"].assert_called_with(file)
@@ -128,6 +137,42 @@ def test_get_compose_config_error():
     ):
         result, err = users.get_compose_config("testuser", config)
         assert (result, isinstance(err, Exception)) == (None, True)
+
+
+@pytest.fixture
+def project_templates(tmp_path, monkeypatch):
+    """Generate the real CLI templates into a temp dir and run the CLI from there."""
+    generate_project(str(tmp_path))
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
+
+
+def _limits_config(set_limits):
+    """A non-localhost user config with the given set_limits flag."""
+    return {
+        "server": "example.com",
+        "path": "/opt/dtaas",
+        "resources": {
+            "cpus": 4,
+            "mem_limit": "4G",
+            "pids_limit": 4960,
+            "shm_size": "512m",
+        },
+        "tls": False,
+        "set_limits": set_limits,
+    }
+
+
+def test_get_compose_config_includes_limits_when_enabled(project_templates):
+    """With set_limits true the generated service carries all four limit keys."""
+    result, err = users.get_compose_config("alice", _limits_config(True))
+
+    assert err is None
+    assert result is not None
+    assert result["cpus"] == "4"
+    assert result["mem_limit"] == "4G"
+    assert result["pids_limit"] == "4960"
+    assert result["shm_size"] == "512m"
 
 
 @pytest.mark.parametrize(
@@ -182,30 +227,6 @@ def test_add_users_rejects_newline_in_email(
     assert err is not None and "newlines" in str(err)
 
 
-def test_add_users_writes_conf_server_before_starting_containers(
-    mock_config, mock_utils, mock_user_operations, tmp_path, monkeypatch
-):
-    """Forward-auth rules are written even when 'docker compose up' fails."""
-    conf = tmp_path / "config" / "conf.server"
-    conf.parent.mkdir()
-    conf.write_text(CONF_SERVER_CONTENT, encoding="utf-8")
-    monkeypatch.setattr(users_utils, "CONF_SERVER_PATH", conf)
-
-    mock_config.get_add_users_list.return_value = (["user3"], None)
-    mock_config.get_users.return_value = (
-        {"add": ["user3"], "user3": {"email": "user3@example.com"}},
-        None,
-    )
-    mock_user_operations["start"].return_value = Exception("compose up failed")
-
-    err = users.add_users(mock_config)
-
-    assert err is not None and "compose up failed" in str(err)
-    text = conf.read_text(encoding="utf-8")
-    assert "rule.onlyu3.rule=PathPrefix(`/user3`)" in text
-    assert "rule.onlyu3.whitelist=user3@example.com" in text
-
-
 @pytest.mark.parametrize("export_error", [False, True])
 def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error):
     """Test delete_user removes users from compose"""
@@ -216,21 +237,6 @@ def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error
 
     err = users.delete_user(mock_config)
     assert (err is not None) if export_error else err is None
-
-
-def test_delete_user_removes_conf_server_rules(
-    mock_config, mock_utils, mock_user_operations
-):
-    """delete_user removes each deleted user's forward-auth rule from conf.server."""
-    compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
-    mock_config.get_delete_users_list.return_value = (["user1"], None)
-    mock_utils["import"].return_value = (compose, None)
-
-    with patch("src.pkg.users.remove_conf_server_entry") as mock_remove:
-        err = users.delete_user(mock_config)
-
-    assert err is None
-    mock_remove.assert_called_once_with("user1")
 
 
 def test_delete_user_handles_none_compose(

@@ -119,6 +119,7 @@ directory) and reports all problems at once:
 | `[common].server-dns` | Must be `localhost`, an IP, or a fully qualified hostname |
 | `[common].path` | Must be an absolute path to an existing directory |
 | `[common.security].certs-src` | When present, must be an absolute path to an existing directory |
+| `[common.resources].set_limits` | When present, `true` or `false` (default `true`) |
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
@@ -135,6 +136,11 @@ present.
 
 `path` and `certs-src` are checked against the local filesystem, run
 `validate` on the deployment host.
+
+The `[common.resources]` limit fields (`cpus`, `pids_limit`, `mem_limit`,
+`shm_size`) are required only when `set_limits` is `true` (the default). With
+`set_limits = false` they are optional and ignored; any value still present is
+validated.
 
 **Options**
 
@@ -389,6 +395,7 @@ dtaas generate-project
 | `dtaas.toml` | Main CLI configuration |
 | `users.server.yml` | Docker Compose template for HTTP deployments |
 | `users.server.secure.yml` | Docker Compose template for HTTPS/TLS deployments |
+| `users.resources.yml` | Per-user resource-limit overlay, merged in when `set_limits` is true |
 | `files/template/` | Skeleton copied into each new user workspace |
 
 > **Tip: verify the Docker image tag**
@@ -428,6 +435,32 @@ the container for the change to take effect:
 ```bash
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
+
+**Resource limits (optional)**
+
+By default each user container is created with the CPU, memory, process, and
+shared-memory caps from `[common.resources]`, merged in from the
+`users.resources.yml` overlay. To onboard users without any caps, set
+`set_limits = false` in that section:
+
+```toml
+# Constrained users (default): limits enforced
+[common.resources]
+set_limits = true
+cpus       = 4
+mem_limit  = "4G"
+pids_limit = 4960
+shm_size   = "512m"
+```
+
+```toml
+# Unconstrained users: no caps written, limit fields optional
+[common.resources]
+set_limits = false
+```
+
+The flag is read on every `user add`, so a deployment can host both constrained
+and unconstrained users by toggling `set_limits` between runs.
 
 > **Notes**
 > - `user add` starts a container for a new user or restarts a stopped one; it
@@ -536,6 +569,9 @@ certs-src = "/etc/letsencrypt/live/dtaas.example.com"
 
 # ── Per-user container resource limits (optional, all types) ──────────────────
 [common.resources]
+# Enforce the limits below. Set to false to add users without any caps.
+# The 4 fields are then optional and ignored. Defaults to true when omitted.
+set_limits = true
 cpus       = 4        # CPU cores; may be fractional, e.g. 0.5
 mem_limit  = "4G"     # memory limit — unit required: G, m, k …
 pids_limit = 4960     # maximum number of processes per container (integer)

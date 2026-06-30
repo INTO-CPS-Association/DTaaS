@@ -140,6 +140,28 @@ def test_size_unit_is_required(base):
     assert "common.resources.shm_size must include a unit, e.g. '512m'" in errors
 
 
+def test_resources_optional_when_set_limits_false(base):
+    """With set_limits=false the cpus/mem/shm/pids fields may all be omitted."""
+    data = with_common(base, resources={"set_limits": False})
+    assert collect_errors(data) == []
+
+
+def test_resources_still_validated_when_set_limits_false(base):
+    """A bad value is reported even in unlimited mode, when one is supplied."""
+    data = with_common(base, resources={"set_limits": False, "cpus": "4"})
+    assert "common.resources.cpus must be a positive number of CPU cores" in (
+        collect_errors(data)
+    )
+
+
+def test_resources_required_when_set_limits_true(base):
+    """set_limits=true keeps every limit field mandatory."""
+    data = with_common(base, resources={"set_limits": True})
+    errors = collect_errors(data)
+    assert "common.resources.cpus is missing" in errors
+    assert "common.resources.shm_size is missing" in errors
+
+
 def test_user_lists_validation(base):
     """users.add/delete are optional but must be lists of strings when present."""
     data = copy.deepcopy(base)

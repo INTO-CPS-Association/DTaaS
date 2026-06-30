@@ -144,14 +144,20 @@ def _check_certs_src(data):
 
 
 def _check_resources(data):
-    """cpus is a positive number; pids_limit an integer; mem/shm are byte sizes."""
+    """Resource limits, required unless common.resources.set_limits is false.
+
+    With set_limits = false the container runs uncapped, so the fields are
+    optional; any values that are present are still checked.
+    """
+    enabled = _get(data, "common", "resources", "set_limits") is not False
+    check = _required if enabled else _optional
     cpus_msg = "common.resources.cpus must be a positive number of CPU cores"
-    errors = _required(data, ("common", "resources", "cpus"), _is_number, cpus_msg)
+    errors = check(data, ("common", "resources", "cpus"), _is_number, cpus_msg)
     pids_msg = "common.resources.pids_limit must be an integer"
-    errors += _required(data, ("common", "resources", "pids_limit"), _is_int, pids_msg)
+    errors += check(data, ("common", "resources", "pids_limit"), _is_int, pids_msg)
     for field, example in _SIZE_FIELDS:
         message = f"common.resources.{field} must include a unit, e.g. '{example}'"
-        errors += _required(data, ("common", "resources", field), _is_size, message)
+        errors += check(data, ("common", "resources", field), _is_size, message)
     return errors
 
 

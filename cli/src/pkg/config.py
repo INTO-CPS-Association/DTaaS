@@ -100,6 +100,19 @@ class Config:
             return None, err
         return resources, None
 
+    def get_set_limits(self):
+        """Gets the set_limits flag from config.common.resources (default True).
+
+        When false, user containers are created without resource limits.
+        """
+        conf_common, err = self.get_common()
+        if err is not None or not isinstance(conf_common, dict):
+            return True, err
+        resources = conf_common.get("resources", {})
+        if not isinstance(resources, dict):
+            return True, Exception("Config file error: resources section is not a dict")
+        return bool(resources.get("set_limits", True)), None
+
     def get_tls(self):
         """Gets the TLS flag from config.common.security"""
         conf_common, err = self.get_common()
