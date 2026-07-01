@@ -9,6 +9,7 @@ from src.pkg.project import (
     generate_deploy_project,
     create_user_dirs,
     set_files_permissions,
+    _copy_config_file,
     _copy_example_files,
     _copy_file,
     _check_no_symlinks,
@@ -19,12 +20,32 @@ from src.pkg.project import (
 # pylint: disable=protected-access
 
 
-def test_generate_config_copies_only_toml(tmp_path):
-    """generate_config writes dtaas.toml (returning False) and no other templates."""
+def test_generate_config_copies_toml_and_users_csv(tmp_path):
+    """generate_config writes dtaas.toml (returning False) and the users.csv sample."""
     assert generate_config(str(tmp_path)) is False
 
     assert (tmp_path / "dtaas.toml").is_file()
+    assert (tmp_path / "users.csv").is_file()
     assert not (tmp_path / "users.server.yml").exists()
+
+
+def test_generate_config_skips_existing_users_csv(tmp_path, capsys):
+    """An existing users.csv is preserved and a skip message is printed."""
+    (tmp_path / "users.csv").write_text("existing")
+
+    generate_config(str(tmp_path))
+
+    assert (tmp_path / "users.csv").read_text() == "existing"
+    assert "'users.csv' already exists, skipping" in capsys.readouterr().out
+
+
+def test_copy_config_file_writes_and_reports_skip(tmp_path, capsys):
+    """_copy_config_file returns False when written, True (with a message) when skipped."""
+    assert _copy_config_file("dtaas.toml", str(tmp_path), force=False) is False
+    assert (tmp_path / "dtaas.toml").is_file()
+
+    assert _copy_config_file("dtaas.toml", str(tmp_path), force=False) is True
+    assert "'dtaas.toml' already exists, skipping" in capsys.readouterr().out
 
 
 def test_generate_config_skips_existing_without_force(tmp_path, capsys):

@@ -26,7 +26,9 @@ The CLI is written in Python and uses the following libraries:
   (_cli/src/pkg/deploy.py_) to drive `docker compose up`/`down`. It wraps the
   docker CLI (which must be installed on the host) and raises a
   `python_on_whales.exceptions.DockerException` carrying the real command
-  output (return code and stderr) when a compose operation fails.
+  output (return code and stderr) when a compose operation fails. It is also
+  used by _cli/src/pkg/state.py_ to read best-effort container id/status when
+  writing the `.dtaas.state.json` runtime cache.
 
 - [Poetry Package](https://python-poetry.org/docs/) to manage
   dependencies and build the CLI. The configuration file for this is
@@ -81,6 +83,26 @@ service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
 `OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
 `run_cert_update` and `require_update_flag` for the `update` group.
 
+### User registry and runtime state
+
+User provisioning spans three single-owner files, modelled on the config/state
+split Terraform uses for `.tf` vs `terraform.tfstate`: `dtaas.toml` holds the
+hand-edited `starting` users, `dtaas.users.registry.json` is the CLI-owned store
+of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
+
+- _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
+  the `{username: details}` store (empty when absent), `add_to_registry` merges
+  new users, and `remove_from_registry` drops them — each persisted atomically
+  (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
+  `read_csv_users` parses a `users.csv` for bulk import.
+- _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
+  `delete_users` deprovisions the named users and removes them from the
+  registry. `cmd_utils.import_users_file` merges a `--file users.csv` into the
+  registry before `add` runs.
+- _src/pkg/state.py_ owns `.dtaas.state.json`. After each add/delete it records,
+  per user, a `config_hash` (a stable sha256 of the compose service) plus
+  best-effort container id/status from python-on-whales.
+
 ### TOML File
 
 The base configuration file used by the CLI is the _dtaas.toml_ file.
@@ -90,7 +112,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.10.0"
+version="0.11.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```
@@ -130,17 +152,22 @@ shm_size="512m"
 
 ```toml
 [users]
-add=["username1","username2"]
-delete=["username2"]
+starting=["username1","username2"]
 
 [users.username1]
 email="username1@intocps.org"
+groups=["starting"]
+load_balance=true
 ```
 
-- _add_: list of usernames to create.
-- _delete_: list of usernames to remove.
-- Per-user sub-tables provide the _email_ field, written to
-  `config/conf.server` on `dtaas admin user add`.
+- _starting_: the initial users installed with the instance, hand-edited at
+  install time. Additional users added later via `dtaas admin user add` are
+  **not** listed here — they live in the CLI-owned `dtaas.users.registry.json`.
+- Per-user sub-tables provide _email_ (written to `config/conf.server` on
+  `dtaas admin user add`), plus _groups_ and _load_balance_ tags.
+
+See [User registry and runtime state](#user-registry-and-runtime-state) for the
+registry and `.dtaas.state.json` cache.
 
 #### [frontend]
 

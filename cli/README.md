@@ -20,7 +20,7 @@ python -m venv .venv && source .venv/bin/activate   # Linux / macOS
 # 2. Install the package
 pip install dtaas
 
-# 3. Generate a dtaas.toml configuration template
+# 3. Generate dtaas.toml + a sample users.csv to fill in
 dtaas admin config generate
 
 # 4. Open dtaas.toml and fill in your server DNS, paths, and credentials
@@ -65,7 +65,8 @@ dtaas admin uninstall
    - [generate-project](#generate-project)
    - [admin user add](#-admin-user-add)
    - [admin user delete](#-admin-user-delete)
-3. [Configuration Reference: dtaas.toml](#️-configuration-reference--dtaastoml)
+3. [User files: dtaas.toml, registry, state](#-user-files)
+4. [Configuration Reference: dtaas.toml](#️-configuration-reference--dtaastoml)
 
 ---
 
@@ -104,6 +105,9 @@ validate before running any other command.
 dtaas admin config generate
 ```
 
+This writes `dtaas.toml` and a sample `users.csv` (bulk input for
+`dtaas admin user add --file`) into the target directory.
+
 **Validate an existing file**
 
 ```bash
@@ -123,7 +127,6 @@ directory) and reports all problems at once:
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
-| `[users].add`, `[users].delete` | When present, must be lists of strings |
 | `[users.<name>].email` | Valid RFC 5321/5322 address (no DNS lookup) |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
@@ -238,7 +241,7 @@ dtaas admin install
 
 Internally runs `docker compose up -d` against the `docker-compose.yml` in
 the installation directory. Before starting, it ensures per-user workspace
-directories listed in `[users].add` exist, recreating each from
+directories for the `[users].starting` list exist, recreating each from
 `files/template/` if missing and sets ownership to `1000:100`.
 
 **Options**
@@ -408,16 +411,28 @@ dtaas generate-project
 
 ### ➕ `admin user add`
 
-Adds one or more users to a running DTaaS instance.
+Provisions users on a running DTaaS instance. Additional users are recorded in
+the CLI-owned `dtaas.users.registry.json`
+(see [User files](#-user-files)), not in `dtaas.toml`.
+The typical flow is a bulk import from a CSV:
 
-Edit `dtaas.toml` to list the GitLab usernames to add:
-
-```toml
-[users]
-add = ["username1", "username2", "username3"]
+```bash
+# Merge users.csv into the registry, then provision every registry user
+dtaas admin user add --file users.csv
 ```
 
-Then run from the directory containing `dtaas.toml`:
+`dtaas admin config generate` writes a sample `users.csv` next to `dtaas.toml`:
+
+```csv
+username,email,groups,load_balance
+alice,alice@intocps.org,additional,true
+bob,bob@intocps.org,additional;beta-testers,false
+```
+
+`groups` is a `;`-separated list and `load_balance` is `true`/`false`. Passing
+`--file` merges the CSV into the registry (adding new users, updating existing
+ones) atomically, the registry is never hand-edited. Omit `--file` to
+(re)provision every user already in the registry:
 
 ```bash
 dtaas admin user add
@@ -465,7 +480,8 @@ and unconstrained users by toggling `set_limits` between runs.
 > **Notes**
 > - `user add` starts a container for a new user or restarts a stopped one; it
 >   reports *Running* for containers already up without restarting them.
-> - Returns an error if the `add` list is empty.
+> - Provisioning is idempotent: re-running `user add` reprovisions every
+>   registry user without duplicating work. An empty registry is a no-op.
 > - Usernames containing `.` cannot currently be added via the CLI (known
 >   issue; to be resolved in a future release).
 > - This command does not enable AuthMS authentication.
@@ -474,20 +490,17 @@ and unconstrained users by toggling `set_limits` between runs.
 
 ### ➖ `admin user delete`
 
-Removes users from a running DTaaS instance.
-
-Edit `dtaas.toml` to list the GitLab usernames to remove:
-
-```toml
-[users]
-delete = ["username1", "username2", "username3"]
-```
-
-Then run from the directory containing `dtaas.toml`:
+Removes one or more named users from a running DTaaS instance, like `userdel`.
+Pass the usernames as arguments:
 
 ```bash
-dtaas admin user delete
+dtaas admin user delete username1 username2
 ```
+
+Each user is deprovisioned (its container stopped, its compose service and
+forward-auth rule removed) and dropped from `dtaas.users.registry.json`. Users
+that are not currently provisioned are reported and skipped, but are still
+removed from the registry.
 
 The CLI automatically removes the traefik-forward-auth routing rules for
 deleted users from `config/conf.server`. Restart the container for the change
@@ -497,7 +510,30 @@ to take effect:
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
-> Returns an error if the `delete` list is empty.
+> At least one username argument is required.
+
+---
+
+## 👥 User files
+
+User management spans three files, each with a single owner, modelled on the
+config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
+
+| File | Owner | Contents | Git |
+|---|---|---|---|
+| `dtaas.toml` `[users]` | Human, at install time | **Starting** users: the `starting` list plus per-user `email`, `groups`, `load_balance` | Tracked hand-edited |
+| `dtaas.users.registry.json` | CLI (`user add` / `user delete`) | **Additional** users, same fields | Tracked CLI-written, never hand-edited |
+| `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored runtime cache |
+
+- **`dtaas.toml`** is written once by a human and never rewritten by the CLI,
+  so a comment-bearing, reviewed config is never silently mutated.
+- **`dtaas.users.registry.json`** is a database the CLI owns and mutates
+  atomically (the way `useradd` owns `/etc/passwd`). Edit its users through
+  `dtaas admin user add --file users.csv` / `dtaas admin user delete`, not by
+  hand. `users.csv` copied by `dtaas admin config generate` is the
+  human-editable bulk input that feeds it.
+- **`.dtaas.state.json`** is a disposable cache of what is actually running,
+  refreshed on every add/delete. It is git-ignored and safe to delete.
 
 ---
 
@@ -577,19 +613,26 @@ mem_limit  = "4G"     # memory limit — unit required: G, m, k …
 pids_limit = 4960     # maximum number of processes per container (integer)
 shm_size   = "512m"   # shared memory — unit required
 
-# ── User list (all deployment types) ──────────────────────────────────────────
-# Usernames must match GitLab accounts on the configured instance.
-# Note: usernames containing "." are not yet supported.
+# ── Starting users (all deployment types) ─────────────────────────────────────
+# The users installed with this instance, hand-edited once at install time.
+# Additional users added later with `dtaas admin user add` live in the
+# CLI-owned dtaas.users.registry.json instead — never here.
+# Usernames must match GitLab accounts; usernames containing "." are not yet
+# supported.
 [users]
-add    = ["alice", "bob"]   # provisioned on: dtaas admin user add
-delete = []                 # removed on:      dtaas admin user delete
+starting = ["alice", "bob"]
 
-# Per-user email: enables traefik-forward-auth routing rules automatically.
+# Per-user email enables traefik-forward-auth routing rules automatically;
+# groups/load_balance carry per-user tags.
 [users.alice]
-email = "alice@example.com"
+email        = "alice@example.com"
+groups       = ["starting"]
+load_balance = true
 
 [users.bob]
-email = "bob@example.com"
+email        = "bob@example.com"
+groups       = ["starting"]
+load_balance = false
 
 # ── React web client OAuth app (insecure-server, secure-server,
 #                                secure-server-gitlab) ────────────────────────

@@ -246,3 +246,6 @@ deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/fullchain.pem
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/privkey.pem
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/data
 !deploy/dtaas/docker/secure-server_with_integrated-gitlab/data/.gitkeep
+
+# dtaas CLI runtime state cache (machine-owned, never committed)
+.dtaas.state.json

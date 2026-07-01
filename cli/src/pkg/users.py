@@ -5,6 +5,8 @@ import shutil
 from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
+from .registry import load_registry, remove_from_registry
+from .state import write_state
 from .users_utils import (
     add_conf_server_entry,
     remove_conf_server_entry,
@@ -138,10 +140,14 @@ def _setup_compose_structure(compose):
         compose["networks"] = {"users": {"name": "dtaas-users", "external": True}}
 
 
-def _get_add_users_config(config_obj):
-    """Retrieve configuration needed for adding users."""
-    user_list, err = config_obj.get_add_users_list()
-    utils.check_error(err)
+def _get_registry_users():
+    """Return (all registry usernames, the additional-user store) to provision."""
+    users_section = load_registry()
+    return list(users_section), users_section
+
+
+def _get_deploy_config(config_obj):
+    """Retrieve deployment settings (server, path, resources, TLS) from dtaas.toml."""
     server, err = config_obj.get_server_dns()
     utils.check_error(err)
     path, err = config_obj.get_path()
@@ -152,16 +158,17 @@ def _get_add_users_config(config_obj):
     utils.check_error(err)
     set_limits, err = config_obj.get_set_limits()
     utils.check_error(err)
-    return user_list, server, path, resources, tls, set_limits
+    return server, path, resources, tls, set_limits
 
 
 def _finalize_compose(compose):
-    """Export and start user containers."""
+    """Export, start user containers, and record runtime state."""
     err = utils.export_yaml(compose, COMPOSE_USERS_YML)
     utils.check_error(err)
     users_list = list(compose["services"].keys())
     err = start_user_containers(users_list)
     utils.check_error(err)
+    write_state(compose["services"])
 
 
 def add_users(config_obj):
@@ -169,11 +176,8 @@ def add_users(config_obj):
     try:
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
-        user_list, server, path, resources, tls, set_limits = _get_add_users_config(
-            config_obj
-        )
-        users_section, err = config_obj.get_users()
-        utils.check_error(err)
+        user_list, users_section = _get_registry_users()
+        server, path, resources, tls, set_limits = _get_deploy_config(config_obj)
     except Exception as e:
         return e
 
@@ -212,17 +216,16 @@ def add_users(config_obj):
     return None
 
 
-def delete_user(config_obj):
-    """delete cli command handler"""
+def delete_users(usernames):
+    """delete cli command handler: deprovision *usernames* and drop them from
+    the CLI-owned user registry."""
     try:
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         if compose is None:
             return Exception("Failed to load compose configuration")
-        user_list, err = config_obj.get_delete_users_list()
-        utils.check_error(err)
         existing_services = compose.get("services", {})
-        existing, missing = categorize_users(user_list, existing_services)
+        existing, missing = categorize_users(list(usernames), existing_services)
         report_missing_users(missing)
         if existing:
             err = stop_user_containers(existing)
@@ -232,6 +235,8 @@ def delete_user(config_obj):
         utils.check_error(err)
         for username in existing:
             remove_conf_server_entry(username)
+        remove_from_registry(usernames)
+        write_state(compose["services"])
     except Exception as e:
         return e
 

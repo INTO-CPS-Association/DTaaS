@@ -34,10 +34,10 @@ def _user_value(users, key):
     if not m:
         return ""
     index = int(m.group(2)) - 1
-    add = users.get("add", [])
-    if index >= len(add):
+    starting = users.get("starting", [])
+    if index >= len(starting):
         return ""
-    username = str(add[index]).strip()
+    username = str(starting[index]).strip()
     if m.group(1) == "username":
         return username
     section = users.get(username, {})

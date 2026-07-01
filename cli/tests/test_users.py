@@ -8,15 +8,13 @@ from src.pkg import users
 from src.pkg import users_utils
 from src.pkg.project import generate_project
 from tests.conftest import CONF_SERVER_CONTENT
-# pylint: disable=redefined-outer-name,unused-argument
+# pylint: disable=redefined-outer-name,unused-argument,protected-access
 
 
 @pytest.fixture
 def mock_config():
-    """Mock config object"""
+    """Mock config object providing deployment settings from dtaas.toml."""
     mock = MagicMock()
-    mock.get_add_users_list.return_value = (["user1"], None)
-    mock.get_delete_users_list.return_value = (["user1"], None)
     mock.get_server_dns.return_value = ("foo.example.com", None)
     mock.get_path.return_value = ("/test/path", None)
     mock.get_resource_limits.return_value = (
@@ -25,8 +23,17 @@ def mock_config():
     )
     mock.get_tls.return_value = (False, None)
     mock.get_set_limits.return_value = (True, None)
-    mock.get_users.return_value = ({"add": ["user1"], "user1": {}}, None)
     return mock
+
+
+@pytest.fixture
+def mock_registry():
+    """Patch the registry store functions add_users/delete_users use."""
+    with patch("src.pkg.users.load_registry") as mock_load, patch(
+        "src.pkg.users.remove_from_registry"
+    ) as mock_remove:
+        mock_load.return_value = {"user1": {"email": "user1@x.io"}}
+        yield {"load": mock_load, "remove": mock_remove}
 
 
 @pytest.fixture
@@ -48,9 +55,10 @@ def mock_user_operations():
         "src.pkg.users.add_users_to_compose"
     ) as ma, patch("src.pkg.users.start_user_containers") as ms, patch(
         "src.pkg.users.stop_user_containers"
-    ) as mst:
+    ) as mst, patch("src.pkg.users.write_state") as mw:
         mc.return_value = ma.return_value = ms.return_value = mst.return_value = None
-        yield {"create": mc, "add": ma, "start": ms, "stop": mst}
+        mw.return_value = {}
+        yield {"create": mc, "add": ma, "start": ms, "stop": mst, "state": mw}
 
 
 @pytest.fixture
@@ -200,27 +208,37 @@ def test_run_command_for_containers(mock_run, returncode, has_error):
     "compose,field", [({"services": {}}, "version"), ({"version": "3"}, "services")]
 )
 def test_add_users_missing_fields(
-    mock_config, mock_utils, mock_user_operations, compose, field
+    mock_config, mock_registry, mock_utils, mock_user_operations, compose, field
 ):
     """Test add_users adds missing fields to compose"""
     mock_utils["import"].return_value = (compose, None)
     assert users.add_users(mock_config) is None and field in compose
 
 
-def test_add_users_returns_config_error(mock_config, mock_utils):
-    """add_users returns the exception when config retrieval fails."""
-    mock_config.get_add_users_list.return_value = (None, Exception("missing add list"))
+def test_add_users_returns_registry_error(mock_config, mock_registry, mock_utils):
+    """add_users returns the exception when the registry cannot be read."""
+    mock_registry["load"].side_effect = ValueError("bad registry")
 
     err = users.add_users(mock_config)
 
-    assert err is not None and "missing add list" in str(err)
+    assert err is not None and "bad registry" in str(err)
+
+
+def test_get_registry_users_returns_list_and_details(mock_registry):
+    """_get_registry_users pairs the registry usernames with the details store."""
+    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
+
+    user_list, users_section = users._get_registry_users()
+
+    assert user_list == ["alice"]
+    assert users_section["alice"]["email"] == "a@x.io"
 
 
 def test_add_users_rejects_newline_in_email(
-    mock_config, mock_utils, mock_user_operations
+    mock_config, mock_registry, mock_utils, mock_user_operations
 ):
     """A newline in a user's email aborts add_users without writing the rule."""
-    mock_config.get_users.return_value = ({"user1": {"email": "bad\n@x.com"}}, None)
+    mock_registry["load"].return_value = {"user1": {"email": "bad\n@x.com"}}
 
     err = users.add_users(mock_config)
 
@@ -228,23 +246,23 @@ def test_add_users_rejects_newline_in_email(
 
 
 @pytest.mark.parametrize("export_error", [False, True])
-def test_delete_user(mock_config, mock_utils, mock_user_operations, export_error):
-    """Test delete_user removes users from compose"""
+def test_delete_users(mock_registry, mock_utils, mock_user_operations, export_error):
+    """delete_users removes users from compose and, on success, the registry."""
     compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
-    mock_config.get_delete_users_list.return_value = (["user1"], None)
     mock_utils["import"].return_value = (compose, None)
     mock_utils["export"].return_value = Exception("Failed") if export_error else None
 
-    err = users.delete_user(mock_config)
+    err = users.delete_users(["user1"])
+
     assert (err is not None) if export_error else err is None
+    if not export_error:
+        mock_registry["remove"].assert_called_once_with(["user1"])
 
 
-def test_delete_user_handles_none_compose(
-    mock_config, mock_utils, mock_user_operations
-):
-    """delete_user returns an error when the compose file loads as None."""
+def test_delete_users_handles_none_compose(mock_registry, mock_utils):
+    """delete_users returns an error when the compose file loads as None."""
     mock_utils["import"].return_value = (None, None)
 
-    err = users.delete_user(mock_config)
+    err = users.delete_users(["user1"])
 
     assert err is not None and "Failed to load compose" in str(err)

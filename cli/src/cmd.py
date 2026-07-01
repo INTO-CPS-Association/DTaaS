@@ -11,6 +11,7 @@ from .cmd_utils import (
     VerticalChoicesCommand,
     apply_deploy_config,
     provision_user_files,
+    import_users_file,
     run_user_command,
     confirm_remove_user_files,
     run_config_update,
@@ -137,25 +138,36 @@ def user():
 
 #### user group commands
 @user.command()
-def add():
+@click.option(
+    "--file",
+    "csv_file",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Import users from a CSV file into the registry before adding.",
+)
+def add(csv_file):
     """
-    add a list of users to DTaaS at once\n
-    Specify the list in dtaas.toml [users].add\n
+    add users to DTaaS from the user registry\n
+    Provisions every user in dtaas.users.registry.json.\n
+    Pass --file to merge a users CSV into the registry first.\n
     """
+    if csv_file:
+        import_users_file(csv_file)
     run_user_command(
         userPkg.add_users, "Users added successfully", "Error while adding users"
     )
 
 
 @user.command()
-def delete():
+@click.argument("usernames", nargs=-1, required=True)
+def delete(usernames):
     """
-    removes the USERNAME user from DTaaS\n
-    Specify the users in dtaas.toml [users].delete\n
+    removes the named USERNAMES from DTaaS\n
+    Deprovisions each user and drops them from dtaas.users.registry.json\n
     """
-    run_user_command(
-        userPkg.delete_user, "User deleted successfully", "Error while deleting users"
-    )
+    err = userPkg.delete_users(usernames)
+    if err is not None:
+        raise click.ClickException(f"Error while deleting users: {err}")
+    click.echo("Users deleted successfully")
 
 
 @admin.command(name="install")

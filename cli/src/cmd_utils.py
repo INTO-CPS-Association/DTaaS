@@ -8,6 +8,7 @@ the user-command wrapper, and the destructive-action confirmation prompt.
 import click
 from python_on_whales.exceptions import DockerException
 from .pkg import config as configPkg
+from .pkg import registry as registryPkg
 from .pkg import project as projectPkg
 from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
@@ -96,9 +97,9 @@ def _copy_deploy_certs(deploy_type, output_dir, toml_data, force):
 
 
 def _create_user_dirs(output_dir, toml_data):
-    """Create per-user directories from the [users].add list in dtaas.toml."""
+    """Create per-user directories from the [users].starting list in dtaas.toml."""
     users = toml_data.get("users", {}) if toml_data else {}
-    usernames = users.get("add", []) if isinstance(users, dict) else []
+    usernames = users.get("starting", []) if isinstance(users, dict) else []
     if not usernames:
         return
     try:
@@ -117,6 +118,14 @@ def provision_user_files(output_dir):
         raise click.ClickException(f"Error reading dtaas.toml: {err}")
     _create_user_dirs(output_dir, toml_data)
     projectPkg.set_files_permissions(output_dir)
+
+
+def import_users_file(csv_file):
+    """Merge a users CSV into the registry store, mapping errors to ClickException."""
+    try:
+        registryPkg.add_to_registry(registryPkg.read_csv_users(csv_file))
+    except (OSError, KeyError, ValueError) as exc:
+        raise click.ClickException(f"Error importing users file: {exc}") from exc
 
 
 def run_user_command(action, success_msg, error_prefix):

@@ -20,7 +20,7 @@ def runner():
 def mock_user_pkg():
     """Mock user package functions and Config to avoid filesystem dependency"""
     with patch("src.cmd.userPkg.add_users") as mock_add, patch(
-        "src.cmd.userPkg.delete_user"
+        "src.cmd.userPkg.delete_users"
     ) as mock_delete, patch("src.cmd_utils.configPkg.Config") as mock_cfg:
         mock_cfg.return_value = MagicMock()
         yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
@@ -30,10 +30,10 @@ def test_delete_user_success(runner, mock_user_pkg):
     """Test successful user deletion"""
     mock_user_pkg["delete"].return_value = None
 
-    result = runner.invoke(dtaas, ["admin", "user", "delete"])
+    result = runner.invoke(dtaas, ["admin", "user", "delete", "alice", "bob"])
     assert result.exit_code == 0
-    assert "User deleted successfully" in result.output
-    mock_user_pkg["delete"].assert_called_once()
+    assert "Users deleted successfully" in result.output
+    mock_user_pkg["delete"].assert_called_once_with(("alice", "bob"))
 
 
 def test_generate_project_success(runner):
@@ -151,6 +151,45 @@ def test_add_users_config_error(runner):
 
     assert result.exit_code != 0
     assert "no config" in result.output
+
+
+def test_add_users_with_file_imports_registry(runner, mock_user_pkg, tmp_path):
+    """add --file imports the CSV into the registry before provisioning."""
+    mock_user_pkg["add"].return_value = None
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text("username,email,groups,load_balance\nalice,a@x.io,g,true\n")
+
+    with patch("src.cmd.import_users_file") as mock_import:
+        result = runner.invoke(dtaas, ["admin", "user", "add", "--file", str(csv_file)])
+
+    assert result.exit_code == 0
+    mock_import.assert_called_once_with(str(csv_file))
+    mock_user_pkg["add"].assert_called_once()
+
+
+def test_add_users_without_file_skips_import(runner, mock_user_pkg):
+    """add without --file provisions from the existing registry, no import."""
+    mock_user_pkg["add"].return_value = None
+
+    with patch("src.cmd.import_users_file") as mock_import:
+        result = runner.invoke(dtaas, ["admin", "user", "add"])
+
+    assert result.exit_code == 0
+    mock_import.assert_not_called()
+
+
+def test_add_users_file_import_error(runner, tmp_path):
+    """A malformed users file surfaces as a ClickException."""
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text("no-username-column\n")
+
+    with patch(
+        "src.cmd_utils.registryPkg.read_csv_users", side_effect=KeyError("username")
+    ):
+        result = runner.invoke(dtaas, ["admin", "user", "add", "--file", str(csv_file)])
+
+    assert result.exit_code != 0
+    assert "Error importing users file" in result.output
 
 
 @pytest.fixture

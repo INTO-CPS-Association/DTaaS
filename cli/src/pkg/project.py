@@ -79,16 +79,28 @@ def generate_project(dest_dir=".", force=False):
     _create_workspace_dirs(dest_dir)
 
 
+def _copy_config_file(template_name, dest_dir, force):
+    """Copy one config template into dest_dir, echoing when skipped.
+
+    Returns True if the existing file was kept (skipped), else False.
+    Raises OSError on copy failure.
+    """
+    skipped = _copy_template(template_name, dest_dir, force)
+    if skipped:
+        click.echo(f"'{template_name}' already exists, skipping")
+    return skipped
+
+
 def generate_config(dest_dir=".", force=False):
-    """Copy only the dtaas.toml template into dest_dir for the user to fill in.
+    """Copy the dtaas.toml and sample users.csv templates into dest_dir.
 
     Returns True if an existing dtaas.toml was kept (skipped), False if it was
-    written. Raises OSError on copy failure.
+    written. The users.csv sample is copied alongside it (skipped if present).
+    Raises OSError on copy failure.
     """
     _validate_project_inputs(dest_dir)
-    skipped = _copy_template("dtaas.toml", dest_dir, force)
-    if skipped:
-        click.echo("'dtaas.toml' already exists, skipping")
+    skipped = _copy_config_file("dtaas.toml", dest_dir, force)
+    _copy_config_file("users.csv", dest_dir, force)
     return skipped
 
 
