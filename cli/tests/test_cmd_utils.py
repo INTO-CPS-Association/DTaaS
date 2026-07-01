@@ -74,8 +74,9 @@ def test_stage_users_rejects_username_and_file(tmp_path):
     """Passing both a USERNAME and --file is rejected."""
     csv = tmp_path / "u.csv"
     csv.write_text("username,email\nalice,a@intocps.org\n")
+    csv_path = str(csv)
     with pytest.raises(click.ClickException, match="either a USERNAME or --file"):
-        stage_users_for_add("alice", str(csv), None, (), True)
+        stage_users_for_add("alice", csv_path, None, (), True)
 
 
 def test_stage_single_user_requires_email():

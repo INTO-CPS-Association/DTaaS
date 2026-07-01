@@ -141,9 +141,11 @@ def test_apply_config_raises_on_file_error(tmp_path):
     """write failures are collected and raised as OSError"""
     bad = tmp_path / ".env"
     bad.write_text("SERVER_DNS=localhost\n")
+    dest = str(tmp_path)
+    specs = [(".env", "env", {"SERVER_DNS": "x"})]
     with patch.object(Path, "write_text", side_effect=OSError("permission denied")):
         with pytest.raises(OSError):
-            apply_config(str(tmp_path), [(".env", "env", {"SERVER_DNS": "x"})])
+            apply_config(dest, specs)
 
 
 def test_validate_value_rejects_newline():

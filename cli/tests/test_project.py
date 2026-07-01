@@ -60,9 +60,10 @@ def test_generate_config_skips_existing_without_force(tmp_path, capsys):
 
 def test_generate_config_raises_on_copy_failure(tmp_path):
     """OSError is raised when the dtaas.toml copy fails."""
+    dest = str(tmp_path)
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
-            generate_config(str(tmp_path))
+            generate_config(dest)
 
 
 def test_generate_project_skips_existing_file(tmp_path, capsys):
@@ -85,9 +86,10 @@ def test_generate_project_copies_resources_overlay(tmp_path):
 
 def test_generate_project_raises_on_copy_failure(tmp_path):
     """OSError is raised when a file copy fails."""
+    dest = str(tmp_path)
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
-            generate_project(str(tmp_path))
+            generate_project(dest)
 
 
 def test_copy_file_skips_existing(tmp_path, capsys):
@@ -242,9 +244,10 @@ def test_copy_example_files_skips_existing_without_force(tmp_path):
 
 def test_generate_project_raises_when_templates_dir_missing(tmp_path):
     """generate_project raises RuntimeError when the bundled templates are absent."""
+    out = str(tmp_path / "out")
     with patch("src.pkg.project.TEMPLATES_DIR", tmp_path / "no-templates"):
         with pytest.raises(RuntimeError, match="templates directory not found"):
-            generate_project(str(tmp_path / "out"))
+            generate_project(out)
 
 
 def test_copy_example_files_raises_on_copy_failure(tmp_path):

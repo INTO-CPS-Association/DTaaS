@@ -108,4 +108,4 @@ def _parse_csv_row(row):
 def read_csv_users(csv_path):
     """Return {username: details} parsed from a users CSV file."""
     with open(csv_path, newline="", encoding="utf-8") as handle:
-        return dict(_parse_csv_row(row) for row in csv.DictReader(handle))
+        return dict(map(_parse_csv_row, csv.DictReader(handle)))

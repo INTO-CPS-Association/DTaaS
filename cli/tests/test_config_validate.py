@@ -260,15 +260,17 @@ def test_non_dict_sections_report_missing_keys():
 def test_validate_config_missing_file(tmp_path, monkeypatch):
     """validate_config raises FileNotFoundError when no dtaas.toml exists."""
     monkeypatch.chdir(tmp_path)  # neither output_dir nor cwd has the file
+    output_dir = str(tmp_path)
     with pytest.raises(FileNotFoundError, match="dtaas.toml not found"):
-        validate_config(str(tmp_path))
+        validate_config(output_dir)
 
 
 def test_validate_config_parse_error(tmp_path):
     """validate_config raises ValueError when the file cannot be parsed."""
     (tmp_path / "dtaas.toml").write_text("key = = =")
+    output_dir = str(tmp_path)
     with pytest.raises(ValueError):
-        validate_config(str(tmp_path))
+        validate_config(output_dir)
 
 
 def test_validate_config_returns_empty_for_valid_file(tmp_path):
