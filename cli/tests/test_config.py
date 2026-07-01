@@ -159,6 +159,48 @@ def test_get_tls_success_true():
         assert tls is True
 
 
+def test_get_set_limits_defaults_to_true():
+    """set_limits defaults to True when absent so limits stay enforced."""
+    with patch("src.pkg.config.utils.import_toml") as mock_import:
+        mock_import.return_value = ({"common": {"resources": {"cpus": 4}}}, None)
+        cfg = Config()
+        set_limits, err = cfg.get_set_limits()
+        assert err is None
+        assert set_limits is True
+
+
+def test_get_set_limits_reads_false():
+    """An explicit set_limits=false disables resource limits."""
+    with patch("src.pkg.config.utils.import_toml") as mock_import:
+        mock_import.return_value = (
+            {"common": {"resources": {"set_limits": False}}},
+            None,
+        )
+        cfg = Config()
+        set_limits, err = cfg.get_set_limits()
+        assert err is None
+        assert set_limits is False
+
+
+def test_get_set_limits_when_no_common_section(mock_utils):
+    """get_set_limits returns True with error when 'common' section is absent."""
+    mock_utils.return_value = ({"users": {}}, None)
+    cfg = config.Config()
+    set_limits, err = cfg.get_set_limits()
+    assert set_limits is True
+    assert err is not None
+
+
+def test_get_set_limits_resources_not_dict(mock_utils):
+    """get_set_limits returns True with error when resources is not a dict."""
+    mock_utils.return_value = ({"common": {"resources": "nope"}}, None)
+    cfg = config.Config()
+    set_limits, err = cfg.get_set_limits()
+    assert set_limits is True
+    assert err is not None
+    assert "resources section is not a dict" in str(err)
+
+
 def test_get_from_config_when_data_is_none():
     """get_from_config returns error when config is uninitialised."""
     cfg = Config.__new__(Config)

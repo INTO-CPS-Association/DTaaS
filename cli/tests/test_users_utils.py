@@ -6,8 +6,37 @@ from src.pkg.users_utils import (
     _conf_server_block,
     add_conf_server_entry,
     remove_conf_server_entry,
+    build_base_mapping,
+    resource_mapping,
 )
 from tests.conftest import CONF_SERVER_CONTENT
+
+
+def test_build_base_mapping_includes_server_dns_for_remote():
+    """A non-localhost server contributes a ${SERVER_DNS} placeholder."""
+    mapping = build_base_mapping("alice", {"path": "/opt/dtaas", "server": "x.org"})
+    assert mapping["${DTAAS_DIR}"] == "/opt/dtaas"
+    assert mapping["${username}"] == "alice"
+    assert mapping["${SERVER_DNS}"] == "x.org"
+
+
+def test_build_base_mapping_omits_server_dns_for_localhost():
+    """localhost installations carry no ${SERVER_DNS} label."""
+    mapping = build_base_mapping("alice", {"path": "/opt/dtaas", "server": "localhost"})
+    assert "${SERVER_DNS}" not in mapping
+
+
+def test_resource_mapping_stringifies_values():
+    """resource_mapping renders every limit as a string placeholder value."""
+    mapping = resource_mapping(
+        {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"}
+    )
+    assert mapping == {
+        "${shm_size}": "512m",
+        "${cpus}": "4",
+        "${mem_limit}": "4G",
+        "${pids_limit}": "4960",
+    }
 
 
 def test_next_rule_num_increments_max():

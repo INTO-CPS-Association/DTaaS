@@ -3,8 +3,34 @@
 import re
 import click
 from pathlib import Path
+from . import utils
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
+
+
+def build_base_mapping(username, config):
+    """Build the non-resource placeholder mapping for a user service.
+
+    ${SERVER_DNS} is only added for non-localhost servers, mirroring the
+    previous behaviour where localhost installations carry no host label.
+    """
+    mapping = {
+        "${DTAAS_DIR}": config["path"],
+        "${username}": username,
+    }
+    if config["server"] != utils.LOCALHOST_SERVER:
+        mapping["${SERVER_DNS}"] = config["server"]
+    return mapping
+
+
+def resource_mapping(resources):
+    """Build the resource-limit placeholder mapping for users.resources.yml."""
+    return {
+        "${shm_size}": str(resources["shm_size"]),
+        "${cpus}": str(resources["cpus"]),
+        "${mem_limit}": str(resources["mem_limit"]),
+        "${pids_limit}": str(resources["pids_limit"]),
+    }
 
 
 def _next_rule_num(text):

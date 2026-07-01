@@ -114,19 +114,33 @@ def check_placeholders(dest_dir, specs):
     return warnings
 
 
+def _render(content, file_format, values):
+    """Return *content* with every key/value substitution for *file_format* applied."""
+    setter = _SETTERS[file_format]
+    for key, value in values.items():
+        content = setter(content, key, value)
+    return content
+
+
+def _decode_editable(raw):
+    """Return decoded text, or None when *raw* looks binary (has a NUL byte)."""
+    if b"\x00" in raw[:4096]:
+        return None
+    return raw.decode("utf-8")
+
+
+def _write_if_changed(path, old, new):
+    """Write *new* to *path* only when it differs from *old*."""
+    if new != old:
+        path.write_text(new, encoding="utf-8")
+
+
 def _apply_to_file(path, file_format, values):
     """Apply key/value substitutions to one config file. Returns error or None."""
-    setter = _SETTERS[file_format]
     try:
-        raw = path.read_bytes()
-        if b"\x00" in raw[:4096]:
-            return None
-        content = raw.decode("utf-8")
-        new_content = content
-        for key, value in values.items():
-            new_content = setter(new_content, key, value)
-        if new_content != content:
-            path.write_text(new_content, encoding="utf-8")
+        content = _decode_editable(path.read_bytes())
+        if content is not None:
+            _write_if_changed(path, content, _render(content, file_format, values))
     except (OSError, UnicodeDecodeError) as exc:
         return str(exc)
     return None
@@ -153,3 +167,17 @@ def apply_config(dest_dir, specs):
     errors = _collect_apply_errors(dest_dir, specs)
     if errors:
         raise OSError("\n".join(errors))
+
+
+def diff_specs(dest_dir, specs):
+    """Return the relative paths whose content *specs* would change.
+
+    Read-only preview used for dry runs and to decide which services need a
+    restart. Missing, binary, or unreadable files count as unchanged.
+    """
+    changed = []
+    for rel_path, file_format, values in specs:
+        text = _read_file_text(Path(dest_dir) / rel_path)
+        if text is not None and _render(text, file_format, values) != text:
+            changed.append(rel_path)
+    return changed

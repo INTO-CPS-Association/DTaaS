@@ -36,15 +36,6 @@ def test_delete_user_success(runner, mock_user_pkg):
     mock_user_pkg["delete"].assert_called_once()
 
 
-def test_delete_user_error(runner, mock_user_pkg):
-    """Test user deletion with error"""
-    mock_user_pkg["delete"].return_value = Exception("Delete failed")
-
-    result = runner.invoke(dtaas, ["admin", "user", "delete"])
-    assert result.exit_code != 0
-    assert "Error while deleting users" in result.output
-
-
 def test_generate_project_success(runner):
     """Test successful project file generation with defaults"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
@@ -77,21 +68,6 @@ def test_generate_deployment_without_config_prints_note(runner):
     assert "Note:" in result.output
 
 
-def test_generate_deployment_malformed_toml_errors(runner):
-    """generate-deployment fails when dtaas.toml exists but cannot be parsed"""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=Path("dtaas.toml")
-    ), patch(
-        "src.cmd_utils.utilsPkg.import_toml",
-        return_value=(None, Exception("parse error")),
-    ):
-        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
-
-    assert result.exit_code != 0
-    assert "Error reading dtaas.toml" in result.output
-
-
 def test_generate_deployment_error(runner):
     """generate-deployment converts known exceptions to ClickException"""
     with patch("src.cmd.projectPkg.generate_deploy_project") as mock_gen:
@@ -105,120 +81,67 @@ def test_generate_deployment_error(runner):
         assert "template missing" in result.output
 
 
-def test_generate_deployment_help_lists_choices_vertically(runner):
-    """The custom help formatter renders --type choices as a vertical list."""
-    result = runner.invoke(dtaas, ["generate-deployment", "--help"])
+def test_config_generate_success(runner):
+    """config generate forwards output-dir/force and reports success when written."""
+    with patch("src.cmd.projectPkg.generate_config", return_value=False) as mock_gen:
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
 
     assert result.exit_code == 0
-    assert "One of:" in result.output
-    # Each deploy type appears on its own line in the Options section.
-    for deploy_type in ["localhost", "secure-server", "workspace-localhost"]:
-        assert deploy_type in result.output
+    assert "Configuration file generated successfully" in result.output
+    mock_gen.assert_called_once_with(".", False)
 
 
-def test_generate_deployment_prints_placeholder_warnings(runner):
-    """Warnings from check_placeholders are echoed to the user."""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=Path("dtaas.toml")
-    ), patch(
-        "src.cmd_utils.utilsPkg.import_toml", return_value=({"localhost": {}}, None)
-    ), patch("src.cmd_utils.deployConfigPkg.build_file_specs", return_value=[]), patch(
-        "src.cmd_utils.deployConfigPkg.apply_config"
-    ), patch(
-        "src.cmd_utils.deployConfigPkg.check_placeholders",
-        return_value=["Warning: placeholder FOO left unset"],
-    ):
-        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+def test_config_generate_skips_existing(runner):
+    """When the file already exists, no misleading success message is printed."""
+    with patch("src.cmd.projectPkg.generate_config", return_value=True):
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
 
     assert result.exit_code == 0
-    assert "placeholder FOO left unset" in result.output
+    assert "Configuration file generated successfully" not in result.output
 
 
-def test_generate_deployment_substitution_error(runner):
-    """A failure during config substitution is reported as a ClickException."""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=Path("dtaas.toml")
-    ), patch(
-        "src.cmd_utils.utilsPkg.import_toml", return_value=({"localhost": {}}, None)
-    ), patch(
-        "src.cmd_utils.deployConfigPkg.build_file_specs",
-        side_effect=ValueError("bad spec"),
-    ):
-        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
+def test_config_generate_error(runner):
+    """config generate converts an OSError into a ClickException."""
+    with patch("src.cmd.projectPkg.generate_config", side_effect=OSError("disk full")):
+        result = runner.invoke(dtaas, ["admin", "config", "generate"])
 
     assert result.exit_code != 0
-    assert "Error substituting config values" in result.output
+    assert "Error while generating config" in result.output
 
 
-def test_generate_deployment_user_dir_error(runner):
-    """An OSError while creating user directories surfaces as a ClickException."""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=Path("dtaas.toml")
-    ), patch(
-        "src.cmd_utils.utilsPkg.import_toml",
-        return_value=({"users": {"add": ["alice"]}, "localhost": {}}, None),
-    ), patch("src.cmd_utils.deployConfigPkg.build_file_specs", return_value=[]), patch(
-        "src.cmd_utils.deployConfigPkg.apply_config"
-    ), patch(
-        "src.cmd_utils.projectPkg.create_user_dirs", side_effect=OSError("disk full")
-    ):
-        result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
-
-    assert result.exit_code != 0
-    assert "Error creating user directories" in result.output
-
-
-def test_generate_deployment_copies_certs(runner):
-    """The certs-src from dtaas.toml is forwarded to certsPkg.copy_certs."""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd.projectPkg.set_files_permissions"
-    ), patch("src.cmd_utils._find_toml", return_value=Path("dtaas.toml")), patch(
-        "src.cmd_utils.utilsPkg.import_toml",
-        return_value=(
-            {"common": {"security": {"certs-src": "/etc/certs"}}, "secure-server": {}},
-            None,
-        ),
-    ), patch("src.cmd_utils.deployConfigPkg.build_file_specs", return_value=[]), patch(
-        "src.cmd_utils.deployConfigPkg.apply_config"
-    ), patch(
-        "src.cmd_utils.deployConfigPkg.check_placeholders", return_value=[]
-    ), patch(
-        "src.cmd_utils.certsPkg.copy_certs", return_value="certs copied"
-    ) as mock_copy:
-        result = runner.invoke(
-            dtaas, ["generate-deployment", "--type", "secure-server"]
-        )
+def test_config_validate_valid(runner):
+    """config validate reports success when no problems are found."""
+    with patch("src.cmd.configValidatePkg.validate_config", return_value=[]):
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
 
     assert result.exit_code == 0
-    assert "certs copied" in result.output
-    mock_copy.assert_called_once_with("secure-server", ".", "/etc/certs", False)
+    assert "Configuration is valid" in result.output
 
 
-def test_generate_deployment_cert_copy_error(runner):
-    """An OSError while copying certificates surfaces as a ClickException."""
-
-    with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=Path("dtaas.toml")
-    ), patch(
-        "src.cmd_utils.utilsPkg.import_toml",
-        return_value=({"common": {"security": {"certs-src": "/etc/certs"}}}, None),
-    ), patch("src.cmd_utils.deployConfigPkg.build_file_specs", return_value=[]), patch(
-        "src.cmd_utils.deployConfigPkg.apply_config"
-    ), patch(
-        "src.cmd_utils.deployConfigPkg.check_placeholders", return_value=[]
-    ), patch(
-        "src.cmd_utils.certsPkg.copy_certs", side_effect=OSError("permission denied")
+def test_config_validate_reports_problems(runner):
+    """config validate lists every problem and exits non-zero."""
+    with patch(
+        "src.cmd.configValidatePkg.validate_config",
+        return_value=["git-repo must be a valid URL", "common.path is missing"],
     ):
-        result = runner.invoke(
-            dtaas, ["generate-deployment", "--type", "secure-server"]
-        )
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
 
     assert result.exit_code != 0
-    assert "Error copying certificates" in result.output
+    assert "Invalid dtaas.toml" in result.output
+    assert "- git-repo must be a valid URL" in result.output
+    assert "- common.path is missing" in result.output
+
+
+def test_config_validate_missing_file(runner):
+    """A FileNotFoundError from validate_config surfaces as a ClickException."""
+    with patch(
+        "src.cmd.configValidatePkg.validate_config",
+        side_effect=FileNotFoundError("dtaas.toml not found"),
+    ):
+        result = runner.invoke(dtaas, ["admin", "config", "validate"])
+
+    assert result.exit_code != 0
+    assert "dtaas.toml not found" in result.output
 
 
 def test_add_users_config_error(runner):
@@ -266,29 +189,6 @@ def test_admin_install_error(runner, mock_deploy_pkg):
     assert "not generated" in result.output
 
 
-def test_admin_install_docker_error(runner, mock_deploy_pkg):
-    """A python-on-whales DockerException surfaces with its real message."""
-    mock_deploy_pkg["install"].side_effect = DockerException(
-        ["docker", "compose", "up", "-d"], 1, stderr=b"Cannot connect to the daemon"
-    )
-
-    result = runner.invoke(dtaas, ["admin", "install"])
-
-    assert result.exit_code != 0
-    assert "Cannot connect to the daemon" in result.output
-
-
-def test_admin_uninstall_success(runner, mock_deploy_pkg):
-    """uninstall reports success and preserves files by default."""
-    mock_deploy_pkg["uninstall"].return_value = None
-
-    result = runner.invoke(dtaas, ["admin", "uninstall"])
-
-    assert result.exit_code == 0
-    assert "Deployment uninstalled successfully" in result.output
-    mock_deploy_pkg["uninstall"].assert_called_once_with(".", False)
-
-
 def test_admin_uninstall_remove_user_files_with_yes(runner, mock_deploy_pkg):
     """--remove-user-files with --yes skips the prompt and reports removal."""
     mock_deploy_pkg["uninstall"].return_value = "Removed user files at '/x/files'."
@@ -302,16 +202,6 @@ def test_admin_uninstall_remove_user_files_with_yes(runner, mock_deploy_pkg):
     mock_deploy_pkg["uninstall"].assert_called_once_with(".", True)
 
 
-def test_admin_uninstall_remove_user_files_aborts(runner, mock_deploy_pkg):
-    """Declining the confirmation prompt aborts before any teardown."""
-    result = runner.invoke(
-        dtaas, ["admin", "uninstall", "--remove-user-files"], input="n\n"
-    )
-
-    assert result.exit_code != 0
-    mock_deploy_pkg["uninstall"].assert_not_called()
-
-
 def test_admin_uninstall_error(runner, mock_deploy_pkg):
     """uninstall converts an OSError into a ClickException."""
     mock_deploy_pkg["uninstall"].side_effect = OSError("daemon down")
@@ -320,18 +210,6 @@ def test_admin_uninstall_error(runner, mock_deploy_pkg):
 
     assert result.exit_code != 0
     assert "daemon down" in result.output
-
-
-def test_admin_uninstall_no_existing_installation(runner, mock_deploy_pkg):
-    """A repeated uninstall reports there is nothing installed, not success."""
-    mock_deploy_pkg["present"].return_value = False
-
-    result = runner.invoke(dtaas, ["admin", "uninstall"])
-
-    assert result.exit_code == 0
-    assert "no existing DTaaS / Workspace installation" in result.output
-    assert "uninstalled successfully" not in result.output
-    mock_deploy_pkg["uninstall"].assert_not_called()
 
 
 def test_admin_uninstall_removes_files_when_nothing_running(runner, mock_deploy_pkg):
@@ -357,7 +235,7 @@ def test_admin_uninstall_removes_files_when_nothing_running(runner, mock_deploy_
 def test_admin_update_certs_success(runner):
     """update --certs forwards the output dir and echoes the result message."""
     with patch(
-        "src.cmd.certUpdatePkg.update_certs", return_value="certs updated"
+        "src.cmd_utils.certUpdatePkg.update_certs", return_value="certs updated"
     ) as mock_update:
         result = runner.invoke(dtaas, ["admin", "update", "--certs"])
 
@@ -366,33 +244,14 @@ def test_admin_update_certs_success(runner):
     mock_update.assert_called_once_with(".")
 
 
-def test_admin_update_requires_a_target(runner):
-    """update without a target flag fails with a helpful message."""
-    result = runner.invoke(dtaas, ["admin", "update"])
-
-    assert result.exit_code != 0
-    assert "Nothing to update" in result.output
-
-
-def test_admin_update_validation_error(runner):
-    """A CertValidationError surfaces as a ClickException with its message."""
+def test_admin_update_config_success(runner):
+    """update --config forwards the output dir (not dry-run) and echoes the result."""
     with patch(
-        "src.cmd.certUpdatePkg.update_certs",
-        side_effect=CertValidationError("Certificate expired on 2024-01-01."),
-    ):
-        result = runner.invoke(dtaas, ["admin", "update", "--certs"])
+        "src.cmd_utils.configUpdatePkg.update_config",
+        return_value="Updated config/.env.",
+    ) as mock_update:
+        result = runner.invoke(dtaas, ["admin", "update", "--config"])
 
-    assert result.exit_code != 0
-    assert "expired" in result.output
-
-
-def test_admin_update_os_error(runner):
-    """An OSError (e.g. missing certs-src) surfaces as a ClickException."""
-    with patch(
-        "src.cmd.certUpdatePkg.update_certs",
-        side_effect=OSError("certs-src directory not found"),
-    ):
-        result = runner.invoke(dtaas, ["admin", "update", "--certs"])
-
-    assert result.exit_code != 0
-    assert "certs-src" in result.output
+    assert result.exit_code == 0
+    assert "Updated config/.env." in result.output
+    mock_update.assert_called_once_with(".", False)

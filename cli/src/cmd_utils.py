@@ -6,11 +6,15 @@ the user-command wrapper, and the destructive-action confirmation prompt.
 """
 
 import click
+from python_on_whales.exceptions import DockerException
 from .pkg import config as configPkg
 from .pkg import project as projectPkg
 from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
+from .pkg import config_update as configUpdatePkg
+from .pkg import cert_update as certUpdatePkg
 from .pkg import utils as utilsPkg
+from .pkg.cert_validate import CertValidationError
 
 
 class VerticalChoicesCommand(click.Command):
@@ -134,3 +138,27 @@ def confirm_remove_user_files(remove_user_files, yes):
             "This permanently deletes all per-user workspace files. Continue?",
             abort=True,
         )
+
+
+def run_config_update(output_dir, dry_run):
+    """Re-apply dtaas.toml config to the installed deployment and report changes."""
+    try:
+        message = configUpdatePkg.update_config(output_dir, dry_run)
+    except (OSError, ValueError, DockerException) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(message)
+
+
+def require_update_flag(certs, config_):
+    """Reject an 'admin update' invocation that selects no assets to update."""
+    if not (certs or config_):
+        raise click.ClickException("Nothing to update; pass --certs or --config.")
+
+
+def run_cert_update(output_dir):
+    """Refresh and reload the deployment's TLS certificates."""
+    try:
+        message = certUpdatePkg.update_certs(output_dir)
+    except (CertValidationError, OSError, DockerException, RuntimeError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(message)
