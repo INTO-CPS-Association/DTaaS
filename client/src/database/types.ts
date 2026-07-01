@@ -3,7 +3,7 @@
  */
 export const DB_CONFIG = {
   name: 'DTaaS',
-  version: 2,
+  version: 3,
   stores: {
     executionHistory: {
       keyPath: 'id',
