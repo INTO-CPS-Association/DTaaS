@@ -102,7 +102,7 @@ proportional benefit.
 
 ## Phase 2.1: Review Fixes and Config Improvements
 
-### Issues Identified
+### Phase 2.1 Issues Identified
 
 Phase 2 PR review revealed several issues:
 
@@ -124,7 +124,7 @@ Phase 2 PR review revealed several issues:
 5. **Blob URL leak** — `consoleLogger.ts` `downloadLogs()` did not use
    `try/finally` to guarantee `URL.revokeObjectURL()`.
 
-### Changes Made
+### Phase 2.1 Changes Made
 
 | File                                 | Change                                                                                  |
 | ------------------------------------ | --------------------------------------------------------------------------------------- |
@@ -185,7 +185,7 @@ storage panel to see the `DTaaS` database with its `logs` store.
 
 ## Phase 2.2: Preview Route Logging Coverage Fix
 
-### Issues Identified
+### Phase 2.2 Issues Identified
 
 1. **Preview route initialization gap** — `useLogger` initialized only from
    `state.auth.userName`. On preview routes opened from workbench links,
@@ -200,7 +200,7 @@ storage panel to see the `DTaaS` database with its `logs` store.
 3. **PR bot blockers** — markdown formatting drift from `LOGGER_PROMPT.md`
    caused qlty/prettier blocking issues to reappear on PR #30.
 
-### Changes Made
+### Phase 2.2 Changes Made
 
 | File                                                                 | Change                                                                      |
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------- |

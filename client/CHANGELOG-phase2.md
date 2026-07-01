@@ -34,7 +34,7 @@ tabs, all tabs now write to the same IndexedDB database. A new
 
 Addresses Copilot review comments, qlty issues, and config improvements.
 
-### Bug Fixes
+### Phase 2.1 Bug Fixes
 
 - **useLogger init race condition** — `initRef.current` was set before
   `initLogger()` resolved. If init failed, the logger silently dropped
@@ -48,7 +48,7 @@ Addresses Copilot review comments, qlty issues, and config improvements.
 - **Blob URL leak** — `consoleLogger.ts` `downloadLogs()` now wraps the
   DOM operations in `try/finally` to guarantee `URL.revokeObjectURL()`.
 
-### Improvements
+### Phase 2.1 Improvements
 
 - **MIME type** — Changed `application/jsonl` to the standard
   `application/x-ndjson` in both `LogViewer.tsx` and `consoleLogger.ts`.
@@ -125,7 +125,7 @@ All commands pass:
 
 Addresses persistent preview logging gaps and PR #30 formatting blockers.
 
-### Bug Fixes
+### Phase 2.2 Bug Fixes
 
 - **Logger initialization fallback** — `useLogger` now initializes from
   `sessionStorage.username` when Redux `auth.userName` is empty. This fixes
@@ -137,7 +137,7 @@ Addresses persistent preview logging gaps and PR #30 formatting blockers.
   digital twins/library flows (dialog actions, file actions, search inputs,
   tree item clicks).
 
-### Improvements
+### Phase 2.2 Improvements
 
 - Added unit/preview test assertions to protect newly added logger attribute
   coverage and the `useLogger` sessionStorage fallback behavior.
