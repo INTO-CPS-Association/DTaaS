@@ -109,6 +109,10 @@ jest.mock('uuid', () => ({
   version: jest.fn(() => 4),
 }));
 
+jest.mock('util/logger/useLogger', () => ({
+  useLogger: jest.fn(),
+}));
+
 jest.mock('react-syntax-highlighter', () => ({
   Prism: ({ children }: { children: string }) => (
     <div data-testid="syntax-highlighter">{children}</div>

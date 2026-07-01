@@ -93,8 +93,18 @@ function Editor({
               onChange={handleTabChange}
               aria-label="editor preview tabs"
             >
-              <Tab label="Editor" />
-              <Tab label="Preview" />
+              <Tab
+                label="Editor"
+                data-logger-element="tab"
+                data-logger-label="Editor"
+                data-logger-context={JSON.stringify({ section: 'editor-pane' })}
+              />
+              <Tab
+                label="Preview"
+                data-logger-element="tab"
+                data-logger-label="Preview"
+                data-logger-context={JSON.stringify({ section: 'editor-pane' })}
+              />
             </Tabs>
           </Box>
 

@@ -9,6 +9,7 @@ import SignIn from 'route/auth/Signin';
 import Account from 'route/account/Account';
 import Config from 'route/config/Config';
 import Measurement from 'route/measurement/Measurement';
+import LogViewer from 'page/LogViewer';
 
 export const routes = [
   {
@@ -88,6 +89,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <Measurement />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'insights/log',
+    element: (
+      <PrivateRoute>
+        <LogViewer />
       </PrivateRoute>
     ),
   },

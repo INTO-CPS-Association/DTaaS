@@ -52,7 +52,12 @@ const userConfigInvalidText: React.ReactElement = (
     Invalid Application Configuration. Please contact the administrator of your
     DTaaS installation.
     <br />
-    <a href="./developer" style={{ fontSize: '0.7em' }}>
+    <a
+      href="./developer"
+      style={{ fontSize: '0.7em' }}
+      data-logger-element="link"
+      data-logger-label="Inspect Configuration"
+    >
       Inspect configuration
     </a>
   </>
@@ -61,7 +66,9 @@ const userConfigInvalidText: React.ReactElement = (
 const userConfigValidText: React.ReactElement = (
   <>
     <p>Configuration appears to be valid.</p>
-    <a href="/">Return to login</a>
+    <a href="/" data-logger-element="link" data-logger-label="Return to Login">
+      Return to login
+    </a>
   </>
 );
 

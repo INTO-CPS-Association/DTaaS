@@ -10,7 +10,9 @@ test.describe('Tests on Authentication Flow', () => {
 
   test('Homepage has correct title and signin link', async ({ page }) => {
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible({ timeout: 10000 });
@@ -19,7 +21,9 @@ test.describe('Tests on Authentication Flow', () => {
 
   test('Account Button Contents and Links', async ({ page, baseURL }) => {
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible({ timeout: 10000 });

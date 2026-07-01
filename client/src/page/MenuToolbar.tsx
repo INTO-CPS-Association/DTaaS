@@ -115,10 +115,18 @@ function MenuToolbar({
               component={Link}
               to="/account"
               onClick={handleCloseUserMenu}
+              data-logger-element="nav-link"
+              data-logger-label="Account"
             >
               Account
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleSignOut}>
+            <MenuItem
+              component={Link}
+              to="/"
+              onClick={handleSignOut}
+              data-logger-element="button"
+              data-logger-label="Logout"
+            >
               Logout
             </MenuItem>
           </Menu>

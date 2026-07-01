@@ -1,9 +1,31 @@
 "This file has generic helper functions and variables for dtaas cli"
 
+from pathlib import Path
 import yaml
 import tomlkit
 
 LOCALHOST_SERVER = "localhost"
+
+
+def find_toml(output_dir):
+    """Return path to dtaas.toml, checking output_dir first then cwd, or None."""
+    for candidate in [Path(output_dir) / "dtaas.toml", Path("dtaas.toml")]:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _nested_dict(data, key):
+    """Return data[key] when it is a dict, otherwise an empty dict."""
+    value = data.get(key, {}) if isinstance(data, dict) else {}
+    return value if isinstance(value, dict) else {}
+
+
+def resolve_certs_src(toml_data):
+    """Resolve [common.security].certs-src from dtaas.toml, or '' if unset."""
+    security = _nested_dict(_nested_dict(toml_data, "common"), "security")
+    certs_src = security.get("certs-src", "")
+    return certs_src.strip() if isinstance(certs_src, str) else ""
 
 
 def import_yaml(filename):
@@ -52,19 +74,11 @@ def import_toml(filename):
 
 def replace_all(obj, mapping):
     """This function is used to replace all placeholders with values in a nested object"""
-    if isinstance(obj, str):
-        obj, err = replace_string(obj, mapping)
-        return obj, err
-
-    if isinstance(obj, list):
-        obj, err = replace_list(obj, mapping)
-        return obj, err
-
-    if isinstance(obj, dict):
-        obj, err = replace_dict(obj, mapping)
-        return obj, err
-
-    return None, Exception("Config substition failed: Object format not valid")
+    _handlers = {str: replace_string, list: replace_list, dict: replace_dict}
+    handler = _handlers.get(type(obj))
+    if handler is None:
+        return None, Exception("Config substitution failed: Object format not valid")
+    return handler(obj, mapping)
 
 
 def replace_string(s, mapping):
@@ -83,15 +97,20 @@ def replace_list(arr, mapping):
     return arr, None
 
 
-def replace_dict(dictionary, mapping):
-    """Replaces all placeholders in the dictionary with values from the mapping"""
+def _replace_dict_values(dictionary, mapping):
+    """Replace values in a dict whose keys are already validated as strings."""
     for key in dictionary:
-        if not isinstance(key, str):
-            return None, Exception("Config substitution failed: Key is not a string")
         dictionary[key], err = replace_all(dictionary[key], mapping)
         if err is not None:
             return None, err
     return dictionary, None
+
+
+def replace_dict(dictionary, mapping):
+    """Replaces all placeholders in the dictionary with values from the mapping"""
+    if not all(isinstance(k, str) for k in dictionary):
+        return None, Exception("Config substitution failed: Key is not a string")
+    return _replace_dict_values(dictionary, mapping)
 
 
 def check_error(err):

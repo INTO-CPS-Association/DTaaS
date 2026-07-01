@@ -91,6 +91,8 @@ function DeleteDialog({
         <Button
           color="primary"
           onClick={() => handleCloseDeleteDialog(setShowDialog)}
+          data-logger-element="button"
+          data-logger-label="Delete Dialog Cancel"
         >
           Cancel
         </Button>
@@ -105,6 +107,8 @@ function DeleteDialog({
               dispatch,
             })
           }
+          data-logger-element="button"
+          data-logger-label="Delete Dialog Confirm"
         >
           Yes
         </Button>

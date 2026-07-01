@@ -194,10 +194,20 @@ const ReconfigureMainDialog = ({
       />
     </DialogContent>
     <DialogActions>
-      <Button color="primary" onClick={handleCancel}>
+      <Button
+        color="primary"
+        onClick={handleCancel}
+        data-logger-element="button"
+        data-logger-label="Cancel"
+      >
         Cancel
       </Button>
-      <Button color="primary" onClick={handleSave}>
+      <Button
+        color="primary"
+        onClick={handleSave}
+        data-logger-element="button"
+        data-logger-label="Save"
+      >
         Save
       </Button>
     </DialogActions>
@@ -218,8 +228,19 @@ const ConfirmationDialog = ({
   <Dialog open={open} onClose={onClose}>
     <DialogContent>{content}</DialogContent>
     <DialogActions>
-      <Button onClick={onClose}>No</Button>
-      <Button color="primary" onClick={onConfirm}>
+      <Button
+        onClick={onClose}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm No"
+      >
+        No
+      </Button>
+      <Button
+        color="primary"
+        onClick={onConfirm}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm Yes"
+      >
         Yes
       </Button>
     </DialogActions>

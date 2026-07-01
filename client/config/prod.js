@@ -13,5 +13,6 @@ if (typeof window !== 'undefined') {
     REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+    LOGGER_URL: 'https://foo.com/logger',
   };
 };

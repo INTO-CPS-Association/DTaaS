@@ -57,6 +57,8 @@ export const renderFileTreeItems = (
             key={`${baseLabel}-${item}-${index}`}
             itemId={`${baseLabel}-${item}`}
             label={itemLabel}
+            data-logger-element="treeitem"
+            data-logger-label={itemLabel}
             onClick={() => {
               handleFileClick(
                 { fileName: item, asset: context.asset, files: context.files },
@@ -95,6 +97,8 @@ export const renderFileSection = (
           key={`${baseLabel}-${item}-${index}`}
           itemId={`${baseLabel}-${item}`}
           label={item}
+          data-logger-element="treeitem"
+          data-logger-label={item}
           onClick={() => {
             handleFileClick(
               { fileName: item, asset: context.asset, files: context.files },

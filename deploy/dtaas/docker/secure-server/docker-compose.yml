@@ -93,6 +93,22 @@ services:
     networks:
       - frontend
 
+  logger-ms:
+    image: intocps/logger-ms:latest
+    restart: unless-stopped
+    volumes:
+      - ./files/common:/dtaas/logger/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.logger-ms.loadbalancer.server.port=4003"
+      - >-
+        traefik.http.routers.logger-ms.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/logger`)
+      - "traefik.http.routers.logger-ms.tls=true"
+      - "traefik.http.routers.logger-ms.middlewares=traefik-forward-auth"
+    networks:
+      - frontend
+
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:latest
     restart: unless-stopped

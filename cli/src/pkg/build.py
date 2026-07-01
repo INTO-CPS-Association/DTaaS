@@ -21,7 +21,7 @@ _DEST_ROOT = _CLI_ROOT / "src" / "templates" / "deploy"
 # Maps each deploy type to its source directory (relative to the repo root).
 _SOURCES: dict[str, str] = {
     "localhost": "deploy/dtaas/docker/localhost",
-    "server": "deploy/dtaas/docker/server",
+    "insecure-server": "deploy/dtaas/docker/server",
     "secure-server": "deploy/dtaas/docker/secure-server",
     "secure-server-gitlab": "deploy/dtaas/docker/secure-server_with_integrated-gitlab",
     "workspace-localhost": "deploy/workspace/dex/localhost",
@@ -43,7 +43,7 @@ def _copy_one(deploy_type: str, rel_source: str) -> None:
     dest = _DEST_ROOT / deploy_type
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src, dest, ignore=_ignore)
+    shutil.copytree(src, dest, ignore=_ignore, copy_function=shutil.copy)
 
 
 def build() -> None:
@@ -59,5 +59,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())

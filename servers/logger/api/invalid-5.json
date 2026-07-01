@@ -1,0 +1,12 @@
+{
+  "sessionId": "99999999-9999-4999-8999-999999999999",
+  "userHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "timestamp": "2026-03-24T20:07:00.000Z",
+  "event": "click",
+  "page": "/library",
+  "element": "tab",
+  "label": "Functions",
+  "context": {
+    "bad": 42
+  }
+}

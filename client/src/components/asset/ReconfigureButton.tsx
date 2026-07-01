@@ -18,6 +18,8 @@ function ReconfigureButton({ setShowReconfigure }: ReconfigureButtonProps) {
       size="small"
       color="primary"
       onClick={() => handleToggleReconfigureDialog(setShowReconfigure)}
+      data-logger-element="button"
+      data-logger-label="Reconfigure"
     >
       Reconfigure
     </Button>

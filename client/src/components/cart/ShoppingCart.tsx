@@ -57,12 +57,19 @@ function ShoppingCart() {
           padding: '5px 0',
         }}
       >
-        <Button variant="contained" onClick={() => setOpenDialog(true)}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenDialog(true)}
+          data-logger-element="button"
+          data-logger-label="Clear Cart"
+        >
           Clear
         </Button>
         <Button
           variant="contained"
           onClick={() => navigate('/preview/digitaltwins')}
+          data-logger-element="button"
+          data-logger-label="Proceed"
         >
           Proceed
         </Button>
@@ -74,10 +81,21 @@ function ShoppingCart() {
           <DialogContentText>Are you sure you want to clear?</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
+          <Button
+            onClick={() => setOpenDialog(false)}
+            color="primary"
+            data-logger-element="button"
+            data-logger-label="Clear Cart No"
+          >
             No
           </Button>
-          <Button onClick={handleClearCart} color="secondary" autoFocus>
+          <Button
+            onClick={handleClearCart}
+            color="secondary"
+            autoFocus
+            data-logger-element="button"
+            data-logger-label="Clear Cart Yes"
+          >
             Yes
           </Button>
         </DialogActions>

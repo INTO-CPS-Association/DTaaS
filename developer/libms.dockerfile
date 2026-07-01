@@ -1,4 +1,4 @@
-FROM node:24.12.0-slim as build
+FROM node:24.12.0-slim AS build
 
 #! docker should be run from the root directory of the project
 

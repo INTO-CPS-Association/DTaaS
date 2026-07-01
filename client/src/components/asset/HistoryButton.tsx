@@ -38,6 +38,9 @@ function HistoryButton({
         color="primary"
         onClick={() => handleToggleHistory(setShowLog)}
         disabled={historyButtonDisabled && executionCount === 0}
+        data-logger-element="button"
+        data-logger-label="History"
+        data-logger-context={JSON.stringify({ asset: assetName })}
       >
         History
       </Button>

@@ -1,0 +1,10 @@
+{
+  "sessionId": "33333333-3333-4333-8333-333333333333",
+  "userHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "timestamp": "2026-03-24T20:02:00.000Z",
+  "event": "navigate",
+  "page": "/library/assets",
+  "element": "link",
+  "label": "Open Asset",
+  "context": {}
+}

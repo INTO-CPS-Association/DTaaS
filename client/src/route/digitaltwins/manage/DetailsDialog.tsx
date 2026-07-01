@@ -63,6 +63,8 @@ function DetailsDialog({
         <Button
           onClick={() => handleCloseDetailsDialog(setShowDialog)}
           color="primary"
+          data-logger-element="button"
+          data-logger-label="Details Dialog Close"
         >
           Close
         </Button>

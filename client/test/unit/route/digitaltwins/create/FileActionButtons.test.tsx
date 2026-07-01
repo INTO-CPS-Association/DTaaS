@@ -28,4 +28,23 @@ describe('FileActionButtons', () => {
     screen.getByText('Rename File').click();
     expect(setOpenDeleteFileDialog).not.toHaveBeenCalled();
   });
+
+  it('adds logger attributes to file action buttons', () => {
+    expect(screen.getByText('Delete File')).toHaveAttribute(
+      'data-logger-element',
+      'button',
+    );
+    expect(screen.getByText('Delete File')).toHaveAttribute(
+      'data-logger-label',
+      'Delete File',
+    );
+    expect(screen.getByText('Rename File')).toHaveAttribute(
+      'data-logger-element',
+      'button',
+    );
+    expect(screen.getByText('Rename File')).toHaveAttribute(
+      'data-logger-label',
+      'Rename File',
+    );
+  });
 });

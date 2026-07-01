@@ -27,7 +27,11 @@ const urlKeys = [
   'REACT_APP_REDIRECT_URI',
   'REACT_APP_LOGOUT_REDIRECT_URI',
   'REACT_APP_AUTH_AUTHORITY',
+  'LOGGER_URL',
 ];
+
+const configuredKeys = (keys: string[]) =>
+  keys.filter((key) => key in globalThis.env);
 
 function getValidationPromises(): Record<string, Promise<ValidationType>> {
   return {
@@ -38,13 +42,16 @@ function getValidationPromises(): Record<string, Promise<ValidationType>> {
       parseField(ScopesString, globalThis.env.REACT_APP_GITLAB_SCOPES),
     ),
     ...Object.fromEntries(
-      pathKeys.map((key) => [
+      configuredKeys(pathKeys).map((key) => [
         key,
         parseField(PathString, globalThis.env[key] ?? ''),
       ]),
     ),
     ...Object.fromEntries(
-      urlKeys.map((key) => [key, urlIsReachable(globalThis.env[key] ?? '')]),
+      configuredKeys(urlKeys).map((key) => [
+        key,
+        urlIsReachable(globalThis.env[key] ?? ''),
+      ]),
     ),
   };
 }

@@ -9,7 +9,9 @@ const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
 async function signIn(page: import('@playwright/test').Page) {
   await page.goto('./');
   await page.getByRole('button', { name: 'SignIn' }).click();
-  await page.getByRole('button', { name: 'Authorize' }).click();
+  await page
+    .getByRole('button', { name: /Authorize/ })
+    .press('Enter', { timeout: 30000 });
   await expect(
     page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();

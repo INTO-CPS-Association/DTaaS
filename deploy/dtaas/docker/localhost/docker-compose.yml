@@ -26,6 +26,17 @@ services:
       - "traefik.http.services.client.loadbalancer.server.port=4000"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
 
+  logger-ms:
+    image: intocps/logger-ms:latest
+    restart: unless-stopped
+    volumes:
+      - "./files/common:/dtaas/logger/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.logger-ms.entryPoints=web"
+      - "traefik.http.services.logger-ms.loadbalancer.server.port=4003"
+      - "traefik.http.routers.logger-ms.rule=PathPrefix(`/logger`)"
+
   user:
     image: intocps/workspace:main-967bc10
     restart: unless-stopped

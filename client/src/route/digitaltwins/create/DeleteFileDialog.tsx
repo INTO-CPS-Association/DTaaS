@@ -34,10 +34,20 @@ const DeleteFileDialog: React.FC<DeleteFileDialogProps> = ({
         its content?
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenDeleteFileDialog(false)} color="primary">
+        <Button
+          onClick={() => setOpenDeleteFileDialog(false)}
+          color="primary"
+          data-logger-element="button"
+          data-logger-label="Delete File No"
+        >
           No
         </Button>
-        <Button onClick={handleDeleteFile} color="secondary">
+        <Button
+          onClick={handleDeleteFile}
+          color="secondary"
+          data-logger-element="button"
+          data-logger-label="Delete File Yes"
+        >
           Yes
         </Button>
       </DialogActions>

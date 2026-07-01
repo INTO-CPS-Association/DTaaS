@@ -1,6 +1,7 @@
 """This file has functions that handle the generate-project cli command"""
 
 import shutil
+import subprocess
 from pathlib import Path
 
 import click
@@ -47,14 +48,13 @@ def _create_workspace_dirs(dest_dir):
 
 
 def _validate_project_inputs(dest_dir):
-    """Raise if the templates dir or dest_dir are missing."""
+    """Raise if templates dir is missing; create dest_dir if needed."""
     if not TEMPLATES_DIR.is_dir():
         raise RuntimeError(
             f"Package data missing: templates directory not found at {TEMPLATES_DIR}. "
             "The package may have been installed incorrectly."
         )
-    if not Path(dest_dir).is_dir():
-        raise FileNotFoundError(f"Destination directory does not exist: {dest_dir}")
+    Path(dest_dir).mkdir(parents=True, exist_ok=True)
 
 
 def _try_copy_template(template_name, dest_dir, force):
@@ -78,12 +78,10 @@ def generate_project(dest_dir=".", force=False):
     _create_workspace_dirs(dest_dir)
 
 
-def _copy_file(item, src, dest, force):
-    """Copy one file into dest, returning an error string or None."""
-    rel = item.relative_to(src)
-    target = dest / rel
+def _copy_file(item, target, force):
+    """Copy item to target, returning an error string or None."""
     if target.exists() and not force:
-        click.echo(f"'{rel}' already exists, skipping")
+        click.echo(f"'{target}' already exists, skipping")
         return None
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -107,17 +105,6 @@ def _check_no_symlinks(src, entries):
         )
 
 
-def _copy_entries(entries, src, dest, force):
-    """Copy all regular files from *entries* into *dest*, preserving structure.
-
-    Raises OSError listing all failures if any copy fails.
-    """
-    files = filter(Path.is_file, entries)
-    errors = list(filter(None, (_copy_file(i, src, dest, force) for i in files)))
-    if errors:
-        raise OSError("\n".join(errors))
-
-
 def _copy_tree(src_dir, dest_dir, force=False):
     """Recursively copy *src_dir* contents into *dest_dir*.
 
@@ -127,7 +114,18 @@ def _copy_tree(src_dir, dest_dir, force=False):
     src, dest = Path(src_dir), Path(dest_dir)
     entries = sorted(src.rglob("*"))
     _check_no_symlinks(src, entries)
-    _copy_entries(entries, src, dest, force)
+    errors = list(
+        filter(
+            None,
+            (
+                _copy_file(item, dest / item.relative_to(src), force)
+                for item in entries
+                if item.is_file()
+            ),
+        )
+    )
+    if errors:
+        raise OSError("\n".join(errors))
 
 
 def _validate_deploy_inputs(deploy_type, src, dest):
@@ -135,7 +133,7 @@ def _validate_deploy_inputs(deploy_type, src, dest):
 
     Raises ValueError if deploy_type is not recognised.
     Raises RuntimeError if the template directory is missing.
-    Raises FileNotFoundError if dest does not exist.
+    Creates dest if it does not exist.
     """
     if deploy_type not in DEPLOY_TYPES:
         raise ValueError(
@@ -147,8 +145,72 @@ def _validate_deploy_inputs(deploy_type, src, dest):
             f"Template directory not found at {src}. "
             "The package may have been installed incorrectly."
         )
-    if not dest.is_dir():
-        raise FileNotFoundError(f"Destination directory does not exist: {dest}")
+    dest.mkdir(parents=True, exist_ok=True)
+
+
+def _copy_example(example, force):
+    """Copy one *.example file to its non-example counterpart. Returns error or None."""
+    target = example.with_suffix("")
+    if not force and target.exists():
+        return None
+    try:
+        shutil.copy2(example, target)
+    except OSError as exc:
+        return str(exc)
+    return None
+
+
+def _copy_example_files(dest_dir, force=False):
+    """Copy *.example files to their non-example counterparts."""
+    errors = list(
+        filter(
+            None,
+            (
+                _copy_example(ex, force)
+                for ex in sorted(Path(dest_dir).rglob("*.example"))
+            ),
+        )
+    )
+    if errors:
+        raise OSError("\n".join(errors))
+
+
+def create_user_dirs(dest_dir, usernames):
+    """Create files/<username>/ by copying files/template/ for each username.
+
+    Skips silently when files/template/ does not exist (e.g. workspace deploy
+    types) or when a user directory already exists.
+    """
+    template = Path(dest_dir) / "files" / "template"
+    if not template.is_dir():
+        return
+    for username in usernames:
+        user_dir = Path(dest_dir) / "files" / username
+        if not user_dir.exists():
+            shutil.copytree(template, user_dir)
+
+
+def set_files_permissions(dest_dir):
+    """Set ownership to 1000:100 and grant read/write/execute on files/."""
+    files_dir = Path(dest_dir) / "files"
+    if not files_dir.is_dir():
+        return
+    try:
+        subprocess.run(
+            ["sudo", "chown", "-R", "1000:100", str(files_dir)],
+            check=True,
+        )
+        subprocess.run(
+            ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
+            check=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        pass
+
+
+def _has_template_files(src):
+    """True if *src* holds deployment files."""
+    return any(p.is_file() and p.name != ".gitkeep" for p in src.rglob("*"))
 
 
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
@@ -156,4 +218,8 @@ def generate_deploy_project(deploy_type, dest_dir=".", force=False):
     src = DEPLOY_TEMPLATES_DIR / deploy_type
     dest = Path(dest_dir)
     _validate_deploy_inputs(deploy_type, src, dest)
+    if not _has_template_files(src):
+        click.echo(f"Warning: no deployment templates found for '{deploy_type}'")
+        return
     _copy_tree(src, dest, force)
+    _copy_example_files(dest, force)

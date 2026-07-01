@@ -115,6 +115,15 @@ describe('configUtil', () => {
       expect(results.REACT_APP_CLIENT_ID.status).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('mockedClientID');
     });
+
+    test('getValidationResult LOGGER_URL validates when configured', async () => {
+      globalThis.env.LOGGER_URL = 'https://logger.example.com';
+      const results: Record<string, ValidationType> =
+        await getValidationResults();
+      expect(results.LOGGER_URL.error).toBeUndefined();
+      expect(results.LOGGER_URL.status).toBe(200);
+      expect(results.LOGGER_URL.value).toEqual('https://logger.example.com');
+    });
   });
 
   describe('urlIsReachable', () => {

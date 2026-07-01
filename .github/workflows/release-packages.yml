@@ -26,14 +26,14 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
 
       - name: Upload dtaas-localhost
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dtaas-localhost
           path: deploy/dtaas/docker/localhost
@@ -41,8 +41,8 @@ jobs:
           retention-days: 2
 
       - name: Upload dtaas-server
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dtaas-server
           path: deploy/dtaas/docker/server
@@ -50,8 +50,8 @@ jobs:
           retention-days: 2
 
       - name: Upload dtaas-secure-server
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dtaas-secure-server
           path: deploy/dtaas/docker/secure-server
@@ -59,8 +59,8 @@ jobs:
           retention-days: 2
 
       - name: Upload dtaas-secure-server-integrated-gitlab
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: dtaas-secure-server-integrated-gitlab
           path: deploy/dtaas/docker/secure-server_with_integrated-gitlab
@@ -68,8 +68,8 @@ jobs:
           retention-days: 2
 
       - name: Upload workspace-dex-localhost
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: workspace-dex-localhost
           path: deploy/workspace/dex/localhost
@@ -77,8 +77,8 @@ jobs:
           retention-days: 2
 
       - name: Upload workspace-keycloak-production
-        # v6.0.0
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: workspace-keycloak-production
           path: deploy/workspace/keycloak/production

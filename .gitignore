@@ -246,3 +246,11 @@ deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/fullchain.pem
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/privkey.pem
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/data
 !deploy/dtaas/docker/secure-server_with_integrated-gitlab/data/.gitkeep
+
+# llm prompt files for local use
+prompt.current
+
+# logger microservice
+!servers/logger/src/logs
+servers/logger/logger.yaml
+servers/logger/certs

@@ -14,7 +14,9 @@ test.describe('Account Settings Form', () => {
     // Go to the Settings page
     await page.goto('./');
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();

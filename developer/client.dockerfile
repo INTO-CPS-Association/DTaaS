@@ -1,5 +1,5 @@
 #! docker should be run from the root directory of the project
-FROM node:24.12.0-slim as build
+FROM node:24.12.0-slim AS build
 
 # Set the working directory inside the container
 WORKDIR /dtaas/client

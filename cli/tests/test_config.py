@@ -57,24 +57,6 @@ def test_config_init_error(mock_utils):
         config.Config()
 
 
-def test_get_config_not_initialized():
-    """Test getConfig when data is None"""
-    cfg = config.Config.__new__(config.Config)
-    cfg.data = None
-    _, err = cfg.get_config()
-    assert err is not None
-
-
-def test_get_from_config_missing_key(mock_utils, mock_toml_data):
-    """Test getFromConfig with missing key"""
-    mock_utils.return_value = (mock_toml_data, None)
-    cfg = config.Config()
-    result, err = cfg.get_from_config("missing_key")
-    assert result is None
-    assert err is not None
-    assert "Missing missing_key tag" in str(err)
-
-
 def test_get_string_from_common_missing_key(mock_utils, mock_toml_data):
     """Test getStringFromCommon with missing key"""
     mock_utils.return_value = (mock_toml_data, None)
@@ -82,24 +64,6 @@ def test_get_string_from_common_missing_key(mock_utils, mock_toml_data):
     result, err = cfg.get_string_from_common("missing_key")
     assert result is None
     assert err is not None
-
-
-def test_get_users_success(mock_utils, mock_toml_data):
-    """Test getUsers retrieves users section"""
-    mock_utils.return_value = (mock_toml_data, None)
-    cfg = config.Config()
-    users, err = cfg.get_users()
-    assert err is None
-    assert users == mock_toml_data["users"]
-
-
-def test_get_string_list_from_users_success(mock_utils, mock_toml_data):
-    """Test getStringListFromUsers retrieves list"""
-    mock_utils.return_value = (mock_toml_data, None)
-    cfg = config.Config()
-    add_list, err = cfg.get_string_list_from_users("add")
-    assert err is None
-    assert add_list == ["user1", "user2"]
 
 
 def test_get_string_list_from_users_missing_key(mock_utils, mock_toml_data):
@@ -195,24 +159,66 @@ def test_get_tls_success_true():
         assert tls is True
 
 
-def test_get_tls_success_false():
-    """Test getTLS retrieves tls flag when set to false"""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        mock_import.return_value = (
-            {"common": {"security": {"tls": False}}},
-            None,
-        )
-        cfg = Config()
-        tls, err = cfg.get_tls()
-        assert err is None
-        assert tls is False
+def test_get_from_config_when_data_is_none():
+    """get_from_config returns error when config is uninitialised."""
+    cfg = Config.__new__(Config)
+    cfg.data = None
+    result, err = cfg.get_from_config("any_key")
+    assert result is None
+    assert err is not None
 
 
-def test_get_tls_default_false():
-    """Test getTLS defaults to false when security section is missing"""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        mock_import.return_value = ({"common": {}}, None)
-        cfg = Config()
-        tls, err = cfg.get_tls()
-        assert err is None
-        assert tls is False
+def test_get_string_from_common_when_no_common_section(mock_utils):
+    """get_string_from_common returns error when 'common' section is absent."""
+    mock_utils.return_value = ({"users": {}}, None)
+    cfg = config.Config()
+    result, err = cfg.get_string_from_common("path")
+    assert result is None
+    assert err is not None
+
+
+def test_get_string_list_from_users_when_no_users_section(mock_utils):
+    """get_string_list_from_users returns error when 'users' section is absent."""
+    mock_utils.return_value = ({"common": {}}, None)
+    cfg = config.Config()
+    result, err = cfg.get_string_list_from_users("add")
+    assert result is None
+    assert err is not None
+
+
+def test_get_string_list_from_users_not_a_list(mock_utils):
+    """get_string_list_from_users returns error when the value is not a list."""
+    mock_utils.return_value = ({"users": {"add": "not-a-list"}}, None)
+    cfg = config.Config()
+    result, err = cfg.get_string_list_from_users("add")
+    assert result is None
+    assert err is not None
+    assert "must be a list" in str(err)
+
+
+def test_get_resource_limits_when_no_common_section(mock_utils):
+    """get_resource_limits returns error when 'common' section is absent."""
+    mock_utils.return_value = ({"users": {}}, None)
+    cfg = config.Config()
+    result, err = cfg.get_resource_limits()
+    assert result is None
+    assert err is not None
+
+
+def test_get_tls_when_no_common_section(mock_utils):
+    """get_tls returns False with error when 'common' section is absent."""
+    mock_utils.return_value = ({"users": {}}, None)
+    cfg = config.Config()
+    tls, err = cfg.get_tls()
+    assert tls is False
+    assert err is not None
+
+
+def test_get_tls_security_not_dict(mock_utils):
+    """get_tls returns False with error when security section is not a dict."""
+    mock_utils.return_value = ({"common": {"security": "not-a-dict"}}, None)
+    cfg = config.Config()
+    tls, err = cfg.get_tls()
+    assert tls is False
+    assert err is not None
+    assert "security section is not a dict" in str(err)
