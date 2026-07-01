@@ -183,6 +183,16 @@ def test_get_compose_config_includes_limits_when_enabled(project_templates):
     assert result["shm_size"] == "512m"
 
 
+def test_get_compose_config_missing_template(tmp_path, monkeypatch):
+    """A missing user-workspace template yields a clear, actionable error."""
+    monkeypatch.chdir(tmp_path)  # no users.server.yml in this directory
+
+    result, err = users.get_compose_config("alice", _limits_config(False))
+
+    assert result is None
+    assert err is not None and "generate-project" in str(err)
+
+
 @pytest.mark.parametrize(
     "func", [users.start_user_containers, users.stop_user_containers]
 )
@@ -200,7 +210,8 @@ def test_run_command_for_containers(mock_run, returncode, has_error):
     mock_run.return_value = MagicMock(
         returncode=returncode, stderr="Error" if has_error else ""
     )
-    assert (users.run_command_for_containers("up", ["user1"]) is not None) == has_error
+    result = users.run_command_for_containers(["docker", "compose", "up"], ["user1"])
+    assert (result is not None) == has_error
 
 
 # addUsers tests
@@ -245,6 +256,35 @@ def test_add_users_rejects_newline_in_email(
     assert err is not None and "newlines" in str(err)
 
 
+def test_add_users_rejects_invalid_username(mock_config, mock_registry, mock_utils):
+    """A registry username carrying shell metacharacters aborts add_users."""
+    mock_registry["load"].return_value = {"bad;rm -rf": {"email": "x@y.io"}}
+
+    err = users.add_users(mock_config)
+
+    assert err is not None and "Invalid username" in str(err)
+
+
+def test_delete_users_rejects_invalid_username():
+    """delete_users rejects a non-shell-safe username before touching docker."""
+    err = users.delete_users(["bad name"])
+
+    assert err is not None and "Invalid username" in str(err)
+
+
+def test_add_users_empty_registry_is_noop(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """An empty registry provisions nothing and starts no containers."""
+    mock_registry["load"].return_value = {}
+
+    err = users.add_users(mock_config)
+
+    assert err is None
+    mock_user_operations["start"].assert_not_called()
+    mock_user_operations["state"].assert_not_called()
+
+
 @pytest.mark.parametrize("export_error", [False, True])
 def test_delete_users(mock_registry, mock_utils, mock_user_operations, export_error):
     """delete_users removes users from compose and, on success, the registry."""
@@ -266,3 +306,29 @@ def test_delete_users_handles_none_compose(mock_registry, mock_utils):
     err = users.delete_users(["user1"])
 
     assert err is not None and "Failed to load compose" in str(err)
+
+
+def test_delete_users_removes_conf_for_every_requested_name(
+    mock_registry, mock_utils, mock_user_operations
+):
+    """conf.server rules are removed for every requested user, not just existing ones."""
+    mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
+
+    with patch("src.pkg.users.remove_conf_server_entry") as mock_remove:
+        err = users.delete_users(["user1", "ghost"])
+
+    assert err is None
+    removed = {call.args[0] for call in mock_remove.call_args_list}
+    assert removed == {"user1", "ghost"}
+
+
+def test_delete_users_handles_compose_without_services(
+    mock_registry, mock_utils, mock_user_operations
+):
+    """delete_users tolerates a compose file that has no 'services' key."""
+    mock_utils["import"].return_value = ({"version": "3"}, None)
+
+    err = users.delete_users(["user1"])
+
+    assert err is None
+    mock_registry["remove"].assert_called_once_with(["user1"])

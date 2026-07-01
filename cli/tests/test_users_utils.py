@@ -1,5 +1,6 @@
 """Tests for users_utils module."""
 
+import pytest
 from src.pkg import users_utils
 from src.pkg.users_utils import (
     _next_rule_num,
@@ -8,8 +9,39 @@ from src.pkg.users_utils import (
     remove_conf_server_entry,
     build_base_mapping,
     resource_mapping,
+    is_valid_username,
+    validate_usernames,
 )
 from tests.conftest import CONF_SERVER_CONTENT
+
+
+@pytest.mark.parametrize(
+    "name,valid",
+    [
+        ("alice", True),
+        ("user.name-1_2", True),
+        ("bad;rm -rf", False),
+        ("bad name", False),
+        ("$(whoami)", False),
+        ("-leading-dash", False),
+        ("", False),
+        (5, False),
+    ],
+)
+def test_is_valid_username(name, valid):
+    """Only alphanumeric-plus-._- names (no shell metacharacters) are valid."""
+    assert is_valid_username(name) is valid
+
+
+def test_validate_usernames_raises_on_first_bad_name():
+    """validate_usernames names the offending username in the error."""
+    with pytest.raises(ValueError, match="bad;name"):
+        validate_usernames(["alice", "bad;name"])
+
+
+def test_validate_usernames_passes_for_all_valid():
+    """A list of valid usernames validates without raising."""
+    validate_usernames(["alice", "bob-1"])  # must not raise
 
 
 def test_build_base_mapping_includes_server_dns_for_remote():

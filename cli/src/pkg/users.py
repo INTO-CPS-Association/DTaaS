@@ -15,6 +15,7 @@ from .users_utils import (
     remove_users_from_compose,
     build_base_mapping,
     resource_mapping,
+    validate_usernames,
 )
 
 
@@ -30,9 +31,17 @@ def _load_template(server, tls):
     """
     if server == utils.LOCALHOST_SERVER:
         return None, Exception("user add is not supported for localhost installations")
-    if tls:
-        return utils.import_yaml("users.server.secure.yml")
-    return utils.import_yaml("users.server.yml")
+    name = "users.server.secure.yml" if tls else "users.server.yml"
+    template, err = utils.import_yaml(name)
+    if err is not None:
+        return None, err
+    if not template:
+        return None, Exception(
+            f"User workspace template '{name}' is missing or empty in this "
+            "directory. Run 'dtaas generate-project' (or "
+            "'dtaas generate-deployment') here first."
+        )
+    return template, None
 
 
 def _apply_resource_limits(service, config):
@@ -106,27 +115,26 @@ def add_users_to_compose(users, compose, config):
 
 def start_user_containers(users):
     """Starts all the user containers in the 'users' list"""
-    cmd = "docker compose -f compose.users.yml up -d"
-    err = run_command_for_containers(cmd, users)
-    return err
+    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "up", "-d"]
+    return run_command_for_containers(cmd, users)
 
 
 def stop_user_containers(users):
     """Stops all the user containers in the 'users' list"""
-    cmd = "docker compose -f compose.users.yml down"
-    err = run_command_for_containers(cmd, users)
-    return err
+    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "down"]
+    return run_command_for_containers(cmd, users)
 
 
 def run_command_for_containers(command, containers):
-    """Runs the given docker command for the given containers"""
-    cmd = [command]
-    for name in containers:
-        cmd.append(name)
-    cmd_str = " ".join(cmd)
-    result = subprocess.run(cmd_str, shell=True, check=False)
+    """Runs the given docker command (an argv list) for the given containers.
+
+    Invoked with shell=False so usernames are passed as literal argv entries and
+    can never be interpreted as shell syntax.
+    """
+    argv = command + list(containers)
+    result = subprocess.run(argv, shell=False, check=False)
     if result.returncode != 0:
-        return Exception(f"failed to run '{cmd_str}' command")
+        return Exception(f"failed to run '{' '.join(argv)}' command")
     return None
 
 
@@ -177,6 +185,9 @@ def add_users(config_obj):
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         user_list, users_section = _get_registry_users()
+        if not user_list:
+            return None  # empty registry: nothing to provision
+        validate_usernames(user_list)
         server, path, resources, tls, set_limits = _get_deploy_config(config_obj)
     except Exception as e:
         return e
@@ -220,6 +231,7 @@ def delete_users(usernames):
     """delete cli command handler: deprovision *usernames* and drop them from
     the CLI-owned user registry."""
     try:
+        validate_usernames(usernames)
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
         if compose is None:
@@ -233,10 +245,10 @@ def delete_users(usernames):
         remove_users_from_compose(compose, existing)
         err = utils.export_yaml(compose, COMPOSE_USERS_YML)
         utils.check_error(err)
-        for username in existing:
+        for username in usernames:
             remove_conf_server_entry(username)
         remove_from_registry(usernames)
-        write_state(compose["services"])
+        write_state(compose.get("services", {}))
     except Exception as e:
         return e
 

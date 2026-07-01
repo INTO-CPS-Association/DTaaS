@@ -53,19 +53,19 @@ starting=["username1","username2","username3"]
 
 [users.username1]
 email="username1@intocps.org"
-groups=["starting"]
+groups=["default","dtaas"]
 load_balance=true
 
 [users.username2]
 email="username2@intocps.org"
-groups=["starting"]
+groups=["default","dtaas"]
 load_balance=false
 
 [users.username3]
-# A starting user can also carry additional, non-reserved group tags
-# alongside "starting" -- groups is always a list, even for one entry.
+# A user can also carry additional, non-reserved group tags alongside the
+# "default" and "dtaas" groups -- groups is always a list, even for one entry.
 email="username3@intocps.org"
-groups=["starting","beta-testers","load-balanced-tier1"]
+groups=["default","dtaas","beta-testers","load-balanced-tier1"]
 load_balance=true
 
 # Installation-specific configuration

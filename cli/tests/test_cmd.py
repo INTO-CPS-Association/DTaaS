@@ -153,29 +153,32 @@ def test_add_users_config_error(runner):
     assert "no config" in result.output
 
 
-def test_add_users_with_file_imports_registry(runner, mock_user_pkg, tmp_path):
-    """add --file imports the CSV into the registry before provisioning."""
+def test_add_users_with_file(runner, mock_user_pkg, tmp_path):
+    """add --file stages the CSV then provisions."""
     mock_user_pkg["add"].return_value = None
     csv_file = tmp_path / "users.csv"
     csv_file.write_text("username,email,groups,load_balance\nalice,a@x.io,g,true\n")
 
-    with patch("src.cmd.import_users_file") as mock_import:
+    with patch("src.cmd.stage_users_for_add") as mock_stage:
         result = runner.invoke(dtaas, ["admin", "user", "add", "--file", str(csv_file)])
 
     assert result.exit_code == 0
-    mock_import.assert_called_once_with(str(csv_file))
+    mock_stage.assert_called_once_with(None, str(csv_file), None, (), True)
     mock_user_pkg["add"].assert_called_once()
 
 
-def test_add_users_without_file_skips_import(runner, mock_user_pkg):
-    """add without --file provisions from the existing registry, no import."""
+def test_add_single_user(runner, mock_user_pkg):
+    """add USERNAME --email stages one user then provisions."""
     mock_user_pkg["add"].return_value = None
 
-    with patch("src.cmd.import_users_file") as mock_import:
-        result = runner.invoke(dtaas, ["admin", "user", "add"])
+    with patch("src.cmd.stage_users_for_add") as mock_stage:
+        result = runner.invoke(
+            dtaas, ["admin", "user", "add", "alice", "--email", "a@x.io"]
+        )
 
     assert result.exit_code == 0
-    mock_import.assert_not_called()
+    mock_stage.assert_called_once_with("alice", None, "a@x.io", (), True)
+    mock_user_pkg["add"].assert_called_once()
 
 
 def test_add_users_file_import_error(runner, tmp_path):

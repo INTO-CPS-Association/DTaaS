@@ -4,8 +4,24 @@ import re
 import click
 from pathlib import Path
 from . import utils
+from .constants import USERNAME_RE
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
+
+
+def is_valid_username(name):
+    """True when *name* is a safe username (alphanumeric plus . _ -)."""
+    return isinstance(name, str) and bool(USERNAME_RE.match(name))
+
+
+def validate_usernames(usernames):
+    """Raise ValueError naming the first username that is not shell-safe."""
+    for name in usernames:
+        if not is_valid_username(name):
+            raise ValueError(
+                f"Invalid username '{name}': only letters, digits, '.', '_' "
+                "and '-' are allowed."
+            )
 
 
 def build_base_mapping(username, config):

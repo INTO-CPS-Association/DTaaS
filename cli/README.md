@@ -127,7 +127,10 @@ directory) and reports all problems at once:
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
+| `[users].starting` | When present, must be a list of strings |
 | `[users.<name>].email` | Valid RFC 5321/5322 address (no DNS lookup) |
+| `[users.<name>].groups` | When present, must be a list of strings |
+| `[users.<name>].load_balance` | When present, must be `true` or `false` |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
@@ -413,11 +416,16 @@ dtaas generate-project
 
 Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
-(see [User files](#-user-files)), not in `dtaas.toml`.
-The typical flow is a bulk import from a CSV:
+(see [User files](#-user-files)), not in `dtaas.toml`. Add a single user:
 
 ```bash
-# Merge users.csv into the registry, then provision every registry user
+dtaas admin user add alice --email alice@intocps.org \
+  --group dtaas --load-balance
+```
+
+Or bulk-add from a CSV:
+
+```bash
 dtaas admin user add --file users.csv
 ```
 
@@ -429,14 +437,25 @@ alice,alice@intocps.org,additional,true
 bob,bob@intocps.org,additional;beta-testers,false
 ```
 
-`groups` is a `;`-separated list and `load_balance` is `true`/`false`. Passing
-`--file` merges the CSV into the registry (adding new users, updating existing
-ones) atomically, the registry is never hand-edited. Omit `--file` to
-(re)provision every user already in the registry:
+`groups` is a `;`-separated list and `load_balance` is `true`/`false`. Both
+forms merge into the registry (never hand-edited), then every registry user is
+provisioned. A username already in `dtaas.toml`'s `starting` list or the
+registry is **skipped with a warning** it is never added twice or overwritten.
+Omit both `USERNAME` and `--file` to (re)provision the existing registry:
 
 ```bash
 dtaas admin user add
 ```
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `USERNAME` | — | Add one user (requires `--email`) |
+| `--file PATH` | — | Bulk-add users from a CSV |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
+| `--group TEXT` | `dtaas` | Group tag for `USERNAME` (repeatable) |
+| `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 
 For each username the CLI checks whether `files/<username>/` already exists.
 If not, a new directory with the correct structure is created from
@@ -609,9 +628,9 @@ certs-src = "/etc/letsencrypt/live/dtaas.example.com"
 # The 4 fields are then optional and ignored. Defaults to true when omitted.
 set_limits = true
 cpus       = 4        # CPU cores; may be fractional, e.g. 0.5
-mem_limit  = "4G"     # memory limit — unit required: G, m, k …
+mem_limit  = "4G"     # memory limit unit required: G, m, k …
 pids_limit = 4960     # maximum number of processes per container (integer)
-shm_size   = "512m"   # shared memory — unit required
+shm_size   = "512m"   # shared memory unit required
 
 # ── Starting users (all deployment types) ─────────────────────────────────────
 # The users installed with this instance, hand-edited once at install time.
@@ -626,12 +645,12 @@ starting = ["alice", "bob"]
 # groups/load_balance carry per-user tags.
 [users.alice]
 email        = "alice@example.com"
-groups       = ["starting"]
+groups       = ["default", "dtaas"]
 load_balance = true
 
 [users.bob]
 email        = "bob@example.com"
-groups       = ["starting"]
+groups       = ["default", "dtaas"]
 load_balance = false
 
 # ── React web client OAuth app (insecure-server, secure-server,

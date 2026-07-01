@@ -10,6 +10,7 @@ from python_on_whales.exceptions import DockerException
 from .pkg import config as configPkg
 from .pkg import registry as registryPkg
 from .pkg import project as projectPkg
+from .pkg.users_utils import validate_usernames
 from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import config_update as configUpdatePkg
@@ -120,12 +121,71 @@ def provision_user_files(output_dir):
     projectPkg.set_files_permissions(output_dir)
 
 
-def import_users_file(csv_file):
-    """Merge a users CSV into the registry store, mapping errors to ClickException."""
+def _starting_usernames():
+    """The [users].starting list from dtaas.toml, or [] when unavailable."""
     try:
-        registryPkg.add_to_registry(registryPkg.read_csv_users(csv_file))
+        config_obj = configPkg.Config()
+    except RuntimeError:
+        return []
+    users, _ = config_obj.get_users()
+    starting = users.get("starting", []) if isinstance(users, dict) else []
+    return [str(x) for x in starting] if isinstance(starting, list) else []
+
+
+def _read_users_csv(csv_file):
+    """Parse a users CSV, mapping parse errors to ClickException."""
+    try:
+        return registryPkg.read_csv_users(csv_file)
     except (OSError, KeyError, ValueError) as exc:
         raise click.ClickException(f"Error importing users file: {exc}") from exc
+
+
+def _users_from_args(username, email, groups, load_balance):
+    """Build a one-user {name: details} mapping from CLI arguments."""
+    if not email:
+        raise click.ClickException("Provide --email when adding a single user.")
+    return {
+        username: {
+            "email": email,
+            "groups": list(groups) or ["dtaas"],
+            "load_balance": load_balance,
+        }
+    }
+
+
+def _users_to_add(username, csv_file, email, groups, load_balance):
+    """Collect the users to add from --file or a single USERNAME argument."""
+    if csv_file:
+        return _read_users_csv(csv_file)
+    if username:
+        return _users_from_args(username, email, groups, load_balance)
+    return {}
+
+
+def _register_users(new_users):
+    """Validate and register new users, warning about skipped duplicates."""
+    try:
+        validate_usernames(new_users)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    _, skipped = registryPkg.register_new_users(new_users, _starting_usernames())
+    for name in skipped:
+        click.echo(f"'{name}' already exists, skipping")
+
+
+def stage_users_for_add(username, csv_file, email, groups, load_balance):
+    """Merge CLI/CSV users into the registry before provisioning.
+
+    Rejects malformed usernames and, with a warning, skips any already in
+    dtaas.toml's starting list or the registry. Raises ClickException on bad
+    input. A bare 'user add' (no USERNAME, no --file) is a no-op here and just
+    reprovisions the existing registry.
+    """
+    if username and csv_file:
+        raise click.ClickException("Pass either a USERNAME or --file, not both.")
+    new_users = _users_to_add(username, csv_file, email, groups, load_balance)
+    if new_users:
+        _register_users(new_users)
 
 
 def run_user_command(action, success_msg, error_prefix):

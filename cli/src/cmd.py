@@ -11,7 +11,7 @@ from .cmd_utils import (
     VerticalChoicesCommand,
     apply_deploy_config,
     provision_user_files,
-    import_users_file,
+    stage_users_for_add,
     run_user_command,
     confirm_remove_user_files,
     run_config_update,
@@ -138,20 +138,35 @@ def user():
 
 #### user group commands
 @user.command()
+@click.argument("username", required=False)
 @click.option(
     "--file",
     "csv_file",
     type=click.Path(exists=True, dir_okay=False),
-    help="Import users from a CSV file into the registry before adding.",
+    help="Bulk-add users from a CSV file into the registry.",
 )
-def add(csv_file):
+@click.option("--email", help="Email for USERNAME (enables forward-auth routing).")
+@click.option(
+    "--group",
+    "groups",
+    multiple=True,
+    help="Group tag for USERNAME (repeatable; defaults to 'dtaas').",
+)
+@click.option(
+    "--load-balance/--no-load-balance",
+    default=True,
+    help="Mark USERNAME for load balancing (default: enabled).",
+)
+def add(username, csv_file, email, groups, load_balance):
     """
-    add users to DTaaS from the user registry\n
-    Provisions every user in dtaas.users.registry.json.\n
-    Pass --file to merge a users CSV into the registry first.\n
+    add users to DTaaS\n
+    Single user: dtaas admin user add alice --email alice@intocps.org\n
+    Bulk from CSV: dtaas admin user add --file users.csv\n
+    Both merge into dtaas.users.registry.json, then every registry user is
+    provisioned. With no USERNAME and no --file, the existing registry is
+    reprovisioned.\n
     """
-    if csv_file:
-        import_users_file(csv_file)
+    stage_users_for_add(username, csv_file, email, groups, load_balance)
     run_user_command(
         userPkg.add_users, "Users added successfully", "Error while adding users"
     )

@@ -1,12 +1,16 @@
 """Tests for the CLI helper functions in cmd_utils.py."""
 
 from unittest.mock import MagicMock, patch
+import click
+import pytest
 from src.cmd_utils import (
     VerticalChoicesCommand,
     _find_toml,
     _certs_src,
     provision_user_files,
+    stage_users_for_add,
 )
+from src.pkg.registry import load_registry
 
 
 def test_param_rows_skips_hidden_param():
@@ -64,3 +68,73 @@ def test_provision_user_files_noop_without_toml(tmp_path, monkeypatch):
 
     mock_create.assert_not_called()
     mock_perms.assert_not_called()
+
+
+def test_stage_users_rejects_username_and_file(tmp_path):
+    """Passing both a USERNAME and --file is rejected."""
+    csv = tmp_path / "u.csv"
+    csv.write_text("username,email\nalice,a@intocps.org\n")
+    with pytest.raises(click.ClickException, match="either a USERNAME or --file"):
+        stage_users_for_add("alice", str(csv), None, (), True)
+
+
+def test_stage_single_user_requires_email():
+    """A single-user add without --email is rejected."""
+    with pytest.raises(click.ClickException, match="--email"):
+        stage_users_for_add("alice", None, None, (), True)
+
+
+def test_stage_single_user_registers(tmp_path, monkeypatch):
+    """A valid single-user add writes the user into the registry."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add("alice", None, "a@intocps.org", ("team",), False)
+
+    store = load_registry()
+    assert store["alice"]["email"] == "a@intocps.org"
+    assert store["alice"]["groups"] == ["team"]
+    assert store["alice"]["load_balance"] is False
+
+
+def test_stage_single_user_defaults_group_to_dtaas(tmp_path, monkeypatch):
+    """With no --group, a single-user add defaults the group to 'dtaas'."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add("alice", None, "a@intocps.org", (), True)
+
+    assert load_registry()["alice"]["groups"] == ["dtaas"]
+
+
+def test_stage_skips_duplicate_registry_user(tmp_path, monkeypatch, capsys):
+    """A username already in the registry is skipped with a warning, not overwritten."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add("alice", None, "a@intocps.org", (), True)
+    stage_users_for_add("alice", None, "changed@intocps.org", (), True)
+
+    assert "'alice' already exists, skipping" in capsys.readouterr().out
+    assert load_registry()["alice"]["email"] == "a@intocps.org"
+
+
+def test_stage_skips_starting_user(tmp_path, monkeypatch, capsys):
+    """A username that is a starting user in dtaas.toml is skipped."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "dtaas.toml").write_text(
+        '[users]\nstarting=["alice"]\n[users.alice]\nemail="a@intocps.org"\n'
+    )
+    stage_users_for_add("alice", None, "other@intocps.org", (), True)
+
+    assert "'alice' already exists, skipping" in capsys.readouterr().out
+    assert load_registry() == {}
+
+
+def test_stage_rejects_invalid_username(tmp_path, monkeypatch):
+    """A shell-unsafe username is rejected before registration."""
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(click.ClickException, match="Invalid username"):
+        stage_users_for_add("bad;rm", None, "a@intocps.org", (), True)
+
+
+def test_stage_noop_without_username_or_file(tmp_path, monkeypatch):
+    """A bare add (no USERNAME, no --file) registers nothing."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add(None, None, None, (), True)
+
+    assert load_registry() == {}

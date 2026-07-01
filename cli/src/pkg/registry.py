@@ -28,19 +28,44 @@ def load_registry(path=REGISTRY_FILE):
 
 
 def _write_registry(users, path):
-    """Atomically persist the user store to *path* (temp file + os.replace)."""
+    """Atomically persist the user store to *path* (temp file + os.replace).
+
+    The temp file is flushed and fsync'd before the rename so a crash or power
+    loss cannot leave a truncated registry behind.
+    """
     text = json.dumps({"users": users}, indent=2) + "\n"
     tmp = f"{path}.tmp"
-    Path(tmp).write_text(text, encoding="utf-8")
+    with open(tmp, "w", encoding="utf-8") as handle:
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
     os.replace(tmp, path)
 
 
-def add_to_registry(new_users, path=REGISTRY_FILE):
-    """Merge *new_users* ({name: details}) into the store and persist it."""
+def _partition_new(new_users, known):
+    """Split new_users into ({name: details} to add, [names] to skip)."""
+    added, skipped = {}, []
+    for name, details in new_users.items():
+        if name in known:
+            skipped.append(name)
+        else:
+            added[name] = details
+    return added, skipped
+
+
+def register_new_users(new_users, reserved, path=REGISTRY_FILE):
+    """Merge new_users into the store, skipping names that already exist.
+
+    Names in *reserved* (dtaas.toml's starting users) or already present in the
+    registry are skipped rather than overwritten, so a user can never end up in
+    both files. Returns (added_names, skipped_names).
+    """
     users = load_registry(path)
-    users.update(new_users)
+    known = set(users) | set(reserved)
+    added, skipped = _partition_new(new_users, known)
+    users.update(added)
     _write_registry(users, path)
-    return users
+    return list(added), skipped
 
 
 def remove_from_registry(usernames, path=REGISTRY_FILE):
@@ -51,16 +76,31 @@ def remove_from_registry(usernames, path=REGISTRY_FILE):
     return removed
 
 
+def _parse_load_balance(value):
+    """Parse a true/false load_balance cell; reject other non-empty values.
+
+    An empty cell defaults to False; any value other than true/false is
+    rejected so a typo never silently provisions with unintended settings.
+    """
+    text = value.strip().lower()
+    if text in ("", "false"):
+        return False
+    if text == "true":
+        return True
+    raise ValueError(f"Invalid load_balance '{value}': expected 'true' or 'false'.")
+
+
 def _parse_csv_row(row):
     """Convert one users.csv row into (username, details).
 
-    'groups' is a ';'-separated cell and 'load_balance' is a true/false string.
+    'groups' is a ';'-separated cell (each tag stripped; an empty cell defaults
+    to ['additional']) and 'load_balance' must be a true/false string.
     """
-    groups = [g for g in row.get("groups", "").split(";") if g]
+    groups = [g.strip() for g in row.get("groups", "").split(";") if g.strip()]
     details = {
         "email": row.get("email", "").strip(),
-        "groups": groups,
-        "load_balance": row.get("load_balance", "").strip().lower() == "true",
+        "groups": groups or ["additional"],
+        "load_balance": _parse_load_balance(row.get("load_balance", "")),
     }
     return row["username"].strip(), details
 

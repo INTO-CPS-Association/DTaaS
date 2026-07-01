@@ -156,7 +156,7 @@ starting=["username1","username2"]
 
 [users.username1]
 email="username1@intocps.org"
-groups=["starting"]
+groups=["default","dtaas"]
 load_balance=true
 ```
 

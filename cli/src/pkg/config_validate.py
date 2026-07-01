@@ -11,15 +11,14 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from email_validator import EmailNotValidError, validate_email
 from fqdn import FQDN
 from . import utils
+from .constants import USERNAME_RE
 
 
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
-USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 NUMERIC_HOST_RE = re.compile(r"^[0-9.]+$")
 
 _SIZE_FIELDS = (("mem_limit", "4G"), ("shm_size", "512m"))
-_LIST_FIELDS = ("add", "delete")
 
 
 def _get(data, *keys):
@@ -166,32 +165,58 @@ def _is_string_list(value):
     return isinstance(value, list) and all(isinstance(x, str) for x in value)
 
 
-def _check_user_lists(data):
-    """users.add and users.delete, when present, must be lists of strings."""
-    errors = []
-    for field in _LIST_FIELDS:
-        message = f"users.{field} must be a list of strings"
-        errors += _optional(data, ("users", field), _is_string_list, message)
-    return errors
+def _check_starting(data):
+    """users.starting, when present, must be a list of strings."""
+    return _optional(
+        data,
+        ("users", "starting"),
+        _is_string_list,
+        "users.starting must be a list of strings",
+    )
 
 
 def _email_error(name, info):
-    """Return an error for a user sub-table whose email is missing or invalid."""
-    if not isinstance(info, dict):
-        return []
+    """users.<name>.email must be a valid address."""
     if _is_email(info.get("email", "")):
         return []
     return [f"users.{name}.email is not a valid email address"]
 
 
-def _check_emails(data):
-    """Every [users.<name>] sub-table must hold a valid email."""
+def _groups_error(name, info):
+    """users.<name>.groups, when present, must be a list of strings."""
+    groups = info.get("groups")
+    if groups is None or _is_string_list(groups):
+        return []
+    return [f"users.{name}.groups must be a list of strings"]
+
+
+def _load_balance_error(name, info):
+    """users.<name>.load_balance, when present, must be a boolean."""
+    load_balance = info.get("load_balance")
+    if load_balance is None or isinstance(load_balance, bool):
+        return []
+    return [f"users.{name}.load_balance must be true or false"]
+
+
+def _user_table_errors(name, info):
+    """Validate one [users.<name>] sub-table; the starting list is not a table."""
+    if not isinstance(info, dict):
+        return []
+    return (
+        _email_error(name, info)
+        + _groups_error(name, info)
+        + _load_balance_error(name, info)
+    )
+
+
+def _check_user_tables(data):
+    """Every [users.<name>] sub-table must hold a valid email and valid tags."""
     users = _get(data, "users")
     if not isinstance(users, dict):
         return []
     errors = []
     for name, info in users.items():
-        errors += _email_error(name, info)
+        errors += _user_table_errors(name, info)
     return errors
 
 
@@ -224,8 +249,8 @@ _CHECKS = (
     _check_path,
     _check_certs_src,
     _check_resources,
-    _check_user_lists,
-    _check_emails,
+    _check_starting,
+    _check_user_tables,
     _check_deploy_fields,
 )
 
