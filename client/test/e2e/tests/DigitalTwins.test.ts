@@ -11,7 +11,9 @@ test.describe('Digital Twin Log Cleaning', () => {
     // Navigate to the home page and authenticate
     await page.goto('./');
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible({ timeout: 10000 });

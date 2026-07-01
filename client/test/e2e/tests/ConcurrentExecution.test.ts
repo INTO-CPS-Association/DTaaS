@@ -11,7 +11,9 @@ test.describe('Concurrent Execution', () => {
     // Navigate to the home page and authenticate
     await page.goto('./');
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
@@ -202,8 +204,20 @@ test.describe('Concurrent Execution', () => {
     await page.waitForTimeout(DEBOUNCE_TIME);
     await startButton.click();
 
-    // Wait for debounce period plus a bit for execution to start
-    await page.waitForTimeout(2000);
+    // The Start click returns before the async pipeline/IndexedDB write finishes.
+    const preReloadHistoryButton = helloWorldCard
+      .getByRole('button', { name: 'History' })
+      .first();
+    await expect(preReloadHistoryButton).toBeEnabled({ timeout: 30000 });
+    await preReloadHistoryButton.click();
+
+    const preReloadHistoryDialog = page.locator('div[role="dialog"]');
+    await expect(preReloadHistoryDialog).toBeVisible();
+    await expect(
+      preReloadHistoryDialog.locator('.MuiAccordionSummary-root').first(),
+    ).toBeVisible({ timeout: 30000 });
+    await preReloadHistoryDialog.getByRole('button', { name: 'Close' }).click();
+    await expect(preReloadHistoryDialog).not.toBeVisible();
 
     // Reload the page after execution has started
     await page.reload();
