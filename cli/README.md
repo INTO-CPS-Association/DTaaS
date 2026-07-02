@@ -501,8 +501,8 @@ and unconstrained users by toggling `set_limits` between runs.
 >   reports *Running* for containers already up without restarting them.
 > - Provisioning is idempotent: re-running `user add` reprovisions every
 >   registry user without duplicating work. An empty registry is a no-op.
-> - Usernames containing `.` cannot currently be added via the CLI (known
->   issue; to be resolved in a future release).
+> - Usernames may include '.', '_' and '-' (must start with a letter or digit).
+>   (Whitespace, path separators, and shell metacharacters are rejected.)
 > - This command does not enable AuthMS authentication.
 
 ---
@@ -521,6 +521,15 @@ forward-auth rule removed) and dropped from `dtaas.users.registry.json`. Users
 that are not currently provisioned are reported and skipped, but are still
 removed from the registry.
 
+Preview a removal without making any changes with `--dry-run`:
+
+```bash
+dtaas admin user delete username1 username2 --dry-run
+```
+
+It lists which users would be deprovisioned and removed from the registry, then
+exits without stopping containers or editing any file.
+
 The CLI automatically removes the traefik-forward-auth routing rules for
 deleted users from `config/conf.server`. Restart the container for the change
 to take effect:
@@ -530,6 +539,32 @@ docker compose -f compose.server.yml --env-file .env up -d --force-recreate trae
 ```
 
 > At least one username argument is required.
+
+---
+
+### 🔍 `admin config reconcile`
+
+Reports which provisioned users have **drifted** from what the CLI last
+recorded in `.dtaas.state.json`. Read-only — it changes nothing.
+
+```bash
+dtaas admin config reconcile
+```
+
+It compares the state cache against `compose.users.yml` and lists:
+
+- **drifted** — the compose config changed since the user was provisioned
+  (re-run `dtaas admin user add` to reprovision);
+- **untracked** — provisioned but not recorded in the state cache;
+- **orphaned** — in the state cache but no longer provisioned.
+
+When everything matches it prints `In sync: no drift detected.`
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `--output-dir PATH` | `.` | Installation directory to inspect |
 
 ---
 

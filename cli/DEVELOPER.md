@@ -91,17 +91,20 @@ hand-edited `starting` users, `dtaas.users.registry.json` is the CLI-owned store
 of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
 
 - _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
-  the `{username: details}` store (empty when absent), `add_to_registry` merges
+  the `{username: details}` store (empty when absent), `register_new_users` merges
   new users, and `remove_from_registry` drops them — each persisted atomically
   (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
   `read_csv_users` parses a `users.csv` for bulk import.
 - _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
   `delete_users` deprovisions the named users and removes them from the
-  registry. `cmd_utils.import_users_file` merges a `--file users.csv` into the
-  registry before `add` runs.
+  registry (`dry_run=True` previews without changing anything).
+  `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
+  USERNAME) into the registry before `add` runs.
 - _src/pkg/state.py_ owns `.dtaas.state.json`. After each add/delete it records,
   per user, a `config_hash` (a stable sha256 of the compose service) plus
-  best-effort container id/status from python-on-whales.
+  best-effort container id/status from python-on-whales. `find_drift` reads that
+  cache back to power `dtaas admin config reconcile`, which reports drifted,
+  untracked, and orphaned users against `compose.users.yml`.
 
 ### TOML File
 

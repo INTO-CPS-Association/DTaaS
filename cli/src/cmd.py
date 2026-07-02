@@ -15,6 +15,7 @@ from .cmd_utils import (
     run_user_command,
     confirm_remove_user_files,
     run_config_update,
+    run_reconcile,
     run_cert_update,
     require_update_flag,
 )
@@ -99,6 +100,26 @@ def config_validate(output_dir):
     click.echo("Configuration is valid")
 
 
+@config.command(name="reconcile")
+@click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Installation directory to inspect.",
+)
+def config_reconcile(output_dir):
+    """Report users whose running config has drifted from .dtaas.state.json.
+
+    Read-only: compares the state cache against compose.users.yml and lists
+    drifted, untracked, and orphaned users. Re-run 'dtaas admin user add' to
+    reprovision drifted users.
+    """
+    try:
+        run_reconcile(output_dir)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+
 @dtaas.command(name="generate-deployment", cls=VerticalChoicesCommand)
 @click.option(
     "--type",
@@ -150,7 +171,7 @@ def user():
     "--group",
     "groups",
     multiple=True,
-    help="Group tag for USERNAME (repeatable; defaults to 'dtaas').",
+    help="Group tag for USERNAME (repeatable; defaults to 'additional').",
 )
 @click.option(
     "--load-balance/--no-load-balance",
@@ -174,15 +195,24 @@ def add(username, csv_file, email, groups, load_balance):
 
 @user.command()
 @click.argument("usernames", nargs=-1, required=True)
-def delete(usernames):
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Show which users would be removed without deleting anything.",
+)
+def delete(usernames, dry_run):
     """
     removes the named USERNAMES from DTaaS\n
-    Deprovisions each user and drops them from dtaas.users.registry.json\n
+    Deprovisions each user and drops them from dtaas.users.registry.json.\n
+    Pass --dry-run to preview the removal without making any changes.\n
     """
-    err = userPkg.delete_users(usernames)
+    err = userPkg.delete_users(usernames, dry_run=dry_run)
     if err is not None:
         raise click.ClickException(f"Error while deleting users: {err}")
-    click.echo("Users deleted successfully")
+    if dry_run:
+        click.echo("Dry run complete; nothing was deleted.")
+    else:
+        click.echo("Users deleted successfully")
 
 
 @admin.command(name="install")

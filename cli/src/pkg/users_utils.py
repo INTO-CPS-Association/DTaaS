@@ -141,6 +141,13 @@ def report_missing_users(missing):
         click.echo(f"'{username}' does not exist, skipping deletion")
 
 
+def report_delete_preview(existing, usernames):
+    """Print what 'user delete' would do, without changing anything (dry-run)."""
+    if existing:
+        click.echo(f"Would deprovision and stop: {', '.join(existing)}")
+    click.echo(f"Would remove from registry: {', '.join(usernames)}")
+
+
 def remove_users_from_compose(compose, user_list):
     """Remove users from compose configuration."""
     for username in user_list:

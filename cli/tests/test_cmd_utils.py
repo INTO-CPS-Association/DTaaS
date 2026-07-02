@@ -1,5 +1,6 @@
 """Tests for the CLI helper functions in cmd_utils.py."""
 
+import json
 from unittest.mock import MagicMock, patch
 import click
 import pytest
@@ -9,8 +10,10 @@ from src.cmd_utils import (
     _certs_src,
     provision_user_files,
     stage_users_for_add,
+    run_reconcile,
 )
 from src.pkg.registry import load_registry
+from src.pkg.state import config_hash
 
 
 def test_param_rows_skips_hidden_param():
@@ -96,12 +99,13 @@ def test_stage_single_user_registers(tmp_path, monkeypatch):
     assert store["alice"]["load_balance"] is False
 
 
-def test_stage_single_user_defaults_group_to_dtaas(tmp_path, monkeypatch):
-    """With no --group, a single-user add defaults the group to 'dtaas'."""
+def test_stage_single_user_defaults_group_to_additional(tmp_path, monkeypatch):
+    """With no --group, a single-user add defaults the group to 'additional',
+    matching the CSV import path."""
     monkeypatch.chdir(tmp_path)
     stage_users_for_add("alice", None, "a@intocps.org", (), True)
 
-    assert load_registry()["alice"]["groups"] == ["dtaas"]
+    assert load_registry()["alice"]["groups"] == ["additional"]
 
 
 def test_stage_skips_duplicate_registry_user(tmp_path, monkeypatch, capsys):
@@ -139,3 +143,33 @@ def test_stage_noop_without_username_or_file(tmp_path, monkeypatch):
     stage_users_for_add(None, None, None, (), True)
 
     assert load_registry() == {}
+
+
+def test_run_reconcile_reports_drift(tmp_path, capsys):
+    """run_reconcile flags a user whose compose config differs from the state cache."""
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": "sha256:old"}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v2\n", encoding="utf-8"
+    )
+
+    run_reconcile(str(tmp_path))
+
+    out = capsys.readouterr().out
+    assert "alice" in out and "config changed" in out
+
+
+def test_run_reconcile_in_sync(tmp_path, capsys):
+    """run_reconcile reports 'In sync' when hashes match."""
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    run_reconcile(str(tmp_path))
+
+    assert "In sync" in capsys.readouterr().out

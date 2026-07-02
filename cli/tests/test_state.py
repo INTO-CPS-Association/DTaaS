@@ -3,7 +3,14 @@
 import json
 from unittest.mock import patch, MagicMock
 from python_on_whales.exceptions import DockerException
-from src.pkg.state import config_hash, build_state, write_state, _service_facts
+from src.pkg.state import (
+    config_hash,
+    build_state,
+    write_state,
+    load_state,
+    find_drift,
+    _service_facts,
+)
 # pylint: disable=protected-access
 
 
@@ -66,3 +73,45 @@ def test_service_facts_returns_empty_on_docker_error():
         side_effect=DockerException(["docker", "compose", "ps"], 1),
     ):
         assert _service_facts() == {}
+
+
+def test_load_state_empty_when_absent(tmp_path):
+    """A missing state cache reads as an empty mapping."""
+    assert load_state(str(tmp_path / "nope.json")) == {}
+
+
+def test_load_state_reads_file(tmp_path):
+    """load_state returns the recorded per-user facts."""
+    path = tmp_path / ".dtaas.state.json"
+    path.write_text(
+        json.dumps({"alice": {"config_hash": "sha256:x"}}), encoding="utf-8"
+    )
+
+    assert load_state(str(path))["alice"]["config_hash"] == "sha256:x"
+
+
+def test_find_drift_detects_changed_untracked_orphaned():
+    """find_drift classifies drifted, untracked, and orphaned users."""
+    services = {"alice": {"image": "v2"}, "bob": {"image": "b"}}
+    state = {
+        "alice": {"config_hash": config_hash({"image": "v1"})},  # config changed
+        "carol": {"config_hash": "sha256:x"},  # no longer provisioned
+    }
+
+    report = find_drift(state, services)
+
+    assert report["drifted"] == ["alice"]
+    assert report["untracked"] == ["bob"]
+    assert report["orphaned"] == ["carol"]
+
+
+def test_find_drift_in_sync():
+    """A state cache matching the compose services reports no drift."""
+    services = {"alice": {"image": "v1"}}
+    state = {"alice": {"config_hash": config_hash({"image": "v1"})}}
+
+    assert find_drift(state, services) == {
+        "drifted": [],
+        "untracked": [],
+        "orphaned": [],
+    }

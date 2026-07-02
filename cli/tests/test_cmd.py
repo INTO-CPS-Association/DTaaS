@@ -33,7 +33,36 @@ def test_delete_user_success(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["admin", "user", "delete", "alice", "bob"])
     assert result.exit_code == 0
     assert "Users deleted successfully" in result.output
-    mock_user_pkg["delete"].assert_called_once_with(("alice", "bob"))
+    mock_user_pkg["delete"].assert_called_once_with(("alice", "bob"), dry_run=False)
+
+
+def test_delete_user_dry_run(runner, mock_user_pkg):
+    """delete --dry-run previews without deleting and prints the dry-run message."""
+    mock_user_pkg["delete"].return_value = None
+
+    result = runner.invoke(dtaas, ["admin", "user", "delete", "alice", "--dry-run"])
+
+    assert result.exit_code == 0
+    assert "Dry run complete" in result.output
+    mock_user_pkg["delete"].assert_called_once_with(("alice",), dry_run=True)
+
+
+def test_config_reconcile_invokes_run_reconcile(runner):
+    """config reconcile delegates to run_reconcile with the output dir."""
+    with patch("src.cmd.run_reconcile") as mock_reconcile:
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile"])
+
+    assert result.exit_code == 0
+    mock_reconcile.assert_called_once_with(".")
+
+
+def test_config_reconcile_maps_errors(runner):
+    """A malformed state cache surfaces as a ClickException."""
+    with patch("src.cmd.run_reconcile", side_effect=ValueError("bad state")):
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile"])
+
+    assert result.exit_code != 0
+    assert "bad state" in result.output
 
 
 def test_generate_project_success(runner):

@@ -214,6 +214,21 @@ def test_run_command_for_containers(mock_run, returncode, has_error):
     assert (result is not None) == has_error
 
 
+@patch("src.pkg.users.subprocess.run", return_value=MagicMock(returncode=0))
+def test_stop_user_containers_targets_named_services(mock_run):
+    """stop_user_containers uses 'rm --stop --force <services>', not 'down'.
+
+    'docker compose down' takes no SERVICE arguments and tears down the whole
+    project; 'rm --stop --force' stops and removes only the named services.
+    """
+    users.stop_user_containers(["alice", "bob"])
+
+    argv = mock_run.call_args.args[0]
+    assert "down" not in argv
+    assert "rm" in argv and "--stop" in argv and "--force" in argv
+    assert argv[-2:] == ["alice", "bob"]
+
+
 # addUsers tests
 @pytest.mark.parametrize(
     "compose,field", [({"services": {}}, "version"), ({"version": "3"}, "services")]
@@ -332,3 +347,20 @@ def test_delete_users_handles_compose_without_services(
 
     assert err is None
     mock_registry["remove"].assert_called_once_with(["user1"])
+
+
+def test_delete_users_dry_run_makes_no_changes(
+    mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A dry-run previews the plan and calls no mutating operation."""
+    mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
+
+    err = users.delete_users(["user1", "ghost"], dry_run=True)
+
+    assert err is None
+    mock_user_operations["stop"].assert_not_called()
+    mock_registry["remove"].assert_not_called()
+    mock_utils["export"].assert_not_called()
+    out = capsys.readouterr().out
+    assert "Would deprovision and stop: user1" in out
+    assert "Would remove from registry: user1, ghost" in out

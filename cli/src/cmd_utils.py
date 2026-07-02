@@ -5,11 +5,14 @@ formatter, the deployment-config orchestration used by generate-deployment,
 the user-command wrapper, and the destructive-action confirmation prompt.
 """
 
+from pathlib import Path
 import click
 from python_on_whales.exceptions import DockerException
 from .pkg import config as configPkg
 from .pkg import registry as registryPkg
 from .pkg import project as projectPkg
+from .pkg import state as statePkg
+from .pkg.constants import COMPOSE_USERS_YML
 from .pkg.users_utils import validate_usernames
 from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
@@ -141,13 +144,17 @@ def _read_users_csv(csv_file):
 
 
 def _users_from_args(username, email, groups, load_balance):
-    """Build a one-user {name: details} mapping from CLI arguments."""
+    """Build a one-user {name: details} mapping from CLI arguments.
+
+    Defaults groups to ['additional'] when --group is omitted, matching the CSV
+    import path (registry._parse_csv_row) so the two produce identical users.
+    """
     if not email:
         raise click.ClickException("Provide --email when adding a single user.")
     return {
         username: {
             "email": email,
-            "groups": list(groups) or ["dtaas"],
+            "groups": list(groups) or ["additional"],
             "load_balance": load_balance,
         }
     }
@@ -207,6 +214,33 @@ def confirm_remove_user_files(remove_user_files, yes):
             "This permanently deletes all per-user workspace files. Continue?",
             abort=True,
         )
+
+
+_RECONCILE_LABELS = (
+    ("drifted", "config changed since provisioning; re-run 'dtaas admin user add'"),
+    ("untracked", "provisioned but not recorded in the state cache"),
+    ("orphaned", "in the state cache but no longer provisioned"),
+)
+
+
+def _echo_reconcile(report):
+    """Print a drift report, noting when everything is in sync."""
+    if not any(report.values()):
+        click.echo("In sync: no drift detected.")
+        return
+    for key, label in _RECONCILE_LABELS:
+        for name in report[key]:
+            click.echo(f"- {name}: {label}")
+
+
+def run_reconcile(output_dir):
+    """Report drift between .dtaas.state.json and compose.users.yml."""
+    state = statePkg.load_state(str(Path(output_dir) / statePkg.STATE_FILE))
+    compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
+    if err is not None:
+        raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
+    services = compose.get("services", {}) if isinstance(compose, dict) else {}
+    _echo_reconcile(statePkg.find_drift(state, services))
 
 
 def run_config_update(output_dir, dry_run):

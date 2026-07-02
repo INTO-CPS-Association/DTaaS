@@ -61,3 +61,40 @@ def write_state(services, path=STATE_FILE):
     state = build_state(services, _service_facts())
     Path(path).write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     return state
+
+
+def load_state(path=STATE_FILE):
+    """Load the runtime state cache, returning {} when the file is absent."""
+    file = Path(path)
+    if not file.is_file():
+        return {}
+    return json.loads(file.read_text(encoding="utf-8"))
+
+
+def _missing(names, other):
+    """Names present in *names* but absent from *other*."""
+    return [name for name in names if name not in other]
+
+
+def _drifted_users(state, services):
+    """Users whose current compose config differs from the provisioned hash."""
+    drifted = []
+    for user, service in services.items():
+        stored = state.get(user)
+        if stored is not None and stored.get("config_hash") != config_hash(service):
+            drifted.append(user)
+    return drifted
+
+
+def find_drift(state, services):
+    """Compare the state cache against the current compose services.
+
+    Returns {'drifted', 'untracked', 'orphaned'} username lists: drifted =
+    config changed since provisioning; untracked = provisioned but absent from
+    the state cache; orphaned = in the state cache but no longer provisioned.
+    """
+    return {
+        "drifted": _drifted_users(state, services),
+        "untracked": _missing(services, state),
+        "orphaned": _missing(state, services),
+    }

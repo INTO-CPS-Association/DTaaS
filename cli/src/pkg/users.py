@@ -13,6 +13,7 @@ from .users_utils import (
     categorize_users,
     report_missing_users,
     remove_users_from_compose,
+    report_delete_preview,
     build_base_mapping,
     resource_mapping,
     validate_usernames,
@@ -120,8 +121,13 @@ def start_user_containers(users):
 
 
 def stop_user_containers(users):
-    """Stops all the user containers in the 'users' list"""
-    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "down"]
+    """Stops and removes only the named user containers.
+
+    'docker compose down' takes no SERVICE arguments and always tears down the
+    whole project, so 'rm --stop --force' is used instead to target just the
+    given services.
+    """
+    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "rm", "--stop", "--force"]
     return run_command_for_containers(cmd, users)
 
 
@@ -227,9 +233,10 @@ def add_users(config_obj):
     return None
 
 
-def delete_users(usernames):
+def delete_users(usernames, dry_run=False):
     """delete cli command handler: deprovision *usernames* and drop them from
-    the CLI-owned user registry."""
+    the CLI-owned user registry. With dry_run, report what would happen and make
+    no changes."""
     try:
         validate_usernames(usernames)
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
@@ -239,6 +246,9 @@ def delete_users(usernames):
         existing_services = compose.get("services", {})
         existing, missing = categorize_users(list(usernames), existing_services)
         report_missing_users(missing)
+        if dry_run:
+            report_delete_preview(existing, usernames)
+            return None
         if existing:
             err = stop_user_containers(existing)
             utils.check_error(err)
