@@ -2,6 +2,7 @@
 
 import os
 import shutil
+from dataclasses import dataclass
 from pathlib import Path
 
 import click
@@ -82,41 +83,76 @@ def _cert_copy_message(certs_dir, copied, missing):
     return "\n".join(parts)
 
 
+@dataclass
+class _CertCopyTarget:
+    """Grouped context for copying a single cert file."""
+
+    src: Path
+    certs_dir: Path
+    force: bool
+
+
+def _copy_one_cert(target, name):
+    """Copy a single cert file; return 'copied', 'missing', or 'skipped'."""
+    latest = find_latest_cert(target.src, name[: -len(".pem")])
+    if latest is None:
+        return "missing"
+    dest = target.certs_dir / name
+    if dest.exists() and not target.force:
+        return "skipped"
+    shutil.copy2(latest, dest)
+    return "copied"
+
+
 def _copy_cert_pair(src, certs_dir, force):
     """Copy the latest fullchain/privkey from src into certs_dir.
 
     Existing files are skipped unless force is True. Returns a status note.
     Raises OSError on copy failure.
     """
+    target = _CertCopyTarget(src, certs_dir, force)
     copied, missing = [], []
     for name in CERT_FILES:
-        latest = find_latest_cert(src, name[: -len(".pem")])
-        if latest is None:
+        status = _copy_one_cert(target, name)
+        if status == "copied":
+            copied.append(name)
+        elif status == "missing":
             missing.append(name)
-            continue
-        dest = certs_dir / name
-        if dest.exists() and not force:
-            continue
-        shutil.copy2(latest, dest)
-        copied.append(name)
     secure_private_key(certs_dir / PRIVATE_KEY_NAME)
     return _cert_copy_message(certs_dir, copied, missing)
 
 
-def copy_certs(deploy_type, dest_dir, certs_src, force=False):
+def _certs_src_issue(certs_src):
+    """Return a note describing why certs_src is unusable, or None if it's fine."""
+    if not certs_src:
+        return "Note: certs-src not set in dtaas.toml; TLS certificates not copied."
+    src = Path(certs_src)
+    if not src.is_dir():
+        return f"Note: certs-src not found ({src}); TLS certificates not copied."
+    return None
+
+
+@dataclass
+class CertsCopySpec:
+    """Grouped inputs for copying TLS certs into a generated deployment."""
+
+    deploy_type: str
+    certs_src: str
+    force: bool = False
+
+
+def copy_certs(dest_dir, spec):
     """Copy TLS certificates into dest_dir/certs for a secure deployment.
 
     Returns an informative note, or None when nothing applies (non-TLS deploy).
     Skips gracefully with a note when no source is configured or the source
     directory is missing. Raises OSError only on an actual copy failure.
     """
-    if deploy_type not in TLS_DEPLOY_TYPES:
+    if spec.deploy_type not in TLS_DEPLOY_TYPES:
         return None
-    if not certs_src:
-        return "Note: certs-src not set in dtaas.toml; TLS certificates not copied."
-    src = Path(certs_src)
-    if not src.is_dir():
-        return f"Note: certs-src not found ({src}); TLS certificates not copied."
+    issue = _certs_src_issue(spec.certs_src)
+    if issue:
+        return issue
     certs_dir = Path(dest_dir) / "certs"
     certs_dir.mkdir(parents=True, exist_ok=True)
-    return _copy_cert_pair(src, certs_dir, force)
+    return _copy_cert_pair(Path(spec.certs_src), certs_dir, spec.force)

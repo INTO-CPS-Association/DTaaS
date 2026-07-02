@@ -3,6 +3,18 @@
 from . import utils
 
 
+def _users_list_error(conf_users, key):
+    """Return an Exception describing why config.users.<key> is invalid, or None."""
+    if key not in conf_users:
+        return Exception(f"Config file error: No {key} list in 'users' tag")
+    value = conf_users[key]
+    is_list = isinstance(value, list)
+    if not is_list or not value:
+        problem = "must be a list" if not is_list else "list is empty"
+        return Exception(f"Config file error: users.{key} {problem}")
+    return None
+
+
 class Config:
     """The Config class for DTaaS"""
 
@@ -56,18 +68,11 @@ class Config:
         if err is not None or not isinstance(conf_users, dict):
             return None, err
 
-        if key not in conf_users:
-            return None, Exception(f"Config file error: No {key} list in 'users' tag")
+        err = _users_list_error(conf_users, key)
+        if err is not None:
+            return None, err
 
-        value = conf_users[key]
-        if not isinstance(value, list):
-            return None, Exception(f"Config file error: users.{key} must be a list")
-
-        strings_list = [str(x) for x in value]
-        if not strings_list:
-            return None, Exception(f"Config file error: users.{key} list is empty")
-
-        return strings_list, None
+        return [str(x) for x in conf_users[key]], None
 
     def get_path(self):
         """Gets the 'path' from config.common"""

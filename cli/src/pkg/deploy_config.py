@@ -28,17 +28,26 @@ def _set_yaml_value(text, key, value):
 _SETTERS = {"env": _set_env_value, "js": _set_js_value, "yaml": _set_yaml_value}
 
 
-def _user_value(users, key):
-    """Resolve a ``username<N>`` or ``email<N>`` pseudo-key from [users]."""
+def _resolved_starting_index(users, key):
+    """Parse a ``username<N>``/``email<N>`` key into (field, index, starting), or None."""
     m = re.match(r"(username|email)(\d+)$", key)
     if not m:
-        return ""
+        return None
     index = int(m.group(2)) - 1
     starting = users.get("starting", [])
     if index >= len(starting):
+        return None
+    return m.group(1), index, starting
+
+
+def _user_value(users, key):
+    """Resolve a ``username<N>`` or ``email<N>`` pseudo-key from [users]."""
+    resolved = _resolved_starting_index(users, key)
+    if resolved is None:
         return ""
+    field, index, starting = resolved
     username = str(starting[index]).strip()
-    if m.group(1) == "username":
+    if field == "username":
         return username
     section = users.get(username, {})
     return str(section.get("email", "")).strip() if isinstance(section, dict) else ""
@@ -101,16 +110,22 @@ def _missing_placeholder_warnings(text, rel_path):
     ]
 
 
+def _placeholder_warnings_for_file(dest_dir, rel_path):
+    """Return placeholder warnings for one generated file, or [] if unreadable/missing."""
+    path = Path(dest_dir) / rel_path
+    if not path.is_file():
+        return []
+    text = _read_file_text(path)
+    if text is None:
+        return []
+    return _missing_placeholder_warnings(text, rel_path)
+
+
 def check_placeholders(dest_dir, specs):
     """Return warnings for known secret placeholders still present after substitution."""
     warnings = []
     for rel_path, _, _ in specs:
-        path = Path(dest_dir) / rel_path
-        if not path.is_file():
-            continue
-        text = _read_file_text(path)
-        if text is not None:
-            warnings.extend(_missing_placeholder_warnings(text, rel_path))
+        warnings.extend(_placeholder_warnings_for_file(dest_dir, rel_path))
     return warnings
 
 
@@ -146,14 +161,20 @@ def _apply_to_file(path, file_format, values):
     return None
 
 
+def _apply_one_error(dest_dir, spec):
+    """Apply one (rel_path, file_format, values) spec; return an error string, or None."""
+    rel_path, file_format, values = spec
+    path = Path(dest_dir) / rel_path
+    if not path.is_file():
+        return None
+    return _apply_to_file(path, file_format, values)
+
+
 def _collect_apply_errors(dest_dir, specs):
     """Apply substitution specs and return a list of error strings."""
     errors = []
-    for rel_path, file_format, values in specs:
-        path = Path(dest_dir) / rel_path
-        if not path.is_file():
-            continue
-        err = _apply_to_file(path, file_format, values)
+    for spec in specs:
+        err = _apply_one_error(dest_dir, spec)
         if err:
             errors.append(err)
     return errors

@@ -100,16 +100,21 @@ def _is_username(value):
     return isinstance(value, str) and bool(USERNAME_RE.match(value))
 
 
-def _required(data, keys, predicate, message):
-    """Return [message] if the value at *keys* is missing or fails *predicate*."""
+def _required(data, keys, rule):
+    """Return [message] if the value at *keys* is missing or fails *rule*.
+
+    *rule* is a (predicate, message) pair.
+    """
+    predicate, message = rule
     value = _get(data, *keys)
     if value is None:
         return [".".join(keys) + " is missing"]
     return [] if predicate(value) else [message]
 
 
-def _optional(data, keys, predicate, message):
+def _optional(data, keys, rule):
     """Like _required, but a missing value is allowed (no error)."""
+    predicate, message = rule
     value = _get(data, *keys)
     if value is None:
         return []
@@ -118,19 +123,19 @@ def _optional(data, keys, predicate, message):
 
 def _check_git_repo(data):
     """git-repo must be a URL."""
-    return _required(data, ("git-repo",), _is_url, "git-repo must be a valid URL")
+    return _required(data, ("git-repo",), (_is_url, "git-repo must be a valid URL"))
 
 
 def _check_server_dns(data):
     """common.server-dns must be a hostname or IP."""
     message = "common.server-dns must be a valid hostname or IP address"
-    return _required(data, ("common", "server-dns"), _is_host, message)
+    return _required(data, ("common", "server-dns"), (_is_host, message))
 
 
 def _check_path(data):
     """common.path must be an absolute path to an existing directory."""
     message = "common.path must be an absolute path to an existing directory"
-    return _required(data, ("common", "path"), _is_existing_dir, message)
+    return _required(data, ("common", "path"), (_is_existing_dir, message))
 
 
 def _check_certs_src(data):
@@ -139,7 +144,7 @@ def _check_certs_src(data):
     message = (
         "common.security.certs-src must be an absolute path to an existing directory"
     )
-    return _optional(data, keys, _is_existing_dir, message)
+    return _optional(data, keys, (_is_existing_dir, message))
 
 
 def _check_resources(data):
@@ -151,12 +156,12 @@ def _check_resources(data):
     enabled = _get(data, "common", "resources", "set_limits") is not False
     check = _required if enabled else _optional
     cpus_msg = "common.resources.cpus must be a positive number of CPU cores"
-    errors = check(data, ("common", "resources", "cpus"), _is_number, cpus_msg)
+    errors = check(data, ("common", "resources", "cpus"), (_is_number, cpus_msg))
     pids_msg = "common.resources.pids_limit must be an integer"
-    errors += check(data, ("common", "resources", "pids_limit"), _is_int, pids_msg)
+    errors += check(data, ("common", "resources", "pids_limit"), (_is_int, pids_msg))
     for field, example in _SIZE_FIELDS:
         message = f"common.resources.{field} must include a unit, e.g. '{example}'"
-        errors += check(data, ("common", "resources", field), _is_size, message)
+        errors += check(data, ("common", "resources", field), (_is_size, message))
     return errors
 
 
@@ -170,8 +175,7 @@ def _check_starting(data):
     return _optional(
         data,
         ("users", "starting"),
-        _is_string_list,
-        "users.starting must be a list of strings",
+        (_is_string_list, "users.starting must be a list of strings"),
     )
 
 
@@ -239,7 +243,7 @@ def _check_deploy_fields(data):
     errors = []
     for section, key, predicate, label in _DEPLOY_FIELDS:
         message = f"{section}.{key} must be a valid {label}"
-        errors += _optional(data, (section, key), predicate, message)
+        errors += _optional(data, (section, key), (predicate, message))
     return errors
 
 

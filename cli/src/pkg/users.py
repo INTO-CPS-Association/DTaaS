@@ -2,6 +2,7 @@
 
 import subprocess
 import shutil
+from dataclasses import dataclass
 from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
@@ -34,14 +35,14 @@ def _load_template(server, tls):
         return None, Exception("user add is not supported for localhost installations")
     name = "users.server.secure.yml" if tls else "users.server.yml"
     template, err = utils.import_yaml(name)
-    if err is not None:
-        return None, err
-    if not template:
-        return None, Exception(
+    if err is None and not template:
+        err = Exception(
             f"User workspace template '{name}' is missing or empty in this "
             "directory. Run 'dtaas generate-project' (or "
             "'dtaas generate-deployment') here first."
         )
+    if err is not None:
+        return None, err
     return template, None
 
 
@@ -84,18 +85,23 @@ def get_compose_config(username, config):
     return result, None
 
 
+def _create_one_user_dir(username, file_path):
+    """Copy the template into username's workspace dir and chown it (best-effort)."""
+    user_dir = Path(file_path) / username
+    shutil.copytree(Path(file_path) / "template", user_dir, dirs_exist_ok=True)
+    try:
+        shutil.chown(user_dir, user=1000, group=100)
+        for item in user_dir.rglob("*"):
+            shutil.chown(item, user=1000, group=100)
+    except (AttributeError, PermissionError):
+        # Skip os.chown in tests to avoid PermissionError
+        pass
+
+
 def create_user_files(users, file_path):
     """Creates all the users' workspace directories"""
     for username in users:
-        user_dir = Path(file_path) / username
-        shutil.copytree(Path(file_path) / "template", user_dir, dirs_exist_ok=True)
-        try:
-            shutil.chown(user_dir, user=1000, group=100)
-            for item in user_dir.rglob("*"):
-                shutil.chown(item, user=1000, group=100)
-        except (AttributeError, PermissionError):
-            # Skip os.chown in tests to avoid PermissionError
-            pass
+        _create_one_user_dir(username, file_path)
     return None
 
 
@@ -185,52 +191,114 @@ def _finalize_compose(compose):
     write_state(compose["services"])
 
 
+@dataclass
+class _AddContext:
+    """Everything needed to provision the registry's users."""
+
+    compose: dict
+    user_list: list
+    users_section: dict
+    config: dict
+
+
+def _load_add_context(config_obj):
+    """Load compose, registry users, and deploy config for provisioning.
+
+    Returns an _AddContext, or None when the registry is empty (nothing to
+    provision). Raises on any other error.
+    """
+    compose, err = utils.import_yaml(COMPOSE_USERS_YML)
+    utils.check_error(err)
+    compose = compose or {}
+    user_list, users_section = _get_registry_users()
+    if not user_list:
+        return None
+    validate_usernames(user_list)
+    server, path, resources, tls, set_limits = _get_deploy_config(config_obj)
+    config = {
+        "server": server,
+        "path": path,
+        "resources": resources,
+        "tls": tls,
+        "set_limits": set_limits,
+    }
+    return _AddContext(compose, user_list, users_section, config)
+
+
+def _authorise_user(username, users_section):
+    """Validate username/email are newline-free, then add the forward-auth rule.
+
+    Raises ValueError if either contains a newline (which would corrupt
+    conf.server).
+    """
+    section = (users_section or {}).get(username, {})
+    email = str(section.get("email", "") if isinstance(section, dict) else "").strip()
+    if any(c in username for c in ("\n", "\r")) or any(
+        c in email for c in ("\n", "\r")
+    ):
+        raise ValueError(
+            f"Invalid user config for '{username}': "
+            "username/email must not contain newlines"
+        )
+    add_conf_server_entry(username, email)
+
+
+def _provision_users(ctx):
+    """Create workspace files, compose entries, and forward-auth rules.
+
+    Authorising each user in the forward-auth config happens before starting
+    their container: writing conf.server first means a later 'compose up'
+    failure cannot leave the forward-auth rules stale.
+    """
+    create_user_files(ctx.user_list, ctx.config["path"] + "/files")
+    err = add_users_to_compose(ctx.user_list, ctx.compose, ctx.config)
+    utils.check_error(err)
+    for username in ctx.user_list:
+        _authorise_user(username, ctx.users_section)
+    _finalize_compose(ctx.compose)
+
+
 def add_users(config_obj):
     """add cli command handler"""
     try:
-        compose, err = utils.import_yaml(COMPOSE_USERS_YML)
-        utils.check_error(err)
-        user_list, users_section = _get_registry_users()
-        if not user_list:
+        ctx = _load_add_context(config_obj)
+        if ctx is None:
             return None  # empty registry: nothing to provision
-        validate_usernames(user_list)
-        server, path, resources, tls, set_limits = _get_deploy_config(config_obj)
+        _setup_compose_structure(ctx.compose)
+        _provision_users(ctx)
     except Exception as e:
         return e
-
-    _setup_compose_structure(compose)
-
-    try:
-        create_user_files(user_list, path + "/files")
-        config = {
-            "server": server,
-            "path": path,
-            "resources": resources,
-            "tls": tls,
-            "set_limits": set_limits,
-        }
-        err = add_users_to_compose(user_list, compose, config)
-        utils.check_error(err)
-        # Authorise each user in the forward-auth config before starting their
-        # container. Writing conf.server first means a later 'compose up'
-        # failure cannot leave the forward-auth rules stale.
-        for username in user_list:
-            section = (users_section or {}).get(username, {})
-            email = str(
-                section.get("email", "") if isinstance(section, dict) else ""
-            ).strip()
-            if any(c in username for c in ("\n", "\r")) or any(
-                c in email for c in ("\n", "\r")
-            ):
-                raise ValueError(
-                    f"Invalid user config for '{username}': username/email must not contain newlines"
-                )
-            add_conf_server_entry(username, email)
-        _finalize_compose(compose)
-    except Exception as e:
-        return e
-
     return None
+
+
+def _delete_context(usernames):
+    """Validate usernames and load compose, returning (compose, existing users).
+
+    Raises on validation/import failure or a missing compose file.
+    """
+    validate_usernames(usernames)
+    compose, err = utils.import_yaml(COMPOSE_USERS_YML)
+    utils.check_error(err)
+    if compose is None:
+        raise ValueError("Failed to load compose configuration")
+    existing_services = compose.get("services", {})
+    existing, missing = categorize_users(list(usernames), existing_services)
+    report_missing_users(missing)
+    return compose, existing
+
+
+def _remove_users(compose, existing, usernames):
+    """Stop containers, rewrite compose, clear auth rules, and update state."""
+    if existing:
+        err = stop_user_containers(existing)
+        utils.check_error(err)
+    remove_users_from_compose(compose, existing)
+    err = utils.export_yaml(compose, COMPOSE_USERS_YML)
+    utils.check_error(err)
+    for username in usernames:
+        remove_conf_server_entry(username)
+    remove_from_registry(usernames)
+    write_state(compose.get("services", {}))
 
 
 def delete_users(usernames, dry_run=False):
@@ -238,28 +306,11 @@ def delete_users(usernames, dry_run=False):
     the CLI-owned user registry. With dry_run, report what would happen and make
     no changes."""
     try:
-        validate_usernames(usernames)
-        compose, err = utils.import_yaml(COMPOSE_USERS_YML)
-        utils.check_error(err)
-        if compose is None:
-            return Exception("Failed to load compose configuration")
-        existing_services = compose.get("services", {})
-        existing, missing = categorize_users(list(usernames), existing_services)
-        report_missing_users(missing)
+        compose, existing = _delete_context(usernames)
         if dry_run:
             report_delete_preview(existing, usernames)
-            return None
-        if existing:
-            err = stop_user_containers(existing)
-            utils.check_error(err)
-        remove_users_from_compose(compose, existing)
-        err = utils.export_yaml(compose, COMPOSE_USERS_YML)
-        utils.check_error(err)
-        for username in usernames:
-            remove_conf_server_entry(username)
-        remove_from_registry(usernames)
-        write_state(compose.get("services", {}))
+        else:
+            _remove_users(compose, existing, usernames)
     except Exception as e:
         return e
-
     return None

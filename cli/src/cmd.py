@@ -2,25 +2,23 @@
 
 import click
 from python_on_whales.exceptions import DockerException
-from .pkg import users as userPkg
 from .pkg import project as projectPkg
 from .pkg import deploy as deployPkg
 from .pkg import config_validate as configValidatePkg
 from .pkg.project import DEPLOY_TYPES
-from .cmd_utils import (
+from .cmd_deploy_utils import (
     VerticalChoicesCommand,
     apply_deploy_config,
     provision_user_files,
-    stage_users_for_add,
-    run_user_command,
-    confirm_remove_user_files,
-    run_config_update,
-    run_reconcile,
-    run_cert_update,
-    require_update_flag,
 )
-
-NO_INSTALLATION_MESSAGE = "There is no existing DTaaS / Workspace installation"
+from .cmd_utils import (
+    UpdateOptions,
+    confirm_remove_user_files,
+    run_reconcile,
+    run_uninstall,
+    run_update,
+)
+from .cmd_user import add as user_add, delete as user_delete
 
 
 ### Groups
@@ -157,62 +155,9 @@ def user():
     return
 
 
-#### user group commands
-@user.command()
-@click.argument("username", required=False)
-@click.option(
-    "--file",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-add users from a CSV file into the registry.",
-)
-@click.option("--email", help="Email for USERNAME (enables forward-auth routing).")
-@click.option(
-    "--group",
-    "groups",
-    multiple=True,
-    help="Group tag for USERNAME (repeatable; defaults to 'additional').",
-)
-@click.option(
-    "--load-balance/--no-load-balance",
-    default=True,
-    help="Mark USERNAME for load balancing (default: enabled).",
-)
-def add(username, csv_file, email, groups, load_balance):
-    """
-    add users to DTaaS\n
-    Single user: dtaas admin user add alice --email alice@intocps.org\n
-    Bulk from CSV: dtaas admin user add --file users.csv\n
-    Both merge into dtaas.users.registry.json, then every registry user is
-    provisioned. With no USERNAME and no --file, the existing registry is
-    reprovisioned.\n
-    """
-    stage_users_for_add(username, csv_file, email, groups, load_balance)
-    run_user_command(
-        userPkg.add_users, "Users added successfully", "Error while adding users"
-    )
-
-
-@user.command()
-@click.argument("usernames", nargs=-1, required=True)
-@click.option(
-    "--dry-run",
-    is_flag=True,
-    help="Show which users would be removed without deleting anything.",
-)
-def delete(usernames, dry_run):
-    """
-    removes the named USERNAMES from DTaaS\n
-    Deprovisions each user and drops them from dtaas.users.registry.json.\n
-    Pass --dry-run to preview the removal without making any changes.\n
-    """
-    err = userPkg.delete_users(usernames, dry_run=dry_run)
-    if err is not None:
-        raise click.ClickException(f"Error while deleting users: {err}")
-    if dry_run:
-        click.echo("Dry run complete; nothing was deleted.")
-    else:
-        click.echo("Users deleted successfully")
+#### user group commands (defined in cmd_user.py to keep this file short)
+user.add_command(user_add)
+user.add_command(user_delete)
 
 
 @admin.command(name="install")
@@ -253,19 +198,7 @@ def install(output_dir):
 def uninstall(output_dir, remove_user_files, yes):
     """Tear the deployment down with 'docker compose down'."""
     confirm_remove_user_files(remove_user_files, yes)
-    try:
-        if deployPkg.installation_present(output_dir):
-            message = deployPkg.uninstall(output_dir, remove_user_files)
-            if message:
-                click.echo(message)
-            click.echo("Deployment uninstalled successfully")
-            return
-        click.echo(NO_INSTALLATION_MESSAGE)
-        if remove_user_files:
-            deployPkg.require_compose_file(output_dir)
-            click.echo(deployPkg.delete_user_files(output_dir))
-    except (OSError, DockerException) as exc:
-        raise click.ClickException(str(exc)) from exc
+    run_uninstall(output_dir, remove_user_files)
 
 
 @admin.command(name="update")
@@ -291,7 +224,7 @@ def uninstall(output_dir, remove_user_files, yes):
     show_default=True,
     help="Installation directory containing the generated deployment.",
 )
-def update(certs, config_, dry_run, output_dir):
+def update(**kwargs):
     """Update deployment assets in place.
 
     --certs validates the newest certificate pair from certs-src and swaps it
@@ -299,8 +232,4 @@ def update(certs, config_, dry_run, output_dir):
     service's config file and restarts the services whose files changed; add
     --dry-run to preview the changes first.
     """
-    require_update_flag(certs, config_)
-    if certs:
-        run_cert_update(output_dir)
-    if config_:
-        run_config_update(output_dir, dry_run)
+    run_update(UpdateOptions(**kwargs))

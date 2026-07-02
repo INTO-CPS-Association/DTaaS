@@ -2,7 +2,12 @@
 
 import os
 from unittest.mock import patch
-from src.pkg.certs import copy_certs, find_latest_cert, secure_private_key
+from src.pkg.certs import (
+    CertsCopySpec,
+    copy_certs,
+    find_latest_cert,
+    secure_private_key,
+)
 
 
 def _make_cert_src(src, files):
@@ -34,12 +39,13 @@ def test_find_latest_cert_ignores_unrelated_names(tmp_path):
 
 def test_copy_certs_skips_non_tls_deploy(tmp_path):
     """copy_certs is a no-op (returns None) for non-TLS deploy types."""
-    assert copy_certs("localhost", str(tmp_path), str(tmp_path)) is None
+    spec = CertsCopySpec("localhost", str(tmp_path))
+    assert copy_certs(str(tmp_path), spec) is None
 
 
 def test_copy_certs_notes_when_no_source(tmp_path):
     """A TLS deploy with no certs-src returns an informative note, copies nothing."""
-    note = copy_certs("secure-server", str(tmp_path), "")
+    note = copy_certs(str(tmp_path), CertsCopySpec("secure-server", ""))
 
     assert note is not None and "certs-src not set" in note
     assert not (tmp_path / "certs").exists()
@@ -47,7 +53,8 @@ def test_copy_certs_notes_when_no_source(tmp_path):
 
 def test_copy_certs_notes_when_source_missing(tmp_path):
     """A non-existent certs-src directory yields a note without raising."""
-    note = copy_certs("secure-server", str(tmp_path), str(tmp_path / "nope"))
+    spec = CertsCopySpec("secure-server", str(tmp_path / "nope"))
+    note = copy_certs(str(tmp_path), spec)
 
     assert note is not None and "not found" in note
 
@@ -69,7 +76,7 @@ def test_copy_certs_copies_latest_pair(tmp_path):
         os.utime(src / f"privkey{name}", (when, when))
     dest = tmp_path / "install"
 
-    note = copy_certs("secure-server", str(dest), str(src))
+    note = copy_certs(str(dest), CertsCopySpec("secure-server", str(src)))
 
     assert (dest / "certs" / "fullchain.pem").read_text() == "fc-new"
     assert (dest / "certs" / "privkey.pem").read_text() == "pk-new"
@@ -82,7 +89,7 @@ def test_copy_certs_sets_private_key_permissions(tmp_path):
     _make_cert_src(src, {"fullchain.pem": "fc", "privkey.pem": "pk"})
     dest = tmp_path / "install"
 
-    copy_certs("secure-server", str(dest), str(src))
+    copy_certs(str(dest), CertsCopySpec("secure-server", str(src)))
 
     key = dest / "certs" / "privkey.pem"
     assert key.exists()
@@ -100,7 +107,7 @@ def test_copy_certs_skips_existing_without_force(tmp_path):
     (certs / "fullchain.pem").write_text("fc-old")
     (certs / "privkey.pem").write_text("pk-old")
 
-    copy_certs("secure-server", str(dest), str(src), force=False)
+    copy_certs(str(dest), CertsCopySpec("secure-server", str(src), force=False))
 
     assert (certs / "fullchain.pem").read_text() == "fc-old"
 
@@ -114,7 +121,7 @@ def test_copy_certs_overwrites_with_force(tmp_path):
     certs.mkdir(parents=True)
     (certs / "fullchain.pem").write_text("fc-old")
 
-    copy_certs("secure-server", str(dest), str(src), force=True)
+    copy_certs(str(dest), CertsCopySpec("secure-server", str(src), force=True))
 
     assert (certs / "fullchain.pem").read_text() == "fc-new"
 
@@ -138,7 +145,7 @@ def test_copy_certs_notes_partial_source(tmp_path):
     _make_cert_src(src, {"fullchain.pem": "fc"})  # privkey.pem absent
     dest = tmp_path / "install"
 
-    note = copy_certs("secure-server", str(dest), str(src))
+    note = copy_certs(str(dest), CertsCopySpec("secure-server", str(src)))
 
     assert note is not None and "privkey.pem" in note
     assert (dest / "certs" / "fullchain.pem").exists()
