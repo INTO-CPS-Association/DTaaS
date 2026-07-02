@@ -1,13 +1,21 @@
-"""This file has functions that handle the user cli commands"""
+"""The 'user add'/'user delete' CLI command handlers.
 
-import subprocess
-import shutil
+Loads registry/deploy config, then drives the compose/container plumbing in
+users_compose.py to provision or deprovision the requested users.
+"""
+
 from dataclasses import dataclass
-from pathlib import Path
 from . import utils
 from .constants import COMPOSE_USERS_YML
 from .registry import load_registry, remove_from_registry
 from .state import write_state
+from .users_compose import (
+    add_users_to_compose,
+    create_user_files,
+    finalize_compose,
+    setup_compose_structure,
+    stop_user_containers,
+)
 from .users_utils import (
     add_conf_server_entry,
     remove_conf_server_entry,
@@ -15,149 +23,8 @@ from .users_utils import (
     report_missing_users,
     remove_users_from_compose,
     report_delete_preview,
-    build_base_mapping,
-    resource_mapping,
     validate_usernames,
 )
-
-
-def _load_template(server, tls):
-    """Load the appropriate template based on server type and TLS.
-
-    Args:
-        server: Server DNS name (not 'localhost')
-        tls: Whether to use TLS/secure template
-
-    Returns:
-        Tuple of (template dict, error if any)
-    """
-    if server == utils.LOCALHOST_SERVER:
-        return None, Exception("user add is not supported for localhost installations")
-    name = "users.server.secure.yml" if tls else "users.server.yml"
-    template, err = utils.import_yaml(name)
-    if err is None and not template:
-        err = Exception(
-            f"User workspace template '{name}' is missing or empty in this "
-            "directory. Run 'dtaas generate-project' (or "
-            "'dtaas generate-deployment') here first."
-        )
-    if err is not None:
-        return None, err
-    return template, None
-
-
-def _apply_resource_limits(service, config):
-    """Merge substituted resource limits into the service dict when enabled.
-
-    When set_limits is false the service is returned unchanged so the container
-    runs without CPU/memory/process caps. Raises on a template load or
-    substitution error.
-    """
-    if not config.get("set_limits", True):
-        return service
-    template, err = utils.import_yaml("users.resources.yml")
-    utils.check_error(err)
-    resources, err = utils.replace_all(template, resource_mapping(config["resources"]))
-    utils.check_error(err)
-    service.update(resources)
-    return service
-
-
-def get_compose_config(username, config):
-    """Makes and returns the config for the user
-
-    Args:
-        username: Username for the config
-        config: Dict with 'server', 'path', 'resources', 'tls', 'set_limits' keys
-
-    Returns:
-        Tuple of (user config dict, error if any)
-    """
-    try:
-        template, err = _load_template(config["server"], config.get("tls"))
-        utils.check_error(err)
-        mapping = build_base_mapping(username, config)
-        result, err = utils.replace_all(template, mapping)
-        utils.check_error(err)
-        result = _apply_resource_limits(result, config)
-    except Exception as e:
-        return None, e
-    return result, None
-
-
-def _create_one_user_dir(username, file_path):
-    """Copy the template into username's workspace dir and chown it (best-effort)."""
-    user_dir = Path(file_path) / username
-    shutil.copytree(Path(file_path) / "template", user_dir, dirs_exist_ok=True)
-    try:
-        shutil.chown(user_dir, user=1000, group=100)
-        for item in user_dir.rglob("*"):
-            shutil.chown(item, user=1000, group=100)
-    except (AttributeError, PermissionError):
-        # Skip os.chown in tests to avoid PermissionError
-        pass
-
-
-def create_user_files(users, file_path):
-    """Creates all the users' workspace directories"""
-    for username in users:
-        _create_one_user_dir(username, file_path)
-    return None
-
-
-def add_users_to_compose(users, compose, config):
-    """Adds all the users config to the compose dictionary
-    Args:
-        users: List of usernames
-        compose: Compose dict to update
-        config: Dict with 'server', 'path', 'resources' keys
-    """
-    for username in users:
-        user_conf, err = get_compose_config(username, config)
-        if err is not None:
-            return err
-        compose["services"][username] = user_conf
-    return None
-
-
-def start_user_containers(users):
-    """Starts all the user containers in the 'users' list"""
-    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "up", "-d"]
-    return run_command_for_containers(cmd, users)
-
-
-def stop_user_containers(users):
-    """Stops and removes only the named user containers.
-
-    'docker compose down' takes no SERVICE arguments and always tears down the
-    whole project, so 'rm --stop --force' is used instead to target just the
-    given services.
-    """
-    cmd = ["docker", "compose", "-f", COMPOSE_USERS_YML, "rm", "--stop", "--force"]
-    return run_command_for_containers(cmd, users)
-
-
-def run_command_for_containers(command, containers):
-    """Runs the given docker command (an argv list) for the given containers.
-
-    Invoked with shell=False so usernames are passed as literal argv entries and
-    can never be interpreted as shell syntax.
-    """
-    argv = command + list(containers)
-    result = subprocess.run(argv, shell=False, check=False)
-    if result.returncode != 0:
-        return Exception(f"failed to run '{' '.join(argv)}' command")
-    return None
-
-
-def _setup_compose_structure(compose):
-    """Ensure compose has required structure for services."""
-    if "version" not in compose:
-        compose["version"] = "3"
-    if "services" not in compose:
-        compose["services"] = {}
-    if "networks" not in compose:
-        compose["networks"] = {"users": {"name": "dtaas-users", "external": True}}
 
 
 def _get_registry_users():
@@ -179,16 +46,6 @@ def _get_deploy_config(config_obj):
     set_limits, err = config_obj.get_set_limits()
     utils.check_error(err)
     return server, path, resources, tls, set_limits
-
-
-def _finalize_compose(compose):
-    """Export, start user containers, and record runtime state."""
-    err = utils.export_yaml(compose, COMPOSE_USERS_YML)
-    utils.check_error(err)
-    users_list = list(compose["services"].keys())
-    err = start_user_containers(users_list)
-    utils.check_error(err)
-    write_state(compose["services"])
 
 
 @dataclass
@@ -255,7 +112,7 @@ def _provision_users(ctx):
     utils.check_error(err)
     for username in ctx.user_list:
         _authorise_user(username, ctx.users_section)
-    _finalize_compose(ctx.compose)
+    finalize_compose(ctx.compose)
 
 
 def add_users(config_obj):
@@ -264,7 +121,7 @@ def add_users(config_obj):
         ctx = _load_add_context(config_obj)
         if ctx is None:
             return None  # empty registry: nothing to provision
-        _setup_compose_structure(ctx.compose)
+        setup_compose_structure(ctx.compose)
         _provision_users(ctx)
     except Exception as e:
         return e

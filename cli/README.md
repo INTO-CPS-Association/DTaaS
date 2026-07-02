@@ -419,8 +419,18 @@ the CLI-owned `dtaas.users.registry.json`
 (see [User files](#-user-files)), not in `dtaas.toml`. Add a single user:
 
 ```bash
-dtaas admin user add alice --email alice@intocps.org \
-  --group dtaas --load-balance
+dtaas admin user add --email alice@intocps.org --group dtaas --load-balance alice
+```
+
+> Click accepts `--email`, `--group`, and `--load-balance` in any position
+> relative to `USERNAME` the form above is the recommended convention,
+> matching `useradd [options] LOGIN`.
+
+`--group` is repeatable, not comma-separated pass it once per group to add a
+user to multiple groups:
+
+```bash
+dtaas admin user add --email alice@intocps.org --group dtaas --group testers alice
 ```
 
 Or bulk-add from a CSV:
@@ -454,7 +464,7 @@ dtaas admin user add
 | `USERNAME` | — | Add one user (requires `--email`) |
 | `--file PATH` | — | Bulk-add users from a CSV |
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
-| `--group TEXT` | `dtaas` | Group tag for `USERNAME` (repeatable) |
+| `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 
 For each username the CLI checks whether `files/<username>/` already exists.
@@ -675,8 +685,7 @@ shm_size   = "512m"   # shared memory unit required
 # The users installed with this instance, hand-edited once at install time.
 # Additional users added later with `dtaas admin user add` live in the
 # CLI-owned dtaas.users.registry.json instead — never here.
-# Usernames must match GitLab accounts; usernames containing "." are not yet
-# supported.
+# Usernames must match GitLab accounts.
 [users]
 starting = ["alice", "bob"]
 

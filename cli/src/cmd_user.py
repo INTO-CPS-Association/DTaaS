@@ -33,7 +33,7 @@ from .cmd_utils import UserAddInput, run_user_command, stage_users_for_add
 def add(**kwargs):
     """
     add users to DTaaS\n
-    Single user: dtaas admin user add alice --email alice@intocps.org\n
+    Single user: dtaas admin user add --email alice@intocps.org alice\n
     Bulk from CSV: dtaas admin user add --file users.csv\n
     Both merge into dtaas.users.registry.json, then every registry user is
     provisioned. With no USERNAME and no --file, the existing registry is

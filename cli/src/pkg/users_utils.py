@@ -4,7 +4,7 @@ import re
 import click
 from pathlib import Path
 from . import utils
-from .constants import USERNAME_RE
+from .constants import CONF_SERVER_RULE_NUM_RE, USERNAME_RE
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
 
@@ -51,7 +51,7 @@ def resource_mapping(resources):
 
 def _next_rule_num(text):
     """Return the next available onlyu<N> index from existing conf.server content."""
-    nums = [int(m) for m in re.findall(r"rule\.onlyu(\d+)\.", text)]
+    nums = [int(m) for m in CONF_SERVER_RULE_NUM_RE.findall(text)]
     return max(nums, default=0) + 1
 
 

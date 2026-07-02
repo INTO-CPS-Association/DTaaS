@@ -3,6 +3,7 @@
 import re
 from pathlib import Path
 from ._deploy_data import _DEPLOY_FILES, _SECRET_PLACEHOLDERS
+from .constants import USER_PSEUDO_KEY_RE
 
 
 def _set_env_value(text, key, value):
@@ -30,7 +31,7 @@ _SETTERS = {"env": _set_env_value, "js": _set_js_value, "yaml": _set_yaml_value}
 
 def _resolved_starting_index(users, key):
     """Parse a ``username<N>``/``email<N>`` key into (field, index, starting), or None."""
-    m = re.match(r"(username|email)(\d+)$", key)
+    m = USER_PSEUDO_KEY_RE.match(key)
     if not m:
         return None
     index = int(m.group(2)) - 1
