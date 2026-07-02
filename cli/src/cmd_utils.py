@@ -155,9 +155,9 @@ def run_uninstall(output_dir, remove_user_files):
 
 
 _RECONCILE_LABELS = (
+    ("missing", "registered but not provisioned; re-run 'dtaas admin user add'"),
+    ("unexpected", "provisioned but not in the registry; investigate"),
     ("drifted", "config changed since provisioning; re-run 'dtaas admin user add'"),
-    ("untracked", "provisioned but not recorded in the state cache"),
-    ("orphaned", "in the state cache but no longer provisioned"),
 )
 
 
@@ -172,13 +172,18 @@ def _echo_reconcile(report):
 
 
 def run_reconcile(output_dir):
-    """Report drift between .dtaas.state.json and compose.users.yml."""
+    """Report drift between dtaas.users.registry.json (desired) and the live
+    compose.users.yml services (actual), using .dtaas.state.json to detect
+    config changes on users present in both."""
+    registry_users = registryPkg.load_registry(
+        str(Path(output_dir) / registryPkg.REGISTRY_FILE)
+    )
     state = statePkg.load_state(str(Path(output_dir) / statePkg.STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
     if err is not None:
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
-    _echo_reconcile(statePkg.find_drift(state, services))
+    _echo_reconcile(statePkg.find_drift(registry_users, state, services))
 
 
 def run_config_update(output_dir, dry_run):

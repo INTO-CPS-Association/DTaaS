@@ -106,11 +106,13 @@ def config_validate(output_dir):
     help="Installation directory to inspect.",
 )
 def config_reconcile(output_dir):
-    """Report users whose running config has drifted from .dtaas.state.json.
+    """Report drift between the user registry and what is actually provisioned.
 
-    Read-only: compares the state cache against compose.users.yml and lists
-    drifted, untracked, and orphaned users. Re-run 'dtaas admin user add' to
-    reprovision drifted users.
+    Read-only: compares dtaas.users.registry.json (desired) against the live
+    compose.users.yml services (actual), and lists users that are missing,
+    unexpected, or whose config has drifted since it was last provisioned
+    (using .dtaas.state.json). Re-run 'dtaas admin user add' to fix missing or
+    drifted users.
     """
     try:
         run_reconcile(output_dir)

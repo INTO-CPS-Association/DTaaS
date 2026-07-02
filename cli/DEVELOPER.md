@@ -100,11 +100,19 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   registry (`dry_run=True` previews without changing anything).
   `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
   USERNAME) into the registry before `add` runs.
-- _src/pkg/state.py_ owns `.dtaas.state.json`. After each add/delete it records,
-  per user, a `config_hash` (a stable sha256 of the compose service) plus
-  best-effort container id/status from python-on-whales. `find_drift` reads that
-  cache back to power `dtaas admin config reconcile`, which reports drifted,
-  untracked, and orphaned users against `compose.users.yml`.
+- _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
+  it with a fresh snapshot (not an append-only log) recording, per currently
+  provisioned user, a `config_hash` (a stable sha256 of the compose service)
+  plus best-effort container id/status from python-on-whales.
+  `find_drift(registry_users, state, services)` powers
+  `dtaas admin config reconcile`: it treats the registry as the desired state
+  and compares it against the live `compose.users.yml` services, reporting
+  _missing_ (registered, not provisioned) and _unexpected_ (provisioned, not
+  registered) users directly from that comparison. The state cache is used
+  only for the third category, _drifted_ — a user present in both whose live
+  config no longer matches the hash recorded when it was last provisioned; a
+  user with no recorded hash is not flagged, since reconcile has nothing to
+  compare it against.
 
 ### TOML File
 

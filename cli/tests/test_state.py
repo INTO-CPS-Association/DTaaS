@@ -90,28 +90,44 @@ def test_load_state_reads_file(tmp_path):
     assert load_state(str(path))["alice"]["config_hash"] == "sha256:x"
 
 
-def test_find_drift_detects_changed_untracked_orphaned():
-    """find_drift classifies drifted, untracked, and orphaned users."""
-    services = {"alice": {"image": "v2"}, "bob": {"image": "b"}}
-    state = {
-        "alice": {"config_hash": config_hash({"image": "v1"})},  # config changed
-        "carol": {"config_hash": "sha256:x"},  # no longer provisioned
-    }
+def test_find_drift_detects_missing_unexpected_drifted():
+    """find_drift classifies missing, unexpected, and drifted users.
 
-    report = find_drift(state, services)
+    'alice' is registered and provisioned but her live config no longer
+    matches what was recorded (drifted). 'bob' is registered but not
+    provisioned at all (missing). 'carol' is provisioned but not registered
+    (unexpected).
+    """
+    registry_users = {"alice": {}, "bob": {}}
+    services = {"alice": {"image": "v2"}, "carol": {"image": "c"}}
+    state = {"alice": {"config_hash": config_hash({"image": "v1"})}}
 
+    report = find_drift(registry_users, state, services)
+
+    assert report["missing"] == ["bob"]
+    assert report["unexpected"] == ["carol"]
     assert report["drifted"] == ["alice"]
-    assert report["untracked"] == ["bob"]
-    assert report["orphaned"] == ["carol"]
 
 
 def test_find_drift_in_sync():
-    """A state cache matching the compose services reports no drift."""
+    """A registry matching the live compose services reports no drift."""
+    registry_users = {"alice": {}}
     services = {"alice": {"image": "v1"}}
     state = {"alice": {"config_hash": config_hash({"image": "v1"})}}
 
-    assert find_drift(state, services) == {
+    assert find_drift(registry_users, state, services) == {
+        "missing": [],
+        "unexpected": [],
         "drifted": [],
-        "untracked": [],
-        "orphaned": [],
     }
+
+
+def test_find_drift_skips_unrecorded_config_hash():
+    """A registered, provisioned user with no entry in the state cache is not
+    flagged as drifted -- there is nothing to compare against."""
+    registry_users = {"alice": {}}
+    services = {"alice": {"image": "v1"}}
+
+    report = find_drift(registry_users, {}, services)
+
+    assert report == {"missing": [], "unexpected": [], "drifted": []}

@@ -80,9 +80,7 @@ def test_add_single_user(runner, mock_user_pkg):
         )
 
     assert result.exit_code == 0
-    mock_stage.assert_called_once_with(
-        UserAddInput("alice", None, "a@x.io", (), True)
-    )
+    mock_stage.assert_called_once_with(UserAddInput("alice", None, "a@x.io", (), True))
     mock_user_pkg["add"].assert_called_once()
 
 

@@ -544,19 +544,23 @@ docker compose -f compose.server.yml --env-file .env up -d --force-recreate trae
 
 ### 🔍 `admin config reconcile`
 
-Reports which provisioned users have **drifted** from what the CLI last
-recorded in `.dtaas.state.json`. Read-only — it changes nothing.
+It is a Read-Only command. Reports drift between `dtaas.users.registry.json`
+(who **should** be provisioned) and the live `compose.users.yml` services
+(who **is** provisioned).
 
 ```bash
 dtaas admin config reconcile
 ```
 
-It compares the state cache against `compose.users.yml` and lists:
+It lists:
 
-- **drifted** — the compose config changed since the user was provisioned
-  (re-run `dtaas admin user add` to reprovision);
-- **untracked** — provisioned but not recorded in the state cache;
-- **orphaned** — in the state cache but no longer provisioned.
+- **missing** — registered but not currently provisioned (re-run
+  `dtaas admin user add` to provision them);
+- **unexpected** — provisioned but not in the registry (investigate — may be a
+  manual edit or a partial delete);
+- **drifted** — provisioned, but the live config no longer matches what
+  `.dtaas.state.json` recorded when it was last provisioned (re-run
+  `dtaas admin user add` to reprovision).
 
 When everything matches it prints `In sync: no drift detected.`
 

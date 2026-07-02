@@ -13,14 +13,16 @@ def test_stage_users_rejects_username_and_file(tmp_path):
     csv = tmp_path / "u.csv"
     csv.write_text("username,email\nalice,a@intocps.org\n")
     csv_path = str(csv)
+    user_input = UserAddInput("alice", csv_path, None, (), True)
     with pytest.raises(click.ClickException, match="either a USERNAME or --file"):
-        stage_users_for_add(UserAddInput("alice", csv_path, None, (), True))
+        stage_users_for_add(user_input)
 
 
 def test_stage_single_user_requires_email():
     """A single-user add without --email is rejected."""
+    user_input = UserAddInput("alice", None, None, (), True)
     with pytest.raises(click.ClickException, match="--email"):
-        stage_users_for_add(UserAddInput("alice", None, None, (), True))
+        stage_users_for_add(user_input)
 
 
 def test_stage_single_user_registers(tmp_path, monkeypatch):
@@ -68,8 +70,9 @@ def test_stage_skips_starting_user(tmp_path, monkeypatch, capsys):
 def test_stage_rejects_invalid_username(tmp_path, monkeypatch):
     """A shell-unsafe username is rejected before registration."""
     monkeypatch.chdir(tmp_path)
+    user_input = UserAddInput("bad;rm", None, "a@intocps.org", (), True)
     with pytest.raises(click.ClickException, match="Invalid username"):
-        stage_users_for_add(UserAddInput("bad;rm", None, "a@intocps.org", (), True))
+        stage_users_for_add(user_input)
 
 
 def test_stage_noop_without_username_or_file(tmp_path, monkeypatch):
@@ -80,8 +83,17 @@ def test_stage_noop_without_username_or_file(tmp_path, monkeypatch):
     assert load_registry() == {}
 
 
+def _write_registry(tmp_path, users):
+    """Write a dtaas.users.registry.json with the given {name: details} users."""
+    (tmp_path / "dtaas.users.registry.json").write_text(
+        json.dumps({"users": users}), encoding="utf-8"
+    )
+
+
 def test_run_reconcile_reports_drift(tmp_path, capsys):
-    """run_reconcile flags a user whose compose config differs from the state cache."""
+    """run_reconcile flags a registered, provisioned user whose compose config
+    differs from what the state cache last recorded."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
     (tmp_path / ".dtaas.state.json").write_text(
         json.dumps({"alice": {"config_hash": "sha256:old"}}), encoding="utf-8"
     )
@@ -95,8 +107,24 @@ def test_run_reconcile_reports_drift(tmp_path, capsys):
     assert "alice" in out and "config changed" in out
 
 
+def test_run_reconcile_reports_missing_and_unexpected(tmp_path, capsys):
+    """run_reconcile flags a registered-but-not-provisioned user (missing) and
+    a provisioned-but-unregistered service (unexpected)."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  carol:\n    image: v1\n", encoding="utf-8"
+    )
+
+    run_reconcile(str(tmp_path))
+
+    out = capsys.readouterr().out
+    assert "alice" in out and "not provisioned" in out
+    assert "carol" in out and "not in the registry" in out
+
+
 def test_run_reconcile_in_sync(tmp_path, capsys):
-    """run_reconcile reports 'In sync' when hashes match."""
+    """run_reconcile reports 'In sync' when the registry, state, and compose agree."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
     stored = config_hash({"image": "v1"})
     (tmp_path / ".dtaas.state.json").write_text(
         json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"

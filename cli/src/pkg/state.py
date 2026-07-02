@@ -2,8 +2,15 @@
 
 Observed facts about provisioned user containers -- config hash, provisioning
 time, and best-effort container id/status -- written whenever 'dtaas admin user
-add'/'delete' changes the running set. The config hash lets a later run detect
-which users have drifted from the config they were provisioned with.
+add'/'delete' changes the running set. Each write fully replaces the file's
+contents with the current set of provisioned services: it is a point-in-time
+snapshot, not an append-only log, so it only ever reflects the most recent
+add/delete. The config hash lets a later run detect which users' running
+config has changed since they were provisioned.
+
+dtaas.users.registry.json remains the source of truth for who *should* be
+provisioned; this cache only records what the CLI last observed. See
+find_drift(), which compares the two against the live compose services.
 """
 
 import hashlib
@@ -76,25 +83,34 @@ def _missing(names, other):
     return [name for name in names if name not in other]
 
 
-def _drifted_users(state, services):
-    """Users whose current compose config differs from the provisioned hash."""
+def _drifted_users(registry_users, state, services):
+    """Registry users whose live compose config no longer matches the hash
+    recorded the last time they were provisioned.
+
+    A user with no recorded hash (state cache missing or stale) is not
+    flagged, since there is nothing to compare against -- that gap is exactly
+    what 'missing'/'unexpected' below are for.
+    """
     drifted = []
-    for user, service in services.items():
-        stored = state.get(user)
-        if stored is not None and stored.get("config_hash") != config_hash(service):
-            drifted.append(user)
+    for name in registry_users:
+        service, recorded = services.get(name), state.get(name)
+        if service is not None and recorded is not None:
+            if recorded.get("config_hash") != config_hash(service):
+                drifted.append(name)
     return drifted
 
 
-def find_drift(state, services):
-    """Compare the state cache against the current compose services.
+def find_drift(registry_users, state, services):
+    """Compare the registry (desired) against the live compose services (actual).
 
-    Returns {'drifted', 'untracked', 'orphaned'} username lists: drifted =
-    config changed since provisioning; untracked = provisioned but absent from
-    the state cache; orphaned = in the state cache but no longer provisioned.
+    Returns {'missing', 'unexpected', 'drifted'} username lists: missing =
+    registered but not currently provisioned (re-run 'user add'); unexpected =
+    provisioned but not in the registry (investigate -- may be a manual edit or
+    a partial delete); drifted = provisioned with a config that no longer
+    matches what was recorded when it was last provisioned.
     """
     return {
-        "drifted": _drifted_users(state, services),
-        "untracked": _missing(services, state),
-        "orphaned": _missing(state, services),
+        "missing": _missing(registry_users, services),
+        "unexpected": _missing(services, registry_users),
+        "drifted": _drifted_users(registry_users, state, services),
     }

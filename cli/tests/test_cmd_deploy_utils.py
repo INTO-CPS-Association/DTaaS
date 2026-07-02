@@ -45,7 +45,9 @@ def test_certs_src_handles_missing_section():
 def test_provision_user_files_creates_dirs_and_sets_permissions(tmp_path):
     """provision_user_files recreates per-user dirs from toml and fixes ownership."""
     (tmp_path / "dtaas.toml").write_text('[users]\nstarting = ["alice"]\n')
-    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create, patch(
+    with patch(
+        "src.cmd_deploy_utils.projectPkg.create_user_dirs"
+    ) as mock_create, patch(
         "src.cmd_deploy_utils.projectPkg.set_files_permissions"
     ) as mock_perms:
         provision_user_files(str(tmp_path))
@@ -57,7 +59,9 @@ def test_provision_user_files_creates_dirs_and_sets_permissions(tmp_path):
 def test_provision_user_files_noop_without_toml(tmp_path, monkeypatch):
     """provision_user_files does nothing when no dtaas.toml is present."""
     monkeypatch.chdir(tmp_path)  # no dtaas.toml in output dir or cwd
-    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create, patch(
+    with patch(
+        "src.cmd_deploy_utils.projectPkg.create_user_dirs"
+    ) as mock_create, patch(
         "src.cmd_deploy_utils.projectPkg.set_files_permissions"
     ) as mock_perms:
         provision_user_files(str(tmp_path))
