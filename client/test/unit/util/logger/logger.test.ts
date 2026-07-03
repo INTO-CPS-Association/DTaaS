@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   initLogger,
   log,
+  logNavigation,
   resetLogger,
   isLoggerInitialized,
 } from 'util/logger/logger';
@@ -45,13 +46,19 @@ describe('logger', () => {
   });
 
   it('returns null when logging before init', () => {
-    const result = log({ page: '/page', element: 'btn', label: 'Click' });
+    const result = log({
+      event: 'click',
+      page: '/page',
+      element: 'btn',
+      label: 'Click',
+    });
     expect(result).toBeNull();
   });
 
   it('logs an event after initialization', async () => {
     await initLogger('testuser');
     const event = log({
+      event: 'click',
       page: '/library',
       element: 'tab',
       label: 'Functions',
@@ -59,6 +66,7 @@ describe('logger', () => {
     });
 
     expect(event).not.toBeNull();
+    expect(event!.event).toBe('click');
     expect(event!.page).toBe('/library');
     expect(event!.element).toBe('tab');
     expect(event!.label).toBe('Functions');
@@ -68,7 +76,12 @@ describe('logger', () => {
 
   it('persists log event to IndexedDB', async () => {
     await initLogger('testuser');
-    const event = log({ page: '/library', element: 'tab', label: 'Data' });
+    const event = log({
+      event: 'click',
+      page: '/library',
+      element: 'tab',
+      label: 'Data',
+    });
 
     expect(indexedDBLogger.addLog).toHaveBeenCalledWith(event);
   });
@@ -81,7 +94,12 @@ describe('logger', () => {
     };
 
     await initLogger('testuser');
-    const event = log({ page: '/library', element: 'tab', label: 'Data' });
+    const event = log({
+      event: 'change',
+      page: '/library',
+      element: 'tab',
+      label: 'Data',
+    });
 
     expect(beaconLogger.sendBeacon).toHaveBeenCalledWith(
       'https://example.com/logger',
@@ -93,7 +111,7 @@ describe('logger', () => {
 
   it('does not send beacon when logger URL is empty', async () => {
     await initLogger('testuser');
-    log({ page: '/library', element: 'tab', label: 'Data' });
+    log({ event: 'click', page: '/library', element: 'tab', label: 'Data' });
     expect(beaconLogger.sendBeacon).not.toHaveBeenCalled();
   });
 
@@ -101,5 +119,39 @@ describe('logger', () => {
     await initLogger('testuser');
     resetLogger();
     expect(isLoggerInitialized()).toBe(false);
+  });
+
+  it('returns null when logging navigation before init', () => {
+    expect(logNavigation('/library')).toBeNull();
+  });
+
+  it('logs a navigation event after initialization', async () => {
+    await initLogger('testuser');
+    const event = logNavigation('/library');
+
+    expect(event).not.toBeNull();
+    expect(event!.event).toBe('navigation');
+    expect(event!.page).toBe('/library');
+    expect(event!.element).toBe('page');
+    expect(event!.label).toBe('/library');
+  });
+
+  it('skips consecutive navigation events for the same page', async () => {
+    await initLogger('testuser');
+
+    expect(logNavigation('/library')).not.toBeNull();
+    expect(logNavigation('/library')).toBeNull();
+    expect(logNavigation('/digitaltwins')).not.toBeNull();
+    expect(logNavigation('/library')).not.toBeNull();
+  });
+
+  it('clears the last navigation page on reset', async () => {
+    await initLogger('testuser');
+    logNavigation('/library');
+
+    resetLogger();
+    await initLogger('testuser');
+
+    expect(logNavigation('/library')).not.toBeNull();
   });
 });

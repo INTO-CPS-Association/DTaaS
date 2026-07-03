@@ -5,6 +5,7 @@ describe('logEvent', () => {
     const event = createLogEvent({
       sessionId: 'session-123',
       userHash: 'hash-abc',
+      event: 'click',
       page: '/library',
       element: 'tab',
       label: 'Functions',
@@ -21,10 +22,24 @@ describe('logEvent', () => {
     expect(event.timestamp).toBeDefined();
   });
 
+  it('passes through the event type', () => {
+    const event = createLogEvent({
+      sessionId: 'session-123',
+      userHash: 'hash-abc',
+      event: 'change',
+      page: '/insights/log',
+      element: 'input',
+      label: 'Log filter',
+    });
+
+    expect(event.event).toBe('change');
+  });
+
   it('defaults context to empty object', () => {
     const event = createLogEvent({
       sessionId: 'session-123',
       userHash: 'hash-abc',
+      event: 'click',
       page: '/library',
       element: 'tab',
       label: 'Functions',
@@ -37,6 +52,7 @@ describe('logEvent', () => {
     const event = createLogEvent({
       sessionId: 's',
       userHash: 'h',
+      event: 'click',
       page: '/',
       element: 'btn',
       label: 'X',

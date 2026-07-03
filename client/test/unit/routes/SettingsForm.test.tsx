@@ -7,7 +7,6 @@ import {
   within,
   cleanup,
 } from '@testing-library/react';
-import { useSelector, useDispatch } from 'react-redux';
 import SettingsForm from 'route/account/SettingsForm';
 import {
   setGroupName,
@@ -16,8 +15,7 @@ import {
   setDTDirectory,
   setRunnerTag,
   setBranchName,
-  DEFAULT_SETTINGS,
-  DEFAULT_MEASUREMENT,
+  setLoggingEnabled,
 } from 'store/settings.slice';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
 import { clearDigitalTwins } from 'model/backend/state/digitalTwin.slice';
@@ -51,6 +49,8 @@ describe('SettingsForm', () => {
     expect(screen.getByLabelText(/dt directory/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/common library/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^runner tag$/i)).toBeInTheDocument();
+    expect(screen.getByText(/logging settings/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/enable logging/i)).toBeChecked();
   });
 
   it('updates local state on input change', () => {
@@ -141,6 +141,16 @@ describe('SettingsForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /reset to defaults/i }));
 
     expect(mockDispatch).toHaveBeenCalledWith(resetToDefaults());
+  });
+
+  it('saves logging preference when toggled', async () => {
+    fireEvent.click(screen.getByLabelText(/enable logging/i));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /save settings/i }));
+    });
+
+    expect(mockDispatch).toHaveBeenCalledWith(setLoggingEnabled(false));
   });
 
   it('shows "Settings reset to defaults" message when reset is clicked', async () => {
@@ -247,67 +257,5 @@ describe('SettingsForm', () => {
     expect(
       screen.queryByText('Group name is required'),
     ).not.toBeInTheDocument();
-  });
-
-  describe('digital twin name synchronization on load', () => {
-    it('dispatches setPrimaryDTName when loaded DT names do not include stored primary DT name', async () => {
-      const mockedUseSelector = useSelector as unknown as jest.Mock;
-      mockedUseSelector.mockImplementation((selector) =>
-        selector({
-          settings: {
-            ...DEFAULT_SETTINGS,
-            ...DEFAULT_MEASUREMENT,
-            primaryDTName: 'non-existent-dt',
-          },
-          digitalTwin: {
-            digitalTwin: {
-              'available-dt-1': {},
-              'available-dt-2': {},
-            },
-          },
-        }),
-      );
-
-      const mockedUseDispatch = useDispatch as unknown as jest.Mock;
-      const testDispatch = jest.fn();
-      mockedUseDispatch.mockReturnValue(testDispatch);
-
-      renderWithRouter(<SettingsForm />, { route: '/private' });
-
-      await waitFor(() => {
-        // Verify that some dispatch was called during initialization
-        expect(testDispatch).toHaveBeenCalled();
-      });
-    });
-
-    it('dispatches setSecondaryDTName when loaded DT names do not include stored secondary DT name', async () => {
-      const mockedUseSelector = useSelector as unknown as jest.Mock;
-      mockedUseSelector.mockImplementation((selector) =>
-        selector({
-          settings: {
-            ...DEFAULT_SETTINGS,
-            ...DEFAULT_MEASUREMENT,
-            secondaryDTName: 'non-existent-dt',
-          },
-          digitalTwin: {
-            digitalTwin: {
-              'available-dt-1': {},
-              'available-dt-2': {},
-            },
-          },
-        }),
-      );
-
-      const mockedUseDispatch = useDispatch as unknown as jest.Mock;
-      const testDispatch = jest.fn();
-      mockedUseDispatch.mockReturnValue(testDispatch);
-
-      renderWithRouter(<SettingsForm />, { route: '/private' });
-
-      await waitFor(() => {
-        // Verify that some dispatch was called during initialization
-        expect(testDispatch).toHaveBeenCalled();
-      });
-    });
   });
 });

@@ -13,6 +13,13 @@ import { LogEvent } from 'util/logger/logEvent';
 
 jest.mock('util/logger/indexedDBLogger');
 
+jest.mock('page/Layout', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="mock-layout">{children}</div>
+  ),
+}));
+
 const mockGetAllLogs = indexedDBLogger.getAllLogs as jest.MockedFunction<
   typeof indexedDBLogger.getAllLogs
 >;
@@ -70,6 +77,18 @@ describe('LogViewer', () => {
     expect(content).toContain('Private');
   });
 
+  it('shows entry details in dedicated cards', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('log-content')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('subtab')).toBeInTheDocument();
+    expect(screen.getAllByText(/\/library/).length).toBeGreaterThan(0);
+    expect(screen.getByText('tab: functions')).toBeInTheDocument();
+  });
+
   it('shows newest log entries first', async () => {
     render(<LogViewer />);
 
@@ -91,19 +110,40 @@ describe('LogViewer', () => {
     });
   });
 
-  it('clears logs when clear button is clicked', async () => {
+  it('asks for confirmation before clearing logs', async () => {
     render(<LogViewer />);
 
     await waitFor(() => {
       expect(screen.getByTestId('clear-logs')).toBeEnabled();
     });
 
-    mockGetAllLogs.mockResolvedValue([]);
     fireEvent.click(screen.getByTestId('clear-logs'));
+
+    expect(screen.getByText('Clear all logs?')).toBeInTheDocument();
+    expect(mockClearLogs).not.toHaveBeenCalled();
+
+    mockGetAllLogs.mockResolvedValue([]);
+    fireEvent.click(screen.getByTestId('confirm-clear-logs'));
 
     await waitFor(() => {
       expect(mockClearLogs).toHaveBeenCalled();
     });
+  });
+
+  it('keeps logs when clearing is cancelled', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('clear-logs')).toBeEnabled();
+    });
+
+    fireEvent.click(screen.getByTestId('clear-logs'));
+    fireEvent.click(screen.getByTestId('cancel-clear-logs'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Clear all logs?')).not.toBeInTheDocument();
+    });
+    expect(mockClearLogs).not.toHaveBeenCalled();
   });
 
   it('shows empty state when no logs', async () => {
@@ -165,6 +205,39 @@ describe('LogViewer', () => {
     await waitFor(() => {
       expect(mockSubscribeToLogChanges).toHaveBeenCalled();
     });
+  });
+
+  it('filters log entries by search text', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('log-content')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Filter logs'), {
+      target: { value: 'subtab' },
+    });
+
+    expect(screen.getByText('1 of 2 log entries')).toBeInTheDocument();
+    const content = screen.getByTestId('log-content').textContent ?? '';
+    expect(content).toContain('Private');
+    expect(content).not.toContain('Functions');
+  });
+
+  it('shows a message when no entries match the filter', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('log-content')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Filter logs'), {
+      target: { value: 'no-such-entry' },
+    });
+
+    expect(
+      screen.getByText('No entries match the current filter.'),
+    ).toBeInTheDocument();
   });
 
   it('refreshes logs after a subscribed database change', async () => {

@@ -3,6 +3,7 @@ import settingsReducer, {
   setDTDirectory,
   setCommonLibraryProjectName,
   setRunnerTag,
+  setLoggingEnabled,
   resetToDefaults,
   DEFAULT_SETTINGS,
   DEFAULT_MEASUREMENT,
@@ -43,6 +44,11 @@ describe('settingsSlice', () => {
   it('should handle setRunnerTag', () => {
     const state = settingsReducer(initialState, setRunnerTag('testRunnerTag'));
     expect(state.RUNNER_TAG).toBe('testRunnerTag');
+  });
+
+  it('should handle setLoggingEnabled', () => {
+    const state = settingsReducer(initialState, setLoggingEnabled(false));
+    expect(state.loggingEnabled).toBe(false);
   });
 
   it('should handle resetToDefaults', () => {

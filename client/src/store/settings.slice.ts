@@ -15,6 +15,7 @@ export const DEFAULT_SETTINGS = {
   COMMON_LIBRARY_PROJECT_NAME,
   RUNNER_TAG,
   BRANCH_NAME,
+  loggingEnabled: true,
 };
 
 export { DEFAULT_MEASUREMENT };
@@ -30,6 +31,7 @@ interface SettingsState {
   primaryDTName: string;
   secondaryDTName: string;
   disabledTaskNames: string[];
+  loggingEnabled: boolean;
 }
 
 export const loadInitialSettings = (): SettingsState => {
@@ -75,6 +77,9 @@ export const settingsSlice = createSlice({
     setSecondaryDTName: (state, action: PayloadAction<string>) => {
       state.secondaryDTName = action.payload;
     },
+    setLoggingEnabled: (state, action: PayloadAction<boolean>) => {
+      state.loggingEnabled = action.payload;
+    },
     toggleTaskEnabled: (state, action: PayloadAction<string>) => {
       const name = action.payload;
       const idx = state.disabledTaskNames.indexOf(name);
@@ -100,6 +105,7 @@ export const {
   setSecondaryRunnerTag,
   setPrimaryDTName,
   setSecondaryDTName,
+  setLoggingEnabled,
   toggleTaskEnabled,
   resetToDefaults,
 } = settingsSlice.actions;

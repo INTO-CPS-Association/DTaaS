@@ -6,12 +6,14 @@ interface FilterProps {
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  loggerLabel?: string;
 }
 
 const Filter: React.FC<FilterProps> = ({
   placeholder = 'Search by name',
   value,
   onChange,
+  loggerLabel = 'Asset filter',
 }) => {
   const handleClear = () => onChange('');
 
@@ -29,7 +31,7 @@ const Filter: React.FC<FilterProps> = ({
         slotProps={{
           htmlInput: {
             'data-logger-element': 'input',
-            'data-logger-label': 'Asset filter',
+            'data-logger-label': loggerLabel,
           },
         }}
       />

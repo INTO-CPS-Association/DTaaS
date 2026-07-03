@@ -1,8 +1,10 @@
+export type LogEventType = 'click' | 'change' | 'navigation' | 'notification';
+
 export interface LogEvent {
   readonly sessionId: string;
   readonly userHash: string;
   readonly timestamp: string;
-  readonly event: string;
+  readonly event: LogEventType;
   readonly page: string;
   readonly element: string;
   readonly label: string;
@@ -12,6 +14,7 @@ export interface LogEvent {
 export interface CreateLogEventInput {
   readonly sessionId: string;
   readonly userHash: string;
+  readonly event: LogEventType;
   readonly page: string;
   readonly element: string;
   readonly label: string;
@@ -21,6 +24,7 @@ export interface CreateLogEventInput {
 export function createLogEvent({
   sessionId,
   userHash,
+  event,
   page,
   element,
   label,
@@ -30,7 +34,7 @@ export function createLogEvent({
     sessionId,
     userHash,
     timestamp: new Date().toISOString(),
-    event: 'click',
+    event,
     page,
     element,
     label,

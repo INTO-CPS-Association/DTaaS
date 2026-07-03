@@ -1,8 +1,15 @@
 import { TextField, Typography, Grid, Divider } from '@mui/material';
 import { SettingsFieldProps } from 'route/account/SettingsForm';
 
+type ApplicationFieldId =
+  | 'groupName'
+  | 'dtDirectory'
+  | 'commonLibraryProjectName'
+  | 'runnerTag'
+  | 'branchName';
+
 interface FieldConfig {
-  id: string;
+  id: ApplicationFieldId;
   label: string;
   errorMsg: string;
   helpMsg: string;

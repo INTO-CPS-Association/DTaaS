@@ -59,8 +59,20 @@ function ConfirmDialog({
         <DialogContentText>{description}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onConfirm} color="primary" variant="contained">
+        <Button
+          onClick={onClose}
+          data-logger-element="button"
+          data-logger-label={`Cancel ${confirmLabel}`}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={onConfirm}
+          color="primary"
+          variant="contained"
+          data-logger-element="button"
+          data-logger-label={`Confirm ${confirmLabel}`}
+        >
           {confirmLabel}
         </Button>
       </DialogActions>
@@ -110,6 +122,8 @@ export default function MeasurementControls({
             onClick={onStart}
             size="small"
             disabled={noTasksEnabled || isComplete || hasStarted}
+            data-logger-element="button"
+            data-logger-label="Start Measurement"
           >
             Start
           </Button>
@@ -120,6 +134,8 @@ export default function MeasurementControls({
             onClick={() => setStopDialogOpen(true)}
             size="small"
             disabled={!isRunning}
+            data-logger-element="button"
+            data-logger-label="Stop Measurement"
           >
             Stop
           </Button>
@@ -130,6 +146,8 @@ export default function MeasurementControls({
             onClick={onRestart}
             disabled={noTasksEnabled || !hasStarted || isRunning}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Restart Measurement"
           >
             Restart
           </Button>
@@ -140,6 +158,8 @@ export default function MeasurementControls({
             onClick={() => downloadResultsJson(results)}
             disabled={!hasAnyResults}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Export Measurement Results"
           >
             Export
           </Button>
@@ -150,6 +170,8 @@ export default function MeasurementControls({
             onClick={() => setPurgeDialogOpen(true)}
             disabled={isRunning}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Purge Measurement Data"
           >
             Purge
           </Button>

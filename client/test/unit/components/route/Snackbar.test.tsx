@@ -3,10 +3,15 @@ import '@testing-library/jest-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomSnackbar from 'components/route/Snackbar';
 import { hideSnackbar } from 'store/snackbar.slice';
+import { log } from 'util/logger/logger';
 
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
   useDispatch: jest.fn(),
+}));
+
+jest.mock('util/logger/logger', () => ({
+  log: jest.fn(),
 }));
 
 jest.mock('store/snackbar.slice', () => ({
@@ -211,6 +216,39 @@ describe('CustomSnackbar', () => {
 
     expect(mockSnackbarCalls.length).toBeGreaterThan(0);
     expect(mockSnackbarCalls[0].autoHideDuration).toBeUndefined();
+  });
+
+  it('logs a notification event for each shown snackbar', () => {
+    renderSnackbar([
+      { id: 0, message: 'Pipeline started', severity: 'success' },
+      { id: 1, message: 'Pipeline failed', severity: 'error' },
+    ]);
+
+    expect(log).toHaveBeenCalledTimes(2);
+    expect(log).toHaveBeenCalledWith({
+      event: 'notification',
+      page: expect.any(String),
+      element: 'snackbar',
+      label: 'Pipeline started',
+      context: { severity: 'success' },
+    });
+    expect(log).toHaveBeenCalledWith({
+      event: 'notification',
+      page: expect.any(String),
+      element: 'snackbar',
+      label: 'Pipeline failed',
+      context: { severity: 'error' },
+    });
+  });
+
+  it('does not log a notification again on re-render', () => {
+    const { rerender } = renderSnackbar([
+      { id: 0, message: 'Once', severity: 'info' },
+    ]);
+
+    rerender(<CustomSnackbar />);
+
+    expect(log).toHaveBeenCalledTimes(1);
   });
 
   it('renders multiple snackbars when items has multiple entries', () => {

@@ -1,7 +1,12 @@
 import { render, act, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authSlice from 'store/auth.slice';
+import settingsSlice, {
+  DEFAULT_MEASUREMENT,
+  DEFAULT_SETTINGS,
+} from 'store/settings.slice';
 
 let capturedInitCall: string | null = null;
 
@@ -18,6 +23,7 @@ jest.mock('util/logger/logger', () => ({
   }),
   isLoggerInitialized: jest.fn().mockReturnValue(true),
   log: jest.fn(),
+  logNavigation: jest.fn(),
   resetLogger: jest.fn(),
 }));
 
@@ -39,11 +45,30 @@ function TestComponent() {
   );
 }
 
-const createTestStore = (userName?: string) =>
+const createTestStore = (userName?: string, loggingEnabled = true) =>
   configureStore({
-    reducer: combineReducers({ auth: authSlice }),
-    preloadedState: { auth: { userName } },
+    reducer: combineReducers({ auth: authSlice, settings: settingsSlice }),
+    preloadedState: {
+      auth: { userName },
+      settings: {
+        ...DEFAULT_SETTINGS,
+        ...DEFAULT_MEASUREMENT,
+        loggingEnabled,
+      },
+    },
   });
+
+function renderWithProviders(
+  ui: React.ReactElement,
+  store: ReturnType<typeof createTestStore>,
+  initialPath = '/',
+) {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[initialPath]}>{ui}</MemoryRouter>
+    </Provider>,
+  );
+}
 
 describe('useLogger', () => {
   beforeEach(() => {
@@ -59,11 +84,7 @@ describe('useLogger', () => {
   it('initializes the logger when username is available', async () => {
     const store = createTestStore('alice');
 
-    render(
-      <Provider store={store}>
-        <TestComponent />
-      </Provider>,
-    );
+    renderWithProviders(<TestComponent />, store);
 
     await waitFor(() => {
       expect(capturedInitCall).toBe('alice');
@@ -74,11 +95,17 @@ describe('useLogger', () => {
     const store = createTestStore(undefined);
 
     await act(async () => {
-      render(
-        <Provider store={store}>
-          <TestComponent />
-        </Provider>,
-      );
+      renderWithProviders(<TestComponent />, store);
+    });
+
+    expect(logger.initLogger).not.toHaveBeenCalled();
+  });
+
+  it('does not initialize when logging is disabled', async () => {
+    const store = createTestStore('alice', false);
+
+    await act(async () => {
+      renderWithProviders(<TestComponent />, store);
     });
 
     expect(logger.initLogger).not.toHaveBeenCalled();
@@ -88,11 +115,7 @@ describe('useLogger', () => {
     const store = createTestStore(undefined);
     sessionStorage.setItem('username', 'session-user');
 
-    render(
-      <Provider store={store}>
-        <TestComponent />
-      </Provider>,
-    );
+    renderWithProviders(<TestComponent />, store);
 
     await waitFor(() => {
       expect(capturedInitCall).toBe('session-user');
@@ -104,11 +127,7 @@ describe('useLogger', () => {
 
     let container: HTMLElement;
     await act(async () => {
-      const result = render(
-        <Provider store={store}>
-          <TestComponent />
-        </Provider>,
-      );
+      const result = renderWithProviders(<TestComponent />, store);
       container = result.container;
     });
 
@@ -118,11 +137,70 @@ describe('useLogger', () => {
     });
 
     expect(logger.log).toHaveBeenCalledWith({
+      event: 'click',
       page: expect.any(String),
       element: 'button',
       label: 'TestBtn',
       context: { action: 'test' },
     });
+  });
+
+  it('logs change events on form controls with data-logger attributes', async () => {
+    const store = createTestStore('alice');
+
+    function TestWithInput() {
+      useLogger();
+      return (
+        <input
+          data-logger-element="input"
+          data-logger-label="TestInput"
+          defaultValue=""
+        />
+      );
+    }
+
+    let container: HTMLElement;
+    await act(async () => {
+      const result = renderWithProviders(<TestWithInput />, store);
+      container = result.container;
+    });
+
+    const input = container!.querySelector('input')!;
+    act(() => {
+      fireEvent.change(input, { target: { value: 'abc' } });
+    });
+
+    expect(logger.log).toHaveBeenCalledWith({
+      event: 'change',
+      page: expect.any(String),
+      element: 'input',
+      label: 'TestInput',
+      context: {},
+    });
+  });
+
+  it('does not log clicks on form controls', async () => {
+    const store = createTestStore('alice');
+
+    function TestWithInput() {
+      useLogger();
+      return (
+        <input data-logger-element="input" data-logger-label="TestInput" />
+      );
+    }
+
+    let container: HTMLElement;
+    await act(async () => {
+      const result = renderWithProviders(<TestWithInput />, store);
+      container = result.container;
+    });
+
+    const input = container!.querySelector('input')!;
+    act(() => {
+      fireEvent.click(input);
+    });
+
+    expect(logger.log).not.toHaveBeenCalled();
   });
 
   it('does not log clicks on elements without data-logger attributes', async () => {
@@ -135,11 +213,7 @@ describe('useLogger', () => {
 
     let container: HTMLElement;
     await act(async () => {
-      const result = render(
-        <Provider store={store}>
-          <TestWithPlainBtn />
-        </Provider>,
-      );
+      const result = renderWithProviders(<TestWithPlainBtn />, store);
       container = result.container;
     });
 
@@ -149,5 +223,65 @@ describe('useLogger', () => {
     });
 
     expect(logger.log).not.toHaveBeenCalled();
+  });
+
+  it('does not log clicks when logging is disabled', async () => {
+    const store = createTestStore('alice', false);
+
+    let container: HTMLElement;
+    await act(async () => {
+      const result = renderWithProviders(<TestComponent />, store);
+      container = result.container;
+    });
+
+    const button = container!.querySelector('button')!;
+    act(() => {
+      fireEvent.click(button);
+    });
+
+    expect(logger.log).not.toHaveBeenCalled();
+  });
+
+  it('logs a navigation event for the current page when already initialized', async () => {
+    const store = createTestStore('alice');
+
+    await act(async () => {
+      renderWithProviders(<TestComponent />, store, '/library');
+    });
+
+    expect(logger.logNavigation).toHaveBeenCalledWith('/library');
+  });
+
+  it('logs a navigation event once initialization completes', async () => {
+    (logger.isLoggerInitialized as jest.Mock).mockReturnValue(false);
+    const store = createTestStore('alice');
+
+    renderWithProviders(<TestComponent />, store, '/digitaltwins');
+
+    await waitFor(() => {
+      expect(logger.logNavigation).toHaveBeenCalledWith('/digitaltwins');
+    });
+  });
+
+  it('does not log a navigation event while uninitialized', async () => {
+    (logger.isLoggerInitialized as jest.Mock).mockReturnValue(false);
+    (logger.initLogger as jest.Mock).mockReturnValue(new Promise(() => {}));
+    const store = createTestStore('alice');
+
+    await act(async () => {
+      renderWithProviders(<TestComponent />, store, '/library');
+    });
+
+    expect(logger.logNavigation).not.toHaveBeenCalled();
+  });
+
+  it('does not log navigation when logging is disabled', async () => {
+    const store = createTestStore('alice', false);
+
+    await act(async () => {
+      renderWithProviders(<TestComponent />, store, '/library');
+    });
+
+    expect(logger.logNavigation).not.toHaveBeenCalled();
   });
 });

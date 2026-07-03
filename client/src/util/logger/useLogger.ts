@@ -1,7 +1,16 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { RootState } from 'store/store';
-import { initLogger, isLoggerInitialized, log } from 'util/logger/logger';
+import {
+  initLogger,
+  isLoggerInitialized,
+  log,
+  logNavigation,
+} from 'util/logger/logger';
+import { LogEventType } from 'util/logger/logEvent';
+
+const LOGGED_EVENT_TYPES: readonly LogEventType[] = ['click', 'change'];
 
 function findLoggerElement(target: EventTarget | null): HTMLElement | null {
   let el = target as HTMLElement | null;
@@ -25,11 +34,16 @@ function getLoggerUsername(stateUsername: string | undefined): string {
   return stateUsername ?? sessionStorage.getItem('username') ?? '';
 }
 
-function startLogger(username: string, initRef: { current: boolean }): void {
+function startLogger(
+  username: string,
+  initRef: { current: boolean },
+  onReady: () => void,
+): void {
   if (!username || initRef.current) return;
   initLogger(username)
     .then(() => {
       initRef.current = true;
+      onReady();
     })
     .catch((err) => {
       // eslint-disable-next-line no-console
@@ -37,8 +51,17 @@ function startLogger(username: string, initRef: { current: boolean }): void {
     });
 }
 
-function logClickEvent(event: MouseEvent): void {
+function isFormControl(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  );
+}
+
+function logDomEvent(event: Event): void {
   if (!isLoggerInitialized()) return;
+  if (event.type === 'click' && isFormControl(event.target)) return;
   const el = findLoggerElement(event.target);
   if (!el) return;
 
@@ -47,27 +70,49 @@ function logClickEvent(event: MouseEvent): void {
   const context = parseContext(el.dataset.loggerContext);
   const page = window.location.pathname;
 
-  log({ page, element, label, context });
+  log({ event: event.type as LogEventType, page, element, label, context });
 }
 
-function registerClickLogger(handleClick: (event: MouseEvent) => void) {
-  document.addEventListener('click', handleClick, true);
-  return () => document.removeEventListener('click', handleClick, true);
+function registerDomEventLogger(handleEvent: (event: Event) => void) {
+  LOGGED_EVENT_TYPES.forEach((type) =>
+    document.addEventListener(type, handleEvent, true),
+  );
+  return () =>
+    LOGGED_EVENT_TYPES.forEach((type) =>
+      document.removeEventListener(type, handleEvent, true),
+    );
 }
 
 // eslint-disable-next-line import/prefer-default-export
 export function useLogger(): void {
   const stateUsername = useSelector((state: RootState) => state.auth.userName);
+  const loggingEnabled = useSelector(
+    (state: RootState) => state.settings.loggingEnabled,
+  );
   const username = getLoggerUsername(stateUsername);
   const initRef = useRef(false);
+  const [ready, setReady] = useState(isLoggerInitialized());
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    startLogger(username, initRef);
-  }, [username]);
+    if (!loggingEnabled) return;
+    startLogger(username, initRef, () => setReady(true));
+  }, [loggingEnabled, username]);
 
-  const handleClick = useCallback((event: MouseEvent) => {
-    logClickEvent(event);
-  }, []);
+  useEffect(() => {
+    if (loggingEnabled && ready) logNavigation(pathname);
+  }, [loggingEnabled, ready, pathname]);
 
-  useEffect(() => registerClickLogger(handleClick), [handleClick]);
+  const handleEvent = useCallback(
+    (event: Event) => {
+      if (!loggingEnabled) return;
+      logDomEvent(event);
+    },
+    [loggingEnabled],
+  );
+
+  useEffect(() => {
+    if (!loggingEnabled) return undefined;
+    return registerDomEventLogger(handleEvent);
+  }, [handleEvent, loggingEnabled]);
 }

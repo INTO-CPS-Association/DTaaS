@@ -1,4 +1,4 @@
-import { LogEvent, createLogEvent } from 'util/logger/logEvent';
+import { LogEvent, LogEventType, createLogEvent } from 'util/logger/logEvent';
 import { hashUsername } from 'util/logger/hashUtils';
 import { getSessionId } from 'util/logger/sessionManager';
 import { logToConsole } from 'util/logger/consoleLogger';
@@ -9,8 +9,10 @@ let userHash = '';
 let sessionId = '';
 let loggerUrl = '';
 let initialized = false;
+let lastNavigationPage = '';
 
 export interface LogInput {
+  readonly event: LogEventType;
   readonly page: string;
   readonly element: string;
   readonly label: string;
@@ -29,6 +31,7 @@ export function isLoggerInitialized(): boolean {
 }
 
 export function log({
+  event,
   page,
   element,
   label,
@@ -36,23 +39,39 @@ export function log({
 }: LogInput): LogEvent | null {
   if (!initialized) return null;
 
-  const event = createLogEvent({
+  const logEvent = createLogEvent({
     sessionId,
     userHash,
+    event,
     page,
     element,
     label,
     context,
   });
-  logToConsole(event);
-  addLog(event).catch((err) => {
+  logToConsole(logEvent);
+  addLog(logEvent).catch((err) => {
     // eslint-disable-next-line no-console
     console.warn('Logger: failed to persist event to IndexedDB', err);
   });
   if (loggerUrl) {
-    sendBeacon(loggerUrl, event);
+    sendBeacon(loggerUrl, logEvent);
   }
-  return event;
+  return logEvent;
+}
+
+export function logNavigation(page: string): LogEvent | null {
+  if (page === lastNavigationPage) return null;
+
+  const logEvent = log({
+    event: 'navigation',
+    page,
+    element: 'page',
+    label: page,
+  });
+  if (logEvent) {
+    lastNavigationPage = page;
+  }
+  return logEvent;
 }
 
 export function resetLogger(): void {
@@ -60,4 +79,5 @@ export function resetLogger(): void {
   sessionId = '';
   loggerUrl = '';
   initialized = false;
+  lastNavigationPage = '';
 }
