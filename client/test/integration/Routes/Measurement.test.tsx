@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 import { testLayout } from 'test/integration/Routes/routes.testUtil';
 
-const setup = () => setupIntegrationTest('/insight/measure');
+const setup = () => setupIntegrationTest('/insights/measure');
 
 describe('Measurement Page', () => {
   beforeEach(async () => {
