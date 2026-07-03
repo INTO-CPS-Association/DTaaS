@@ -108,9 +108,10 @@ def test_resolve_delete_usernames_rejects_both(tmp_path):
     """Passing both positional usernames and --file is rejected."""
     csv = tmp_path / "u.csv"
     csv.write_text("username,email\nalice,a@x.io\n")
+    csv_file = str(csv)
 
     with pytest.raises(click.ClickException, match="either USERNAMES or --file"):
-        resolve_delete_usernames(("alice",), str(csv))
+        resolve_delete_usernames(("alice",), csv_file)
 
 
 def test_resolve_delete_usernames_rejects_neither():
