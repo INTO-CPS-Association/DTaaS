@@ -34,7 +34,7 @@ def dtaas():
       4.  dtaas generate-deployment --type secure-server
       5.  dtaas admin install                # start containers
 
-    Full documentation: https://into-cps-association.github.io/DTaaS
+    Full documentation: https://pypi.org/project/dtaas
     """
     return
 
