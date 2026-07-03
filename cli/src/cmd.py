@@ -24,7 +24,18 @@ from .cmd_user import add as user_add, delete as user_delete
 ### Groups
 @click.group()
 def dtaas():
-    """Provision, configure, and manage Digital Twin as a Service environments."""
+    """Provision, configure, and manage Digital Twin as a Service environments.
+
+    \b
+    First-time setup:
+      1.  dtaas admin config generate        # create dtaas.toml template
+      2.  # edit dtaas.toml (server DNS, paths, credentials)
+      3.  dtaas admin config validate        # check for errors
+      4.  dtaas generate-deployment --type secure-server
+      5.  dtaas admin install                # start containers
+
+    Full documentation: https://into-cps-association.github.io/DTaaS
+    """
     return
 
 
@@ -42,6 +53,8 @@ def generate_project(output_dir, force):
     Creates dtaas.toml, users.server.yml, and users.server.secure.yml
     in the target directory. Existing files are left untouched unless
     --force is set.
+
+    Next: edit dtaas.toml and run 'dtaas admin config validate'.
     """
     try:
         projectPkg.generate_project(output_dir, force)
@@ -52,13 +65,21 @@ def generate_project(output_dir, force):
 
 @dtaas.group()
 def admin():
-    """administration commands"""
+    """Commands to install, update, and manage a DTaaS deployment.
+
+    Run 'dtaas admin config generate' first to create dtaas.toml,
+    then 'dtaas admin config validate' before any other command.
+    """
     return
 
 
 @admin.group(name="config")
 def config():
-    """configuration file commands"""
+    """Manage dtaas.toml — the single configuration file for a deployment.
+
+    Start here: generate a template, fill it in, then validate before
+    running 'dtaas generate-deployment' or any other 'dtaas admin' command.
+    """
 
 
 @config.command(name="generate")
@@ -70,7 +91,12 @@ def config():
 )
 @click.option("--force", is_flag=True, help="Overwrite an existing dtaas.toml.")
 def config_generate(output_dir, force):
-    """Generate a dtaas.toml configuration template to fill in."""
+    """Generate a dtaas.toml configuration template.
+
+    Writes dtaas.toml and a sample users.csv into --output-dir.
+    Edit dtaas.toml to set your server address, paths, and credentials,
+    then run 'dtaas admin config validate' to check for errors.
+    """
     try:
         skipped = projectPkg.generate_config(output_dir, force)
     except OSError as exc:
@@ -87,7 +113,17 @@ def config_generate(output_dir, force):
     help="Directory containing the dtaas.toml to validate.",
 )
 def config_validate(output_dir):
-    """Validate the values in dtaas.toml."""
+    """Validate the values in dtaas.toml and report all errors at once.
+
+    Reads dtaas.toml from --output-dir (falls back to the current directory).
+    Fix any errors shown, then run:
+
+    \b
+      dtaas generate-deployment --type <TYPE>
+
+    where TYPE is one of: localhost, insecure-server, secure-server,
+    secure-server-gitlab, workspace-localhost, workspace-secure-server.
+    """
     try:
         errors = configValidatePkg.validate_config(output_dir)
     except (OSError, ValueError) as exc:
@@ -123,6 +159,11 @@ def config_reconcile(output_dir, fix):
     it operates on the current directory regardless of --output-dir).
     'unexpected' services (running but not registered) are never touched by
     --fix -- remove those deliberately with 'dtaas admin user delete'.
+
+    \b
+    Examples:
+      dtaas admin config reconcile           # report drift (read-only)
+      dtaas admin config reconcile --fix     # also reprovision missing users
     """
     try:
         run_reconcile(output_dir, fix)
@@ -147,10 +188,19 @@ def config_reconcile(output_dir, fix):
 )
 @click.option("--force", is_flag=True, help="Overwrite existing files.")
 def generate_deployment(deploy_type, output_dir, force):
-    """Generate project structure for a deployment scenario.
+    """Generate files for a deployment scenario.
 
-    Copies all files for the chosen --type into the target directory,
-    removing the need to download separate zip packages.
+    Copies docker-compose.yml and supporting files for the chosen --type
+    into the target directory, substituting values from dtaas.toml when
+    present.
+
+    \b
+    Examples:
+      dtaas generate-deployment --type secure-server
+      dtaas generate-deployment --type localhost --output-dir ./demo
+      dtaas generate-deployment --type insecure-server --force
+
+    Next: edit generated files if needed, then run 'dtaas admin install'.
     """
     try:
         projectPkg.generate_deploy_project(deploy_type, output_dir, force)
@@ -163,7 +213,10 @@ def generate_deployment(deploy_type, output_dir, force):
 
 @admin.group()
 def user():
-    """user management commands"""
+    """Add and remove users from a running DTaaS instance.
+
+    Requires a running deployment. Run 'dtaas admin install' first.
+    """
     return
 
 
@@ -180,7 +233,14 @@ user.add_command(user_delete)
     help="Installation directory containing the generated deployment.",
 )
 def install(output_dir):
-    """Bring the generated deployment up with 'docker compose up -d'."""
+    """Start the deployment with 'docker compose up -d'.
+
+    Requires a deployment generated by 'dtaas generate-deployment'.
+    Before starting, provisions per-user workspace directories for any
+    users listed under [users].starting in dtaas.toml.
+
+    Next: run 'dtaas admin user add' to add users to the running instance.
+    """
     try:
         provision_user_files(output_dir)
         deployPkg.install(output_dir)
@@ -208,7 +268,12 @@ def install(output_dir):
     help="Skip the confirmation prompt for --remove-user-files.",
 )
 def uninstall(output_dir, remove_user_files, yes):
-    """Tear the deployment down with 'docker compose down'."""
+    """Stop and remove the deployment with 'docker compose down'.
+
+    Per-user workspace files are preserved by default.
+    Use --remove-user-files to also delete workspace directories
+    (prompts for confirmation; skip with --yes in non-interactive scripts).
+    """
     confirm_remove_user_files(remove_user_files, yes)
     run_uninstall(output_dir, remove_user_files)
 
@@ -237,11 +302,16 @@ def uninstall(output_dir, remove_user_files, yes):
     help="Installation directory containing the generated deployment.",
 )
 def update(**kwargs):
-    """Update deployment assets in place.
+    """Update deployment assets in place without regenerating the project.
 
-    --certs validates the newest certificate pair from certs-src and swaps it
-    in before reloading traefik. --config re-applies dtaas.toml to every
-    service's config file and restarts the services whose files changed; add
-    --dry-run to preview the changes first.
+    \b
+    Examples:
+      dtaas admin update --certs                  # rotate TLS certificates
+      dtaas admin update --config                 # re-apply dtaas.toml
+      dtaas admin update --config --dry-run       # preview changes first
+
+    --certs swaps in the newest certificate pair from certs-src and reloads
+    traefik. --config re-substitutes dtaas.toml into service config files
+    and restarts services whose files changed.
     """
     run_update(UpdateOptions(**kwargs))

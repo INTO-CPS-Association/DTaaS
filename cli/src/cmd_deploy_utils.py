@@ -5,6 +5,7 @@ certificate-copy orchestration used by 'generate-deployment' and provisioning
 user workspace files ahead of 'admin install'.
 """
 
+import inspect as _inspect
 import click
 from .pkg import project as projectPkg
 from .pkg import certs as certsPkg
@@ -17,9 +18,10 @@ class VerticalChoicesCommand(click.Command):
 
     def format_help_text(self, ctx, formatter):
         if self.help:
+            text = _inspect.cleandoc(self.help).partition("\f")[0]
             formatter.write_paragraph()
             with formatter.indentation():
-                formatter.write_text(self.help)
+                formatter.write_text(text)
 
     def format_options(self, ctx, formatter):
         rows = []
