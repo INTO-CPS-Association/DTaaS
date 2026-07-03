@@ -1,13 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-import { getAllLogs, clearLogs } from 'util/logger/indexedDBLogger';
+import {
+  getAllLogs,
+  clearLogs,
+  subscribeToLogChanges,
+} from 'util/logger/indexedDBLogger';
 import { LogEvent } from 'util/logger/logEvent';
+
+function timestampValue(event: LogEvent): number {
+  const parsed = Date.parse(event.timestamp);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function sortLogsNewestFirst(entries: LogEvent[]): LogEvent[] {
+  return [...entries].sort(
+    (first, second) => timestampValue(second) - timestampValue(first),
+  );
+}
+
+function toJsonLines(entries: LogEvent[]): string {
+  return entries.map((event) => JSON.stringify(event)).join('\n');
+}
 
 function LogViewer() {
   const [logs, setLogs] = useState<LogEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveUpdate, setLiveUpdate] = useState(false);
 
   const loadLogs = useCallback(async () => {
     const entries = await getAllLogs().catch(() => [] as LogEvent[]);
@@ -16,13 +38,15 @@ function LogViewer() {
   }, []);
 
   useEffect(() => {
-    getAllLogs()
-      .catch(() => [] as LogEvent[])
-      .then((entries) => {
-        setLogs(entries);
-        setLoading(false);
-      });
-  }, []);
+    loadLogs();
+  }, [loadLogs]);
+
+  useEffect(() => {
+    if (!liveUpdate) return undefined;
+
+    loadLogs();
+    return subscribeToLogChanges(loadLogs);
+  }, [liveUpdate, loadLogs]);
 
   const handleClear = async () => {
     await clearLogs().catch(() => {});
@@ -30,7 +54,7 @@ function LogViewer() {
   };
 
   const handleDownload = () => {
-    const jsonl = logs.map((e) => JSON.stringify(e)).join('\n');
+    const jsonl = toJsonLines(displayedLogs);
     const blob = new Blob([jsonl], { type: 'application/x-ndjson' });
     let url = '';
     try {
@@ -46,7 +70,8 @@ function LogViewer() {
     }
   };
 
-  const jsonlContent = logs.map((e) => JSON.stringify(e)).join('\n');
+  const displayedLogs = sortLogsNewestFirst(logs);
+  const jsonlContent = toJsonLines(displayedLogs);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -83,6 +108,19 @@ function LogViewer() {
         >
           Refresh
         </Button>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={liveUpdate}
+              onChange={(event) => setLiveUpdate(event.target.checked)}
+              slotProps={{ input: { 'aria-label': 'Live update logs' } }}
+              data-testid="live-update-logs"
+              data-logger-element="switch"
+              data-logger-label="Live Update Logs"
+            />
+          }
+          label="Live update"
+        />
       </Box>
       <Typography variant="body2" sx={{ mb: 1 }}>
         {logs.length} log entries
@@ -97,8 +135,10 @@ function LogViewer() {
             backgroundColor: '#f5f5f5',
             p: 2,
             borderRadius: 1,
-            overflow: 'auto',
-            maxHeight: '70vh',
+            height: '60vh',
+            minHeight: 320,
+            overflowY: 'auto',
+            overflowX: 'auto',
             fontSize: '0.8rem',
             fontFamily: 'monospace',
             whiteSpace: 'pre-wrap',

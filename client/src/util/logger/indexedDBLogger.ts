@@ -3,9 +3,30 @@ import { DB_CONFIG } from 'database/types';
 import { setupObjectStores } from 'database/BaseIndexedDBService';
 
 const STORE_NAME = 'logs';
+const LOGS_CHANGED_EVENT = 'dtaas:logs-changed';
+const LOGS_CHANGED_CHANNEL = 'dtaas-workflow-logs';
 
 let cachedDB: IDBDatabase | null = null;
 let dbPromise: Promise<IDBDatabase> | null = null;
+let changeChannel: BroadcastChannel | null = null;
+
+function emitLocalLogChange(): void {
+  window.dispatchEvent(new Event(LOGS_CHANGED_EVENT));
+}
+
+function getChangeChannel(): BroadcastChannel | null {
+  if (typeof BroadcastChannel === 'undefined') return null;
+  if (changeChannel) return changeChannel;
+
+  changeChannel = new BroadcastChannel(LOGS_CHANGED_CHANNEL);
+  changeChannel.onmessage = emitLocalLogChange;
+  return changeChannel;
+}
+
+function notifyLogChange(): void {
+  emitLocalLogChange();
+  getChangeChannel()?.postMessage(LOGS_CHANGED_EVENT);
+}
 
 function clearDBCache(): void {
   cachedDB = null;
@@ -69,7 +90,10 @@ export async function addLog(event: LogEvent): Promise<void> {
     const store = tx.objectStore(STORE_NAME);
     store.add({ ...event });
 
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => {
+      notifyLogChange();
+      resolve();
+    };
     tx.onerror = () => reject(new Error('Failed to add log event'));
   });
 }
@@ -93,14 +117,26 @@ export async function clearLogs(): Promise<void> {
     const store = tx.objectStore(STORE_NAME);
     store.clear();
 
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => {
+      notifyLogChange();
+      resolve();
+    };
     tx.onerror = () => reject(new Error('Failed to clear log events'));
   });
+}
+
+export function subscribeToLogChanges(listener: () => void): () => void {
+  const handleLogChange = () => listener();
+  window.addEventListener(LOGS_CHANGED_EVENT, handleLogChange);
+  getChangeChannel();
+  return () => window.removeEventListener(LOGS_CHANGED_EVENT, handleLogChange);
 }
 
 export function resetDBConnection(): void {
   if (cachedDB) {
     cachedDB.close();
   }
+  changeChannel?.close();
+  changeChannel = null;
   clearDBCache();
 }

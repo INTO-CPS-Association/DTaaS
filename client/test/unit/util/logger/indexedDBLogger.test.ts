@@ -3,6 +3,7 @@ import {
   addLog,
   getAllLogs,
   clearLogs,
+  subscribeToLogChanges,
   resetDBConnection,
 } from 'util/logger/indexedDBLogger';
 import { LogEvent } from 'util/logger/logEvent';
@@ -69,5 +70,26 @@ describe('indexedDBLogger', () => {
   it('returns empty array when no logs exist', async () => {
     const logs = await getAllLogs();
     expect(logs).toHaveLength(0);
+  });
+
+  it('notifies subscribers when logs change', async () => {
+    const listener = jest.fn();
+    const unsubscribe = subscribeToLogChanges(listener);
+
+    await addLog(mockEvent);
+    await clearLogs();
+
+    expect(listener).toHaveBeenCalledTimes(2);
+    unsubscribe();
+  });
+
+  it('stops notifying after unsubscribe', async () => {
+    const listener = jest.fn();
+    const unsubscribe = subscribeToLogChanges(listener);
+
+    unsubscribe();
+    await addLog(mockEvent);
+
+    expect(listener).not.toHaveBeenCalled();
   });
 });

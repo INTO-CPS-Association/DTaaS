@@ -1,5 +1,11 @@
 import 'fake-indexeddb/auto';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LogViewer from 'page/LogViewer';
 import * as indexedDBLogger from 'util/logger/indexedDBLogger';
@@ -13,6 +19,10 @@ const mockGetAllLogs = indexedDBLogger.getAllLogs as jest.MockedFunction<
 const mockClearLogs = indexedDBLogger.clearLogs as jest.MockedFunction<
   typeof indexedDBLogger.clearLogs
 >;
+const mockSubscribeToLogChanges =
+  indexedDBLogger.subscribeToLogChanges as jest.MockedFunction<
+    typeof indexedDBLogger.subscribeToLogChanges
+  >;
 
 const mockEvents: LogEvent[] = [
   {
@@ -42,6 +52,7 @@ describe('LogViewer', () => {
     jest.clearAllMocks();
     mockGetAllLogs.mockResolvedValue(mockEvents);
     mockClearLogs.mockResolvedValue(undefined);
+    mockSubscribeToLogChanges.mockReturnValue(jest.fn());
 
     globalThis.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
     globalThis.URL.revokeObjectURL = jest.fn();
@@ -57,6 +68,19 @@ describe('LogViewer', () => {
     const content = screen.getByTestId('log-content').textContent;
     expect(content).toContain('Functions');
     expect(content).toContain('Private');
+  });
+
+  it('shows newest log entries first', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('log-content')).toBeInTheDocument();
+    });
+
+    const content = screen.getByTestId('log-content').textContent ?? '';
+    expect(content.indexOf('Private')).toBeLessThan(
+      content.indexOf('Functions'),
+    );
   });
 
   it('shows log entry count', async () => {
@@ -123,6 +147,46 @@ describe('LogViewer', () => {
 
     mockGetAllLogs.mockResolvedValue([mockEvents[0]]);
     fireEvent.click(screen.getByTestId('refresh-logs'));
+
+    await waitFor(() => {
+      expect(screen.getByText('1 log entries')).toBeInTheDocument();
+    });
+  });
+
+  it('subscribes to database changes when live update is enabled', async () => {
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-update-logs')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('live-update-logs'));
+
+    await waitFor(() => {
+      expect(mockSubscribeToLogChanges).toHaveBeenCalled();
+    });
+  });
+
+  it('refreshes logs after a subscribed database change', async () => {
+    let listener: () => void | Promise<void> = () => {};
+    mockSubscribeToLogChanges.mockImplementation((callback) => {
+      listener = callback;
+      return jest.fn();
+    });
+    mockGetAllLogs
+      .mockResolvedValueOnce(mockEvents)
+      .mockResolvedValueOnce(mockEvents)
+      .mockResolvedValueOnce([mockEvents[0]]);
+
+    render(<LogViewer />);
+
+    await waitFor(() => {
+      expect(screen.getByText('2 log entries')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('live-update-logs'));
+    await waitFor(() => expect(mockSubscribeToLogChanges).toHaveBeenCalled());
+    await act(async () => listener());
 
     await waitFor(() => {
       expect(screen.getByText('1 log entries')).toBeInTheDocument();
