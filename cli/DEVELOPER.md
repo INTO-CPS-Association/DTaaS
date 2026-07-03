@@ -98,8 +98,13 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
 - _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
   `delete_users` deprovisions the named users and removes them from the
   registry (`dry_run=True` previews without changing anything).
+  `cmd_utils.resolve_delete_usernames` resolves the usernames to delete from
+  positional args or a `--file users.csv` (only the `username` column is
+  read), rejecting the call if both or neither are given.
   `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
-  USERNAME) into the registry before `add` runs.
+  USERNAME) into the registry before `add` runs, and rejects the call
+  (`ClickException`) if neither is given — a bare `user add` is never a silent
+  no-op or an implicit reprovision.
 - _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
   it with a fresh snapshot (not an append-only log) recording, per currently
   provisioned user, a `config_hash` (a stable sha256 of the compose service)
@@ -112,7 +117,11 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   only for the third category, _drifted_ — a user present in both whose live
   config no longer matches the hash recorded when it was last provisioned; a
   user with no recorded hash is not flagged, since reconcile has nothing to
-  compare it against.
+  compare it against. `cmd_utils.run_reconcile(output_dir, fix=True)` reuses
+  `run_user_command`/`userPkg.add_users` (via `_fix_reconcile`) to reprovision
+  _missing_/_drifted_ users after reporting; it deliberately never acts on
+  _unexpected_ users, since removing something that's actually running is a
+  separate, explicit `user delete` decision.
 
 ### TOML File
 
@@ -305,3 +314,69 @@ The following are the planned next steps:
   This is because '.' is a special character for labels in docker compose.
   We need to include such usernames, simply by internally replacing
   '.' instances in usernames by '-' or '_'.
+
+## 👥 User Management Files: Design Rationale
+
+This section explains _why_ user management is split across three files. For
+_where_ each piece is implemented, see
+[User registry and runtime state](#user-registry-and-runtime-state) above.
+
+### The problem this design solves
+
+Earlier, `dtaas.toml` had a single `[users]` table with `add`/`delete` lists.
+That file was expected to do two incompatible jobs at once: be a
+human-edited setting, and be a machine-processed to-do list. Nothing ever
+cleared the list once it was processed, so after successfully adding
+`alice`, `dtaas.toml` still said `add = ["alice"]`. Running `user add` again say, to also add `bob` had no way to tell "alice is already done, only
+provision bob," which could lead to duplicate or conflicting containers.
+There was no persistent record, separate from the config file, of _who had
+actually already been provisioned_.
+
+### Three files, three owners
+
+The fix is to stop making one file do two jobs. Each file below has exactly
+one owner and one responsibility:
+
+| File | Owner | Responsibility |
+|---|---|---|
+| `dtaas.toml` `[users]` | Human, once, at install time | The `starting` users the instance is installed with |
+| `dtaas.users.registry.json` | The CLI, exclusively | Every `additional` user, added at any point after install |
+| `.dtaas.state.json` | The CLI, exclusively | A disposable snapshot of what is actually running right now |
+
+### Why each file behaves the way it does
+
+- **`dtaas.toml` is never rewritten by the CLI, ever.** Once a human commits
+  `starting` users at install time, the CLI only _reads_ that list (for
+  `admin install` and `generate-deployment`). A comment-bearing, reviewed
+  config file should never be silently mutated by a tool — that risk is
+  exactly what made the old `add`/`delete` design fragile.
+- **`dtaas.users.registry.json` is a merge, not a replace.** `user add`
+  unions new users into the existing store and skips (with a warning, not an
+  overwrite) anyone already present either already registered, or already
+  a `starting` user in `dtaas.toml`. This is what actually fixes the
+  duplicate-container bug: there is now one unambiguous, persistent answer to
+  "has this user already been added," instead of an unprocessed to-do list.
+- **`.dtaas.state.json` is disposable by design.** It is gitignored, and each
+  write fully replaces its contents with a fresh snapshot (it is _not_ an
+  append-only log). If you delete it, nothing is lost the CLI rebuilds it
+  on the next `add`/`delete`. Its only job is to remember, per user, a hash
+  of the config it was last provisioned with, so a later run can tell
+  whether that config has since changed underneath it.
+- **`dtaas admin config reconcile` treats the registry as the desired
+  state, not the state cache.** An earlier version of `reconcile` compared
+  `.dtaas.state.json` against the live compose services — but since the
+  state cache is written from that same compose data at the end of every
+  `add`/`delete`, the two would almost always agree by construction, so that
+  comparison rarely caught anything meaningful. Comparing the _registry_
+  (who should exist) against the _live services_ (who does exist) is the
+  comparison that actually matters, and is what lets `reconcile` catch a
+  registered user who never got provisioned (e.g. an interrupted `add`).
+  `.dtaas.state.json` is kept for exactly one narrower job it's suited for:
+  detecting whether a provisioned user's config has since drifted.
+- **`starting` and `additional` users are provisioned through genuinely
+  different mechanisms, on purpose.** `starting` users are baked into the
+  main `docker-compose.yml` at `generate-deployment` time, in a fixed number
+  of slots per deploy type. `additional` (registry) users get a dynamically
+  managed, separate `compose.users.yml`. This means `dtaas.users.registry.json`
+  and `.dtaas.state.json` only ever track `additional` users `starting`
+  users intentionally never appear in either file.

@@ -7,7 +7,12 @@ wired onto the 'user' group by cmd.py via Group.add_command.
 
 import click
 from .pkg import users as userPkg
-from .cmd_utils import UserAddInput, run_user_command, stage_users_for_add
+from .cmd_utils import (
+    UserAddInput,
+    resolve_delete_usernames,
+    run_user_command,
+    stage_users_for_add,
+)
 
 
 @click.command()
@@ -36,8 +41,7 @@ def add(**kwargs):
     Single user: dtaas admin user add --email alice@intocps.org alice\n
     Bulk from CSV: dtaas admin user add --file users.csv\n
     Both merge into dtaas.users.registry.json, then every registry user is
-    provisioned. With no USERNAME and no --file, the existing registry is
-    reprovisioned.\n
+    provisioned. A USERNAME or --file is required.\n
     """
     user_input = UserAddInput(**kwargs)
 
@@ -52,19 +56,28 @@ def add(**kwargs):
 
 
 @click.command()
-@click.argument("usernames", nargs=-1, required=True)
+@click.argument("usernames", nargs=-1, required=False)
+@click.option(
+    "--file",
+    "csv_file",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Bulk-delete users listed in a CSV file (only the username column is used).",
+)
 @click.option(
     "--dry-run",
     is_flag=True,
     help="Show which users would be removed without deleting anything.",
 )
-def delete(usernames, dry_run):
+def delete(usernames, csv_file, dry_run):
     """
-    removes the named USERNAMES from DTaaS\n
+    removes users from DTaaS\n
+    By name: dtaas admin user delete alice bob\n
+    Bulk from CSV: dtaas admin user delete --file users.csv\n
     Deprovisions each user and drops them from dtaas.users.registry.json.\n
     Pass --dry-run to preview the removal without making any changes.\n
     """
-    err = userPkg.delete_users(usernames, dry_run=dry_run)
+    resolved = resolve_delete_usernames(usernames, csv_file)
+    err = userPkg.delete_users(resolved, dry_run=dry_run)
     if err is not None:
         raise click.ClickException(f"Error while deleting users: {err}")
     if dry_run:

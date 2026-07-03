@@ -105,17 +105,27 @@ def config_validate(output_dir):
     show_default=True,
     help="Installation directory to inspect.",
 )
-def config_reconcile(output_dir):
+@click.option(
+    "--fix",
+    is_flag=True,
+    help="Reprovision missing/drifted registry users after reporting.",
+)
+def config_reconcile(output_dir, fix):
     """Report drift between the user registry and what is actually provisioned.
 
-    Read-only: compares dtaas.users.registry.json (desired) against the live
+    Compares dtaas.users.registry.json (desired) against the live
     compose.users.yml services (actual), and lists users that are missing,
     unexpected, or whose config has drifted since it was last provisioned
-    (using .dtaas.state.json). Re-run 'dtaas admin user add' to fix missing or
-    drifted users.
+    (using .dtaas.state.json).
+
+    Without --fix this is read-only. With --fix, missing and drifted users are
+    reprovisioned afterward (equivalent to running 'dtaas admin user add', so
+    it operates on the current directory regardless of --output-dir).
+    'unexpected' services (running but not registered) are never touched by
+    --fix -- remove those deliberately with 'dtaas admin user delete'.
     """
     try:
-        run_reconcile(output_dir)
+        run_reconcile(output_dir, fix)
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
 

@@ -416,7 +416,19 @@ dtaas generate-project
 
 Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
-(see [User files](#-user-files)), not in `dtaas.toml`. Add a single user:
+(see [User files](#-user-files)), not in `dtaas.toml`.
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `USERNAME` | — | Add one user (requires `--email`) |
+| `--file PATH` | — | Bulk-add users from a CSV |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
+| `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
+| `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
+
+Add a single user:
 
 ```bash
 dtaas admin user add --email alice@intocps.org --group dtaas --load-balance alice
@@ -451,11 +463,11 @@ bob,bob@intocps.org,additional;beta-testers,false
 forms merge into the registry (never hand-edited), then every registry user is
 provisioned. A username already in `dtaas.toml`'s `starting` list or the
 registry is **skipped with a warning** it is never added twice or overwritten.
-Omit both `USERNAME` and `--file` to (re)provision the existing registry:
 
-```bash
-dtaas admin user add
-```
+A `USERNAME` or `--file` is required a bare `dtaas admin user add` with
+neither is rejected rather than silently reprovisioning the whole registry.
+To resync everyone already in the registry (e.g. after `compose.users.yml`
+was lost), use `dtaas admin config reconcile --fix` instead.
 
 **Options**
 
@@ -519,12 +531,30 @@ and unconstrained users by toggling `set_limits` between runs.
 
 ### ➖ `admin user delete`
 
-Removes one or more named users from a running DTaaS instance, like `userdel`.
+Removes one or more users from a running DTaaS instance, like `userdel`.
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `USERNAMES` | — | One or more usernames to remove |
+| `--file PATH` | — | Bulk-delete users listed in a CSV (only the `username` column is used) |
+| `--dry-run` | off | Preview the removal without making any changes |
+
 Pass the usernames as arguments:
 
 ```bash
 dtaas admin user delete username1 username2
 ```
+
+Or bulk-delete from a CSV (the same `users.csv` format used by
+`admin user add --file` other columns are ignored):
+
+```bash
+dtaas admin user delete --file users.csv
+```
+
+`USERNAMES` and `--file` are mutually exclusive, and one of them is required.
 
 Each user is deprovisioned (its container stopped, its compose service and
 forward-auth rule removed) and dropped from `dtaas.users.registry.json`. Users
@@ -548,15 +578,13 @@ to take effect:
 docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
 ```
 
-> At least one username argument is required.
-
 ---
 
 ### 🔍 `admin config reconcile`
 
-It is a Read-Only command. Reports drift between `dtaas.users.registry.json`
-(who **should** be provisioned) and the live `compose.users.yml` services
-(who **is** provisioned).
+Reports drift between `dtaas.users.registry.json` (who **should** be
+provisioned) and the live `compose.users.yml` services (who **is**
+provisioned).
 
 ```bash
 dtaas admin config reconcile
@@ -564,21 +592,32 @@ dtaas admin config reconcile
 
 It lists:
 
-- **missing** — registered but not currently provisioned (re-run
-  `dtaas admin user add` to provision them);
-- **unexpected** — provisioned but not in the registry (investigate — may be a
+- **missing** registered but not currently provisioned;
+- **unexpected** provisioned but not in the registry (investigate — may be a
   manual edit or a partial delete);
-- **drifted** — provisioned, but the live config no longer matches what
-  `.dtaas.state.json` recorded when it was last provisioned (re-run
-  `dtaas admin user add` to reprovision).
+- **drifted** provisioned, but the live config no longer matches what
+  `.dtaas.state.json` recorded when it was last provisioned.
 
 When everything matches it prints `In sync: no drift detected.`
+
+Without `--fix` this is read-only. Pass `--fix` to reprovision **missing** and
+**drifted** users afterward (equivalent to running `dtaas admin user add`, so
+it acts on the current directory, not `--output-dir`):
+
+```bash
+dtaas admin config reconcile --fix
+```
+
+**unexpected** services are never touched by `--fix` removing something
+that's actually running is a deliberate action use
+`dtaas admin user delete` for those.
 
 **Options**
 
 | Option | Default | Description |
 |---|---|---|
 | `--output-dir PATH` | `.` | Installation directory to inspect |
+| `--fix` | off | Reprovision missing/drifted registry users after reporting |
 
 ---
 

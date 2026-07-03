@@ -17,12 +17,21 @@ def runner():
 
 
 def test_config_reconcile_invokes_run_reconcile(runner):
-    """config reconcile delegates to run_reconcile with the output dir."""
+    """config reconcile delegates to run_reconcile with the output dir and fix flag."""
     with patch("src.cmd.run_reconcile") as mock_reconcile:
         result = runner.invoke(dtaas, ["admin", "config", "reconcile"])
 
     assert result.exit_code == 0
-    mock_reconcile.assert_called_once_with(".")
+    mock_reconcile.assert_called_once_with(".", False)
+
+
+def test_config_reconcile_passes_fix_flag(runner):
+    """config reconcile --fix forwards fix=True to run_reconcile."""
+    with patch("src.cmd.run_reconcile") as mock_reconcile:
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile", "--fix"])
+
+    assert result.exit_code == 0
+    mock_reconcile.assert_called_once_with(".", True)
 
 
 def test_config_reconcile_maps_errors(runner):

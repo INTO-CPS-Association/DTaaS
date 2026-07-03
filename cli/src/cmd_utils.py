@@ -14,6 +14,7 @@ from .pkg import config as configPkg
 from .pkg import registry as registryPkg
 from .pkg import state as statePkg
 from .pkg import deploy as deployPkg
+from .pkg import users as userPkg
 from .pkg.constants import COMPOSE_USERS_YML, REGISTRY_FILE, STATE_FILE
 from .pkg.users_utils import validate_usernames
 from .pkg import config_update as configUpdatePkg
@@ -96,14 +97,33 @@ def stage_users_for_add(user_input):
 
     Rejects malformed usernames and, with a warning, skips any already in
     dtaas.toml's starting list or the registry. Raises ClickException on bad
-    input. A bare 'user add' (no USERNAME, no --file) is a no-op here and just
-    reprovisions the existing registry.
+    or missing input: a USERNAME or --file is required, and not both.
     """
     if user_input.username and user_input.csv_file:
         raise click.ClickException("Pass either a USERNAME or --file, not both.")
-    new_users = _users_to_add(user_input)
-    if new_users:
-        _register_users(new_users)
+    if not user_input.username and not user_input.csv_file:
+        raise click.ClickException(
+            "Provide a USERNAME (e.g. 'dtaas admin user add alice --email "
+            "a@x.io') or --file <users.csv> to add users."
+        )
+    _register_users(_users_to_add(user_input))
+
+
+def resolve_delete_usernames(usernames, csv_file):
+    """Resolve the usernames to delete from positional USERNAMES or --file.
+
+    Only the username column of the CSV is used; email/groups/load_balance are
+    ignored for delete. Raises ClickException if both or neither are given.
+    """
+    if usernames and csv_file:
+        raise click.ClickException("Pass either USERNAMES or --file, not both.")
+    if csv_file:
+        return list(_read_users_csv(csv_file))
+    if usernames:
+        return list(usernames)
+    raise click.ClickException(
+        "Provide one or more USERNAMES or --file <users.csv> to delete users."
+    )
 
 
 def run_user_command(action, success_msg, error_prefix):
@@ -171,17 +191,28 @@ def _echo_reconcile(report):
             click.echo(f"- {name}: {label}")
 
 
-def run_reconcile(output_dir):
+def _fix_reconcile():
+    """Reprovision missing/drifted registry users (equivalent to 'user add')."""
+    run_user_command(
+        userPkg.add_users,
+        "Reprovisioned missing/drifted users.",
+        "Error while fixing drift",
+    )
+
+
+def run_reconcile(output_dir, fix=False):
     """Report drift between dtaas.users.registry.json (desired) and the live
-    compose.users.yml services (actual), using .dtaas.state.json to detect
-    config changes on users present in both."""
+    compose.users.yml services (actual)"""
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
     if err is not None:
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
-    _echo_reconcile(statePkg.find_drift(registry_users, state, services))
+    report = statePkg.find_drift(registry_users, state, services)
+    _echo_reconcile(report)
+    if fix and (report["missing"] or report["drifted"]):
+        _fix_reconcile()
 
 
 def run_config_update(output_dir, dry_run):

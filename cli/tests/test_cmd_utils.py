@@ -1,9 +1,15 @@
 """Tests for the CLI helper functions in cmd_utils.py."""
 
 import json
+from unittest.mock import MagicMock, patch
 import click
 import pytest
-from src.cmd_utils import UserAddInput, stage_users_for_add, run_reconcile
+from src.cmd_utils import (
+    UserAddInput,
+    resolve_delete_usernames,
+    stage_users_for_add,
+    run_reconcile,
+)
 from src.pkg.registry import load_registry
 from src.pkg.state import config_hash
 
@@ -75,12 +81,42 @@ def test_stage_rejects_invalid_username(tmp_path, monkeypatch):
         stage_users_for_add(user_input)
 
 
-def test_stage_noop_without_username_or_file(tmp_path, monkeypatch):
-    """A bare add (no USERNAME, no --file) registers nothing."""
+def test_stage_rejects_bare_add(tmp_path, monkeypatch):
+    """A bare add (no USERNAME, no --file) is rejected with a helpful message."""
     monkeypatch.chdir(tmp_path)
-    stage_users_for_add(UserAddInput(None, None, None, (), True))
+    user_input = UserAddInput(None, None, None, (), True)
+    with pytest.raises(click.ClickException, match="Provide a USERNAME"):
+        stage_users_for_add(user_input)
 
     assert load_registry() == {}
+
+
+def test_resolve_delete_usernames_from_positional_args():
+    """Positional usernames are returned as-is (as a list)."""
+    assert resolve_delete_usernames(("alice", "bob"), None) == ["alice", "bob"]
+
+
+def test_resolve_delete_usernames_from_csv(tmp_path):
+    """--file resolves to the usernames parsed from the CSV, ignoring other columns."""
+    csv = tmp_path / "u.csv"
+    csv.write_text("username,email\nalice,a@x.io\nbob,b@x.io\n")
+
+    assert resolve_delete_usernames((), str(csv)) == ["alice", "bob"]
+
+
+def test_resolve_delete_usernames_rejects_both(tmp_path):
+    """Passing both positional usernames and --file is rejected."""
+    csv = tmp_path / "u.csv"
+    csv.write_text("username,email\nalice,a@x.io\n")
+
+    with pytest.raises(click.ClickException, match="either USERNAMES or --file"):
+        resolve_delete_usernames(("alice",), str(csv))
+
+
+def test_resolve_delete_usernames_rejects_neither():
+    """Passing neither positional usernames nor --file is rejected."""
+    with pytest.raises(click.ClickException, match="Provide one or more USERNAMES"):
+        resolve_delete_usernames((), None)
 
 
 def _write_registry(tmp_path, users):
@@ -136,3 +172,45 @@ def test_run_reconcile_in_sync(tmp_path, capsys):
     run_reconcile(str(tmp_path))
 
     assert "In sync" in capsys.readouterr().out
+
+
+def test_run_reconcile_fix_reprovisions_missing(tmp_path, capsys):
+    """--fix reprovisions when there are missing/drifted users."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+
+    with patch("src.cmd_utils.configPkg.Config", return_value=MagicMock()), patch(
+        "src.cmd_utils.userPkg.add_users", return_value=None
+    ) as mock_add:
+        run_reconcile(str(tmp_path), fix=True)
+
+    mock_add.assert_called_once()
+    assert "Reprovisioned" in capsys.readouterr().out
+
+
+def test_run_reconcile_fix_skips_when_in_sync(tmp_path):
+    """--fix does not reprovision when there is nothing missing or drifted."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch("src.cmd_utils.userPkg.add_users") as mock_add:
+        run_reconcile(str(tmp_path), fix=True)
+
+    mock_add.assert_not_called()
+
+
+def test_run_reconcile_fix_never_touches_unexpected(tmp_path):
+    """--fix does not reprovision for an 'unexpected' (unregistered) service alone."""
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  carol:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch("src.cmd_utils.userPkg.add_users") as mock_add:
+        run_reconcile(str(tmp_path), fix=True)
+
+    mock_add.assert_not_called()

@@ -31,7 +31,7 @@ def test_delete_user_success(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["admin", "user", "delete", "alice", "bob"])
     assert result.exit_code == 0
     assert "Users deleted successfully" in result.output
-    mock_user_pkg["delete"].assert_called_once_with(("alice", "bob"), dry_run=False)
+    mock_user_pkg["delete"].assert_called_once_with(["alice", "bob"], dry_run=False)
 
 
 def test_delete_user_dry_run(runner, mock_user_pkg):
@@ -42,7 +42,44 @@ def test_delete_user_dry_run(runner, mock_user_pkg):
 
     assert result.exit_code == 0
     assert "Dry run complete" in result.output
-    mock_user_pkg["delete"].assert_called_once_with(("alice",), dry_run=True)
+    mock_user_pkg["delete"].assert_called_once_with(["alice"], dry_run=True)
+
+
+def test_delete_users_with_file(runner, mock_user_pkg, tmp_path):
+    """delete --file bulk-deletes the usernames listed in a CSV."""
+    mock_user_pkg["delete"].return_value = None
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text(
+        "username,email,groups,load_balance\n"
+        "alice,a@x.io,g,true\n"
+        "bob,b@x.io,g,false\n"
+    )
+
+    result = runner.invoke(dtaas, ["admin", "user", "delete", "--file", str(csv_file)])
+
+    assert result.exit_code == 0
+    mock_user_pkg["delete"].assert_called_once_with(["alice", "bob"], dry_run=False)
+
+
+def test_delete_users_rejects_names_and_file(runner, tmp_path):
+    """Passing both USERNAMES and --file is rejected."""
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text("username,email\nalice,a@x.io\n")
+
+    result = runner.invoke(
+        dtaas, ["admin", "user", "delete", "alice", "--file", str(csv_file)]
+    )
+
+    assert result.exit_code != 0
+    assert "either USERNAMES or --file" in result.output
+
+
+def test_delete_users_requires_names_or_file(runner):
+    """A bare delete with no USERNAMES and no --file is rejected."""
+    result = runner.invoke(dtaas, ["admin", "user", "delete"])
+
+    assert result.exit_code != 0
+    assert "Provide one or more USERNAMES" in result.output
 
 
 def test_add_users_config_error(runner):
