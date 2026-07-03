@@ -7,42 +7,57 @@ const STORE_NAME = 'logs';
 let cachedDB: IDBDatabase | null = null;
 let dbPromise: Promise<IDBDatabase> | null = null;
 
-function openDB(): Promise<IDBDatabase> {
-  if (cachedDB) return Promise.resolve(cachedDB);
-  if (dbPromise) return dbPromise;
+function clearDBCache(): void {
+  cachedDB = null;
+  dbPromise = null;
+}
 
-  dbPromise = new Promise((resolve, reject) => {
+function handleVersionChange(): void {
+  cachedDB?.close();
+  clearDBCache();
+}
+
+function cacheDBConnection(db: IDBDatabase): IDBDatabase {
+  cachedDB = db;
+  cachedDB.onclose = clearDBCache;
+  cachedDB.onversionchange = handleVersionChange;
+  dbPromise = null;
+  return cachedDB;
+}
+
+function rejectOpen(reject: (reason?: unknown) => void, message: string): void {
+  dbPromise = null;
+  reject(new Error(message));
+}
+
+function createOpenDBPromise(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
 
     request.onerror = () => {
-      dbPromise = null;
-      reject(new Error('Failed to open IndexedDB for logs'));
+      rejectOpen(reject, 'Failed to open IndexedDB for logs');
     };
 
     request.onblocked = () => {
-      dbPromise = null;
-      reject(new Error('IndexedDB open blocked by another tab'));
+      rejectOpen(reject, 'IndexedDB open blocked by another tab');
     };
 
     request.onsuccess = (event) => {
-      cachedDB = (event.target as IDBOpenDBRequest).result;
-      cachedDB.onclose = () => {
-        cachedDB = null;
-        dbPromise = null;
-      };
-      cachedDB.onversionchange = () => {
-        cachedDB?.close();
-        cachedDB = null;
-        dbPromise = null;
-      };
-      dbPromise = null;
-      resolve(cachedDB);
+      const db = (event.target as IDBOpenDBRequest).result;
+      resolve(cacheDBConnection(db));
     };
 
     request.onupgradeneeded = (event) => {
       setupObjectStores((event.target as IDBOpenDBRequest).result);
     };
   });
+}
+
+function openDB(): Promise<IDBDatabase> {
+  if (cachedDB) return Promise.resolve(cachedDB);
+  if (dbPromise) return dbPromise;
+
+  dbPromise = createOpenDBPromise();
 
   return dbPromise;
 }
@@ -86,7 +101,6 @@ export async function clearLogs(): Promise<void> {
 export function resetDBConnection(): void {
   if (cachedDB) {
     cachedDB.close();
-    cachedDB = null;
   }
-  dbPromise = null;
+  clearDBCache();
 }

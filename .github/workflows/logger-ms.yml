@@ -1,6 +1,6 @@
 name: Logger microservice
 
-on:
+"on":
   push:
     paths:
       - 'servers/logger/**'

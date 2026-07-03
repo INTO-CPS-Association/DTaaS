@@ -45,13 +45,18 @@ describe('logger', () => {
   });
 
   it('returns null when logging before init', () => {
-    const result = log('/page', 'btn', 'Click');
+    const result = log({ page: '/page', element: 'btn', label: 'Click' });
     expect(result).toBeNull();
   });
 
   it('logs an event after initialization', async () => {
     await initLogger('testuser');
-    const event = log('/library', 'tab', 'Functions', { subtab: 'private' });
+    const event = log({
+      page: '/library',
+      element: 'tab',
+      label: 'Functions',
+      context: { subtab: 'private' },
+    });
 
     expect(event).not.toBeNull();
     expect(event!.page).toBe('/library');
@@ -63,7 +68,7 @@ describe('logger', () => {
 
   it('persists log event to IndexedDB', async () => {
     await initLogger('testuser');
-    const event = log('/library', 'tab', 'Data');
+    const event = log({ page: '/library', element: 'tab', label: 'Data' });
 
     expect(indexedDBLogger.addLog).toHaveBeenCalledWith(event);
   });
@@ -76,7 +81,7 @@ describe('logger', () => {
     };
 
     await initLogger('testuser');
-    const event = log('/library', 'tab', 'Data');
+    const event = log({ page: '/library', element: 'tab', label: 'Data' });
 
     expect(beaconLogger.sendBeacon).toHaveBeenCalledWith(
       'https://example.com/logger',
@@ -88,7 +93,7 @@ describe('logger', () => {
 
   it('does not send beacon when logger URL is empty', async () => {
     await initLogger('testuser');
-    log('/library', 'tab', 'Data');
+    log({ page: '/library', element: 'tab', label: 'Data' });
     expect(beaconLogger.sendBeacon).not.toHaveBeenCalled();
   });
 

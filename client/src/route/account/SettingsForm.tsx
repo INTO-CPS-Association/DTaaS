@@ -176,33 +176,36 @@ const SettingsForm: React.FC = () => {
     const errors = validateSettingsForm(formValues);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      return;
-    }
-
-    const current = {
-      GROUP_NAME,
-      DT_DIRECTORY,
-      COMMON_LIBRARY_PROJECT_NAME,
-      RUNNER_TAG,
-      BRANCH_NAME,
-      MEASUREMENT_TRIALS,
-      MEASUREMENT_SECONDARY_RUNNER_TAG,
-      MEASUREMENT_PRIMARY_DT_NAME,
-      MEASUREMENT_SECONDARY_DT_NAME,
-    };
-    const needsRefresh = dispatchChangedSettings(dispatch, formValues, current);
-    updateFrozenSettings();
-
-    setNotificationMessage('Settings saved successfully!');
-    setNotificationSeverity('success');
-    setShowNotification(true);
-
-    if (needsRefresh) {
-      dispatch(clearDigitalTwins());
-      setTwinsLoading(true);
-      fetchDigitalTwins(dispatch, () => {}).finally(() =>
-        setTwinsLoading(false),
+    } else {
+      const current = {
+        GROUP_NAME,
+        DT_DIRECTORY,
+        COMMON_LIBRARY_PROJECT_NAME,
+        RUNNER_TAG,
+        BRANCH_NAME,
+        MEASUREMENT_TRIALS,
+        MEASUREMENT_SECONDARY_RUNNER_TAG,
+        MEASUREMENT_PRIMARY_DT_NAME,
+        MEASUREMENT_SECONDARY_DT_NAME,
+      };
+      const needsRefresh = dispatchChangedSettings(
+        dispatch,
+        formValues,
+        current,
       );
+      updateFrozenSettings();
+
+      setNotificationMessage('Settings saved successfully!');
+      setNotificationSeverity('success');
+      setShowNotification(true);
+
+      if (needsRefresh) {
+        dispatch(clearDigitalTwins());
+        setTwinsLoading(true);
+        fetchDigitalTwins(dispatch, () => {}).finally(() =>
+          setTwinsLoading(false),
+        );
+      }
     }
   };
 

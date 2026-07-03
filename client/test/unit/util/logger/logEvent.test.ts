@@ -2,14 +2,14 @@ import { createLogEvent } from 'util/logger/logEvent';
 
 describe('logEvent', () => {
   it('creates a log event with all fields', () => {
-    const event = createLogEvent(
-      'session-123',
-      'hash-abc',
-      '/library',
-      'tab',
-      'Functions',
-      { subtab: 'private' },
-    );
+    const event = createLogEvent({
+      sessionId: 'session-123',
+      userHash: 'hash-abc',
+      page: '/library',
+      element: 'tab',
+      label: 'Functions',
+      context: { subtab: 'private' },
+    });
 
     expect(event.sessionId).toBe('session-123');
     expect(event.userHash).toBe('hash-abc');
@@ -22,19 +22,25 @@ describe('logEvent', () => {
   });
 
   it('defaults context to empty object', () => {
-    const event = createLogEvent(
-      'session-123',
-      'hash-abc',
-      '/library',
-      'tab',
-      'Functions',
-    );
+    const event = createLogEvent({
+      sessionId: 'session-123',
+      userHash: 'hash-abc',
+      page: '/library',
+      element: 'tab',
+      label: 'Functions',
+    });
 
     expect(event.context).toEqual({});
   });
 
   it('produces a valid ISO timestamp', () => {
-    const event = createLogEvent('s', 'h', '/', 'btn', 'X');
+    const event = createLogEvent({
+      sessionId: 's',
+      userHash: 'h',
+      page: '/',
+      element: 'btn',
+      label: 'X',
+    });
     const parsed = Date.parse(event.timestamp);
     expect(Number.isNaN(parsed)).toBe(false);
   });

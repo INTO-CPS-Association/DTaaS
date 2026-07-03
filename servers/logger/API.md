@@ -13,7 +13,7 @@ process responses.
 
 Ingest a single log event.
 
-#### Request
+#### POST Request
 
 - **Method**: `POST`
 - **Content-Type**: `application/json`
@@ -35,13 +35,13 @@ Ingest a single log event.
 }
 ```
 
-#### Response
+#### POST Response
 
-| Status                    | Description                               |
-| ------------------------- | ----------------------------------------- |
-| 204 No Content            | Event accepted (no body)                  |
-| 400 Bad Request           | Malformed JSON or missing required fields |
-| 413 Payload Too Large     | Body exceeds configured max payload bytes |
+| Status                | Description                               |
+| --------------------- | ----------------------------------------- |
+| 204 No Content        | Event accepted (no body)                  |
+| 400 Bad Request       | Malformed JSON or missing required fields |
+| 413 Payload Too Large | Body exceeds configured max payload bytes |
 
 The service enables CORS with `Access-Control-Allow-Origin` controlled by
 `cors-allow-origin` (`LOGGER_CORS_ALLOW_ORIGIN` in env).
@@ -51,10 +51,10 @@ It also always sends `Access-Control-Allow-Credentials: true`.
 
 Returns service health.
 
-#### Response
+#### Health Response
 
-| Status | Description |
-| ------ | ----------- |
+| Status | Description                                 |
+| ------ | ------------------------------------------- |
 | 200 OK | Service is available (`{ "status": "ok" }`) |
 
 > **Note:** Because the client uses the Beacon API (fire-and-forget),

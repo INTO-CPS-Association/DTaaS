@@ -9,14 +9,23 @@ export interface LogEvent {
   readonly context: Record<string, string>;
 }
 
-export function createLogEvent(
-  sessionId: string,
-  userHash: string,
-  page: string,
-  element: string,
-  label: string,
-  context: Record<string, string> = {},
-): LogEvent {
+export interface CreateLogEventInput {
+  readonly sessionId: string;
+  readonly userHash: string;
+  readonly page: string;
+  readonly element: string;
+  readonly label: string;
+  readonly context?: Record<string, string>;
+}
+
+export function createLogEvent({
+  sessionId,
+  userHash,
+  page,
+  element,
+  label,
+  context = {},
+}: CreateLogEventInput): LogEvent {
   return {
     sessionId,
     userHash,

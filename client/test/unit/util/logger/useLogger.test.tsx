@@ -117,12 +117,12 @@ describe('useLogger', () => {
       fireEvent.click(button);
     });
 
-    expect(logger.log).toHaveBeenCalledWith(
-      expect.any(String),
-      'button',
-      'TestBtn',
-      { action: 'test' },
-    );
+    expect(logger.log).toHaveBeenCalledWith({
+      page: expect.any(String),
+      element: 'button',
+      label: 'TestBtn',
+      context: { action: 'test' },
+    });
   });
 
   it('does not log clicks on elements without data-logger attributes', async () => {

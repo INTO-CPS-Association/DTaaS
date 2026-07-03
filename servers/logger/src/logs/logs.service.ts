@@ -5,11 +5,48 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import Config from '../config/config.service.js';
 import { LogEventDto } from '../dto/log-event.dto.js';
 
+type LogWriteStream = ReturnType<typeof createWriteStream>;
+
+function endWriteStream(stream: LogWriteStream): Promise<void> {
+  return new Promise((resolve, reject) => {
+    stream.end((error?: Error | null) => {
+      if (error !== undefined && error !== null) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+function writeToStream(
+  stream: LogWriteStream,
+  line: string,
+  logger: Logger,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const onError = (error: Error) => {
+      stream.off('error', onError);
+      reject(error);
+    };
+    stream.on('error', onError);
+    stream.write(line, 'utf8', (error) => {
+      stream.off('error', onError);
+      if (error !== null && error !== undefined) {
+        logger.error('Failed to persist workflow log event', error);
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
 @Injectable()
 export default class LogsService implements OnModuleDestroy {
   private readonly logger = new Logger(LogsService.name);
   private readonly logFilePath: string;
-  private writeStream: ReturnType<typeof createWriteStream> | null = null;
+  private writeStream: LogWriteStream | null = null;
   private writeQueue: Promise<void> = Promise.resolve();
   private initialized = false;
   private initializePromise: Promise<void> | null = null;
@@ -27,20 +64,15 @@ export default class LogsService implements OnModuleDestroy {
 
   async onModuleDestroy(): Promise<void> {
     await this.writeQueue;
+    await this.closeWriteStream();
+  }
+
+  private async closeWriteStream(): Promise<void> {
     const stream = this.writeStream;
-    if (stream === null) {
-      return;
+    if (stream !== null) {
+      await endWriteStream(stream);
+      this.writeStream = null;
     }
-    await new Promise<void>((resolve, reject) => {
-      stream.end((error?: Error | null) => {
-        if (error !== undefined && error !== null) {
-          reject(error);
-          return;
-        }
-        resolve();
-      });
-    });
-    this.writeStream = null;
     this.initialized = false;
   }
 
@@ -93,26 +125,11 @@ export default class LogsService implements OnModuleDestroy {
   }
 
   private writeLine(line: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.writeStream === null) {
-        reject(new Error('Logger write stream is not initialized'));
-        return;
-      }
-      const stream = this.writeStream;
-      const onError = (error: Error) => {
-        stream.off('error', onError);
-        reject(error);
-      };
-      stream.on('error', onError);
-      stream.write(line, 'utf8', (error) => {
-        stream.off('error', onError);
-        if (error !== null && error !== undefined) {
-          this.logger.error('Failed to persist workflow log event', error);
-          reject(error);
-          return;
-        }
-        resolve();
-      });
-    });
+    if (this.writeStream === null) {
+      return Promise.reject(
+        new Error('Logger write stream is not initialized'),
+      );
+    }
+    return writeToStream(this.writeStream, line, this.logger);
   }
 }

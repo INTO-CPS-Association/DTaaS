@@ -21,39 +21,53 @@ function parseContext(raw: string | undefined): Record<string, string> {
   }
 }
 
+function getLoggerUsername(stateUsername: string | undefined): string {
+  return stateUsername ?? sessionStorage.getItem('username') ?? '';
+}
+
+function startLogger(username: string, initRef: { current: boolean }): void {
+  if (!username || initRef.current) return;
+  initLogger(username)
+    .then(() => {
+      initRef.current = true;
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn('Logger: init failed, will retry on next render', err);
+    });
+}
+
+function logClickEvent(event: MouseEvent): void {
+  if (!isLoggerInitialized()) return;
+  const el = findLoggerElement(event.target);
+  if (!el) return;
+
+  const element = el.dataset.loggerElement ?? '';
+  const label = el.dataset.loggerLabel ?? el.textContent?.trim() ?? '';
+  const context = parseContext(el.dataset.loggerContext);
+  const page = window.location.pathname;
+
+  log({ page, element, label, context });
+}
+
+function registerClickLogger(handleClick: (event: MouseEvent) => void) {
+  document.addEventListener('click', handleClick, true);
+  return () => document.removeEventListener('click', handleClick, true);
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export function useLogger(): void {
   const stateUsername = useSelector((state: RootState) => state.auth.userName);
-  const username = stateUsername ?? sessionStorage.getItem('username') ?? '';
+  const username = getLoggerUsername(stateUsername);
   const initRef = useRef(false);
 
   useEffect(() => {
-    if (!username || initRef.current) return;
-    initLogger(username)
-      .then(() => {
-        initRef.current = true;
-      })
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.warn('Logger: init failed, will retry on next render', err);
-      });
+    startLogger(username, initRef);
   }, [username]);
 
   const handleClick = useCallback((event: MouseEvent) => {
-    if (!isLoggerInitialized()) return;
-    const el = findLoggerElement(event.target);
-    if (!el) return;
-
-    const element = el.dataset.loggerElement ?? '';
-    const label = el.dataset.loggerLabel ?? el.textContent?.trim() ?? '';
-    const context = parseContext(el.dataset.loggerContext);
-    const page = window.location.pathname;
-
-    log(page, element, label, context);
+    logClickEvent(event);
   }, []);
 
-  useEffect(() => {
-    document.addEventListener('click', handleClick, true);
-    return () => document.removeEventListener('click', handleClick, true);
-  }, [handleClick]);
+  useEffect(() => registerClickLogger(handleClick), [handleClick]);
 }

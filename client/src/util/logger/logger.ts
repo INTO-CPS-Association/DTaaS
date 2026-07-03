@@ -10,6 +10,13 @@ let sessionId = '';
 let loggerUrl = '';
 let initialized = false;
 
+export interface LogInput {
+  readonly page: string;
+  readonly element: string;
+  readonly label: string;
+  readonly context?: Record<string, string>;
+}
+
 export async function initLogger(username: string): Promise<void> {
   sessionId = getSessionId();
   userHash = await hashUsername(username);
@@ -21,22 +28,22 @@ export function isLoggerInitialized(): boolean {
   return initialized;
 }
 
-export function log(
-  page: string,
-  element: string,
-  label: string,
-  context: Record<string, string> = {},
-): LogEvent | null {
+export function log({
+  page,
+  element,
+  label,
+  context = {},
+}: LogInput): LogEvent | null {
   if (!initialized) return null;
 
-  const event = createLogEvent(
+  const event = createLogEvent({
     sessionId,
     userHash,
     page,
     element,
     label,
     context,
-  );
+  });
   logToConsole(event);
   addLog(event).catch((err) => {
     // eslint-disable-next-line no-console
