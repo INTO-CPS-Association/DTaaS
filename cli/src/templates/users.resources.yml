@@ -1,0 +1,4 @@
+shm_size: ${shm_size}
+cpus: ${cpus}
+mem_limit: ${mem_limit}
+pids_limit: ${pids_limit}

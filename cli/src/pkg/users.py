@@ -11,30 +11,9 @@ from .users_utils import (
     categorize_users,
     report_missing_users,
     remove_users_from_compose,
+    build_base_mapping,
+    resource_mapping,
 )
-
-
-def _build_config_mapping(user_config, resources):
-    """Build the mapping for config substitution.
-
-    Args:
-        user_config: Dict with keys 'username', 'path', optionally 'server'
-        resources: Dict with resource limits
-
-    Returns:
-        Mapping dict for config substitution
-    """
-    mapping = {
-        "${DTAAS_DIR}": user_config["path"],
-        "${username}": user_config["username"],
-        "${shm_size}": str(resources["shm_size"]),
-        "${cpus}": str(resources["cpus"]),
-        "${mem_limit}": str(resources["mem_limit"]),
-        "${pids_limit}": str(resources["pids_limit"]),
-    }
-    if user_config.get("server") is not None:
-        mapping["${SERVER_DNS}"] = user_config["server"]
-    return mapping
 
 
 def _load_template(server, tls):
@@ -54,12 +33,29 @@ def _load_template(server, tls):
     return utils.import_yaml("users.server.yml")
 
 
+def _apply_resource_limits(service, config):
+    """Merge substituted resource limits into the service dict when enabled.
+
+    When set_limits is false the service is returned unchanged so the container
+    runs without CPU/memory/process caps. Raises on a template load or
+    substitution error.
+    """
+    if not config.get("set_limits", True):
+        return service
+    template, err = utils.import_yaml("users.resources.yml")
+    utils.check_error(err)
+    resources, err = utils.replace_all(template, resource_mapping(config["resources"]))
+    utils.check_error(err)
+    service.update(resources)
+    return service
+
+
 def get_compose_config(username, config):
     """Makes and returns the config for the user
 
     Args:
         username: Username for the config
-        config: Dict with 'server', 'path', 'resources', 'tls' keys
+        config: Dict with 'server', 'path', 'resources', 'tls', 'set_limits' keys
 
     Returns:
         Tuple of (user config dict, error if any)
@@ -67,16 +63,10 @@ def get_compose_config(username, config):
     try:
         template, err = _load_template(config["server"], config.get("tls"))
         utils.check_error(err)
-        user_config = {
-            "username": username,
-            "path": config["path"],
-            "server": config["server"]
-            if config["server"] != utils.LOCALHOST_SERVER
-            else None,
-        }
-        mapping = _build_config_mapping(user_config, config["resources"])
+        mapping = build_base_mapping(username, config)
         result, err = utils.replace_all(template, mapping)
         utils.check_error(err)
+        result = _apply_resource_limits(result, config)
     except Exception as e:
         return None, e
     return result, None
@@ -160,7 +150,9 @@ def _get_add_users_config(config_obj):
     utils.check_error(err)
     tls, err = config_obj.get_tls()
     utils.check_error(err)
-    return user_list, server, path, resources, tls
+    set_limits, err = config_obj.get_set_limits()
+    utils.check_error(err)
+    return user_list, server, path, resources, tls, set_limits
 
 
 def _finalize_compose(compose):
@@ -177,7 +169,9 @@ def add_users(config_obj):
     try:
         compose, err = utils.import_yaml(COMPOSE_USERS_YML)
         utils.check_error(err)
-        user_list, server, path, resources, tls = _get_add_users_config(config_obj)
+        user_list, server, path, resources, tls, set_limits = _get_add_users_config(
+            config_obj
+        )
         users_section, err = config_obj.get_users()
         utils.check_error(err)
     except Exception as e:
@@ -187,7 +181,13 @@ def add_users(config_obj):
 
     try:
         create_user_files(user_list, path + "/files")
-        config = {"server": server, "path": path, "resources": resources, "tls": tls}
+        config = {
+            "server": server,
+            "path": path,
+            "resources": resources,
+            "tls": tls,
+            "set_limits": set_limits,
+        }
         err = add_users_to_compose(user_list, compose, config)
         utils.check_error(err)
         # Authorise each user in the forward-auth config before starting their

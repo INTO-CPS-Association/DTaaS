@@ -55,6 +55,32 @@ The CLI has two layers of code:
   is responsible for. It also
   has helper functions that can be used across the CLI.
 
+The `admin config` commands are backed here: `generate_config` in
+_src/pkg/project.py_ copies just the `dtaas.toml` template (reusing the same
+helpers as `generate-project`), and _src/pkg/config_validate.py_ checks the
+values in an existing `dtaas.toml`. Each check in `config_validate.py` returns
+a list of human-readable problems (empty when the value is acceptable) and
+`validate_config` aggregates them so the user sees every issue at once. Most
+checks are syntactic, but `path` and `certs-src` are verified against the local
+filesystem (the directory must exist), so `validate` is expected to run on the
+deployment host.
+
+`admin update --config` is backed by _src/pkg/config_update.py_, which
+re-applies `dtaas.toml` to an installed deployment in place. It reuses the
+existing substitution engine rather than duplicating it:
+`config_validate.collect_errors` gates the run,
+`deploy_config.build_file_specs` produces the per-file specs,
+`deploy_config.diff_specs` previews which files a spec would change
+(read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
+writes them (idempotently — only changed files are touched). The deployment
+type is detected from the compose service names via `deploy.compose_services`
+(more robust than inspecting config-file names). When any file changed, the
+whole stack is recreated through `deploy.restart_all`
+(`docker compose up -d --force-recreate`), since a config change can affect any
+service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
+`OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
+`run_cert_update` and `require_update_flag` for the `update` group.
+
 ### TOML File
 
 The base configuration file used by the CLI is the _dtaas.toml_ file.
@@ -64,7 +90,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.8.1"
+version="0.10.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```

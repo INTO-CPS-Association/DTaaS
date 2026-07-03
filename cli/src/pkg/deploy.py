@@ -2,6 +2,7 @@
 
 import shutil
 from pathlib import Path
+import yaml
 from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
 
@@ -200,6 +201,16 @@ def restart_service(directory, service):
     _client(directory).compose.up(services=[service], force_recreate=True, detach=True)
 
 
+def restart_all(directory):
+    """Recreate every compose service so they pick up new configuration.
+
+    Mirrors 'docker compose up -d --force-recreate'. Raises OSError if the
+    deployment is missing, or DockerException if compose itself fails.
+    """
+    require_compose_file(directory)
+    _client(directory).compose.up(force_recreate=True, detach=True)
+
+
 def stop_service(directory, service):
     """Stop one compose service so its files can be safely replaced.
 
@@ -219,3 +230,14 @@ def service_running(directory, service):
     require_compose_file(directory)
     containers = _client(directory).compose.ps(services=[service])
     return any(container.state.running for container in containers)
+
+
+def compose_services(directory):
+    """Return the set of service names defined in the deployment's compose file.
+
+    Raises OSError when the compose file is missing.
+    """
+    require_compose_file(directory)
+    data = yaml.safe_load((Path(directory) / COMPOSE_FILE).read_text(encoding="utf-8"))
+    services = data.get("services", {}) if isinstance(data, dict) else {}
+    return set(services)

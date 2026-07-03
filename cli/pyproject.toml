@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas"
-version = "0.8.1"
+version = "0.10.0"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal"]
 license = "INTO-CPS-Association"
@@ -18,6 +18,8 @@ click = "^8.4.2"
 tomlkit = "^0.15.0"
 python-on-whales = "^0.81.0"
 cryptography = "^49.0.0"
+email-validator = "^2.2.0"
+fqdn = "^1.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"
