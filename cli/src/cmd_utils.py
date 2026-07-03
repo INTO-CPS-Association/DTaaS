@@ -14,7 +14,7 @@ from .pkg import config as configPkg
 from .pkg import registry as registryPkg
 from .pkg import state as statePkg
 from .pkg import deploy as deployPkg
-from .pkg.constants import COMPOSE_USERS_YML
+from .pkg.constants import COMPOSE_USERS_YML, REGISTRY_FILE, STATE_FILE
 from .pkg.users_utils import validate_usernames
 from .pkg import config_update as configUpdatePkg
 from .pkg import cert_update as certUpdatePkg
@@ -175,10 +175,8 @@ def run_reconcile(output_dir):
     """Report drift between dtaas.users.registry.json (desired) and the live
     compose.users.yml services (actual), using .dtaas.state.json to detect
     config changes on users present in both."""
-    registry_users = registryPkg.load_registry(
-        str(Path(output_dir) / registryPkg.REGISTRY_FILE)
-    )
-    state = statePkg.load_state(str(Path(output_dir) / statePkg.STATE_FILE))
+    registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
+    state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
     if err is not None:
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")

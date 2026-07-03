@@ -13,8 +13,7 @@ import csv
 import json
 import os
 from pathlib import Path
-
-REGISTRY_FILE = "dtaas.users.registry.json"
+from .constants import REGISTRY_FILE
 
 
 def load_registry(path=REGISTRY_FILE):

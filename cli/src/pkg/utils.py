@@ -3,8 +3,7 @@
 from pathlib import Path
 import yaml
 import tomlkit
-
-LOCALHOST_SERVER = "localhost"
+from .constants import LOCALHOST_SERVER
 
 
 def find_toml(output_dir):

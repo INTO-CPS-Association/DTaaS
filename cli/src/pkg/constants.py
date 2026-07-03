@@ -1,7 +1,16 @@
 import re
 
-# For users.py
+# For users.py / deploy.py
 COMPOSE_USERS_YML = "compose.users.yml"
+
+# For registry.py
+REGISTRY_FILE = "dtaas.users.registry.json"
+
+# For state.py
+STATE_FILE = ".dtaas.state.json"
+
+# For utils.py
+LOCALHOST_SERVER = "localhost"
 
 # A safe username: alphanumeric plus . _ - only, so it never carries shell
 # metacharacters, whitespace, or path separators into container commands.

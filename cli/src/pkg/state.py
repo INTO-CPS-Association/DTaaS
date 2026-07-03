@@ -19,9 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from python_on_whales import DockerClient
 from python_on_whales.exceptions import DockerException
-from .constants import COMPOSE_USERS_YML
-
-STATE_FILE = ".dtaas.state.json"
+from .constants import COMPOSE_USERS_YML, STATE_FILE
 
 
 def config_hash(service):

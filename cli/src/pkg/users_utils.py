@@ -3,8 +3,7 @@
 import re
 import click
 from pathlib import Path
-from . import utils
-from .constants import CONF_SERVER_RULE_NUM_RE, USERNAME_RE
+from .constants import CONF_SERVER_RULE_NUM_RE, LOCALHOST_SERVER, USERNAME_RE
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
 
@@ -34,7 +33,7 @@ def build_base_mapping(username, config):
         "${DTAAS_DIR}": config["path"],
         "${username}": username,
     }
-    if config["server"] != utils.LOCALHOST_SERVER:
+    if config["server"] != LOCALHOST_SERVER:
         mapping["${SERVER_DNS}"] = config["server"]
     return mapping
 

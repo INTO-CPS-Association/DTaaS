@@ -69,7 +69,7 @@ def _check_resources(data):
     return errors
 
 
-def _check_default(data):
+def _check_starting(data):
     """users.starting, when present, must be a list of strings."""
     return optional(
         data,
@@ -152,7 +152,7 @@ _CHECKS = (
     _check_path,
     _check_certs_src,
     _check_resources,
-    _check_default,
+    _check_starting,
     _check_user_tables,
     _check_deploy_fields,
 )

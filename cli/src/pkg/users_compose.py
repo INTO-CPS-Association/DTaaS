@@ -9,7 +9,7 @@ import subprocess
 import shutil
 from pathlib import Path
 from . import utils
-from .constants import COMPOSE_USERS_YML
+from .constants import COMPOSE_USERS_YML, LOCALHOST_SERVER
 from .state import write_state
 from .users_utils import build_base_mapping, resource_mapping
 
@@ -24,7 +24,7 @@ def _load_template(server, tls):
     Returns:
         Tuple of (template dict, error if any)
     """
-    if server == utils.LOCALHOST_SERVER:
+    if server == LOCALHOST_SERVER:
         return None, Exception("user add is not supported for localhost installations")
     name = "users.server.secure.yml" if tls else "users.server.yml"
     template, err = utils.import_yaml(name)
