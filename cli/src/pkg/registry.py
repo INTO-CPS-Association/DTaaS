@@ -105,6 +105,16 @@ def _parse_csv_row(row):
 
 
 def read_csv_users(csv_path):
-    """Return {username: details} parsed from a users CSV file."""
+    """Return {username: details} parsed from a users CSV file.
+
+    Raises ValueError if the same username appears in more than one row, so a
+    duplicate can never silently overwrite an earlier row's details.
+    """
+    users = {}
     with open(csv_path, newline="", encoding="utf-8") as handle:
-        return dict(map(_parse_csv_row, csv.DictReader(handle)))
+        for row in csv.DictReader(handle):
+            username, details = _parse_csv_row(row)
+            if username in users:
+                raise ValueError(f"Duplicate username '{username}' in {csv_path}")
+            users[username] = details
+    return users

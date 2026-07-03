@@ -138,7 +138,8 @@ def _delete_context(usernames):
     utils.check_error(err)
     if compose is None:
         raise ValueError("Failed to load compose configuration")
-    existing_services = compose.get("services", {})
+    services = compose.get("services")
+    existing_services = services if isinstance(services, dict) else {}
     existing, missing = categorize_users(list(usernames), existing_services)
     report_missing_users(missing)
     return compose, existing

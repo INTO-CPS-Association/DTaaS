@@ -152,6 +152,20 @@ def test_read_csv_users_parses_all_rows(tmp_path):
     assert users["bob"]["groups"] == ["additional", "beta-testers"]
 
 
+def test_read_csv_users_rejects_duplicate_username(tmp_path):
+    """A username repeated in the CSV is rejected rather than silently overwritten."""
+    csv_path = tmp_path / "users.csv"
+    csv_path.write_text(
+        "username,email,groups,load_balance\n"
+        "alice,alice@intocps.org,additional,true\n"
+        "alice,other@intocps.org,additional,false\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="Duplicate username 'alice'"):
+        read_csv_users(str(csv_path))
+
+
 def test_csv_import_round_trips_through_registry(tmp_path):
     """A CSV merged into the registry reads back as the same user store."""
     csv_path = tmp_path / "users.csv"

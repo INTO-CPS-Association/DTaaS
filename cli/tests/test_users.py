@@ -163,6 +163,18 @@ def test_delete_users_removes_conf_for_every_requested_name(
     assert removed == {"user1", "ghost"}
 
 
+def test_delete_users_handles_non_dict_services(
+    mock_registry, mock_utils, mock_user_operations
+):
+    """delete_users tolerates malformed YAML where 'services' is not a dict."""
+    mock_utils["import"].return_value = ({"services": None}, None)
+
+    err = users.delete_users(["user1"])
+
+    assert err is None
+    mock_registry["remove"].assert_called_once_with(["user1"])
+
+
 def test_delete_users_handles_compose_without_services(
     mock_registry, mock_utils, mock_user_operations
 ):

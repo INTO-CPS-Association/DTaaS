@@ -39,9 +39,15 @@ def add(**kwargs):
     provisioned. With no USERNAME and no --file, the existing registry is
     reprovisioned.\n
     """
-    stage_users_for_add(UserAddInput(**kwargs))
+    user_input = UserAddInput(**kwargs)
+
+    def _stage_then_add(config_obj):
+        """Stage the registry only once dtaas.toml has loaded successfully."""
+        stage_users_for_add(user_input)
+        return userPkg.add_users(config_obj)
+
     run_user_command(
-        userPkg.add_users, "Users added successfully", "Error while adding users"
+        _stage_then_add, "Users added successfully", "Error while adding users"
     )
 
 

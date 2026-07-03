@@ -54,6 +54,24 @@ def test_add_users_config_error(runner):
     assert "no config" in result.output
 
 
+def test_add_users_config_error_does_not_stage_registry(runner):
+    """A failed Config() load must not write to the registry first.
+
+    stage_users_for_add runs inside the action passed to run_user_command, so
+    it only executes once Config() has already succeeded -- a bad dtaas.toml
+    never leaves a partially-updated registry behind.
+    """
+    with patch(
+        "src.cmd_utils.configPkg.Config", side_effect=RuntimeError("no config")
+    ), patch("src.cmd_user.stage_users_for_add") as mock_stage:
+        result = runner.invoke(
+            dtaas, ["admin", "user", "add", "alice", "--email", "a@x.io"]
+        )
+
+    assert result.exit_code != 0
+    mock_stage.assert_not_called()
+
+
 def test_add_users_with_file(runner, mock_user_pkg, tmp_path):
     """add --file stages the CSV then provisions."""
     mock_user_pkg["add"].return_value = None
@@ -84,7 +102,7 @@ def test_add_single_user(runner, mock_user_pkg):
     mock_user_pkg["add"].assert_called_once()
 
 
-def test_add_users_file_import_error(runner, tmp_path):
+def test_add_users_file_import_error(runner, mock_user_pkg, tmp_path):
     """A malformed users file surfaces as a ClickException."""
     csv_file = tmp_path / "users.csv"
     csv_file.write_text("no-username-column\n")
