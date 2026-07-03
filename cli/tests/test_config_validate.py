@@ -24,9 +24,12 @@ def base(tmp_path):
             },
         },
         "users": {
-            "add": ["u1", "u2"],
-            "delete": ["u2"],
-            "u1": {"email": "u1@intocps.org"},
+            "starting": ["u1", "u2"],
+            "u1": {
+                "email": "u1@intocps.org",
+                "groups": ["default"],
+                "load_balance": True,
+            },
             "u2": {"email": "u2@intocps.org"},
         },
     }
@@ -162,15 +165,14 @@ def test_resources_required_when_set_limits_true(base):
     assert "common.resources.shm_size is missing" in errors
 
 
-def test_user_lists_validation(base):
-    """users.add/delete are optional but must be lists of strings when present."""
+def test_starting_validation(base):
+    """users.starting is optional but must be a list of strings when present."""
     data = copy.deepcopy(base)
-    data["users"] = {"add": "notalist", "delete": ["ok", 5]}
+    data["users"] = {"starting": ["ok", 5]}
     errors = collect_errors(data)
-    assert "users.add must be a list of strings" in errors
-    assert "users.delete must be a list of strings" in errors
+    assert "users.starting must be a list of strings" in errors
 
-    data["users"] = {}  # absent lists are allowed
+    data["users"] = {}  # absent list is allowed
     assert collect_errors(data) == []
 
 
@@ -178,7 +180,7 @@ def test_email_validation(base):
     """Each user sub-table must carry a valid email."""
     data = copy.deepcopy(base)
     data["users"] = {
-        "add": ["u1"],
+        "starting": ["u1"],
         "u1": {"email": "not-an-email"},
         "u2": {},  # missing email
     }
@@ -191,8 +193,21 @@ def test_email_validation_rejects_malformed_addresses(base):
     """email-validator catches cases a minimal regex would wrongly accept."""
     for bad in ("foo@@bar.com", "foo@bar", "foo@.com", 123):
         data = copy.deepcopy(base)
-        data["users"] = {"add": ["u1"], "u1": {"email": bad}}
+        data["users"] = {"starting": ["u1"], "u1": {"email": bad}}
         assert "users.u1.email is not a valid email address" in collect_errors(data)
+
+
+def test_groups_and_load_balance_validation(base):
+    """Per-user groups must be a string list and load_balance a boolean."""
+    data = copy.deepcopy(base)
+    data["users"]["u1"] = {
+        "email": "u1@intocps.org",
+        "groups": "notalist",
+        "load_balance": "yes",
+    }
+    errors = collect_errors(data)
+    assert "users.u1.groups must be a list of strings" in errors
+    assert "users.u1.load_balance must be true or false" in errors
 
 
 def test_deploy_sections_are_optional(base):
@@ -245,15 +260,17 @@ def test_non_dict_sections_report_missing_keys():
 def test_validate_config_missing_file(tmp_path, monkeypatch):
     """validate_config raises FileNotFoundError when no dtaas.toml exists."""
     monkeypatch.chdir(tmp_path)  # neither output_dir nor cwd has the file
+    output_dir = str(tmp_path)
     with pytest.raises(FileNotFoundError, match="dtaas.toml not found"):
-        validate_config(str(tmp_path))
+        validate_config(output_dir)
 
 
 def test_validate_config_parse_error(tmp_path):
     """validate_config raises ValueError when the file cannot be parsed."""
     (tmp_path / "dtaas.toml").write_text("key = = =")
+    output_dir = str(tmp_path)
     with pytest.raises(ValueError):
-        validate_config(str(tmp_path))
+        validate_config(output_dir)
 
 
 def test_validate_config_returns_empty_for_valid_file(tmp_path):

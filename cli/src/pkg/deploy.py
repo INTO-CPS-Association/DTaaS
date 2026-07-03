@@ -5,9 +5,9 @@ from pathlib import Path
 import yaml
 from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
+from .constants import COMPOSE_USERS_YML
 
 COMPOSE_FILE = "docker-compose.yml"
-USERS_COMPOSE_FILE = "compose.users.yml"
 USER_FILES_DIR = "files"
 ENV_FILE = Path("config") / ".env"
 # files/ entries provided by the deployment template (shared workspace and the
@@ -38,7 +38,7 @@ def _users_client(directory):
     Users added via 'dtaas admin user add' run from compose.users.yml as a
     separate compose project, so the main compose file does not know about them.
     """
-    users_compose = Path(directory) / USERS_COMPOSE_FILE
+    users_compose = Path(directory) / COMPOSE_USERS_YML
     if not users_compose.is_file():
         return None
     return DockerClient(compose_files=[str(users_compose)])

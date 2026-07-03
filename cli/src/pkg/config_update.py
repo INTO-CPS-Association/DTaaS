@@ -62,15 +62,13 @@ _SECRETS_HINT = (
 )
 
 
-def _summary(deploy_type, changed, head, tail, warnings=()):
-    """Build the human-readable result or dry-run preview, plus any warnings."""
+def _summary(deploy_type, changed, dry_run):
+    """Build the human-readable result or dry-run preview."""
     if not changed:
-        base = f"No configuration changes for '{deploy_type}'; nothing to update."
-    else:
-        base = f"{head} {', '.join(changed)}; {tail} all services."
-    if warnings:
-        return "\n".join([base, *warnings, _SECRETS_HINT])
-    return base
+        return f"No configuration changes for '{deploy_type}'; nothing to update."
+    if dry_run:
+        return f"Would update {', '.join(changed)}; would restart all services."
+    return f"Updated {', '.join(changed)}; restarted all services."
 
 
 def update_config(output_dir, dry_run=False):
@@ -92,9 +90,12 @@ def update_config(output_dir, dry_run=False):
     specs = deploy_config.build_file_specs(deploy_type, data)
     changed = deploy_config.diff_specs(output_dir, specs)
     if dry_run:
-        return _summary(deploy_type, changed, "Would update", "would restart")
+        return _summary(deploy_type, changed, dry_run=True)
     deploy_config.apply_config(output_dir, specs)
     if changed:
         deploy.restart_all(output_dir)
     warnings = deploy_config.check_placeholders(output_dir, specs)
-    return _summary(deploy_type, changed, "Updated", "restarted", warnings)
+    base = _summary(deploy_type, changed, dry_run=False)
+    if warnings:
+        return "\n".join([base, *warnings, _SECRETS_HINT])
+    return base

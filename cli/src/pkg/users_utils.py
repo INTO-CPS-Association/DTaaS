@@ -3,9 +3,24 @@
 import re
 import click
 from pathlib import Path
-from . import utils
+from .constants import CONF_SERVER_RULE_NUM_RE, LOCALHOST_SERVER, USERNAME_RE
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
+
+
+def is_valid_username(name):
+    """True when *name* is a safe username (alphanumeric plus . _ -)."""
+    return isinstance(name, str) and bool(USERNAME_RE.match(name))
+
+
+def validate_usernames(usernames):
+    """Raise ValueError naming the first username that is not shell-safe."""
+    for name in usernames:
+        if not is_valid_username(name):
+            raise ValueError(
+                f"Invalid username '{name}': only letters, digits, '.', '_' "
+                "and '-' are allowed."
+            )
 
 
 def build_base_mapping(username, config):
@@ -18,7 +33,7 @@ def build_base_mapping(username, config):
         "${DTAAS_DIR}": config["path"],
         "${username}": username,
     }
-    if config["server"] != utils.LOCALHOST_SERVER:
+    if config["server"] != LOCALHOST_SERVER:
         mapping["${SERVER_DNS}"] = config["server"]
     return mapping
 
@@ -35,7 +50,7 @@ def resource_mapping(resources):
 
 def _next_rule_num(text):
     """Return the next available onlyu<N> index from existing conf.server content."""
-    nums = [int(m) for m in re.findall(r"rule\.onlyu(\d+)\.", text)]
+    nums = [int(m) for m in CONF_SERVER_RULE_NUM_RE.findall(text)]
     return max(nums, default=0) + 1
 
 
@@ -123,6 +138,13 @@ def report_missing_users(missing):
     """
     for username in missing:
         click.echo(f"'{username}' does not exist, skipping deletion")
+
+
+def report_delete_preview(existing, usernames):
+    """Print what 'user delete' would do, without changing anything (dry-run)."""
+    if existing:
+        click.echo(f"Would deprovision and stop: {', '.join(existing)}")
+    click.echo(f"Would remove from registry: {', '.join(usernames)}")
 
 
 def remove_users_from_compose(compose, user_list):

@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="0.10.0"
+version="0.11.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -40,22 +40,37 @@ shm_size="512m" # Shared memory size
 
 
 [users]
-# matching user info must present in this config file
-add=["username1","username2", "username3"]
-delete=["username2", "username3"]
+# Starting users installed with this DTaaS instance. This list is
+# declarative and human-edited, set once at install time.
+#
+# Additional users added later via `dtaas admin user add` (or
+# `--file users.csv`) are NOT tracked here. They live in the CLI-owned
+# dtaas.users.registry.json instead, and `dtaas admin user add`/`delete`
+# never write to this file.
+#
+# Every username below must have a matching [users.<username>] table.
+starting=["username1","username2","username3"]
 
 [users.username1]
 email="username1@intocps.org"
+groups=["default","dtaas"]
+load_balance=true
 
 [users.username2]
 email="username2@intocps.org"
+groups=["default","dtaas"]
+load_balance=false
 
 [users.username3]
+# A user can also carry additional, non-reserved group tags alongside the
+# "default" and "dtaas" groups -- groups is always a list, even for one entry.
 email="username3@intocps.org"
+groups=["default","dtaas","beta-testers","load-balanced-tier1"]
+load_balance=true
 
 # Installation-specific configuration
-# For non-localhost deployments, usernames (USERNAME1, USERNAME2, ...)
-# are taken from the [users] add list above.
+# For non-localhost deployments, the starting usernames (USERNAME1,
+# USERNAME2, ...) are taken from the [users] starting list above.
 
 # OAuth application for the DTaaS client website (React frontend).
 # This is a separate OAuth application from the server one used by

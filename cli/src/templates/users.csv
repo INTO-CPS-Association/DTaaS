@@ -1,0 +1,3 @@
+username,email,groups,load_balance
+alice,alice@intocps.org,additional,true
+bob,bob@intocps.org,additional;beta-testers;load-balanced-tier1,false

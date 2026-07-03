@@ -254,3 +254,5 @@ prompt.current
 !servers/logger/src/logs
 servers/logger/logger.yaml
 servers/logger/certs
+# dtaas CLI runtime state cache (machine-owned, never committed)
+.dtaas.state.json

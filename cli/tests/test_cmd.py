@@ -1,6 +1,6 @@
 """Tests for CLI commands."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from pathlib import Path
 import pytest
 from click.testing import CliRunner
@@ -16,24 +16,31 @@ def runner():
     return CliRunner()
 
 
-@pytest.fixture
-def mock_user_pkg():
-    """Mock user package functions and Config to avoid filesystem dependency"""
-    with patch("src.cmd.userPkg.add_users") as mock_add, patch(
-        "src.cmd.userPkg.delete_user"
-    ) as mock_delete, patch("src.cmd_utils.configPkg.Config") as mock_cfg:
-        mock_cfg.return_value = MagicMock()
-        yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
+def test_config_reconcile_invokes_run_reconcile(runner):
+    """config reconcile delegates to run_reconcile with the output dir and fix flag."""
+    with patch("src.cmd.run_reconcile") as mock_reconcile:
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile"])
 
-
-def test_delete_user_success(runner, mock_user_pkg):
-    """Test successful user deletion"""
-    mock_user_pkg["delete"].return_value = None
-
-    result = runner.invoke(dtaas, ["admin", "user", "delete"])
     assert result.exit_code == 0
-    assert "User deleted successfully" in result.output
-    mock_user_pkg["delete"].assert_called_once()
+    mock_reconcile.assert_called_once_with(".", False)
+
+
+def test_config_reconcile_passes_fix_flag(runner):
+    """config reconcile --fix forwards fix=True to run_reconcile."""
+    with patch("src.cmd.run_reconcile") as mock_reconcile:
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile", "--fix"])
+
+    assert result.exit_code == 0
+    mock_reconcile.assert_called_once_with(".", True)
+
+
+def test_config_reconcile_maps_errors(runner):
+    """A malformed state cache surfaces as a ClickException."""
+    with patch("src.cmd.run_reconcile", side_effect=ValueError("bad state")):
+        result = runner.invoke(dtaas, ["admin", "config", "reconcile"])
+
+    assert result.exit_code != 0
+    assert "bad state" in result.output
 
 
 def test_generate_project_success(runner):
@@ -60,7 +67,7 @@ def test_generate_project_error(runner):
 def test_generate_deployment_without_config_prints_note(runner):
     """generate-deployment prints a note when dtaas.toml is absent"""
     with patch("src.cmd.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_utils._find_toml", return_value=None
+        "src.cmd_deploy_utils._find_toml", return_value=None
     ):
         result = runner.invoke(dtaas, ["generate-deployment", "--type", "localhost"])
 
@@ -142,15 +149,6 @@ def test_config_validate_missing_file(runner):
 
     assert result.exit_code != 0
     assert "dtaas.toml not found" in result.output
-
-
-def test_add_users_config_error(runner):
-    """add command raises ClickException when Config() fails"""
-    with patch("src.cmd_utils.configPkg.Config", side_effect=RuntimeError("no config")):
-        result = runner.invoke(dtaas, ["admin", "user", "add"])
-
-    assert result.exit_code != 0
-    assert "no config" in result.output
 
 
 @pytest.fixture
