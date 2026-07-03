@@ -161,9 +161,10 @@ def test_read_csv_users_rejects_duplicate_username(tmp_path):
         "alice,other@intocps.org,additional,false\n",
         encoding="utf-8",
     )
+    csv_file = str(csv_path)
 
     with pytest.raises(ValueError, match="Duplicate username 'alice'"):
-        read_csv_users(str(csv_path))
+        read_csv_users(csv_file)
 
 
 def test_csv_import_round_trips_through_registry(tmp_path):
