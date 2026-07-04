@@ -6,10 +6,8 @@ import pytest
 from src.pkg.certs import CertsCopySpec
 from src.cmd_deploy_utils import (
     VerticalChoicesCommand,
-    _certs_src,
     _copy_deploy_certs,
     _create_user_dirs,
-    _find_toml,
     _substitute_config,
     apply_deploy_config,
     provision_user_files,
@@ -89,12 +87,17 @@ def test_provision_user_files_noop_without_toml(tmp_path, monkeypatch):
     mock_perms.assert_not_called()
 
 
-def test_provision_user_files_maps_parse_error(tmp_path):
-    """provision_user_files surfaces a dtaas.toml parse error as a ClickException."""
+@pytest.fixture
+def broken_toml_dir(tmp_path):
+    """A directory containing an unparsable dtaas.toml."""
     (tmp_path / "dtaas.toml").write_text("key = = =")
+    return tmp_path
 
+
+def test_provision_user_files_maps_parse_error(broken_toml_dir):
+    """provision_user_files surfaces a dtaas.toml parse error as a ClickException."""
     with pytest.raises(click.ClickException, match="Error reading dtaas.toml"):
-        provision_user_files(str(tmp_path))
+        provision_user_files(str(broken_toml_dir))
 
 
 def test_create_user_dirs_maps_oserror():
@@ -159,12 +162,10 @@ def test_apply_deploy_config_notes_missing_toml(tmp_path, monkeypatch, capsys):
     assert "dtaas.toml not found" in capsys.readouterr().out
 
 
-def test_apply_deploy_config_maps_parse_error(tmp_path):
+def test_apply_deploy_config_maps_parse_error(broken_toml_dir):
     """apply_deploy_config surfaces a dtaas.toml parse error as a ClickException."""
-    (tmp_path / "dtaas.toml").write_text("key = = =")
-
     with pytest.raises(click.ClickException, match="Error reading dtaas.toml"):
-        apply_deploy_config("secure-server", str(tmp_path))
+        apply_deploy_config("secure-server", str(broken_toml_dir))
 
 
 def test_apply_deploy_config_runs_full_pipeline(tmp_path):
