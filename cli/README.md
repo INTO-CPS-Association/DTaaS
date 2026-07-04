@@ -44,11 +44,11 @@ dtaas admin uninstall
 > | `--type` | When to use |
 > |---|---|
 > | `localhost` | Local dev / demo only |
-> | `insecure-server` | Multi-user HTTP demo — **not internet-facing** |
-> | `secure-server` | Multi-user HTTPS — production-ready |
-> | `secure-server-gitlab` | HTTPS + bundled GitLab — production-ready |
+> | `insecure-server` | Multi-user HTTP demo: **not internet-facing** |
+> | `secure-server` | Multi-user HTTPS: production-ready |
+> | `secure-server-gitlab` | HTTPS + bundled GitLab: production-ready |
 > | `workspace-localhost` | Workspace + Dex on localhost |
-> | `workspace-secure-server` | Workspace + Keycloak — production-ready |
+> | `workspace-secure-server` | Workspace + Keycloak: production-ready |
 
 ---
 
@@ -310,7 +310,7 @@ dtaas admin uninstall --remove-user-files --yes
 
 ### 🔁 `admin update --certs`
 
-Rotates TLS certificates of a running deployment in place — no project
+Rotates TLS certificates of a running deployment in place no project
 regeneration or manual file copying required.
 
 ```bash
@@ -595,7 +595,7 @@ dtaas admin config reconcile
 It lists:
 
 - **missing** registered but not currently provisioned;
-- **unexpected** provisioned but not in the registry (investigate — may be a
+- **unexpected** provisioned but not in the registry (investigate may be a
   manual edit or a partial delete);
 - **drifted** provisioned, but the live config no longer matches what
   `.dtaas.state.json` recorded when it was last provisioned.
@@ -724,7 +724,7 @@ shm_size   = "512m"   # shared memory unit required
 
 # ── Starting users (all deployment types) ─────────────────────────────────────
 # One self-contained [[users]] block per user, hand-edited once at install
-# time. Presence in this file is the desired state — there are no add/delete
+# time. Presence in this file is the desired state there are no add/delete
 # lists. Additional users added later with `dtaas admin user add` live in the
 # CLI-owned dtaas.users.registry.json instead.
 # Usernames must match GitLab accounts and be unique across the array.

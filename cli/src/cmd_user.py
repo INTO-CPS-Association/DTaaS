@@ -36,12 +36,16 @@ from .cmd_utils import (
     help="Mark USERNAME for load balancing (default: enabled).",
 )
 def add(**kwargs):
-    """
-    add users to DTaaS\n
-    Single user: dtaas admin user add --email alice@intocps.org alice\n
-    Bulk from CSV: dtaas admin user add --file users.csv\n
-    Both merge into dtaas.users.registry.json, then every registry user is
-    provisioned. A USERNAME or --file is required.\n
+    """Add users to a running DTaaS instance.
+
+    \b
+    Examples:
+      dtaas admin user add alice --email alice@example.org
+      dtaas admin user add --file users.csv
+
+    Merges the specified user(s) into dtaas.users.registry.json, then
+    provisions all registry users. A USERNAME or --file is required.
+    Requires a running deployment (run 'dtaas admin install' first).
     """
     user_input = UserAddInput(**kwargs)
 
@@ -69,12 +73,16 @@ def add(**kwargs):
     help="Show which users would be removed without deleting anything.",
 )
 def delete(usernames, csv_file, dry_run):
-    """
-    removes users from DTaaS\n
-    By name: dtaas admin user delete alice bob\n
-    Bulk from CSV: dtaas admin user delete --file users.csv\n
-    Deprovisions each user and drops them from dtaas.users.registry.json.\n
-    Pass --dry-run to preview the removal without making any changes.\n
+    """Remove users from a running DTaaS instance.
+
+    \b
+    Examples:
+      dtaas admin user delete alice bob
+      dtaas admin user delete --file users.csv
+      dtaas admin user delete alice --dry-run
+
+    Deprovisions each user and removes them from dtaas.users.registry.json.
+    Use --dry-run to preview removals without making any changes.
     """
     resolved = resolve_delete_usernames(usernames, csv_file)
     err = userPkg.delete_users(resolved, dry_run=dry_run)

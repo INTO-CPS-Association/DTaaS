@@ -1,4 +1,4 @@
-# DTaaS Command Line Interface — Developer Notes
+# DTaaS Command Line Interface Developer Notes
 
 This document outlines the development strategy and contribution guidelines.
 The source code for the CLI is located in the _cli/src_ directory.
@@ -74,7 +74,7 @@ existing substitution engine rather than duplicating it:
 `deploy_config.build_file_specs` produces the per-file specs,
 `deploy_config.diff_specs` previews which files a spec would change
 (read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
-writes them (idempotently — only changed files are touched). The deployment
+writes them (idempotently only changed files are touched). The deployment
 type is detected from the compose service names via `deploy.compose_services`
 (more robust than inspecting config-file names). When any file changed, the
 whole stack is recreated through `deploy.restart_all`
@@ -92,7 +92,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
 
 - _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
   the `{username: details}` store (empty when absent), `register_new_users` merges
-  new users, and `remove_from_registry` drops them — each persisted atomically
+  new users, and `remove_from_registry` drops them each persisted atomically
   (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
   `read_csv_users` parses a `users.csv` for bulk import.
 - _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
@@ -103,7 +103,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   read), rejecting the call if both or neither are given.
   `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
   USERNAME) into the registry before `add` runs, and rejects the call
-  (`ClickException`) if neither is given — a bare `user add` is never a silent
+  (`ClickException`) if neither is given a bare `user add` is never a silent
   no-op or an implicit reprovision.
 - _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
   it with a fresh snapshot (not an append-only log) recording, per currently
@@ -114,7 +114,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   and compares it against the live `compose.users.yml` services, reporting
   _missing_ (registered, not provisioned) and _unexpected_ (provisioned, not
   registered) users directly from that comparison. The state cache is used
-  only for the third category, _drifted_ — a user present in both whose live
+  only for the third category, _drifted_ a user present in both whose live
   config no longer matches the hash recorded when it was last provisioned; a
   user with no recorded hash is not flagged, since reconcile has nothing to
   compare it against. `cmd_utils.run_reconcile(output_dir, fix=True)` reuses
@@ -184,14 +184,14 @@ email="username2@intocps.org"
 
 - Each `[[users]]` block is one self-contained, starting user installed with
   the instance, hand-edited at install time. Presence in the array is the
-  desired state — there is no separate add/delete list, and a username never
+  desired state there is no separate add/delete list, and a username never
   needs to be kept in sync across more than one place. Additional users added
-  later via `dtaas admin user add` are **not** listed here — they live in the
+  later via `dtaas admin user add` are **not** listed here they live in the
   CLI-owned `dtaas.users.registry.json`.
 - _username_/_email_ are required (_email_ is written to `config/conf.server`
   on `dtaas admin user add`); _groups_/_load_balance_ are optional per-user
   tags; _password_ is an optional field reserved for future GitLab-onboarding
-  provisioning — avoid committing a real secret in it.
+  provisioning avoid committing a real secret in it.
 - This schema previously went through an intermediate `starting = [...]` list
   plus per-user `[users.<name>]` sub-table stage; that stage is now itself
   superseded by `[[users]]`.
@@ -358,7 +358,7 @@ one owner and one responsibility:
 - **`dtaas.toml` is never rewritten by the CLI, ever.** Once a human commits
   `starting` users at install time, the CLI only _reads_ that list (for
   `admin install` and `generate-deployment`). A comment-bearing, reviewed
-  config file should never be silently mutated by a tool — that risk is
+  config file should never be silently mutated by a tool that risk is
   exactly what made the old `add`/`delete` design fragile.
 - **`dtaas.users.registry.json` is a merge, not a replace.** `user add`
   unions new users into the existing store and skips (with a warning, not an
@@ -374,7 +374,7 @@ one owner and one responsibility:
   whether that config has since changed underneath it.
 - **`dtaas admin config reconcile` treats the registry as the desired
   state, not the state cache.** An earlier version of `reconcile` compared
-  `.dtaas.state.json` against the live compose services — but since the
+  `.dtaas.state.json` against the live compose services but since the
   state cache is written from that same compose data at the end of every
   `add`/`delete`, the two would almost always agree by construction, so that
   comparison rarely caught anything meaningful. Comparing the _registry_
