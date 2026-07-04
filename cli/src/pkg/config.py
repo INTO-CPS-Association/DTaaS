@@ -3,18 +3,6 @@
 from . import utils
 
 
-def _users_list_error(conf_users, key):
-    """Return an Exception describing why config.users.<key> is invalid, or None."""
-    if key not in conf_users:
-        return Exception(f"Config file error: No {key} list in 'users' tag")
-    value = conf_users[key]
-    is_list = isinstance(value, list)
-    if not is_list or not value:
-        problem = "must be a list" if not is_list else "list is empty"
-        return Exception(f"Config file error: users.{key} {problem}")
-    return None
-
-
 class Config:
     """The Config class for DTaaS"""
 
@@ -58,21 +46,36 @@ class Config:
         return str(conf_common[key]), None
 
     def get_users(self):
-        """Gets the 'users' section of config"""
-        users, err = self.get_from_config("users")
-        return users, err
+        """Gets the '[[users]]' array of tables from config, as a list of dicts.
 
-    def get_string_list_from_users(self, key):
-        """Gets the specific key as a list of strings from config.users"""
-        conf_users, err = self.get_users()
-        if err is not None or not isinstance(conf_users, dict):
+        The 'users' key is optional; when absent this returns an empty list
+        rather than an error.
+        """
+        conf, err = self.get_config()
+        if err is not None or conf is None:
             return None, err
+        users = conf.get("users", [])
+        if not isinstance(users, list):
+            return None, Exception(
+                "Config file error: 'users' must be an array of tables ([[users]])"
+            )
+        return [u for u in users if isinstance(u, dict)], None
 
-        err = _users_list_error(conf_users, key)
-        if err is not None:
+    def get_starting_users(self):
+        """Gets the usernames declared by [[users]] in config."""
+        users, err = self.get_users()
+        if err is not None or users is None:
             return None, err
+        return [str(u.get("username", "")) for u in users], None
 
-        return [str(x) for x in conf_users[key]], None
+    def get_user_emails(self):
+        """Gets {username: email} for every [[users]] record in config."""
+        users, err = self.get_users()
+        if err is not None or users is None:
+            return None, err
+        return {
+            str(u.get("username", "")): str(u.get("email", "")) for u in users
+        }, None
 
     def get_path(self):
         """Gets the 'path' from config.common"""
@@ -83,16 +86,6 @@ class Config:
         """Gets the 'server-dns' from config.common"""
         server, err = self.get_string_from_common("server-dns")
         return server, err
-
-    def get_add_users_list(self):
-        """Gets the 'add' list from config.users"""
-        add_users_list, err = self.get_string_list_from_users("add")
-        return add_users_list, err
-
-    def get_delete_users_list(self):
-        """Gets the 'delete' list from config.users"""
-        delete_users_list, err = self.get_string_list_from_users("delete")
-        return delete_users_list, err
 
     def get_resource_limits(self):
         """Gets the default resource limits"""

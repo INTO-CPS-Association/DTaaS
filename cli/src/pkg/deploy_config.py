@@ -29,36 +29,32 @@ def _set_yaml_value(text, key, value):
 _SETTERS = {"env": _set_env_value, "js": _set_js_value, "yaml": _set_yaml_value}
 
 
-def _resolved_starting_index(users, key):
-    """Parse a ``username<N>``/``email<N>`` key into (field, index, starting), or None."""
+def _resolved_user_index(users, key):
+    """Parse a ``username<N>``/``email<N>`` key into (field, index), or None."""
     m = USER_PSEUDO_KEY_RE.match(key)
     if not m:
         return None
     index = int(m.group(2)) - 1
-    starting = users.get("starting", [])
-    if index >= len(starting):
+    if index >= len(users):
         return None
-    return m.group(1), index, starting
+    return m.group(1), index
 
 
 def _user_value(users, key):
-    """Resolve a ``username<N>`` or ``email<N>`` pseudo-key from [users]."""
-    resolved = _resolved_starting_index(users, key)
+    """Resolve a ``username<N>`` or ``email<N>`` pseudo-key from [[users]]."""
+    resolved = _resolved_user_index(users, key)
     if resolved is None:
         return ""
-    field, index, starting = resolved
-    username = str(starting[index]).strip()
-    if field == "username":
-        return username
-    section = users.get(username, {})
-    return str(section.get("email", "")).strip() if isinstance(section, dict) else ""
+    field, index = resolved
+    record = users[index]
+    return str(record.get(field, "")).strip() if isinstance(record, dict) else ""
 
 
 def _toml_lookup(toml_data, source):
     """Resolve a ``section.key`` source string to its value in toml_data."""
     section, _, key = source.partition(".")
     if section == "users":
-        return _user_value(toml_data.get("users", {}), key)
+        return _user_value(toml_data.get("users", []), key)
     return str(toml_data.get(section, {}).get(key, "")).strip()
 
 

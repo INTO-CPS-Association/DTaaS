@@ -127,10 +127,12 @@ directory) and reports all problems at once:
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
-| `[users].starting` | When present, must be a list of strings |
-| `[users.<name>].email` | Valid RFC 5321/5322 address (no DNS lookup) |
-| `[users.<name>].groups` | When present, must be a list of strings |
-| `[users.<name>].load_balance` | When present, must be `true` or `false` |
+| `[[users]]` | When present, must be an array of tables; usernames must be unique |
+| `[[users]].username` | Required, valid username |
+| `[[users]].email` | Required, valid RFC 5321/5322 address (no DNS lookup) |
+| `[[users]].groups` | When present, must be a list of strings |
+| `[[users]].load_balance` | When present, must be `true` or `false` |
+| `[[users]].password` | When present, must be a string |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
@@ -219,7 +221,7 @@ directory. Each `--type` reads from its matching top-level section in
 The `[frontend]` section supplies `REACT_APP_CLIENT_ID` and
 `REACT_APP_AUTH_AUTHORITY` for the DTaaS web client, these are a separate
 OAuth application from the traefik-forward-auth credentials configured in
-`[insecure-server]` / `[secure-server]`. The `[common]` and `[users]`
+`[insecure-server]` / `[secure-server]`. The `[common]` and `[[users]]`
 sections are substituted across all types.
 
 If `dtaas.toml` is not found, a note is printed and generated files keep
@@ -244,7 +246,7 @@ dtaas admin install
 
 Internally runs `docker compose up -d` against the `docker-compose.yml` in
 the installation directory. Before starting, it ensures per-user workspace
-directories for the `[users].starting` list exist, recreating each from
+directories for every `[[users]]` record exist, recreating each from
 `files/template/` if missing and sets ownership to `1000:100`.
 
 **Options**
@@ -461,7 +463,7 @@ bob,bob@intocps.org,additional;beta-testers,false
 
 `groups` is a `;`-separated list and `load_balance` is `true`/`false`. Both
 forms merge into the registry (never hand-edited), then every registry user is
-provisioned. A username already in `dtaas.toml`'s `starting` list or the
+provisioned. A username already declared in `dtaas.toml`'s `[[users]]` or the
 registry is **skipped with a warning** it is never added twice or overwritten.
 
 A `USERNAME` or `--file` is required a bare `dtaas admin user add` with
@@ -628,7 +630,7 @@ config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
 
 | File | Owner | Contents | Git |
 |---|---|---|---|
-| `dtaas.toml` `[users]` | Human, at install time | **Starting** users: the `starting` list plus per-user `email`, `groups`, `load_balance` | Tracked hand-edited |
+| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Tracked hand-edited |
 | `dtaas.users.registry.json` | CLI (`user add` / `user delete`) | **Additional** users, same fields | Tracked CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored runtime cache |
 
@@ -665,7 +667,7 @@ Not-Used —
 | `[common]` | ✅ | ✅ | ✅ | ✅ |
 | `[common.security]` | — | — | ✅ | ✅ |
 | `[common.resources]` | ○ | ○ | ○ | ○ |
-| `[users]` | ✅ | ✅ | ✅ | ✅ |
+| `[[users]]` | ✅ | ✅ | ✅ | ✅ |
 | `[frontend]` | — | ✅ | ✅ | ✅ |
 | `[localhost]` | ✅ | — | — | — |
 | `[insecure-server]` | — | ✅ | — | — |
@@ -679,7 +681,7 @@ Not-Used —
 | `[common]` | ✅ | ✅ |
 | `[common.security]` | — | ✅ |
 | `[common.resources]` | ○ | ○ |
-| `[users]` | ✅ | ✅ |
+| `[[users]]` | ✅ | ✅ |
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
 
@@ -721,21 +723,24 @@ pids_limit = 4960     # maximum number of processes per container (integer)
 shm_size   = "512m"   # shared memory unit required
 
 # ── Starting users (all deployment types) ─────────────────────────────────────
-# The users installed with this instance, hand-edited once at install time.
-# Additional users added later with `dtaas admin user add` live in the
-# CLI-owned dtaas.users.registry.json instead — never here.
-# Usernames must match GitLab accounts.
-[users]
-starting = ["alice", "bob"]
-
-# Per-user email enables traefik-forward-auth routing rules automatically;
-# groups/load_balance carry per-user tags.
-[users.alice]
+# One self-contained [[users]] block per user, hand-edited once at install
+# time. Presence in this file is the desired state — there are no add/delete
+# lists. Additional users added later with `dtaas admin user add` live in the
+# CLI-owned dtaas.users.registry.json instead.
+# Usernames must match GitLab accounts and be unique across the array.
+#
+# email enables traefik-forward-auth routing rules automatically;
+# groups/load_balance carry per-user tags. password is optional (used by
+# future GitLab-provisioning onboarding) avoid committing a real secret
+# here; prefer supplying it at runtime instead.
+[[users]]
+username     = "alice"
 email        = "alice@example.com"
 groups       = ["default", "dtaas"]
 load_balance = true
 
-[users.bob]
+[[users]]
+username     = "bob"
 email        = "bob@example.com"
 groups       = ["default", "dtaas"]
 load_balance = false

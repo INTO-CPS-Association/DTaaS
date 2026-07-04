@@ -69,57 +69,50 @@ def _check_resources(data):
     return errors
 
 
-def _check_starting(data):
-    """users.starting, when present, must be a list of strings."""
-    return optional(
-        data,
-        ("users", "starting"),
-        (is_string_list, "users.starting must be a list of strings"),
-    )
+def _duplicate_username_errors(users):
+    """Every username across [[users]] must be unique."""
+    names = [
+        str(u.get("username"))
+        for u in users
+        if isinstance(u, dict) and is_username(u.get("username"))
+    ]
+    dupes = sorted({n for n in names if names.count(n) > 1})
+    return [f"users: duplicate username '{n}'" for n in dupes]
 
 
-def _email_error(name, info):
-    """users.<name>.email must be a valid address."""
-    if is_email(info.get("email", "")):
-        return []
-    return [f"users.{name}.email is not a valid email address"]
-
-
-def _groups_error(name, info):
-    """users.<name>.groups, when present, must be a list of strings."""
-    groups = info.get("groups")
-    if groups is None or is_string_list(groups):
-        return []
-    return [f"users.{name}.groups must be a list of strings"]
-
-
-def _load_balance_error(name, info):
-    """users.<name>.load_balance, when present, must be a boolean."""
-    load_balance = info.get("load_balance")
-    if load_balance is None or isinstance(load_balance, bool):
-        return []
-    return [f"users.{name}.load_balance must be true or false"]
-
-
-def _user_table_errors(name, info):
-    """Validate one [users.<name>] sub-table; the starting list is not a table."""
+def _user_record_errors(info):
+    """Validate one [[users]] record: required username/email, optional tags."""
     if not isinstance(info, dict):
-        return []
-    return (
-        _email_error(name, info)
-        + _groups_error(name, info)
-        + _load_balance_error(name, info)
-    )
-
-
-def _check_user_tables(data):
-    """Every [users.<name>] sub-table must hold a valid email and valid tags."""
-    users = get_nested(data, "users")
-    if not isinstance(users, dict):
-        return []
+        return ["users: each entry must be a table"]
+    name = info.get("username")
     errors = []
-    for name, info in users.items():
-        errors += _user_table_errors(name, info)
+    if not is_username(name):
+        errors.append("users: each entry requires a valid 'username'")
+        name = "?"
+    if not is_email(info.get("email", "")):
+        errors.append(f"users.{name}.email is not a valid email address")
+    groups = info.get("groups")
+    if groups is not None and not is_string_list(groups):
+        errors.append(f"users.{name}.groups must be a list of strings")
+    load_balance = info.get("load_balance")
+    if load_balance is not None and not isinstance(load_balance, bool):
+        errors.append(f"users.{name}.load_balance must be true or false")
+    password = info.get("password")
+    if password is not None and not isinstance(password, str):
+        errors.append(f"users.{name}.password must be a string")
+    return errors
+
+
+def _check_users(data):
+    """[[users]], when present, must be a list of valid, uniquely-named records."""
+    users = get_nested(data, "users")
+    if users is None:
+        return []
+    if not isinstance(users, list):
+        return ["users must be an array of tables ([[users]])"]
+    errors = _duplicate_username_errors(users)
+    for info in users:
+        errors += _user_record_errors(info)
     return errors
 
 
@@ -152,8 +145,7 @@ _CHECKS = (
     _check_path,
     _check_certs_src,
     _check_resources,
-    _check_starting,
-    _check_user_tables,
+    _check_users,
     _check_deploy_fields,
 )
 

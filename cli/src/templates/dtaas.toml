@@ -39,38 +39,37 @@ pids_limit=4960 # Number of processes
 shm_size="512m" # Shared memory size
 
 
-[users]
-# Starting users installed with this DTaaS instance. This list is
-# declarative and human-edited, set once at install time.
+# Starting users installed with this DTaaS instance. Each [[users]] block is
+# one self-contained user record; presence here is the desired state, set
+# once at install time, there are no add/delete lists.
 #
 # Additional users added later via `dtaas admin user add` (or
 # `--file users.csv`) are NOT tracked here. They live in the CLI-owned
 # dtaas.users.registry.json instead, and `dtaas admin user add`/`delete`
 # never write to this file.
-#
-# Every username below must have a matching [users.<username>] table.
-starting=["username1","username2","username3"]
-
-[users.username1]
+[[users]]
+username="username1"
 email="username1@intocps.org"
 groups=["default","dtaas"]
 load_balance=true
 
-[users.username2]
+[[users]]
+username="username2"
 email="username2@intocps.org"
 groups=["default","dtaas"]
 load_balance=false
 
-[users.username3]
+[[users]]
 # A user can also carry additional, non-reserved group tags alongside the
 # "default" and "dtaas" groups -- groups is always a list, even for one entry.
+username="username3"
 email="username3@intocps.org"
 groups=["default","dtaas","beta-testers","load-balanced-tier1"]
 load_balance=true
 
 # Installation-specific configuration
 # For non-localhost deployments, the starting usernames (USERNAME1,
-# USERNAME2, ...) are taken from the [users] starting list above.
+# USERNAME2, ...) are taken from the [[users]] records above.
 
 # OAuth application for the DTaaS client website (React frontend).
 # This is a separate OAuth application from the server one used by

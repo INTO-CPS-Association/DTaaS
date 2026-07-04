@@ -44,13 +44,11 @@ def test_import_toml():
                 "shm_size": "512m",
             },
         },
-        "users": {
-            "add": ["username1", "username2", "username3"],
-            "delete": ["username2", "username3"],
-            "username1": {"email": "username1@intocps.org"},
-            "username2": {"email": "username2@intocps.org"},
-            "username3": {"email": "username3@intocps.org"},
-        },
+        "users": [
+            {"username": "username1", "email": "username1@intocps.org"},
+            {"username": "username2", "email": "username2@intocps.org"},
+            {"username": "username3", "email": "username3@intocps.org"},
+        ],
         "frontend": {
             "react-app-client-id": "your_client_id_here",
             "react-app-oauth-url": "https://gitlab.com",

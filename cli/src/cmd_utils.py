@@ -26,14 +26,13 @@ NO_INSTALLATION_MESSAGE = "There is no existing DTaaS / Workspace installation"
 
 
 def _starting_usernames():
-    """The [users].starting list from dtaas.toml, or [] when unavailable."""
+    """The [[users]] usernames from dtaas.toml, or [] when unavailable."""
     try:
         config_obj = configPkg.Config()
     except RuntimeError:
         return []
-    users, _ = config_obj.get_users()
-    starting = users.get("starting", []) if isinstance(users, dict) else []
-    return [str(x) for x in starting] if isinstance(starting, list) else []
+    usernames, err = config_obj.get_starting_users()
+    return usernames if err is None else []
 
 
 def _read_users_csv(csv_file):

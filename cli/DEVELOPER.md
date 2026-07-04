@@ -168,23 +168,33 @@ shm_size="512m"
   here into the deployment's `certs/` directory (see `src/pkg/certs.py`).
 - Resource fields set default container limits for user workspaces.
 
-#### [users]
+#### [[users]]
 
 ```toml
-[users]
-starting=["username1","username2"]
-
-[users.username1]
+[[users]]
+username="username1"
 email="username1@intocps.org"
 groups=["default","dtaas"]
 load_balance=true
+
+[[users]]
+username="username2"
+email="username2@intocps.org"
 ```
 
-- _starting_: the initial users installed with the instance, hand-edited at
-  install time. Additional users added later via `dtaas admin user add` are
-  **not** listed here — they live in the CLI-owned `dtaas.users.registry.json`.
-- Per-user sub-tables provide _email_ (written to `config/conf.server` on
-  `dtaas admin user add`), plus _groups_ and _load_balance_ tags.
+- Each `[[users]]` block is one self-contained, starting user installed with
+  the instance, hand-edited at install time. Presence in the array is the
+  desired state — there is no separate add/delete list, and a username never
+  needs to be kept in sync across more than one place. Additional users added
+  later via `dtaas admin user add` are **not** listed here — they live in the
+  CLI-owned `dtaas.users.registry.json`.
+- _username_/_email_ are required (_email_ is written to `config/conf.server`
+  on `dtaas admin user add`); _groups_/_load_balance_ are optional per-user
+  tags; _password_ is an optional field reserved for future GitLab-onboarding
+  provisioning — avoid committing a real secret in it.
+- This schema previously went through an intermediate `starting = [...]` list
+  plus per-user `[users.<name>]` sub-table stage; that stage is now itself
+  superseded by `[[users]]`.
 
 See [User registry and runtime state](#user-registry-and-runtime-state) for the
 registry and `.dtaas.state.json` cache.
@@ -339,7 +349,7 @@ one owner and one responsibility:
 
 | File | Owner | Responsibility |
 |---|---|---|
-| `dtaas.toml` `[users]` | Human, once, at install time | The `starting` users the instance is installed with |
+| `dtaas.toml` `[[users]]` | Human, once, at install time | The `starting` users the instance is installed with |
 | `dtaas.users.registry.json` | The CLI, exclusively | Every `additional` user, added at any point after install |
 | `.dtaas.state.json` | The CLI, exclusively | A disposable snapshot of what is actually running right now |
 

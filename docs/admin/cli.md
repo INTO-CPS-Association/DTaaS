@@ -81,10 +81,13 @@ shm_size = "512m"
 # mem_limit = "8G"
 
 
-[users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"] 
-delete = ["username2", "username3"]
+[[users]]
+username = "username1"
+email = "username1@intocps.org"
+
+[[users]]
+username = "username2"
+email = "username2@intocps.org"
 ...
 ```
 
@@ -107,24 +110,30 @@ new user workspaces. The available templates are:
 
 ### Add Users
 
-To add new users using the CLI, the
-_users.add_ list in
-_dtaas.toml_ should be populated with the GitLab instance
-usernames of the users to be added.
+The initial, "starting" users an instance is installed with are declared in
+_dtaas.toml_ as `[[users]]` records (see above); they are hand-edited once,
+at install time, and never rewritten by the CLI.
 
-```toml
-[users]
-# matching user info must present in this config file
-add = ["username1","username2", "username3"]
-```
-
-The working directory must be the _cli_ directory.
-
-Then execute:
+Users added later at runtime are **not** added to _dtaas.toml_. Instead, run
+`dtaas admin user add` from the _cli_ directory, either for a single user:
 
 ```bash
-dtaas admin user add
+dtaas admin user add alice --email alice@intocps.org
 ```
+
+or in bulk from a CSV file (the sample `users.csv` is written alongside
+`dtaas.toml` by `dtaas admin config generate`):
+
+```bash
+dtaas admin user add --file users.csv
+```
+
+`--group` (repeatable) and `--load-balance`/`--no-load-balance` set the
+optional per-user tags. Either form merges the user(s) into the CLI-owned
+`dtaas.users.registry.json` — never hand-edited — then provisions every
+registry user. A username already declared in `dtaas.toml`'s `[[users]]` or
+already in the registry is skipped with a warning, never added twice or
+overwritten.
 
 The command checks for the existence of `files/<username>` directory.
 If it does not exist, a new directory with correct file structure is created.
@@ -132,74 +141,36 @@ The directory, if it exists, must be owned by the user executing
 **dtaas** command on the host operating system. If the files do not
 have the expected ownership rights, the command fails.
 
-#### Caveats
-
-This process brings up the containers, without the AuthMS authentication.
-
-- Currently the _email_ fields for each user in
-  _dtaas.toml_ are not in use, and are not necessary
-  to complete. These emails must be configured manually
-  for each user in the config file of
-  the _traefik-forward-auth_ service and its
-  container must be restarted. This is accomplished as follows:
-
-- Navigate to the directory into which the installation zip is extracted.
-
-- Add three lines to `config/conf.server`
-
-```txt
-rule.onlyu3.action=auth
-rule.onlyu3.rule=PathPrefix(`/user3`)
-rule.onlyu3.whitelist = user3@emailservice.com
-```
-
-- Run the command for these changes to take effect:
-
-```bash
-docker compose --env-file config/.env up \
-  -d --force-recreate traefik-forward-auth
-```
-
-The new users are now added to the DTaaS
-instance, with authorisation enabled.
+When an _email_ is given for a user, the CLI automatically adds the matching
+traefik-forward-auth routing rule to `config/conf.server` and restarts that
+service — no manual editing of `conf.server` is needed.
 
 ### Delete Users
 
-- To delete existing users, the _users.delete_ list in
-  _dtaas.toml_ should be populated with the GitLab instance
-  usernames of the users to be deleted.
-
-```toml
-[users]
-# matching user info must present in this config file
-delete = ["username1","username2", "username3"]
-```
-
-- The working directory must be the _cli_ directory.
-
-Then execute:
+Pass one or more usernames to `dtaas admin user delete`, run from the _cli_
+directory:
 
 ```bash
-dtaas admin user delete
+dtaas admin user delete alice bob
 ```
 
-- Remember to remove the rules for deleted users
-  in _conf.server_.
+or bulk-delete from the same CSV format (only the `username` column is used):
+
+```bash
+dtaas admin user delete --file users.csv
+```
+
+Add `--dry-run` to preview which users would be removed without deleting
+anything. Each deleted user is deprovisioned (container stopped, compose
+service and forward-auth rule removed) and dropped from
+`dtaas.users.registry.json`.
 
 ### Additional Points to Remember
 
-- The _user add_ CLI will add and start a
-  container for a new user.
-  It can also start a container for an existing
-  user if that container was somehow stopped.
-  It shows a _Running_ status for existing user
-  containers that are already up and running,
-  it does not restart them.
-
-- _user add_ and _user delete_ CLIs return an
-  error if the _add_ and _delete_ lists in
-  _dtaas.toml_ are empty, respectively.
-
-- '.' is a special character. Currently, usernames which have
-  '.'s in them cannot be added properly through the CLI.
-  This is an active issue that will be resolved in future releases.
+- `user add` starts a container for a new user, or restarts one that was
+  stopped. It reports a _Running_ status for containers already up, without
+  restarting them.
+- Provisioning is idempotent: re-running `user add` reprovisions every
+  registry user without duplicating work.
+- Usernames may include `.`, `_` and `-` (must start with a letter or digit);
+  whitespace, path separators, and shell metacharacters are rejected.

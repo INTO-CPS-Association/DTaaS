@@ -50,7 +50,7 @@ def test_build_file_specs_insecure_server():
     """insecure-server splits server and frontend OAuth apps per file"""
     toml = {
         "common": {"server-dns": "myserver.com"},
-        "users": {"starting": ["alice"], "alice": {"email": "alice@example.com"}},
+        "users": [{"username": "alice", "email": "alice@example.com"}],
         "insecure-server": {
             "oauth-client-id": "server_id",
             "oauth-client-secret": "server_secret",
@@ -92,7 +92,7 @@ def test_build_file_specs_secure_server_uses_https():
     """secure-server uses https:// for REACT_APP_URL and friends"""
     toml = {
         "common": {"server-dns": "myserver.com"},
-        "users": {"starting": ["alice"]},
+        "users": [{"username": "alice"}],
         "secure-server": {
             "oauth-client-id": "id",
             "oauth-client-secret": "secret",
@@ -198,9 +198,16 @@ def test_apply_config_skips_binary_file(tmp_path):
     assert binary.read_bytes() == original
 
 
-def test_toml_lookup_user_collision_reserved_key():
-    """email lookup is safe when a username collides with the 'starting' key"""
-    toml = {"users": {"starting": ["starting"]}}
+def test_toml_lookup_returns_empty_for_out_of_range_index():
+    """username/email lookups are safe when fewer [[users]] exist than the index"""
+    toml = {"users": [{"username": "alice", "email": "a@x.io"}]}
+    assert _toml_lookup(toml, "users.username2") == ""
+    assert _toml_lookup(toml, "users.email2") == ""
+
+
+def test_toml_lookup_returns_empty_when_field_missing():
+    """A [[users]] record without an email yields '' rather than raising"""
+    toml = {"users": [{"username": "alice"}]}
     assert _toml_lookup(toml, "users.email1") == ""
 
 

@@ -90,9 +90,13 @@ def _copy_deploy_certs(output_dir, spec):
 
 
 def _create_user_dirs(output_dir, toml_data):
-    """Create per-user directories from the [users].starting list in dtaas.toml."""
-    users = toml_data.get("users", {}) if toml_data else {}
-    usernames = users.get("starting", []) if isinstance(users, dict) else []
+    """Create per-user directories from the [[users]] records in dtaas.toml."""
+    users = toml_data.get("users", []) if toml_data else []
+    if not isinstance(users, list):
+        users = []
+    usernames = [
+        u.get("username") for u in users if isinstance(u, dict) and u.get("username")
+    ]
     if not usernames:
         return
     try:

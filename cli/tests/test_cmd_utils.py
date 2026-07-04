@@ -65,7 +65,7 @@ def test_stage_skips_starting_user(tmp_path, monkeypatch, capsys):
     """A username that is a starting user in dtaas.toml is skipped."""
     monkeypatch.chdir(tmp_path)
     (tmp_path / "dtaas.toml").write_text(
-        '[users]\nstarting=["alice"]\n[users.alice]\nemail="a@intocps.org"\n'
+        '[[users]]\nusername="alice"\nemail="a@intocps.org"\n'
     )
     stage_users_for_add(UserAddInput("alice", None, "other@intocps.org", (), True))
 

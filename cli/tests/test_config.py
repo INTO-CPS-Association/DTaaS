@@ -12,7 +12,10 @@ def mock_toml_data():
     """Mock TOML configuration data"""
     return {
         "common": {"path": "/test/path", "server-dns": "localhost"},
-        "users": {"add": ["user1", "user2"], "delete": ["user3"]},
+        "users": [
+            {"username": "user1", "email": "user1@x.io"},
+            {"username": "user2", "email": "user2@x.io"},
+        ],
     }
 
 
@@ -39,11 +42,9 @@ def mock_config():
                         "shm_size": "512m",
                     },
                 },
-                "users": {
-                    "add": ["user1", "user2"],
-                    "delete": ["user3"],
-                    "username1": {"email": "test@example.com"},
-                },
+                "users": [
+                    {"username": "username1", "email": "test@example.com"},
+                ],
             },
             None,
         )
@@ -66,26 +67,6 @@ def test_get_string_from_common_missing_key(mock_utils, mock_toml_data):
     assert err is not None
 
 
-def test_get_string_list_from_users_missing_key(mock_utils, mock_toml_data):
-    """Test getStringListFromUsers with missing key"""
-    mock_utils.return_value = (mock_toml_data, None)
-    cfg = config.Config()
-    result, err = cfg.get_string_list_from_users("missing_key")
-    assert result is None
-    assert err is not None
-
-
-def test_get_string_list_from_users_empty_list(mock_utils):
-    """Test getStringListFromUsers with empty list"""
-    data = {"users": {"add": []}}
-    mock_utils.return_value = (data, None)
-    cfg = config.Config()
-    result, err = cfg.get_string_list_from_users("add")
-    assert result is None
-    assert err is not None
-    assert "list is empty" in str(err)
-
-
 def test_get_path_success(mock_utils, mock_toml_data):
     """Test getPath retrieves path"""
     mock_utils.return_value = (mock_toml_data, None)
@@ -104,22 +85,50 @@ def test_get_server_dns_success(mock_utils, mock_toml_data):
     assert server == "localhost"
 
 
-def test_get_add_users_list_success(mock_utils, mock_toml_data):
-    """Test getAddUsersList retrieves add list"""
+def test_get_users_success(mock_utils, mock_toml_data):
+    """get_users returns the [[users]] list of dicts"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    add_list, err = cfg.get_add_users_list()
+    users, err = cfg.get_users()
     assert err is None
-    assert add_list == ["user1", "user2"]
+    assert users == mock_toml_data["users"]
 
 
-def test_get_delete_users_list_success(mock_utils, mock_toml_data):
-    """Test getDeleteUsersList retrieves delete list"""
+def test_get_users_missing_defaults_to_empty_list(mock_utils):
+    """get_users returns [] with no error when 'users' is absent"""
+    mock_utils.return_value = ({"common": {}}, None)
+    cfg = config.Config()
+    users, err = cfg.get_users()
+    assert err is None
+    assert users == []
+
+
+def test_get_users_not_a_list_errors(mock_utils):
+    """get_users errors when 'users' is not an array of tables"""
+    mock_utils.return_value = ({"users": {"add": ["user1"]}}, None)
+    cfg = config.Config()
+    users, err = cfg.get_users()
+    assert users is None
+    assert err is not None
+    assert "array of tables" in str(err)
+
+
+def test_get_starting_users_success(mock_utils, mock_toml_data):
+    """get_starting_users returns the usernames from [[users]]"""
     mock_utils.return_value = (mock_toml_data, None)
     cfg = config.Config()
-    delete_list, err = cfg.get_delete_users_list()
+    usernames, err = cfg.get_starting_users()
     assert err is None
-    assert delete_list == ["user3"]
+    assert usernames == ["user1", "user2"]
+
+
+def test_get_user_emails_success(mock_utils, mock_toml_data):
+    """get_user_emails returns a {username: email} mapping from [[users]]"""
+    mock_utils.return_value = (mock_toml_data, None)
+    cfg = config.Config()
+    emails, err = cfg.get_user_emails()
+    assert err is None
+    assert emails == {"user1": "user1@x.io", "user2": "user2@x.io"}
 
 
 def test_get_resources_success(mock_config):
@@ -217,25 +226,6 @@ def test_get_string_from_common_when_no_common_section(mock_utils):
     result, err = cfg.get_string_from_common("path")
     assert result is None
     assert err is not None
-
-
-def test_get_string_list_from_users_when_no_users_section(mock_utils):
-    """get_string_list_from_users returns error when 'users' section is absent."""
-    mock_utils.return_value = ({"common": {}}, None)
-    cfg = config.Config()
-    result, err = cfg.get_string_list_from_users("add")
-    assert result is None
-    assert err is not None
-
-
-def test_get_string_list_from_users_not_a_list(mock_utils):
-    """get_string_list_from_users returns error when the value is not a list."""
-    mock_utils.return_value = ({"users": {"add": "not-a-list"}}, None)
-    cfg = config.Config()
-    result, err = cfg.get_string_list_from_users("add")
-    assert result is None
-    assert err is not None
-    assert "must be a list" in str(err)
 
 
 def test_get_resource_limits_when_no_common_section(mock_utils):
