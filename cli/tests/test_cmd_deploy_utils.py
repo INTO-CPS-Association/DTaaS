@@ -96,8 +96,9 @@ def broken_toml_dir(tmp_path):
 
 def test_provision_user_files_maps_parse_error(broken_toml_dir):
     """provision_user_files surfaces a dtaas.toml parse error as a ClickException."""
+    output_dir = str(broken_toml_dir)
     with pytest.raises(click.ClickException, match="Error reading dtaas.toml"):
-        provision_user_files(str(broken_toml_dir))
+        provision_user_files(output_dir)
 
 
 def test_create_user_dirs_maps_oserror():
@@ -164,8 +165,9 @@ def test_apply_deploy_config_notes_missing_toml(tmp_path, monkeypatch, capsys):
 
 def test_apply_deploy_config_maps_parse_error(broken_toml_dir):
     """apply_deploy_config surfaces a dtaas.toml parse error as a ClickException."""
+    output_dir = str(broken_toml_dir)
     with pytest.raises(click.ClickException, match="Error reading dtaas.toml"):
-        apply_deploy_config("secure-server", str(broken_toml_dir))
+        apply_deploy_config("secure-server", output_dir)
 
 
 def test_apply_deploy_config_runs_full_pipeline(tmp_path):
