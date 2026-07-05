@@ -83,6 +83,21 @@ service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
 `OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
 `run_cert_update` and `require_update_flag` for the `update` group.
 
+The lifecycle commands (`admin status` / `stop` / `pause` / `resume`) are
+backed by _src/pkg/lifecycle.py_ and defined in _src/cmd_lifecycle.py_. They
+observe or suspend an installed deployment without removing it (unlike
+`uninstall`): `collect_status` returns per-service records (state and health)
+for both the main deployment and the user-added `compose.users.yml` workloads,
+and `stop`/`pause`/`unpause` map onto `docker compose stop`/`pause`/`unpause`
+across both projects. To keep one definition of "the deployment",
+`lifecycle.py` reuses deploy.py's compose-client plumbing (`require_compose_file`,
+`_client`, `_users_client`, `compose_services`) rather than re-deriving it.
+`cmd_lifecycle.py` renders the status records as a table or (`--json`) as JSON,
+and `_run_suspend` reports the "nothing installed" case as an exit-0 no-op so
+the commands are safe in CI/ops scripts. The commands are attached to the
+`admin` group by `add_lifecycle_commands`, mirroring how `cmd_user.py` wires the
+`user` subcommands.
+
 ### User registry and runtime state
 
 User provisioning spans three single-owner files, modelled on the config/state

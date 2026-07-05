@@ -60,6 +60,7 @@ dtaas admin uninstall
    - [generate-deployment](#generate-deployment)
    - [admin install](#-admin-install)
    - [admin uninstall](#-admin-uninstall)
+   - [Lifecycle operations: status / stop / pause / resume](#lifecycle-operations)
    - [admin update --certs](#-admin-update---certs)
    - [admin update --config](#-admin-update---config)
    - [generate-project](#generate-project)
@@ -305,6 +306,115 @@ dtaas admin uninstall --remove-user-files --yes
 > `<output-dir>/files/`, preserving `files/common/` and `files/template/` so
 > a later `admin install` can recreate user directories. It refuses to follow
 > a symlinked `files/`. Double-check `--output-dir` before using this flag.
+
+---
+
+### Lifecycle operations
+
+Operational controls for an **already-installed** deployment: observe it with
+`status`, and suspend or resume it with `stop`, `pause`, and `resume`. None of
+these remove containers or networks, that is `uninstall`'s job. Each command
+targets both the main deployment and any user-added workloads
+(`compose.users.yml`), and exits `0` on success (including the idempotent
+"nothing installed" case) and non-zero on failure, so they are safe to call
+from CI/ops scripts.
+
+**Lifecycle command matrix**
+
+| Command | `docker compose` verb | Effect | Containers kept? | Reverse with |
+|---|---|---|:---:|---|
+| `admin install` | `up -d` | Create and start every service | n/a | `admin stop` / `admin uninstall` |
+| `admin status` | `ps` (read-only) | Report per-service state; no change | n/a | n/a |
+| `admin stop` | `stop` | Terminate the processes, keep the containers | yes | `admin install` |
+| `admin pause` | `pause` | Freeze the processes (memory preserved) | yes | `admin resume` |
+| `admin resume` | `unpause` | Thaw previously paused processes | yes | n/a |
+| `admin uninstall` | `down` | Stop **and remove** containers and networks | no | `admin install` |
+
+> **`stop` vs `pause`.** `stop` sends `SIGTERM`/`SIGKILL`: processes end, and a
+> restart re-runs them from scratch. `pause` uses the kernel cgroup freezer:
+> processes are suspended in place with their memory intact and resume
+> instantly, but a paused container still holds its resources. Use `stop` to
+> free CPU (the baseline, reversible with `install`); use `pause` for a brief,
+> instantly reversible suspension. `pause` expects running containers and will
+> error if the deployment is already stopped.
+
+#### 📊 `admin status`
+
+Reports the state of every service, for both the deployment and user
+workloads.
+
+```bash
+dtaas admin status
+```
+
+```text
+PROJECT     SERVICE            STATE        HEALTH
+deployment  traefik            running      healthy
+deployment  client             running      -
+deployment  gitlab             not created  -
+users       user-alice         paused       -
+```
+
+State values are `running`, `paused`, `exited`, `restarting`, or
+`not created` (a service defined in `docker-compose.yml` that has no container
+yet). `HEALTH` shows the container healthcheck status, or `-` when the service
+has none.
+
+For automation, `--json` emits the same records as machine-readable JSON:
+
+```bash
+dtaas admin status --json
+```
+
+```json
+[
+  {"project": "deployment", "service": "traefik", "state": "running", "health": "healthy"}
+]
+```
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `--output-dir PATH` | `.` | Installation directory |
+| `--json` | off | Emit machine-readable JSON instead of the table |
+
+#### ⏹️ `admin stop`
+
+Stops all services with `docker compose stop`. Containers and networks are
+**kept**, so this is not an uninstall. Restart with `admin install`.
+
+```bash
+dtaas admin stop
+```
+
+Reports `no existing DTaaS / Workspace installation` and exits `0` when nothing
+is running, so it is safe to call repeatedly.
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `--output-dir PATH` | `.` | Installation directory |
+
+#### ⏸️ `admin pause` / ▶️ `admin resume`
+
+`pause` freezes every running container in place with `docker compose pause`;
+`resume` thaws them with `docker compose unpause`. Memory is preserved and
+resume is near-instant.
+
+```bash
+dtaas admin pause
+dtaas admin resume
+```
+
+Both report the absent-installation case and exit `0` when nothing is running.
+
+**Options**
+
+| Option | Default | Description |
+|---|---|---|
+| `--output-dir PATH` | `.` | Installation directory |
 
 ---
 

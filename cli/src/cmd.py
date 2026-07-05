@@ -19,6 +19,7 @@ from .cmd_utils import (
     run_update,
 )
 from .cmd_user import add as user_add, delete as user_delete
+from .cmd_lifecycle import add_lifecycle_commands
 
 
 ### Groups
@@ -223,6 +224,8 @@ def user():
 #### user group commands (defined in cmd_user.py to keep this file short)
 user.add_command(user_add)
 user.add_command(user_delete)
+#### lifecycle commands status/stop/pause/resume (defined in cmd_lifecycle.py)
+add_lifecycle_commands(admin)
 
 
 @admin.command(name="install")
