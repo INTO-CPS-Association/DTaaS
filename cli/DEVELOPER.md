@@ -147,7 +147,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="1.0.0"
+version="1.1.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```

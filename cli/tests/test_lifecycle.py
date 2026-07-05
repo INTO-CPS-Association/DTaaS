@@ -99,8 +99,9 @@ def test_collect_status_without_user_compose(tmp_path):
 
 def test_collect_status_requires_compose_file(tmp_path):
     """collect_status refuses to report on a deployment that was never generated."""
+    directory = str(tmp_path)
     with pytest.raises(OSError, match="docker-compose.yml"):
-        lifecycle.collect_status(str(tmp_path))
+        lifecycle.collect_status(directory)
 
 
 def test_stop_stops_deployment_and_user_clients(tmp_path):
@@ -154,8 +155,9 @@ def test_unpause_unpauses_all_clients(tmp_path):
 
 def test_stop_requires_compose_file(tmp_path):
     """stop refuses to act without a generated deployment."""
+    directory = str(tmp_path)
     with pytest.raises(OSError, match="docker-compose.yml"):
-        lifecycle.stop(str(tmp_path))
+        lifecycle.stop(directory)
 
 
 def test_pause_propagates_docker_exception(tmp_path):
@@ -165,8 +167,9 @@ def test_pause_propagates_docker_exception(tmp_path):
     deployment.compose.pause.side_effect = DockerException(
         ["docker", "compose", "pause"], 1, stderr=b"not running"
     )
+    directory = str(tmp_path)
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
         "src.pkg.lifecycle.deploy._users_client", return_value=None
     ):
         with pytest.raises(DockerException):
-            lifecycle.pause(str(tmp_path))
+            lifecycle.pause(directory)
