@@ -35,7 +35,7 @@ def _resolved_user_index(users, key):
     if not m:
         return None
     index = int(m.group(2)) - 1
-    if index >= len(users):
+    if not isinstance(users, list) or index >= len(users):
         return None
     return m.group(1), index
 

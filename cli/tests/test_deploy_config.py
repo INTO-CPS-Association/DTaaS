@@ -112,6 +112,29 @@ def test_build_file_specs_secure_server_uses_https():
     assert js_values["REACT_APP_LOGOUT_REDIRECT_URI"] == "https://myserver.com/"
 
 
+def test_build_file_specs_secure_server_gitlab_includes_oauth_url():
+    """secure-server-gitlab substitutes OAUTH_URL like the other server types"""
+    toml = {
+        "common": {"server-dns": "myserver.com"},
+        "users": [],
+        "secure-server-gitlab": {
+            "oauth-url": "https://gitlab.example.com",
+            "oauth-client-id": "id",
+            "oauth-client-secret": "secret",
+        },
+        "frontend": {
+            "react-app-client-id": "client_id",
+            "react-app-oauth-url": "https://gitlab.example.com",
+        },
+    }
+    specs = {
+        path: (fmt, values)
+        for path, fmt, values in build_file_specs("secure-server-gitlab", toml)
+    }
+    env_values = specs["config/.env"][1]
+    assert env_values["OAUTH_URL"] == "https://gitlab.example.com"
+
+
 def test_apply_config_edits_files_by_key(tmp_path):
     """apply_config edits the targeted keys in each config file"""
     config_dir = tmp_path / "config"
@@ -208,6 +231,13 @@ def test_toml_lookup_returns_empty_for_out_of_range_index():
 def test_toml_lookup_returns_empty_when_field_missing():
     """A [[users]] record without an email yields '' rather than raising"""
     toml = {"users": [{"username": "alice"}]}
+    assert _toml_lookup(toml, "users.email1") == ""
+
+
+def test_toml_lookup_returns_empty_when_users_not_a_list():
+    """A malformed (old dict-based) 'users' value degrades to '' instead of raising"""
+    toml = {"users": {"starting": ["alice"], "alice": {"email": "a@x.io"}}}
+    assert _toml_lookup(toml, "users.username1") == ""
     assert _toml_lookup(toml, "users.email1") == ""
 
 

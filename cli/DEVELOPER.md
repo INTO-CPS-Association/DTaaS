@@ -74,7 +74,7 @@ existing substitution engine rather than duplicating it:
 `deploy_config.build_file_specs` produces the per-file specs,
 `deploy_config.diff_specs` previews which files a spec would change
 (read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
-writes them (idempotently only changed files are touched). The deployment
+writes them (idempotently: only changed files are touched). The deployment
 type is detected from the compose service names via `deploy.compose_services`
 (more robust than inspecting config-file names). When any file changed, the
 whole stack is recreated through `deploy.restart_all`
@@ -92,7 +92,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
 
 - _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
   the `{username: details}` store (empty when absent), `register_new_users` merges
-  new users, and `remove_from_registry` drops them each persisted atomically
+  new users, and `remove_from_registry` drops them, each persisted atomically
   (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
   `read_csv_users` parses a `users.csv` for bulk import.
 - _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
@@ -103,7 +103,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   read), rejecting the call if both or neither are given.
   `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
   USERNAME) into the registry before `add` runs, and rejects the call
-  (`ClickException`) if neither is given a bare `user add` is never a silent
+  (`ClickException`) if neither is given: a bare `user add` is never a silent
   no-op or an implicit reprovision.
 - _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
   it with a fresh snapshot (not an append-only log) recording, per currently
@@ -114,7 +114,7 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   and compares it against the live `compose.users.yml` services, reporting
   _missing_ (registered, not provisioned) and _unexpected_ (provisioned, not
   registered) users directly from that comparison. The state cache is used
-  only for the third category, _drifted_ a user present in both whose live
+  only for the third category, _drifted_: a user present in both whose live
   config no longer matches the hash recorded when it was last provisioned; a
   user with no recorded hash is not flagged, since reconcile has nothing to
   compare it against. `cmd_utils.run_reconcile(output_dir, fix=True)` reuses
@@ -132,7 +132,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="0.11.1"
+version="1.0.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```

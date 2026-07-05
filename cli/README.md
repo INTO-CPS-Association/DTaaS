@@ -310,7 +310,7 @@ dtaas admin uninstall --remove-user-files --yes
 
 ### 🔁 `admin update --certs`
 
-Rotates TLS certificates of a running deployment in place no project
+Rotates TLS certificates of a running deployment in place: no project
 regeneration or manual file copying required.
 
 ```bash
@@ -595,7 +595,7 @@ dtaas admin config reconcile
 It lists:
 
 - **missing** registered but not currently provisioned;
-- **unexpected** provisioned but not in the registry (investigate may be a
+- **unexpected** provisioned but not in the registry (investigate: may be a
   manual edit or a partial delete);
 - **drifted** provisioned, but the live config no longer matches what
   `.dtaas.state.json` recorded when it was last provisioned.

@@ -123,6 +123,7 @@ _DEPLOY_FIELDS = (
     ("localhost", "default-user", is_username, "username"),
     ("insecure-server", "oauth-url", is_url, "URL"),
     ("secure-server", "oauth-url", is_url, "URL"),
+    ("secure-server-gitlab", "oauth-url", is_url, "URL"),
     ("workspace-localhost", "auth-authority", is_url, "URL"),
     ("workspace-localhost", "default-user", is_username, "username"),
     ("workspace-secure-server", "keycloak-issuer-url", is_url, "URL"),

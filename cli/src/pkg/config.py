@@ -59,22 +59,33 @@ class Config:
             return None, Exception(
                 "Config file error: 'users' must be an array of tables ([[users]])"
             )
-        return [u for u in users if isinstance(u, dict)], None
+        if not all(isinstance(u, dict) for u in users):
+            return None, Exception(
+                "Config file error: each [[users]] entry must be a table"
+            )
+        return users, None
 
     def get_starting_users(self):
         """Gets the usernames declared by [[users]] in config."""
         users, err = self.get_users()
         if err is not None or users is None:
             return None, err
-        return [str(u.get("username", "")) for u in users], None
+        names = (str(u.get("username", "")).strip() for u in users)
+        return [name for name in names if name], None
 
     def get_user_emails(self):
-        """Gets {username: email} for every [[users]] record in config."""
+        """Gets {username: email} for every [[users]] record in config.
+
+        No caller yet; added alongside get_users()/get_starting_users() as
+        groundwork for upcoming GitLab-provisioning work (#1693).
+        """
         users, err = self.get_users()
         if err is not None or users is None:
             return None, err
         return {
-            str(u.get("username", "")): str(u.get("email", "")) for u in users
+            str(u.get("username", "")).strip(): str(u.get("email", "")).strip()
+            for u in users
+            if str(u.get("username", "")).strip()
         }, None
 
     def get_path(self):

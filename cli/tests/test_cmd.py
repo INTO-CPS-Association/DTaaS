@@ -43,6 +43,19 @@ def test_config_reconcile_maps_errors(runner):
     assert "bad state" in result.output
 
 
+def test_config_reconcile_help_renders_examples_block(runner):
+    """The docstring's \\b example block is preformatted, not word-wrapped.
+
+    A missing blank line before \\b merges it into the preceding paragraph,
+    so Click folds the example commands onto wrapped lines instead of
+    rendering one per line.
+    """
+    result = runner.invoke(dtaas, ["admin", "config", "reconcile", "--help"])
+
+    assert "\x08" not in result.output
+    assert "Examples:\n    dtaas admin config reconcile " in result.output
+
+
 def test_generate_project_success(runner):
     """Test successful project file generation with defaults"""
     with patch("src.cmd.projectPkg.generate_project") as mock_gen:
@@ -86,6 +99,18 @@ def test_generate_deployment_error(runner):
 
         assert result.exit_code != 0
         assert "template missing" in result.output
+
+
+def test_generate_deployment_help_renders_examples_block(runner):
+    """The docstring's \\b example block is preformatted, not word-wrapped.
+
+    Same regression as config_reconcile's --help: a missing blank line
+    before \\b merges it into the preceding paragraph.
+    """
+    result = runner.invoke(dtaas, ["generate-deployment", "--help"])
+
+    assert "\x08" not in result.output
+    assert "Examples:\n    dtaas generate-deployment " in result.output
 
 
 def test_config_generate_success(runner):

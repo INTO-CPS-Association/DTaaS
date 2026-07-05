@@ -27,7 +27,7 @@ def test_import_toml():
 
     expected = {
         "name": "Digital Twin as a Service (DTaaS)",
-        "version": "0.11.1",
+        "version": "1.0.0",
         "owner": "The INTO-CPS-Association",
         "git-repo": "https://github.com/into-cps-association/DTaaS.git",
         "common": {
@@ -71,6 +71,7 @@ def test_import_toml():
             "oauth-secret": "your_random_secret_key_here",
         },
         "secure-server-gitlab": {
+            "oauth-url": "https://gitlab.com",
             "oauth-client-id": "your_client_id_here",
             "oauth-client-secret": "your_client_secret_here",
             "oauth-secret": "your_random_secret_key_here",

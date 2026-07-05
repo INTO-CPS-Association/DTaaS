@@ -269,6 +269,13 @@ def test_deploy_username_validated(base):
     assert "localhost.auth-authority must be a valid URL" not in errors
 
 
+def test_secure_server_gitlab_oauth_url_validated(base):
+    """secure-server-gitlab.oauth-url is checked like the other server types."""
+    data = copy.deepcopy(base)
+    data["secure-server-gitlab"] = {"oauth-url": "not a url"}
+    assert "secure-server-gitlab.oauth-url must be a valid URL" in collect_errors(data)
+
+
 def test_deploy_placeholder_host_with_underscore_flagged(base):
     """Strict URL checking flags the template's your_server_dns placeholder."""
     data = copy.deepcopy(base)

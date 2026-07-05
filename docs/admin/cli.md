@@ -130,7 +130,7 @@ dtaas admin user add --file users.csv
 
 `--group` (repeatable) and `--load-balance`/`--no-load-balance` set the
 optional per-user tags. Either form merges the user(s) into the CLI-owned
-`dtaas.users.registry.json` — never hand-edited — then provisions every
+`dtaas.users.registry.json` (never hand-edited), then provisions every
 registry user. A username already declared in `dtaas.toml`'s `[[users]]` or
 already in the registry is skipped with a warning, never added twice or
 overwritten.
@@ -142,8 +142,13 @@ The directory, if it exists, must be owned by the user executing
 have the expected ownership rights, the command fails.
 
 When an _email_ is given for a user, the CLI automatically adds the matching
-traefik-forward-auth routing rule to `config/conf.server` and restarts that
-service — no manual editing of `conf.server` is needed.
+traefik-forward-auth routing rule to `config/conf.server`; no manual editing
+of `conf.server` is needed. Restart the container for the change to take
+effect:
+
+```bash
+docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+```
 
 ### Delete Users
 
