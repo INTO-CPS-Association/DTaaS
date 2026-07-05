@@ -82,7 +82,7 @@ shm_size   = "512m"   # shared memory unit required
 #
 # email enables traefik-forward-auth routing rules automatically;
 # groups/load_balance carry per-user tags. password is optional (used by
-# future GitLab-provisioning onboarding) avoid committing a real secret
+# future GitLab-provisioning onboarding); avoid committing a real secret
 # here; prefer supplying it at runtime instead.
 [[users]]
 username     = "alice"

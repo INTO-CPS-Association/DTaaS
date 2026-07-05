@@ -191,7 +191,7 @@ email="username2@intocps.org"
 - _username_/_email_ are required (_email_ is written to `config/conf.server`
   on `dtaas admin user add`); _groups_/_load_balance_ are optional per-user
   tags; _password_ is an optional field reserved for future GitLab-onboarding
-  provisioning avoid committing a real secret in it.
+  provisioning; avoid committing a real secret in it.
 - This schema previously went through an intermediate `starting = [...]` list
   plus per-user `[users.<name>]` sub-table stage; that stage is now itself
   superseded by `[[users]]`.

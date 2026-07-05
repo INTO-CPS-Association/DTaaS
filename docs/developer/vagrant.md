@@ -51,7 +51,7 @@ including hostname, VM name, memory, CPUs, and disk size.
 
 ## Related
 
-- DTaaS installation scenarios: `../admin/steps.md`
+- DTaaS installation scenarios: `../admin/overview.md`
 - DTaaS package deployments: `../admin/dtaas/`
 - Workspace deployments: `../admin/workspace/`
 - Platform services: `../admin/services/cli.md`

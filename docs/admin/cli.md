@@ -257,19 +257,11 @@ service and forward-auth rule removed) and dropped from
   restarting them.
 - Provisioning is idempotent: re-running `user add` reprovisions every
   registry user without duplicating work.
-- Usernames may include `.`, `_` and `-` (must start with a letter or digit);
+- Usernames may include `_` and `-` (must start with a letter or digit);
   whitespace, path separators, and shell metacharacters are rejected.
 
 ### Known Limitations
 
-- The _email_ fields for users in `dtaas.toml` are not used
-  automatically; forward-auth whitelists must be configured manually
-  as shown above.
 - Usernames containing `.` cannot currently be added through the
   CLI. This is an active issue that will be resolved in a future
   release.
-- `user add` also starts a container for an existing user whose
-  container was stopped; it does not restart containers that are
-  already running.
-- `user add` and `user delete` return an error if the corresponding
-  list in `dtaas.toml` is empty.

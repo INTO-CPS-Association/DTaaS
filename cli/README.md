@@ -54,19 +54,27 @@ dtaas admin uninstall
 
 ## 📋 Table of Contents
 
-1. [Installation](#-installation)
-2. [Commands](#-commands)
-   - [admin config generate / validate](#️-admin-config) ← start here
-   - [generate-deployment](#generate-deployment)
-   - [admin install](#-admin-install)
-   - [admin uninstall](#-admin-uninstall)
-   - [admin update --certs](#-admin-update---certs)
-   - [admin update --config](#-admin-update---config)
-   - [generate-project](#generate-project)
-   - [admin user add](#-admin-user-add)
-   - [admin user delete](#-admin-user-delete)
-3. [User files: dtaas.toml, registry, state](#-user-files)
-4. [Configuration Reference: dtaas.toml](#️-configuration-reference--dtaastoml)
+- [DTaaS Command Line Interface](#dtaas-command-line-interface)
+  - [⚡ Quick Start](#-quick-start)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [📦 Installation](#-installation)
+  - [🛠 Commands](#-commands)
+    - [🗒️ `admin config`](#️-admin-config)
+    - [`generate-deployment`](#generate-deployment)
+      - [Configuration substitution](#configuration-substitution)
+      - [TLS certificate placement](#tls-certificate-placement)
+    - [🚀 `admin install`](#-admin-install)
+    - [🧹 `admin uninstall`](#-admin-uninstall)
+    - [🔁 `admin update --certs`](#-admin-update---certs)
+    - [🧩 `admin update --config`](#-admin-update---config)
+    - [`generate-project`](#generate-project)
+    - [➕ `admin user add`](#-admin-user-add)
+    - [➖ `admin user delete`](#-admin-user-delete)
+    - [🔍 `admin config reconcile`](#-admin-config-reconcile)
+  - [👥 User files](#-user-files)
+  - [⚙️ Configuration Reference `dtaas.toml`](#️-configuration-reference-dtaastoml)
+    - [Which sections does my deployment need?](#which-sections-does-my-deployment-need)
+    - [Annotated `dtaas.toml`](#annotated-dtaastoml)
 
 ---
 
@@ -731,7 +739,7 @@ shm_size   = "512m"   # shared memory unit required
 #
 # email enables traefik-forward-auth routing rules automatically;
 # groups/load_balance carry per-user tags. password is optional (used by
-# future GitLab-provisioning onboarding) avoid committing a real secret
+# future GitLab-provisioning onboarding); avoid committing a real secret
 # here; prefer supplying it at runtime instead.
 [[users]]
 username     = "alice"

@@ -4,7 +4,7 @@ There are two ways to install the DTaaS platform:
 
 1. **DTaaS CLI (recommended).** A single `dtaas` command generates,
    validates, installs, and operates a deployment for every supported
-   scenario.The [CLI installation guide](cli.md) covers the full workflow.
+   scenario. The [CLI installation guide](cli.md) covers the full workflow.
 1. **Manual scenario packages (advanced).** Hand-edited docker compose
    packages for each scenario. Choose this path only when the CLI
    scenarios need customisation beyond what `dtaas.toml` offers, or
