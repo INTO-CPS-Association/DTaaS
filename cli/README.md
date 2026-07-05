@@ -491,7 +491,7 @@ adds a traefik-forward-auth routing rule to `config/conf.server`. Restart
 the container for the change to take effect:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
 **Resource limits (optional)**
@@ -577,7 +577,7 @@ deleted users from `config/conf.server`. Restart the container for the change
 to take effect:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
 ---

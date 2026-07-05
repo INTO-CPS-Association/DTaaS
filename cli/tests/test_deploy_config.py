@@ -241,6 +241,13 @@ def test_toml_lookup_returns_empty_when_users_not_a_list():
     assert _toml_lookup(toml, "users.email1") == ""
 
 
+def test_toml_lookup_rejects_zero_index_pseudo_key():
+    """A '<field>0' pseudo-key (index -1) resolves to '' rather than the last user"""
+    toml = {"users": [{"username": "alice", "email": "a@x.io"}]}
+    assert _toml_lookup(toml, "users.username0") == ""
+    assert _toml_lookup(toml, "users.email0") == ""
+
+
 def test_diff_specs_reports_only_changed_files(tmp_path):
     """diff_specs lists files a spec would change and omits no-op specs."""
     config_dir = tmp_path / "config"

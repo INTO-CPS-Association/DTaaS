@@ -112,6 +112,32 @@ def test_create_user_dirs_maps_oserror():
             _create_user_dirs("/out", toml_data)
 
 
+def test_create_user_dirs_filters_unsafe_usernames():
+    """Only safe usernames reach create_user_dirs; path-unsafe ones are dropped."""
+    toml_data = {
+        "users": [
+            {"username": "alice"},
+            {"username": ".."},  # path traversal
+            {"username": "a/b"},  # path separator
+            {"username": "bad name"},  # whitespace
+            {"username": "bob.smith"},  # dots are allowed mid-name
+        ]
+    }
+    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create:
+        _create_user_dirs("/out", toml_data)
+
+    mock_create.assert_called_once_with("/out", ["alice", "bob.smith"])
+
+
+def test_create_user_dirs_noop_when_all_usernames_unsafe():
+    """When every username is unsafe, create_user_dirs is never called."""
+    toml_data = {"users": [{"username": ".."}, {"username": "a/b"}]}
+    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create:
+        _create_user_dirs("/out", toml_data)
+
+    mock_create.assert_not_called()
+
+
 def test_substitute_config_maps_errors_to_click_exception():
     """_substitute_config wraps build/apply failures as a ClickException."""
     with patch(

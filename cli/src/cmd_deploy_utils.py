@@ -11,6 +11,7 @@ from .pkg import project as projectPkg
 from .pkg import certs as certsPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import utils as utilsPkg
+from .pkg.users_utils import is_valid_username
 
 
 class VerticalChoicesCommand(click.Command):
@@ -91,14 +92,21 @@ def _copy_deploy_certs(output_dir, spec):
         click.echo(note)
 
 
+def _valid_usernames(users):
+    """Safe usernames from a [[users]] list, dropping malformed/unsafe records.
+
+    Filtering through is_valid_username keeps a hand-edited dtaas.toml from
+    steering directory creation outside files/ (e.g. a '..' username).
+    """
+    if not isinstance(users, list):
+        return []
+    candidates = [u.get("username") for u in users if isinstance(u, dict)]
+    return [name for name in candidates if is_valid_username(name)]
+
+
 def _create_user_dirs(output_dir, toml_data):
     """Create per-user directories from the [[users]] records in dtaas.toml."""
-    users = toml_data.get("users", []) if toml_data else []
-    if not isinstance(users, list):
-        users = []
-    usernames = [
-        u.get("username") for u in users if isinstance(u, dict) and u.get("username")
-    ]
+    usernames = _valid_usernames((toml_data or {}).get("users", []))
     if not usernames:
         return
     try:

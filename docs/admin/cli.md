@@ -147,7 +147,7 @@ of `conf.server` is needed. Restart the container for the change to take
 effect:
 
 ```bash
-docker compose -f compose.server.yml --env-file .env up -d --force-recreate traefik-forward-auth
+docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
 ### Delete Users
