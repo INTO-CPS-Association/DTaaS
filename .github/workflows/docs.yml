@@ -28,9 +28,34 @@ jobs:
     steps:
       - name: Checkout
         # v7.0.0
+        # lfs: false is intentional. LFS objects are fetched in the
+        # cached "Fetch Git LFS assets" step below, which avoids
+        # re-downloading (and re-billing) LFS bandwidth on every run.
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           lfs: false
+
+      - name: Create Git LFS asset manifest
+        # The manifest hash keys the cache: it only changes when an
+        # LFS-tracked file is added, removed, or updated.
+        run: |
+          git lfs ls-files --long | awk '{print $1}' | sort > .lfs-assets-id
+
+      - name: Cache Git LFS objects
+        # v4.3.0
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+          restore-keys: |
+            lfs-
+
+      - name: Fetch Git LFS assets
+        # Cache hit: checkout resolves pointers from .git/lfs without
+        # network traffic. Cache miss: downloads only docs assets.
+        run: |
+          git lfs install --local
+          git lfs pull --include="docs/**"
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
@@ -41,11 +66,9 @@ jobs:
         run: pip install -r script/docs/mkdocs-requirements-github.txt
 
       - name: build docs
-        # MKDOCS_LFS_STRICT=false demotes the LFS check from an abort to a
-        # warning so CI can still build docs when lfs: false is set above.
-        # Remove this env var once lfs: true is restored.
-        env:
-          MKDOCS_LFS_STRICT: 'false'
+        # The LFS pre-build hook (script/docs/mkdocs_hooks.py) runs in
+        # strict mode: the build aborts if any LFS pointer would be
+        # copied into the site as a broken image or video.
         run: mkdocs build --config-file mkdocs-github.yml
 
       - name: show contents of compiled docs

@@ -170,7 +170,7 @@ The sections relevant for administrators are summarised below.
 
 | Topic | Description |
 | :--- | :--- |
-| [Installation overview](https://into-cps-association.github.io/DTaaS/development/admin/overview.html) | Comparison of all installation setups (localhost, server, vagrant, packages) |
+| [Installation steps](https://into-cps-association.github.io/DTaaS/development/admin/overview.html) | Comparison of all installation setups (localhost, server, vagrant, packages) |
 | [Client configuration](https://into-cps-association.github.io/DTaaS/development/admin/client/config.html) | All React client `client.js` variables explained |
 | [Client OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html) | Creating the OAuth 2.0 application for the React frontend |
 | [Server OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html) | Creating the OAuth 2.0 application for Traefik forward-auth |

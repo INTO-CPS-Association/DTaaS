@@ -78,31 +78,34 @@ nav:
               - Heart Digital Twin (PaaS):
                   user/examples/automation/heart-dt-paas/README.md
   - Admin:
-      - Installation Scenarios:
-          - Overview: admin/overview.md
-          - Steps: admin/steps.md
-      - DTaaS:
-          - Localhost:
-              - Install: admin/dtaas/localhost/install.md
-              - Config: admin/dtaas/localhost/config.md
-          - Secure Server:
-              - Install: admin/dtaas/secure-server/install.md
-              - Config: admin/dtaas/secure-server/config.md
-          - Secure Server and GitLab:
-              - Install: admin/dtaas/secure-server-gitlab/install.md
-              - Config: admin/dtaas/secure-server-gitlab/config.md
-          - CLI: admin/cli.md
-      - Workspace:
-          - Localhost:
-              - Install: admin/workspace/localhost/install.md
-              - Dex: admin/workspace/localhost/dex.md
-              - Custom User: admin/workspace/localhost/custom-user.md
-              - Developer: admin/workspace/localhost/developer.md
-          - Secure Server:
-              - Install: admin/workspace/secure-server/install.md
-              - Configuration: admin/workspace/secure-server/configuration.md
-              - Keycloak Setup: admin/workspace/secure-server/keycloak-setup.md
-              - Design: admin/workspace/secure-server/design.md
+      - Overview: admin/overview.md
+      - Auto Installation:
+          - Install with CLI: admin/cli.md
+          - CLI Configuration Reference: admin/cli-config.md
+      - Manual Installation (Advanced):
+          - DTaaS:
+              - Localhost:
+                  - Install: admin/dtaas/localhost/install.md
+                  - Config: admin/dtaas/localhost/config.md
+              - Secure Server:
+                  - Install: admin/dtaas/secure-server/install.md
+                  - Config: admin/dtaas/secure-server/config.md
+              - Secure Server and GitLab:
+                  - Install: admin/dtaas/secure-server-gitlab/install.md
+                  - Config: admin/dtaas/secure-server-gitlab/config.md
+          - Workspace:
+              - Localhost:
+                  - Install: admin/workspace/localhost/install.md
+                  - Dex: admin/workspace/localhost/dex.md
+                  - Custom User: admin/workspace/localhost/custom-user.md
+                  - Developer: admin/workspace/localhost/developer.md
+              - Secure Server:
+                  - Install: admin/workspace/secure-server/install.md
+                  - Configuration:
+                      admin/workspace/secure-server/configuration.md
+                  - Keycloak Setup:
+                      admin/workspace/secure-server/keycloak-setup.md
+                  - Design: admin/workspace/secure-server/design.md
       - Platform Services: admin/services/cli.md
       - GitLab:
           - Server: admin/gitlab/index.md
@@ -133,6 +136,14 @@ nav:
           - Architecture: developer/system/architecture.md
           - Current Status: developer/system/current-status.md
           - Research Overview: developer/system/research-overview.md
+          - Review:
+              - Overview: developer/system/review/index.md
+              - Architecture Review:
+                  developer/system/review/architecture-review.md
+              - Design Review: developer/system/review/design-review.md
+              - Systemic Issues:
+                  developer/system/review/systemic-issues.md
+              - Improvements: developer/system/review/improvements.md
       - Technical Concepts:
           - OAuth 2.0 and Keycloak:
               developer/technical-concepts/oauth-keycloak.md
