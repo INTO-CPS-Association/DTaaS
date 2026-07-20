@@ -35,12 +35,12 @@ const DeveloperConfig = (
       {'Config verification'}
     </Typography>
     <div id="config-items">
-      {Object.entries(globalThis.env).map(([key, value]) => (
+      {Object.entries(validationResults).map(([key, validation]) => (
         <ConfigItem
           key={key}
           label={key}
-          value={value!}
-          validation={validationResults[key]}
+          value={globalThis.env[key] ?? ''}
+          validation={validation}
         />
       ))}
     </div>
@@ -52,7 +52,12 @@ const userConfigInvalidText: React.ReactElement = (
     Invalid Application Configuration. Please contact the administrator of your
     DTaaS installation.
     <br />
-    <a href="./developer" style={{ fontSize: '0.7em' }}>
+    <a
+      href="./developer"
+      style={{ fontSize: '0.7em' }}
+      data-logger-element="link"
+      data-logger-label="Inspect Configuration"
+    >
       Inspect configuration
     </a>
   </>
@@ -61,7 +66,9 @@ const userConfigInvalidText: React.ReactElement = (
 const userConfigValidText: React.ReactElement = (
   <>
     <p>Configuration appears to be valid.</p>
-    <a href="/">Return to login</a>
+    <a href="/" data-logger-element="link" data-logger-label="Return to Login">
+      Return to login
+    </a>
   </>
 );
 
@@ -112,10 +119,9 @@ const useValidationResults = () => {
 };
 
 const useConfigErrors = (validationResults: Record<string, ValidationType>) =>
-  Object.keys(globalThis.env).some((key) => {
-    const result = validationResults[key];
-    return result && 'error' in result && result.error !== undefined;
-  });
+  Object.values(validationResults).some(
+    (result) => result && 'error' in result && result.error !== undefined,
+  );
 
 const Config = (props: { role: string }) => {
   const { validationResults, isLoading } = useValidationResults();

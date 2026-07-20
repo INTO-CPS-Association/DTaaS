@@ -62,7 +62,13 @@ function ProfileTab() {
     <>
       You can edit your profile details and change password on{' '}
       <b>
-        <a href={profileUrl} target="_blank" rel="noreferrer">
+        <a
+          href={profileUrl}
+          target="_blank"
+          rel="noreferrer"
+          data-logger-element="link"
+          data-logger-label="SSO Profile"
+        >
           SSO OAuth Provider.
         </a>
       </b>
@@ -89,7 +95,13 @@ function SettingsTab() {
   const profileUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
   const profileSettingsText = profileUrl ? (
     <b>
-      <a href={profileUrl}>SSO OAuth Provider.</a>
+      <a
+        href={profileUrl}
+        data-logger-element="link"
+        data-logger-label="SSO Settings"
+      >
+        SSO OAuth Provider.
+      </a>
     </b>
   ) : (
     'your SSO OAuth Provider account page.'

@@ -96,6 +96,57 @@ describe('GitlabInstance', () => {
     expect(mockApi.getTriggerToken).toHaveBeenCalledWith(1);
   });
 
+  it('should initialize when the project path matches the username', async () => {
+    gitlab = new GitlabInstance('enok', mockApi);
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 1, name: getGroupName() });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 1, name: 'Enok', path: 'enok' },
+      { id: 2, name: 'common', path: 'common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+
+    expect(gitlab.getProjectId()).toBe(1);
+    expect(gitlab.getCommonProjectId()).toBe(2);
+  });
+
+  it('should initialize when the namespace path matches the username', async () => {
+    gitlab = new GitlabInstance('enok', mockApi);
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 1, name: getGroupName() });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 1, name: 'Enok', path_with_namespace: 'DTaaS/enok' },
+      { id: 2, name: 'common', path_with_namespace: 'DTaaS/common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+
+    expect(gitlab.getProjectId()).toBe(1);
+    expect(gitlab.getCommonProjectId()).toBe(2);
+  });
+
+  it('should initialize when only project names match case-insensitively', async () => {
+    gitlab = new GitlabInstance('enok', mockApi);
+    jest
+      .spyOn(mockApi, 'getGroupByName')
+      .mockResolvedValue({ id: 1, name: getGroupName() });
+    jest.spyOn(mockApi, 'listGroupProjects').mockResolvedValue([
+      { id: 1, name: 'Enok' },
+      { id: 2, name: 'Common' },
+    ]);
+    jest.spyOn(mockApi, 'getTriggerToken').mockResolvedValue('test-token');
+
+    await gitlab.init();
+
+    expect(gitlab.getProjectId()).toBe(1);
+    expect(gitlab.getCommonProjectId()).toBe(2);
+  });
+
   it('should throw error if project is not found', async () => {
     jest
       .spyOn(mockApi, 'getGroupByName')

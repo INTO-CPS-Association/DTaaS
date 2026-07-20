@@ -3,6 +3,7 @@ import { ExecutionHistoryEntry } from 'model/backend/gitlab/types/executionHisto
 import indexedDBService from 'database/executionHistoryDB';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { createMockDTExecutionResult } from 'test/unit/store/executionHistory/testSetup';
+import { resetDBConnection } from 'database/dbConnection';
 
 if (typeof globalThis.structuredClone !== 'function') {
   globalThis.structuredClone = <T>(obj: T): T =>
@@ -229,16 +230,15 @@ describe('IndexedDBService (Real Implementation)', () => {
       return mockRequest;
     };
 
+    resetDBConnection();
     indexedDB.open = jest.fn().mockImplementation(mockOpenImplementation);
 
-    const newService = Object.create(Object.getPrototypeOf(indexedDBService));
-    newService.db = null;
-    newService.dbName = 'test-db';
-    newService.dbVersion = 1;
-
-    await expect(newService.init()).rejects.toThrow('Failed to open IndexedDB');
+    await expect(indexedDBService.init()).rejects.toThrow(
+      'Failed to open IndexedDB',
+    );
 
     indexedDB.open = originalOpen;
+    resetDBConnection();
   });
 
   it('should handle multiple init calls gracefully', async () => {

@@ -11,7 +11,10 @@ describe('ReconfigureButton', () => {
   const renderReconfigureButton = (setShowReconfigure: jest.Mock = jest.fn()) =>
     render(
       <Provider store={store}>
-        <ReconfigureButton setShowReconfigure={setShowReconfigure} />
+        <ReconfigureButton
+          assetName="testAsset"
+          setShowReconfigure={setShowReconfigure}
+        />
       </Provider>,
     );
 

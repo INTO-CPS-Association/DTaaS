@@ -28,6 +28,7 @@ export const createDTTab = ({
     )
     .map((tab) => ({
       label: tab.label,
+      loggerContext: { dt: { tab: tab.label.toLowerCase() } },
       body:
         tab.label === 'Create' ? (
           <>

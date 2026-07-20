@@ -9,7 +9,9 @@ const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
 async function signIn(page: import('@playwright/test').Page) {
   await page.goto('./');
   await page.getByRole('button', { name: 'SignIn' }).click();
-  await page.getByRole('button', { name: 'Authorize' }).click();
+  await page
+    .getByRole('button', { name: /Authorize/ })
+    .press('Enter', { timeout: 30000 });
   await expect(
     page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();
@@ -29,7 +31,7 @@ test.describe('Measurement Page', () => {
     await signIn(page);
 
     // Navigate to measurement page
-    await page.goto('./insight/measure');
+    await page.goto('./insights/measure');
   });
 
   test.afterEach(async ({ page }) => {
@@ -48,7 +50,7 @@ test.describe('Measurement Page', () => {
     await expect(page.locator('text=404 Not Found')).not.toBeVisible();
 
     // Verify correct URL
-    await expect(page).toHaveURL(/insight\/measure/);
+    await expect(page).toHaveURL(/insights\/measure/);
 
     // Verify page title renders (basic smoke test)
     await expect(
@@ -85,7 +87,7 @@ test.describe('Measurement Page', () => {
     await page.fill('#measurementSecondaryRunnerTag', SECONDARY_RUNNER);
     await page.fill('#measurementTrials', '1');
     await page.getByRole('button', { name: 'Save Settings' }).click();
-    await page.goto('./insight/measure');
+    await page.goto('./insights/measure');
 
     // Disable all but the 4th task
     /* eslint-disable no-await-in-loop */
@@ -148,7 +150,7 @@ test.describe('Measurement Page', () => {
 
     // Return to measurement page using browser back (avoids full reload that resets module state)
     await page.goBack();
-    await expect(page).toHaveURL(/insight\/measure/);
+    await expect(page).toHaveURL(/insights\/measure/);
 
     // Verify measurement is still running
     await expect(

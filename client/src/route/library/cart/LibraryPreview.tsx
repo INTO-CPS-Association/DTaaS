@@ -8,6 +8,7 @@ import { assetType, scope } from 'route/library/cart/LibraryTabDataPreview';
 export function createTabs() {
   return assetType.map((tab) => ({
     label: tab.label,
+    loggerContext: { library: { assetType: tab.label } },
     body: <Typography variant="body1">{tab.body}</Typography>,
   }));
 }
@@ -16,6 +17,9 @@ export function createCombinedTabs() {
   return assetType.map((tab) =>
     scope.map((subtab) => ({
       label: `${subtab.label}`,
+      loggerContext: {
+        library: { assetType: tab.label, scope: subtab.label },
+      },
       body: (
         <div style={{ display: 'flex', gap: '2rem' }}>
           <div style={{ flex: 2 }}>

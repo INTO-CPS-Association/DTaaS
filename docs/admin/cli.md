@@ -1,45 +1,121 @@
-# DTaaS Command Line Interface
+# Install DTaaS with the CLI
 
-The DTaaS Command Line Interface (CLI) is a command line tool for managing
-a DTaaS installation.
+The DTaaS Command Line Interface (CLI) is the recommended way to
+install and operate a DTaaS deployment. One `dtaas` entry point
+generates deployment projects, validates configuration, brings
+deployments up and down, manages users, and rotates certificates for
+all supported scenarios.
 
-## Prerequisite
-
-The DTaaS platform with base users and essential
-containers must be operational before the CLI can be utilised.
+This page covers the standard installation workflow. The complete command
+reference, including all options and generated-file layouts, is in
+the
+[Config Reference](cli-config.md).
 
 ## Installation
 
-The CLI is available as a Python package that can be installed via pip.
-
-It is recommended to install the CLI in a virtual environment.
-
-The installation steps are as follows:
-
-- Change the working folder:
+Installation inside a virtual environment is strongly recommended.
 
 ```bash
-cd <DTaaS-directory>/cli
-```
+python -m venv .venv
+source .venv/bin/activate     # Linux / macOS
+# .venv\Scripts\activate      # Windows
 
-- It is recommended to use a virtual environment.
-  A virtual environment should be created and activated.
-
-- To install the CLI:
-
-```bash
 pip install dtaas
+dtaas --help                  # verify
 ```
 
-## Usage
+## Quick Start
 
-!!! note
-    The base DTaaS platform should be up and running before
-    adding/deleting users with the CLI.
+From a clean machine to a running deployment:
 
-### Configure
+```bash
+# 1. Generate dtaas.toml + a sample users.csv
+dtaas admin config generate
 
-The CLI uses _dtaas.toml_ as configuration file. A sample
+# 2. Edit dtaas.toml: server DNS, paths, OAuth credentials, users
+
+# 3. Validate; fix any reported errors before continuing
+dtaas admin config validate
+
+# 4. Generate deployment files for your chosen scenario
+dtaas generate-deployment --type secure-server
+
+# 5. Bring the deployment up
+dtaas admin install
+```
+
+Tear it down again with `dtaas admin uninstall` (add
+`--remove-user-files` to also delete per-user workspace directories;
+this prompts for confirmation).
+
+### Deployment Types
+
+| `--type` | When to use |
+| :------- | :---------- |
+| `localhost` | Local development or demo, single user |
+| `insecure-server` | Multi-user HTTP demo — **not internet-facing** |
+| `secure-server` | Multi-user HTTPS — production-ready |
+| `secure-server-gitlab` | HTTPS with bundled GitLab — production-ready |
+| `workspace-localhost` | Workspace with Dex on localhost |
+| `workspace-secure-server` | Workspace with Keycloak — production-ready |
+
+The generated packages match the
+[manual installation scenarios](overview.md#manual-installation-scenarios-advanced);
+the CLI fills in the configuration and file structure that the manual
+path asks you to prepare by hand.
+
+## Configuration
+
+The CLI treats `dtaas.toml` as the single source of truth. It looks
+for the file in `--output-dir` first, then in the current working
+directory, so one top-level `dtaas.toml` can serve a deployment
+generated into a subdirectory.
+
+Key sections:
+
+- `[common]` — server DNS and the absolute path of the DTaaS
+  installation directory.
+- `[common.resources]` — default resource limits applied to user
+  workspace containers (`cpus`, `mem_limit`, `pids_limit`,
+  `shm_size`), with a `set_limits` flag to disable enforcement.
+  Adjust to match host capacity and tenancy policy.
+- `[common.security]` — OAuth credentials and `certs-src`, the
+  source directory for TLS certificates.
+
+Always run `dtaas admin config validate` after editing; it reports
+all problems at once.
+
+### TLS Certificates
+
+For the HTTPS scenarios, point `[common.security].certs-src` at the
+directory holding the certificate pair before running
+`generate-deployment`. To rotate certificates on a running
+deployment:
+
+```bash
+dtaas admin update --certs
+```
+
+The command validates the new pair, swaps it in with a backup of the
+live pair, and restarts only the gateway. If validation fails, the
+live certificates are left untouched.
+
+### Updating Configuration In Place
+
+To re-apply `dtaas.toml` changes to an installed deployment without
+regenerating the project:
+
+```bash
+dtaas admin update --config --dry-run   # preview
+dtaas admin update --config             # apply and restart services
+```
+
+The command is idempotent and refuses to apply an invalid
+configuration. `--certs` and `--config` may be combined.
+
+### Abridged Configuration
+
+The CLI uses _dtaas.toml_ as configuration file. An abridged
 configuration file is given here.
 
 ```toml
@@ -99,7 +175,9 @@ email = "username2@intocps.org"
   workspace via the CLI or by restarting the container in Docker Compose).
 - Use units (`M`, `G`) for memory and shared memory values.
 
-### Select Template
+## User Management
+
+### Generate Templates
 
 The _cli_ uses YAML templates provided in this directory to create
 new user workspaces. The available templates are:
@@ -107,6 +185,12 @@ new user workspaces. The available templates are:
 1. _user.local.yml_: localhost installation
 1. _User.server.yml_: multi-user web application over HTTP
 1. _user.server.secure.yml_: multi-user web application over HTTPS
+
+Generate the required user templates using
+
+```bash
+dtaas generate-project
+```
 
 ### Add Users
 
@@ -146,10 +230,6 @@ traefik-forward-auth routing rule to `config/conf.server`; no manual editing
 of `conf.server` is needed. Restart the container for the change to take
 effect:
 
-```bash
-docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
-```
-
 ### Delete Users
 
 Pass one or more usernames to `dtaas admin user delete`, run from the _cli_
@@ -177,5 +257,11 @@ service and forward-auth rule removed) and dropped from
   restarting them.
 - Provisioning is idempotent: re-running `user add` reprovisions every
   registry user without duplicating work.
-- Usernames may include `.`, `_` and `-` (must start with a letter or digit);
+- Usernames may include `_` and `-` (must start with a letter or digit);
   whitespace, path separators, and shell metacharacters are rejected.
+
+### Known Limitations
+
+- Usernames containing `.` cannot currently be added through the
+  CLI. This is an active issue that will be resolved in a future
+  release.

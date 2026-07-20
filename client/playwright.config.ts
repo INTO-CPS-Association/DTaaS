@@ -24,10 +24,10 @@ export default defineConfig({
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test
-  globalTimeout: 10 * 60 * 1000,
+  globalTimeout: 25 * 60 * 1000,
   workers: 3,
   testDir: './test/e2e/tests',
-  testMatch: /.*\.test\.ts/,
+  testMatch: '**/*.test.ts',
   reporter: [
     [
       'html',
@@ -59,8 +59,22 @@ export default defineConfig({
     // Setup project
     {
       name: 'setup',
-      testMatch: /.*\.setup\.ts/,
+      testMatch: '**/*.setup.ts',
       use: { browserName: 'chromium' },
+    },
+    // Pipeline-dependent tests run sequentially to avoid GitLab runner contention.
+    // Declared before chromium/firefox so the scheduler grants it a worker slot
+    // up front instead of it being starved by the uncapped chromium/firefox jobs
+    // -- saves about a minute
+    {
+      name: 'chromium-sequential',
+      testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
+      workers: 1,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
     {
       name: 'chromium',
@@ -80,17 +94,6 @@ export default defineConfig({
       },
       testIgnore: /ConcurrentExecution|DigitalTwins|Measurement/,
       timeout: 2 * 60 * 1000,
-      dependencies: ['setup'],
-    },
-    // Pipeline-dependent tests run sequentially to avoid GitLab runner contention
-    {
-      name: 'chromium-sequential',
-      testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
-      workers: 1,
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
-      },
       dependencies: ['setup'],
     },
     {

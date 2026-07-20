@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import type { LogContext } from 'util/logger/logEvent';
 
 interface TabRenderProps {
   index: number;
@@ -8,6 +9,7 @@ interface TabRenderProps {
 export interface TabData {
   label: string;
   body: React.ReactElement;
+  loggerContext?: LogContext;
 }
 
 function TabRender(props: TabRenderProps) {

@@ -13,12 +13,18 @@ import useCart from 'model/store/CartAccess';
 import { removeAllFiles } from 'model/store/libraryConfigFiles.slice';
 import { useDispatch } from 'react-redux';
 import CartList from 'components/cart/CartList';
+import { logDismiss } from 'util/logger/logger';
 
 function ShoppingCart() {
-  const { actions } = useCart();
+  const { state, actions } = useCart();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const dispatch = useDispatch();
+
+  const cartLogContext = (button: string) =>
+    JSON.stringify({
+      cart: { count: state.assets.length, button },
+    });
 
   const handleClearCart = () => {
     actions.clear();
@@ -57,27 +63,60 @@ function ShoppingCart() {
           padding: '5px 0',
         }}
       >
-        <Button variant="contained" onClick={() => setOpenDialog(true)}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenDialog(true)}
+          data-logger-element="button"
+          data-logger-label="Clear Cart"
+          data-logger-context={cartLogContext('clear')}
+        >
           Clear
         </Button>
         <Button
           variant="contained"
           onClick={() => navigate('/preview/digitaltwins')}
+          data-logger-element="button"
+          data-logger-label="Proceed"
+          data-logger-context={cartLogContext('proceed')}
         >
           Proceed
         </Button>
       </Box>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+      <Dialog
+        open={openDialog}
+        onClose={(_event, reason) => {
+          logDismiss({
+            element: 'dialog',
+            label: 'Confirm Clear Cart',
+            reason,
+            context: { cart: { count: state.assets.length } },
+          });
+          setOpenDialog(false);
+        }}
+      >
         <DialogTitle>Confirm Clear</DialogTitle>
         <DialogContent>
           <DialogContentText>Are you sure you want to clear?</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
+          <Button
+            onClick={() => setOpenDialog(false)}
+            color="primary"
+            data-logger-element="button"
+            data-logger-label="Clear Cart No"
+            data-logger-context={cartLogContext('clear-cancel')}
+          >
             No
           </Button>
-          <Button onClick={handleClearCart} color="secondary" autoFocus>
+          <Button
+            onClick={handleClearCart}
+            color="secondary"
+            autoFocus
+            data-logger-element="button"
+            data-logger-label="Clear Cart Yes"
+            data-logger-context={cartLogContext('clear-confirm')}
+          >
             Yes
           </Button>
         </DialogActions>

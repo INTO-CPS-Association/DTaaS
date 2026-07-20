@@ -7,6 +7,7 @@ function AccountContent() {
   const AccountTab: TabData[] = tabs.map((tab) => ({
     label: tab.label,
     body: tab.body,
+    loggerContext: { account: { tab: tab.label.toLowerCase() } },
   }));
 
   return (

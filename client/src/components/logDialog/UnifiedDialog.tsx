@@ -3,9 +3,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
 } from '@mui/material';
 import ExecutionHistoryList from 'components/execution/ExecutionHistoryList';
+import LoggedDialogButton from 'components/logDialog/LoggedDialogButton';
+import { logDismiss } from 'util/logger/logger';
 
 interface UnifiedDialogProps {
   readonly open: boolean;
@@ -27,19 +28,40 @@ function UnifiedDialog({
   deleteAllDialog,
 }: UnifiedDialogProps) {
   return (
-    <Dialog open={open} maxWidth="md" fullWidth onClose={onClose}>
+    <Dialog
+      open={open}
+      maxWidth="md"
+      fullWidth
+      onClose={(_event, reason) => {
+        logDismiss({
+          element: 'dialog',
+          label: title,
+          reason,
+          context: { dt: { name: dtName } },
+        });
+        onClose();
+      }}
+    >
       {deleteAllDialog}
       <DialogTitle>{title}</DialogTitle>
       <DialogContent dividers>
         <ExecutionHistoryList dtName={dtName} onViewLogs={onViewLogs} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClearAll} color="error">
-          Clear All
-        </Button>
-        <Button onClick={onClose} color="primary">
-          Close
-        </Button>
+        <LoggedDialogButton
+          onClick={onClearAll}
+          color="error"
+          label="Clear All"
+          context={{ dt: { name: dtName, button: 'clear-all-executions' } }}
+          text="Clear All"
+        />
+        <LoggedDialogButton
+          onClick={onClose}
+          color="primary"
+          label="Close"
+          context={{ dt: { name: dtName, button: 'close-history' } }}
+          text="Close"
+        />
       </DialogActions>
     </Dialog>
   );

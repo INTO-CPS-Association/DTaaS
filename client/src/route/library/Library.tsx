@@ -1,4 +1,5 @@
 import Layout from 'page/Layout';
+import { useEffect } from 'react';
 import TabComponent, { constructURL } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { useURLforLIB } from 'util/envUtil';
@@ -38,7 +39,11 @@ export function createCombinedTabs() {
 function LibraryContent() {
   const auth = useAuth();
   const getAndSetUsername = useGetAndSetUsername();
-  getAndSetUsername(auth);
+
+  useEffect(() => {
+    getAndSetUsername(auth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.user]);
 
   const tabsData = createTabs();
 

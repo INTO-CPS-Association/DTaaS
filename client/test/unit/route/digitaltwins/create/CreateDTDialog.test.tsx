@@ -139,4 +139,15 @@ describe('CreateDTDialog', () => {
 
     expect(mockDispatch).not.toHaveBeenCalled();
   });
+
+  it('adds logger attributes to create dialog action buttons', () => {
+    expect(screen.getByRole('button', { name: /Cancel/i })).toHaveAttribute(
+      'data-logger-label',
+      'Create DT Cancel',
+    );
+    expect(screen.getByRole('button', { name: /Confirm/i })).toHaveAttribute(
+      'data-logger-label',
+      'Create DT Confirm',
+    );
+  });
 });

@@ -10,10 +10,10 @@ import {
   setSecondaryRunnerTag,
   setPrimaryDTName,
   setSecondaryDTName,
+  setLoggingEnabled,
 } from 'store/settings.slice';
 
 export interface FormValues {
-  [key: string]: string;
   groupName: string;
   dtDirectory: string;
   commonLibraryProjectName: string;
@@ -23,6 +23,7 @@ export interface FormValues {
   measurementSecondaryRunnerTag: string;
   measurementPrimaryDTName: string;
   measurementSecondaryDTName: string;
+  loggingEnabled: boolean;
 }
 
 interface CurrentSettings {
@@ -35,23 +36,32 @@ interface CurrentSettings {
   MEASUREMENT_SECONDARY_RUNNER_TAG: string;
   MEASUREMENT_PRIMARY_DT_NAME: string;
   MEASUREMENT_SECONDARY_DT_NAME: string;
+  LOGGING_ENABLED: boolean;
 }
 
-const requiredStringFields: Array<keyof Omit<FormValues, 'measurementTrials'>> =
-  [
-    'groupName',
-    'dtDirectory',
-    'commonLibraryProjectName',
-    'runnerTag',
-    'branchName',
-    'measurementSecondaryRunnerTag',
-    'measurementPrimaryDTName',
-    'measurementSecondaryDTName',
-  ];
+type RequiredStringField = Exclude<
+  keyof FormValues,
+  'measurementTrials' | 'loggingEnabled'
+>;
+
+const requiredStringFields: RequiredStringField[] = [
+  'groupName',
+  'dtDirectory',
+  'commonLibraryProjectName',
+  'runnerTag',
+  'branchName',
+  'measurementSecondaryRunnerTag',
+  'measurementPrimaryDTName',
+  'measurementSecondaryDTName',
+];
 
 function isInvalidTrials(value: string): boolean {
   const trialsValue = Number.parseInt(value, 10);
   return !value.trim() || Number.isNaN(trialsValue) || trialsValue < 1;
+}
+
+function isInvalidRequiredString(value: unknown): boolean {
+  return typeof value !== 'string' || !value.trim();
 }
 
 export function validateSettingsForm(
@@ -60,7 +70,8 @@ export function validateSettingsForm(
   const errors: Record<string, boolean> = {};
 
   for (const field of requiredStringFields) {
-    if (!formValues[field].trim()) {
+    const value = formValues[field];
+    if (isInvalidRequiredString(value)) {
       errors[field] = true;
     }
   }
@@ -149,6 +160,10 @@ export function dispatchChangedSettings(
     trialsValue !== current.MEASUREMENT_TRIALS
   ) {
     dispatch(setTrials(trialsValue));
+  }
+
+  if (formValues.loggingEnabled !== current.LOGGING_ENABLED) {
+    dispatch(setLoggingEnabled(formValues.loggingEnabled));
   }
 
   return needsRefresh;

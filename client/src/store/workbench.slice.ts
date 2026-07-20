@@ -25,6 +25,7 @@ const initialState: WorkbenchServicesState = {
 function getFallbackServices(
   username: string,
 ): Record<string, WorkbenchService> {
+  const namespaceUsername = username.trim().toLowerCase();
   const fallback = JSON.parse(JSON.stringify(servicesTemplate)) as Record<
     string,
     WorkbenchService
@@ -32,7 +33,7 @@ function getFallbackServices(
   if (fallback.desktop) {
     fallback.desktop.endpoint = fallback.desktop.endpoint.replace(
       'username',
-      username,
+      namespaceUsername,
     );
   }
   return fallback;

@@ -4,6 +4,7 @@ import { setStorageService } from 'model/backend/state/executionHistory.slice';
 import indexedDBService from 'database/executionHistoryDB';
 import measurementDBService from 'database/measurementHistoryDB';
 import { rootReducer } from 'store/storeTypes';
+import type { RootState } from 'store/storeTypes';
 import {
   setRunnerTag,
   setBranchName,
@@ -16,25 +17,32 @@ import { setMeasurementStore } from 'model/backend/gitlab/measure/measurement.ex
 import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
 import { setPipelineExecutionDB } from 'model/backend/util/digitalTwinPipelineExecution';
 import { setMeasurementDB } from 'model/backend/gitlab/measure/measurement.runner';
+import { setLoggerStore } from 'util/logger/logger';
 
 setStorageService(indexedDBService);
 
-const settingsPersistMiddleware: Middleware = (store) => (next) => (action) => {
-  const result = next(action);
-
-  if (
-    action &&
+function isSettingsAction(action: unknown): action is { type: string } {
+  return (
     typeof action === 'object' &&
+    action !== null &&
     'type' in action &&
     typeof action.type === 'string' &&
     action.type.startsWith('settings/')
-  ) {
-    const state = store.getState();
-    localStorage.setItem('settings', JSON.stringify(state.settings));
-  }
+  );
+}
 
-  return result;
-};
+function persistSettings(store: { getState: () => RootState }): void {
+  localStorage.setItem('settings', JSON.stringify(store.getState().settings));
+}
+
+const settingsPersistMiddleware: Middleware<unknown, RootState> =
+  (store) => (next) => (action) => {
+    const result = next(action);
+
+    if (isSettingsAction(action)) persistSettings(store);
+
+    return result;
+  };
 
 const store = configureStore({
   reducer: rootReducer,
@@ -65,6 +73,10 @@ setMeasurementStore({
 setExecutionHistoryDB(indexedDBService);
 setPipelineExecutionDB(indexedDBService);
 setMeasurementDB(measurementDBService);
+setLoggerStore({
+  showSnackbar: (message, severity) =>
+    store.dispatch(showSnackbar({ message, severity })),
+});
 
 export type { RootState } from 'store/storeTypes';
 export type AppDispatch = typeof store.dispatch;

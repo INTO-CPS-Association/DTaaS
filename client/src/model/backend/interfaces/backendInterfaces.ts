@@ -234,6 +234,8 @@ export type RepositoryTreeItem = {
 export type ProjectSummary = {
   id: number | string;
   name: string;
+  path?: string;
+  path_with_namespace?: string;
 };
 
 export type ProjectId = number | string;

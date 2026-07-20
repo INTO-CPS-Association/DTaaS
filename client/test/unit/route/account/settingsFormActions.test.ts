@@ -13,6 +13,7 @@ import {
   setSecondaryRunnerTag,
   setPrimaryDTName,
   setSecondaryDTName,
+  setLoggingEnabled,
 } from 'store/settings.slice';
 
 const validFormValues = (): FormValues => ({
@@ -25,6 +26,7 @@ const validFormValues = (): FormValues => ({
   measurementSecondaryRunnerTag: 'secondary-runner',
   measurementPrimaryDTName: 'primary',
   measurementSecondaryDTName: 'secondary',
+  loggingEnabled: true,
 });
 const validCurrent = () => ({
   GROUP_NAME: 'group',
@@ -36,6 +38,7 @@ const validCurrent = () => ({
   MEASUREMENT_SECONDARY_RUNNER_TAG: 'secondary-runner',
   MEASUREMENT_PRIMARY_DT_NAME: 'primary',
   MEASUREMENT_SECONDARY_DT_NAME: 'secondary',
+  LOGGING_ENABLED: true,
 });
 
 describe('validateSettingsForm', () => {
@@ -43,7 +46,12 @@ describe('validateSettingsForm', () => {
     expect(validateSettingsForm(validFormValues())).toEqual({});
   });
 
-  const requiredStringFields: Array<keyof FormValues> = [
+  type RequiredStringField = Exclude<
+    keyof FormValues,
+    'measurementTrials' | 'loggingEnabled'
+  >;
+
+  const requiredStringFields: RequiredStringField[] = [
     'groupName',
     'dtDirectory',
     'commonLibraryProjectName',
@@ -188,6 +196,16 @@ describe('dispatchChangedSettings', () => {
     });
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(setTrials(10));
+  });
+
+  it('dispatches setLoggingEnabled when loggingEnabled changes', () => {
+    const { dispatch, needsRefresh } = runDispatch({
+      ...validFormValues(),
+      loggingEnabled: false,
+    });
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(setLoggingEnabled(false));
+    expect(needsRefresh).toBe(false);
   });
 
   it('does not dispatch setTrials for invalid measurementTrials', () => {

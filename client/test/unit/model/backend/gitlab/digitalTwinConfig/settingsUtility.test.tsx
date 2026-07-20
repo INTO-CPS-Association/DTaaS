@@ -4,6 +4,8 @@ import {
   getDTDirectory,
   getRunnerTag,
   getBranchName,
+  getLoggingEnabled,
+  resetSettingsStore,
 } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 import {
   useGroupName,
@@ -97,5 +99,11 @@ describe('Constants', () => {
     expect(getDTDirectory()).toBe('testDT');
     expect(getRunnerTag()).toBe('testRunner');
     expect(getBranchName()).toBe('testBranch');
+  });
+
+  it('returns false for logging when the settings store is not initialized', () => {
+    resetSettingsStore();
+
+    expect(getLoggingEnabled()).toBe(false);
   });
 });

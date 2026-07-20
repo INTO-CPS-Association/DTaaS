@@ -1,17 +1,4 @@
-import { DB_CONFIG } from 'database/types';
-
-function setupObjectStores(db: IDBDatabase): void {
-  for (const [storeName, storeConfig] of Object.entries(DB_CONFIG.stores)) {
-    if (!db.objectStoreNames.contains(storeName)) {
-      const store = db.createObjectStore(storeName, {
-        keyPath: storeConfig.keyPath,
-      });
-      for (const index of storeConfig.indexes) {
-        store.createIndex(index.name, index.keyPath);
-      }
-    }
-  }
-}
+import { openDB } from 'database/dbConnection';
 
 export interface CursorQuery {
   storeName: string;
@@ -19,49 +6,46 @@ export interface CursorQuery {
   key: IDBValidKey;
 }
 
+function openCursorRequest(
+  store: IDBObjectStore,
+  query: CursorQuery,
+): IDBRequest<IDBCursorWithValue | null> {
+  return store.index(query.indexName).openCursor(IDBKeyRange.only(query.key));
+}
+
+function handleCursorResult(
+  request: IDBRequest<IDBCursorWithValue | null>,
+  cursorAction: (cursor: IDBCursorWithValue) => void,
+  resolve: () => void,
+): void {
+  const cursor = request.result;
+  if (!cursor) {
+    resolve();
+    return;
+  }
+  cursorAction(cursor);
+  cursor.continue();
+}
+
+interface CursorHandlerOptions {
+  request: IDBRequest<IDBCursorWithValue | null>;
+  cursorAction: (cursor: IDBCursorWithValue) => void;
+  resolve: () => void;
+  reject: (reason?: unknown) => void;
+  errorMessage: string;
+}
+
+function attachCursorHandlers(options: CursorHandlerOptions): void {
+  const { request, cursorAction, resolve, reject, errorMessage } = options;
+  request.onerror = () => reject(new Error(errorMessage));
+  request.onsuccess = () => handleCursorResult(request, cursorAction, resolve);
+}
+
 export default abstract class BaseIndexedDBService {
   protected db: IDBDatabase | undefined;
 
-  private readonly dbName: string;
-
-  private readonly dbVersion: number;
-
-  private initPromise: Promise<void> | undefined;
-
-  constructor() {
-    this.dbName = DB_CONFIG.name;
-    this.dbVersion = DB_CONFIG.version;
-  }
-
   public async init(): Promise<void> {
-    if (this.db) {
-      return;
-    }
-
-    if (this.initPromise) {
-      return this.initPromise;
-    }
-
-    this.initPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.dbVersion);
-
-      request.onerror = () => {
-        this.initPromise = undefined;
-        reject(new Error('Failed to open IndexedDB'));
-      };
-
-      request.onsuccess = (event) => {
-        this.db = (event.target as IDBOpenDBRequest).result;
-        this.initPromise = undefined;
-        resolve();
-      };
-
-      request.onupgradeneeded = (event) => {
-        setupObjectStores((event.target as IDBOpenDBRequest).result);
-      };
-    });
-
-    return this.initPromise;
+    this.db = await openDB();
   }
 
   protected async withStore<T>(
@@ -111,22 +95,14 @@ export default abstract class BaseIndexedDBService {
 
       const transaction = this.db.transaction([query.storeName], 'readwrite');
       const store = transaction.objectStore(query.storeName);
-      const index = store.index(query.indexName);
-      const request = index.openCursor(IDBKeyRange.only(query.key));
-
-      request.onerror = () => {
-        reject(new Error(errorMessage));
-      };
-
-      request.onsuccess = (event) => {
-        const cursor = (event.target as IDBRequest).result;
-        if (cursor) {
-          cursorAction(cursor);
-          cursor.continue();
-        } else {
-          resolve();
-        }
-      };
+      const request = openCursorRequest(store, query);
+      attachCursorHandlers({
+        request,
+        cursorAction,
+        resolve,
+        reject,
+        errorMessage,
+      });
     });
   }
 }

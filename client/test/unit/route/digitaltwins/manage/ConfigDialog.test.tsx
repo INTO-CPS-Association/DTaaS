@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import ReconfigureDialog, * as Reconfigure from 'route/digitaltwins/manage/ReconfigureDialog';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -145,6 +146,27 @@ describe('ReconfigureDialog', () => {
     await waitFor(() => {
       expect(setShowDialog).toHaveBeenCalledWith(false);
     });
+  });
+
+  it('dismisses the confirmation dialog via Escape without closing the reconfigure dialog', async () => {
+    const confirmText =
+      'Are you sure you want to cancel? Changes will not be applied.';
+
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    expect(screen.getByText(confirmText)).toBeInTheDocument();
+
+    const confirmDialog = screen
+      .getAllByRole('dialog')
+      .find((dialog) => within(dialog).queryByText(confirmText));
+    expect(confirmDialog).toBeDefined();
+    if (!confirmDialog) throw new Error('Confirmation dialog was not found');
+
+    fireEvent.keyDown(confirmDialog, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByText(confirmText)).not.toBeInTheDocument();
+    });
+    expect(setShowDialog).not.toHaveBeenCalled();
   });
 
   it('calls handleCloseLog when the close function is called', () => {

@@ -21,8 +21,8 @@ setup('authenticate', async ({ page }) => {
   await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.
   await page.getByRole('button', { name: 'Sign In' }).click();
   await page
-    .getByRole('button', { name: 'Authorize' })
-    .click({ timeout: 30000 });
+    .getByRole('button', { name: /Authorize/ })
+    .press('Enter', { timeout: 30000 });
   await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible(
     { timeout: 30000 },
   );

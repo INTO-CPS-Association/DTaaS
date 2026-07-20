@@ -89,6 +89,7 @@ describe('workbench reducer', () => {
       fetchMock: jest.Mock,
       username: string,
     ) {
+      const namespaceUsername = username.toLowerCase();
       globalThis.fetch = fetchMock;
       const store = createTestStore();
       await store.dispatch(
@@ -100,7 +101,7 @@ describe('workbench reducer', () => {
       expect(store.getState().workbench.status).toBe('succeeded');
       expect(store.getState().workbench.services.desktop).toBeDefined();
       expect(store.getState().workbench.services.desktop.endpoint).toContain(
-        username,
+        namespaceUsername,
       );
       return store;
     }
@@ -146,11 +147,13 @@ describe('workbench reducer', () => {
     it('replaces username placeholder in VNC endpoint when using fallback', async () => {
       const store = await assertFallbackBehavior(
         jest.fn().mockRejectedValue(new Error('Network error')),
-        'alice',
+        'Alice',
       );
       const endpoint =
         store.getState().workbench.services.desktop?.endpoint ?? '';
       expect(endpoint).not.toContain('username%2F');
+      expect(endpoint).toContain('alice%2F');
+      expect(endpoint).not.toContain('Alice%2F');
     });
   });
 });

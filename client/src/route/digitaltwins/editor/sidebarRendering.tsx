@@ -26,13 +26,21 @@ export interface RenderOptions {
   readonly assetPath?: string;
 }
 
-const getBaseLabel = (label: string, asset: AssetOrNull): string => {
-  const lower = label.toLowerCase();
-  if (asset instanceof LibraryAsset && !asset.isPrivate) {
-    return lower.startsWith('common/') ? lower : `common/${lower}`;
-  }
-  return lower;
+const isPublicLibraryAsset = (asset: AssetOrNull): boolean =>
+  asset instanceof LibraryAsset && !asset.isPrivate;
+
+const prefixLibraryLabel = (label: string, isPublic: boolean): string => {
+  const prefix = isPublic && !label.startsWith('common/') ? 'common/' : '';
+  return `${prefix}${label}`;
 };
+
+const normalizeLibraryAssetLabel = (
+  label: string,
+  asset: AssetOrNull,
+): string => prefixLibraryLabel(label, isPublicLibraryAsset(asset));
+
+const getBaseLabel = (label: string, asset: AssetOrNull): string =>
+  normalizeLibraryAssetLabel(label.toLowerCase(), asset);
 
 const getItemLabel = (item: string, asset: AssetOrNull): string =>
   asset instanceof LibraryAsset && !asset.isPrivate ? `common/${item}` : item;
@@ -49,6 +57,8 @@ export const renderFileTreeItems = (
       key={`${baseLabel}-${context.label}`}
       itemId={`${baseLabel}-${context.label}`}
       label={context.label as TreeItemProps['label']}
+      data-logger-element="treeitem-section"
+      data-logger-label={context.label}
     >
       {context.filesToRender.map((item, index) => {
         const itemLabel = getItemLabel(item, context.asset);
@@ -57,6 +67,11 @@ export const renderFileTreeItems = (
             key={`${baseLabel}-${item}-${index}`}
             itemId={`${baseLabel}-${item}`}
             label={itemLabel}
+            data-logger-element="treeitem"
+            data-logger-label={itemLabel}
+            data-logger-context={JSON.stringify({
+              file: { name: item, section: context.label },
+            })}
             onClick={() => {
               handleFileClick(
                 { fileName: item, asset: context.asset, files: context.files },
@@ -89,12 +104,19 @@ export const renderFileSection = (
       key={`${baseLabel}-${context.label}`}
       itemId={`${baseLabel}-${context.label}`}
       label={context.label}
+      data-logger-element="treeitem-section"
+      data-logger-label={context.label}
     >
       {context.filesToRender.map((item, index) => (
         <TreeItem
           key={`${baseLabel}-${item}-${index}`}
           itemId={`${baseLabel}-${item}`}
           label={item}
+          data-logger-element="treeitem"
+          data-logger-label={item}
+          data-logger-context={JSON.stringify({
+            file: { name: item, section: context.label },
+          })}
           onClick={() => {
             handleFileClick(
               { fileName: item, asset: context.asset, files: context.files },

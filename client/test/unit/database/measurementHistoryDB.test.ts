@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import measurementDBService from 'database/measurementHistoryDB';
 import { createMockTask } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
 import { clearDatabase } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
+import { resetDBConnection } from 'database/dbConnection';
 
 describe('MeasurementDBService (Real Implementation)', () => {
   beforeEach(async () => {
@@ -180,21 +181,17 @@ describe('MeasurementDBService (Real Implementation)', () => {
   );
 
   it('should return existing init promise when called concurrently', async () => {
-    const service = Object.create(Object.getPrototypeOf(measurementDBService));
-    service.db = undefined;
-    service.dbName = 'concurrent-test-db';
-    service.dbVersion = 1;
-    service.initPromise = undefined;
+    resetDBConnection();
 
     const originalOpen = indexedDB.open;
     let openCallCount = 0;
-    indexedDB.open = jest.fn(() => {
+    indexedDB.open = jest.fn((...args: Parameters<typeof originalOpen>) => {
       openCallCount += 1;
-      return originalOpen.call(indexedDB, service.dbName, service.dbVersion);
+      return originalOpen.apply(indexedDB, args);
     });
 
-    const promise1 = service.init();
-    const promise2 = service.init();
+    const promise1 = measurementDBService.init();
+    const promise2 = measurementDBService.init();
 
     await Promise.all([promise1, promise2]);
     expect(openCallCount).toBe(1);

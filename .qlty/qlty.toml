@@ -42,6 +42,9 @@ exclude_patterns = [
   "docs/publish/**",
   # Workaround: qlty mangles TypeScript types in this file during staging
   "**/measurement.envSetup.ts",
+  "**/measurement.types.ts",
+  "**/logEvent.ts",
+  "client/src/model/backend/gitlab/digitalTwinConfig/constants.ts",
 ]
 
 test_patterns = [

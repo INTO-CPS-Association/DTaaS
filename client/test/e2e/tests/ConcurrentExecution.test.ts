@@ -11,7 +11,9 @@ test.describe('Concurrent Execution', () => {
     // Navigate to the home page and authenticate
     await page.goto('./');
     await page.getByRole('button', { name: 'SignIn' }).click();
-    await page.getByRole('button', { name: 'Authorize' }).click();
+    await page
+      .getByRole('button', { name: /Authorize/ })
+      .press('Enter', { timeout: 30000 });
     await expect(
       page.getByRole('button', { name: 'Open settings' }),
     ).toBeVisible();
@@ -45,19 +47,16 @@ test.describe('Concurrent Execution', () => {
     await expect(startButton).toBeVisible();
 
     // Enforce debounce between requests to avoid overwhelming GitLab
-    await page.waitForTimeout(DEBOUNCE_TIME);
+    await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
 
-    // Wait for debounce period plus a bit for execution to start
-    await page.waitForTimeout(DEBOUNCE_TIME * 2);
+    // Button re-enables only once the start request resolves.
+    await expect(startButton).toBeEnabled();
 
     // Start a second execution
     await startButton.click();
 
-    // Wait for debounce period plus a bit for second execution to start
-    await page.waitForTimeout(DEBOUNCE_TIME * 2);
-
-    // Click the History button
+    // Click the History button (enabled-wait below covers the execution starting)
     const historyButton = helloWorldCard
       .getByRole('button', { name: 'History' })
       .first();
@@ -109,14 +108,19 @@ test.describe('Concurrent Execution', () => {
       .filter({ hasText: /Running with gitlab-runner|No logs available/ });
     await expect(logsContent).toBeVisible({ timeout: 10000 });
 
-    // Wait a bit to ensure both executions have time to complete
-    await page.waitForTimeout(1500);
-
-    // Check another execution's logs if available
+    // Check another execution's logs if available; poll for terminal status.
     const secondExecution = historyDialog
       .locator('.MuiAccordionSummary-root')
       .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
       .nth(1);
+
+    try {
+      await expect(async () => {
+        expect(await secondExecution.count()).toBeGreaterThan(0);
+      }).toPass({ timeout: 30000 });
+    } catch {
+      // Not ready in time; optional check below is skipped.
+    }
 
     if ((await secondExecution.count()) > 0) {
       await secondExecution.click();
@@ -167,7 +171,14 @@ test.describe('Concurrent Execution', () => {
       await page.getByRole('button', { name: 'DELETE' }).click();
       await expect(confirmDialog).not.toBeVisible();
 
-      await page.waitForTimeout(500); // Wait a bit for the UI to update
+      // Wait for the list to reflect the deletion before recursing
+      await expect(async () => {
+        const count = await historyDialog
+          .locator('.MuiAccordionSummary-root')
+          .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
+          .count();
+        expect(count).toBe(remainingCount - 1);
+      }).toPass({ timeout: 5000 });
 
       // Recursive call with decremented count
       await deleteCompletedExecutions(remainingCount - 1);
@@ -199,11 +210,23 @@ test.describe('Concurrent Execution', () => {
       .first();
 
     // Enforce debounce between requests to avoid overwhelming GitLab
-    await page.waitForTimeout(DEBOUNCE_TIME);
+    await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
 
-    // Wait for debounce period plus a bit for execution to start
-    await page.waitForTimeout(2000);
+    // The Start click returns before the async pipeline/IndexedDB write finishes.
+    const preReloadHistoryButton = helloWorldCard
+      .getByRole('button', { name: 'History' })
+      .first();
+    await expect(preReloadHistoryButton).toBeEnabled({ timeout: 30000 });
+    await preReloadHistoryButton.click();
+
+    const preReloadHistoryDialog = page.locator('div[role="dialog"]');
+    await expect(preReloadHistoryDialog).toBeVisible();
+    await expect(
+      preReloadHistoryDialog.locator('.MuiAccordionSummary-root').first(),
+    ).toBeVisible({ timeout: 30000 });
+    await preReloadHistoryDialog.getByRole('button', { name: 'Close' }).click();
+    await expect(preReloadHistoryDialog).not.toBeVisible();
 
     // Reload the page after execution has started
     await page.reload();

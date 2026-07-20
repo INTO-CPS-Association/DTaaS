@@ -79,6 +79,8 @@ function MenuToolbar({
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           edge="start"
+          data-logger-element="button"
+          data-logger-label="Open Drawer"
           sx={{
             marginRight: 5,
             ...(open && { display: 'none' }),
@@ -96,7 +98,11 @@ function MenuToolbar({
             title="Open settings"
             slotProps={{ popper: { container: root } }}
           >
-            <IconButton onClick={handleOpenUserMenu}>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              data-logger-element="button"
+              data-logger-label="Open Settings"
+            >
               <Avatar sx={{ bgcolor: deepPurple[500] }}>A</Avatar>
             </IconButton>
           </Tooltip>
@@ -115,10 +121,18 @@ function MenuToolbar({
               component={Link}
               to="/account"
               onClick={handleCloseUserMenu}
+              data-logger-element="nav-link"
+              data-logger-label="Account"
             >
               Account
             </MenuItem>
-            <MenuItem component={Link} to="/" onClick={handleSignOut}>
+            <MenuItem
+              component={Link}
+              to="/"
+              onClick={handleSignOut}
+              data-logger-element="button"
+              data-logger-label="Logout"
+            >
               Logout
             </MenuItem>
           </Menu>

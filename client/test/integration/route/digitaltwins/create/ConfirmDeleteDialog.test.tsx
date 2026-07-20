@@ -28,6 +28,7 @@ describe('ConfirmDeleteDialog', () => {
           <ConfirmDeleteDialog
             open={true}
             setOpenConfirmDeleteDialog={setOpenConfirmDeleteDialog}
+            newDigitalTwinName="hello"
             setFileName={setFileName}
             setFileContent={setFileContent}
             setFileType={setFileType}

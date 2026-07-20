@@ -30,12 +30,13 @@ function MenuLayout(props: { children: React.ReactNode }) {
 function Layout(props: {
   children: React.ReactNode;
   sx?: React.CSSProperties;
+  maxWidth?: React.ComponentProps<typeof Container>['maxWidth'];
 }) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <MenuLayout>
         <Container
-          maxWidth="lg"
+          maxWidth={props.maxWidth ?? 'lg'}
           sx={{ mt: 1, mb: 1, flexGrow: 1, ...props.sx }}
           className="content"
         >

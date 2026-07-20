@@ -19,6 +19,25 @@ then
   rm -rf site
 fi
 
+# Documentation images and videos are tracked with Git LFS. Fetch them
+# before building; otherwise MkDocs copies LFS pointer files into the
+# site and every image and video appears broken. The pre-build hook
+# (script/docs/mkdocs_hooks.py) aborts the build in that case, so this
+# step is mandatory rather than optional.
+printf "fetch documentation assets from Git LFS\n"
+if ! command -v git-lfs > /dev/null 2>&1; then
+  echo "git-lfs is not installed; install it and rerun." >&2
+  exit 1
+fi
+git lfs install --local || {
+  echo "git lfs install failed; cannot fetch documentation assets." >&2
+  exit 1
+}
+git lfs pull --include="docs/**" || {
+  echo "git lfs pull failed; documentation assets are unavailable." >&2
+  exit 1
+}
+
 printf "generate and publish documents"
 mkdocs build --config-file mkdocs.yml --site-dir "site/online/${VERSION}"
 

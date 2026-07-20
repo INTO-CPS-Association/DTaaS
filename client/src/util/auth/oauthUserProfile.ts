@@ -93,7 +93,7 @@ export function resolveOAuthUsername(profile: OAuthProfile): string {
     getUsernameFromProfileUrl(getClaim(profile, 'profile')),
     getClaim(profile, 'sub'),
   ].find((value) => value !== undefined && isSafeUsername(value));
-  return username ?? '';
+  return username?.toLowerCase() ?? '';
 }
 
 export function resolveOAuthProfileUrl(

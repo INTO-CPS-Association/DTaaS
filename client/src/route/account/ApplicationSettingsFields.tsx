@@ -1,8 +1,15 @@
 import { TextField, Typography, Grid, Divider } from '@mui/material';
 import { SettingsFieldProps } from 'route/account/SettingsForm';
 
+type ApplicationFieldId =
+  | 'groupName'
+  | 'dtDirectory'
+  | 'commonLibraryProjectName'
+  | 'runnerTag'
+  | 'branchName';
+
 interface FieldConfig {
-  id: string;
+  id: ApplicationFieldId;
   label: string;
   errorMsg: string;
   helpMsg: string;
@@ -64,6 +71,16 @@ const ApplicationSettingsFields: React.FC<SettingsFieldProps> = ({
             onChange={handleInputChange}
             error={fieldErrors[id]}
             helperText={fieldErrors[id] ? errorMsg : helpMsg}
+            slotProps={{
+              htmlInput: {
+                'data-logger-element': 'input',
+                'data-logger-label': label,
+                'data-logger-capture-value': 'true',
+                'data-logger-context': JSON.stringify({
+                  settings: { section: 'application', field: id },
+                }),
+              },
+            }}
           />
         </Grid>
       ))}
