@@ -54,12 +54,12 @@ function Acknowledgements(props: OwnProps) {
 
 function RenderFooter() {
   return (
-    <>
+    <footer>
       <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
         <Copyright />
         <Acknowledgements sx={{ pt: 1 }} />
       </Container>
-    </>
+    </footer>
   );
 }
 

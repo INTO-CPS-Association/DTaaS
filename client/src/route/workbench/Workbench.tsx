@@ -19,7 +19,11 @@ const Container = styled.div`
 function WorkBenchContent() {
   const linkValues = useWorkbenchLinkValues();
   const dispatch = useDispatch<AppDispatch>();
-  const username = useSelector((state: RootState) => state.auth).userName ?? '';
+  const username = (
+    useSelector((state: RootState) => state.auth).userName ?? ''
+  )
+    .trim()
+    .toLowerCase();
   const servicesStatus = useSelector(
     (state: RootState) => state.workbench.status,
   );

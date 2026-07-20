@@ -74,6 +74,11 @@ interface LinkButtonProps {
                 {...(button.name !== 'ToolbarIcon' && {
                   title: `${button.name}-btn`,
                 })}
+                data-logger-element="link"
+                data-logger-label={button.name ?? 'service'}
+                data-logger-context={JSON.stringify({
+                  link: { url: button.link },
+                })}
               >
                 {cloneElement(
                   button.icon as React.ReactElement<{

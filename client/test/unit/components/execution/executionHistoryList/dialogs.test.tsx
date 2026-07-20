@@ -40,6 +40,11 @@ jest.mock('database/executionHistoryDB', () => ({
   },
 }));
 
+jest.mock('util/logger/logger', () => ({
+  log: jest.fn(),
+  logDismiss: jest.fn(),
+}));
+
 const ctx = createExecutionHistoryListContext();
 
 describe('ExecutionHistoryList - details and dialogs', () => {
@@ -163,6 +168,41 @@ describe('ExecutionHistoryList - details and dialogs', () => {
     const cancelButton = screen.getByRole('button', { name: /cancel/i });
     fireEvent.click(cancelButton);
 
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('logs the dismissal when the delete dialog is dismissed via Escape', async () => {
+    const mockExecutions = [
+      {
+        id: 'exec1',
+        dtName: 'test-dt',
+        pipelineId: 1001,
+        timestamp: 1620000000000,
+        status: ExecutionStatus.COMPLETED,
+        jobLogs: [],
+      },
+    ];
+    ctx.testStore = createTestStore(mockExecutions);
+    useSelectorFromStore(ctx);
+
+    render(
+      <Provider store={ctx.testStore}>
+        <ExecutionHistoryList dtName={dtName} onViewLogs={mockOnViewLogs} />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getAllByLabelText(/delete/i)[0]);
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+
+    const { logDismiss } = jest.requireMock('util/logger/logger');
+    expect(logDismiss).toHaveBeenCalledWith({
+      element: 'dialog',
+      label: 'Confirm Deletion',
+      reason: 'escapeKeyDown',
+      context: { dt: { name: dtName, executionId: 'exec1' } },
+    });
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });

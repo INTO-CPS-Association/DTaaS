@@ -6,6 +6,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { RootState } from 'store/store';
 import { hideSnackbar, SnackbarItem } from 'store/snackbar.slice';
+import { log, logDismiss } from 'util/logger/logger';
 
 const ICONS: Record<string, React.ElementType> = {
   ClearIcon,
@@ -37,6 +38,13 @@ const CustomSnackbar: React.FC = () => {
       clearTimeout(timeout);
       timeouts.delete(id);
     }
+    const item = items.find((entry) => entry.id === id);
+    if (item)
+      logDismiss({
+        element: 'snackbar',
+        label: item.message,
+        context: { notification: { severity: item.severity } },
+      });
     dispatch(hideSnackbar(id));
   };
 
@@ -48,6 +56,22 @@ const CustomSnackbar: React.FC = () => {
       }
     };
   }, []);
+
+  const lastLoggedIdReference = useRef(-1);
+  useEffect(() => {
+    for (const item of items) {
+      if (item.id > lastLoggedIdReference.current) {
+        lastLoggedIdReference.current = item.id;
+        log({
+          event: 'notification',
+          page: globalThis.location.pathname,
+          element: 'snackbar',
+          label: item.message,
+          context: { notification: { severity: item.severity } },
+        });
+      }
+    }
+  }, [items]);
 
   useEffect(() => {
     const timeouts = timeoutsReference.current;

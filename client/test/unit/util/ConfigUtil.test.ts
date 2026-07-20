@@ -115,6 +115,47 @@ describe('configUtil', () => {
       expect(results.REACT_APP_CLIENT_ID.status).toBeUndefined();
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('mockedClientID');
     });
+
+    test('getValidationResult LOGGER_URL validates when configured', async () => {
+      globalThis.env.LOGGER_URL = 'https://logger.example.com';
+      const results: Record<string, ValidationType> =
+        await getValidationResults();
+      expect(results.LOGGER_URL.error).toBeUndefined();
+      expect(results.LOGGER_URL.status).toBe(200);
+      expect(results.LOGGER_URL.value).toEqual('https://logger.example.com');
+    });
+
+    test('getValidationResult omits LOGGER_URL when it is not configured', async () => {
+      delete globalThis.env.LOGGER_URL;
+      const results: Record<string, ValidationType> =
+        await getValidationResults();
+
+      expect(results.LOGGER_URL).toBeUndefined();
+    });
+
+    test('getValidationResult omits LOGGER_URL when it is blank', async () => {
+      globalThis.env.LOGGER_URL = '';
+      const results: Record<string, ValidationType> =
+        await getValidationResults();
+
+      expect(results.LOGGER_URL).toBeUndefined();
+    });
+
+    test('getValidationResult reports missing required URLs', async () => {
+      const envWithoutRedirect: Partial<NodeJS.ProcessEnv> = {
+        ...globalThis.env,
+      };
+      delete envWithoutRedirect.REACT_APP_REDIRECT_URI;
+      globalThis.env = envWithoutRedirect as NodeJS.ProcessEnv;
+      const results: Record<string, ValidationType> =
+        await getValidationResults();
+
+      expect(results.REACT_APP_REDIRECT_URI.error).toEqual(
+        'Required URL is missing.',
+      );
+      expect(results.REACT_APP_REDIRECT_URI.status).toBeUndefined();
+      expect(results.REACT_APP_REDIRECT_URI.value).toBeUndefined();
+    });
   });
 
   describe('urlIsReachable', () => {

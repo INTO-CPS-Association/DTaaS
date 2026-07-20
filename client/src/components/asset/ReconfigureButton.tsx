@@ -1,7 +1,8 @@
-import { Button } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
+import AssetActionButton from 'components/asset/AssetActionButton';
 
 interface ReconfigureButtonProps {
+  readonly assetName: string;
   readonly setShowReconfigure: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -11,16 +12,17 @@ export const handleToggleReconfigureDialog = (
   setShowReconfigure((prev) => !prev);
 };
 
-function ReconfigureButton({ setShowReconfigure }: ReconfigureButtonProps) {
+function ReconfigureButton({
+  assetName,
+  setShowReconfigure,
+}: ReconfigureButtonProps) {
   return (
-    <Button
-      variant="contained"
-      size="small"
-      color="primary"
+    <AssetActionButton
+      action="reconfigure"
+      assetName={assetName}
+      label="Reconfigure"
       onClick={() => handleToggleReconfigureDialog(setShowReconfigure)}
-    >
-      Reconfigure
-    </Button>
+    />
   );
 }
 

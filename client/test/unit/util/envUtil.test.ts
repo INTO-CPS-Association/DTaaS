@@ -14,7 +14,8 @@ describe('envUtil', () => {
   const testLIB = '';
   const testAppURL = 'https://example.com';
   const testBasename = 'testBasename';
-  const testUsername = 'username';
+  const testUsername = 'UserName';
+  const expectedUsername = 'username';
   const testAppID = 'testAppID';
   const testAuthority = 'https://example.com';
   const testScopes = 'testScopes';
@@ -69,10 +70,10 @@ describe('envUtil', () => {
 
   test('GetURL should return the correct environment variables', () => {
     expect(useURLforDT()).toBe(
-      `${testAppURL}/${testBasename}/${testUsername}/${testDT}`,
+      `${testAppURL}/${testBasename}/${expectedUsername}/${testDT}`,
     );
     expect(useURLforLIB()).toBe(
-      `${testAppURL}/${testBasename}/${testUsername}/${testLIB}`,
+      `${testAppURL}/${testBasename}/${expectedUsername}/${testLIB}`,
     );
     expect(useURLbasename()).toBe(testBasename);
   });
@@ -99,17 +100,17 @@ describe('envUtil', () => {
 
     const desktopEntry = result.find((el) => el.key === 'VNCDESKTOP');
     expect(desktopEntry?.link).toBe(
-      `${appURL}/${testUsername}/${testServices.desktop.endpoint}`,
+      `${appURL}/${expectedUsername}/${testServices.desktop.endpoint}`,
     );
 
     const vscodeEntry = result.find((el) => el.key === 'VSCODE');
     expect(vscodeEntry?.link).toBe(
-      `${appURL}/${testUsername}/${testServices.vscode.endpoint}`,
+      `${appURL}/${expectedUsername}/${testServices.vscode.endpoint}`,
     );
 
     const labEntry = result.find((el) => el.key === 'JUPYTERLAB');
     expect(labEntry?.link).toBe(
-      `${appURL}/${testUsername}/${testServices.lab.endpoint}`,
+      `${appURL}/${expectedUsername}/${testServices.lab.endpoint}`,
     );
   });
 
@@ -157,8 +158,8 @@ describe('envUtil', () => {
 
   it('still handles if basename is set to empty string', () => {
     globalThis.env.REACT_APP_URL_BASENAME = '';
-    expect(useURLforDT()).toBe(`${testAppURL}/${testUsername}/${testDT}`);
-    expect(useURLforLIB()).toBe(`${testAppURL}/${testUsername}/${testLIB}`);
+    expect(useURLforDT()).toBe(`${testAppURL}/${expectedUsername}/${testDT}`);
+    expect(useURLforLIB()).toBe(`${testAppURL}/${expectedUsername}/${testLIB}`);
     expect(useURLbasename()).toBe('');
   });
 });

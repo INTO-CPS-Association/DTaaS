@@ -47,6 +47,8 @@ const signInButton = (startAuthProcess: () => void) => (
       },
     }}
     startIcon={<LockOutlinedIcon />}
+    data-logger-element="button"
+    data-logger-label="SignIn"
   >
     SignIn
   </Button>

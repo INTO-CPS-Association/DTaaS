@@ -84,6 +84,19 @@ function DetailsButton({
       size="small"
       color="primary"
       onClick={() => handleClick(asset, assetName, library, setShowDetails)}
+      data-logger-element="button"
+      data-logger-label="Details"
+      data-logger-context={JSON.stringify(
+        library
+          ? {
+              library: {
+                path: assetPath,
+                scope: assetPrivacy ? 'Private' : 'Common',
+                button: 'details',
+              },
+            }
+          : { dt: { name: assetName, button: 'details' } },
+      )}
     >
       Details
     </Button>

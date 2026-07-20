@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MeasurementControls from 'route/measurement/MeasurementControls';
 
@@ -159,6 +165,25 @@ describe('MeasurementControls', () => {
       expect(handler).not.toHaveBeenCalled();
     },
   );
+
+  it('dismisses the confirmation dialog via Escape without calling the handler', async () => {
+    const onStop = jest.fn();
+    render(
+      <MeasurementControls
+        {...defaultControlProps}
+        isRunning={true}
+        onStop={onStop}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Stop Measurement?')).not.toBeInTheDocument();
+    });
+    expect(onStop).not.toHaveBeenCalled();
+  });
 
   it('calls onRestart directly when Restart button is clicked', () => {
     const onRestart = jest.fn();

@@ -16,6 +16,8 @@ import {
   downloadResultsJson,
   isTaskComplete,
 } from 'model/backend/gitlab/measure/measurement.utils';
+import { logDismiss } from 'util/logger/logger';
+import type { LogContext } from 'util/logger/logEvent';
 
 interface MeasurementControlsProps {
   isRunning: boolean;
@@ -44,6 +46,7 @@ function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  measurementContext,
 }: Readonly<{
   open: boolean;
   onClose: () => void;
@@ -51,16 +54,47 @@ function ConfirmDialog({
   title: string;
   description: string;
   confirmLabel: string;
+  measurementContext: LogContext;
 }>) {
+  const withButton = (button: string) =>
+    JSON.stringify({
+      measurement: { ...measurementContext, button },
+    });
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={(_event, reason) => {
+        logDismiss({
+          element: 'dialog',
+          label: title,
+          reason,
+          context: { measurement: measurementContext },
+        });
+        onClose();
+      }}
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onConfirm} color="primary" variant="contained">
+        <Button
+          onClick={onClose}
+          data-logger-element="button"
+          data-logger-label={`Cancel ${confirmLabel}`}
+          data-logger-context={withButton('cancel')}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={onConfirm}
+          color="primary"
+          variant="contained"
+          data-logger-element="button"
+          data-logger-label={`Confirm ${confirmLabel}`}
+          data-logger-context={withButton('confirm')}
+        >
           {confirmLabel}
         </Button>
       </DialogActions>
@@ -110,6 +144,11 @@ export default function MeasurementControls({
             onClick={onStart}
             size="small"
             disabled={noTasksEnabled || isComplete || hasStarted}
+            data-logger-element="button"
+            data-logger-label="Start Measurement"
+            data-logger-context={JSON.stringify({
+              measurement: { button: 'start', totalTasks, iterations },
+            })}
           >
             Start
           </Button>
@@ -120,6 +159,11 @@ export default function MeasurementControls({
             onClick={() => setStopDialogOpen(true)}
             size="small"
             disabled={!isRunning}
+            data-logger-element="button"
+            data-logger-label="Stop Measurement"
+            data-logger-context={JSON.stringify({
+              measurement: { button: 'stop', completedTasks, totalTasks },
+            })}
           >
             Stop
           </Button>
@@ -130,6 +174,11 @@ export default function MeasurementControls({
             onClick={onRestart}
             disabled={noTasksEnabled || !hasStarted || isRunning}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Restart Measurement"
+            data-logger-context={JSON.stringify({
+              measurement: { button: 'restart', totalTasks, iterations },
+            })}
           >
             Restart
           </Button>
@@ -140,6 +189,11 @@ export default function MeasurementControls({
             onClick={() => downloadResultsJson(results)}
             disabled={!hasAnyResults}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Export Measurement Results"
+            data-logger-context={JSON.stringify({
+              measurement: { button: 'export', resultCount: results.length },
+            })}
           >
             Export
           </Button>
@@ -150,6 +204,11 @@ export default function MeasurementControls({
             onClick={() => setPurgeDialogOpen(true)}
             disabled={isRunning}
             size="small"
+            data-logger-element="button"
+            data-logger-label="Purge Measurement Data"
+            data-logger-context={JSON.stringify({
+              measurement: { button: 'purge', resultCount: results.length },
+            })}
           >
             Purge
           </Button>
@@ -165,6 +224,7 @@ export default function MeasurementControls({
         title="Stop Measurement?"
         description="Are you sure you want to stop the measurement? This will cancel all running executions and mark the current task as stopped."
         confirmLabel="Stop"
+        measurementContext={{ action: 'stop', completedTasks, totalTasks }}
       />
 
       <ConfirmDialog
@@ -177,6 +237,7 @@ export default function MeasurementControls({
         title="Purge Measurement Data?"
         description="Are you sure you want to purge all measurement data? This will permanently delete all results and cannot be undone."
         confirmLabel="Purge"
+        measurementContext={{ action: 'purge', resultCount: results.length }}
       />
     </Box>
   );

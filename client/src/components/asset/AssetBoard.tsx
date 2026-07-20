@@ -116,7 +116,12 @@ const AssetBoard: React.FC<AssetBoardProps> = ({ tab }) => {
 
   return (
     <>
-      <Filter value={filter} onChange={setFilter} />
+      <Filter
+        value={filter}
+        onChange={setFilter}
+        loggerLabel="Digital twin filter"
+        loggerContext={{ dt: { tab } }}
+      />
       <Grid {...outerGridContainerProps}>
         {filteredAssets.map((asset) => (
           <AssetGridItem

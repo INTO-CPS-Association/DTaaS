@@ -69,7 +69,17 @@ function AssetLibrary({ pathToAssets, privateRepo }: AssetLibraryProps) {
   return (
     <>
       <Box sx={{ mb: 2 }}>
-        <Filter value={filter} onChange={setFilter} />
+        <Filter
+          value={filter}
+          onChange={setFilter}
+          loggerLabel="Library filter"
+          loggerContext={{
+            library: {
+              assetType: pathToAssets,
+              scope: privateRepo ? 'Private' : 'Common',
+            },
+          }}
+        />
       </Box>
       <Grid {...outerGridContainerProps}>
         {filteredAssets.map((asset) => (

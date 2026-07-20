@@ -19,6 +19,7 @@ import {
 } from 'model/store/file.slice';
 import { formatName } from 'model/backend/digitalTwin';
 import Editor from 'route/digitaltwins/editor/Editor';
+import { logDismiss } from 'util/logger/logger';
 
 export {
   saveChanges,
@@ -112,6 +113,8 @@ function ReconfigureDialog({
         onClose={handleCloseSaveDialog}
         onConfirm={handleConfirmSave}
         content="Are you sure you want to apply the changes?"
+        name={name}
+        action="save"
       />
 
       <ConfirmationDialog
@@ -119,6 +122,8 @@ function ReconfigureDialog({
         onClose={handleCloseCancelDialog}
         onConfirm={handleConfirmCancel}
         content="Are you sure you want to cancel? Changes will not be applied."
+        name={name}
+        action="cancel"
       />
     </>
   );
@@ -194,10 +199,24 @@ const ReconfigureMainDialog = ({
       />
     </DialogContent>
     <DialogActions>
-      <Button color="primary" onClick={handleCancel}>
+      <Button
+        color="primary"
+        onClick={handleCancel}
+        data-logger-element="button"
+        data-logger-label="Cancel"
+        data-logger-context={JSON.stringify({
+          dt: { name, button: 'cancel' },
+        })}
+      >
         Cancel
       </Button>
-      <Button color="primary" onClick={handleSave}>
+      <Button
+        color="primary"
+        onClick={handleSave}
+        data-logger-element="button"
+        data-logger-label="Save"
+        data-logger-context={JSON.stringify({ dt: { name, button: 'save' } })}
+      >
         Save
       </Button>
     </DialogActions>
@@ -209,17 +228,49 @@ const ConfirmationDialog = ({
   onClose,
   onConfirm,
   content,
+  name,
+  action,
 }: {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
   readonly content: string;
+  readonly name: string;
+  readonly action: 'save' | 'cancel';
 }) => (
-  <Dialog open={open} onClose={onClose}>
+  <Dialog
+    open={open}
+    onClose={(_event, reason) => {
+      logDismiss({
+        element: 'dialog',
+        label: 'Reconfigure Confirmation',
+        reason,
+        context: { dt: { name, action } },
+      });
+      onClose();
+    }}
+  >
     <DialogContent>{content}</DialogContent>
     <DialogActions>
-      <Button onClick={onClose}>No</Button>
-      <Button color="primary" onClick={onConfirm}>
+      <Button
+        onClick={onClose}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm No"
+        data-logger-context={JSON.stringify({
+          dt: { name, button: `${action}-confirm-no` },
+        })}
+      >
+        No
+      </Button>
+      <Button
+        color="primary"
+        onClick={onConfirm}
+        data-logger-element="button"
+        data-logger-label="Reconfigure Confirm Yes"
+        data-logger-context={JSON.stringify({
+          dt: { name, button: `${action}-confirm-yes` },
+        })}
+      >
         Yes
       </Button>
     </DialogActions>

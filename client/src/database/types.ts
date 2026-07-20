@@ -3,7 +3,7 @@
  */
 export const DB_CONFIG = {
   name: 'DTaaS',
-  version: 2,
+  version: 3,
   stores: {
     executionHistory: {
       keyPath: 'id',
@@ -18,6 +18,11 @@ export const DB_CONFIG = {
         { name: 'taskName', keyPath: 'taskName' },
         { name: 'timestamp', keyPath: 'timestamp' },
       ],
+    },
+    logs: {
+      keyPath: 'id',
+      autoIncrement: true,
+      indexes: [{ name: 'timestamp', keyPath: 'timestamp' }],
     },
   },
 };

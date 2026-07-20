@@ -9,6 +9,10 @@ export function cleanURL(url: string): string {
   return url?.trim().replace(/^\/|\/$/g, ''); // Remove leading and trailing slashes
 }
 
+export function cleanUsername(username: string | undefined): string {
+  return username?.trim().toLowerCase() ?? '';
+}
+
 /**
  * Injects the `username` into the `baseURL` and `endpoint` to create a link.
  * @param baseURL Example `https://intocps.org` Any leading or trailing slashes will be removed.
@@ -16,7 +20,9 @@ export function cleanURL(url: string): string {
  * @returns a complete URL: `baseUrl` / `username` / `endpoint`
  */
 const useUserLink = (baseURL: string, endpoint?: string): string => {
-  const username = useSelector((state: RootState) => state.auth).userName;
+  const username = cleanUsername(
+    useSelector((state: RootState) => state.auth).userName,
+  );
   const cleanBaseURL = cleanURL(baseURL);
   const cleanEndpoint = cleanURL(endpoint ?? '');
   return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
@@ -54,7 +60,7 @@ function buildUserLink(
 ): string {
   const cleanBaseURL = cleanURL(baseURL);
   const cleanEndpoint = cleanURL(endpoint ?? '');
-  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
+  return `${cleanBaseURL}/${cleanUsername(username)}/${cleanEndpoint}`;
 }
 
 /**
@@ -66,7 +72,9 @@ function buildUserLink(
  * Preview links (LIBRARY_PREVIEW, DT_PREVIEW) continue to be read from environment variables.
  */
 export function useWorkbenchLinkValues(): KeyLinkPair[] {
-  const username = useSelector((state: RootState) => state.auth).userName ?? '';
+  const username = cleanUsername(
+    useSelector((state: RootState) => state.auth).userName,
+  );
   const services = useSelector((state: RootState) => state.workbench.services);
   const appURL = useAppURL();
   const workbenchLinkValues: KeyLinkPair[] = [];

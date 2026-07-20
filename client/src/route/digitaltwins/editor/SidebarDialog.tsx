@@ -46,6 +46,13 @@ const SidebarDialog = ({
         variant="outlined"
         value={newFileName}
         onChange={(e) => setNewFileName(e.target.value)}
+        slotProps={{
+          htmlInput: {
+            'data-logger-element': 'input',
+            'data-logger-label': 'Sidebar File Name Input',
+            'data-logger-capture-value': 'true',
+          },
+        }}
       />
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </DialogContent>
@@ -58,6 +65,11 @@ const SidebarDialog = ({
             setErrorMessage,
           )
         }
+        data-logger-element="button"
+        data-logger-label="Sidebar Dialog Cancel"
+        data-logger-context={JSON.stringify({
+          file: { name: newFileName, button: 'new-cancel' },
+        })}
       >
         Cancel
       </Button>
@@ -71,6 +83,11 @@ const SidebarDialog = ({
         }
         variant="contained"
         color="primary"
+        data-logger-element="button"
+        data-logger-label="Sidebar Dialog Add"
+        data-logger-context={JSON.stringify({
+          file: { name: newFileName, button: 'new-confirm' },
+        })}
       >
         Add
       </Button>

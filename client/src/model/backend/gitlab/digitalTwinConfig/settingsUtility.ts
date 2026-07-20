@@ -12,6 +12,7 @@ type SettingsState = {
   COMMON_LIBRARY_PROJECT_NAME: string;
   RUNNER_TAG: string;
   BRANCH_NAME: string;
+  loggingEnabled: boolean;
 };
 
 type StoreReader = { getState: () => { settings: SettingsState } };
@@ -20,6 +21,10 @@ let _store: StoreReader | null = null;
 
 export function setSettingsStore(store: StoreReader): void {
   _store = store;
+}
+
+export function resetSettingsStore(): void {
+  _store = null;
 }
 
 function getStore(): StoreReader {
@@ -40,3 +45,7 @@ export const getRunnerTag = (): string =>
   getStore().getState().settings.RUNNER_TAG;
 export const getBranchName = (): string =>
   getStore().getState().settings.BRANCH_NAME;
+export const getLoggingEnabled = (): boolean => {
+  if (!_store) return false;
+  return _store.getState().settings.loggingEnabled;
+};

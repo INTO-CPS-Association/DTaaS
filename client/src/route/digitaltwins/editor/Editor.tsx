@@ -27,6 +27,11 @@ interface EditorProps {
   >;
 }
 
+const buildPaneLogContext = (DTName: string | undefined, fileName: string) => ({
+  ...(DTName ? { dt: { name: DTName } } : {}),
+  file: { name: fileName },
+});
+
 function Editor({
   DTName,
   tab,
@@ -93,8 +98,22 @@ function Editor({
               onChange={handleTabChange}
               aria-label="editor preview tabs"
             >
-              <Tab label="Editor" />
-              <Tab label="Preview" />
+              <Tab
+                label="Editor"
+                data-logger-element="tab"
+                data-logger-label="Editor"
+                data-logger-context={JSON.stringify(
+                  buildPaneLogContext(DTName, fileName),
+                )}
+              />
+              <Tab
+                label="Preview"
+                data-logger-element="tab"
+                data-logger-label="Preview"
+                data-logger-context={JSON.stringify(
+                  buildPaneLogContext(DTName, fileName),
+                )}
+              />
             </Tabs>
           </Box>
 

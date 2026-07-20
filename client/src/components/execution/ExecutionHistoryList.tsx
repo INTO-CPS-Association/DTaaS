@@ -10,12 +10,11 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
+import ConfirmationDialogActions from 'components/logDialog/ConfirmationDialogActions';
 import {
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
@@ -45,6 +44,7 @@ import { RootState } from 'store/store';
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { showSnackbar } from 'store/snackbar.slice';
 import { formatName } from 'model/backend/digitalTwin';
+import { logDismiss } from 'util/logger/logger';
 
 interface ExecutionHistoryListProps {
   dtName: string;
@@ -55,6 +55,20 @@ export const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);
   return date.toLocaleString();
 };
+
+const buildStopLogContext = (
+  dtName: string,
+  executions: { timestamp: number }[] | undefined,
+) =>
+  JSON.stringify({
+    dt: {
+      name: dtName,
+      button: 'stop',
+      history: (executions ?? []).map((execution) =>
+        new Date(execution.timestamp).toISOString(),
+      ),
+    },
+  });
 
 const getStatusIcon = (status: ExecutionStatus) => {
   switch (status) {
@@ -92,6 +106,7 @@ const getStatusText = (status: ExecutionStatus): string => {
 
 interface DeleteConfirmationDialogProps {
   open: boolean;
+  dtName: string;
   executionId: string | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -99,11 +114,23 @@ interface DeleteConfirmationDialogProps {
 
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   open,
+  dtName,
   executionId,
   onClose,
   onConfirm,
 }) => (
-  <Dialog open={open} onClose={onClose}>
+  <Dialog
+    open={open}
+    onClose={(_event, reason) => {
+      logDismiss({
+        element: 'dialog',
+        label: 'Confirm Deletion',
+        reason,
+        context: { dt: { name: dtName, executionId } },
+      });
+      onClose();
+    }}
+  >
     <DialogTitle>Confirm Deletion</DialogTitle>
     <DialogContent>
       <Typography>
@@ -118,14 +145,18 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         This action cannot be undone.
       </Typography>
     </DialogContent>
-    <DialogActions>
-      <Button onClick={onClose} color="primary">
-        Cancel
-      </Button>
-      <Button onClick={onConfirm} color="error">
-        Delete
-      </Button>
-    </DialogActions>
+    <ConfirmationDialogActions
+      cancelContext={{
+        dt: { name: dtName, executionId, button: 'delete-execution-cancel' },
+      }}
+      confirmContext={{
+        dt: { name: dtName, executionId, button: 'delete-execution-confirm' },
+      }}
+      confirmLabel="Delete Execution"
+      confirmText="Delete"
+      onClose={onClose}
+      onConfirm={onConfirm}
+    />
   </Dialog>
 );
 
@@ -251,6 +282,7 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
       {/* Delete confirmation dialog */}
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
+        dtName={dtName}
         executionId={executionToDelete}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
@@ -271,6 +303,15 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls={`execution-${execution.id}-content`}
                 id={`execution-${execution.id}-header`}
+                data-logger-element="accordion"
+                data-logger-label="Toggle Execution Details"
+                data-logger-context={JSON.stringify({
+                  dt: {
+                    name: dtName,
+                    executionId: execution.id,
+                    button: 'toggle-execution-details',
+                  },
+                })}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -305,6 +346,12 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                         aria-label="stop"
                         onClick={(e) => handleStopExecution(execution.id, e)}
                         size="small"
+                        data-logger-element="button"
+                        data-logger-label="Stop Execution"
+                        data-logger-context={buildStopLogContext(
+                          dtName,
+                          executions,
+                        )}
                       >
                         <StopIcon />
                       </IconButton>
@@ -318,6 +365,15 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
                         aria-label="delete"
                         onClick={(e) => handleDeleteClick(execution.id, e)}
                         size="small"
+                        data-logger-element="button"
+                        data-logger-label="Delete Execution"
+                        data-logger-context={JSON.stringify({
+                          dt: {
+                            name: dtName,
+                            executionId: execution.id,
+                            button: 'delete-execution',
+                          },
+                        })}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -327,10 +383,7 @@ const ExecutionHistoryList: React.FC<ExecutionHistoryListProps> = ({
               </AccordionSummary>
               <AccordionDetails>
                 {(() => {
-                  if (
-                    !selectedExecution ||
-                    selectedExecution.id !== execution.id
-                  ) {
+                  if (selectedExecution?.id !== execution.id) {
                     return (
                       <Box
                         sx={{ display: 'flex', justifyContent: 'center', p: 2 }}

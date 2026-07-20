@@ -85,6 +85,28 @@ describe('Config', () => {
     expect(linkToDeveloperConfig).toHaveAttribute('href', './developer');
   });
 
+  test('renders invalid UserConfig when a required URL is missing', async () => {
+    const envWithoutRedirect: Partial<NodeJS.ProcessEnv> = {
+      ...globalThis.env,
+    };
+    delete envWithoutRedirect.REACT_APP_REDIRECT_URI;
+    globalThis.env = envWithoutRedirect as NodeJS.ProcessEnv;
+    render(
+      <MemoryRouter>
+        <Config role="user" />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Invalid Application Configuration/i),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByText(/Configuration appears to be valid./i),
+    ).not.toBeInTheDocument();
+  });
+
   test('renders valid UserConfig correctly', async () => {
     render(
       <MemoryRouter>

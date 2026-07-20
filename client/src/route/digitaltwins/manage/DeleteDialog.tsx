@@ -91,6 +91,11 @@ function DeleteDialog({
         <Button
           color="primary"
           onClick={() => handleCloseDeleteDialog(setShowDialog)}
+          data-logger-element="button"
+          data-logger-label="Delete Dialog Cancel"
+          data-logger-context={JSON.stringify({
+            dt: { name, button: 'delete-cancel' },
+          })}
         >
           Cancel
         </Button>
@@ -105,6 +110,11 @@ function DeleteDialog({
               dispatch,
             })
           }
+          data-logger-element="button"
+          data-logger-label="Delete Dialog Confirm"
+          data-logger-context={JSON.stringify({
+            dt: { name, button: 'delete-confirm' },
+          })}
         >
           Yes
         </Button>

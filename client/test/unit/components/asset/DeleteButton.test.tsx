@@ -11,7 +11,7 @@ describe('DeleteButton', () => {
   const renderDeleteButton = (setShowDelete: jest.Mock = jest.fn()) =>
     render(
       <Provider store={store}>
-        <DeleteButton setShowDelete={setShowDelete} />
+        <DeleteButton assetName="hello" setShowDelete={setShowDelete} />
       </Provider>,
     );
 

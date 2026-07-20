@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MeasurementTable from 'route/measurement/MeasurementTable';
 import {
@@ -210,6 +210,58 @@ describe('MeasurementTable', () => {
 
     expect(screen.getByTestId('trial-card')).toBeInTheDocument();
     expect(screen.getByText('Trial 1 - RUNNING')).toBeInTheDocument();
+  });
+
+  it('does not toggle the row when clicking interactive cells', () => {
+    const results = [
+      createMockTask({
+        'Task Name': 'Done',
+        Description: 'First',
+        Status: 'SUCCESS',
+        Trials: [
+          createMockTrial({
+            Status: 'SUCCESS',
+            Execution: [createMockExecution()],
+          }),
+        ],
+      }),
+    ];
+
+    const { container } = render(
+      <MeasurementTable
+        results={results}
+        currentTaskIndex={null}
+        currentExecutions={[]}
+        onDownloadTask={mockDownload}
+        primaryRunnerTag="linux"
+        secondaryRunnerTag="windows"
+        primaryDTName="dt-primary"
+        secondaryDTName="dt-secondary"
+        isRunning={false}
+        disabledTaskNames={[]}
+        onToggleTask={mockToggleTask}
+      />,
+    );
+
+    const isDescriptionCollapsed = () =>
+      container.querySelector('.MuiCollapse-hidden') !== null;
+    expect(isDescriptionCollapsed()).toBe(true);
+
+    // Clicks inside the trials, data, and expanded-description cells must not
+    // bubble up and toggle the row expansion.
+    fireEvent.click(screen.getByTestId('trial-card'));
+    expect(isDescriptionCollapsed()).toBe(true);
+
+    fireEvent.click(screen.getByText('Download Task Results'));
+    expect(isDescriptionCollapsed()).toBe(true);
+    expect(mockDownload).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('First'));
+    expect(isDescriptionCollapsed()).toBe(true);
+
+    // Clicking the task name cell still toggles the row.
+    fireEvent.click(screen.getByText('Done'));
+    expect(isDescriptionCollapsed()).toBe(false);
   });
 
   it('renders runner tag badges', () => {

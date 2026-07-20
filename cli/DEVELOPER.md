@@ -107,7 +107,7 @@ the commands are safe in CI/ops scripts. The commands are attached to the
 User provisioning spans three single-owner files, modelled on the config/state
 split Terraform uses for `.tf` vs `terraform.tfstate`: `dtaas.toml` holds the
 hand-edited `starting` users, `dtaas.users.registry.json` is the CLI-owned store
-of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
+of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
 
 - _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
   the `{username: details}` store (empty when absent), `register_new_users` merges
@@ -237,7 +237,7 @@ email="username2@intocps.org"
 - _username_/_email_ are required (_email_ is written to `config/conf.server`
   on `dtaas admin user add`); _groups_/_load_balance_ are optional per-user
   tags; _password_ is an optional field reserved for future GitLab-onboarding
-  provisioning avoid committing a real secret in it.
+  provisioning; avoid committing a real secret in it.
 - This schema previously went through an intermediate `starting = [...]` list
   plus per-user `[users.<name>]` sub-table stage; that stage is now itself
   superseded by `[[users]]`.
@@ -383,8 +383,9 @@ Earlier, `dtaas.toml` had a single `[users]` table with `add`/`delete` lists.
 That file was expected to do two incompatible jobs at once: be a
 human-edited setting, and be a machine-processed to-do list. Nothing ever
 cleared the list once it was processed, so after successfully adding
-`alice`, `dtaas.toml` still said `add = ["alice"]`. Running `user add` again say, to also add `bob` had no way to tell "alice is already done, only
-provision bob," which could lead to duplicate or conflicting containers.
+`alice`, `dtaas.toml` still said `add = ["alice"]`. Running `user add` again say,
+to also add `bob` had no way to tell "alice is already done, only provision
+bob," which could lead to duplicate or conflicting containers.
 There was no persistent record, separate from the config file, of _who had
 actually already been provisioned_.
 

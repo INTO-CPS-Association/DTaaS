@@ -1,12 +1,23 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import LogDialog from 'components/LogDialog';
+import { logDismiss } from 'util/logger/logger';
 
 // Mock Redux hooks
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
   useDispatch: jest.fn(),
+}));
+
+jest.mock('util/logger/logger', () => ({
+  logDismiss: jest.fn(),
 }));
 
 jest.mock('model/backend/state/executionHistory.slice', () => {
@@ -232,6 +243,44 @@ describe('LogDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: /delete all/i }));
 
     expect(mockDispatch).toHaveBeenCalledWith(mockClearAction);
+  });
+
+  it('logs the dismissal and closes when the dialog is dismissed via Escape', () => {
+    renderLogDialog();
+
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+
+    expect(logDismiss).toHaveBeenCalledWith({
+      element: 'dialog',
+      label: 'TestDT Execution History',
+      reason: 'escapeKeyDown',
+      context: { dt: { name: 'testDT' } },
+    });
+    expect(setShowLog).toHaveBeenCalledWith(false);
+  });
+
+  it('logs the dismissal when the clear-all confirmation is dismissed via Escape', async () => {
+    setupMocks([{ id: 'exec1', name: 'execution1' }]);
+    renderLogDialog();
+
+    fireEvent.click(screen.getByRole('button', { name: /clear all/i }));
+    const confirmDialog = screen
+      .getAllByRole('dialog')
+      .find((dialog) => within(dialog).queryByText('Confirm Clear All'));
+    if (!confirmDialog) throw new Error('Confirm Clear All dialog not found');
+
+    fireEvent.keyDown(confirmDialog, { key: 'Escape' });
+
+    expect(logDismiss).toHaveBeenCalledWith({
+      element: 'dialog',
+      label: 'Confirm Clear All',
+      reason: 'escapeKeyDown',
+      context: { dt: { name: 'TestDT' } },
+    });
+    expect(setShowLog).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.queryByText('Confirm Clear All')).not.toBeInTheDocument();
+    });
   });
 
   it('handles clear all cancellation', () => {

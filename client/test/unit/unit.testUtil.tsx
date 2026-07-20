@@ -246,7 +246,7 @@ export function testStaticAccountProfile(mockUser: mockUserType) {
 
 export async function testAccountSettings(mockUser: mockUserType) {
   await userEvent.click(screen.getByText('Settings'));
-  waitFor(() => {
+  await waitFor(() => {
     expect(
       screen.getByRole('heading', { level: 2, name: 'Settings' }),
     ).toBeInTheDocument();
@@ -254,7 +254,7 @@ export async function testAccountSettings(mockUser: mockUserType) {
     const profileUrl = resolveOAuthProfileUrl(mockUser.profile);
     const settingsParagraph = screen.getByText(/Edit the profile on/);
     const expectedInnerHTML = profileUrl
-      ? `Edit the profile on <b><a href="${profileUrl}">SSO OAuth Provider.</a></b>`
+      ? `Edit the profile on <b><a href="${profileUrl}" data-logger-element="link" data-logger-label="SSO Settings">SSO OAuth Provider.</a></b>`
       : 'Edit the profile on your SSO OAuth Provider account page.';
     expect(settingsParagraph).toHaveProperty('innerHTML', expectedInnerHTML);
   });

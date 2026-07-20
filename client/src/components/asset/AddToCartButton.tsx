@@ -9,6 +9,8 @@ interface AddToCartButtonProps {
   readonly assetPrivacy: boolean;
 }
 
+type CartActions = ReturnType<typeof useCart>['actions'];
+
 // Helper to check if asset is in cart
 const isAssetInCart = (
   cartAssets: LibraryAsset[],
@@ -19,6 +21,21 @@ const isAssetInCart = (
       item.path === asset.path && item.isPrivate === asset.isPrivate,
   );
 
+const getCartActionLabel = (isInCart: boolean): string =>
+  isInCart ? 'Remove' : 'Add';
+
+const toggleCartAsset = (
+  actions: CartActions,
+  asset: LibraryAsset,
+  isInCart: boolean,
+): void => {
+  if (isInCart) {
+    actions.remove(asset);
+    return;
+  }
+  actions.add(asset);
+};
+
 function AddToCartButton({ assetPath, assetPrivacy }: AddToCartButtonProps) {
   const { state: cartState, actions } = useCart();
   const asset = useSelector(
@@ -26,14 +43,9 @@ function AddToCartButton({ assetPath, assetPrivacy }: AddToCartButtonProps) {
   ) as LibraryAsset;
 
   const isInCart = isAssetInCart(cartState.assets, asset);
+  const actionLabel = getCartActionLabel(isInCart);
 
-  const handleClick = () => {
-    if (isInCart) {
-      actions.remove(asset);
-    } else {
-      actions.add(asset);
-    }
-  };
+  const handleClick = () => toggleCartAsset(actions, asset, isInCart);
 
   return (
     <Button
@@ -41,8 +53,17 @@ function AddToCartButton({ assetPath, assetPrivacy }: AddToCartButtonProps) {
       size="small"
       color="primary"
       onClick={handleClick}
+      data-logger-element="button"
+      data-logger-label={actionLabel}
+      data-logger-context={JSON.stringify({
+        library: {
+          path: assetPath,
+          scope: assetPrivacy ? 'Private' : 'Common',
+          button: actionLabel.toLowerCase(),
+        },
+      })}
     >
-      {isInCart ? 'Remove' : 'Add'}
+      {actionLabel}
     </Button>
   );
 }

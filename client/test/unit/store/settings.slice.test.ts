@@ -3,9 +3,11 @@ import settingsReducer, {
   setDTDirectory,
   setCommonLibraryProjectName,
   setRunnerTag,
+  setLoggingEnabled,
   resetToDefaults,
   DEFAULT_SETTINGS,
   DEFAULT_MEASUREMENT,
+  getDefaultLoggingEnabled,
   loadInitialSettings,
 } from 'store/settings.slice';
 
@@ -45,6 +47,76 @@ describe('settingsSlice', () => {
     expect(state.RUNNER_TAG).toBe('testRunnerTag');
   });
 
+  it('should handle setLoggingEnabled', () => {
+    const state = settingsReducer(initialState, setLoggingEnabled(true));
+    expect(state.loggingEnabled).toBe(true);
+  });
+
+  it('defaults logging off when no remote logger is configured', () => {
+    const originalEnv = globalThis.env;
+    globalThis.env = { ...originalEnv };
+    delete globalThis.env.LOGGER_URL;
+
+    try {
+      expect(getDefaultLoggingEnabled()).toBe(false);
+    } finally {
+      globalThis.env = originalEnv;
+    }
+  });
+
+  it('defaults logging off when a remote logger is configured', () => {
+    const originalEnv = globalThis.env;
+    globalThis.env = {
+      ...originalEnv,
+      LOGGER_URL: 'https://example.com/logger',
+    };
+
+    try {
+      expect(getDefaultLoggingEnabled()).toBe(false);
+    } finally {
+      globalThis.env = originalEnv;
+    }
+  });
+
+  it('does not carry a pre-remote loggingEnabled choice over as remote consent', () => {
+    const originalEnv = globalThis.env;
+    globalThis.env = {
+      ...originalEnv,
+      LOGGER_URL: 'https://example.com/logger',
+    };
+    jest
+      .spyOn(Storage.prototype, 'getItem')
+      .mockReturnValue(JSON.stringify({ loggingEnabled: true }));
+
+    try {
+      const result = loadInitialSettings();
+      expect(result.loggingEnabled).toBe(false);
+      expect(result.remoteLoggerConfiguredAtSave).toBe(true);
+    } finally {
+      globalThis.env = originalEnv;
+    }
+  });
+
+  it('keeps a loggingEnabled choice made while the remote logger was configured', () => {
+    const originalEnv = globalThis.env;
+    globalThis.env = {
+      ...originalEnv,
+      LOGGER_URL: 'https://example.com/logger',
+    };
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(
+      JSON.stringify({
+        loggingEnabled: true,
+        remoteLoggerConfiguredAtSave: true,
+      }),
+    );
+
+    try {
+      expect(loadInitialSettings().loggingEnabled).toBe(true);
+    } finally {
+      globalThis.env = originalEnv;
+    }
+  });
+
   it('should handle resetToDefaults', () => {
     const modified = {
       ...initialState,
@@ -78,6 +150,38 @@ describe('settingsSlice', () => {
   });
 
   it('returns defaults when localStorage is empty', () => {
+    expect(loadInitialSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
+      ...DEFAULT_MEASUREMENT,
+    });
+  });
+
+  it('falls back to defaults when a persisted field has the wrong type', () => {
+    const tampered = { GROUP_NAME: 123, trials: 'not-a-number' };
+    jest
+      .spyOn(Storage.prototype, 'getItem')
+      .mockReturnValue(JSON.stringify(tampered));
+
+    expect(loadInitialSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
+      ...DEFAULT_MEASUREMENT,
+    });
+  });
+
+  it('falls back to defaults when persisted settings is not an object', () => {
+    jest
+      .spyOn(Storage.prototype, 'getItem')
+      .mockReturnValue(JSON.stringify(['tampered', 'array']));
+
+    expect(loadInitialSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
+      ...DEFAULT_MEASUREMENT,
+    });
+  });
+
+  it('falls back to defaults when persisted settings is not valid JSON', () => {
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue('{not-json');
+
     expect(loadInitialSettings()).toEqual({
       ...DEFAULT_SETTINGS,
       ...DEFAULT_MEASUREMENT,

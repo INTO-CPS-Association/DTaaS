@@ -73,6 +73,21 @@ describe('AssetCardExecute Integration Test', () => {
     isPrivate: true,
   };
 
+  const mockExecutionHistoryState = {
+    executionHistory: {
+      entries: [
+        {
+          id: 'test-execution-id',
+          dtName: 'Asset 1',
+          pipelineId: 123,
+          timestamp: Date.now(),
+          status: ExecutionStatus.COMPLETED,
+          jobLogs: [],
+        },
+      ],
+    },
+  } as unknown as RootState;
+
   beforeEach(() => {
     storeResetAll();
 
@@ -83,21 +98,13 @@ describe('AssetCardExecute Integration Test', () => {
         ) {
           return null;
         }
-        if (
-          typeof selector === 'function' &&
-          selector.name === 'selector' &&
-          selector.toString().includes('selectExecutionHistoryByDTName')
-        ) {
-          return [
-            {
-              id: 'test-execution-id',
-              dtName: 'Asset 1',
-              pipelineId: 123,
-              timestamp: Date.now(),
-              status: ExecutionStatus.COMPLETED,
-              jobLogs: [],
-            },
-          ];
+        try {
+          const executionHistoryResult = selector(mockExecutionHistoryState);
+          if (executionHistoryResult !== undefined) {
+            return executionHistoryResult;
+          }
+        } catch {
+          // selector reads a different slice of state; fall through to DT mock
         }
         return createMockDigitalTwinData('Asset 1');
       },

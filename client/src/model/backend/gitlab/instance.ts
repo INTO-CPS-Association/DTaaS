@@ -13,8 +13,38 @@ import {
   LogEntry,
   ProjectId,
   JobSummary,
+  ProjectSummary,
 } from 'model/backend/interfaces/backendInterfaces';
 import { Pipeline } from 'model/backend/interfaces/execution';
+
+const normalizeProjectKey = (value: string | undefined): string =>
+  value?.toLowerCase() ?? '';
+
+function getNamespaceProjectPath(project: ProjectSummary): string | undefined {
+  return project.path_with_namespace?.split('/').pop();
+}
+
+function projectMatches(project: ProjectSummary, projectName: string): boolean {
+  const expected = normalizeProjectKey(projectName);
+  const candidates = [
+    project.path,
+    getNamespaceProjectPath(project),
+    project.name,
+  ];
+
+  return candidates.some(
+    (candidate) => normalizeProjectKey(candidate) === expected,
+  );
+}
+
+function findProject(
+  projects: ProjectSummary[],
+  projectName: string,
+): ProjectSummary | null {
+  return (
+    projects.find((project) => projectMatches(project, projectName)) ?? null
+  );
+}
 
 export class GitlabInstance implements BackendInterface {
   public projectName: string;
@@ -58,11 +88,8 @@ export class GitlabInstance implements BackendInterface {
   private async setProjectIds(): Promise<void> {
     const group = await this.api.getGroupByName(getGroupName());
     const projects = await this.api.listGroupProjects(group.id as string);
-    const project =
-      projects.find((proj) => proj.name === this.projectName) ?? null;
-    const commonProject =
-      projects.find((proj) => proj.name === getCommonLibraryProjectName()) ??
-      null;
+    const project = findProject(projects, this.projectName);
+    const commonProject = findProject(projects, getCommonLibraryProjectName());
 
     if (!project) {
       throw new Error(`Project ${this.projectName} not found`);

@@ -14,6 +14,15 @@ describe('oauthUserProfile', () => {
       ).toBe('kc-user');
     });
 
+    it('normalizes resolved username casing for namespace URLs', () => {
+      expect(
+        resolveOAuthUsername({
+          preferred_username: 'Enok',
+          sub: 'uuid-123',
+        }),
+      ).toBe('enok');
+    });
+
     it('resolves username from profile URL for gitlab profiles', () => {
       expect(
         resolveOAuthUsername({

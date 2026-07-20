@@ -55,7 +55,18 @@ function DTSelectField({
   const field = (
     <TextField
       select
-      slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}
+      slotProps={{
+        select: { native: true },
+        inputLabel: { shrink: true },
+        htmlInput: {
+          'data-logger-element': 'select',
+          'data-logger-label': label,
+          'data-logger-capture-value': 'true',
+          'data-logger-context': JSON.stringify({
+            settings: { section: 'measurement', field: id },
+          }),
+        },
+      }}
       fullWidth
       id={id}
       label={label}
@@ -92,6 +103,14 @@ function DTSelectField({
                 disabled={loading}
                 size="small"
                 sx={{ mt: 1 }}
+                data-logger-element="button"
+                data-logger-label="Refresh Digital Twins"
+                data-logger-context={JSON.stringify({
+                  settings: {
+                    section: 'measurement',
+                    button: 'refresh-digital-twins',
+                  },
+                })}
               >
                 <RefreshIcon />
               </IconButton>
@@ -141,7 +160,18 @@ const MeasurementSettingsFields: React.FC<MeasurementSettingsFieldsProps> = ({
                 : 'Number of times each task is repeated to calculate average execution time'
             }
             slotProps={{
-              htmlInput: { min: 1 },
+              htmlInput: {
+                min: 1,
+                'data-logger-element': 'input',
+                'data-logger-label': 'Trial Number',
+                'data-logger-capture-value': 'true',
+                'data-logger-context': JSON.stringify({
+                  settings: {
+                    section: 'measurement',
+                    field: 'measurementTrials',
+                  },
+                }),
+              },
             }}
           />
         </Grid>
@@ -160,6 +190,19 @@ const MeasurementSettingsFields: React.FC<MeasurementSettingsFieldsProps> = ({
                 ? 'Measurement secondary runner tag is required'
                 : 'Runner tag used for multi-runner measurement tests'
             }
+            slotProps={{
+              htmlInput: {
+                'data-logger-element': 'input',
+                'data-logger-label': 'Measurement Secondary Runner Tag',
+                'data-logger-capture-value': 'true',
+                'data-logger-context': JSON.stringify({
+                  settings: {
+                    section: 'measurement',
+                    field: 'measurementSecondaryRunnerTag',
+                  },
+                }),
+              },
+            }}
           />
         </Grid>
 

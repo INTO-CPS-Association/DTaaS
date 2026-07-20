@@ -38,8 +38,11 @@ function CardButtonsContainerManage({
         setShowDetails={setShowDetails}
         assetPrivacy={assetPrivacy}
       />
-      <ReconfigureButton setShowReconfigure={setShowReconfigure} />
-      <DeleteButton setShowDelete={setShowDelete} />
+      <ReconfigureButton
+        assetName={assetName}
+        setShowReconfigure={setShowReconfigure}
+      />
+      <DeleteButton assetName={assetName} setShowDelete={setShowDelete} />
     </CardActions>
   );
 }

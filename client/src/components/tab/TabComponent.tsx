@@ -24,7 +24,18 @@ function renderScopeTabList(
     <TabList>
       {scope &&
         scope[subIndex] &&
-        scope[subIndex].map((tab, index) => <Tab key={index}>{tab.label}</Tab>)}
+        scope[subIndex].map((tab) => (
+          <Tab
+            key={tab.label}
+            data-logger-element="subtab"
+            data-logger-label={tab.label}
+            data-logger-context={
+              tab.loggerContext ? JSON.stringify(tab.loggerContext) : undefined
+            }
+          >
+            {tab.label}
+          </Tab>
+        ))}
     </TabList>
   );
 }
@@ -53,8 +64,17 @@ export function TabComponent(props: {
   return (
     <Tabs>
       <TabList>
-        {props.assetType.map((tab, index) => (
-          <Tab key={index}>{tab.label}</Tab>
+        {props.assetType.map((tab) => (
+          <Tab
+            key={tab.label}
+            data-logger-element="tab"
+            data-logger-label={tab.label}
+            data-logger-context={
+              tab.loggerContext ? JSON.stringify(tab.loggerContext) : undefined
+            }
+          >
+            {tab.label}
+          </Tab>
         ))}
       </TabList>{' '}
       {props.assetType.map((subtab, subIndex) => (

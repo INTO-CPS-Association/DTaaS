@@ -1,16 +1,38 @@
-# Overview :compass:
+# Installation Steps
 
-## Installation Scenarios :package:
+There are two ways to install the DTaaS platform:
 
-The DTaaS project provides installation assets for the following scenarios.
+1. **DTaaS CLI (recommended).** A single `dtaas` command generates,
+   validates, installs, and operates a deployment for every supported
+   scenario. The [CLI installation guide](cli.md) covers the full workflow.
+1. **Manual scenario packages (advanced).** Hand-edited docker compose
+   packages for each scenario. Choose this path only when the CLI
+   scenarios need customisation beyond what `dtaas.toml` offers, or
+   when studying the deployment internals. Start at the
+   [manual installation scenarios](#manual-installation-scenarios-advanced).
+
+## Platform Services (Optional)
+
+To install additional data/infrastructure services (MQTT, InfluxDB,
+Grafana, and others), use the [Platform Services CLI](services/cli.md).
+
+## Manual Installation Scenarios (Advanced)
+
+!!! note
+    These packages are the manual counterpart of what
+    `dtaas generate-deployment` produces. The CLI performs the steps
+    below automatically; prefer it unless you need to modify the
+    deployment beyond its configuration options.
+
+Start by selecting a scenario package.
 
 ### DTaaS
 
-DTaaS scenarios focus on complete platform deployments that bundle the web
-client, gateway, user workspaces, and core services. Choose a scenario based on
-target environment, security needs, and GitLab topology. Each scenario now
-provides dedicated Install and Config pages, plus scenario-specific operational
-documents.
+DTaaS scenarios focus on complete platform deployments that bundle the
+web client, gateway, user workspaces, and core services. Choose a
+scenario based on target environment, security needs, and GitLab
+topology. Each scenario provides dedicated Install and Config pages,
+plus scenario-specific operational documents.
 
 | Scenario                                                           | Purpose                                                        |
 | :----------------------------------------------------------------- | :------------------------------------------------------------- |
@@ -21,11 +43,12 @@ documents.
 
 ### Workspace
 
-Workspace scenarios focus on user workbench access, identity-provider setup,
-and route-level protection. Choose localhost for rapid onboarding with Dex, or
-secure server for production-style Keycloak/OIDC deployment. Scenario pages are
-organised by Install, Configuration, and identity-provider setup to make
-operations and troubleshooting predictable.
+Workspace scenarios focus on user workbench access, identity-provider
+setup, and route-level protection. Choose localhost for rapid
+onboarding with Dex, or secure server for production-style
+Keycloak/OIDC deployment. Scenario pages are organised by Install,
+Configuration, and identity-provider setup to make operations and
+troubleshooting predictable.
 
 | Scenario                                            | Purpose                                       |
 | :-------------------------------------------------- | :-------------------------------------------- |
@@ -34,16 +57,65 @@ operations and troubleshooting predictable.
 
 ### Other
 
-- [Platform services](services/cli.md)
 - [Vagrant](../developer/vagrant.md)
-- [Independent packages](packages.md)
 
-The [installation steps](steps.md) page remains the recommended sequence guide.
+After selecting a scenario package, follow these steps:
+
+### 1. Configure OAuth and Client Settings
+
+- DTaaS packages:
+  - Frontend OAuth setup: [client auth](client/auth.md)
+  - Backend OAuth setup (forward-auth): [servers auth](servers/auth.md)
+  - Client runtime settings: [client config](client/config.md)
+- Workspace Dex localhost:
+  - Configure `.env` and `config/dex-config.yaml`
+- Workspace Keycloak secure server:
+  - Follow package guides in
+    [workspace config](workspace/secure-server/configuration.md)
+    and
+    [Keycloak config](workspace/secure-server/keycloak-setup.md)
+
+### 2. Configure Filesystem and Certificates
+
+For DTaaS or workspace server deployments:
+
+- Create user workspaces under `files/`
+- Provide TLS certs under `certs/`
+- Create `config/.env` from example and update the same
+- Create `config/client.js` from example and update the same
+- Create `config/dex-config.yaml` from example (no changes needed)
+
+### 3. Start Services
+
+Run docker compose commands:
+
+For DTaaS packages,
+
+```bash
+docker compose --env-file config/.env up -d
+```
+
+For workspace packages,
+
+```bash
+docker compose up -d
+```
+
+### 4. Validate and Iterate
+
+- Confirm login flow in browser
+- Validate workspace routes (`/user1`, `/user2`)
+- Check service logs and health
+
+## Independent Packages
+
+Reusable package details are listed on [packages](packages.md).
 
 ## Walkthrough Videos
 
-These walkthroughs are useful when selecting or validating an installation
-scenario. When a `4x` recording exists, the preview and MP4 link below use it.
+These walkthroughs are useful when selecting or validating an
+installation scenario. When a `4x` recording exists, the preview and
+MP4 link below use it.
 
 ### DTaaS localhost
 

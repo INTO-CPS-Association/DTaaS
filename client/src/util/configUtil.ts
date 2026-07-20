@@ -27,7 +27,13 @@ const urlKeys = [
   'REACT_APP_REDIRECT_URI',
   'REACT_APP_LOGOUT_REDIRECT_URI',
   'REACT_APP_AUTH_AUTHORITY',
+  'LOGGER_URL',
 ];
+
+const isConfiguredKey = (key: string): boolean =>
+  key === 'LOGGER_URL' ? Boolean(globalThis.env.LOGGER_URL?.trim()) : true;
+
+const configuredKeys = (keys: string[]) => keys.filter(isConfiguredKey);
 
 function getValidationPromises(): Record<string, Promise<ValidationType>> {
   return {
@@ -38,13 +44,16 @@ function getValidationPromises(): Record<string, Promise<ValidationType>> {
       parseField(ScopesString, globalThis.env.REACT_APP_GITLAB_SCOPES),
     ),
     ...Object.fromEntries(
-      pathKeys.map((key) => [
+      configuredKeys(pathKeys).map((key) => [
         key,
         parseField(PathString, globalThis.env[key] ?? ''),
       ]),
     ),
     ...Object.fromEntries(
-      urlKeys.map((key) => [key, urlIsReachable(globalThis.env[key] ?? '')]),
+      configuredKeys(urlKeys).map((key) => [
+        key,
+        urlIsReachable(globalThis.env[key] ?? ''),
+      ]),
     ),
   };
 }
@@ -130,21 +139,22 @@ async function opaqueRequest(url: string): Promise<ValidationType | null> {
 }
 
 export async function urlIsReachable(url: string): Promise<ValidationType> {
-  let reachability: ValidationType = {
-    value: undefined,
-    status: undefined,
-    error: `Failed to fetch ${url} after multiple attempts.`,
-  };
-  const corsResponse = await corsRequest(url);
-  if (corsResponse) {
-    reachability = corsResponse;
-  } else {
-    const opaqueResponse = await opaqueRequest(url);
-    if (opaqueResponse) {
-      reachability = opaqueResponse;
-    }
+  if (!url.trim()) {
+    return {
+      value: undefined,
+      status: undefined,
+      error: 'Required URL is missing.',
+    };
   }
-  return reachability;
+
+  return (
+    (await corsRequest(url)) ??
+    (await opaqueRequest(url)) ?? {
+      value: undefined,
+      status: undefined,
+      error: `Failed to fetch ${url} after multiple attempts.`,
+    }
+  );
 }
 
 const parseField = (

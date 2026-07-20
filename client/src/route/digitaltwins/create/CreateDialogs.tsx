@@ -56,6 +56,7 @@ const CreateDialogs: React.FC<CreateDialogsProps> = (props) => (
     <ConfirmDeleteDialog
       open={props.openConfirmDeleteDialog}
       setOpenConfirmDeleteDialog={props.setOpenConfirmDeleteDialog}
+      newDigitalTwinName={props.newDigitalTwinName}
       setFileName={props.setFileName}
       setFileContent={props.setFileContent}
       setFileType={props.setFileType}
