@@ -153,11 +153,18 @@ def setup_compose_structure(compose):
         compose["networks"] = {"users": {"name": "dtaas-users", "external": True}}
 
 
-def finalize_compose(compose):
-    """Export, start user containers, and record runtime state."""
+def finalize_compose(compose, skip_start=()):
+    """Export, start user containers (except those in skip_start), and record state.
+
+    skip_start holds usernames whose registry desired_status is not 'running'
+    (set by 'dtaas admin user pause'/'stop'). Their compose service definition
+    is still written, so their config is not lost, but their container is not
+    started -- otherwise the idempotent re-provisioning that 'user add' (and
+    'config reconcile --fix') does on every run would silently undo the pause.
+    """
     err = utils.export_yaml(compose, COMPOSE_USERS_YML)
     utils.check_error(err)
-    users_list = list(compose["services"].keys())
+    users_list = [name for name in compose["services"] if name not in skip_start]
     err = start_user_containers(users_list)
     utils.check_error(err)
     write_state(compose["services"])

@@ -45,7 +45,11 @@ The CLI has two layers of code:
   deals with defining the structure of the CLI, and the specific
   CLI commands itself. The CLI functions in this file call
   the Package layer functions. Non-command helpers shared by the
-  command definitions live alongside it in _src/cmd_utils.py_.
+  command definitions are split by concern to keep each file within a
+  reasonable line count: _src/cmd_utils.py_ (uninstall/reconcile/update
+  orchestration), _src/cmd_deploy_utils.py_ (deployment-generation
+  helpers), and _src/cmd_user_utils.py_ (user-input resolution/validation
+  for _src/cmd_user.py_'s commands).
 
 - Package layer: This is the _cli/src/pkg_ directory.
   It contains the
@@ -109,17 +113,44 @@ of *additional* users, and `.dtaas.state.json` is a git-ignored runtime cache.
   the `{username: details}` store (empty when absent), `register_new_users` merges
   new users, and `remove_from_registry` drops them, each persisted atomically
   (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
-  `read_csv_users` parses a `users.csv` for bulk import.
+  `read_csv_users` parses a `users.csv` for bulk import. `set_desired_status`
+  writes each user's intended running state (`running`/`paused`/`stopped`,
+  from `constants.DESIRED_STATUSES`) without touching their email/groups/
+  load_balance; see _users_lifecycle.py_ below.
 - _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
   `delete_users` deprovisions the named users and removes them from the
   registry (`dry_run=True` previews without changing anything).
-  `cmd_utils.resolve_delete_usernames` resolves the usernames to delete from
-  positional args or a `--file users.csv` (only the `username` column is
-  read), rejecting the call if both or neither are given.
-  `cmd_utils.stage_users_for_add` merges a `--file users.csv` (or a single
-  USERNAME) into the registry before `add` runs, and rejects the call
-  (`ClickException`) if neither is given: a bare `user add` is never a silent
-  no-op or an implicit reprovision.
+  `cmd_user_utils.resolve_usernames` resolves the usernames to act on from
+  positional args or a `--file`/`-f users.csv` (only the `username` column is
+  read), rejecting the call if both or neither are given; it is shared by
+  `user delete`/`pause`/`stop`/`resume`. `cmd_user_utils.stage_users_for_add`
+  merges a `--file users.csv` (or a single USERNAME) into the registry before
+  `add` runs, and rejects the call (`ClickException`) if neither is given: a
+  bare `user add` is never a silent no-op or an implicit reprovision.
+- _src/pkg/users_lifecycle.py_ backs `user pause`/`stop`/`resume`: siblings of
+  `add`/`delete` that target specific registry users (not the whole
+  installation -- see `lifecycle.py` above for that) via `USERNAMES` or
+  `--file`/`-f`. `pause_users`/`stop_users`/`resume_users` all funnel through
+  `_apply`, which resolves each username against the registry and
+  compose.users.yml's live services (`_split_targets`, distinguishing
+  unregistered from registered-but-not-provisioned), runs the compose action,
+  refreshes `.dtaas.state.json`, and writes the new `desired_status`. `resume`
+  needs its live container state, not just the registry's desired_status, to
+  choose the right compose verb: `_split_by_paused` separates targets into
+  paused (needs `unpause`) and stopped (needs `start`), since `unpause` errors
+  on a non-paused container and `start` does nothing for an already-paused
+  one. `cmd_user_utils.reject_starting_users` rejects targeting a `dtaas.toml`
+  starting user before any of this runs, since those aren't registry-tracked
+  and are suspended/resumed as part of the whole installation instead (`admin
+  pause`/`stop`/`resume`).
+- `desired_status` is what makes a pause/stop durable: `users.py`'s
+  `_provision_users` computes `_skip_start_users` from the registry's
+  per-user `desired_status` and passes it to `users_compose.finalize_compose`,
+  which still writes every user's compose service definition (so their config
+  is never lost) but skips starting the container for anyone not `running`.
+  Without this, `user add`'s idempotent "re-provision everyone on every run"
+  behavior (and `config reconcile --fix`, which calls the same `add_users`)
+  would silently undo a pause the next time either ran.
 - _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
   it with a fresh snapshot (not an append-only log) recording, per currently
   provisioned user, a `config_hash` (a stable sha256 of the compose service)

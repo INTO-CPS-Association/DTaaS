@@ -194,3 +194,30 @@ def test_stop_user_containers_targets_named_services(mock_run):
     assert "down" not in argv
     assert "rm" in argv and "--stop" in argv and "--force" in argv
     assert argv[-2:] == ["alice", "bob"]
+
+
+def test_finalize_compose_starts_everyone_by_default(mock_utils):
+    """With no skip_start, finalize_compose starts every service."""
+    compose = {"services": {"alice": {}, "bob": {}}}
+    with patch(
+        "src.pkg.users_compose.start_user_containers", return_value=None
+    ) as mock_start, patch("src.pkg.users_compose.write_state"):
+        users_compose.finalize_compose(compose)
+
+    assert set(mock_start.call_args.args[0]) == {"alice", "bob"}
+
+
+def test_finalize_compose_skips_paused_or_stopped_users(mock_utils):
+    """A username in skip_start is not passed to start_user_containers.
+
+    This is what makes 'user pause'/'stop' durable: without it, the next
+    'user add' (which re-provisions everyone on every run) would silently
+    restart a user that was intentionally suspended.
+    """
+    compose = {"services": {"alice": {}, "bob": {}}}
+    with patch(
+        "src.pkg.users_compose.start_user_containers", return_value=None
+    ) as mock_start, patch("src.pkg.users_compose.write_state"):
+        users_compose.finalize_compose(compose, skip_start={"bob"})
+
+    assert mock_start.call_args.args[0] == ["alice"]

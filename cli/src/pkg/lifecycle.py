@@ -14,6 +14,15 @@ removing it (which is what uninstall does):
 The docker-client plumbing (require_compose_file, the compose clients, and
 compose_services) is reused from deploy.py so both command families share one
 definition of "the deployment".
+
+Partial-failure note: stop/pause/unpause act on the deployment project first,
+then the user-added project (compose.users.yml) when it exists. If the first
+project's compose command fails, the second is never attempted; if the first
+succeeds and the second then fails, the first project has already been
+mutated -- there is no rollback. Each project's own compose command is
+idempotent, so re-running the same lifecycle command is the recovery path:
+it repeats a harmless no-op against whichever project already changed and
+retries the one that failed.
 """
 
 from . import deploy

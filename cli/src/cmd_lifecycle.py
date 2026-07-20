@@ -79,9 +79,9 @@ _output_dir_option = click.option(
 def status(output_dir, as_json):
     """Report per-service state for the deployment and user workloads.
 
-    Each service is reported as running/paused/exited/stopped, or 'not created'
-    when it is defined but has no container yet. Always exits 0 when it can
-    read the deployment; pass --json for automation.
+    Each service is reported as running/paused/exited/restarting, or 'not
+    created' when it is defined but has no container yet. Always exits 0 when
+    it can read the deployment; pass --json for automation.
     """
     try:
         rows = lifecyclePkg.collect_status(output_dir)

@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
-from src.cmd_utils import UserAddInput
+from src.cmd_user_utils import UserAddInput
 # pylint: disable=redefined-outer-name
 
 
@@ -151,3 +151,81 @@ def test_add_users_file_import_error(runner, mock_user_pkg, tmp_path):
 
     assert result.exit_code != 0
     assert "Error importing users file" in result.output
+
+
+@pytest.fixture
+def mock_users_lifecycle_pkg():
+    """Mock the users_lifecycle package functions used by pause/stop/resume."""
+    with patch("src.cmd_user.usersLifecyclePkg.pause_users") as mock_pause, patch(
+        "src.cmd_user.usersLifecyclePkg.stop_users"
+    ) as mock_stop, patch("src.cmd_user.usersLifecyclePkg.resume_users") as mock_resume:
+        yield {"pause": mock_pause, "stop": mock_stop, "resume": mock_resume}
+
+
+@pytest.mark.parametrize(
+    "verb,fn,verb_past",
+    [
+        ("pause", "pause", "paused"),
+        ("stop", "stop", "stopped"),
+        ("resume", "resume", "resumed"),
+    ],
+)
+def test_lifecycle_command_success(
+    runner, mock_users_lifecycle_pkg, verb, fn, verb_past
+):
+    """pause/stop/resume report success and forward the resolved usernames."""
+    mock_users_lifecycle_pkg[fn].return_value = (["alice"], [], [])
+
+    result = runner.invoke(dtaas, ["admin", "user", verb, "alice"])
+
+    assert result.exit_code == 0
+    assert f"alice {verb_past} successfully" in result.output
+    mock_users_lifecycle_pkg[fn].assert_called_once_with(["alice"])
+
+
+def test_pause_reports_unregistered_and_not_provisioned(
+    runner, mock_users_lifecycle_pkg
+):
+    """pause reports each skipped username with the reason, then any successes."""
+    mock_users_lifecycle_pkg["pause"].return_value = (["alice"], ["ghost"], ["bob"])
+
+    result = runner.invoke(dtaas, ["admin", "user", "pause", "alice", "bob", "ghost"])
+
+    assert result.exit_code == 0
+    assert "'ghost' is not a registered user, skipping" in result.output
+    assert "'bob' is not currently provisioned, skipping" in result.output
+    assert "alice paused successfully" in result.output
+
+
+def test_pause_with_file(runner, mock_users_lifecycle_pkg, tmp_path):
+    """pause --file bulk-targets the usernames listed in a CSV."""
+    mock_users_lifecycle_pkg["pause"].return_value = (["alice", "bob"], [], [])
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text("username,email\nalice,a@x.io\nbob,b@x.io\n")
+
+    result = runner.invoke(dtaas, ["admin", "user", "pause", "--file", str(csv_file)])
+
+    assert result.exit_code == 0
+    mock_users_lifecycle_pkg["pause"].assert_called_once_with(["alice", "bob"])
+
+
+def test_stop_rejects_starting_user(
+    runner, mock_users_lifecycle_pkg, tmp_path, monkeypatch
+):
+    """Targeting a dtaas.toml starting user is rejected before any compose call."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "dtaas.toml").write_text('[[users]]\nusername="alice"\n')
+
+    result = runner.invoke(dtaas, ["admin", "user", "stop", "alice"])
+
+    assert result.exit_code != 0
+    assert "Cannot stop starting user" in result.output
+    mock_users_lifecycle_pkg["stop"].assert_not_called()
+
+
+def test_resume_requires_names_or_file(runner):
+    """A bare resume with no USERNAMES and no --file is rejected."""
+    result = runner.invoke(dtaas, ["admin", "user", "resume"])
+
+    assert result.exit_code != 0
+    assert "Provide one or more USERNAMES" in result.output

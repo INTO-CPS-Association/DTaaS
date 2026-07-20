@@ -5,6 +5,7 @@ COMPOSE_USERS_YML = "compose.users.yml"
 
 # For registry.py
 REGISTRY_FILE = "dtaas.users.registry.json"
+DESIRED_STATUSES = frozenset({"running", "paused", "stopped"})
 
 # For state.py
 STATE_FILE = ".dtaas.state.json"

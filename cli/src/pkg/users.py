@@ -100,19 +100,31 @@ def _authorise_user(username, users_section):
     add_conf_server_entry(username, email)
 
 
+def _skip_start_users(users_section):
+    """Registry usernames whose desired_status is not 'running' (paused/stopped)."""
+    return {
+        name
+        for name, details in (users_section or {}).items()
+        if isinstance(details, dict)
+        and details.get("desired_status", "running") != "running"
+    }
+
+
 def _provision_users(ctx):
     """Create workspace files, compose entries, and forward-auth rules.
 
     Authorising each user in the forward-auth config happens before starting
     their container: writing conf.server first means a later 'compose up'
-    failure cannot leave the forward-auth rules stale.
+    failure cannot leave the forward-auth rules stale. A user paused or
+    stopped via 'dtaas admin user pause'/'stop' is not restarted here -- see
+    _skip_start_users.
     """
     create_user_files(ctx.user_list, ctx.config["path"] + "/files")
     err = add_users_to_compose(ctx.user_list, ctx.compose, ctx.config)
     utils.check_error(err)
     for username in ctx.user_list:
         _authorise_user(username, ctx.users_section)
-    finalize_compose(ctx.compose)
+    finalize_compose(ctx.compose, _skip_start_users(ctx.users_section))
 
 
 def add_users(config_obj):

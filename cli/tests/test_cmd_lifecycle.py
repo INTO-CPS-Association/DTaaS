@@ -134,3 +134,55 @@ def test_resume_calls_unpause(runner):
     assert result.exit_code == 0
     assert "Deployment resumed successfully" in result.output
     mock_unpause.assert_called_once_with(".")
+
+
+def test_pause_reports_absent_installation(runner):
+    """pause is a no-op (exit 0) that reports when nothing is installed."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=False
+    ), patch("src.cmd_lifecycle.lifecyclePkg.pause") as mock_pause:
+        result = runner.invoke(dtaas, ["admin", "pause"])
+
+    assert result.exit_code == 0
+    assert "no existing DTaaS / Workspace installation" in result.output
+    mock_pause.assert_not_called()
+
+
+def test_pause_maps_docker_exception(runner):
+    """A compose failure during pause surfaces as a non-zero ClickException."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch(
+        "src.cmd_lifecycle.lifecyclePkg.pause",
+        side_effect=DockerException(["docker"], 1, stderr=b"not running"),
+    ):
+        result = runner.invoke(dtaas, ["admin", "pause"])
+
+    assert result.exit_code != 0
+    assert "not running" in result.output
+
+
+def test_resume_reports_absent_installation(runner):
+    """resume is a no-op (exit 0) that reports when nothing is installed."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=False
+    ), patch("src.cmd_lifecycle.lifecyclePkg.unpause") as mock_unpause:
+        result = runner.invoke(dtaas, ["admin", "resume"])
+
+    assert result.exit_code == 0
+    assert "no existing DTaaS / Workspace installation" in result.output
+    mock_unpause.assert_not_called()
+
+
+def test_resume_maps_docker_exception(runner):
+    """A compose failure during resume surfaces as a non-zero ClickException."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch(
+        "src.cmd_lifecycle.lifecyclePkg.unpause",
+        side_effect=DockerException(["docker"], 1, stderr=b"not paused"),
+    ):
+        result = runner.invoke(dtaas, ["admin", "resume"])
+
+    assert result.exit_code != 0
+    assert "not paused" in result.output

@@ -18,7 +18,13 @@ from .cmd_utils import (
     run_uninstall,
     run_update,
 )
-from .cmd_user import add as user_add, delete as user_delete
+from .cmd_user import (
+    add as user_add,
+    delete as user_delete,
+    pause as user_pause,
+    resume as user_resume,
+    stop as user_stop,
+)
 from .cmd_lifecycle import add_lifecycle_commands
 
 
@@ -214,9 +220,12 @@ def generate_deployment(deploy_type, output_dir, force):
 
 @admin.group()
 def user():
-    """Add and remove users from a running DTaaS instance.
+    """Manage additional (registry-tracked) users on a running DTaaS instance.
 
-    Requires a running deployment. Run 'dtaas admin install' first.
+    Requires a running deployment. Run 'dtaas admin install' first. Only
+    manages users added via 'user add', not dtaas.toml's starting users --
+    suspend/resume the whole installation with 'dtaas admin
+    pause'/'stop'/'resume' instead.
     """
     return
 
@@ -224,6 +233,9 @@ def user():
 #### user group commands (defined in cmd_user.py to keep this file short)
 user.add_command(user_add)
 user.add_command(user_delete)
+user.add_command(user_pause)
+user.add_command(user_stop)
+user.add_command(user_resume)
 #### lifecycle commands status/stop/pause/resume (defined in cmd_lifecycle.py)
 add_lifecycle_commands(admin)
 
