@@ -346,9 +346,9 @@ A point-by-point audit of the design against the two references.
 `user stop alice`, and the existing `user add`/`delete` commands already take it
 positionally. Keeping `<username>` positional (with `--file` for bulk) is
 therefore consistent internally and with the guideline's stated exception. One
-correction: standardize bulk input on `--file` (dest `csv_file`) everywhere; do
-**not** introduce a short `-f`, since clig.dev warns against spending one-letter
-flags early (`-f` conventionally means `--force`).
+correction: standardize bulk input on `--file` (dest `csv_file`) everywhere;
+`-f` may be offered as a short alias for `--file` where it doesn't conflict
+with `--force` in the same command group.
 
 **Where git specifically informs the design.** `git`'s top-level help groups
 commands by workflow stage ("start a working area," "work on the current
@@ -413,7 +413,7 @@ Conventions to preserve across every noun:
 - `--output-dir` (`default="."`, `show_default=True`) on every directory-scoped
   command.
 - `--file` (dest `csv_file`) for bulk targets; positional `<username>` /
-  `<usernames>...` for explicit targets. No new `-f`.
+  `<usernames>...` for explicit targets.
 - `except (OSError, DockerException) → click.ClickException(str(exc))`.
 - `"<Thing> <verbed> successfully"` success messages; idempotent absent-case via
   a shared "no installation" message and presence check.

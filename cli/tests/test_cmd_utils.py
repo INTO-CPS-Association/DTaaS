@@ -101,3 +101,62 @@ def test_run_reconcile_fix_never_touches_unexpected(tmp_path):
         run_reconcile(str(tmp_path), fix=True)
 
     mock_add.assert_not_called()
+
+
+def test_run_reconcile_reports_desired_status_drift(tmp_path, capsys):
+    """reconcile reports a provisioned user whose live state differs from desired."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch(
+        "src.cmd_utils.usersLifecyclePkg.desired_status_drift",
+        return_value=[("alice", "paused", "running")],
+    ):
+        run_reconcile(str(tmp_path))
+
+    out = capsys.readouterr().out
+    assert "alice: desired 'paused' but container is 'running'" in out
+
+
+def test_run_reconcile_in_sync_needs_no_status_drift(tmp_path, capsys):
+    """'In sync' prints only when membership AND desired-status both agree."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch("src.cmd_utils.usersLifecyclePkg.desired_status_drift", return_value=[]):
+        run_reconcile(str(tmp_path))
+
+    assert "In sync" in capsys.readouterr().out
+
+
+def test_run_reconcile_fix_enforces_desired_status(tmp_path, capsys):
+    """--fix enforces desired_status when there is state drift, even if
+    membership is otherwise in sync."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch(
+        "src.cmd_utils.usersLifecyclePkg.desired_status_drift",
+        return_value=[("alice", "paused", "running")],
+    ), patch(
+        "src.cmd_utils.usersLifecyclePkg.enforce_desired_status"
+    ) as mock_enforce, patch("src.cmd_utils.userPkg.add_users") as mock_add:
+        run_reconcile(str(tmp_path), fix=True)
+
+    mock_enforce.assert_called_once()
+    mock_add.assert_not_called()  # membership in sync, so no reprovision
+    assert "Enforced desired status" in capsys.readouterr().out

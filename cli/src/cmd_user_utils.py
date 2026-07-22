@@ -57,6 +57,7 @@ def _users_from_args(user_input):
             "email": user_input.email,
             "groups": list(user_input.groups) or ["additional"],
             "load_balance": user_input.load_balance,
+            "desired_status": "running",
         }
     }
 
@@ -71,14 +72,18 @@ def _users_to_add(user_input):
 
 
 def _register_users(new_users):
-    """Validate and register new users, warning about skipped duplicates."""
+    """Validate and register new users, warning about skipped duplicates.
+
+    Returns the usernames actually added (excluding skipped duplicates).
+    """
     try:
         validate_usernames(new_users)
     except ValueError as exc:
         raise click.ClickException(str(exc)) from exc
-    _, skipped = registryPkg.register_new_users(new_users, _starting_usernames())
+    added, skipped = registryPkg.register_new_users(new_users, _starting_usernames())
     for name in skipped:
         click.echo(f"'{name}' already exists, skipping")
+    return added
 
 
 def stage_users_for_add(user_input):
@@ -86,7 +91,9 @@ def stage_users_for_add(user_input):
 
     Rejects malformed usernames and, with a warning, skips any already in
     dtaas.toml's starting list or the registry. Raises ClickException on bad
-    or missing input: a USERNAME or --file is required, and not both.
+    or missing input: a USERNAME or --file is required, and not both. Returns
+    the usernames actually added, so only those are started (not the whole
+    registry).
     """
     if user_input.username and user_input.csv_file:
         raise click.ClickException("Pass either a USERNAME or --file, not both.")
@@ -95,7 +102,7 @@ def stage_users_for_add(user_input):
             "Provide a USERNAME (e.g. 'dtaas admin user add alice --email "
             "a@x.io') or --file <users.csv> to add users."
         )
-    _register_users(_users_to_add(user_input))
+    return _register_users(_users_to_add(user_input))
 
 
 def resolve_usernames(usernames, csv_file, verb="delete"):

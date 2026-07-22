@@ -136,6 +136,30 @@ def test_resume_calls_unpause(runner):
     mock_unpause.assert_called_once_with(".")
 
 
+def test_start_success(runner):
+    """start reports success and forwards the default output dir."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch("src.cmd_lifecycle.lifecyclePkg.start") as mock_start:
+        result = runner.invoke(dtaas, ["admin", "start"])
+
+    assert result.exit_code == 0
+    assert "Deployment started successfully" in result.output
+    mock_start.assert_called_once_with(".")
+
+
+def test_start_reports_absent_installation(runner):
+    """start is a no-op (exit 0) that reports when nothing is installed."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=False
+    ), patch("src.cmd_lifecycle.lifecyclePkg.start") as mock_start:
+        result = runner.invoke(dtaas, ["admin", "start"])
+
+    assert result.exit_code == 0
+    assert "no existing DTaaS / Workspace installation" in result.output
+    mock_start.assert_not_called()
+
+
 def test_pause_reports_absent_installation(runner):
     """pause is a no-op (exit 0) that reports when nothing is installed."""
     with patch(

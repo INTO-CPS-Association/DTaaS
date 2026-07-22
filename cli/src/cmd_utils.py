@@ -15,6 +15,7 @@ from .pkg import registry as registryPkg
 from .pkg import state as statePkg
 from .pkg import deploy as deployPkg
 from .pkg import users as userPkg
+from .pkg import users_lifecycle as usersLifecyclePkg
 from .pkg.constants import COMPOSE_USERS_YML, REGISTRY_FILE, STATE_FILE
 from .pkg import config_update as configUpdatePkg
 from .pkg import cert_update as certUpdatePkg
@@ -79,17 +80,19 @@ _RECONCILE_LABELS = (
 )
 
 
-def _echo_reconcile(report):
-    """Print a drift report, noting when everything is in sync."""
-    if not any(report.values()):
+def _echo_reconcile(report, status_drift):
+    """Print membership + desired-status drift, noting when everything is in sync."""
+    if not any(report.values()) and not status_drift:
         click.echo("In sync: no drift detected.")
         return
     for key, label in _RECONCILE_LABELS:
         for name in report[key]:
             click.echo(f"- {name}: {label}")
+    for name, desired, actual in status_drift:
+        click.echo(f"- {name}: desired '{desired}' but container is '{actual}'")
 
 
-def _fix_reconcile():
+def _reprovision_missing():
     """Reprovision missing/drifted registry users (equivalent to 'user add')."""
     run_user_command(
         userPkg.add_users,
@@ -98,9 +101,25 @@ def _fix_reconcile():
     )
 
 
+def _fix_reconcile(report, status_drift):
+    """Reprovision missing/drifted users, then enforce each user's desired_status."""
+    if report["missing"] or report["drifted"]:
+        _reprovision_missing()
+    if status_drift:
+        usersLifecyclePkg.enforce_desired_status()
+        click.echo("Enforced desired status on drifted users.")
+
+
 def run_reconcile(output_dir, fix=False):
-    """Report drift between dtaas.users.registry.json (desired) and the live
-    compose.users.yml services (actual)"""
+    """Report drift between dtaas.users.registry.json (desired) and what is
+    actually running, then optionally fix it.
+
+    Two kinds of drift are reported: membership drift (registry vs the live
+    compose.users.yml services) and desired-status drift (a provisioned user
+    whose live container state does not match its registry desired_status).
+    With fix, missing/drifted users are reprovisioned and every provisioned
+    user is paused/stopped/started to match its desired_status.
+    """
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
@@ -108,9 +127,10 @@ def run_reconcile(output_dir, fix=False):
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
     report = statePkg.find_drift(registry_users, state, services)
-    _echo_reconcile(report)
-    if fix and (report["missing"] or report["drifted"]):
-        _fix_reconcile()
+    status_drift = usersLifecyclePkg.desired_status_drift()
+    _echo_reconcile(report, status_drift)
+    if fix:
+        _fix_reconcile(report, status_drift)
 
 
 def run_config_update(output_dir, dry_run):

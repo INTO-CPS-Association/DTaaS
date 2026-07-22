@@ -1,13 +1,13 @@
-"""The lifecycle subcommands: status, stop, pause, resume.
+"""The lifecycle subcommands: status, stop, start, pause, resume.
 
 Defined here as standalone commands (rather than under cmd.py's 'admin' group
 decorator) to keep cmd.py within a reasonable line count; cmd.py wires them
 onto the 'admin' group via add_lifecycle_commands.
 
 These operate on an *installed* deployment. 'status' reports per-service state
-for both the main deployment and user-added workloads. 'stop', 'pause', and
-'resume' suspend or resume a running deployment in place, without removing
-containers or networks (that is what 'uninstall' does).
+for both the main deployment and user-added workloads. 'stop'/'start' and
+'pause'/'resume' suspend or resume a running deployment in place, without
+removing containers or networks (that is what 'uninstall' does).
 """
 
 import json
@@ -96,9 +96,19 @@ def stop(output_dir):
     """Stop all services in place ('docker compose stop').
 
     Containers and networks are kept, so this is not 'uninstall'. Reverse it
-    with 'dtaas admin install'.
+    with 'dtaas admin start'.
     """
     _run_suspend(output_dir, lifecyclePkg.stop, "Deployment stopped successfully")
+
+
+@click.command(name="start")
+@_output_dir_option
+def start(output_dir):
+    """Start all stopped services in place ('docker compose start').
+
+    The counterpart to 'dtaas admin stop'.
+    """
+    _run_suspend(output_dir, lifecyclePkg.start, "Deployment started successfully")
 
 
 @click.command(name="pause")
@@ -120,6 +130,6 @@ def resume(output_dir):
 
 
 def add_lifecycle_commands(admin_group):
-    """Register the lifecycle commands (status/stop/pause/resume) on *admin_group*."""
-    for command in (status, stop, pause, resume):
+    """Register the lifecycle commands (status/stop/start/pause/resume) on *admin_group*."""
+    for command in (status, stop, start, pause, resume):
         admin_group.add_command(command)

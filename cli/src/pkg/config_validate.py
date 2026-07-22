@@ -130,16 +130,45 @@ _DEPLOY_FIELDS = (
     ("workspace-secure-server", "auth-authority", is_url, "URL"),
 )
 
+# Top-level sections that are specific to one deployment type. The shared
+# '[frontend]' section is not listed, so it is always checked.
+DEPLOYMENT_SECTIONS = frozenset(
+    {
+        "localhost",
+        "insecure-server",
+        "secure-server",
+        "secure-server-gitlab",
+        "workspace-localhost",
+        "workspace-secure-server",
+    }
+)
 
-def _check_deploy_fields(data):
+
+def _field_applies(section, deploy_type):
+    """True if a deployment-section field should be checked for *deploy_type*.
+
+    With deploy_type None (standalone 'config validate') every present section
+    is checked. Scoped to a deploy_type ('update --config'), only that type's
+    section (plus shared sections like [frontend]) is checked, so an unrelated
+    leftover section does not fail the update.
+    """
+    if deploy_type is None or section not in DEPLOYMENT_SECTIONS:
+        return True
+    return section == deploy_type
+
+
+def _check_deploy_fields(data, deploy_type=None):
     """Validate URL/username fields across deployment sections when present."""
     errors = []
     for section, key, predicate, label in _DEPLOY_FIELDS:
+        if not _field_applies(section, deploy_type):
+            continue
         message = f"{section}.{key} must be a valid {label}"
         errors += optional(data, (section, key), (predicate, message))
     return errors
 
 
+# Checks that do not depend on the deployment type.
 _CHECKS = (
     _check_git_repo,
     _check_server_dns,
@@ -147,15 +176,19 @@ _CHECKS = (
     _check_certs_src,
     _check_resources,
     _check_users,
-    _check_deploy_fields,
 )
 
 
-def collect_errors(data):
-    """Run every check against *data* and return the combined list of problems."""
+def collect_errors(data, deploy_type=None):
+    """Run every check against *data* and return the combined list of problems.
+
+    When *deploy_type* is given, only that type's deployment section (plus
+    shared sections) is validated; with None every present section is checked.
+    """
     errors = []
     for check in _CHECKS:
         errors += check(data)
+    errors += _check_deploy_fields(data, deploy_type)
     return errors
 
 

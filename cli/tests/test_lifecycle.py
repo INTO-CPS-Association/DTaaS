@@ -45,7 +45,12 @@ def test_state_name_reports_paused_over_status():
 
 def test_state_name_uses_status_when_not_paused():
     """A non-paused container reports its raw status word."""
-    assert lifecycle._state_name(_fake_container(status="exited")) == "exited"
+    assert lifecycle._state_name(_fake_container(status="restarting")) == "restarting"
+
+
+def test_state_name_maps_exited_to_stopped():
+    """Docker's 'exited' status is presented as 'stopped' to match the CLI verb."""
+    assert lifecycle._state_name(_fake_container(status="exited")) == "stopped"
 
 
 def test_state_name_unknown_when_status_missing():
@@ -127,6 +132,19 @@ def test_stop_without_user_compose(tmp_path):
         lifecycle.stop(str(tmp_path))
 
     deployment.compose.stop.assert_called_once_with()
+
+
+def test_start_starts_all_clients(tmp_path):
+    """start issues 'compose start' on the deployment and user projects."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    deployment, users = MagicMock(), MagicMock()
+    with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
+        "src.pkg.lifecycle.deploy._users_client", return_value=users
+    ):
+        lifecycle.start(str(tmp_path))
+
+    deployment.compose.start.assert_called_once_with()
+    users.compose.start.assert_called_once_with()
 
 
 def test_pause_pauses_all_clients(tmp_path):

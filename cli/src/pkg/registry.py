@@ -130,6 +130,7 @@ def _parse_csv_row(row):
         "email": row.get("email", "").strip(),
         "groups": groups or ["additional"],
         "load_balance": _parse_load_balance(row.get("load_balance", "")),
+        "desired_status": "running",
     }
     return row["username"].strip(), details
 

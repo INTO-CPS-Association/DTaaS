@@ -153,18 +153,29 @@ def setup_compose_structure(compose):
         compose["networks"] = {"users": {"name": "dtaas-users", "external": True}}
 
 
-def finalize_compose(compose, skip_start=()):
-    """Export, start user containers (except those in skip_start), and record state.
+def finalize_compose(compose, skip_start=(), start_only=None):
+    """Export compose, start the appropriate user containers, and record state.
 
     skip_start holds usernames whose registry desired_status is not 'running'
     (set by 'dtaas admin user pause'/'stop'). Their compose service definition
     is still written, so their config is not lost, but their container is not
-    started -- otherwise the idempotent re-provisioning that 'user add' (and
-    'config reconcile --fix') does on every run would silently undo the pause.
+    started -- otherwise the idempotent re-provisioning that 'config reconcile
+    --fix' does on every run would silently undo the pause.
+
+    start_only further restricts which users are started: None starts every
+    service not in skip_start ('config reconcile --fix'); a list starts only
+    those names ('user add', so adding one user never recreates the rest).
     """
     err = utils.export_yaml(compose, COMPOSE_USERS_YML)
     utils.check_error(err)
-    users_list = [name for name in compose["services"] if name not in skip_start]
-    err = start_user_containers(users_list)
-    utils.check_error(err)
+    users_list = [
+        name
+        for name in compose["services"]
+        if name not in skip_start and (start_only is None or name in start_only)
+    ]
+    # An empty list must not reach 'compose up -d' (no SERVICE args ups the
+    # whole project); only start when there is something specific to start.
+    if users_list:
+        err = start_user_containers(users_list)
+        utils.check_error(err)
     write_state(compose["services"])

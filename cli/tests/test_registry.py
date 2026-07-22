@@ -124,6 +124,14 @@ def test_parse_csv_row_defaults_empty_groups_to_additional():
     assert details["groups"] == ["additional"]
 
 
+def test_parse_csv_row_sets_desired_status_running():
+    """A CSV-imported user starts with desired_status 'running'."""
+    _, details = _parse_csv_row(
+        {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "true"}
+    )
+    assert details["desired_status"] == "running"
+
+
 def test_parse_csv_row_rejects_invalid_load_balance():
     """A load_balance value that is neither true nor false is rejected."""
     with pytest.raises(ValueError, match="load_balance"):

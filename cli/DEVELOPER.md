@@ -87,20 +87,38 @@ service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
 `OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
 `run_cert_update` and `require_update_flag` for the `update` group.
 
-The lifecycle commands (`admin status` / `stop` / `pause` / `resume`) are
-backed by _src/pkg/lifecycle.py_ and defined in _src/cmd_lifecycle.py_. They
-observe or suspend an installed deployment without removing it (unlike
+The lifecycle commands (`admin status` / `stop` / `start` / `pause` / `resume`)
+are backed by _src/pkg/lifecycle.py_ and defined in _src/cmd_lifecycle.py_.
+They observe or suspend an installed deployment without removing it (unlike
 `uninstall`): `collect_status` returns per-service records (state and health)
 for both the main deployment and the user-added `compose.users.yml` workloads,
-and `stop`/`pause`/`unpause` map onto `docker compose stop`/`pause`/`unpause`
-across both projects. To keep one definition of "the deployment",
-`lifecycle.py` reuses deploy.py's compose-client plumbing (`require_compose_file`,
-`_client`, `_users_client`, `compose_services`) rather than re-deriving it.
+and `stop`/`start`/`pause`/`unpause` map onto `docker compose
+stop`/`start`/`pause`/`unpause` across both projects. `_state_name` presents
+Docker's `exited` status as `stopped` so the reported state matches the
+`admin stop` verb. To keep one definition of "the deployment", `lifecycle.py`
+reuses deploy.py's compose-client plumbing (`require_compose_file`, `_client`,
+`_users_client`, `compose_services`) rather than re-deriving it.
 `cmd_lifecycle.py` renders the status records as a table or (`--json`) as JSON,
 and `_run_suspend` reports the "nothing installed" case as an exit-0 no-op so
 the commands are safe in CI/ops scripts. The commands are attached to the
 `admin` group by `add_lifecycle_commands`, mirroring how `cmd_user.py` wires the
 `user` subcommands.
+
+_src/pkg/deploy.py_'s local-file cleanup for `uninstall --remove-user-files`
+lives in a separate _src/pkg/user_files.py_ (pure filesystem work, no docker):
+`delete_user_files` removes the generated per-user workspace directories and
+the CLI-owned `dtaas.users.registry.json`/`.dtaas.state.json`, while keeping
+the `files/common` and `files/template` scaffolding so a later install can
+repopulate user dirs. A plain `uninstall` keeps the registry/state files, so a
+reinstall restores the same additional users.
+
+`admin update --config` validation is scoped to the installed deployment type:
+`config_validate.collect_errors(data, deploy_type)` checks only that type's
+deployment section (plus shared sections like `[frontend]`), so a leftover
+unrelated section -- e.g. a stale `[workspace-secure-server]` block in a
+`secure-server` deployment -- does not block the update. Standalone
+`admin config validate` passes no deploy_type and still checks every present
+section.
 
 ### User registry and runtime state
 
@@ -117,9 +135,14 @@ of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
   writes each user's intended running state (`running`/`paused`/`stopped`,
   from `constants.DESIRED_STATUSES`) without touching their email/groups/
   load_balance; see _users_lifecycle.py_ below.
-- _src/pkg/users.py_ `add_users` provisions every registry user (idempotent);
-  `delete_users` deprovisions the named users and removes them from the
-  registry (`dry_run=True` previews without changing anything).
+- _src/pkg/users.py_ `add_users(config_obj, start_only=None)` writes every
+  registry user to `compose.users.yml` (keeping the file complete) but only
+  _starts_ the `start_only` users -- `user add` passes just the newly-added
+  usernames (returned by `stage_users_for_add`), so adding one user never
+  recreates the rest; `config reconcile --fix` passes `None`, meaning start
+  every provisioned user. `delete_users` deprovisions the named users and
+  removes them from the registry (`dry_run=True` previews without changing
+  anything).
   `cmd_user_utils.resolve_usernames` resolves the usernames to act on from
   positional args or a `--file`/`-f users.csv` (only the `username` column is
   read), rejecting the call if both or neither are given; it is shared by
@@ -134,15 +157,23 @@ of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
   `_apply`, which resolves each username against the registry and
   compose.users.yml's live services (`_split_targets`, distinguishing
   unregistered from registered-but-not-provisioned), runs the compose action,
-  refreshes `.dtaas.state.json`, and writes the new `desired_status`. `resume`
-  needs its live container state, not just the registry's desired_status, to
-  choose the right compose verb: `_split_by_paused` separates targets into
-  paused (needs `unpause`) and stopped (needs `start`), since `unpause` errors
-  on a non-paused container and `start` does nothing for an already-paused
-  one. `cmd_user_utils.reject_starting_users` rejects targeting a `dtaas.toml`
-  starting user before any of this runs, since those aren't registry-tracked
-  and are suspended/resumed as part of the whole installation instead (`admin
-  pause`/`stop`/`resume`).
+  refreshes `.dtaas.state.json`, and writes the new `desired_status`. The
+  compose actions are state-aware via `_live_states` (a single `compose ps`),
+  so they never error on an already-in-state container: `_pause_targets` skips
+  already-paused ones (`compose pause` errors on a non-running container),
+  `_stop_targets` skips already-stopped ones, and `_resume_targets` dispatches
+  each target to `unpause` (if paused) or `start` (if stopped), leaving
+  already-running ones alone. `cmd_user_utils.reject_starting_users` rejects
+  targeting a `dtaas.toml` starting user before any of this runs, since those
+  aren't registry-tracked and are suspended/resumed as part of the whole
+  installation instead (`admin pause`/`stop`/`resume`).
+- `users_lifecycle.desired_status_drift` / `enforce_desired_status` power the
+  desired-status half of `config reconcile`: `desired_status_drift` lists
+  provisioned users whose live container state differs from their registry
+  `desired_status`, and `enforce_desired_status` pauses/stops/resumes them to
+  match. `cmd_utils.run_reconcile` reports both membership drift (from
+  `state.find_drift`) and this status drift, and `--fix` reprovisions
+  missing/drifted users and then enforces desired_status.
 - `desired_status` is what makes a pause/stop durable: `users.py`'s
   `_provision_users` computes `_skip_start_users` from the registry's
   per-user `desired_status` and passes it to `users_compose.finalize_compose`,

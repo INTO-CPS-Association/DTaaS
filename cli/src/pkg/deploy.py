@@ -1,19 +1,14 @@
 """Handlers for the 'dtaas admin install and uninstall' commands."""
 
-import shutil
 from pathlib import Path
 import yaml
 from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
 from .constants import COMPOSE_USERS_YML
+from .user_files import delete_user_files
 
 COMPOSE_FILE = "docker-compose.yml"
-USER_FILES_DIR = "files"
 ENV_FILE = Path("config") / ".env"
-# files/ entries provided by the deployment template (shared workspace and the
-# per-user skeleton), as opposed to generated per-user directories. These are
-# kept by --remove-user-files so a later install can repopulate user dirs.
-SCAFFOLDING_ENTRIES = frozenset({"common", "template"})
 
 
 def _env_files(directory) -> list[ValidPath]:
@@ -81,70 +76,6 @@ def install(directory="."):
     """
     _require_deployment(directory)
     _client(directory).compose.up(detach=True)
-
-
-def _check_within_base(files_dir, base):
-    """Reject a symlinked or escaping per-user files directory."""
-    if files_dir.is_symlink() or not files_dir.resolve().is_relative_to(base):
-        raise OSError(
-            f"Refusing to delete '{USER_FILES_DIR}': it is a symlink or "
-            "resolves outside the installation directory."
-        )
-
-
-def _user_files_dir(directory):
-    """Return the per-user files directory inside *directory*, or None if absent.
-
-    Raises OSError if the directory would escape the installation directory.
-    """
-    base = Path(directory).resolve()
-    files_dir = base / USER_FILES_DIR
-    if not files_dir.exists():
-        return None
-    _check_within_base(files_dir, base)
-    return files_dir
-
-
-def _is_generated_user_dir(child):
-    """True if *child* is a generated per-user directory safe to delete.
-
-    Excludes the 'common' and 'template' scaffolding, any non-directory entry,
-    and symlinks (which could point outside the installation).
-    """
-    if child.name in SCAFFOLDING_ENTRIES:
-        return False
-    return child.is_dir() and not child.is_symlink()
-
-
-def _remove_user_dirs(files_dir):
-    """Delete generated per-user directories, keeping template scaffolding.
-
-    Returns the names removed. The shared 'common' workspace and the per-user
-    'template' skeleton are preserved so a subsequent install can recreate the
-    user directories from them.
-    """
-    removed = []
-    for child in files_dir.iterdir():
-        if not _is_generated_user_dir(child):
-            continue
-        shutil.rmtree(child)
-        removed.append(child.name)
-    return removed
-
-
-def delete_user_files(directory):
-    """Delete generated per-user workspace directories. Return a status message.
-
-    The deployment-provided scaffolding (files/common and files/template) is
-    kept so 'dtaas admin install' can repopulate the per-user directories.
-    """
-    files_dir = _user_files_dir(directory)
-    if files_dir is None:
-        return f"No '{USER_FILES_DIR}' directory found; nothing to remove."
-    removed = _remove_user_dirs(files_dir)
-    if not removed:
-        return f"No per-user directories found in '{files_dir}'; nothing to remove."
-    return f"Removed user files at '{files_dir}'."
 
 
 def _down_user_containers(directory):

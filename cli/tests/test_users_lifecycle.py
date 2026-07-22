@@ -6,12 +6,13 @@ from src.pkg import users_lifecycle
 # pylint: disable=protected-access,redefined-outer-name
 
 
-def _fake_container(service, paused):
+def _fake_container(service, paused=False, status="running"):
     """A stand-in for a python-on-whales Container with the fields used."""
     container = MagicMock()
     container.name = service
     container.config.labels = {"com.docker.compose.service": service}
     container.state.paused = paused
+    container.state.status = status
     return container
 
 
@@ -94,20 +95,39 @@ def test_apply_runs_action_and_updates_state_and_registry(
     mock_registry["set_status"].assert_called_once_with(["alice"], "paused")
 
 
-def test_pause_targets_calls_compose_pause():
-    """_pause_targets scopes 'compose pause' to the given services."""
+def test_container_state_maps_exited_to_stopped():
+    """_container_state reports docker 'exited' as 'stopped'."""
+    assert (
+        users_lifecycle._container_state(_fake_container("x", status="exited"))
+        == "stopped"
+    )
+    assert (
+        users_lifecycle._container_state(_fake_container("x", paused=True)) == "paused"
+    )
+
+
+def test_pause_targets_only_pauses_running_containers():
+    """_pause_targets skips an already-paused container so compose does not error."""
     client = MagicMock()
+    client.compose.ps.return_value = [
+        _fake_container("alice", paused=False, status="running"),
+        _fake_container("bob", paused=True),  # already paused -> skipped
+    ]
     with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        users_lifecycle._pause_targets(["alice"])
+        users_lifecycle._pause_targets(["alice", "bob"])
 
     client.compose.pause.assert_called_once_with(services=["alice"])
 
 
-def test_stop_targets_calls_compose_stop():
-    """_stop_targets scopes 'compose stop' to the given services."""
+def test_stop_targets_skips_already_stopped():
+    """_stop_targets stops running/paused containers and skips exited ones."""
     client = MagicMock()
+    client.compose.ps.return_value = [
+        _fake_container("alice", status="running"),
+        _fake_container("bob", status="exited"),  # already stopped -> skipped
+    ]
     with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        users_lifecycle._stop_targets(["alice"])
+        users_lifecycle._stop_targets(["alice", "bob"])
 
     client.compose.stop.assert_called_once_with(services=["alice"])
 
@@ -118,29 +138,38 @@ def test_pause_targets_noop_without_compose_file():
         users_lifecycle._pause_targets(["alice"])  # must not raise
 
 
-def test_split_by_paused_separates_by_live_state():
-    """_split_by_paused reads each container's live state, not desired_status."""
+def test_live_states_reads_state_per_service():
+    """_live_states maps each target service to its live state word."""
     client = MagicMock()
     client.compose.ps.return_value = [
         _fake_container("alice", paused=True),
-        _fake_container("bob", paused=False),
+        _fake_container("bob", status="exited"),
     ]
 
-    paused, other = users_lifecycle._split_by_paused(client, ["alice", "bob"])
+    states = users_lifecycle._live_states(client, ["alice", "bob"])
 
-    assert paused == ["alice"]
-    assert other == ["bob"]
+    assert states == {"alice": "paused", "bob": "stopped"}
+
+
+def test_live_states_empty_targets_skips_ps():
+    """_live_states returns {} without calling ps for an empty target list."""
+    client = MagicMock()
+
+    assert users_lifecycle._live_states(client, []) == {}
+    client.compose.ps.assert_not_called()
 
 
 def test_resume_targets_unpauses_and_starts_as_appropriate():
-    """_resume_targets unpauses paused containers and starts stopped ones."""
+    """_resume_targets unpauses paused containers and starts stopped ones,
+    leaving already-running ones untouched."""
     client = MagicMock()
     client.compose.ps.return_value = [
         _fake_container("alice", paused=True),
-        _fake_container("bob", paused=False),
+        _fake_container("bob", status="exited"),
+        _fake_container("carol", status="running"),
     ]
     with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        users_lifecycle._resume_targets(["alice", "bob"])
+        users_lifecycle._resume_targets(["alice", "bob", "carol"])
 
     client.compose.unpause.assert_called_once_with(services=["alice"])
     client.compose.start.assert_called_once_with(services=["bob"])
@@ -161,6 +190,60 @@ def test_resume_targets_noop_without_compose_file():
     """_resume_targets is a no-op when compose.users.yml does not exist."""
     with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
         users_lifecycle._resume_targets(["alice"])  # must not raise
+
+
+def test_desired_status_drift_reports_mismatches():
+    """desired_status_drift lists provisioned users whose live state differs."""
+    client = MagicMock()
+    client.compose.ps.return_value = [
+        _fake_container("alice", status="running"),  # desired paused -> drift
+        _fake_container("bob", paused=True),  # desired paused -> in sync
+    ]
+    with patch(
+        "src.pkg.users_lifecycle.load_registry",
+        return_value={
+            "alice": {"desired_status": "paused"},
+            "bob": {"desired_status": "paused"},
+            "carol": {"desired_status": "running"},  # no container -> omitted
+        },
+    ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
+        drift = users_lifecycle.desired_status_drift()
+
+    assert drift == [("alice", "paused", "running")]
+
+
+def test_enforce_desired_status_applies_each_action(mock_state):
+    """enforce_desired_status pauses/stops/resumes users to match desired_status."""
+    drift = [
+        ("alice", "paused", "running"),
+        ("bob", "stopped", "running"),
+        ("carol", "running", "paused"),
+    ]
+    with patch(
+        "src.pkg.users_lifecycle.desired_status_drift", return_value=drift
+    ), patch("src.pkg.users_lifecycle._pause_targets") as mp, patch(
+        "src.pkg.users_lifecycle._stop_targets"
+    ) as ms, patch("src.pkg.users_lifecycle._resume_targets") as mr, patch(
+        "src.pkg.users_lifecycle._load_services", return_value={}
+    ):
+        acted = users_lifecycle.enforce_desired_status()
+
+    mp.assert_called_once_with(["alice"])
+    ms.assert_called_once_with(["bob"])
+    mr.assert_called_once_with(["carol"])
+    assert acted == drift
+
+
+def test_enforce_desired_status_noop_when_in_sync(mock_state):
+    """enforce_desired_status does nothing (no state write) when there is no drift."""
+    with patch("src.pkg.users_lifecycle.desired_status_drift", return_value=[]), patch(
+        "src.pkg.users_lifecycle._pause_targets"
+    ) as mp:
+        acted = users_lifecycle.enforce_desired_status()
+
+    mp.assert_called_once_with([])
+    mock_state.assert_not_called()
+    assert acted == []
 
 
 def test_pause_users_end_to_end(mock_registry, mock_services, mock_state):

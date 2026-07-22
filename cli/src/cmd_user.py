@@ -5,8 +5,8 @@ decorator) purely to keep cmd.py within a reasonable line count; they are
 wired onto the 'user' group by cmd.py via Group.add_command.
 
 'pause'/'stop'/'resume' only manage additional (registry-tracked) users --
-see cmd_utils.reject_starting_users. Starting users are suspended/resumed as
-part of the whole installation via 'dtaas admin pause'/'stop'/'resume'.
+see cmd_user_utils.reject_starting_users. Starting users are suspended/resumed
+as part of the whole installation via 'dtaas admin pause'/'stop'/'resume'.
 """
 
 import click
@@ -50,16 +50,22 @@ def add(**kwargs):
       dtaas admin user add alice --email alice@example.org
       dtaas admin user add --file users.csv
 
-    Merges the specified user(s) into dtaas.users.registry.json, then
-    provisions all registry users. A USERNAME or --file is required.
-    Requires a running deployment (run 'dtaas admin install' first).
+    Merges the specified user(s) into dtaas.users.registry.json and starts
+    only those users; already-provisioned users are left untouched. A USERNAME
+    or --file is required (not both). Requires a running deployment (run
+    'dtaas admin install' first). To (re)provision every registry user, use
+    'dtaas admin config reconcile --fix'.
     """
     user_input = UserAddInput(**kwargs)
 
     def _stage_then_add(config_obj):
-        """Stage the registry only once dtaas.toml has loaded successfully."""
-        stage_users_for_add(user_input)
-        return userPkg.add_users(config_obj)
+        """Stage the registry only once dtaas.toml has loaded successfully.
+
+        Only the newly-added users are started, so adding one user does not
+        recreate every other registry user's container.
+        """
+        added = stage_users_for_add(user_input)
+        return userPkg.add_users(config_obj, start_only=added)
 
     run_user_command(
         _stage_then_add, "Users added successfully", "Error while adding users"
@@ -206,7 +212,8 @@ def resume(usernames, csv_file):
       dtaas admin user resume alice bob
       dtaas admin user resume --file users.csv
 
-    Thaws/restarts the named users' containers with 'docker compose unpause',
-    and marks them 'running' again in dtaas.users.registry.json.
+    Thaws paused containers with 'docker compose unpause' or restarts stopped
+    ones with 'docker compose start' (as appropriate), and marks them
+    'running' again in dtaas.users.registry.json.
     """
     _lifecycle_command(usernames, csv_file, "resume")
