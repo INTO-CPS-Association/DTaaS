@@ -1,7 +1,7 @@
 """The CLI-owned runtime state cache, .dtaas.state.json (never git-tracked).
 
 Observed facts about provisioned user containers -- config hash, provisioning
-time, and best-effort container id/status -- written whenever 'dtaas admin user
+time, and best-effort container id/status -- written whenever 'dtaas user
 add'/'delete' changes the running set. Each write fully replaces the file's
 contents with the current set of provisioned services: it is a point-in-time
 snapshot, not an append-only log, so it only ever reflects the most recent

@@ -1,6 +1,6 @@
 """Validate a TLS certificate/key pair before putting it into service.
 
-Used by 'dtaas admin update --certs' to refuse a replacement pair that cannot
+Used by 'dtaas platform update --certs' to refuse a replacement pair that cannot
 be parsed, whose private key does not match the certificate, or that has
 already expired, so the live certificates are never replaced by a bad pair.
 """

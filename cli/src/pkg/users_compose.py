@@ -18,8 +18,7 @@ def _missing_template_error(name):
     """The error for a template file that is absent or empty."""
     return Exception(
         f"User workspace template '{name}' is missing or empty in this "
-        "directory. Run 'dtaas generate-project' (or "
-        "'dtaas generate-deployment') here first."
+        "directory. Run 'dtaas deployment generate --type <type>' here first."
     )
 
 
@@ -162,7 +161,7 @@ def finalize_compose(compose, skip_start=(), start_only=None):
     """Export compose, start the appropriate user containers, and record state.
 
     skip_start holds usernames whose registry desired_status is not 'running'
-    (set by 'dtaas admin user pause'/'stop'). Their compose service definition
+    (set by 'dtaas user pause'/'stop'). Their compose service definition
     is still written, so their config is not lost, but their container is not
     started -- otherwise the idempotent re-provisioning that 'config reconcile
     --fix' does on every run would silently undo the pause.

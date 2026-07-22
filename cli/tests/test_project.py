@@ -6,6 +6,7 @@ import pytest
 from src.pkg.project import (
     generate_project,
     generate_config,
+    generate_user_templates,
     generate_deploy_project,
     create_user_dirs,
     set_files_permissions,
@@ -90,6 +91,26 @@ def test_generate_project_raises_on_copy_failure(tmp_path):
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
             generate_project(dest)
+
+
+def test_generate_user_templates_copies_overlays_not_toml(tmp_path):
+    """generate_user_templates ships the user overlays and skeleton, never dtaas.toml."""
+    generate_user_templates(str(tmp_path))
+
+    assert (tmp_path / "users.server.yml").is_file()
+    assert (tmp_path / "users.server.secure.yml").is_file()
+    assert (tmp_path / "users.resources.yml").is_file()
+    assert (tmp_path / "files" / "template").is_dir()
+    # dtaas.toml is owned by 'config generate', never written here.
+    assert not (tmp_path / "dtaas.toml").exists()
+
+
+def test_generate_user_templates_raises_on_copy_failure(tmp_path):
+    """OSError is raised when an overlay copy fails."""
+    dest = str(tmp_path)
+    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
+        with pytest.raises(OSError, match="disk full"):
+            generate_user_templates(dest)
 
 
 def test_copy_file_skips_existing(tmp_path, capsys):

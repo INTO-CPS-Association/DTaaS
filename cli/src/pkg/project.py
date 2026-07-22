@@ -1,4 +1,4 @@
-"""This file has functions that handle the generate-project cli command"""
+"""Template-copy functions behind 'dtaas config generate' and 'deployment generate'."""
 
 import shutil
 import subprocess
@@ -15,6 +15,11 @@ TEMPLATE_FILES = [
     "users.server.secure.yml",
     "users.resources.yml",
 ]
+
+# The user-management overlay templates (everything generate_project copies
+# except dtaas.toml, which 'dtaas config generate' now owns exclusively). These
+# are copied by 'dtaas deployment generate' so 'dtaas user add' can read them.
+USER_TEMPLATE_FILES = TEMPLATE_FILES[1:]
 
 DEPLOY_TYPES = {
     "localhost",
@@ -73,6 +78,26 @@ def generate_project(dest_dir=".", force=False):
     _validate_project_inputs(dest_dir)
     errors = list(
         filter(None, (_try_copy_template(n, dest_dir, force) for n in TEMPLATE_FILES))
+    )
+    if errors:
+        raise OSError("\n".join(errors))
+    _create_workspace_dirs(dest_dir)
+
+
+def generate_user_templates(dest_dir=".", force=False):
+    """Copy the user-management overlay templates and workspace skeleton.
+
+    Writes users.server.yml, users.server.secure.yml, and users.resources.yml
+    into dest_dir and creates files/template/. This is the non-config half of
+    the old generate_project, invoked by 'dtaas deployment generate'; dtaas.toml
+    is written separately by 'dtaas config generate'. Existing files are kept
+    unless force is set. Raises OSError on copy failure.
+    """
+    _validate_project_inputs(dest_dir)
+    errors = list(
+        filter(
+            None, (_try_copy_template(n, dest_dir, force) for n in USER_TEMPLATE_FILES)
+        )
     )
     if errors:
         raise OSError("\n".join(errors))

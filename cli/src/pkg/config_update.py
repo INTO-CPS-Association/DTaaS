@@ -63,7 +63,7 @@ def _validate(data, deploy_type):
 _SECRETS_HINT = (
     "Some secrets are still unset. Create the OAuth/OIDC application in your "
     "GitLab/Keycloak, copy the client id and secret into the matching dtaas.toml "
-    "section, then re-run 'dtaas admin update --config'."
+    "section, then re-run 'dtaas platform update --config'."
 )
 
 

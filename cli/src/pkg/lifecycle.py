@@ -16,14 +16,11 @@ The docker-client plumbing (require_compose_file, the compose clients, and
 compose_services) is reused from deploy.py so both command families share one
 definition of "the deployment".
 
-Partial-failure note: stop/start/pause/unpause act on the deployment project
-first, then the user-added project (compose.users.yml) when it exists. If the
-first project's compose command fails, the second is never attempted; if the
-first succeeds and the second then fails, the first project has already been
-mutated -- there is no rollback. Each project's own compose command is
-idempotent, so re-running the same lifecycle command is the recovery path:
-it repeats a harmless no-op against whichever project already changed and
-retries the one that failed.
+Scope: collect_status reports both the core services and the user-added project
+(compose.users.yml), giving a whole-installation view. The suspend verbs
+(stop/start/pause/unpause) act on the core services only -- per-user containers
+are suspended individually via 'dtaas user stop'/'pause'/'resume'
+(users_lifecycle.py), keeping the platform and user axes orthogonal.
 """
 
 from . import deploy
@@ -110,54 +107,44 @@ def collect_status(directory="."):
     return rows + _user_rows(directory)
 
 
-def _clients(directory):
-    """The deployment client plus the user-workloads client when present."""
-    clients = [deploy._client(directory)]
-    users = deploy._users_client(directory)
-    if users is not None:
-        clients.append(users)
-    return clients
-
-
 def stop(directory="."):
-    """Stop every container in place without removing it ('compose stop').
+    """Stop the core services in place without removing them ('compose stop').
 
-    Reverse with 'dtaas admin start'. Raises OSError when the deployment is
-    missing, or DockerException if compose itself fails.
+    Acts on the core services only (not per-user containers). Reverse with
+    'dtaas platform start'. Raises OSError when the deployment is missing, or
+    DockerException if compose itself fails.
     """
     deploy.require_compose_file(directory)
-    for client in _clients(directory):
-        client.compose.stop()
+    deploy._client(directory).compose.stop()
 
 
 def start(directory="."):
-    """Start every stopped container in place ('compose start').
+    """Start the stopped core services in place ('compose start').
 
-    The counterpart to 'dtaas admin stop'. Raises OSError when the deployment
-    is missing, or DockerException if compose itself fails.
-    """
-    deploy.require_compose_file(directory)
-    for client in _clients(directory):
-        client.compose.start()
-
-
-def pause(directory="."):
-    """Freeze every running container in place ('compose pause').
-
-    Reverse with 'dtaas admin resume'. Raises OSError when the deployment is
-    missing, or DockerException if compose itself fails.
-    """
-    deploy.require_compose_file(directory)
-    for client in _clients(directory):
-        client.compose.pause()
-
-
-def unpause(directory="."):
-    """Resume every paused container ('compose unpause').
-
+    Acts on the core services only. The counterpart to 'dtaas platform stop'.
     Raises OSError when the deployment is missing, or DockerException if
     compose itself fails.
     """
     deploy.require_compose_file(directory)
-    for client in _clients(directory):
-        client.compose.unpause()
+    deploy._client(directory).compose.start()
+
+
+def pause(directory="."):
+    """Freeze the running core services in place ('compose pause').
+
+    Acts on the core services only (not per-user containers). Reverse with
+    'dtaas platform resume'. Raises OSError when the deployment is missing, or
+    DockerException if compose itself fails.
+    """
+    deploy.require_compose_file(directory)
+    deploy._client(directory).compose.pause()
+
+
+def unpause(directory="."):
+    """Resume the paused core services ('compose unpause').
+
+    Acts on the core services only. Raises OSError when the deployment is
+    missing, or DockerException if compose itself fails.
+    """
+    deploy.require_compose_file(directory)
+    deploy._client(directory).compose.unpause()

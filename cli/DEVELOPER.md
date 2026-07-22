@@ -22,7 +22,7 @@ The CLI is written in Python and uses the following libraries:
   This function should be used directly to read toml files.
 
 - [python-on-whales](https://gabrieldemarmiesse.github.io/python-on-whales/) :
-  Used by the `admin install` / `admin uninstall` commands
+  Used by the `platform install` / `platform uninstall` commands
   (_cli/src/pkg/deploy.py_) to drive `docker compose up`/`down`. It wraps the
   docker CLI (which must be installed on the host) and raises a
   `python_on_whales.exceptions.DockerException` carrying the real command
@@ -41,15 +41,25 @@ The CLI is written in Python and uses the following libraries:
 
 The CLI has two layers of code:
 
-- Command line definition layer: This is the _src/cmd.py_ file. It
-  deals with defining the structure of the CLI, and the specific
-  CLI commands itself. The CLI functions in this file call
-  the Package layer functions. Non-command helpers shared by the
-  command definitions are split by concern to keep each file within a
-  reasonable line count: _src/cmd_utils.py_ (uninstall/reconcile/update
-  orchestration), _src/cmd_deploy_utils.py_ (deployment-generation
-  helpers), and _src/cmd_user_utils.py_ (user-input resolution/validation
-  for _src/cmd_user.py_'s commands).
+- Command line definition layer: every command follows a single
+  `dtaas <noun> <verb>` grammar (see _DTaaS-CLI-Design.md_) with four nouns.
+  _src/cmd.py_ defines the root `dtaas` group and wires the four noun groups
+  in workflow order; each noun is its own module: _src/cmd_config.py_
+  (`config generate|validate|reconcile`), _src/cmd_deployment.py_
+  (`deployment generate`), _src/cmd_platform.py_
+  (`platform install|uninstall|update` plus the lifecycle verbs from
+  _src/cmd_lifecycle.py_), and _src/cmd_user.py_
+  (`user add|delete|status|pause|stop|resume`). Options reused across nouns
+  live in _src/cmd_options.py_. The CLI functions call the Package layer
+  functions. Non-command helpers shared by the command definitions are split
+  by concern to keep each file within a reasonable line count:
+  _src/cmd_utils.py_ (uninstall/reconcile/update orchestration),
+  _src/cmd_deploy_utils.py_ (deployment-generation helpers), and
+  _src/cmd_user_utils.py_ (user-input resolution/validation for
+  _src/cmd_user.py_'s commands). Deprecated pre-2.0 spellings
+  (`admin ...`, `generate-deployment`, `generate-project`) live in
+  _src/cmd_aliases.py_ as hidden aliases that warn and forward; that module is
+  a self-contained deprecation-window layer, deletable in one step.
 
 - Package layer: This is the _cli/src/pkg_ directory.
   It contains the
@@ -61,9 +71,10 @@ The CLI has two layers of code:
   is responsible for. It also
   has helper functions that can be used across the CLI.
 
-The `admin config` commands are backed here: `generate_config` in
+The `config` commands are backed here: `generate_config` in
 _src/pkg/project.py_ copies just the `dtaas.toml` template (reusing the same
-helpers as `generate-project`), and _src/pkg/config_validate.py_ checks the
+template-copy helpers as `generate_user_templates`), and
+_src/pkg/config_validate.py_ checks the
 values in an existing `dtaas.toml`. Each check in `config_validate.py` returns
 a list of human-readable problems (empty when the value is acceptable) and
 `validate_config` aggregates them so the user sees every issue at once. Most
@@ -71,7 +82,7 @@ checks are syntactic, but `path` and `certs-src` are verified against the local
 filesystem (the directory must exist), so `validate` is expected to run on the
 deployment host.
 
-`admin update --config` is backed by _src/pkg/config_update.py_, which
+`platform update --config` is backed by _src/pkg/config_update.py_, which
 re-applies `dtaas.toml` to an installed deployment in place. It reuses the
 existing substitution engine rather than duplicating it:
 `config_validate.collect_errors` gates the run,
@@ -87,22 +98,26 @@ service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
 `OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
 `run_cert_update` and `require_update_flag` for the `update` group.
 
-The lifecycle commands (`admin status` / `stop` / `start` / `pause` / `resume`)
+The lifecycle commands (`platform status` / `stop` / `start` / `pause` / `resume`)
 are backed by _src/pkg/lifecycle.py_ and defined in _src/cmd_lifecycle.py_.
 They observe or suspend an installed deployment without removing it (unlike
-`uninstall`): `collect_status` returns per-service records (state and health)
-for both the main deployment and the user-added `compose.users.yml` workloads,
-and `stop`/`start`/`pause`/`unpause` map onto `docker compose
-stop`/`start`/`pause`/`unpause` across both projects. `_state_name` presents
-Docker's `exited` status as `stopped` so the reported state matches the
-`admin stop` verb. To keep one definition of "the deployment", `lifecycle.py`
-reuses deploy.py's compose-client plumbing (`require_compose_file`, `_client`,
-`_users_client`, `compose_services`) rather than re-deriving it.
-`cmd_lifecycle.py` renders the status records as a table or (`--json`) as JSON,
-and `_run_suspend` reports the "nothing installed" case as an exit-0 no-op so
-the commands are safe in CI/ops scripts. The commands are attached to the
-`admin` group by `add_lifecycle_commands`, mirroring how `cmd_user.py` wires the
-`user` subcommands.
+`uninstall`). `collect_status` returns per-service records (state and health)
+for **both** the core services and the user-added `compose.users.yml` workloads,
+so `platform status` reports the whole installation (and `user status` narrows
+it to the user rows). The suspend verbs `stop`/`start`/`pause`/`unpause`, by
+contrast, map onto `docker compose stop`/`start`/`pause`/`unpause` on the
+**core services only** -- per-user containers are suspended individually through
+_users_lifecycle.py_ (`dtaas user stop`/`pause`/`resume`), keeping the platform
+and user axes orthogonal. `_state_name` presents Docker's `exited` status as
+`stopped` so the reported state matches the `platform stop` verb. To keep one
+definition of "the deployment", `lifecycle.py` reuses deploy.py's compose-client
+plumbing (`require_compose_file`, `_client`, `compose_services`) rather than
+re-deriving it. `cmd_lifecycle.py` renders the status records as a table or
+(`--json`) as JSON via `echo_status` (shared with `user status`), and
+`_run_suspend` reports the "nothing installed" case as an exit-0 no-op so the
+commands are safe in CI/ops scripts. The commands are attached to the
+`platform` group by `add_lifecycle_commands`, mirroring how `cmd_user.py` wires
+its `user` subcommands.
 
 _src/pkg/deploy.py_'s local-file cleanup for `uninstall --remove-user-files`
 lives in a separate _src/pkg/user_files.py_ (pure filesystem work, no docker):
@@ -112,12 +127,12 @@ the `files/common` and `files/template` scaffolding so a later install can
 repopulate user dirs. A plain `uninstall` keeps the registry/state files, so a
 reinstall restores the same additional users.
 
-`admin update --config` validation is scoped to the installed deployment type:
+`platform update --config` validation is scoped to the installed deployment type:
 `config_validate.collect_errors(data, deploy_type)` checks only that type's
 deployment section (plus shared sections like `[frontend]`), so a leftover
 unrelated section -- e.g. a stale `[workspace-secure-server]` block in a
 `secure-server` deployment -- does not block the update. Standalone
-`admin config validate` passes no deploy_type and still checks every present
+`config validate` passes no deploy_type and still checks every present
 section.
 
 ### User registry and runtime state
@@ -166,7 +181,7 @@ of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
   already-running ones alone. `cmd_user_utils.reject_starting_users` rejects
   targeting a `dtaas.toml` starting user before any of this runs, since those
   aren't registry-tracked and are suspended/resumed as part of the whole
-  installation instead (`admin pause`/`stop`/`resume`).
+  installation instead (`platform pause`/`stop`/`resume`).
 - `users_lifecycle.desired_status_drift` / `enforce_desired_status` power the
   desired-status half of `config reconcile`: `desired_status_drift` lists
   provisioned users whose live container state differs from their registry
@@ -187,7 +202,7 @@ of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
   provisioned user, a `config_hash` (a stable sha256 of the compose service)
   plus best-effort container id/status from python-on-whales.
   `find_drift(registry_users, state, services)` powers
-  `dtaas admin config reconcile`: it treats the registry as the desired state
+  `dtaas config reconcile`: it treats the registry as the desired state
   and compares it against the live `compose.users.yml` services, reporting
   _missing_ (registered, not provisioned) and _unexpected_ (provisioned, not
   registered) users directly from that comparison. The state cache is used
@@ -209,7 +224,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="1.1.0"
+version="2.0.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```
@@ -241,7 +256,7 @@ shm_size="512m"
   creation and docker services.
 - _tls_: `false` uses `user.server.yml`; `true` (default) uses `user.server.secure.yml`.
 - _certs-src_: source directory of the TLS certificates. For TLS deploy types,
-  `generate-deployment` copies the latest `fullchain.pem`/`privkey.pem` from
+  `deployment generate` copies the latest `fullchain.pem`/`privkey.pem` from
   here into the deployment's `certs/` directory (see `src/pkg/certs.py`).
 - Resource fields set default container limits for user workspaces.
 
@@ -263,10 +278,10 @@ email="username2@intocps.org"
   the instance, hand-edited at install time. Presence in the array is the
   desired state there is no separate add/delete list, and a username never
   needs to be kept in sync across more than one place. Additional users added
-  later via `dtaas admin user add` are **not** listed here they live in the
+  later via `dtaas user add` are **not** listed here they live in the
   CLI-owned `dtaas.users.registry.json`.
 - _username_/_email_ are required (_email_ is written to `config/conf.server`
-  on `dtaas admin user add`); _groups_/_load_balance_ are optional per-user
+  on `dtaas user add`); _groups_/_load_balance_ are optional per-user
   tags; _password_ is an optional field reserved for future GitLab-onboarding
   provisioning; avoid committing a real secret in it.
 - This schema previously went through an intermediate `starting = [...]` list
@@ -286,14 +301,14 @@ react-app-oauth-url="https://gitlab.com"
 
 OAuth credentials for the DTaaS React client website. This is a separate OAuth application
 from the server-side one (traefik-forward-auth). Values are substituted into `config/client.js`
-by `generate-deployment`.
+by `deployment generate`.
 
 #### Deployment sections
 
 Each deploy type has its own section (`[localhost]`, `[insecure-server]`,
 `[secure-server]`, `[secure-server-gitlab]`, `[workspace-localhost]`,
 `[workspace-secure-server]`). These hold server-side OAuth credentials
-substituted into `.env` and `conf.server` by `generate-deployment`.
+substituted into `.env` and `conf.server` by `deployment generate`.
 
 ## ⚙️ Setup
 
@@ -435,7 +450,7 @@ one owner and one responsibility:
 
 - **`dtaas.toml` is never rewritten by the CLI, ever.** Once a human commits
   `starting` users at install time, the CLI only _reads_ that list (for
-  `admin install` and `generate-deployment`). A comment-bearing, reviewed
+  `platform install` and `deployment generate`). A comment-bearing, reviewed
   config file should never be silently mutated by a tool that risk is
   exactly what made the old `add`/`delete` design fragile.
 - **`dtaas.users.registry.json` is a merge, not a replace.** `user add`
@@ -450,7 +465,7 @@ one owner and one responsibility:
   on the next `add`/`delete`. Its only job is to remember, per user, a hash
   of the config it was last provisioned with, so a later run can tell
   whether that config has since changed underneath it.
-- **`dtaas admin config reconcile` treats the registry as the desired
+- **`dtaas config reconcile` treats the registry as the desired
   state, not the state cache.** An earlier version of `reconcile` compared
   `.dtaas.state.json` against the live compose services but since the
   state cache is written from that same compose data at the end of every
@@ -463,7 +478,7 @@ one owner and one responsibility:
   detecting whether a provisioned user's config has since drifted.
 - **`starting` and `additional` users are provisioned through genuinely
   different mechanisms, on purpose.** `starting` users are baked into the
-  main `docker-compose.yml` at `generate-deployment` time, in a fixed number
+  main `docker-compose.yml` at `deployment generate` time, in a fixed number
   of slots per deploy type. `additional` (registry) users get a dynamically
   managed, separate `compose.users.yml`. This means `dtaas.users.registry.json`
   and `.dtaas.state.json` only ever track `additional` users `starting`

@@ -155,7 +155,7 @@ def test_get_compose_config_missing_template(tmp_path, monkeypatch):
     result, err = users_compose.get_compose_config("alice", _limits_config(False))
 
     assert result is None
-    assert err is not None and "generate-project" in str(err)
+    assert err is not None and "deployment generate" in str(err)
 
 
 @pytest.mark.parametrize(

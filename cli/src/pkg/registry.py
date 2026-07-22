@@ -1,6 +1,6 @@
 """The CLI-owned user registry, dtaas.users.registry.json.
 
-A store of the *additional* users provisioned by 'dtaas admin user add' /
+A store of the *additional* users provisioned by 'dtaas user add' /
 'delete', mutated directly and atomically by the CLI and never hand-edited,
 the way useradd owns /etc/passwd. Starting users live in dtaas.toml instead;
 deployment settings (server, path, resources, TLS) also come from dtaas.toml.
@@ -11,7 +11,7 @@ Shape:
 
 'desired_status' ('running'/'paused'/'stopped', default 'running' when absent
 for registries written before this field existed) records the outcome of the
-last 'dtaas admin user pause'/'stop'/'resume' for that user; see
+last 'dtaas user pause'/'stop'/'resume' for that user; see
 set_desired_status(). It is intentionally separate from the email/groups/
 load_balance fields 'user add' writes: those describe the user, this
 describes whether the CLI should currently be running their container.

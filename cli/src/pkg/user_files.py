@@ -1,4 +1,4 @@
-"""Local file cleanup for 'dtaas admin uninstall --remove-user-files'.
+"""Local file cleanup for 'dtaas platform uninstall --remove-user-files'.
 
 Split out of deploy.py (which drives docker compose) because this concern is
 pure local filesystem work: deleting the generated per-user workspace
@@ -86,7 +86,7 @@ def delete_user_files(directory):
     """Delete per-user workspace directories plus the registry/state files.
 
     The deployment-provided scaffolding (files/common and files/template) is
-    kept so 'dtaas admin install' can repopulate the per-user directories, but
+    kept so 'dtaas platform install' can repopulate the per-user directories, but
     dtaas.users.registry.json and .dtaas.state.json are removed so a reinstall
     starts from a clean additional-user list. Returns a status message.
     """

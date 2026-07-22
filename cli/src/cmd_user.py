@@ -1,18 +1,23 @@
-"""The 'user' subcommands: add, delete, pause, stop, and resume DTaaS users.
+"""The 'user' noun group: add, delete, status, pause, stop, and resume users.
 
-Defined here as standalone commands (rather than under cmd.py's 'user' group
-decorator) purely to keep cmd.py within a reasonable line count; they are
-wired onto the 'user' group by cmd.py via Group.add_command.
+Defines the 'user' group and its commands, wired onto the root 'dtaas' group by
+cmd.py. 'user' acts on additional (registry-tracked) users individually -- a
+separate axis from the whole-installation 'platform' verbs.
 
-'pause'/'stop'/'resume' only manage additional (registry-tracked) users --
-see cmd_user_utils.reject_starting_users. Starting users are suspended/resumed
-as part of the whole installation via 'dtaas admin pause'/'stop'/'resume'.
+'status'/'pause'/'stop'/'resume' only manage additional (registry-tracked)
+users -- see cmd_user_utils.reject_starting_users. Starting users are
+suspended/resumed as part of the whole installation via
+'dtaas platform pause'/'stop'/'resume'.
 """
 
 import click
+from python_on_whales.exceptions import DockerException
 from .pkg import users as userPkg
 from .pkg import users_lifecycle as usersLifecyclePkg
+from .pkg import lifecycle as lifecyclePkg
 from .cmd_utils import run_user_command
+from .cmd_lifecycle import echo_status
+from .cmd_options import output_dir_option, json_option
 from .cmd_user_utils import (
     UserAddInput,
     reject_starting_users,
@@ -21,7 +26,18 @@ from .cmd_user_utils import (
 )
 
 
-@click.command()
+@click.group(name="user")
+def user_group():
+    """Manage additional (registry-tracked) users on a running DTaaS instance.
+
+    Requires a running deployment (run 'dtaas platform install' first). Only
+    manages users added via 'user add', not dtaas.toml's starting users --
+    suspend/resume the whole installation with 'dtaas platform stop'/'pause'/
+    'resume' instead.
+    """
+
+
+@user_group.command()
 @click.argument("username", required=False)
 @click.option(
     "--file",
@@ -47,14 +63,14 @@ def add(**kwargs):
 
     \b
     Examples:
-      dtaas admin user add alice --email alice@example.org
-      dtaas admin user add --file users.csv
+      dtaas user add alice --email alice@example.org
+      dtaas user add --file users.csv
 
     Merges the specified user(s) into dtaas.users.registry.json and starts
     only those users; already-provisioned users are left untouched. A USERNAME
     or --file is required (not both). Requires a running deployment (run
-    'dtaas admin install' first). To (re)provision every registry user, use
-    'dtaas admin config reconcile --fix'.
+    'dtaas platform install' first). To (re)provision every registry user, use
+    'dtaas config reconcile --fix'.
     """
     user_input = UserAddInput(**kwargs)
 
@@ -72,7 +88,7 @@ def add(**kwargs):
     )
 
 
-@click.command()
+@user_group.command()
 @click.argument("usernames", nargs=-1, required=False)
 @click.option(
     "--file",
@@ -89,12 +105,6 @@ def add(**kwargs):
 def delete(usernames, csv_file, dry_run):
     """Remove users from a running DTaaS instance.
 
-    \b
-    Examples:
-      dtaas admin user delete alice bob
-      dtaas admin user delete --file users.csv
-      dtaas admin user delete alice --dry-run
-
     Deprovisions each user and removes them from dtaas.users.registry.json.
     Use --dry-run to preview removals without making any changes.
     """
@@ -106,6 +116,27 @@ def delete(usernames, csv_file, dry_run):
         click.echo("Dry run complete; nothing was deleted.")
     else:
         click.echo("Users deleted successfully")
+
+
+@user_group.command(name="status")
+@click.argument("username", required=False)
+@output_dir_option
+@json_option
+def status(username, output_dir, as_json):
+    """Report the state of all additional users, or one named USERNAME.
+
+    Narrows the whole-installation 'dtaas platform status' view to the per-user
+    containers (compose.users.yml). Each user is reported running/paused/
+    stopped/restarting. Always exits 0 when it can read the deployment.
+    """
+    try:
+        rows = lifecyclePkg.collect_status(output_dir)
+    except (OSError, DockerException) as exc:
+        raise click.ClickException(str(exc)) from exc
+    rows = [row for row in rows if row["project"] == lifecyclePkg.USERS_PROJECT]
+    if username is not None:
+        rows = [row for row in rows if row["service"] == username]
+    echo_status(rows, as_json)
 
 
 _LIFECYCLE_VERBS = {
@@ -144,12 +175,6 @@ def _lifecycle_command(usernames, csv_file, verb):
     _report_lifecycle_result(action(resolved), verb_past)
 
 
-# (effect sentence, desired_status literal actually written to the registry --
-# see users_lifecycle.{pause,stop,resume}_users, NOT the past-tense success-
-# message word from _LIFECYCLE_VERBS -- and an optional "Reverse with ..."
-# sentence) per verb: the only parts of the pause/stop/resume help text that
-# actually differ. Everything else (options, examples, durability sentence
-# shape) is shared by _lifecycle_help/_make_lifecycle_command below.
 _LIFECYCLE_EFFECTS = {
     "pause": (
         "Freezes the named users' containers in place (memory preserved) with "
@@ -185,8 +210,8 @@ def _lifecycle_help(verb):
         for part in (
             f"{verb.capitalize()} specific additional users' containers.",
             "\b\nExamples:\n"
-            f"  dtaas admin user {verb} alice bob\n"
-            f"  dtaas admin user {verb} --file users.csv",
+            f"  dtaas user {verb} alice bob\n"
+            f"  dtaas user {verb} --file users.csv",
             f"{effect} {durability} {reverse}".strip(),
         )
         if part
@@ -197,7 +222,7 @@ def _make_lifecycle_command(verb):
     """Build the pause/stop/resume click Command for *verb*, sharing options
     and dispatch; only the help text (via _LIFECYCLE_EFFECTS) differs."""
 
-    @click.command(name=verb, help=_lifecycle_help(verb))
+    @user_group.command(name=verb, help=_lifecycle_help(verb))
     @click.argument("usernames", nargs=-1, required=False)
     @click.option(
         "--file",

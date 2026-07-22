@@ -74,9 +74,9 @@ def run_uninstall(output_dir, remove_user_files):
 
 
 _RECONCILE_LABELS = (
-    ("missing", "registered but not provisioned; re-run 'dtaas admin user add'"),
+    ("missing", "registered but not provisioned; re-run 'dtaas user add'"),
     ("unexpected", "provisioned but not in the registry; investigate"),
-    ("drifted", "config changed since provisioning; re-run 'dtaas admin user add'"),
+    ("drifted", "config changed since provisioning; re-run 'dtaas user add'"),
 )
 
 
@@ -153,7 +153,7 @@ def run_config_update(output_dir, dry_run):
 
 
 def require_update_flag(certs, config_):
-    """Reject an 'admin update' invocation that selects no assets to update."""
+    """Reject a 'platform update' invocation that selects no assets to update."""
     if not (certs or config_):
         raise click.ClickException("Nothing to update; pass --certs or --config.")
 
@@ -169,7 +169,7 @@ def run_cert_update(output_dir):
 
 @dataclass
 class UpdateOptions:
-    """CLI inputs for 'admin update': which assets to refresh and where."""
+    """CLI inputs for 'platform update': which assets to refresh and where."""
 
     certs: bool
     config_: bool

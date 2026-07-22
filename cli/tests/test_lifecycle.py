@@ -1,4 +1,4 @@
-"""Tests for the lifecycle module (admin status / stop / pause / resume)."""
+"""Tests for the lifecycle module (platform status / stop / pause / resume)."""
 
 from unittest.mock import patch, MagicMock
 import pytest
@@ -109,8 +109,8 @@ def test_collect_status_requires_compose_file(tmp_path):
         lifecycle.collect_status(directory)
 
 
-def test_stop_stops_deployment_and_user_clients(tmp_path):
-    """stop issues 'compose stop' on both the deployment and user projects."""
+def test_stop_acts_on_core_services_only(tmp_path):
+    """stop issues 'compose stop' on the core services, never on user containers."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
     deployment, users = MagicMock(), MagicMock()
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
@@ -119,23 +119,11 @@ def test_stop_stops_deployment_and_user_clients(tmp_path):
         lifecycle.stop(str(tmp_path))
 
     deployment.compose.stop.assert_called_once_with()
-    users.compose.stop.assert_called_once_with()
+    users.compose.stop.assert_not_called()
 
 
-def test_stop_without_user_compose(tmp_path):
-    """stop acts on the deployment alone when there is no user project."""
-    (tmp_path / "docker-compose.yml").write_text("services: {}")
-    deployment = MagicMock()
-    with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
-        "src.pkg.lifecycle.deploy._users_client", return_value=None
-    ):
-        lifecycle.stop(str(tmp_path))
-
-    deployment.compose.stop.assert_called_once_with()
-
-
-def test_start_starts_all_clients(tmp_path):
-    """start issues 'compose start' on the deployment and user projects."""
+def test_start_acts_on_core_services_only(tmp_path):
+    """start issues 'compose start' on the core services, never on user containers."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
     deployment, users = MagicMock(), MagicMock()
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
@@ -144,31 +132,33 @@ def test_start_starts_all_clients(tmp_path):
         lifecycle.start(str(tmp_path))
 
     deployment.compose.start.assert_called_once_with()
-    users.compose.start.assert_called_once_with()
+    users.compose.start.assert_not_called()
 
 
-def test_pause_pauses_all_clients(tmp_path):
-    """pause issues 'compose pause' on every client."""
+def test_pause_acts_on_core_services_only(tmp_path):
+    """pause issues 'compose pause' on the core services, never on user containers."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
-    deployment = MagicMock()
+    deployment, users = MagicMock(), MagicMock()
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
-        "src.pkg.lifecycle.deploy._users_client", return_value=None
+        "src.pkg.lifecycle.deploy._users_client", return_value=users
     ):
         lifecycle.pause(str(tmp_path))
 
     deployment.compose.pause.assert_called_once_with()
+    users.compose.pause.assert_not_called()
 
 
-def test_unpause_unpauses_all_clients(tmp_path):
-    """unpause issues 'compose unpause' on every client."""
+def test_unpause_acts_on_core_services_only(tmp_path):
+    """unpause issues 'compose unpause' on the core services only."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
-    deployment = MagicMock()
+    deployment, users = MagicMock(), MagicMock()
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
-        "src.pkg.lifecycle.deploy._users_client", return_value=None
+        "src.pkg.lifecycle.deploy._users_client", return_value=users
     ):
         lifecycle.unpause(str(tmp_path))
 
     deployment.compose.unpause.assert_called_once_with()
+    users.compose.unpause.assert_not_called()
 
 
 def test_stop_requires_compose_file(tmp_path):

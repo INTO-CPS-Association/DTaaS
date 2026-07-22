@@ -1,8 +1,8 @@
 """Deployment-generation helpers used by cmd.py.
 
 This module holds the help-text formatter and the dtaas.toml substitution/
-certificate-copy orchestration used by 'generate-deployment' and provisioning
-user workspace files ahead of 'admin install'.
+certificate-copy orchestration used by 'deployment generate' and provisioning
+user workspace files ahead of 'platform install'.
 """
 
 import inspect as _inspect

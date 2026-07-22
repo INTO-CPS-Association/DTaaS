@@ -1,6 +1,6 @@
 """Validate the values in a dtaas.toml configuration file.
 
-Used by 'dtaas admin config validate'. Each check returns a list of human
+Used by 'dtaas config validate'. Each check returns a list of human
 readable problems (empty when acceptable); validate_config aggregates them so
 the user sees every issue at once rather than one at a time. See
 validators.py for the generic, DTaaS-agnostic predicates each check builds on.

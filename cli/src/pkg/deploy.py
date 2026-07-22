@@ -1,4 +1,4 @@
-"""Handlers for the 'dtaas admin install and uninstall' commands."""
+"""Handlers for the 'dtaas platform install and uninstall' commands."""
 
 from pathlib import Path
 import yaml
@@ -30,7 +30,7 @@ def _client(directory):
 def _users_client(directory):
     """Return a DockerClient for the 'user add' compose file, or None if absent.
 
-    Users added via 'dtaas admin user add' run from compose.users.yml as a
+    Users added via 'dtaas user add' run from compose.users.yml as a
     separate compose project, so the main compose file does not know about them.
     """
     users_compose = Path(directory) / COMPOSE_USERS_YML
@@ -49,7 +49,7 @@ def require_compose_file(directory):
     if not (Path(directory) / COMPOSE_FILE).is_file():
         raise OSError(
             f"No '{COMPOSE_FILE}' found in '{directory}'. "
-            "Run 'dtaas generate-deployment' first."
+            "Run 'dtaas deployment generate' first."
         )
 
 
@@ -58,13 +58,13 @@ def _require_deployment(directory):
 
     The compose file must live in *directory*; dtaas.toml may live either in
     *directory* or in the current working directory, matching the lookup used
-    by generate-deployment.
+    by deployment generate.
     """
     require_compose_file(directory)
     if not _toml_present(directory):
         raise OSError(
             f"No 'dtaas.toml' found in '{directory}' or the current "
-            "directory. Run 'dtaas generate-project' first."
+            "directory. Run 'dtaas config generate' first."
         )
 
 
@@ -79,7 +79,7 @@ def install(directory="."):
 
 
 def _down_user_containers(directory):
-    """Tear down containers added via 'dtaas admin user add', if any exist.
+    """Tear down containers added via 'dtaas user add', if any exist.
 
     These live in compose.users.yml as a separate project, so the main
     'compose down' would otherwise leave them running and hold the shared

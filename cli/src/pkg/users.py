@@ -130,7 +130,7 @@ def _provision_users(ctx, start_only=None):
     failure cannot leave the forward-auth rules stale. Every registry user is
     written to compose (so the file stays complete), but only *start_only*
     users are started -- None starts all, a list starts just those. A user
-    paused or stopped via 'dtaas admin user pause'/'stop' is never started --
+    paused or stopped via 'dtaas user pause'/'stop' is never started --
     see _skip_start_users.
     """
     create_user_files(ctx.user_list, ctx.config["path"] + "/files")
