@@ -98,6 +98,13 @@ the second digital twin is to be selected.
 
 **Default**: `second digital twin in alphabetical order`
 
+## Logging Settings
+
+### Enable Logging
+
+The setting to permit logging of user activity which is only stored in
+the local browser. The logs can be downloaded by visiting `https://<server-url>/insights/log`.
+
 ## 💾 Saving and Resetting Changes
 
 When satisfied with the changes, **SAVE SETTINGS** must be pressed for them to

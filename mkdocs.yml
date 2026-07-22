@@ -24,6 +24,7 @@ nav:
           - Overview: user/website/dtaas.md
           - Workspace: user/website/workspace.md
           - Settings: user/website/settings.md
+          - Logs: user/website/logs.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
