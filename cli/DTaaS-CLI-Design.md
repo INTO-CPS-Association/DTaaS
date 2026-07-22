@@ -4,7 +4,7 @@
 
 This document defines a single, consistent grammar for the DTaaS CLI:
 
-```
+```ml
 dtaas <noun> <verb> [target] [flags]
 ```
 
@@ -20,18 +20,18 @@ in [clig.dev](https://clig.dev/#subcommands) and in `git`/`docker`.
 
 The CLI currently mixes three incompatible shapes for a command.
 
-**1a. Top-level hyphenated verb-nouns**
+### 1a. Top-level hyphenated verb-nouns
 
-```
+```ml
 dtaas generate-project
 dtaas generate-deployment --type <type>
 ```
 
 Verb first, noun glued on with a hyphen, sitting on the root group.
 
-**1b. Flat verbs under `admin`**
+### 1b. Flat verbs under `admin`
 
-```
+```ml
 dtaas admin install
 dtaas admin uninstall
 dtaas admin update  --certs | --config
@@ -41,9 +41,9 @@ dtaas admin status | stop | pause | resume
 `admin` is a role, not a resource. The object being acted on (the core
 services) is implicit, and the command is a bare verb.
 
-**1c. Noun-grouped verbs under `admin`**
+### 1c. Noun-grouped verbs under `admin`
 
-```
+```ml
 dtaas admin config generate | validate | reconcile
 dtaas admin user   add      | delete
 ```
@@ -108,7 +108,7 @@ Four nouns cover the entire command surface. Each is a real resource in the
 deployment lifecycle.
 
 | Noun | What it is | Lifecycle stage |
-|---|---|---|
+| --- | --- | --- |
 | `config` | `dtaas.toml`, the single source of deployment configuration | Before anything exists |
 | `deployment` | The generated on-disk artifacts: compose tree **and** user-management templates | Scaffolding |
 | `platform` | The installed, running core services (traefik, client, gitlab, …) | Runtime |
@@ -166,7 +166,7 @@ Two facts drive the merge:
 `config` solely owns `dtaas.toml`; `deployment generate` produces every
 generated artifact and consumes `dtaas.toml`:
 
-```
+```ml
 dtaas config generate                       # writes dtaas.toml (+ sample users.csv)
 dtaas config validate                       # checks it
 dtaas deployment generate --type <type>     # writes compose tree + user templates
@@ -220,7 +220,7 @@ safety check.
 ### 5a. `config`
 
 | Verb | Purpose |
-|---|---|
+| --- | --- |
 | `dtaas config generate [--force]` | Write `dtaas.toml` (and a sample `users.csv`); `--force` overwrites existing files |
 | `dtaas config validate` | Validate `dtaas.toml` |
 | `dtaas config reconcile` | Compare desired user registry against live state and report/fix drift |
@@ -228,13 +228,13 @@ safety check.
 ### 5b. `deployment`
 
 | Verb | Purpose |
-|---|---|
+| --- | --- |
 | `dtaas deployment generate --type <type> [--force]` | Generate the compose tree, user-management templates, and workspace skeleton for a scenario, using `dtaas.toml`; `--force` overwrites existing files |
 
 ### 5c. `platform` (core services, managed as one unit)
 
 | Verb | Scope |
-|---|---|
+| --- | --- |
 | `dtaas platform install` | all core services |
 | `dtaas platform uninstall` | all core services |
 | `dtaas platform update --certs` | all core services |
@@ -250,7 +250,7 @@ safety check.
 ### 5d. `user` (additional users, individually)
 
 | Verb | Purpose |
-|---|---|
+| --- | --- |
 | `dtaas user add <username>` / `--file <csv>` | Provision one or more users |
 | `dtaas user delete <username>...` / `--file <csv>` | Deprovision one or more users |
 | `dtaas user status [<username>]` | Report state of all users, or one named user |
@@ -266,7 +266,7 @@ and `.dtaas.state.json` (§6).
 
 ## 6. The two-axis model
 
-```
+```ml
 dtaas platform <verb>            → acts on the core services, as one unit
         install | uninstall | update | status | stop | pause | resume
 
@@ -325,7 +325,7 @@ act on core compose services and do **not** write these files.
 A point-by-point audit of the design against the two references.
 
 | Guideline (clig.dev / git) | This design |
-|---|---|
+| --- | --- |
 | **`noun verb` two-level subcommands** (`docker container create`, `git remote add`) | Adopted as the single rule. ✔ |
 | **Be consistent across subcommands** (same flag names, output) | `--output-dir`, `--file`/`csv_file`, `--json`, `--force`, `--dry-run` reused verbatim across every noun (§8). ✔ |
 | **Don't have ambiguous or similarly-named commands** | Flat `install`/`uninstall`/`stop`/`pause`/`update` siblings are disambiguated by the `platform` noun; `update`'s scope is now explicit. ✔ |
@@ -393,7 +393,7 @@ Each noun is a Click group whose leaf commands live in a `cmd_<noun>.py` module
 and are registered onto the root group — the pattern already used to attach the
 `user` subcommands.
 
-```
+```ml
 src/
   cmd.py              # root `dtaas` group; wires the noun groups
   cmd_config.py       # config generate | validate | reconcile
@@ -427,7 +427,7 @@ Conventions to preserve across every noun:
 ## 9. Summary
 
 | Before (three grammars) | After (`dtaas <noun> <verb>`) |
-|---|---|
+| --- | --- |
 | `dtaas generate-project` | *(folded)* `dtaas config generate` + `dtaas deployment generate` |
 | `dtaas generate-deployment --type t` | `dtaas deployment generate --type t` |
 | `dtaas admin config generate` | `dtaas config generate` |

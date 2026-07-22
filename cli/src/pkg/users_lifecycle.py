@@ -141,6 +141,16 @@ def _resume_targets(targets):
         client.compose.start(services=stopped)
 
 
+def _drifted(name, details, live):
+    """(name, desired, actual) if *name*'s live state differs from its
+    registry desired_status, else None. None if it has no live container."""
+    desired = (details or {}).get("desired_status", "running")
+    actual = live.get(name)
+    if actual is None or actual == desired:
+        return None
+    return name, desired, actual
+
+
 def desired_status_drift():
     """List (user, desired, actual) where a provisioned user's live container
     state differs from its registry desired_status.
@@ -154,13 +164,8 @@ def desired_status_drift():
     if client is None:
         return []
     live = _live_states(client, list(registry))
-    drift = []
-    for name, details in registry.items():
-        desired = (details or {}).get("desired_status", "running")
-        actual = live.get(name)
-        if actual is not None and actual != desired:
-            drift.append((name, desired, actual))
-    return drift
+    drifted = (_drifted(name, details, live) for name, details in registry.items())
+    return [entry for entry in drifted if entry is not None]
 
 
 def enforce_desired_status():

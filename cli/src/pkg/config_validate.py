@@ -80,6 +80,24 @@ def _duplicate_username_errors(users):
     return [f"users: duplicate username '{n}'" for n in dupes]
 
 
+# Optional [[users]] fields checked when present: (key, predicate, label).
+_OPTIONAL_USER_FIELDS = (
+    ("groups", is_string_list, "must be a list of strings"),
+    ("load_balance", lambda v: isinstance(v, bool), "must be true or false"),
+    ("password", lambda v: isinstance(v, str), "must be a string"),
+)
+
+
+def _optional_user_field_errors(info, name):
+    """Check the optional [[users]] fields (groups/load_balance/password)."""
+    errors = []
+    for field, predicate, label in _OPTIONAL_USER_FIELDS:
+        value = info.get(field)
+        if value is not None and not predicate(value):
+            errors.append(f"users.{name}.{field} {label}")
+    return errors
+
+
 def _user_record_errors(info):
     """Validate one [[users]] record: required username/email, optional tags."""
     if not isinstance(info, dict):
@@ -91,15 +109,7 @@ def _user_record_errors(info):
         name = "?"
     if not is_email(info.get("email", "")):
         errors.append(f"users.{name}.email is not a valid email address")
-    groups = info.get("groups")
-    if groups is not None and not is_string_list(groups):
-        errors.append(f"users.{name}.groups must be a list of strings")
-    load_balance = info.get("load_balance")
-    if load_balance is not None and not isinstance(load_balance, bool):
-        errors.append(f"users.{name}.load_balance must be true or false")
-    password = info.get("password")
-    if password is not None and not isinstance(password, str):
-        errors.append(f"users.{name}.password must be a string")
+    errors += _optional_user_field_errors(info, name)
     return errors
 
 

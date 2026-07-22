@@ -80,16 +80,26 @@ _RECONCILE_LABELS = (
 )
 
 
+def _echo_membership_drift(report):
+    """Print each missing/unexpected/drifted username with its explanation."""
+    for key, label in _RECONCILE_LABELS:
+        for name in report[key]:
+            click.echo(f"- {name}: {label}")
+
+
+def _echo_status_drift(status_drift):
+    """Print each (user, desired, actual) desired-status mismatch."""
+    for name, desired, actual in status_drift:
+        click.echo(f"- {name}: desired '{desired}' but container is '{actual}'")
+
+
 def _echo_reconcile(report, status_drift):
     """Print membership + desired-status drift, noting when everything is in sync."""
     if not any(report.values()) and not status_drift:
         click.echo("In sync: no drift detected.")
         return
-    for key, label in _RECONCILE_LABELS:
-        for name in report[key]:
-            click.echo(f"- {name}: {label}")
-    for name, desired, actual in status_drift:
-        click.echo(f"- {name}: desired '{desired}' but container is '{actual}'")
+    _echo_membership_drift(report)
+    _echo_status_drift(status_drift)
 
 
 def _reprovision_missing():

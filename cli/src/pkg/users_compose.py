@@ -14,6 +14,15 @@ from .state import write_state
 from .users_utils import build_base_mapping, resource_mapping
 
 
+def _missing_template_error(name):
+    """The error for a template file that is absent or empty."""
+    return Exception(
+        f"User workspace template '{name}' is missing or empty in this "
+        "directory. Run 'dtaas generate-project' (or "
+        "'dtaas generate-deployment') here first."
+    )
+
+
 def _load_template(server, tls):
     """Load the appropriate template based on server type and TLS.
 
@@ -28,14 +37,10 @@ def _load_template(server, tls):
         return None, Exception("user add is not supported for localhost installations")
     name = "users.server.secure.yml" if tls else "users.server.yml"
     template, err = utils.import_yaml(name)
-    if err is None and not template:
-        err = Exception(
-            f"User workspace template '{name}' is missing or empty in this "
-            "directory. Run 'dtaas generate-project' (or "
-            "'dtaas generate-deployment') here first."
-        )
     if err is not None:
         return None, err
+    if not template:
+        return None, _missing_template_error(name)
     return template, None
 
 

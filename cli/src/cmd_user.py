@@ -144,76 +144,74 @@ def _lifecycle_command(usernames, csv_file, verb):
     _report_lifecycle_result(action(resolved), verb_past)
 
 
-@click.command()
-@click.argument("usernames", nargs=-1, required=False)
-@click.option(
-    "--file",
-    "-f",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-target users listed in a CSV file (only the username column is used).",
-)
-def pause(usernames, csv_file):
-    """Pause specific additional users' containers.
-
-    \b
-    Examples:
-      dtaas admin user pause alice bob
-      dtaas admin user pause --file users.csv
-
-    Freezes the named users' containers in place (memory preserved) with
-    'docker compose pause', and records the pause in
-    dtaas.users.registry.json so a later 'user add' or 'config reconcile
-    --fix' does not silently restart them. Reverse with 'user resume'.
-    """
-    _lifecycle_command(usernames, csv_file, "pause")
-
-
-@click.command()
-@click.argument("usernames", nargs=-1, required=False)
-@click.option(
-    "--file",
-    "-f",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-target users listed in a CSV file (only the username column is used).",
-)
-def stop(usernames, csv_file):
-    """Stop specific additional users' containers.
-
-    \b
-    Examples:
-      dtaas admin user stop alice bob
-      dtaas admin user stop --file users.csv
-
-    Terminates the named users' containers in place with 'docker compose
-    stop' (containers and their compose entries are kept, so this is not
-    'user delete'), and records the stop in dtaas.users.registry.json so a
-    later 'user add' or 'config reconcile --fix' does not silently restart
-    them. Reverse with 'user resume'.
-    """
-    _lifecycle_command(usernames, csv_file, "stop")
+# (effect sentence, desired_status literal actually written to the registry --
+# see users_lifecycle.{pause,stop,resume}_users, NOT the past-tense success-
+# message word from _LIFECYCLE_VERBS -- and an optional "Reverse with ..."
+# sentence) per verb: the only parts of the pause/stop/resume help text that
+# actually differ. Everything else (options, examples, durability sentence
+# shape) is shared by _lifecycle_help/_make_lifecycle_command below.
+_LIFECYCLE_EFFECTS = {
+    "pause": (
+        "Freezes the named users' containers in place (memory preserved) with "
+        "'docker compose pause'.",
+        "paused",
+        "Reverse with 'user resume'.",
+    ),
+    "stop": (
+        "Terminates the named users' containers in place with 'docker compose "
+        "stop' (containers and their compose entries are kept, so this is not "
+        "'user delete').",
+        "stopped",
+        "Reverse with 'user resume'.",
+    ),
+    "resume": (
+        "Thaws a paused container with 'docker compose unpause', or restarts a "
+        "stopped one with 'docker compose start', as appropriate.",
+        "running",
+        "",
+    ),
+}
 
 
-@click.command()
-@click.argument("usernames", nargs=-1, required=False)
-@click.option(
-    "--file",
-    "-f",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-target users listed in a CSV file (only the username column is used).",
-)
-def resume(usernames, csv_file):
-    """Resume specific additional users previously paused or stopped.
+def _lifecycle_help(verb):
+    """Build the shared-shape help text for a pause/stop/resume command."""
+    effect, desired_status, reverse = _LIFECYCLE_EFFECTS[verb]
+    durability = (
+        f"Records the users as '{desired_status}' in dtaas.users.registry.json so "
+        "a later 'user add' or 'config reconcile --fix' does not silently override it."
+    )
+    return "\n\n".join(
+        part
+        for part in (
+            f"{verb.capitalize()} specific additional users' containers.",
+            "\b\nExamples:\n"
+            f"  dtaas admin user {verb} alice bob\n"
+            f"  dtaas admin user {verb} --file users.csv",
+            f"{effect} {durability} {reverse}".strip(),
+        )
+        if part
+    )
 
-    \b
-    Examples:
-      dtaas admin user resume alice bob
-      dtaas admin user resume --file users.csv
 
-    Thaws paused containers with 'docker compose unpause' or restarts stopped
-    ones with 'docker compose start' (as appropriate), and marks them
-    'running' again in dtaas.users.registry.json.
-    """
-    _lifecycle_command(usernames, csv_file, "resume")
+def _make_lifecycle_command(verb):
+    """Build the pause/stop/resume click Command for *verb*, sharing options
+    and dispatch; only the help text (via _LIFECYCLE_EFFECTS) differs."""
+
+    @click.command(name=verb, help=_lifecycle_help(verb))
+    @click.argument("usernames", nargs=-1, required=False)
+    @click.option(
+        "--file",
+        "-f",
+        "csv_file",
+        type=click.Path(exists=True, dir_okay=False),
+        help="Bulk-target users listed in a CSV file (only the username column is used).",
+    )
+    def _command(usernames, csv_file):
+        _lifecycle_command(usernames, csv_file, verb)
+
+    return _command
+
+
+pause = _make_lifecycle_command("pause")
+stop = _make_lifecycle_command("stop")
+resume = _make_lifecycle_command("resume")
