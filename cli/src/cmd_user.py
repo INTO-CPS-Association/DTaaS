@@ -215,7 +215,7 @@ def _resolve_lifecycle_targets(selection, verb):
     """
     usernames, csv_file, all_users = selection
     if not all_users:
-        return resolve_usernames(usernames, csv_file, verb=verb)
+        return resolve_usernames(usernames, csv_file, verb=verb, allow_all=True)
     if usernames or csv_file:
         raise click.ClickException(
             "Pass either target USERNAMES/--file or --all, not both."

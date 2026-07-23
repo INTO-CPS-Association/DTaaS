@@ -137,6 +137,19 @@ def test_resolve_usernames_uses_verb_in_message():
         resolve_usernames((), None, verb="pause")
 
 
+def test_resolve_usernames_omits_all_by_default():
+    """'delete' has no --all, so the 'neither given' error must not suggest it."""
+    with pytest.raises(click.ClickException) as exc_info:
+        resolve_usernames((), None, verb="delete")
+    assert "--all" not in str(exc_info.value)
+
+
+def test_resolve_usernames_mentions_all_when_allowed():
+    """The lifecycle verbs (pause/stop/resume) have --all; the error must say so."""
+    with pytest.raises(click.ClickException, match="--all"):
+        resolve_usernames((), None, verb="stop", allow_all=True)
+
+
 def test_reject_starting_users_passes_when_no_overlap(tmp_path, monkeypatch):
     """No starting users are targeted: reject_starting_users is a no-op."""
     monkeypatch.chdir(tmp_path)

@@ -59,24 +59,24 @@ dtaas platform uninstall
   - [📋 Table of Contents](#-table-of-contents)
   - [📦 Installation](#-installation)
   - [🛠 Commands](#-commands)
-    - [🗒️ `config`](#️-config)
-    - [`deployment generate`](#deployment-generate)
+    - [🗒️ config](#️-config)
+    - [deployment generate](#deployment-generate)
       - [Configuration substitution](#configuration-substitution)
       - [TLS certificate placement](#tls-certificate-placement)
-    - [🚀 `platform install`](#-platform-install)
-    - [🧹 `platform uninstall`](#-platform-uninstall)
-    - [Lifecycle operations: `status` / `stop` / `start` / `pause` / `resume`](#lifecycle-operations)
-    - [🔁 `platform update --certs`](#-platform-update---certs)
-    - [🧩 `platform update --config`](#-platform-update---config)
+    - [🚀 platform install](#-platform-install)
+    - [🧹 platform uninstall](#-platform-uninstall)
+    - [Lifecycle operations: status / stop / start / pause / resume](#lifecycle-operations)
+    - [🔁 platform update --certs](#-platform-update---certs)
+    - [🧩 platform update --config](#-platform-update---config)
     - [Deprecated command spellings](#deprecated-command-spellings)
-    - [➕ `user add`](#-user-add)
-    - [➖ `user delete`](#-user-delete)
-    - [⏯️ `user pause` / `stop` / `resume`](#️-user-pause--stop--resume)
-    - [🔍 `config reconcile`](#-config-reconcile)
+    - [➕ user add](#-user-add)
+    - [➖ user delete](#-user-delete)
+    - [⏯️ user pause / stop / resume](#️-user-pause--stop--resume)
+    - [🔍 config reconcile](#-config-reconcile)
   - [👥 User files](#-user-files)
-  - [⚙️ Configuration Reference `dtaas.toml`](#️-configuration-reference-dtaastoml)
+  - [⚙️ Configuration Reference dtaas.toml](#️-configuration-reference-dtaastoml)
     - [Which sections does my deployment need?](#which-sections-does-my-deployment-need)
-    - [Annotated `dtaas.toml`](#annotated-dtaastoml)
+    - [Annotated dtaas.toml](#annotated-dtaastoml)
 
 ---
 
@@ -103,7 +103,7 @@ dtaas --help
 
 ## 🛠 Commands
 
-### 🗒️ `config`
+### 🗒️ config
 
 Manage `dtaas.toml` independently of the rest of the project. This is the
 first step in the setup workflow generate a template, fill it in, then
@@ -169,7 +169,7 @@ validated.
 
 ---
 
-### `deployment generate`
+### deployment generate
 
 Copies the full project structure for a specific deployment scenario
 `docker-compose.yml`, config examples, and supporting files, into a target
@@ -246,7 +246,7 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 
 ---
 
-### 🚀 `platform install`
+### 🚀 platform install
 
 Brings a generated deployment up with a single command.
 
@@ -278,7 +278,7 @@ The command fails with a clear error if `docker-compose.yml` is missing,
 
 ---
 
-### 🧹 `platform uninstall`
+### 🧹 platform uninstall
 
 Tears the deployment down, stopping and removing containers and networks.
 
@@ -353,7 +353,7 @@ installation (core services **and** user containers).
 > a brief, instantly reversible suspension. `pause` expects running containers
 > and will error if the deployment is already stopped.
 
-#### 📊 `platform status`
+#### 📊 platform status
 
 Reports the state of every service, for both the deployment and user
 workloads.
@@ -394,7 +394,7 @@ dtaas platform status --json
 | `--output-dir PATH` | `.` | Installation directory |
 | `--json` | off | Emit machine-readable JSON instead of the table |
 
-#### ⏹️ `platform stop` / ▶️ `platform start`
+#### ⏹️ platform stop / ▶️ platform start
 
 `stop` stops all services with `docker compose stop`; `start` brings the
 stopped containers back with `docker compose start`. Containers and networks
@@ -415,7 +415,7 @@ repeatedly.
 |---|---|---|
 | `--output-dir PATH` | `.` | Installation directory |
 
-#### ⏸️ `platform pause` / ▶️ `platform resume`
+#### ⏸️ platform pause / ▶️ platform resume
 
 `pause` freezes every running container in place with `docker compose pause`;
 `resume` thaws them with `docker compose unpause`. Memory is preserved and
@@ -437,7 +437,7 @@ installed (no containers in any state).
 
 ---
 
-### 🔁 `platform update --certs`
+### 🔁 platform update --certs
 
 Rotates TLS certificates of a running deployment in place: no project
 regeneration or manual file copying required.
@@ -468,7 +468,7 @@ to run repeatedly.
 
 ---
 
-### 🧩 `platform update --config`
+### 🧩 platform update --config
 
 Re-applies the values in `dtaas.toml` to an already-installed deployment's
 service config files without regenerating the project.
@@ -522,8 +522,22 @@ removed in the next major version. Update scripts to the new spellings:
 | `dtaas generate-deployment --type <t>` | `dtaas deployment generate --type <t>` |
 | `dtaas admin config <verb>` | `dtaas config <verb>` |
 | `dtaas admin install\|uninstall\|update` | `dtaas platform install\|uninstall\|update` |
-| `dtaas admin status\|stop\|start\|pause\|resume` | `dtaas platform status\|stop\|start\|pause\|resume` |
-| `dtaas admin user <verb>` | `dtaas user <verb>` |
+| `dtaas admin status` | `dtaas platform status` |
+| `dtaas admin stop\|start\|pause\|resume` | `dtaas platform stop\|start\|pause\|resume` ⚠️ scope narrowed, see below |
+| `dtaas admin user add\|delete\|pause\|stop\|resume` | `dtaas user add\|delete\|pause\|stop\|resume` |
+
+> **Scope change: `admin stop`/`start`/`pause`/`resume`.** Pre-2.0, these acted
+> on the **whole installation** (core services and every additional user).
+> Their 2.0 replacements act on the **core services only**; per-user
+> containers are left untouched. To reproduce the old whole-installation
+> effect, also target every additional user with
+> [`dtaas user stop`/`pause`/`resume --all`](#️-user-pause--stop--resume)
+> (`admin start` maps to `user resume --all`, since there is no `user start`).
+> The running CLI also prints this as a warning when you use the old spelling.
+>
+> **`user status` has no old spelling.** It is new in 2.0 (the closest
+> pre-2.0 equivalent, whole-installation `admin status`, is now `platform
+> status`), so there was never an `admin user status` to alias.
 
 The old `generate-project` folded into two commands: `dtaas config generate`
 now solely writes `dtaas.toml`, while `dtaas deployment generate` writes the
@@ -539,7 +553,7 @@ skeleton, alongside the deployment compose tree.
 
 ---
 
-### ➕ `user add`
+### ➕ user add
 
 Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
@@ -660,7 +674,7 @@ and unconstrained users by toggling `set_limits` between runs.
 
 ---
 
-### ➖ `user delete`
+### ➖ user delete
 
 Removes one or more users from a running DTaaS instance, like `userdel`.
 
@@ -711,19 +725,25 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 
 ---
 
-### ⏯️ `user pause` / `stop` / `resume`
+### ⏯️ user pause / stop / resume
 
 Suspend or resume **specific additional (registry) users** without touching
-the rest of the installation, targeting one or more `USERNAMES` or a
-`--file`/`-f users.csv` (only the `username` column is read) the same way
-`user delete` does.
+the rest of the installation, targeting one or more `USERNAMES`, a
+`--file`/`-f users.csv` (only the `username` column is read, the same way
+`user delete` does), or `--all` for every additional user at once.
 
 ```bash
 dtaas user pause alice bob
 dtaas user stop alice
 dtaas user resume alice bob
 dtaas user pause --file users.csv
+dtaas user stop --all
 ```
+
+`--all` is also how to reproduce the pre-2.0 whole-installation
+`admin stop`/`pause`/`resume` for the additional-users half: pair it with the
+core-only [`dtaas platform stop`/`pause`/`resume`](#lifecycle-operations) (see
+[Deprecated command spellings](#deprecated-command-spellings)).
 
 | Command | `docker compose` verb | Effect | Reverse with |
 |---|---|---|---|
@@ -759,10 +779,11 @@ alice, bob paused successfully
 |---|---|---|
 | `USERNAMES` | — | One or more usernames to target |
 | `--file PATH` / `-f` | — | Bulk-target users listed in a CSV (only the `username` column is used) |
+| `--all` | off | Target every additional (registry) user; mutually exclusive with `USERNAMES`/`--file` |
 
 ---
 
-### 🔍 `config reconcile`
+### 🔍 config reconcile
 
 Reports drift between `dtaas.users.registry.json` (which **should** be
 provisioned) and the live `compose.users.yml` services (which **are**
@@ -833,7 +854,7 @@ config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
 
 ---
 
-## ⚙️ Configuration Reference `dtaas.toml`
+## ⚙️ Configuration Reference dtaas.toml
 
 `dtaas.toml` is the single source of truth for all CLI commands. Generate a
 blank template with `dtaas config generate`, fill it in, then confirm
@@ -872,7 +893,7 @@ Not-Used —
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
 
-### Annotated `dtaas.toml`
+### Annotated dtaas.toml
 
 The full file below shows every possible key with inline comments. Copy it
 as a starting point and delete sections that do not apply to your deployment

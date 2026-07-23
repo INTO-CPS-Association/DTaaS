@@ -105,12 +105,14 @@ def stage_users_for_add(user_input):
     return _register_users(_users_to_add(user_input))
 
 
-def resolve_usernames(usernames, csv_file, verb="delete"):
+def resolve_usernames(usernames, csv_file, verb="delete", allow_all=False):
     """Resolve the usernames to act on from positional USERNAMES or --file/-f.
 
     Only the username column of the CSV is used; email/groups/load_balance are
     ignored. Raises ClickException if both or neither are given. Shared by
     'user delete'/'pause'/'stop'/'resume'; *verb* only affects the error text.
+    *allow_all* names '--all' as a third option in that error -- set by the
+    lifecycle verbs, which have it, but not by 'delete', which doesn't.
     """
     if usernames and csv_file:
         raise click.ClickException("Pass either USERNAMES or --file, not both.")
@@ -118,9 +120,12 @@ def resolve_usernames(usernames, csv_file, verb="delete"):
         return list(_read_users_csv(csv_file))
     if usernames:
         return list(usernames)
-    raise click.ClickException(
-        f"Provide one or more USERNAMES or --file <users.csv> to {verb} users."
+    target_hint = (
+        "USERNAMES, --file <users.csv>, or --all"
+        if allow_all
+        else "USERNAMES or --file <users.csv>"
     )
+    raise click.ClickException(f"Provide one or more {target_hint} to {verb} users.")
 
 
 def reject_starting_users(usernames, verb):

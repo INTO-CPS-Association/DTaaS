@@ -109,6 +109,19 @@ def _copy_config_file(template_name, dest_dir, force):
     return skipped
 
 
+def generate_dtaas_toml(dest_dir=".", force=False):
+    """Copy just the dtaas.toml template into dest_dir, without users.csv.
+
+    Returns True if an existing dtaas.toml was kept (skipped), False if it was
+    written. Raises OSError on copy failure. Split out of generate_config so
+    the deprecated 'generate-project' shim can write dtaas.toml without also
+    writing (and, under --force, clobbering) a curated users.csv -- the old
+    generate-project never touched that file.
+    """
+    _validate_project_inputs(dest_dir)
+    return _copy_config_file(CONFIG_TOML, dest_dir, force)
+
+
 def generate_config(dest_dir=".", force=False):
     """Copy the dtaas.toml and sample users.csv templates into dest_dir.
 
@@ -116,8 +129,7 @@ def generate_config(dest_dir=".", force=False):
     written. The users.csv sample is copied alongside it (skipped if present).
     Raises OSError on copy failure.
     """
-    _validate_project_inputs(dest_dir)
-    skipped = _copy_config_file(CONFIG_TOML, dest_dir, force)
+    skipped = generate_dtaas_toml(dest_dir, force)
     _copy_config_file("users.csv", dest_dir, force)
     return skipped
 

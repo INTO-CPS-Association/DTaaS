@@ -115,7 +115,8 @@ def test_stop_no_leftover_note_when_no_user_containers(runner):
 
 
 def test_stop_leftover_advisory_swallows_docker_errors(runner):
-    """A failure counting user containers must not fail an otherwise-good stop."""
+    """A failure counting user containers must not fail an otherwise-good stop,
+    but should still leave a note that the check itself could not run."""
     with patch(
         "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
     ), patch("src.cmd_lifecycle.lifecyclePkg.stop"), patch(
@@ -126,6 +127,7 @@ def test_stop_leftover_advisory_swallows_docker_errors(runner):
 
     assert result.exit_code == 0
     assert "Deployment stopped successfully" in result.output
+    assert "could not check per-user containers" in result.output
 
 
 def test_stop_reports_absent_installation(runner):

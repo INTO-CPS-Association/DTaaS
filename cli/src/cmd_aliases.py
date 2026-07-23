@@ -9,6 +9,7 @@ This whole module is a temporary deprecation-window layer: deleting it (and the
 register_aliases call in cmd.py) removes every old spelling at once.
 """
 
+import inspect
 from typing import NamedTuple
 import click
 from .pkg import project as projectPkg
@@ -82,7 +83,7 @@ def _alias(target, dep, hidden=True):
     )
     help_text = f"DEPRECATED: use 'dtaas {dep.new}'."
     if target.help:
-        help_text = f"{help_text}\n\n{target.help}"
+        help_text = f"{help_text}\n\n{inspect.cleandoc(target.help)}"
     return _DeprecatedCommand(
         (warning, dep.note),
         name=dep.name,
@@ -143,7 +144,9 @@ def _generate_project(output_dir, force):
 
     generate-project split into two commands, and there is no sane default
     --type to forward to, so this is a purpose-built shim rather than a forward:
-    it runs 'config generate' (dtaas.toml + users.csv) and the user-template
+    it writes dtaas.toml (via generate_dtaas_toml, not generate_config, so it
+    never touches users.csv -- the old command didn't either, and clobbering a
+    curated one under --force would be a regression) and the user-template
     half of 'deployment generate' (the compose overlays + workspace skeleton),
     exactly the files the old command produced, and points at the two-step
     replacement. The scenario compose tree still needs
@@ -157,7 +160,7 @@ def _generate_project(output_dir, force):
         err=True,
     )
     try:
-        projectPkg.generate_config(output_dir, force)
+        projectPkg.generate_dtaas_toml(output_dir, force)
         projectPkg.generate_user_templates(output_dir, force)
     except OSError as exc:
         raise click.ClickException(f"Error while generating project: {exc}") from exc

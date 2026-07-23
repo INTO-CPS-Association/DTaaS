@@ -76,7 +76,8 @@ def _report_leftover_user_containers(output_dir, verb):
     """
     try:
         count = lifecyclePkg.running_user_container_count(output_dir)
-    except (OSError, DockerException):
+    except (OSError, DockerException) as exc:
+        click.echo(f"Note: could not check per-user containers ({exc}).", err=True)
         return
     if count:
         click.echo(

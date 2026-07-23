@@ -91,7 +91,7 @@ def test_generate_project_alias_still_works_without_type(runner):
     It must not hard-fail with a Click 'Missing option --type' usage error --
     the deprecation contract is that old spellings still work for one release.
     """
-    with patch("src.cmd_aliases.projectPkg.generate_config") as mock_config, patch(
+    with patch("src.cmd_aliases.projectPkg.generate_dtaas_toml") as mock_config, patch(
         "src.cmd_aliases.projectPkg.generate_user_templates"
     ) as mock_templates:
         result = runner.invoke(dtaas, ["generate-project", "--output-dir", "."])
@@ -106,12 +106,33 @@ def test_generate_project_alias_still_works_without_type(runner):
 def test_generate_project_alias_maps_copy_error(runner):
     """A copy failure in the shim surfaces as a ClickException, not a traceback."""
     with patch(
-        "src.cmd_aliases.projectPkg.generate_config", side_effect=OSError("disk full")
+        "src.cmd_aliases.projectPkg.generate_dtaas_toml",
+        side_effect=OSError("disk full"),
     ):
         result = runner.invoke(dtaas, ["generate-project"])
 
     assert result.exit_code != 0
     assert "Error while generating project" in result.output
+
+
+def test_generate_project_alias_preserves_existing_users_csv(runner, tmp_path):
+    """A curated users.csv must survive 'generate-project --force'.
+
+    The old generate-project never wrote users.csv; 'config generate' (which
+    the shim used to delegate to wholesale) does, so under --force it would
+    silently clobber an operator's real users.csv with the placeholder sample.
+    """
+    users_csv = tmp_path / "users.csv"
+    users_csv.write_text(
+        "username,email,groups,load_balance\nalice,a@x.io,default,true\n"
+    )
+
+    result = runner.invoke(
+        dtaas, ["generate-project", "--output-dir", str(tmp_path), "--force"]
+    )
+
+    assert result.exit_code == 0
+    assert users_csv.read_text().startswith("username,email,groups,load_balance\nalice")
 
 
 def test_admin_user_status_is_not_an_alias(runner):

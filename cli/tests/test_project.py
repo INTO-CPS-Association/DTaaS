@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from src.pkg.project import (
     generate_config,
+    generate_dtaas_toml,
     generate_user_templates,
     generate_deploy_project,
     create_user_dirs,
@@ -27,6 +28,14 @@ def test_generate_config_copies_toml_and_users_csv(tmp_path):
     assert (tmp_path / "dtaas.toml").is_file()
     assert (tmp_path / "users.csv").is_file()
     assert not (tmp_path / "users.server.yml").exists()
+
+
+def test_generate_dtaas_toml_never_touches_users_csv(tmp_path):
+    """generate_dtaas_toml writes only dtaas.toml, unlike generate_config."""
+    assert generate_dtaas_toml(str(tmp_path)) is False
+
+    assert (tmp_path / "dtaas.toml").is_file()
+    assert not (tmp_path / "users.csv").exists()
 
 
 def test_generate_config_skips_existing_users_csv(tmp_path, capsys):

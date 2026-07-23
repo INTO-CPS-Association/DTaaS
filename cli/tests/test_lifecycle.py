@@ -122,6 +122,18 @@ def test_running_user_container_count_absent(tmp_path):
         assert lifecycle.running_user_container_count(str(tmp_path)) == 0
 
 
+def test_running_user_container_count_excludes_paused(tmp_path):
+    """A paused user container must not inflate the 'still running' count.
+
+    ps() without all=True still returns paused containers (only removed/absent
+    ones are excluded), so counting its length would tell an operator who just
+    paused every user that they are all still "running".
+    """
+    users = _client_with([_fake_container(paused=True), _fake_container()])
+    with patch("src.pkg.lifecycle.deploy._users_client", return_value=users):
+        assert lifecycle.running_user_container_count(str(tmp_path)) == 1
+
+
 def test_stop_acts_on_core_services_only(tmp_path):
     """stop issues 'compose stop' on the core services, never on user containers."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")

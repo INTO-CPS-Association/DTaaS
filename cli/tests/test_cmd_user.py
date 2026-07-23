@@ -228,11 +228,13 @@ def test_stop_rejects_starting_user(
 
 
 def test_resume_requires_names_or_file(runner):
-    """A bare resume with no USERNAMES and no --file is rejected."""
+    """A bare resume with no USERNAMES and no --file is rejected, naming --all
+    as the third way to supply a target."""
     result = runner.invoke(dtaas, ["user", "resume"])
 
     assert result.exit_code != 0
     assert "Provide one or more USERNAMES" in result.output
+    assert "--all" in result.output
 
 
 _STATUS_ROWS = [

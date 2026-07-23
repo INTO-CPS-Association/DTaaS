@@ -108,15 +108,19 @@ def collect_status(directory="."):
 
 
 def running_user_container_count(directory="."):
-    """Number of per-user containers currently running, 0 when none/absent.
+    """Number of per-user containers currently in the 'running' state.
 
     Lets 'platform stop'/'pause' tell the operator how many per-user containers
     were deliberately left running (the core-only suspend does not touch them).
+    Uses ps(all=True) plus a state check (like _row) rather than the bare
+    non-stopped ps(), which would also count already-paused containers as
+    "still running".
     """
     client = deploy._users_client(directory)
     if client is None:
         return 0
-    return len(client.compose.ps())
+    containers = client.compose.ps(all=True)
+    return sum(1 for container in containers if _state_name(container) == "running")
 
 
 def stop(directory="."):
