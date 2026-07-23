@@ -104,8 +104,8 @@ the second digital twin is to be selected.
 
 Logging controls whether DTaaS records workflow events in your browser
 (stored locally in IndexedDB). If the deployment is configured with
-a remote logger, events may also be streamed to that server. View and download
-logs at `/insights/log`.
+a remote logger,  a remote logger, events may also be streamed to that server. See
+ [Logs](logs.md) for viewing and downloading logs at `/insights/log`.
 
 ## 💾 Saving and Resetting Changes
 

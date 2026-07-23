@@ -96,7 +96,7 @@ all problems at once — see
 
 ### 📄 Abridged Configuration
 
-The CLI uses _dtaas.toml_ as its configuration file. An abridged
+The CLI uses *dtaas.toml* as its configuration file. An abridged
 configuration file is given here.
 
 ```toml
@@ -174,7 +174,7 @@ for `admin user add --file`) into `--output-dir`; `--force` overwrites
 an existing `dtaas.toml`. `validate` reports every problem in the
 file at once — see [Validation Rules](cli-config.md#validation-rules).
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -215,7 +215,7 @@ dtaas admin config reconcile --fix
 something that's actually running is a deliberate action; use
 `dtaas admin user delete` for those.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -232,7 +232,7 @@ a target directory ready to be customised.
 dtaas generate-deployment --type <name>
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -240,7 +240,7 @@ dtaas generate-deployment --type <name>
 | `--output-dir PATH` | `.` | Target directory (must already exist) |
 | `--force` | off | Overwrite files that already exist |
 
-**Examples**
+**Examples:**
 
 ```bash
 # Localhost demo in the current directory
@@ -269,14 +269,14 @@ the `files/template/` directory into your working directory.
 dtaas generate-project
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
 | `--output-dir PATH` | `.` | Target directory (must already exist) |
 | `--force` | off | Overwrite files that already exist |
 
-**Generated files**
+**Generated files:**
 
 | Item | Purpose |
 | :--- | :------ |
@@ -306,7 +306,7 @@ it ensures per-user workspace directories for every `[[users]]`
 record exist, recreating each from `files/template/` if missing, and
 sets ownership to `1000:100`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -351,7 +351,7 @@ the prompt in non-interactive scripts with `--yes`:
 dtaas admin uninstall --remove-user-files --yes
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -383,7 +383,7 @@ each project's compose command is idempotent, so retrying repeats a
 harmless no-op against whichever project already changed and retries
 the one that failed.
 
-**Lifecycle command matrix**
+**Lifecycle command matrix:**
 
 | Command | `docker compose` verb | Effect | Containers kept? | Reverse with |
 | :------ | :---------------------- | :----- | :----------------: | :----------- |
@@ -441,7 +441,7 @@ dtaas admin status --json
 ]
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -463,7 +463,7 @@ Both report `no existing DTaaS / Workspace installation` and exit `0`
 when nothing is installed (no containers in any state), so they are
 safe to call repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -484,7 +484,7 @@ dtaas admin resume
 Both report the absent-installation case and exit `0` when nothing is
 installed (no containers in any state).
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -514,7 +514,7 @@ then:
 If validation fails, live certificates are left untouched. The
 command is safe to run repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -552,7 +552,7 @@ refuses to apply if problems are found. It is **idempotent** — a
 second run with no `dtaas.toml` changes reports
 `No configuration changes` and restarts nothing.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -568,7 +568,7 @@ User management spans three files, each with a single owner — see
 [User Files](cli-config.md#user-files) for the full model.
 
 - **`dtaas.users.registry.json`** — the CLI-owned record of every
-  _additional_ user (added after install with `admin user add`),
+  *additional* user (added after install with `admin user add`),
   including their `desired_status` (`running`/`paused`/`stopped`).
   Mutated only by `admin user add`/`delete`/`pause`/`stop`/`resume`;
   never hand-edited.
@@ -581,10 +581,10 @@ User management spans three files, each with a single owner — see
 ### ➕ Add Users
 
 The initial, "starting" users an instance is installed with are declared in
-_dtaas.toml_ as `[[users]]` records (see [Abridged Configuration](#abridged-configuration));
+*dtaas.toml* as `[[users]]` records (see [Abridged Configuration](#abridged-configuration));
 they are hand-edited once, at install time, and never rewritten by the CLI.
 
-Users added later at runtime are **not** added to _dtaas.toml_. Instead, run
+Users added later at runtime are **not** added to *dtaas.toml*. Instead, run
 `dtaas admin user add`, either for a single user:
 
 ```bash
@@ -627,7 +627,7 @@ To (re)provision **every** registry user at once (e.g. after
 `compose.users.yml` was lost), use `dtaas admin config reconcile --fix`
 instead.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -643,7 +643,7 @@ created. The directory, if it exists, must be owned by the user executing
 the **dtaas** command on the host operating system. If the files do not
 have the expected ownership rights, the command fails.
 
-When an _email_ is given for a user, the CLI automatically adds the matching
+When an *email* is given for a user, the CLI automatically adds the matching
 traefik-forward-auth routing rule to `config/conf.server`; no manual editing
 of `conf.server` is needed. Restart the container for the change to take
 effect:
@@ -713,7 +713,7 @@ change to take effect:
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -763,7 +763,7 @@ aborting the whole batch:
 alice, bob paused successfully
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
@@ -773,7 +773,7 @@ alice, bob paused successfully
 ### 📌 Additional Points to Remember
 
 - `user add` starts a container for a new user, or restarts one that was
-  stopped. It reports a _Running_ status for containers already up, without
+  stopped. It reports a *Running* status for containers already up, without
   restarting them.
 - Provisioning is idempotent: re-running `user add` reprovisions every
   registry user without duplicating work. An empty registry is a no-op.
