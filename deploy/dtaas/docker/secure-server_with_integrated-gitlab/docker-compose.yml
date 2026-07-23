@@ -127,7 +127,7 @@ services:
       - users
 
   gitlab:
-    image: 'gitlab/gitlab-ce:18.10.1-ce.0'
+    image: 'gitlab/gitlab-ce:19.2.0-ce.0'
     container_name: gitlab
     restart: always
     hostname: ${SERVER_DNS}
