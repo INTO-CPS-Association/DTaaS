@@ -9,8 +9,9 @@ import click
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
 
+CONFIG_TOML = "dtaas.toml"
 TEMPLATE_FILES = [
-    "dtaas.toml",
+    CONFIG_TOML,
     "users.server.yml",
     "users.server.secure.yml",
     "users.resources.yml",
@@ -22,7 +23,7 @@ TEMPLATE_FILES = [
 # of these overlays -- e.g. users.resources.yml carries the per-user cgroup
 # limits, and a silent miss there is a resource-exhaustion footgun. These are
 # copied by 'dtaas deployment generate' so 'dtaas user add' can read them.
-USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != "dtaas.toml"]
+USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != CONFIG_TOML]
 
 DEPLOY_TYPES = {
     "localhost",
@@ -116,7 +117,7 @@ def generate_config(dest_dir=".", force=False):
     Raises OSError on copy failure.
     """
     _validate_project_inputs(dest_dir)
-    skipped = _copy_config_file("dtaas.toml", dest_dir, force)
+    skipped = _copy_config_file(CONFIG_TOML, dest_dir, force)
     _copy_config_file("users.csv", dest_dir, force)
     return skipped
 
