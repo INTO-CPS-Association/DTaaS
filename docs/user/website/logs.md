@@ -5,9 +5,9 @@ users interact with the workbench: page navigation, button and link clicks,
 form changes, and notifications. These events are captured entirely in the
 browser and can be reviewed on the **Workflow Logs** page.
 
-## Enabling Logging
+## 🔓 Enabling Logging
 
-Logging is disabled by default. It can be enabled from the
+Logging is disabled by default. It can be enabled using the
 **Enable Logging** checkbox in the **Logging Settings** section of the
 [Settings](settings.md) page (**Account** > **Settings**). No events are
 captured, and none of the pages described below record anything, until this
@@ -18,7 +18,7 @@ server, a notice is shown on the Settings page. Remote logging should only be
 kept enabled with the consent of the person whose workbench activity is
 being recorded.
 
-## Viewing the Logs
+## 👁️ Viewing the Logs
 
 > **URL**: `https://intocps.org/insights/log` or
 > `http://localhost:4000/insights/log`
@@ -40,7 +40,7 @@ The toolbar above the log list provides the following controls:
 | Download                    | Exports the currently displayed entries as a `.jsonl` file.                             |
 | Live update                 | Streams new events into the view as they are recorded.                                  |
 
-## Log Entries (Card View)
+## 🗂️ Log Entries (Card View)
 
 Each entry is shown as a card with:
 
@@ -52,10 +52,10 @@ Each entry is shown as a card with:
 - Any additional context recorded for the event, shown as small chips
   (for example a link's target URL, or a form field's changed value).
 
-## Filtering Logs
+## 🔍 Filtering Logs
 
 Typing into the **Filter logs** box narrows the entries to those whose event
-type, label, element, page, or context text contain the search text. The
+type, label, element, page, or context text contains the search text. The
 entry count above the log list updates to show how many of the total
 entries match, for example *3 of 10 log entries*.
 
@@ -64,7 +64,7 @@ entries match, for example *3 of 10 log entries*.
 The **Download** button label changes to **Download Filtered JSONL** while a
 filter is active, so only the entries currently shown are exported.
 
-## Raw View
+## 🧾 Raw View
 
 Toggling **Raw view** displays the same entries as pretty-printed JSON
 Lines instead of cards, and adds a **Copy to clipboard** button. To keep the
@@ -74,7 +74,7 @@ entries; a note is shown when more entries exist. **Download** and
 entry currently displayed (i.e. respecting the filter, if any).
 
 Each line is a single JSON object. For example, a click on a link followed
-by the resulting page navigation appear as:
+by the resulting page navigation appears as:
 
 ```json
 {
@@ -118,7 +118,7 @@ by the resulting page navigation appear as:
 | `sessionId`        | A random identifier generated for the current browser session.                       |
 | `userHash`         | A SHA-256 hash of the username, used to link events without recording it in plain text. |
 
-## Live Updates
+## 🔴 Live Updates
 
 Turning on **Live update** subscribes the page to new log events as they are
 recorded elsewhere in the browser (including other open tabs), and reloads
@@ -126,14 +126,14 @@ the list automatically. It is turned off by default because continuously
 reloading a large log store is unnecessary while just reviewing past
 entries.
 
-## Clearing Logs
+## 🗑️ Clearing Logs
 
 The :material-delete-outline: icon opens a confirmation dialog before
 permanently deleting all stored log entries. This action cannot be undone,
 and only clears entries stored locally in the browser; it has no effect on
 any copies already streamed to a remote logging server.
 
-## Privacy and Storage
+## 🔒 Privacy and Storage
 
 - Log entries are stored locally in the browser (IndexedDB) and never leave
   the device, unless the DTaaS installation is configured with a remote
@@ -146,7 +146,7 @@ any copies already streamed to a remote logging server.
 - The `sessionId` field is a random value generated per browser session and
   is not linked to user identity.
 
-## Summary
+## 💭 Summary
 
 This page has described the client-side logging feature of the DTaaS
 website: enabling it from Settings, viewing and filtering recorded events

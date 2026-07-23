@@ -11,7 +11,7 @@ command. The complete `dtaas.toml` field reference — validation
 rules, the annotated example file, and the user-file model — is in
 the [Config Reference](cli-config.md).
 
-## Installation
+## 📦 Installation
 
 Installation inside a virtual environment is strongly recommended.
 
@@ -24,7 +24,7 @@ pip install dtaas
 dtaas --help                  # verify
 ```
 
-## Quick Start
+## ⚡ Quick Start
 
 From a clean machine to a running deployment:
 
@@ -48,7 +48,7 @@ Tear it down again with `dtaas admin uninstall` (add
 `--remove-user-files` to also delete per-user workspace directories;
 this prompts for confirmation, or pass `--yes` to skip the prompt).
 
-### Deployment Types
+### 🗺️ Deployment Types
 
 | `--type` | When to use | Support level |
 | :------- | :---------- | :------------- |
@@ -72,7 +72,7 @@ The generated packages match the
 the CLI fills in the configuration and file structure that the manual
 path asks you to prepare by hand.
 
-## Configuration
+## ⚙️ Configuration
 
 The CLI treats `dtaas.toml` as the single source of truth. It looks
 for the file in `--output-dir` first, then in the current working
@@ -94,9 +94,9 @@ Always run `dtaas admin config validate` after editing; it reports
 all problems at once — see
 [Validation Rules](cli-config.md#validation-rules) for the full list.
 
-### Abridged Configuration
+### 📄 Abridged Configuration
 
-The CLI uses _dtaas.toml_ as configuration file. An abridged
+The CLI uses _dtaas.toml_ as its configuration file. An abridged
 configuration file is given here.
 
 ```toml
@@ -156,13 +156,13 @@ email = "username2@intocps.org"
   workspace via the CLI or by restarting the container in Docker Compose).
 - Use units (`M`, `G`) for memory and shared memory values.
 
-## Commands
+## 🛠 Commands
 
 This section documents every `dtaas` command not already covered
 above. Every command accepts `--output-dir` (default `.`), checked
 before falling back to the current working directory.
 
-### `admin config generate` / `admin config validate`
+### 🗒️ `admin config generate` / `admin config validate`
 
 ```bash
 dtaas admin config generate    # writes dtaas.toml + a sample users.csv
@@ -181,10 +181,10 @@ file at once — see [Validation Rules](cli-config.md#validation-rules).
 | `--output-dir PATH` | `.` | For `generate`: target directory (created if missing). For `validate`: search location |
 | `--force` | off | (`generate` only) Overwrite an existing `dtaas.toml` |
 
-### `admin config reconcile`
+### 🔍 `admin config reconcile`
 
-Reports drift between `dtaas.users.registry.json` (who **should** be
-provisioned) and the live `compose.users.yml` services (who **is**
+Reports drift between `dtaas.users.registry.json` (which **should** be
+provisioned) and the live `compose.users.yml` services (which **are**
 provisioned):
 
 ```bash
@@ -202,8 +202,8 @@ It lists:
   state does not match the user's registry `desired_status` (e.g.
   `desired 'paused' but container is 'running'`).
 
-When everything matches it prints `In sync: no drift detected.`
-Without `--fix` this is read-only. Pass `--fix` to reprovision
+When everything matches, it prints `In sync: no drift detected.`
+Without `--fix`, this is read-only. Pass `--fix` to reprovision
 **missing** and **drifted** users, and to pause/stop/start every
 provisioned user to match its `desired_status`:
 
@@ -222,7 +222,7 @@ something that's actually running is a deliberate action; use
 | `--output-dir PATH` | `.` | Installation directory to inspect |
 | `--fix` | off | Reprovision missing/drifted registry users, and enforce desired status, after reporting |
 
-### `generate-deployment`
+### 🏗️ `generate-deployment`
 
 Copies the full project structure for a specific deployment scenario
 — `docker-compose.yml`, config examples, and supporting files — into
@@ -260,7 +260,7 @@ TLS types — the `certs/` directory). See
 for the full details. If `dtaas.toml` is not found, a note is printed
 and generated files keep their default placeholder values.
 
-### `generate-project`
+### 🧰 `generate-project`
 
 Scaffolds `dtaas.toml`, Docker Compose user-workspace templates, and
 the `files/template/` directory into your working directory.
@@ -292,7 +292,7 @@ dtaas generate-project
     [Docker Hub](https://hub.docker.com/r/intocps/workspace/tags) and
     update the tag to a current, stable version before deploying.
 
-### `admin install`
+### 🚀 `admin install`
 
 Brings a generated deployment up with a single command.
 
@@ -324,7 +324,7 @@ The command fails with a clear error if `docker-compose.yml` is
 missing, `dtaas.toml` cannot be found, or the Docker daemon is
 unreachable.
 
-### `admin uninstall`
+### 🧹 `admin uninstall`
 
 Tears the deployment down, stopping and removing containers and
 networks.
@@ -366,7 +366,7 @@ dtaas admin uninstall --remove-user-files --yes
     directories. It refuses to follow a symlinked `files/`.
     Double-check `--output-dir` before using this flag.
 
-### Lifecycle operations
+### 🔄 Lifecycle operations
 
 Operational controls for an **already-installed** deployment: observe
 it with `status`, and suspend or resume it with `stop`/`start` and
@@ -405,7 +405,7 @@ the one that failed.
     reversible suspension. `pause` expects running containers and will
     error if the deployment is already stopped.
 
-#### `admin status`
+#### 📊 `admin status`
 
 Reports the state of every service, for both the deployment and user
 workloads.
@@ -448,7 +448,7 @@ dtaas admin status --json
 | `--output-dir PATH` | `.` | Installation directory |
 | `--json` | off | Emit machine-readable JSON instead of the table |
 
-#### `admin stop` / `admin start`
+#### ⏹️ `admin stop` / ▶️ `admin start`
 
 `stop` stops all services with `docker compose stop`; `start` brings
 the stopped containers back with `docker compose start`. Containers
@@ -469,7 +469,7 @@ safe to call repeatedly.
 | :----- | :------ | :----------- |
 | `--output-dir PATH` | `.` | Installation directory |
 
-#### `admin pause` / `admin resume`
+#### ⏸️ `admin pause` / ▶️ `admin resume`
 
 `pause` freezes every running container in place with
 `docker compose pause`; `resume` thaws them with
@@ -490,7 +490,7 @@ installed (no containers in any state).
 | :----- | :------ | :----------- |
 | `--output-dir PATH` | `.` | Installation directory |
 
-### `admin update --certs`
+### 🔁 `admin update --certs`
 
 Rotates TLS certificates of a running deployment in place: no project
 regeneration or manual file copying required.
@@ -521,7 +521,7 @@ command is safe to run repeatedly.
 | `--certs` | *(required)* | Refresh the deployment's TLS certificates |
 | `--output-dir PATH` | `.` | Installation directory |
 
-### `admin update --config`
+### 🧩 `admin update --config`
 
 Re-applies the values in `dtaas.toml` to an already-installed
 deployment's service config files without regenerating the project.
@@ -562,7 +562,7 @@ second run with no `dtaas.toml` changes reports
 
 `--certs` and `--config` may be combined in a single invocation.
 
-## User Management
+## 👥 User Management
 
 User management spans three files, each with a single owner — see
 [User Files](cli-config.md#user-files) for the full model.
@@ -578,7 +578,7 @@ User management spans three files, each with a single owner — see
   on the next provisioning run. `admin config reconcile` compares it
   against the registry to detect drift.
 
-### Add Users
+### ➕ Add Users
 
 The initial, "starting" users an instance is installed with are declared in
 _dtaas.toml_ as `[[users]]` records (see [Abridged Configuration](#abridged-configuration));
@@ -637,10 +637,10 @@ instead.
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups |
 | `--load-balance` / `--no-load-balance` | on | Mark `USERNAME` for load balancing |
 
-The command checks for the existence of `files/<username>` directory.
-If it does not exist, a new directory with correct file structure is created.
-The directory, if it exists, must be owned by the user executing
-**dtaas** command on the host operating system. If the files do not
+The command checks for the existence of the `files/<username>` directory.
+If it does not exist, a new directory with the correct file structure is
+created. The directory, if it exists, must be owned by the user executing
+the **dtaas** command on the host operating system. If the files do not
 have the expected ownership rights, the command fails.
 
 When an _email_ is given for a user, the CLI automatically adds the matching
@@ -652,7 +652,7 @@ effect:
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
-#### Resource limits (optional)
+#### ⚖️ Resource limits (optional)
 
 By default each user container is created with the CPU, memory, process, and
 shared-memory caps from `[common.resources]`, merged in from the
@@ -678,7 +678,7 @@ set_limits = false
 The flag is read on every `user add`, so a deployment can host both
 constrained and unconstrained users by toggling `set_limits` between runs.
 
-### Delete Users
+### ➖ Delete Users
 
 Pass one or more usernames to `dtaas admin user delete`:
 
@@ -721,11 +721,11 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 | `--file PATH` / `-f` | — | Bulk-delete users listed in a CSV (only the `username` column is used) |
 | `--dry-run` | off | Preview the removal without making any changes |
 
-### `admin user pause` / `stop` / `resume`
+### ⏯️ `admin user pause` / `stop` / `resume`
 
 Suspend or resume **specific additional (registry) users** without touching
 the rest of the installation, targeting one or more `USERNAMES` or a
-`--file`/`-f users.csv` (only the `username` column is read) the same way
+`--file`/`-f users.csv` (only the `username` column is read), the same way
 `admin user delete` does.
 
 ```bash
@@ -770,7 +770,7 @@ alice, bob paused successfully
 | `USERNAMES` | — | One or more usernames to target |
 | `--file PATH` / `-f` | — | Bulk-target users listed in a CSV (only the `username` column is used) |
 
-### Additional Points to Remember
+### 📌 Additional Points to Remember
 
 - `user add` starts a container for a new user, or restarts one that was
   stopped. It reports a _Running_ status for containers already up, without
@@ -781,7 +781,7 @@ alice, bob paused successfully
   whitespace, path separators, and shell metacharacters are rejected.
 - This command does not enable AuthMS authentication.
 
-### Known Limitations
+### ⚠️ Known Limitations
 
 - Usernames containing `.` are accepted by validation, but `.` is a special
   character for labels in Docker Compose, so containers for such users can

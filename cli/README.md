@@ -721,7 +721,7 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 
 Suspend or resume **specific additional (registry) users** without touching
 the rest of the installation, targeting one or more `USERNAMES` or a
-`--file`/`-f users.csv` (only the `username` column is read) the same way
+`--file`/`-f users.csv` (only the `username` column is read), the same way
 `admin user delete` does.
 
 ```bash
@@ -770,8 +770,8 @@ alice, bob paused successfully
 
 ### 🔍 `admin config reconcile`
 
-Reports drift between `dtaas.users.registry.json` (who **should** be
-provisioned) and the live `compose.users.yml` services (who **is**
+Reports drift between `dtaas.users.registry.json` (which **should** be
+provisioned) and the live `compose.users.yml` services (which **are**
 provisioned).
 
 ```bash
@@ -789,9 +789,9 @@ It lists:
   match the user's registry `desired_status` (e.g. `desired 'paused' but
   container is 'running'`).
 
-When everything matches it prints `In sync: no drift detected.`
+When everything matches, it prints `In sync: no drift detected.`
 
-Without `--fix` this is read-only. Pass `--fix` to reprovision **missing** and
+Without `--fix`, this is read-only. Pass `--fix` to reprovision **missing** and
 **drifted** users and to pause/stop/start every provisioned user to match its
 `desired_status` (equivalent to running `dtaas admin user add`, so it acts on
 the current directory, not `--output-dir`):

@@ -7,11 +7,11 @@ valid with `dtaas admin config validate` before running any other
 command. The installation workflow itself is covered in
 [Install with DTaaS CLI](cli.md).
 
-## Which Sections Does My Deployment Need?
+## 🧭 Which Sections Does My Deployment Need?
 
 Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 
-### Server Deployments
+### 🖥️ Server Deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 | --- | :---: | :---: | :---: | :---: |
@@ -25,7 +25,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[secure-server]` | — | — | ✅ | — |
 | `[secure-server-gitlab]` | — | — | — | ✅ |
 
-### Workspace Deployments
+### 🧑‍💻 Workspace Deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 | --- | :---: | :---: |
@@ -36,7 +36,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
 
-## Annotated `dtaas.toml`
+## 📄 Annotated `dtaas.toml`
 
 The full file below shows every possible key with inline comments.
 Copy it as a starting point and delete sections that do not apply to
@@ -155,7 +155,7 @@ client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
 
-## Validation Rules
+## ✅ Validation Rules
 
 `dtaas admin config validate` reads `dtaas.toml` (from `--output-dir`
 first, then the current directory) and reports all problems at once:
@@ -193,7 +193,7 @@ The `[common.resources]` limit fields (`cpus`, `pids_limit`,
 `true` (the default). With `set_limits = false` they are optional and
 ignored; any value still present is validated.
 
-## Configuration Substitution
+## 🔀 Configuration Substitution
 
 When `dtaas.toml` is present, `generate-deployment` reads
 deployment-specific values from it and substitutes them into the
@@ -211,7 +211,7 @@ and `[[users]]` sections are substituted across all types.
 If `dtaas.toml` is not found, a note is printed and generated files
 keep their default placeholder values.
 
-### TLS Certificate Placement
+### 🔐 TLS Certificate Placement
 
 For the TLS types (`secure-server`, `secure-server-gitlab`,
 `workspace-secure-server`), `generate-deployment` also populates the
@@ -219,7 +219,7 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 `[common.security].certs-src` from `dtaas.toml` and copies the latest
 `fullchain.pem` and `privkey.pem` there.
 
-## User Files
+## 👥 User Files
 
 User management spans three files, each with a single owner, modelled
 on the config/state split Terraform uses for `.tf` vs
@@ -247,11 +247,11 @@ on the config/state split Terraform uses for `.tf` vs
   running, refreshed on every add/delete. It is git-ignored and safe
   to delete.
 
-### Checking for Drift
+### 🔍 Checking for Drift
 
 `dtaas admin config reconcile` reports drift between
-`dtaas.users.registry.json` (who **should** be provisioned) and the
-live `compose.users.yml` services (who **is** provisioned). It lists:
+`dtaas.users.registry.json` (which **should** be provisioned) and the
+live `compose.users.yml` services (which **are** provisioned). It lists:
 
 - **missing** — registered but not currently provisioned;
 - **unexpected** — provisioned but not in the registry (investigate:
@@ -262,8 +262,8 @@ live `compose.users.yml` services (who **is** provisioned). It lists:
   state does not match the user's registry `desired_status` (e.g.
   `desired 'paused' but container is 'running'`).
 
-When everything matches it prints `In sync: no drift detected.`
-Without `--fix` this is read-only. Pass `--fix` to reprovision
+When everything matches, it prints `In sync: no drift detected.`
+Without `--fix`, this is read-only. Pass `--fix` to reprovision
 **missing** and **drifted** users, and to pause/stop/start every
 provisioned user to match its `desired_status`; **unexpected**
 services are never touched by `--fix` — use `dtaas admin user delete`
