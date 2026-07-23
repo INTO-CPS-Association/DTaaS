@@ -144,9 +144,9 @@ proper test tree per service.
    the testing and documentation burden.
 
 1. *Image version drift and unpinned images.* The docker compose files
-   pins versions of `intocps/dtaas-web` and `intocps/libms` services
+   pin versions of `intocps/dtaas-web` and `intocps/libms` services
    which might be old versions of the latest releases available on
-   [docker hub](https://hub.docker.com/u/intocps).
+   [Docker Hub](https://hub.docker.com/u/intocps).
    `traefik-forward-auth` uses `:latest` of a third-party image whose
    upstream maintenance has stalled. Compose files are not updated
    by the release process

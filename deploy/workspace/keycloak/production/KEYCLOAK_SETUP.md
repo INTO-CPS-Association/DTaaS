@@ -1,6 +1,7 @@
 # Keycloak Setup Guide for DTaaS
 
-This guide explains how to configure Keycloak for authentication in the DTaaS workspace deployment.
+This guide explains how to configure Keycloak for authentication in
+the DTaaS workspace deployment.
 
 ## Key Benefits
 
@@ -44,7 +45,7 @@ Keycloak-specific environment variables are:
 | `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
 | `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://intocps.org/auth/realms/dtaas` |
 
-Edit Keycloak-configuration in `config/.env`:
+Edit Keycloak configuration in `config/.env`:
 
 ```bash
 # Keycloak Admin Credentials (for initial setup)
