@@ -87,13 +87,13 @@ PY
 ✅ Copy the printed hash into `config/dex-config.yaml`
 as the value of `hash`.
 
-## 👤 Username alignment with `.env`
+## 👤 Username alignment with `config/.env`
 
-DTaaS routes and workspace paths use `.env` value `DEFAULT_USER`.
+DTaaS routes and workspace paths use `config/.env` value `DEFAULT_USER`.
 
 For local/passwordDB mode, keep these aligned:
 
-- `.env`: `DEFAULT_USER=<desired-user>`
+- `config/.env`: `DEFAULT_USER=<desired-user>`
 - `config/dex-config.yaml`: set static user `username`
   and `preferredUsername` to the same `<desired-user>`
 

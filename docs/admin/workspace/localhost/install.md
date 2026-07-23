@@ -33,14 +33,14 @@ mentioned below are to be run this directory.
 Copy example configuration files first:
 
 ```bash
-cp .env.example .env
+cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
 ▶️ Start the demo:
 
 ```bash
-docker compose up -d
+docker compose --env-file config/.env up -d
 ```
 
 The application will be accessible at <http://localhost> from web browser.
@@ -52,7 +52,7 @@ Login using the default credentials.
 ⏹️ Stop the demo:
 
 ```bash
-docker compose down
+docker compose --env-file config/.env down
 ```
 
 ## 🌵Limitations

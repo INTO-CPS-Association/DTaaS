@@ -23,12 +23,12 @@ completed after bringing up the docker compose services.
 
 The compose commands used in the setup guides sets the environment
 with an environment file. An example of this file can be found at
-`.env.example`.
+`config/.env.example`.
 
 Create a copy of this example file without the example suffix:
 
 ```bash
-cp .env.example .env
+cp config/.env.example config/.env
 ```
 
 ## 🌐 Domain
@@ -40,7 +40,7 @@ in this guide, replace it with the domain name of the remote machine.
 Ensure that the remote machine has a domain name and that it is
 accessible from the internet.
 
-Open `.env` and replace the current value of
+Open `config/.env` and replace the current value of
 the `SERVER_DNS` variable with the domain name:
 
 ```bash
@@ -77,7 +77,7 @@ chmod 600 ./certs/privkey.pem
 ## 👥 Usernames
 
 The usernames of the main users for the workspaces can be changed in
-the [environment variable file](#-environment) `.env`.
+the [environment variable file](#-environment) `config/.env`.
 Change the default values (`user1` and `user2`) to the desired usernames:
 
 ```bash
@@ -134,7 +134,7 @@ see [keycloak-setup.md](keycloak-setup.md)**
 
 ### Configure Environment Variables
 
-1. **For Keycloak (default)**, edit `.env` and fill in the Keycloak credentials:
+1. **For Keycloak (default)**, edit `config/.env` and fill in the Keycloak credentials:
 
    ```bash
    # Keycloak Admin Credentials

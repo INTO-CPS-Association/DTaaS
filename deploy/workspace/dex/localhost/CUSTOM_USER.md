@@ -16,7 +16,7 @@ Update these fields in `config/dex-config.yaml`:
 
 Dex configuration details are documented in [`config/DEX.md`](config/DEX.md).
 
-Edit `.env`.
+Edit `config/.env`.
 
   | URL Path     | Example Value | Explanation                           |
   | :----------- | :------------ | :------------------------------------ |
@@ -24,7 +24,7 @@ Edit `.env`.
 
 ⚠️ Important alignment for local/passwordDB mode:
 
-- In `.env`, set `DEFAULT_USER=<desired-user>`.
+- In `config/.env`, set `DEFAULT_USER=<desired-user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 
@@ -35,13 +35,13 @@ Edit `.env`.
 Start the application:
 
 ```bash
-docker compose up -d
+docker compose --env-file config/.env up -d
 ```
 
 Stop the application:
 
 ```bash
-docker compose down
+docker compose --env-file config/.env down
 ```
 
 ### 🌍 Use
