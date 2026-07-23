@@ -73,8 +73,8 @@ entries; a note is shown when more entries exist. **Download** and
 **Copy to clipboard** are not affected by this limit and always cover every
 entry currently displayed (i.e. respecting the filter, if any).
 
-Each line is a single JSON object. For example, a click on a link followed
-by the resulting page navigation appears as:
+Each line is a single JSON object. Entries are shown newest-first,
+so a click on a link followed by the resulting page navigation appears as:
 
 ```json
 {
