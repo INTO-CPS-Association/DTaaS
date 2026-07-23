@@ -52,7 +52,7 @@ Each entry is shown as a card with:
 - Any additional context recorded for the event, shown as small chips
   (for example a link's target URL, or a form field's changed value).
 
-## 🔍 Filtering Logs
+## 🔍 Filtering Logs {#filtering-logs}
 
 Typing into the **Filter logs** box narrows the entries to those whose event
 type, label, element, page, or context text contains the search text. The

@@ -48,7 +48,7 @@ Tear it down again with `dtaas admin uninstall` (add
 `--remove-user-files` to also delete per-user workspace directories;
 this prompts for confirmation, or pass `--yes` to skip the prompt).
 
-### 🗺️ Deployment Types
+### 🗺️ Deployment Types {#deployment-types}
 
 | `--type` | When to use | Support level |
 | :------- | :---------- | :------------- |
@@ -94,7 +94,7 @@ Always run `dtaas admin config validate` after editing; it reports
 all problems at once — see
 [Validation Rules](cli-config.md#validation-rules) for the full list.
 
-### 📄 Abridged Configuration
+### 📄 Abridged Configuration {#abridged-configuration}
 
 The CLI uses *dtaas.toml* as its configuration file. An abridged
 configuration file is given here.
@@ -366,7 +366,7 @@ dtaas admin uninstall --remove-user-files --yes
     directories. It refuses to follow a symlinked `files/`.
     Double-check `--output-dir` before using this flag.
 
-### 🔄 Lifecycle operations
+### 🔄 Lifecycle operations {#lifecycle-operations}
 
 Operational controls for an **already-installed** deployment: observe
 it with `status`, and suspend or resume it with `stop`/`start` and

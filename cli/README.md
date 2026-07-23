@@ -160,7 +160,7 @@ The `[common.resources]` limit fields (`cpus`, `pids_limit`, `mem_limit`,
 `set_limits = false` they are optional and ignored; any value still present is
 validated.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -179,7 +179,7 @@ directory ready to be customised.
 dtaas generate-deployment --type <name>
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -204,7 +204,7 @@ dtaas generate-deployment --type <name>
 > manual hardening steps documented in the `README.md` and `CONFIGURATION.md`
 > shipped with each generated project.
 
-**Examples**
+**Examples:**
 
 ```bash
 # Localhost demo in the current directory
@@ -259,7 +259,7 @@ the installation directory. Before starting, it ensures per-user workspace
 directories for every `[[users]]` record exist, recreating each from
 `files/template/` if missing and sets ownership to `1000:100`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -304,7 +304,7 @@ in non-interactive scripts with `--yes`:
 dtaas admin uninstall --remove-user-files --yes
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -335,7 +335,7 @@ succeeded, there is no rollback, re-run the same command: each project's
 compose command is idempotent, so retrying repeats a harmless no-op against
 whichever project already changed and retries the one that failed.
 
-**Lifecycle command matrix**
+**Lifecycle command matrix:**
 
 | Command | `docker compose` verb | Effect | Containers kept? | Reverse with |
 |---|---|---|:---:|---|
@@ -389,7 +389,7 @@ dtaas admin status --json
 ]
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -411,7 +411,7 @@ Both report `no existing DTaaS / Workspace installation` and exit `0` when
 nothing is installed (no containers in any state), so they are safe to call
 repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -431,7 +431,7 @@ dtaas admin resume
 Both report the absent-installation case and exit `0` when nothing is
 installed (no containers in any state).
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -461,7 +461,7 @@ The command reads `[common.security].certs-src` from `dtaas.toml`, then:
 If validation fails, live certificates are left untouched. The command is safe
 to run repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -499,7 +499,7 @@ dtaas admin update --config --output-dir ./my-server
 apply if problems are found. It is **idempotent** a second run with no
 `dtaas.toml` changes reports `No configuration changes` and restarts nothing.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -520,14 +520,14 @@ Scaffolds `dtaas.toml`, Docker Compose user-workspace templates, and the
 dtaas generate-project
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
 | `--output-dir PATH` | `.` | Target directory (must already exist) |
 | `--force` | off | Overwrite files that already exist |
 
-**Generated files**
+**Generated files:**
 
 | Item | Purpose |
 |---|---|
@@ -551,7 +551,7 @@ Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
 (see [User files](#-user-files)), not in `dtaas.toml`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -605,7 +605,7 @@ registry. To (re)provision **every** registry user at once (e.g. after
 `compose.users.yml` was lost), use `dtaas admin config reconcile --fix`
 instead.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -670,7 +670,7 @@ and unconstrained users by toggling `set_limits` between runs.
 
 Removes one or more users from a running DTaaS instance, like `userdel`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -759,7 +759,7 @@ aborting the whole batch:
 alice, bob paused successfully
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -804,7 +804,7 @@ dtaas admin config reconcile --fix
 that's actually running is a deliberate action use
 `dtaas admin user delete` for those.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
