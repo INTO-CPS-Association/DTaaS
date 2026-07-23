@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.6.13
+    image: traefik:v3.7.8
     restart: unless-stopped
     command:
       - "--log.level=INFO"
@@ -16,7 +16,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   client:
-    image: intocps/dtaas-web:1.0.2
+    image: intocps/dtaas-web:1.4.0
     restart: unless-stopped
     volumes:
       - "./config/client.js:/dtaas/client/build/env.js"
@@ -27,7 +27,7 @@ services:
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
 
   user:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     volumes:
       - "./files/common:/workspace/common"

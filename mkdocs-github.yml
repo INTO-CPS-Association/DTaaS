@@ -99,7 +99,6 @@ nav:
                   - Install: admin/workspace/localhost/install.md
                   - Dex: admin/workspace/localhost/dex.md
                   - Custom User: admin/workspace/localhost/custom-user.md
-                  - Developer: admin/workspace/localhost/developer.md
               - Secure Server:
                   - Install: admin/workspace/secure-server/install.md
                   - Configuration:

@@ -145,8 +145,8 @@ proper test tree per service.
    cannot cover this matrix.
 
 1. *Image version drift and unpinned images.* The `server` scenario
-   pins `intocps/dtaas-web:1.0.2` and `intocps/libms:0.5.9` while the
-   repo releases are 1.3.0 and 0.5.11; `traefik-forward-auth` uses
+   pins `intocps/dtaas-web:1.4.0` and `intocps/libms:0.5.11` while the
+   repo releases are 1.4.0 and 0.5.11; `traefik-forward-auth` uses
    `:latest` of a third-party image whose upstream maintenance has
    stalled. Compose files are not updated by the release process
    (see [SI-7](systemic-issues.md#si-7-release-engineering-gaps)).

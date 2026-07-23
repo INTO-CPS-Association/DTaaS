@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.6.13
+    image: traefik:v3.7.8
     restart: unless-stopped
     command:
       - "--api.insecure=true"
@@ -58,7 +58,7 @@ services:
       - frontend
 
   user1:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     volumes:
       - "./files/common:/workspace/common"
@@ -75,7 +75,7 @@ services:
       - users
 
   user2:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     volumes:
       - "./files/common:/workspace/common"

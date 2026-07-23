@@ -59,15 +59,9 @@ Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## 🧩 Dex Companion in Detail
+## ℹ️ OAuth Scope Notes
 
-The companion service proxies all Dex endpoints and injects a
-`profile` claim into `/dex/userinfo` when `preferred_username`
-is present. This keeps the setup self-contained
-(no GitLab connector) while matching the DTaaS client
-expectation for username extraction.
-
-ℹ️ Scope note for local/passwordDB mode:
+Scope note for local/passwordDB mode:
 
 - Supported: `openid profile email groups offline_access`
 - Not supported by Dex local passwordDB: `read_user read_repository api`

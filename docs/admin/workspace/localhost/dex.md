@@ -14,8 +14,7 @@ template. Duplicate `config/dex-config.yaml.example` to
 
 Set to `http://localhost:5556/dex`.
 
-This must match the URL used by the web client (`REACT_APP_AUTH_AUTHORITY`)
-and the Dex companion/proxy endpoint.
+This must match the URL used by the web client (`REACT_APP_AUTH_AUTHORITY`).
 
 ### `storage.type: memory`
 
