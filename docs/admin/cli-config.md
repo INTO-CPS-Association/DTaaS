@@ -7,11 +7,11 @@ valid with `dtaas admin config validate` before running any other
 command. The installation workflow itself is covered in
 [Install with DTaaS CLI](cli.md).
 
-## Which Sections Does My Deployment Need?
+## 🧭 Which Sections Does My Deployment Need?
 
 Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 
-### Server Deployments
+### 🖥️ Server Deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 | --- | :---: | :---: | :---: | :---: |
@@ -25,7 +25,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[secure-server]` | — | — | ✅ | — |
 | `[secure-server-gitlab]` | — | — | — | ✅ |
 
-### Workspace Deployments
+### 🧑‍💻 Workspace Deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 | --- | :---: | :---: |
@@ -36,7 +36,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
 
-## Annotated `dtaas.toml`
+## 📄 Annotated `dtaas.toml`
 
 The full file below shows every possible key with inline comments.
 Copy it as a starting point and delete sections that do not apply to
@@ -155,7 +155,7 @@ client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
 
-## Validation Rules
+## ✅ Validation Rules
 
 `dtaas admin config validate` reads `dtaas.toml` (from `--output-dir`
 first, then the current directory) and reports all problems at once:
@@ -193,7 +193,7 @@ The `[common.resources]` limit fields (`cpus`, `pids_limit`,
 `true` (the default). With `set_limits = false` they are optional and
 ignored; any value still present is validated.
 
-## Configuration Substitution
+## 🔀 Configuration Substitution
 
 When `dtaas.toml` is present, `generate-deployment` reads
 deployment-specific values from it and substitutes them into the
@@ -211,7 +211,7 @@ and `[[users]]` sections are substituted across all types.
 If `dtaas.toml` is not found, a note is printed and generated files
 keep their default placeholder values.
 
-### TLS Certificate Placement
+### 🔐 TLS Certificate Placement
 
 For the TLS types (`secure-server`, `secure-server-gitlab`,
 `workspace-secure-server`), `generate-deployment` also populates the
@@ -219,7 +219,7 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 `[common.security].certs-src` from `dtaas.toml` and copies the latest
 `fullchain.pem` and `privkey.pem` there.
 
-## User Files
+## 👥 User Files
 
 User management spans three files, each with a single owner, modelled
 on the config/state split Terraform uses for `.tf` vs
@@ -228,7 +228,7 @@ on the config/state split Terraform uses for `.tf` vs
 | File | Owner | Contents | Git |
 | --- | --- | --- | --- |
 | `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Tracked, hand-edited |
-| `dtaas.users.registry.json` | CLI (`user add` / `user delete`) | **Additional** users, same fields | Tracked, CLI-written, never hand-edited |
+| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) | Tracked, CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored, runtime cache |
 
 - **`dtaas.toml`** is written once by a human and never rewritten by
@@ -236,28 +236,40 @@ on the config/state split Terraform uses for `.tf` vs
   mutated.
 - **`dtaas.users.registry.json`** is a database the CLI owns and
   mutates atomically (the way `useradd` owns `/etc/passwd`). Edit its
-  users through `dtaas admin user add --file users.csv` /
-  `dtaas admin user delete`, not by hand. The `users.csv` copied by
+  users through `dtaas admin user add --file users.csv` / `delete` /
+  `pause` / `stop` / `resume`, not by hand. `users.csv` copied by
   `dtaas admin config generate` is the human-editable bulk input that
-  feeds it.
+  feeds `add`/`delete`. `desired_status` defaults to `running` for a
+  user who has never been paused or stopped, and `user add` /
+  `config reconcile --fix` skip starting any user whose
+  `desired_status` is not `running`.
 - **`.dtaas.state.json`** is a disposable cache of what is actually
   running, refreshed on every add/delete. It is git-ignored and safe
   to delete.
 
-### Checking for Drift
+### 🔍 Checking for Drift
 
 `dtaas admin config reconcile` reports drift between
-`dtaas.users.registry.json` (who **should** be provisioned) and the
-live `compose.users.yml` services (who **is** provisioned). It lists:
+`dtaas.users.registry.json` (which **should** be provisioned) and the
+live `compose.users.yml` services (which **are** provisioned). It lists:
 
 - **missing** — registered but not currently provisioned;
 - **unexpected** — provisioned but not in the registry (investigate:
   may be a manual edit or a partial delete);
 - **drifted** — provisioned, but the live config no longer matches
-  what `.dtaas.state.json` recorded when it was last provisioned.
+  what `.dtaas.state.json` recorded when it was last provisioned;
+- **desired-status drift** — provisioned, but the live container
+  state does not match the user's registry `desired_status` (e.g.
+  `desired 'paused' but container is 'running'`).
 
-When everything matches it prints `In sync: no drift detected.`
-Without `--fix` this is read-only. Pass `--fix` to reprovision
-**missing** and **drifted** users afterward; **unexpected** services
-are never touched by `--fix` — use `dtaas admin user delete` for
-those.
+When everything matches, it prints `In sync: no drift detected.`
+Without `--fix`, this is read-only. Pass `--fix` to reprovision
+**missing** and **drifted** users, and to pause/stop/start every
+provisioned user to match its `desired_status`; **unexpected**
+services are never touched by `--fix` — use `dtaas admin user delete`
+for those.
+
+Suspending a user with `dtaas admin user pause`/`stop` is intentional
+and durable: it is reflected as that user's `desired_status`, so a
+later `reconcile` treats the suspension as the desired state instead
+of reporting it as drift.

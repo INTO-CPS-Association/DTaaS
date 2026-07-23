@@ -160,7 +160,7 @@ The `[common.resources]` limit fields (`cpus`, `pids_limit`, `mem_limit`,
 `set_limits = false` they are optional and ignored; any value still present is
 validated.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -179,7 +179,7 @@ directory ready to be customised.
 dtaas deployment generate --type <name>
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -204,7 +204,7 @@ dtaas deployment generate --type <name>
 > manual hardening steps documented in the `README.md` and `CONFIGURATION.md`
 > shipped with each generated project.
 
-**Examples**
+**Examples:**
 
 ```bash
 # Localhost demo in the current directory
@@ -259,7 +259,7 @@ the installation directory. Before starting, it ensures per-user workspace
 directories for every `[[users]]` record exist, recreating each from
 `files/template/` if missing and sets ownership to `1000:100`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -304,7 +304,7 @@ in non-interactive scripts with `--yes`:
 dtaas platform uninstall --remove-user-files --yes
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -333,7 +333,7 @@ users with [`dtaas user stop`/`pause`/`resume`](#️-user-pause--stop--resume)
 instead. `platform status`, being read-only, still reports the whole
 installation (core services **and** user containers).
 
-**Lifecycle command matrix**
+**Lifecycle command matrix:**
 
 | Command | `docker compose` verb | Effect | Containers kept? | Reverse with |
 |---|---|---|:---:|---|
@@ -387,7 +387,7 @@ dtaas platform status --json
 ]
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -409,7 +409,7 @@ Both report `no existing DTaaS / Workspace installation` and exit `0` when
 nothing is installed (no containers in any state), so they are safe to call
 repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -429,7 +429,7 @@ dtaas platform resume
 Both report the absent-installation case and exit `0` when nothing is
 installed (no containers in any state).
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -459,7 +459,7 @@ The command reads `[common.security].certs-src` from `dtaas.toml`, then:
 If validation fails, live certificates are left untouched. The command is safe
 to run repeatedly.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -497,7 +497,7 @@ dtaas platform update --config --output-dir ./my-server
 apply if problems are found. It is **idempotent** a second run with no
 `dtaas.toml` changes reports `No configuration changes` and restarts nothing.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -545,7 +545,7 @@ Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
 (see [User files](#-user-files)), not in `dtaas.toml`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -599,7 +599,7 @@ registry. To (re)provision **every** registry user at once (e.g. after
 `compose.users.yml` was lost), use `dtaas config reconcile --fix`
 instead.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -664,7 +664,7 @@ and unconstrained users by toggling `set_limits` between runs.
 
 Removes one or more users from a running DTaaS instance, like `userdel`.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -753,7 +753,7 @@ aborting the whole batch:
 alice, bob paused successfully
 ```
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
@@ -764,8 +764,8 @@ alice, bob paused successfully
 
 ### 🔍 `config reconcile`
 
-Reports drift between `dtaas.users.registry.json` (who **should** be
-provisioned) and the live `compose.users.yml` services (who **is**
+Reports drift between `dtaas.users.registry.json` (which **should** be
+provisioned) and the live `compose.users.yml` services (which **are**
 provisioned).
 
 ```bash
@@ -783,9 +783,9 @@ It lists:
   match the user's registry `desired_status` (e.g. `desired 'paused' but
   container is 'running'`).
 
-When everything matches it prints `In sync: no drift detected.`
+When everything matches, it prints `In sync: no drift detected.`
 
-Without `--fix` this is read-only. Pass `--fix` to reprovision **missing** and
+Without `--fix`, this is read-only. Pass `--fix` to reprovision **missing** and
 **drifted** users and to pause/stop/start every provisioned user to match its
 `desired_status` (equivalent to running `dtaas user add`, so it acts on
 the current directory, not `--output-dir`):
@@ -798,7 +798,7 @@ dtaas config reconcile --fix
 that's actually running is a deliberate action use
 `dtaas user delete` for those.
 
-**Options**
+**Options:**
 
 | Option | Default | Description |
 |---|---|---|
