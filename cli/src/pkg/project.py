@@ -16,10 +16,13 @@ TEMPLATE_FILES = [
     "users.resources.yml",
 ]
 
-# The user-management overlay templates (everything generate_project copies
-# except dtaas.toml, which 'dtaas config generate' now owns exclusively). These
-# are copied by 'dtaas deployment generate' so 'dtaas user add' can read them.
-USER_TEMPLATE_FILES = TEMPLATE_FILES[1:]
+# The user-management overlay templates: every template except dtaas.toml,
+# which 'dtaas config generate' now owns exclusively. Listed by exclusion (not
+# positional slicing) so prepending to TEMPLATE_FILES cannot silently drop one
+# of these overlays -- e.g. users.resources.yml carries the per-user cgroup
+# limits, and a silent miss there is a resource-exhaustion footgun. These are
+# copied by 'dtaas deployment generate' so 'dtaas user add' can read them.
+USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != "dtaas.toml"]
 
 DEPLOY_TYPES = {
     "localhost",
@@ -71,17 +74,6 @@ def _try_copy_template(template_name, dest_dir, force):
     except OSError as exc:
         return str(exc)
     return None
-
-
-def generate_project(dest_dir=".", force=False):
-    """Copy project template files and initialize workspace structure."""
-    _validate_project_inputs(dest_dir)
-    errors = list(
-        filter(None, (_try_copy_template(n, dest_dir, force) for n in TEMPLATE_FILES))
-    )
-    if errors:
-        raise OSError("\n".join(errors))
-    _create_workspace_dirs(dest_dir)
 
 
 def generate_user_templates(dest_dir=".", force=False):

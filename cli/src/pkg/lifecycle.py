@@ -107,6 +107,18 @@ def collect_status(directory="."):
     return rows + _user_rows(directory)
 
 
+def running_user_container_count(directory="."):
+    """Number of per-user containers currently running, 0 when none/absent.
+
+    Lets 'platform stop'/'pause' tell the operator how many per-user containers
+    were deliberately left running (the core-only suspend does not touch them).
+    """
+    client = deploy._users_client(directory)
+    if client is None:
+        return 0
+    return len(client.compose.ps())
+
+
 def stop(directory="."):
     """Stop the core services in place without removing them ('compose stop').
 

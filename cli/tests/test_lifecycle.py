@@ -109,6 +109,19 @@ def test_collect_status_requires_compose_file(tmp_path):
         lifecycle.collect_status(directory)
 
 
+def test_running_user_container_count(tmp_path):
+    """running_user_container_count returns the number of live user containers."""
+    users = _client_with([_fake_container(), _fake_container()])
+    with patch("src.pkg.lifecycle.deploy._users_client", return_value=users):
+        assert lifecycle.running_user_container_count(str(tmp_path)) == 2
+
+
+def test_running_user_container_count_absent(tmp_path):
+    """running_user_container_count is 0 when there is no user project."""
+    with patch("src.pkg.lifecycle.deploy._users_client", return_value=None):
+        assert lifecycle.running_user_container_count(str(tmp_path)) == 0
+
+
 def test_stop_acts_on_core_services_only(tmp_path):
     """stop issues 'compose stop' on the core services, never on user containers."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")

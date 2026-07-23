@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users_compose
-from src.pkg.project import generate_project
+from src.pkg.project import generate_user_templates
 # pylint: disable=redefined-outer-name
 
 
@@ -115,7 +115,7 @@ def test_get_compose_config_error():
 @pytest.fixture
 def project_templates(tmp_path, monkeypatch):
     """Generate the real CLI templates into a temp dir and run the CLI from there."""
-    generate_project(str(tmp_path))
+    generate_user_templates(str(tmp_path))
     monkeypatch.chdir(tmp_path)
     return tmp_path
 

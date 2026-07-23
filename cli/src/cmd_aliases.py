@@ -1,15 +1,18 @@
 """Deprecated command spellings, forwarding to the new <noun> <verb> surface.
 
 Every old spelling ('dtaas admin install', 'dtaas generate-deployment', ...)
-remains here as an explicit, hidden alias that forwards to its replacement and
-prints a one-line deprecation notice to stderr (see DTaaS-CLI-Design.md §8).
+remains here as an explicit alias that warns and forwards to its replacement for
+one release (see DTaaS-CLI-Design.md §8). The whole 'admin' group is hidden from
+the top-level 'dtaas --help', but its leaves stay visible under 'dtaas admin
+--help' so an operator following an old runbook still finds the old->new map.
 This whole module is a temporary deprecation-window layer: deleting it (and the
 register_aliases call in cmd.py) removes every old spelling at once.
 """
 
 from typing import NamedTuple
 import click
-
+from .pkg import project as projectPkg
+from .cmd_options import target_dir_option, force_option
 
 _PLATFORM_VERBS = (
     "install",
@@ -22,9 +25,20 @@ _PLATFORM_VERBS = (
     "resume",
 )
 _CONFIG_VERBS = ("generate", "validate", "reconcile")
-_USER_VERBS = ("add", "delete", "status", "pause", "stop", "resume")
+# 'status' is intentionally absent: 'user status' is new in 2.0 with no old
+# spelling, so it gets no alias (it was never called 'admin user status').
+_USER_VERBS = ("add", "delete", "pause", "stop", "resume")
 
-_PROJECT_NOTE = "Note: 'dtaas config generate' now writes dtaas.toml; run it first."
+# platform stop/start/pause/resume narrowed from "whole installation" (pre-2.0
+# 'admin ...') to "core services only", so their aliases must warn about the
+# changed blast radius, not just the rename. Maps each narrowed verb to the
+# 'user' verb that now covers per-user containers.
+_USER_EQUIVALENT = {
+    "stop": "stop",
+    "start": "resume",
+    "pause": "pause",
+    "resume": "resume",
+}
 
 
 class _Dep(NamedTuple):
@@ -36,57 +50,118 @@ class _Dep(NamedTuple):
     note: str = ""
 
 
-def _alias(new_cmd, dep):
-    """Build a hidden Command that warns then forwards to *new_cmd*'s callback.
+class _DeprecatedCommand(click.Command):
+    """A deprecated alias: warns (and optionally notes) then runs the real
+    command through Click's normal invoke path.
 
-    Reuses *new_cmd*'s params so the old spelling accepts the same flags; the
-    warning (and any *dep.note*) goes to stderr, then the real callback runs.
+    Going through super().invoke keeps pass_context / ctx.exit working, unlike
+    calling the wrapped callback directly.
     """
 
-    def callback(**kwargs):
-        click.echo(
-            f"Warning: 'dtaas {dep.old}' is deprecated and will be removed in a "
-            f"future release; use 'dtaas {dep.new}'.",
-            err=True,
-        )
-        if dep.note:
-            click.echo(dep.note, err=True)
-        return new_cmd.callback(**kwargs)
+    def __init__(self, notice, **kwargs):
+        super().__init__(**kwargs)
+        self._warning, self._note = notice
 
-    return click.Command(
+    def invoke(self, ctx):
+        click.echo(self._warning, err=True)
+        if self._note:
+            click.echo(self._note, err=True)
+        return super().invoke(ctx)
+
+
+def _alias(target, dep, hidden=True):
+    """Build a deprecated alias command from *target* for the *dep* spelling.
+
+    Reuses *target*'s params (shared Parameter instances -- Click treats them as
+    read-only, so this is safe) and callback, prefixing the help with a
+    DEPRECATED marker so 'dtaas <old> --help' is not mistaken for current usage.
+    """
+    warning = (
+        f"Warning: 'dtaas {dep.old}' is deprecated and will be removed in a "
+        f"future release; use 'dtaas {dep.new}'."
+    )
+    help_text = f"DEPRECATED: use 'dtaas {dep.new}'."
+    if target.help:
+        help_text = f"{help_text}\n\n{target.help}"
+    return _DeprecatedCommand(
+        (warning, dep.note),
         name=dep.name,
-        params=list(new_cmd.params),
-        callback=callback,
-        help=new_cmd.help,
-        hidden=True,
+        params=list(target.params),
+        callback=target.callback,
+        help=help_text,
+        hidden=hidden,
+    )
+
+
+def _scope_note(verb):
+    """The blast-radius warning for a platform verb that narrowed to core-only."""
+    user_verb = _USER_EQUIVALENT[verb]
+    return (
+        f"Scope change: 'platform {verb}' now affects the CORE services only; "
+        f"per-user containers are left untouched. Use 'dtaas user {user_verb} "
+        "--all' to include additional users."
     )
 
 
 def _alias_subgroup(name, group, verbs):
-    """A hidden group mirroring an old 'admin <name>' subgroup ('admin config').
+    """A visible subgroup mirroring an old 'admin <name>' subgroup ('admin config').
 
     Each verb forwards from 'admin <name> <verb>' to '<name> <verb>'.
     """
-    sub = click.Group(name=name, hidden=True)
+    sub = click.Group(name=name, help=f"DEPRECATED: use 'dtaas {name} <verb>'.")
     for verb in verbs:
         dep = _Dep(verb, f"admin {name} {verb}", f"{name} {verb}")
-        sub.add_command(_alias(group.commands[verb], dep))
+        sub.add_command(_alias(group.commands[verb], dep, hidden=False))
     return sub
 
 
 def _build_admin_group(config_group, platform_group, user_group):
-    """The hidden 'admin' group: flat platform verbs plus config/user subgroups."""
+    """The hidden 'admin' group with visible config/user subgroups and verbs."""
     admin = click.Group(
         name="admin",
         hidden=True,
-        help="Deprecated; commands moved to 'config'/'platform'/'user'.",
+        help="DEPRECATED: commands moved to 'config' / 'platform' / 'user'.",
     )
     admin.add_command(_alias_subgroup("config", config_group, _CONFIG_VERBS))
     admin.add_command(_alias_subgroup("user", user_group, _USER_VERBS))
     for verb in _PLATFORM_VERBS:
-        dep = _Dep(verb, f"admin {verb}", f"platform {verb}")
-        admin.add_command(_alias(platform_group.commands[verb], dep))
+        note = _scope_note(verb) if verb in _USER_EQUIVALENT else ""
+        dep = _Dep(verb, f"admin {verb}", f"platform {verb}", note)
+        admin.add_command(_alias(platform_group.commands[verb], dep, hidden=False))
     return admin
+
+
+@click.command(
+    name="generate-project",
+    hidden=True,
+    help="DEPRECATED: use 'dtaas config generate' + 'dtaas deployment generate'.",
+)
+@target_dir_option
+@force_option
+def _generate_project(output_dir, force):
+    """Reproduce the old generate-project via the new building blocks.
+
+    generate-project split into two commands, and there is no sane default
+    --type to forward to, so this is a purpose-built shim rather than a forward:
+    it runs 'config generate' (dtaas.toml + users.csv) and the user-template
+    half of 'deployment generate' (the compose overlays + workspace skeleton),
+    exactly the files the old command produced, and points at the two-step
+    replacement. The scenario compose tree still needs
+    'dtaas deployment generate --type <type>'.
+    """
+    click.echo(
+        "Warning: 'dtaas generate-project' is deprecated and will be removed in "
+        "a future release; it split into 'dtaas config generate' (writes "
+        "dtaas.toml) and 'dtaas deployment generate --type <type>' (writes the "
+        "compose tree). This shim runs the config + user-template halves.",
+        err=True,
+    )
+    try:
+        projectPkg.generate_config(output_dir, force)
+        projectPkg.generate_user_templates(output_dir, force)
+    except OSError as exc:
+        raise click.ClickException(f"Error while generating project: {exc}") from exc
+    click.echo("Project files generated successfully")
 
 
 def register_aliases(root):
@@ -109,14 +184,4 @@ def register_aliases(root):
             _Dep("generate-deployment", "generate-deployment", "deployment generate"),
         )
     )
-    root.add_command(
-        _alias(
-            generate,
-            _Dep(
-                "generate-project",
-                "generate-project",
-                "deployment generate",
-                _PROJECT_NOTE,
-            ),
-        )
-    )
+    root.add_command(_generate_project)

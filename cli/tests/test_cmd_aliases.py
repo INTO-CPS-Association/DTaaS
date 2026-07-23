@@ -72,21 +72,66 @@ def test_generate_deployment_alias_forwards(runner):
     assert "deployment generate" in result.output
 
 
-def test_generate_project_alias_notes_config_owns_toml(runner):
-    """'generate-project' forwards to deployment generate and points at config generate."""
-    with patch("src.cmd_deployment.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_deployment.projectPkg.generate_user_templates"
-    ), patch("src.cmd_deployment.projectPkg.set_files_permissions"), patch(
-        "src.cmd_deploy_utils._find_toml", return_value=None
-    ):
-        result = runner.invoke(dtaas, ["generate-project", "--type", "localhost"])
+def test_admin_stop_alias_warns_about_narrowed_scope(runner):
+    """'admin stop' must warn that scope narrowed to core-only, not just rename."""
+    with patch("src.cmd_lifecycle.deployPkg.installation_present", return_value=False):
+        result = runner.invoke(dtaas, ["admin", "stop"])
+
+    assert result.exit_code == 0
+    assert "deprecated" in result.output
+    assert "platform stop" in result.output
+    # The blast-radius change must be surfaced, pointing at the user verb.
+    assert "CORE services only" in result.output
+    assert "dtaas user stop --all" in result.output
+
+
+def test_generate_project_alias_still_works_without_type(runner):
+    """'generate-project' is a working shim (no --type), not a broken forward.
+
+    It must not hard-fail with a Click 'Missing option --type' usage error --
+    the deprecation contract is that old spellings still work for one release.
+    """
+    with patch("src.cmd_aliases.projectPkg.generate_config") as mock_config, patch(
+        "src.cmd_aliases.projectPkg.generate_user_templates"
+    ) as mock_templates:
+        result = runner.invoke(dtaas, ["generate-project", "--output-dir", "."])
 
     assert result.exit_code == 0
     assert "deprecated" in result.output
     assert "config generate" in result.output
+    mock_config.assert_called_once_with(".", False)
+    mock_templates.assert_called_once_with(".", False)
 
 
-def test_deprecated_aliases_hidden_from_help(runner):
+def test_generate_project_alias_maps_copy_error(runner):
+    """A copy failure in the shim surfaces as a ClickException, not a traceback."""
+    with patch(
+        "src.cmd_aliases.projectPkg.generate_config", side_effect=OSError("disk full")
+    ):
+        result = runner.invoke(dtaas, ["generate-project"])
+
+    assert result.exit_code != 0
+    assert "Error while generating project" in result.output
+
+
+def test_admin_user_status_is_not_an_alias(runner):
+    """'user status' is new in 2.0, so 'admin user status' never existed."""
+    result = runner.invoke(dtaas, ["admin", "user", "status"])
+
+    assert result.exit_code != 0
+    assert "No such command 'status'" in result.output
+
+
+def test_admin_help_lists_migration_targets(runner):
+    """'dtaas admin --help' must not be a dead end -- it lists the old verbs."""
+    result = runner.invoke(dtaas, ["admin", "--help"])
+
+    assert result.exit_code == 0
+    for name in ("install", "uninstall", "config", "user"):
+        assert name in result.output
+
+
+def test_deprecated_aliases_hidden_from_top_level_help(runner):
     """The deprecated spellings do not appear in 'dtaas --help'."""
     result = runner.invoke(dtaas, ["--help"])
 

@@ -64,11 +64,16 @@ def install(output_dir):
     help="Skip the confirmation prompt for --remove-user-files.",
 )
 def uninstall(output_dir, remove_user_files, yes):
-    """Stop and remove the deployment with 'docker compose down'.
+    """Stop and remove the whole installation with 'docker compose down'.
 
-    Per-user workspace files are preserved by default.
-    Use --remove-user-files to also delete workspace directories
-    (prompts for confirmation; skip with --yes in non-interactive scripts).
+    Unlike 'platform stop'/'pause' (core services only), uninstall is
+    whole-installation: it tears down the core services **and** every per-user
+    container (compose.users.yml) so the shared network can be removed.
+
+    Per-user workspace files are preserved by default. Use --remove-user-files
+    to also delete the per-user workspace directories and the CLI-owned
+    dtaas.users.registry.json / .dtaas.state.json (prompts for confirmation;
+    skip with --yes in non-interactive scripts).
     """
     confirm_remove_user_files(remove_user_files, yes)
     run_uninstall(output_dir, remove_user_files)

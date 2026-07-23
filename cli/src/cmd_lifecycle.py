@@ -54,15 +54,35 @@ def _run_suspend(output_dir, action, success_msg):
 
     Reports the absent case (exit 0) so scripts can call these idempotently,
     and maps deployment/compose failures to a ClickException (non-zero exit).
+    Returns True if it acted, False if nothing was installed.
     """
     try:
         if not deployPkg.installation_present(output_dir):
             click.echo(NO_INSTALLATION_MESSAGE)
-            return
+            return False
         action(output_dir)
     except (OSError, DockerException) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(success_msg)
+    return True
+
+
+def _report_leftover_user_containers(output_dir, verb):
+    """After a core-only *verb*, note any per-user containers left running.
+
+    'platform stop'/'pause' act on the core services only; this makes the
+    per-user blast radius visible so the operator is not misled into thinking
+    the whole installation was quiesced.
+    """
+    try:
+        count = lifecyclePkg.running_user_container_count(output_dir)
+    except (OSError, DockerException):
+        return
+    if count:
+        click.echo(
+            f"Note: {count} per-user container(s) are still running "
+            f"({verb} them too with 'dtaas user {verb} --all')."
+        )
 
 
 @click.command(name="status")
@@ -93,7 +113,8 @@ def stop(output_dir):
     with 'dtaas user stop'). Containers and networks are kept, so this is not
     'uninstall'. Reverse it with 'dtaas platform start'.
     """
-    _run_suspend(output_dir, lifecyclePkg.stop, "Deployment stopped successfully")
+    if _run_suspend(output_dir, lifecyclePkg.stop, "Deployment stopped successfully"):
+        _report_leftover_user_containers(output_dir, "stop")
 
 
 @click.command(name="start")
@@ -115,7 +136,8 @@ def pause(output_dir):
     with 'dtaas user pause'). Processes are frozen, not terminated, and memory
     is preserved. Reverse it with 'dtaas platform resume'.
     """
-    _run_suspend(output_dir, lifecyclePkg.pause, "Deployment paused successfully")
+    if _run_suspend(output_dir, lifecyclePkg.pause, "Deployment paused successfully"):
+        _report_leftover_user_containers(output_dir, "pause")
 
 
 @click.command(name="resume")

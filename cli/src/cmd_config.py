@@ -95,14 +95,27 @@ def validate(output_dir):
 )
 def reconcile(output_dir, fix):
     """Report drift between the user registry and what is actually provisioned.
-    With --fix, missing and drifted users are reprovisioned and every provisioned
-    user is paused/stopped/started to match
-    its desired_status
 
     \b
     Examples:
       dtaas config reconcile           # report drift (read-only)
       dtaas config reconcile --fix     # reprovision + enforce status
+
+    Compares dtaas.users.registry.json (desired) against the live
+    compose.users.yml services (actual), listing users that are missing
+    (registered but not provisioned), unexpected (provisioned but not
+    registered), or drifted (config changed since provisioning, via
+    .dtaas.state.json). It also reports desired-status drift: a provisioned user
+    whose live container state does not match its registry desired_status
+    (paused/stopped/running); a user intentionally stopped/paused via
+    'dtaas user stop'/'pause' is treated as being in its desired state.
+
+    Without --fix this is read-only. With --fix, missing and drifted users are
+    reprovisioned and every provisioned user is paused/stopped/started to match
+    its desired_status. --fix is equivalent to running 'dtaas user add', so it
+    operates on the current directory regardless of --output-dir. 'unexpected'
+    services are never touched by --fix -- remove those deliberately with
+    'dtaas user delete'.
     """
     try:
         run_reconcile(output_dir, fix)

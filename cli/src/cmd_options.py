@@ -21,3 +21,15 @@ json_option = click.option(
     is_flag=True,
     help="Emit machine-readable JSON instead of a human-readable table.",
 )
+
+# Shared by the generation commands ('deployment generate' and the deprecated
+# 'generate-project' shim), which write into a target directory rather than an
+# existing installation.
+target_dir_option = click.option(
+    "--output-dir",
+    default=".",
+    show_default=True,
+    help="Target directory for generated files.",
+)
+
+force_option = click.option("--force", is_flag=True, help="Overwrite existing files.")

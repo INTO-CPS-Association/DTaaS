@@ -240,11 +240,14 @@ _STATUS_ROWS = [
     {"project": "users", "service": "alice", "state": "running", "health": None},
     {"project": "users", "service": "bob", "state": "paused", "health": None},
 ]
+_REGISTRY = {"alice": {}, "bob": {}}
 
 
 def test_user_status_filters_to_user_containers(runner):
     """user status narrows the platform view to the per-user containers only."""
-    with patch("src.cmd_user.lifecyclePkg.collect_status", return_value=_STATUS_ROWS):
+    with patch(
+        "src.cmd_user.lifecyclePkg.collect_status", return_value=_STATUS_ROWS
+    ), patch("src.cmd_user.registryPkg.load_registry", return_value=_REGISTRY):
         result = runner.invoke(dtaas, ["user", "status"])
 
     assert result.exit_code == 0
@@ -255,12 +258,34 @@ def test_user_status_filters_to_user_containers(runner):
 
 def test_user_status_single_user(runner):
     """user status USERNAME reports just that user."""
-    with patch("src.cmd_user.lifecyclePkg.collect_status", return_value=_STATUS_ROWS):
+    with patch(
+        "src.cmd_user.lifecyclePkg.collect_status", return_value=_STATUS_ROWS
+    ), patch("src.cmd_user.registryPkg.load_registry", return_value=_REGISTRY):
         result = runner.invoke(dtaas, ["user", "status", "alice"])
 
     assert result.exit_code == 0
     assert "alice" in result.output
     assert "bob" not in result.output
+
+
+def test_user_status_unknown_user_rejected(runner):
+    """A USERNAME not in the registry is rejected (distinguishable from stopped)."""
+    with patch("src.cmd_user.registryPkg.load_registry", return_value=_REGISTRY):
+        result = runner.invoke(dtaas, ["user", "status", "ghost"])
+
+    assert result.exit_code != 0
+    assert "'ghost' is not a registered user" in result.output
+
+
+def test_user_status_registered_but_not_provisioned(runner):
+    """A registered user with no container reads as not-provisioned, not absent."""
+    with patch(
+        "src.cmd_user.lifecyclePkg.collect_status", return_value=_STATUS_ROWS
+    ), patch("src.cmd_user.registryPkg.load_registry", return_value={"carol": {}}):
+        result = runner.invoke(dtaas, ["user", "status", "carol"])
+
+    assert result.exit_code == 0
+    assert "'carol' is registered but not currently provisioned." in result.output
 
 
 def test_user_status_maps_missing_deployment_to_error(runner):
@@ -273,3 +298,30 @@ def test_user_status_maps_missing_deployment_to_error(runner):
 
     assert result.exit_code != 0
     assert "docker-compose.yml" in result.output
+
+
+def test_user_pause_all_targets_registry(runner, mock_users_lifecycle_pkg):
+    """user pause --all targets every registry user."""
+    mock_users_lifecycle_pkg["pause"].return_value = (["alice", "bob"], [], [])
+    with patch("src.cmd_user.registryPkg.load_registry", return_value=_REGISTRY):
+        result = runner.invoke(dtaas, ["user", "pause", "--all"])
+
+    assert result.exit_code == 0
+    mock_users_lifecycle_pkg["pause"].assert_called_once_with(["alice", "bob"])
+
+
+def test_user_stop_all_and_targets_rejected(runner):
+    """--all combined with explicit USERNAMES is rejected."""
+    result = runner.invoke(dtaas, ["user", "stop", "alice", "--all"])
+
+    assert result.exit_code != 0
+    assert "not both" in result.output
+
+
+def test_user_resume_all_empty_registry(runner):
+    """user resume --all with an empty registry is a friendly no-op."""
+    with patch("src.cmd_user.registryPkg.load_registry", return_value={}):
+        result = runner.invoke(dtaas, ["user", "resume", "--all"])
+
+    assert result.exit_code == 0
+    assert "No additional users to act on." in result.output

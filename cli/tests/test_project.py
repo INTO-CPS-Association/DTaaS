@@ -4,7 +4,6 @@ import os
 from unittest.mock import patch
 import pytest
 from src.pkg.project import (
-    generate_project,
     generate_config,
     generate_user_templates,
     generate_deploy_project,
@@ -67,30 +66,16 @@ def test_generate_config_raises_on_copy_failure(tmp_path):
             generate_config(dest)
 
 
-def test_generate_project_skips_existing_file(tmp_path, capsys):
-    """An existing file is skipped and the rest are still copied."""
-    (tmp_path / "dtaas.toml").write_text("existing")
+def test_generate_user_templates_skips_existing_file(tmp_path, capsys):
+    """An existing overlay is skipped and the rest are still copied."""
+    (tmp_path / "users.server.yml").write_text("existing")
 
-    generate_project(str(tmp_path))
+    generate_user_templates(str(tmp_path))
 
-    assert (tmp_path / "dtaas.toml").read_text() == "existing"
+    assert (tmp_path / "users.server.yml").read_text() == "existing"
     captured = capsys.readouterr()
-    assert "'dtaas.toml' already exists, skipping" in captured.out
-
-
-def test_generate_project_copies_resources_overlay(tmp_path):
-    """generate_project ships the users.resources.yml limits overlay."""
-    generate_project(str(tmp_path))
-
+    assert "'users.server.yml' already exists, skipping" in captured.out
     assert (tmp_path / "users.resources.yml").is_file()
-
-
-def test_generate_project_raises_on_copy_failure(tmp_path):
-    """OSError is raised when a file copy fails."""
-    dest = str(tmp_path)
-    with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
-        with pytest.raises(OSError, match="disk full"):
-            generate_project(dest)
 
 
 def test_generate_user_templates_copies_overlays_not_toml(tmp_path):
@@ -263,12 +248,12 @@ def test_copy_example_files_skips_existing_without_force(tmp_path):
     assert (tmp_path / "a").read_text() == "old"
 
 
-def test_generate_project_raises_when_templates_dir_missing(tmp_path):
-    """generate_project raises RuntimeError when the bundled templates are absent."""
+def test_generate_user_templates_raises_when_templates_dir_missing(tmp_path):
+    """generate_user_templates raises RuntimeError when bundled templates are absent."""
     out = str(tmp_path / "out")
     with patch("src.pkg.project.TEMPLATES_DIR", tmp_path / "no-templates"):
         with pytest.raises(RuntimeError, match="templates directory not found"):
-            generate_project(out)
+            generate_user_templates(out)
 
 
 def test_copy_example_files_raises_on_copy_failure(tmp_path):

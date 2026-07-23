@@ -86,6 +86,48 @@ def test_stop_success(runner):
     mock_stop.assert_called_once_with(".")
 
 
+def test_stop_reports_leftover_user_containers(runner):
+    """After a core-only stop, any per-user containers left running are reported."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch("src.cmd_lifecycle.lifecyclePkg.stop"), patch(
+        "src.cmd_lifecycle.lifecyclePkg.running_user_container_count", return_value=2
+    ):
+        result = runner.invoke(dtaas, ["platform", "stop"])
+
+    assert result.exit_code == 0
+    assert "Deployment stopped successfully" in result.output
+    assert "2 per-user container(s) are still running" in result.output
+    assert "dtaas user stop --all" in result.output
+
+
+def test_stop_no_leftover_note_when_no_user_containers(runner):
+    """With no per-user containers, stop prints no leftover advisory."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch("src.cmd_lifecycle.lifecyclePkg.stop"), patch(
+        "src.cmd_lifecycle.lifecyclePkg.running_user_container_count", return_value=0
+    ):
+        result = runner.invoke(dtaas, ["platform", "stop"])
+
+    assert result.exit_code == 0
+    assert "still running" not in result.output
+
+
+def test_stop_leftover_advisory_swallows_docker_errors(runner):
+    """A failure counting user containers must not fail an otherwise-good stop."""
+    with patch(
+        "src.cmd_lifecycle.deployPkg.installation_present", return_value=True
+    ), patch("src.cmd_lifecycle.lifecyclePkg.stop"), patch(
+        "src.cmd_lifecycle.lifecyclePkg.running_user_container_count",
+        side_effect=DockerException(["docker"], 1, stderr=b"boom"),
+    ):
+        result = runner.invoke(dtaas, ["platform", "stop"])
+
+    assert result.exit_code == 0
+    assert "Deployment stopped successfully" in result.output
+
+
 def test_stop_reports_absent_installation(runner):
     """stop is a no-op (exit 0) that reports when nothing is installed."""
     with patch(

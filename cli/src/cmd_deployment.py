@@ -9,6 +9,7 @@ import click
 from .pkg import project as projectPkg
 from .pkg.project import DEPLOY_TYPES
 from .cmd_deploy_utils import VerticalChoicesCommand, apply_deploy_config
+from .cmd_options import target_dir_option, force_option
 
 
 @click.group(name="deployment")
@@ -29,13 +30,8 @@ def deployment_group():
     metavar="[...]",
     help="Deployment scenario to generate.",
 )
-@click.option(
-    "--output-dir",
-    default=".",
-    show_default=True,
-    help="Target directory for generated files.",
-)
-@click.option("--force", is_flag=True, help="Overwrite existing files.")
+@target_dir_option
+@force_option
 def generate(deploy_type, output_dir, force):
     """Generate files for a deployment scenario.
 
