@@ -547,7 +547,7 @@ skeleton, alongside the deployment compose tree.
 
 > **Tip: verify the Docker image tag**
 > `users.server.yml` and `users.server.secure.yml` contain a pinned workspace
-> image tag (e.g. `intocps/workspace:main-967bc10`). Check
+> image tag (e.g. `intocps/workspace:main-56c6f68`). Check
 > [Docker Hub](https://hub.docker.com/r/intocps/workspace/tags) and update the
 > tag to a current, stable version before deploying.
 

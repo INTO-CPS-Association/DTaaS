@@ -135,6 +135,54 @@ def test_build_file_specs_secure_server_gitlab_includes_oauth_url():
     assert env_values["OAUTH_URL"] == "https://gitlab.example.com"
 
 
+def test_build_file_specs_workspace_localhost_targets_config_env():
+    """workspace-localhost writes DEFAULT_USER into config/.env, not the root .env."""
+    toml = {
+        "workspace-localhost": {
+            "default-user": "user1",
+            "client-id": "wl-client",
+            "auth-authority": "http://localhost:5556/dex",
+        },
+    }
+    specs = {
+        path: (fmt, values)
+        for path, fmt, values in build_file_specs("workspace-localhost", toml)
+    }
+    assert ".env" not in specs
+    env_format, env_values = specs["config/.env"]
+    assert env_format == "env"
+    assert env_values["DEFAULT_USER"] == "user1"
+
+
+def test_build_file_specs_workspace_secure_server_targets_config_env():
+    """workspace-secure-server writes Keycloak/OAuth values into config/.env."""
+    toml = {
+        "common": {"server-dns": "myserver.com"},
+        "users": [{"username": "alice"}, {"username": "bob"}],
+        "workspace-secure-server": {
+            "oauth-secret": "sekret",
+            "keycloak-admin": "admin",
+            "keycloak-admin-password": "pw",
+            "keycloak-realm": "dtaas",
+            "keycloak-issuer-url": "https://auth.example.com",
+            "keycloak-client-id": "kc-client",
+            "keycloak-client-secret": "kc-secret",
+        },
+    }
+    specs = {
+        path: (fmt, values)
+        for path, fmt, values in build_file_specs("workspace-secure-server", toml)
+    }
+    assert ".env" not in specs
+    env_format, env_values = specs["config/.env"]
+    assert env_format == "env"
+    assert env_values["SERVER_DNS"] == "myserver.com"
+    assert env_values["USERNAME1"] == "alice"
+    assert env_values["USERNAME2"] == "bob"
+    assert env_values["KEYCLOAK_ADMIN"] == "admin"
+    assert env_values["KEYCLOAK_CLIENT_SECRET"] == "kc-secret"
+
+
 def test_apply_config_edits_files_by_key(tmp_path):
     """apply_config edits the targeted keys in each config file"""
     config_dir = tmp_path / "config"

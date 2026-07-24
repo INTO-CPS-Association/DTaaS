@@ -1,5 +1,5 @@
 container_name: dtaas-cli-${username}
-image: intocps/workspace:main-967bc10
+image: intocps/workspace:main-56c6f68
 restart: unless-stopped
 volumes:
   - "${DTAAS_DIR}/files/common:/workspace/common"

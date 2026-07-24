@@ -193,12 +193,12 @@ REQUIRED_FILES = {
     ],
     "workspace-localhost": [
         "docker-compose.yml",
-        ".env",
+        "config/.env",
         "config/dex-config.yaml",
     ],
     "workspace-secure-server": [
         "docker-compose.yml",
-        ".env",
+        "config/.env",
         "config/client.js",
         "config/forward-auth-conf",
         "config/tls.yml",

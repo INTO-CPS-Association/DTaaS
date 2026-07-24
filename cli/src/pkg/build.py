@@ -28,13 +28,6 @@ _SOURCES: dict[str, str] = {
     "workspace-secure-server": "deploy/workspace/keycloak/production",
 }
 
-# Top-level directory names within a source that are excluded from the copy.
-_EXCLUDE: set[str] = {"companion"}
-
-
-def _ignore(_directory: str, names: list[str]) -> list[str]:
-    return [n for n in names if n in _EXCLUDE]
-
 
 def _copy_one(deploy_type: str, rel_source: str) -> None:
     src = _REPO_ROOT / rel_source
@@ -43,7 +36,7 @@ def _copy_one(deploy_type: str, rel_source: str) -> None:
     dest = _DEST_ROOT / deploy_type
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src, dest, ignore=_ignore, copy_function=shutil.copy)
+    shutil.copytree(src, dest, copy_function=shutil.copy)
 
 
 def build() -> None:

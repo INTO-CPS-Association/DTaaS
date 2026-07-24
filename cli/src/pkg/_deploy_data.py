@@ -85,7 +85,7 @@ _DEPLOY_FILES = {
     ],
     "workspace-localhost": [
         (
-            ".env",
+            _ENV_FILE,
             "env",
             [("DEFAULT_USER", "workspace-localhost.default-user", "{}")],
         ),
@@ -112,7 +112,7 @@ _DEPLOY_FILES = {
     ],
     "workspace-secure-server": [
         (
-            ".env",
+            _ENV_FILE,
             "env",
             [
                 ("SERVER_DNS", _DNS, "{}"),
