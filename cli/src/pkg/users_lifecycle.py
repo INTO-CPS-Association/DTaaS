@@ -168,6 +168,21 @@ def desired_status_drift():
     return [entry for entry in drifted if entry is not None]
 
 
+def missing_containers():
+    """Registry users that should be running but have no live container at all."""
+    client = deploy._users_client(".")
+    registry = load_registry()
+    if client is None:
+        return []
+    live = _live_states(client, list(registry))
+    return [
+        name
+        for name, details in registry.items()
+        if (details or {}).get("desired_status", "running") == "running"
+        and live.get(name) is None
+    ]
+
+
 def enforce_desired_status():
     """Pause/stop/resume provisioned users so their live state matches their
     registry desired_status. Returns the (user, desired, actual) drift acted on.

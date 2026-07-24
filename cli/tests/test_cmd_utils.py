@@ -103,6 +103,51 @@ def test_run_reconcile_fix_never_touches_unexpected(tmp_path):
     mock_add.assert_not_called()
 
 
+def test_run_reconcile_reports_provisioned_user_without_container(tmp_path, capsys):
+    """A registry user in the compose file but with no live container -- e.g. an
+    interrupted 'user add' -- is reported as missing, not silently 'In sync'."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch(
+        "src.cmd_utils.usersLifecyclePkg.missing_containers", return_value=["alice"]
+    ), patch("src.cmd_utils.usersLifecyclePkg.desired_status_drift", return_value=[]):
+        run_reconcile(str(tmp_path))
+
+    out = capsys.readouterr().out
+    assert "alice" in out and "not provisioned" in out
+
+
+def test_run_reconcile_fix_reprovisions_user_without_container(tmp_path):
+    """--fix reprovisions a user whose compose entry exists but has no live
+    container, so an interrupted 'user add' is repairable via reconcile."""
+    _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})
+    stored = config_hash({"image": "v1"})
+    (tmp_path / ".dtaas.state.json").write_text(
+        json.dumps({"alice": {"config_hash": stored}}), encoding="utf-8"
+    )
+    (tmp_path / "compose.users.yml").write_text(
+        "services:\n  alice:\n    image: v1\n", encoding="utf-8"
+    )
+
+    with patch(
+        "src.cmd_utils.usersLifecyclePkg.missing_containers", return_value=["alice"]
+    ), patch(
+        "src.cmd_utils.usersLifecyclePkg.desired_status_drift", return_value=[]
+    ), patch("src.cmd_utils.configPkg.Config", return_value=MagicMock()), patch(
+        "src.cmd_utils.userPkg.add_users", return_value=None
+    ) as mock_add:
+        run_reconcile(str(tmp_path), fix=True)
+
+    mock_add.assert_called_once()
+
+
 def test_run_reconcile_reports_desired_status_drift(tmp_path, capsys):
     """reconcile reports a provisioned user whose live state differs from desired."""
     _write_registry(tmp_path, {"alice": {"email": "a@x.io"}})

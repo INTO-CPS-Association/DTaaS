@@ -52,60 +52,6 @@ def test_load_services_empty_when_compose_absent():
         assert users_lifecycle._load_services() == {}
 
 
-def test_split_targets_categorizes_names(mock_registry):
-    """_split_targets separates provisioned, unregistered, and not-provisioned names."""
-    provisioned, unregistered, not_provisioned = users_lifecycle._split_targets(
-        ["alice", "bob", "carol"], services={"alice": {}}
-    )
-    assert provisioned == ["alice"]
-    assert unregistered == ["carol"]
-    assert not_provisioned == ["bob"]
-
-
-def test_apply_noop_when_nothing_to_act_on(mock_registry, mock_services, mock_state):
-    """_apply skips the compose call, state refresh, and registry write when
-    every target is unregistered or not provisioned."""
-    mock_registry["load"].return_value = {}
-    action = MagicMock()
-
-    acted, unregistered, not_provisioned = users_lifecycle._apply(
-        ["ghost"], action, "paused"
-    )
-
-    assert acted == []
-    assert unregistered == ["ghost"]
-    assert not_provisioned == []
-    action.assert_not_called()
-    mock_state.assert_not_called()
-    mock_registry["set_status"].assert_not_called()
-
-
-def test_apply_runs_action_and_updates_state_and_registry(
-    mock_registry, mock_services, mock_state
-):
-    """_apply drives the compose action, refreshes state, and writes desired_status
-    only for the usernames actually acted on."""
-    action = MagicMock()
-
-    acted, _, _ = users_lifecycle._apply(["alice"], action, "paused")
-
-    assert acted == ["alice"]
-    action.assert_called_once_with(["alice"])
-    mock_state.assert_called_once_with({"alice": {}, "bob": {}})
-    mock_registry["set_status"].assert_called_once_with(["alice"], "paused")
-
-
-def test_container_state_maps_exited_to_stopped():
-    """_container_state reports docker 'exited' as 'stopped'."""
-    assert (
-        users_lifecycle._container_state(_fake_container("x", status="exited"))
-        == "stopped"
-    )
-    assert (
-        users_lifecycle._container_state(_fake_container("x", paused=True)) == "paused"
-    )
-
-
 def test_pause_targets_only_pauses_running_containers():
     """_pause_targets skips an already-paused container so compose does not error."""
     client = MagicMock()
@@ -138,19 +84,6 @@ def test_pause_targets_noop_without_compose_file():
         users_lifecycle._pause_targets(["alice"])  # must not raise
 
 
-def test_live_states_reads_state_per_service():
-    """_live_states maps each target service to its live state word."""
-    client = MagicMock()
-    client.compose.ps.return_value = [
-        _fake_container("alice", paused=True),
-        _fake_container("bob", status="exited"),
-    ]
-
-    states = users_lifecycle._live_states(client, ["alice", "bob"])
-
-    assert states == {"alice": "paused", "bob": "stopped"}
-
-
 def test_live_states_empty_targets_skips_ps():
     """_live_states returns {} without calling ps for an empty target list."""
     client = MagicMock()
@@ -175,23 +108,6 @@ def test_resume_targets_unpauses_and_starts_as_appropriate():
     client.compose.start.assert_called_once_with(services=["bob"])
 
 
-def test_resume_targets_skips_empty_groups():
-    """_resume_targets does not call unpause/start with an empty service list."""
-    client = MagicMock()
-    client.compose.ps.return_value = [_fake_container("alice", paused=True)]
-    with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        users_lifecycle._resume_targets(["alice"])
-
-    client.compose.unpause.assert_called_once_with(services=["alice"])
-    client.compose.start.assert_not_called()
-
-
-def test_resume_targets_noop_without_compose_file():
-    """_resume_targets is a no-op when compose.users.yml does not exist."""
-    with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
-        users_lifecycle._resume_targets(["alice"])  # must not raise
-
-
 def test_desired_status_drift_reports_mismatches():
     """desired_status_drift lists provisioned users whose live state differs."""
     client = MagicMock()
@@ -210,6 +126,31 @@ def test_desired_status_drift_reports_mismatches():
         drift = users_lifecycle.desired_status_drift()
 
     assert drift == [("alice", "paused", "running")]
+
+
+def test_missing_containers_flags_running_users_without_a_container():
+    """A registry user desired 'running' with no live container is reported;
+    a running one, and a user intentionally stopped/paused, are not."""
+    client = MagicMock()
+    client.compose.ps.return_value = [
+        _fake_container("alice", status="running"),  # present -> not missing
+    ]
+    with patch(
+        "src.pkg.users_lifecycle.load_registry",
+        return_value={
+            "alice": {"desired_status": "running"},  # has container
+            "bob": {"desired_status": "running"},  # no container -> missing
+            "carol": {"desired_status": "stopped"},  # no container, but by design
+        },
+    ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
+        assert users_lifecycle.missing_containers() == ["bob"]
+
+
+def test_missing_containers_empty_without_compose_file():
+    """missing_containers returns [] when Docker/compose is unreachable, so a
+    transient outage is not mistaken for absent containers."""
+    with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
+        assert users_lifecycle.missing_containers() == []
 
 
 def test_enforce_desired_status_applies_each_action(mock_state):

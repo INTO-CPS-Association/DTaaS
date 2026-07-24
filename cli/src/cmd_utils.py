@@ -124,11 +124,11 @@ def run_reconcile(output_dir, fix=False):
     """Report drift between dtaas.users.registry.json (desired) and what is
     actually running, then optionally fix it.
 
-    Two kinds of drift are reported: membership drift (registry vs the live
-    compose.users.yml services) and desired-status drift (a provisioned user
-    whose live container state does not match its registry desired_status).
-    With fix, missing/drifted users are reprovisioned and every provisioned
-    user is paused/stopped/started to match its desired_status.
+    - Membership drift (registry vs the live compose.users.yml services)
+    - Desired-status drift (a provisioned user whose live container state
+    does not match its registry desired_status).
+    A registry user that should be running but has no live container is reported
+    as missing so --fix restarts it.
     """
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
@@ -137,6 +137,8 @@ def run_reconcile(output_dir, fix=False):
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
     report = statePkg.find_drift(registry_users, state, services)
+    absent = usersLifecyclePkg.missing_containers()
+    report["missing"] += [name for name in absent if name not in report["missing"]]
     status_drift = usersLifecyclePkg.desired_status_drift()
     _echo_reconcile(report, status_drift)
     if fix:
