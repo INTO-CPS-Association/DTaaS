@@ -77,11 +77,17 @@ _RECONCILE_LABELS = (
     ("missing", "registered but not provisioned; re-run 'dtaas user add'"),
     ("unexpected", "provisioned but not in the registry; investigate"),
     ("drifted", "config changed since provisioning; re-run 'dtaas user add'"),
+    (
+        "absent",
+        "provisioned but its container is gone; re-run 'dtaas user add' or "
+        "'config reconcile --fix'",
+    ),
 )
 
 
 def _echo_membership_drift(report):
-    """Print each missing/unexpected/drifted username with its explanation."""
+    """Print each missing/unexpected/drifted/absent username with its
+    explanation."""
     for key, label in _RECONCILE_LABELS:
         for name in report[key]:
             click.echo(f"- {name}: {label}")
@@ -102,19 +108,37 @@ def _echo_reconcile(report, status_drift):
     _echo_status_drift(status_drift)
 
 
-def _reprovision_missing():
-    """Reprovision missing/drifted registry users (equivalent to 'user add')."""
+def _reprovision_missing(start_only=None):
+    """Reprovision registry users (equivalent to 'user add').
+
+    *start_only* restricts which users' containers are (re)started -- None
+    restarts every provisioned user not paused/stopped by design (used for a
+    genuine registry/compose membership or config-hash mismatch, where the
+    compose file itself needs rewriting); a list restricts the restart to just
+    those usernames (used when the only problem is one or more users' live
+    containers having disappeared, so already-running users are not
+    disrupted). Either way every registry user's workspace files and compose
+    entry are (re)written -- see add_users/_provision_users.
+    """
     run_user_command(
-        userPkg.add_users,
+        lambda config_obj: userPkg.add_users(config_obj, start_only=start_only),
         "Reprovisioned missing/drifted users.",
         "Error while fixing drift",
     )
 
 
 def _fix_reconcile(report, status_drift):
-    """Reprovision missing/drifted users, then enforce each user's desired_status."""
+    """Reprovision missing/drifted/absent users, then enforce desired_status.
+
+    A membership or config-hash mismatch ('missing'/'drifted') reprovisions
+    and restarts every registry user. When the only problem is 'absent' users
+    (a live container disappeared, e.g. an interrupted 'user add'), only those
+    users' containers are restarted, leaving already-running users alone.
+    """
     if report["missing"] or report["drifted"]:
         _reprovision_missing()
+    elif report["absent"]:
+        _reprovision_missing(start_only=report["absent"])
     if status_drift:
         usersLifecyclePkg.enforce_desired_status()
         click.echo("Enforced desired status on drifted users.")
@@ -127,8 +151,12 @@ def run_reconcile(output_dir, fix=False):
     - Membership drift (registry vs the live compose.users.yml services)
     - Desired-status drift (a provisioned user whose live container state
     does not match its registry desired_status).
-    A registry user that should be running but has no live container is reported
-    as missing so --fix restarts it.
+    A registry user that is provisioned (has a compose.users.yml service) but
+    whose live container has disappeared entirely -- e.g. an interrupted
+    'user add' -- is reported separately as 'absent', distinct from 'missing'
+    (which means no compose service exists at all). With --fix, an 'absent'
+    user's container alone is restarted, without touching already-running
+    users.
     """
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
@@ -137,9 +165,7 @@ def run_reconcile(output_dir, fix=False):
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
     report = statePkg.find_drift(registry_users, state, services)
-    absent = usersLifecyclePkg.missing_containers()
-    report["missing"] += [name for name in absent if name not in report["missing"]]
-    status_drift = usersLifecyclePkg.desired_status_drift()
+    status_drift, report["absent"] = usersLifecyclePkg.reconcile_drift(output_dir)
     _echo_reconcile(report, status_drift)
     if fix:
         _fix_reconcile(report, status_drift)
