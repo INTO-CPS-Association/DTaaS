@@ -1,6 +1,7 @@
 """Tests for the generate_project module."""
 
 import os
+from pathlib import Path
 from unittest.mock import patch
 import pytest
 from src.pkg.project import (
@@ -10,7 +11,9 @@ from src.pkg.project import (
     generate_deploy_project,
     create_user_dirs,
     set_files_permissions,
+    warn_stale_root_env,
     _copy_config_file,
+    _copy_example,
     _copy_example_files,
     _copy_file,
     _check_no_symlinks,
@@ -308,3 +311,99 @@ def test_generate_deploy_project_warns_when_no_templates(tmp_path, capsys):
 
     assert "no deployment templates found" in capsys.readouterr().out
     mock_copy.assert_not_called()
+
+
+def test_copy_example_chmods_secret_target_on_fresh_copy(tmp_path):
+    """A freshly copied secret file (.env from .env.example) is chmod'd 0600.
+
+    Windows chmod() can't be asserted via the resulting st_mode (it only
+    tracks the read-only attribute, so 0o600 and 0o644 read back identically)
+    -- so this asserts the call itself, which is the portable signal.
+    """
+    example = tmp_path / ".env.example"
+    example.write_text("KEY=value\n")
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        result = _copy_example(example, force=False)
+
+    assert result is None
+    assert (tmp_path / ".env").read_text() == "KEY=value\n"
+    mock_chmod.assert_called_once_with(0o600)
+
+
+def test_copy_example_chmods_preexisting_secret_target_left_in_place(tmp_path):
+    """A config/.env that already exists (so --force-less copy is skipped) is
+    still hardened -- covers a deployment generated before this hardening
+    existed, which is exactly the population at risk."""
+    example = tmp_path / ".env.example"
+    example.write_text("KEY=placeholder\n")
+    target = tmp_path / ".env"
+    target.write_text("KEY=live-secret\n")
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        result = _copy_example(example, force=False)
+
+    assert result is None
+    assert target.read_text() == "KEY=live-secret\n"  # untouched, not overwritten
+    mock_chmod.assert_called_once_with(0o600)
+
+
+def test_copy_example_does_not_chmod_non_secret_target(tmp_path):
+    """A target outside the secret-filename allowlist (e.g. tls.yml) is untouched."""
+    example = tmp_path / "tls.yml.example"
+    example.write_text("tls: {}\n")
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        _copy_example(example, force=False)
+
+    mock_chmod.assert_not_called()
+
+
+def test_warn_stale_root_env_warns_when_both_files_exist(tmp_path, capsys):
+    """A pre-#1719 deployment upgraded in place has both files -- warn about it."""
+    (tmp_path / "config").mkdir()
+    (tmp_path / ".env").write_text("SECRET=1\n")
+    (tmp_path / "config" / ".env").write_text("SECRET=1\n")
+
+    warn_stale_root_env(str(tmp_path))
+
+    out = capsys.readouterr().out
+    assert "stale" in out
+    assert "config/.env" in out
+
+
+def test_warn_stale_root_env_silent_when_only_config_env_exists(tmp_path, capsys):
+    """A deployment generated after #1719 has only config/.env -- no warning."""
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / ".env").write_text("SECRET=1\n")
+
+    warn_stale_root_env(str(tmp_path))
+
+    assert capsys.readouterr().out == ""
+
+
+def test_warn_stale_root_env_silent_when_only_root_env_exists(tmp_path, capsys):
+    """A deploy type with no config/.env at all (nothing to be stale against)
+    stays silent."""
+    (tmp_path / ".env").write_text("SECRET=1\n")
+
+    warn_stale_root_env(str(tmp_path))
+
+    assert capsys.readouterr().out == ""
+
+
+def test_generate_deploy_project_warns_about_stale_root_env(tmp_path, capsys):
+    """generate_deploy_project surfaces the stale-root-.env warning end to end."""
+    dest = tmp_path / "dest"
+    (dest / "config").mkdir(parents=True)
+    (dest / ".env").write_text("SECRET=1\n")
+    (dest / "config" / ".env").write_text("SECRET=1\n")
+
+    with patch("src.pkg.project._validate_deploy_inputs"), patch(
+        "src.pkg.project._has_template_files", return_value=True
+    ), patch("src.pkg.project._copy_tree"), patch(
+        "src.pkg.project._copy_example_files"
+    ):
+        generate_deploy_project("localhost", str(dest))
+
+    assert "stale" in capsys.readouterr().out

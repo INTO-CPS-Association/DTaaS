@@ -22,8 +22,8 @@ def _load_services(output_dir="."):
     """Return compose.users.yml's service definitions for *output_dir*, or {}
     when absent. Defaults to the current directory for the pause/stop/resume/
     enforce_desired_status call sites, which always act on the current
-    directory (see desired_status_drift/missing_containers for the
-    --output-dir-aware reporting call sites)."""
+    directory (see reconcile_drift for the --output-dir-aware reporting call
+    site)."""
     compose, err = utils.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
     utils.check_error(err)
     services = (compose or {}).get("services", {})
@@ -177,19 +177,19 @@ def _snapshot(output_dir="."):
 
 
 def reconcile_drift(output_dir="."):
-    """(status_drift, absent) for 'config reconcile', from a single live-state
-    snapshot of *output_dir* -- see _snapshot for why this must not be two
-    separate docker queries. status_drift lists (user, desired, actual) where
-    a provisioned user's live state differs from its registry desired_status;
-    absent lists registry users that are provisioned (have a compose service)
-    but should be running and have no live container at all (e.g. an
-    interrupted 'user add') -- a registry user with no compose service at all
-    is find_drift's 'missing' instead, not repeated here. Both are [] when
-    compose.users.yml is absent or Docker is unreachable.
+    """(status_drift, absent, docker_reachable) for 'config reconcile', from a
+    single live-state snapshot of *output_dir* (see _snapshot). status_drift
+    lists (user, desired, actual) where a provisioned user's live state differs
+    from its registry desired_status; absent lists provisioned users (with a
+    compose service) that should be running but have no live container (e.g. an
+    interrupted 'user add'). docker_reachable is False only when Docker could
+    not be queried -- then both lists are [] and the caller must not read that
+    as 'in sync' (state was never verified); it is True when state was
+    observed, including when compose.users.yml is simply absent.
     """
     live, registry, services = _snapshot(output_dir)
     if live is None:
-        return [], []
+        return [], [], False
     drifted = [
         entry
         for entry in (
@@ -204,25 +204,18 @@ def reconcile_drift(output_dir="."):
         and (details or {}).get("desired_status", "running") == "running"
         and live.get(name) is None
     ]
-    return drifted, absent
+    return drifted, absent, True
 
 
 def desired_status_drift(output_dir="."):
     """(user, desired, actual) where live state differs from desired_status.
     Returns [] when compose absent or Docker unreachable. *output_dir*
-    defaults to "." for the --fix action's CWD-scoped checks.
+    defaults to "." for enforce_desired_status's CWD-scoped --fix action;
+    'config reconcile's reporting path calls reconcile_drift directly instead,
+    so both drift categories share one snapshot.
     """
-    drift, _ = reconcile_drift(output_dir)
+    drift, _, _ = reconcile_drift(output_dir)
     return drift
-
-
-def missing_containers(output_dir="."):
-    """Registry users desired running but with no live container.
-    Returns [] when Docker unreachable. *output_dir* scopes the query so
-    --output-dir never mixes deployments.
-    """
-    _, absent = reconcile_drift(output_dir)
-    return absent
 
 
 def enforce_desired_status():

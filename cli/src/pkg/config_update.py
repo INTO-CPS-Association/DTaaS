@@ -5,6 +5,7 @@ from . import utils
 from . import deploy
 from . import deploy_config
 from . import config_validate
+from . import project
 
 
 _SERVICE_MARKERS = (
@@ -92,6 +93,7 @@ def update_config(output_dir, dry_run=False):
     deploy_type = detect_deploy_type(output_dir)
     data = _load_toml(output_dir)
     _validate(data, deploy_type)
+    project.warn_stale_root_env(output_dir)
     specs = deploy_config.build_file_specs(deploy_type, data)
     changed = deploy_config.diff_specs(output_dir, specs)
     if dry_run:

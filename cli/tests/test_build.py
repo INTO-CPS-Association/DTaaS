@@ -5,16 +5,8 @@ import stat
 from pathlib import Path
 
 import pytest
-from src.pkg.build import (
-    build,
-    main,
-    _copy_one,
-    _ignore,
-    _EXCLUDE_NAMES,
-    _EXCLUDE_SUFFIXES,
-    _SOURCES,
-    _DEST_ROOT,
-)
+from src.pkg.build import build, main, _copy_one, _ignore, _SOURCES, _DEST_ROOT
+from src.pkg.constants import SECRET_FILENAMES, SECRET_SUFFIXES
 
 
 def _force_remove(func, path, _excinfo):
@@ -93,9 +85,9 @@ def test_build_never_copies_excluded_secret_filenames():
     real, built template tree."""
     for path in _DEST_ROOT.rglob("*"):
         if path.is_file():
-            assert path.name not in _EXCLUDE_NAMES, f"Excluded file leaked: {path}"
+            assert path.name not in SECRET_FILENAMES, f"Excluded file leaked: {path}"
             assert not path.name.endswith(
-                _EXCLUDE_SUFFIXES
+                SECRET_SUFFIXES
             ), f"Excluded file leaked: {path}"
 
 

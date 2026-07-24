@@ -14,6 +14,12 @@ import shutil
 import sys
 from pathlib import Path
 
+try:
+    from .constants import SECRET_FILENAMES, SECRET_SUFFIXES
+except ImportError:  # run as a plain script: `python src/pkg/build.py`
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from constants import SECRET_FILENAMES, SECRET_SUFFIXES
+
 _CLI_ROOT = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _CLI_ROOT.parent
 _DEST_ROOT = _CLI_ROOT / "src" / "templates" / "deploy"
@@ -28,18 +34,16 @@ _SOURCES: dict[str, str] = {
     "workspace-secure-server": "deploy/workspace/keycloak/production",
 }
 
-# Filenames that hold live secrets on a developer machine (gitignored, so a
-# real deployment may have populated them locally). Only *.example templates
-# should ever reach the packaged wheel; excluding these by name keeps a
-# locally-configured .env, TLS key, or auth conf from being copied in.
-_EXCLUDE_NAMES: frozenset[str] = frozenset(
-    {".env", "conf.server", "client.js", "forward-auth-conf"}
-)
-_EXCLUDE_SUFFIXES: tuple[str, ...] = (".pem", ".key", ".crt", ".p12")
-
 
 def _ignore(_directory: str, names: list[str]) -> list[str]:
-    return [n for n in names if n in _EXCLUDE_NAMES or n.endswith(_EXCLUDE_SUFFIXES)]
+    """copytree ignore hook: keep locally-configured secrets out of the wheel.
+
+    Only *.example templates should ever reach src/templates/deploy; a real
+    deployment run against these source directories may have populated
+    SECRET_FILENAMES/SECRET_SUFFIXES locally (they're gitignored for exactly
+    this reason), and copytree would otherwise happily package them.
+    """
+    return [n for n in names if n in SECRET_FILENAMES or n.endswith(SECRET_SUFFIXES)]
 
 
 def _copy_one(deploy_type: str, rel_source: str) -> None:

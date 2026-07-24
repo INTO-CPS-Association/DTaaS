@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 from ._deploy_data import _DEPLOY_FILES, _SECRET_PLACEHOLDERS
-from .constants import USER_PSEUDO_KEY_RE
+from .constants import USER_PSEUDO_KEY_RE, SECRET_FILENAMES
 
 
 def _set_env_value(text, key, value):
@@ -145,16 +145,21 @@ def _write_if_changed(path, old, new):
     """Write *new* to *path* only when it differs from *old*."""
     if new != old:
         path.write_text(new, encoding="utf-8")
-        if path.name in {".env", "conf.server", "client.js", "forward-auth-conf"}:
-            path.chmod(0o600)
 
 
 def _apply_to_file(path, file_format, values):
-    """Apply key/value substitutions to one config file. Returns error or None."""
+    """Apply key/value substitutions to one config file. Returns error or None.
+
+    Secret-bearing files are chmod'd 0600 on every call, not only when this
+    run happened to change their content -- an existing config/.env from
+    before this hardening was added must end up non-world-readable too.
+    """
     try:
         content = _decode_editable(path.read_bytes())
         if content is not None:
             _write_if_changed(path, content, _render(content, file_format, values))
+            if path.name in SECRET_FILENAMES:
+                path.chmod(0o600)
     except (OSError, UnicodeDecodeError) as exc:
         return str(exc)
     return None

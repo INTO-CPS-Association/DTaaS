@@ -6,6 +6,7 @@ from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
 from .constants import COMPOSE_USERS_YML
 from .user_files import delete_user_files
+from .project import warn_stale_root_env
 
 COMPOSE_FILE = "docker-compose.yml"
 ENV_FILE = Path("config") / ".env"
@@ -75,6 +76,7 @@ def install(directory="."):
     DockerException (from python-on-whales) if compose itself fails.
     """
     _require_deployment(directory)
+    warn_stale_root_env(directory)
     _client(directory).compose.up(detach=True)
 
 

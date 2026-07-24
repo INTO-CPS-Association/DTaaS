@@ -137,8 +137,9 @@ def test_snapshot_live_empty_dict_when_compose_absent():
     """_snapshot reports live={} (not None) when compose.users.yml itself is
     absent -- every desired-running registry user is legitimately absent in
     that case, distinct from a Docker daemon being merely unreachable."""
-    with patch("src.pkg.users_lifecycle.load_registry", return_value={"alice": {}}), \
-        patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
+    with patch(
+        "src.pkg.users_lifecycle.load_registry", return_value={"alice": {}}
+    ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
         live, registry, services = users_lifecycle._snapshot()
 
     assert live == {}
@@ -219,14 +220,14 @@ def test_desired_status_drift_empty_on_docker_exception():
         assert users_lifecycle.desired_status_drift() == []
 
 
-def test_missing_containers_flags_running_users_without_a_container():
+def test_reconcile_drift_absent_flags_running_users_without_a_container():
     """A registry user desired 'running' with a compose service but no live
-    container is reported; a running one, a user intentionally stopped, and a
-    user with no compose service at all (find_drift's 'missing' job, not
-    ours) are not."""
+    container is reported as absent; a running one, a user intentionally
+    stopped, and a user with no compose service at all (find_drift's
+    'missing' job, not this one) are not."""
     client = MagicMock()
     client.compose.ps.return_value = [
-        _fake_container("alice", status="running"),  # present -> not missing
+        _fake_container("alice", status="running"),  # present -> not absent
     ]
     with patch(
         "src.pkg.users_lifecycle.load_registry",
@@ -240,38 +241,27 @@ def test_missing_containers_flags_running_users_without_a_container():
         "src.pkg.users_lifecycle._load_services",
         return_value={"alice": {}, "bob": {}, "carol": {}},  # dave excluded
     ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        assert users_lifecycle.missing_containers() == ["bob"]
+        _, absent, _ = users_lifecycle.reconcile_drift()
 
+    assert absent == ["bob"]
     client.compose.ps.assert_called_once_with(
         services=["alice", "bob", "carol"], all=True
     )
 
 
-def test_missing_containers_empty_without_compose_file():
-    """missing_containers returns [] when compose.users.yml has never been
-    written (an empty registry has nothing to flag either way)."""
+def test_reconcile_drift_absent_empty_without_compose_file():
+    """reconcile_drift's absent list is [] when compose.users.yml has never
+    been written (an empty registry has nothing to flag either way)."""
     with patch("src.pkg.users_lifecycle.deploy._users_client", return_value=None):
-        assert users_lifecycle.missing_containers() == []
+        _, absent, reachable = users_lifecycle.reconcile_drift()
+
+    assert absent == []
+    assert reachable is True
 
 
-def test_missing_containers_empty_on_docker_exception():
-    """missing_containers returns [] -- not every running-desired user -- when
-    Docker is unreachable, so a transient daemon blip can never feed a bogus
-    full-deployment reprovision into 'config reconcile --fix'."""
-    client = MagicMock()
-    client.compose.ps.side_effect = DockerException(["docker", "compose", "ps"], 1)
-    with patch(
-        "src.pkg.users_lifecycle.load_registry",
-        return_value={"alice": {"desired_status": "running"}},
-    ), patch(
-        "src.pkg.users_lifecycle._load_services", return_value={"alice": {}}
-    ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        assert users_lifecycle.missing_containers() == []
-
-
-def test_missing_containers_scopes_to_output_dir():
-    """missing_containers reads the given deployment's registry/compose file,
-    not whatever happens to be in the current directory -- so
+def test_reconcile_drift_scopes_to_output_dir():
+    """reconcile_drift reads the given deployment's registry/compose file, not
+    whatever happens to be in the current directory -- so
     'config reconcile --output-dir X' run from a different deployment's
     directory does not mix the two deployments' users."""
     client = MagicMock()
@@ -281,7 +271,7 @@ def test_missing_containers_scopes_to_output_dir():
     ) as mock_load, patch(
         "src.pkg.users_lifecycle.deploy._users_client", return_value=client
     ) as mock_client:
-        users_lifecycle.missing_containers("/opt/dtaas-b")
+        users_lifecycle.reconcile_drift("/opt/dtaas-b")
 
     mock_client.assert_called_once_with("/opt/dtaas-b")
     mock_load.assert_called_once_with(
@@ -305,16 +295,18 @@ def test_reconcile_drift_single_snapshot_for_both_categories():
         "src.pkg.users_lifecycle._load_services",
         return_value={"alice": {}, "bob": {}},
     ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        status_drift, absent = users_lifecycle.reconcile_drift()
+        status_drift, absent, reachable = users_lifecycle.reconcile_drift()
 
     client.compose.ps.assert_called_once()
     assert status_drift == [("alice", "paused", "running")]
     assert absent == ["bob"]
+    assert reachable is True
 
 
-def test_reconcile_drift_empty_on_docker_exception():
-    """reconcile_drift degrades to ([], []) -- not a crash, and not every
-    user flagged -- when Docker is unreachable."""
+def test_reconcile_drift_reports_unreachable_on_docker_exception():
+    """reconcile_drift degrades to ([], [], False) -- not a crash, and not
+    every user flagged -- when Docker is unreachable. The False flag lets the
+    caller tell 'state verified, nothing wrong' apart from 'could not check'."""
     client = MagicMock()
     client.compose.ps.side_effect = DockerException(["docker", "compose", "ps"], 1)
     with patch(
@@ -323,7 +315,17 @@ def test_reconcile_drift_empty_on_docker_exception():
     ), patch(
         "src.pkg.users_lifecycle._load_services", return_value={"alice": {}}
     ), patch("src.pkg.users_lifecycle.deploy._users_client", return_value=client):
-        assert users_lifecycle.reconcile_drift() == ([], [])
+        assert users_lifecycle.reconcile_drift() == ([], [], False)
+
+
+def test_reconcile_drift_reachable_when_compose_absent():
+    """A missing compose.users.yml is 'nothing to observe', not a failure to
+    observe -- reconcile_drift reports docker_reachable=True so reconcile can
+    still legitimately say 'In sync'."""
+    with patch("src.pkg.users_lifecycle.load_registry", return_value={}), patch(
+        "src.pkg.users_lifecycle.deploy._users_client", return_value=None
+    ):
+        assert users_lifecycle.reconcile_drift() == ([], [], True)
 
 
 def test_enforce_desired_status_applies_each_action(mock_state):

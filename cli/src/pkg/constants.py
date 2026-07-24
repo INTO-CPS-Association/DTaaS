@@ -27,3 +27,7 @@ CONF_SERVER_RULE_NUM_RE = re.compile(r"rule\.onlyu(\d+)\.")
 
 # For deploy_config.py: username<N>/email<N> pseudo-keys under [users].
 USER_PSEUDO_KEY_RE = re.compile(r"(username|email)(\d+)$")
+
+# These must never reach the packaged wheel
+SECRET_FILENAMES = frozenset({".env", "conf.server", "client.js", "forward-auth-conf"})
+SECRET_SUFFIXES = (".pem", ".key", ".crt", ".p12")

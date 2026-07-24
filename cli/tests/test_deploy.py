@@ -45,6 +45,27 @@ def test_install_propagates_docker_exception(tmp_path):
             deploy.install(str(tmp_path))
 
 
+def test_install_warns_about_stale_root_env(tmp_path, capsys):
+    """install() surfaces the stale-root-.env warning before bringing compose up.
+
+    'platform install' is the entry point an operator upgrading an existing
+    deployment is most likely to run, so it needs the same warning as
+    'deployment generate' -- an upgrader typically already has a deployment
+    directory and never re-runs generate.
+    """
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    (tmp_path / "dtaas.toml").write_text("x = 1")
+    (tmp_path / "config").mkdir()
+    (tmp_path / ".env").write_text("SECRET=1\n")
+    (tmp_path / "config" / ".env").write_text("SECRET=1\n")
+
+    with patch("src.pkg.deploy._client") as mock_client:
+        deploy.install(str(tmp_path))
+
+    assert "stale" in capsys.readouterr().out
+    mock_client.return_value.compose.up.assert_called_once_with(detach=True)
+
+
 def test_check_within_base_rejects_symlink(tmp_path):
     """A symlinked files/ pointing elsewhere is rejected (the primary guard)."""
     base = tmp_path / "install"

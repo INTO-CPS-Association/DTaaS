@@ -95,6 +95,23 @@ def test_update_config_applies_and_restarts_all(tmp_path):
     mock_restart.assert_called_once_with(base)
 
 
+def test_update_config_warns_about_stale_root_env(tmp_path, capsys):
+    """update_config surfaces the stale-root-.env warning alongside its summary.
+
+    'platform update --config' is the entry point an operator upgrading an
+    existing deployment is most likely to run, so it needs the same warning
+    as 'deployment generate' -- an upgrader already has a deployment
+    directory and never re-runs generate.
+    """
+    base = _write_deployment(tmp_path, SERVER_SERVICES)
+    (tmp_path / ".env").write_text("SERVER_DNS=old\n")
+
+    with patch("src.pkg.config_update.deploy.restart_all"):
+        config_update.update_config(base, dry_run=True)
+
+    assert "stale" in capsys.readouterr().out
+
+
 def test_update_config_idempotent_second_run(tmp_path):
     """Re-running after the values are applied reports no changes and no restart."""
     base = _write_deployment(tmp_path, SERVER_SERVICES)

@@ -183,6 +183,49 @@ def test_build_file_specs_workspace_secure_server_targets_config_env():
     assert env_values["KEYCLOAK_CLIENT_SECRET"] == "kc-secret"
 
 
+def test_apply_config_chmods_secret_file_when_content_changes(tmp_path):
+    """A secret-named file (config/.env) is chmod'd 0600 when its content changes.
+
+    Windows chmod() can't be asserted via the resulting st_mode (it only tracks
+    the read-only attribute, so 0o600 and 0o644 read back identically) -- so
+    this asserts the call itself, which is the portable signal.
+    """
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / ".env").write_text(ENV_TEXT)
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        apply_config(
+            str(tmp_path), [("config/.env", "env", {"SERVER_DNS": "myserver.com"})]
+        )
+    mock_chmod.assert_called_once_with(0o600)
+
+
+def test_apply_config_chmods_secret_file_even_when_content_is_unchanged(tmp_path):
+    """An existing config/.env from before this hardening was added is still
+    chmod'd 0600 even on a run that changes nothing -- the population this
+    protects is exactly the deployments that already have a live secret file
+    sitting at the old, world-readable mode."""
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / ".env").write_text("SERVER_DNS=myserver.com\n")
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        apply_config(
+            str(tmp_path), [("config/.env", "env", {"SERVER_DNS": "myserver.com"})]
+        )
+    mock_chmod.assert_called_once_with(0o600)
+
+
+def test_apply_config_does_not_chmod_non_secret_files(tmp_path):
+    """A file outside the secret-filename allowlist (e.g. tls.yml) is left alone."""
+    (tmp_path / "tls.yml").write_text("issuer: http://old\n")
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        apply_config(str(tmp_path), [("tls.yml", "yaml", {"issuer": "http://new"})])
+    mock_chmod.assert_not_called()
+
+
 def test_apply_config_edits_files_by_key(tmp_path):
     """apply_config edits the targeted keys in each config file"""
     config_dir = tmp_path / "config"

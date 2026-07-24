@@ -99,10 +99,16 @@ def _echo_status_drift(status_drift):
         click.echo(f"- {name}: desired '{desired}' but container is '{actual}'")
 
 
-def _echo_reconcile(report, status_drift):
-    """Print membership + desired-status drift, noting when everything is in sync."""
+def _echo_reconcile(report, status_drift, docker_reachable=True):
+    """Print membership + desired-status drift, noting when everything is in
+    sync. When Docker was unreachable, container state (absent/desired-status)
+    could not be verified, so warn and never claim 'In sync' -- only the
+    compose-file-based membership drift below is trustworthy."""
+    if not docker_reachable:
+        click.echo("Warning: could not query Docker; container state was not verified.")
     if not any(report.values()) and not status_drift:
-        click.echo("In sync: no drift detected.")
+        if docker_reachable:
+            click.echo("In sync: no drift detected.")
         return
     _echo_membership_drift(report)
     _echo_status_drift(status_drift)
@@ -157,7 +163,18 @@ def run_reconcile(output_dir, fix=False):
     (which means no compose service exists at all). With --fix, an 'absent'
     user's container alone is restarted, without touching already-running
     users.
+
+    --fix reprovisions via 'dtaas user add', which operates on the current
+    directory unconditionally. Combining --fix with an --output-dir other
+    than the cwd would report on one deployment but fix another, so that
+    combination is rejected outright rather than silently acting on the
+    wrong directory.
     """
+    if fix and Path(output_dir).resolve() != Path.cwd():
+        raise click.ClickException(
+            "--fix operates on the current directory; run it from the "
+            "deployment directory instead of passing --output-dir."
+        )
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
@@ -165,9 +182,16 @@ def run_reconcile(output_dir, fix=False):
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
     report = statePkg.find_drift(registry_users, state, services)
-    status_drift, report["absent"] = usersLifecyclePkg.reconcile_drift(output_dir)
-    _echo_reconcile(report, status_drift)
+    status_drift, report["absent"], docker_reachable = (
+        usersLifecyclePkg.reconcile_drift(output_dir)
+    )
+    _echo_reconcile(report, status_drift, docker_reachable)
     if fix:
+        if not docker_reachable:
+            raise click.ClickException(
+                "Cannot --fix: Docker is unreachable, so container state could not "
+                "be verified. Start Docker and retry."
+            )
         _fix_reconcile(report, status_drift)
 
 
