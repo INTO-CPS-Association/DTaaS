@@ -37,7 +37,10 @@ export function configureLoggerApp(
   config: Config,
 ): void {
   app.enableCors(
-    buildCorsOptions(config.getCorsAllowOrigin(), config.getPort()),
+    buildCorsOptions(
+      config.getCorsAllowOrigin(),
+      config.getCorsAllowCredentials(),
+    ),
   );
   registerBodyParser(app, config);
 }

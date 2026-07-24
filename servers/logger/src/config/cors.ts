@@ -8,7 +8,6 @@ function normalizeSingleOrigin(configuredOrigin: string): string {
 
 export function normalizeCorsOrigin(
   configuredOrigin: CorsAllowOrigin,
-  _port: number,
 ): boolean | string | string[] {
   if (Array.isArray(configuredOrigin)) {
     return configuredOrigin.map(normalizeSingleOrigin);
@@ -21,15 +20,21 @@ export function normalizeCorsOrigin(
 
 export function buildCorsOptions(
   configuredOrigin: CorsAllowOrigin,
-  port: number,
+  credentials: boolean,
 ): {
   origin: boolean | string | string[];
   methods: string[];
-  credentials: true;
+  credentials: boolean;
 } {
+  const origin = normalizeCorsOrigin(configuredOrigin);
+  if (credentials && origin === true) {
+    throw new Error(
+      'cors-allow-credentials cannot be enabled with cors-allow-origin: *',
+    );
+  }
   return {
-    origin: normalizeCorsOrigin(configuredOrigin, port),
+    origin,
     methods: ['GET', 'POST', 'OPTIONS'],
-    credentials: true,
+    credentials,
   };
 }

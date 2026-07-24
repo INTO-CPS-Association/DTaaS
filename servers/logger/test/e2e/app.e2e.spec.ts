@@ -55,6 +55,7 @@ describe('Logger service e2e', () => {
     process.env.LOGGER_CORS_ALLOW_ORIGIN = '*';
     process.env.LOGGER_LOG_FILE_PATH = logFilePath;
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '65536';
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_AUTH_TOKEN;
 
     app = await createTestApp();
@@ -66,6 +67,7 @@ describe('Logger service e2e', () => {
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
     delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_LOG_FILE_PATH;
     delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
     delete process.env.LOGGER_AUTH_TOKEN;
@@ -115,7 +117,7 @@ describe('Logger service e2e', () => {
     }
   });
 
-  it('OPTIONS /logger exposes CORS headers', async () => {
+  it('OPTIONS /logger excludes credentials by default', async () => {
     const response = await supertest(app.getHttpServer())
       .options('/logger')
       .set('Origin', 'http://localhost:3000')
@@ -124,7 +126,9 @@ describe('Logger service e2e', () => {
     expect(response.headers['access-control-allow-origin']).toBe(
       'http://localhost:3000',
     );
-    expect(response.headers['access-control-allow-credentials']).toBe('true');
+    expect(
+      response.headers['access-control-allow-credentials'],
+    ).toBeUndefined();
   });
 });
 
@@ -140,6 +144,7 @@ describe('Logger service e2e with auth token configured', () => {
     process.env.LOGGER_CORS_ALLOW_ORIGIN = '*';
     process.env.LOGGER_LOG_FILE_PATH = path.join(tempDir, 'events.jsonl');
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '65536';
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     process.env.LOGGER_AUTH_TOKEN = 'test-secret-token';
 
     app = await createTestApp();
@@ -151,6 +156,7 @@ describe('Logger service e2e with auth token configured', () => {
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
     delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_LOG_FILE_PATH;
     delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
     delete process.env.LOGGER_AUTH_TOKEN;
@@ -209,6 +215,7 @@ describe('Logger service e2e with production body-parser config', () => {
     process.env.LOGGER_CORS_ALLOW_ORIGIN = '*';
     process.env.LOGGER_LOG_FILE_PATH = logFilePath;
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '65536';
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_AUTH_TOKEN;
 
     app = await createTestApp();
@@ -220,6 +227,7 @@ describe('Logger service e2e with production body-parser config', () => {
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
     delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_LOG_FILE_PATH;
     delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
     delete process.env.LOGGER_AUTH_TOKEN;

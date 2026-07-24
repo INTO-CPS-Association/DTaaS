@@ -87,6 +87,7 @@ Important defaults:
 - hostname: `127.0.0.1` for bare local starts;
 - port: `4003`;
 - CORS allow origin: disabled unless configured;
+- CORS credentials: disabled unless configured with explicit origins;
 - auth token: empty, meaning unauthenticated ingest;
 - max payload: 64 KiB;
 - log rotation: 50 MiB active file, 5 retained rotated files.
@@ -137,7 +138,6 @@ The current implementation still has a few deliberate or pending limitations:
   browser transport cannot send auth headers.
 - The static bearer token mode is not JWT verification and has no issuer,
   audience, signature, or expiry checks.
-- CORS credentials are always enabled when CORS is enabled.
 - The server schema must stay aligned with the client event type. Any new client
   event fields should be added to the server schema and fixtures before release.
 

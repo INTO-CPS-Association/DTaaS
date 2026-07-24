@@ -16,6 +16,7 @@ describe('Config service', () => {
     delete process.env.LOGGER_HOSTNAME;
     delete process.env.LOGGER_PORT;
     delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
     delete process.env.LOGGER_AUTH_TOKEN;
     delete process.env.LOGGER_TLS;
     delete process.env.LOGGER_CERTS_DIR;
@@ -34,6 +35,7 @@ describe('Config service', () => {
     expect(config.getHostname()).toBe('127.0.0.1');
     expect(config.getPort()).toBe(4003);
     expect(config.getCorsAllowOrigin()).toBe('');
+    expect(config.getCorsAllowCredentials()).toBe(false);
     expect(config.getAuthToken()).toBe('');
     expect(config.getTls()).toBe(false);
     expect(config.getCertsDirectory()).toBe(
@@ -53,6 +55,7 @@ describe('Config service', () => {
         'hostname: 127.0.0.1',
         'port: 4500',
         'cors-allow-origin: https://client.example',
+        'cors-allow-credentials: true',
         'auth-token: test-token',
         'tls: true',
         'certs: ./secure-certs',
@@ -68,6 +71,7 @@ describe('Config service', () => {
     expect(config.getHostname()).toBe('127.0.0.1');
     expect(config.getPort()).toBe(4500);
     expect(config.getCorsAllowOrigin()).toBe('https://client.example');
+    expect(config.getCorsAllowCredentials()).toBe(true);
     expect(config.getAuthToken()).toBe('test-token');
     expect(config.getTls()).toBe(true);
     expect(config.getCertsDirectory()).toBe(
@@ -97,6 +101,7 @@ describe('Config service', () => {
     process.env.LOGGER_HOSTNAME = '0.0.0.0';
     process.env.LOGGER_PORT = '4900';
     process.env.LOGGER_CORS_ALLOW_ORIGIN = 'http://frontend.local:3000';
+    process.env.LOGGER_CORS_ALLOW_CREDENTIALS = 'true';
     process.env.LOGGER_AUTH_TOKEN = 'token-from-env';
     process.env.LOGGER_TLS = 'true';
     process.env.LOGGER_CERTS_DIR = './runtime-certs';
@@ -108,6 +113,7 @@ describe('Config service', () => {
     expect(config.getHostname()).toBe('0.0.0.0');
     expect(config.getPort()).toBe(4900);
     expect(config.getCorsAllowOrigin()).toBe('http://frontend.local:3000');
+    expect(config.getCorsAllowCredentials()).toBe(true);
     expect(config.getAuthToken()).toBe('token-from-env');
     expect(config.getTls()).toBe(true);
     expect(config.getCertsDirectory()).toBe(
@@ -155,6 +161,7 @@ describe('Config service', () => {
     process.env.LOGGER_HOSTNAME = '   ';
     process.env.LOGGER_PORT = '';
     process.env.LOGGER_CORS_ALLOW_ORIGIN = '   ';
+    process.env.LOGGER_CORS_ALLOW_CREDENTIALS = '';
     process.env.LOGGER_TLS = '';
     process.env.LOGGER_CERTS_DIR = '';
     process.env.LOGGER_LOG_FILE_PATH = '   ';
@@ -165,6 +172,7 @@ describe('Config service', () => {
     expect(config.getHostname()).toBe('127.0.0.1');
     expect(config.getPort()).toBe(4003);
     expect(config.getCorsAllowOrigin()).toBe('');
+    expect(config.getCorsAllowCredentials()).toBe(false);
     expect(config.getTls()).toBe(false);
     expect(config.getCertsDirectory()).toBe(
       path.resolve(process.cwd(), 'certs'),

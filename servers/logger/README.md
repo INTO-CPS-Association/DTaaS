@@ -27,6 +27,8 @@ Environment variables always override YAML values.
 - `port` (default: `4003`)
 - `cors-allow-origin` (default: disabled; set to a single origin or YAML list
   of origins for browser clients)
+- `cors-allow-credentials` (default: `false`; enable only with explicit
+  allowed origins, never `*`)
 - `auth-token` (default: empty string) — a static bearer token for non-browser
   producers. When set, `POST /logger` requires an
   `Authorization: Bearer <auth-token>` header matching this value; requests
@@ -50,6 +52,7 @@ Use `logger.yaml.sample` as a template.
 - `LOGGER_HOSTNAME` (default: `127.0.0.1`; use `0.0.0.0` in containers)
 - `LOGGER_PORT` (default: `4003`)
 - `LOGGER_CORS_ALLOW_ORIGIN` (default: disabled)
+- `LOGGER_CORS_ALLOW_CREDENTIALS` (default: `false`)
 - `LOGGER_AUTH_TOKEN`
 - `LOGGER_TLS`
 - `LOGGER_CERTS_DIR`
@@ -62,8 +65,9 @@ External authentication and edge rate limiting are provided by the reverse
 proxy in the deployment compose files. The service also applies an internal
 request throttle for callers that bypass the proxy.
 
-The service always sets `Access-Control-Allow-Credentials: true` for CORS
-responses.
+The service sends `Access-Control-Allow-Credentials: true` only when
+`cors-allow-credentials` is enabled. Credentials cannot be enabled with a
+wildcard CORS origin.
 
 ## TLS support
 

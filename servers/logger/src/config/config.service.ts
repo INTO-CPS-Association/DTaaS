@@ -10,6 +10,7 @@ type ConfigValues = {
   hostname: string;
   port: number;
   'cors-allow-origin': CorsAllowOrigin;
+  'cors-allow-credentials': boolean;
   'auth-token': string;
   certs: string;
   tls: boolean;
@@ -26,6 +27,7 @@ const DEFAULT_CERTS_DIR = 'certs';
 const DEFAULT_LOG_FILE = 'logs/workflow-logs.jsonl';
 const DEFAULT_MAX_PAYLOAD_BYTES = 64 * 1024;
 const DEFAULT_CORS_ALLOW_ORIGIN = '';
+const DEFAULT_CORS_ALLOW_CREDENTIALS = false;
 const DEFAULT_LOG_MAX_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOG_RETENTION_FILES = 5;
 
@@ -66,6 +68,7 @@ const loggerConfigSchema = z
         z.array(z.string().trim().min(1)).min(1),
       ])
       .optional(),
+    'cors-allow-credentials': booleanSchema.optional(),
     'auth-token': z.string().optional(),
     certs: z.string().trim().min(1).optional(),
     tls: booleanSchema.optional(),
@@ -81,6 +84,7 @@ function defaultConfigValues(): ConfigValues {
     hostname: DEFAULT_HOSTNAME,
     port: DEFAULT_PORT,
     'cors-allow-origin': DEFAULT_CORS_ALLOW_ORIGIN,
+    'cors-allow-credentials': DEFAULT_CORS_ALLOW_CREDENTIALS,
     'auth-token': DEFAULT_AUTH_TOKEN,
     certs: path.resolve(process.cwd(), DEFAULT_CERTS_DIR),
     tls: false,
@@ -157,6 +161,10 @@ export default class Config implements IConfig {
     return this.configValues['cors-allow-origin'];
   }
 
+  getCorsAllowCredentials(): boolean {
+    return this.configValues['cors-allow-credentials'];
+  }
+
   getAuthToken(): string {
     return this.configValues['auth-token'];
   }
@@ -202,6 +210,10 @@ export default class Config implements IConfig {
     if (yamlValues['cors-allow-origin'] !== undefined) {
       this.configValues['cors-allow-origin'] = yamlValues['cors-allow-origin'];
     }
+    if (yamlValues['cors-allow-credentials'] !== undefined) {
+      this.configValues['cors-allow-credentials'] =
+        yamlValues['cors-allow-credentials'];
+    }
     if (yamlValues['auth-token'] !== undefined) {
       this.configValues['auth-token'] = yamlValues['auth-token'];
     }
@@ -246,6 +258,14 @@ export default class Config implements IConfig {
     const corsAllowOrigin = process.env.LOGGER_CORS_ALLOW_ORIGIN;
     if (corsAllowOrigin !== undefined && corsAllowOrigin.trim() !== '') {
       this.configValues['cors-allow-origin'] = corsAllowOrigin.trim();
+    }
+
+    const corsAllowCredentials = parseBooleanEnv(
+      process.env.LOGGER_CORS_ALLOW_CREDENTIALS,
+      'LOGGER_CORS_ALLOW_CREDENTIALS',
+    );
+    if (corsAllowCredentials !== undefined) {
+      this.configValues['cors-allow-credentials'] = corsAllowCredentials;
     }
 
     const authToken = process.env.LOGGER_AUTH_TOKEN;

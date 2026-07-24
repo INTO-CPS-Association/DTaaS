@@ -58,7 +58,9 @@ Ingest a single log event.
 
 The service enables CORS with `Access-Control-Allow-Origin` controlled by
 `cors-allow-origin` (`LOGGER_CORS_ALLOW_ORIGIN` in env).
-It also always sends `Access-Control-Allow-Credentials: true`.
+Set `cors-allow-credentials` (`LOGGER_CORS_ALLOW_CREDENTIALS`) to `true` to
+send `Access-Control-Allow-Credentials: true`. This requires explicit allowed
+origins; it cannot be combined with `cors-allow-origin: '*'`.
 
 ### GET /logger/health
 

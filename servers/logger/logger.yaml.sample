@@ -9,6 +9,7 @@ cors-allow-origin: http://localhost
 #   - https://client-a.example.org
 #   - https://client-b.example.org
 #   - https://client-c.example.org
+cors-allow-credentials: false
 auth-token: ''
 tls: false
 certs: ./certs

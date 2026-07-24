@@ -5,6 +5,7 @@ export interface IConfig {
   getHostname(): string;
   getPort(): number;
   getCorsAllowOrigin(): CorsAllowOrigin;
+  getCorsAllowCredentials(): boolean;
   getAuthToken(): string;
   getTls(): boolean;
   getCertsDirectory(): string;
