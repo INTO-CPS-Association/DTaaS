@@ -5,6 +5,9 @@
   "main": "dist/src/main.js",
   "repository": "https://github.com/into-cps-association/DTaaS.git",
   "author": "prasadtalasila",
+  "contributors": [
+    "Enok Maj"
+  ],
   "license": "The INTO-CPS Association License",
   "private": false,
   "type": "module",
