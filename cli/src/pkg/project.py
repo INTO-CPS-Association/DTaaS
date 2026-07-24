@@ -211,6 +211,8 @@ def _copy_example(example, force):
         return None
     try:
         shutil.copy2(example, target)
+        if target.name in {".env", "conf.server", "client.js", "forward-auth-conf"}:
+            target.chmod(0o600)
     except OSError as exc:
         return str(exc)
     return None
@@ -269,6 +271,18 @@ def _has_template_files(src):
     return any(p.is_file() and p.name != ".gitkeep" for p in src.rglob("*"))
 
 
+def _warn_stale_root_env(dest_dir):
+    """Warn if a stale root .env exists alongside the new config/.env."""
+    root_env = Path(dest_dir) / ".env"
+    config_env = Path(dest_dir) / "config" / ".env"
+    if root_env.is_file() and config_env.is_file():
+        click.echo(
+            "Warning: both .env and config/.env exist in the deployment directory. "
+            "The deployment now reads config/.env (via docker compose --env-file). "
+            "The root .env is stale and should be removed to avoid confusion."
+        )
+
+
 def generate_deploy_project(deploy_type, dest_dir=".", force=False):
     """Copy a deploy template directory tree to the destination."""
     src = DEPLOY_TEMPLATES_DIR / deploy_type
@@ -279,3 +293,4 @@ def generate_deploy_project(deploy_type, dest_dir=".", force=False):
         return
     _copy_tree(src, dest, force)
     _copy_example_files(dest, force)
+    _warn_stale_root_env(dest)

@@ -145,6 +145,8 @@ def _write_if_changed(path, old, new):
     """Write *new* to *path* only when it differs from *old*."""
     if new != old:
         path.write_text(new, encoding="utf-8")
+        if path.name in {".env", "conf.server", "client.js", "forward-auth-conf"}:
+            path.chmod(0o600)
 
 
 def _apply_to_file(path, file_format, values):

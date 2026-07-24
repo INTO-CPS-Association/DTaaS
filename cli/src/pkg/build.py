@@ -28,6 +28,19 @@ _SOURCES: dict[str, str] = {
     "workspace-secure-server": "deploy/workspace/keycloak/production",
 }
 
+# Filenames that hold live secrets on a developer machine (gitignored, so a
+# real deployment may have populated them locally). Only *.example templates
+# should ever reach the packaged wheel; excluding these by name keeps a
+# locally-configured .env, TLS key, or auth conf from being copied in.
+_EXCLUDE_NAMES: frozenset[str] = frozenset(
+    {".env", "conf.server", "client.js", "forward-auth-conf"}
+)
+_EXCLUDE_SUFFIXES: tuple[str, ...] = (".pem", ".key", ".crt", ".p12")
+
+
+def _ignore(_directory: str, names: list[str]) -> list[str]:
+    return [n for n in names if n in _EXCLUDE_NAMES or n.endswith(_EXCLUDE_SUFFIXES)]
+
 
 def _copy_one(deploy_type: str, rel_source: str) -> None:
     src = _REPO_ROOT / rel_source
@@ -36,7 +49,7 @@ def _copy_one(deploy_type: str, rel_source: str) -> None:
     dest = _DEST_ROOT / deploy_type
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src, dest, copy_function=shutil.copy)
+    shutil.copytree(src, dest, ignore=_ignore, copy_function=shutil.copy)
 
 
 def build() -> None:

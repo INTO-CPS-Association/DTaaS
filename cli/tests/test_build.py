@@ -5,7 +5,16 @@ import stat
 from pathlib import Path
 
 import pytest
-from src.pkg.build import build, main, _copy_one, _SOURCES, _DEST_ROOT
+from src.pkg.build import (
+    build,
+    main,
+    _copy_one,
+    _ignore,
+    _EXCLUDE_NAMES,
+    _EXCLUDE_SUFFIXES,
+    _SOURCES,
+    _DEST_ROOT,
+)
 
 
 def _force_remove(func, path, _excinfo):
@@ -50,6 +59,44 @@ def test_build_places_workspace_env_under_config(deploy_type):
     assert not (
         dest / ".env.example"
     ).exists(), f"stale root .env.example present in '{deploy_type}' template"
+
+
+def test_ignore_excludes_locally_populated_secret_files():
+    """_ignore drops gitignored secret filenames a dev machine may have populated.
+
+    These names are never committed to git (see .gitignore) but shutil.copytree
+    cannot know that -- a locally-configured .env or TLS key sitting in a
+    _SOURCES directory must not reach the packaged wheel.
+    """
+    names = [
+        ".env",
+        "conf.server",
+        "client.js",
+        "forward-auth-conf",
+        "privkey.pem",
+        "server.key",
+        "server.crt",
+        "client.p12",
+    ]
+    assert set(_ignore("config", names)) == set(names)
+
+
+def test_ignore_keeps_example_and_unrelated_files():
+    """_ignore only matches exact secret filenames/suffixes, not their .example
+    counterparts or unrelated tracked files."""
+    names = [".env.example", "client.js.example", "conf.server.example", "tls.yml"]
+    assert _ignore("config", names) == []
+
+
+def test_build_never_copies_excluded_secret_filenames():
+    """No file matching the secret-exclusion rules appears anywhere under the
+    real, built template tree."""
+    for path in _DEST_ROOT.rglob("*"):
+        if path.is_file():
+            assert path.name not in _EXCLUDE_NAMES, f"Excluded file leaked: {path}"
+            assert not path.name.endswith(
+                _EXCLUDE_SUFFIXES
+            ), f"Excluded file leaked: {path}"
 
 
 def test_copy_one_raises_when_source_missing():
