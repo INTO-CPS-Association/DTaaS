@@ -295,9 +295,10 @@ def test_run_reconcile_fix_rejects_output_dir_other_than_cwd(tmp_path, monkeypat
     cwd = tmp_path / "cwd"
     cwd.mkdir()
     monkeypatch.chdir(cwd)
+    other_dir_str = str(other_dir)
 
     with pytest.raises(click.ClickException, match="--fix operates on the current"):
-        run_reconcile(str(other_dir), fix=True)
+        run_reconcile(other_dir_str, fix=True)
 
 
 def test_run_reconcile_fix_allows_default_output_dir(tmp_path, monkeypatch):
@@ -323,12 +324,13 @@ def test_run_reconcile_fix_refuses_when_docker_unreachable(tmp_path, monkeypatch
         "services:\n  alice:\n    image: v1\n", encoding="utf-8"
     )
     monkeypatch.chdir(tmp_path)
+    tmp_path_str = str(tmp_path)
 
     with patch(
         "src.cmd_utils.usersLifecyclePkg.reconcile_drift", return_value=([], [], False)
     ), patch("src.cmd_utils.userPkg.add_users") as mock_add:
         with pytest.raises(click.ClickException, match="Docker is unreachable"):
-            run_reconcile(str(tmp_path), fix=True)
+            run_reconcile(tmp_path_str, fix=True)
 
     mock_add.assert_not_called()
 
