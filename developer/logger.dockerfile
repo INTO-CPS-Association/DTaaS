@@ -17,6 +17,7 @@ COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules
 COPY --from=build --chown=node:node /dtaas/logger/package.json ./package.json
 RUN mkdir -p logs && chown node:node logs
 
+ENV LOGGER_HOSTNAME=0.0.0.0
 ENV LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl
 USER node
 CMD ["yarn", "start"]
