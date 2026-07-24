@@ -1,6 +1,9 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { saveRunnerSettings } from 'test/e2e/setup/appSettings';
+import {
+  openAuthenticatedApp,
+  saveRunnerSettings,
+} from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 
 // Increase the test timeout to 10 minutes
@@ -9,14 +12,7 @@ test.setTimeout(600000);
 test.describe('Concurrent Execution', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the home page and authenticate
-    await page.goto('./');
-    await page.getByRole('button', { name: 'SignIn' }).click();
-    await page
-      .getByRole('button', { name: /Authorize/ })
-      .press('Enter', { timeout: 30000 });
-    await expect(
-      page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    await openAuthenticatedApp(page);
     await saveRunnerSettings(page);
 
     // Navigate directly to the Digital Twins page

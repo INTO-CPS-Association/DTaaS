@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
 
 const DEFAULT_SETTINGS = {
   GROUP_NAME: 'DTaaS',
@@ -12,14 +13,7 @@ const DEFAULT_SETTINGS = {
 test.describe('Account Settings Form', () => {
   test.beforeEach(async ({ page }) => {
     // Go to the Settings page
-    await page.goto('./');
-    await page.getByRole('button', { name: 'SignIn' }).click();
-    await page
-      .getByRole('button', { name: /Authorize/ })
-      .press('Enter', { timeout: 30000 });
-    await expect(
-      page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    await openAuthenticatedApp(page);
     await page.getByLabel('Open settings').click();
     await page.getByRole('menuitem', { name: 'Account' }).click();
     await page.getByRole('tab', { name: 'Settings' }).click();

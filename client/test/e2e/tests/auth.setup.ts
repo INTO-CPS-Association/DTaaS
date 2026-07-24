@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import path from 'node:path';
 import setup from 'test/e2e/setup/fixtures';
 import { disableRemoteLogging } from 'test/e2e/setup/appSettings';
+import { saveSessionStorage } from 'test/e2e/setup/authStorage';
 
 // Use absolute path for reliable environment variable loading
 const envPath = path.join(process.cwd(), 'client/test/.env');
@@ -28,6 +29,7 @@ setup('authenticate', async ({ page }) => {
     { timeout: 30000 },
   );
   await disableRemoteLogging(page);
+  await saveSessionStorage(page);
   const storage = await page.context().storageState();
 
   storage.cookies = storage.cookies.map((cookie) => {

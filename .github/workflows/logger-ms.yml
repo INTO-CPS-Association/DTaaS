@@ -5,13 +5,11 @@ name: Logger microservice
     paths:
       - 'servers/logger/**'
       - 'developer/logger.dockerfile'
-      - 'deploy/dtaas/docker/**'
       - '.github/workflows/logger-ms.yml'
   pull_request:
     paths:
       - 'servers/logger/**'
       - 'developer/logger.dockerfile'
-      - 'deploy/dtaas/docker/**'
       - '.github/workflows/logger-ms.yml'
   workflow_dispatch:
 
@@ -41,8 +39,8 @@ jobs:
 
     steps:
       - name: Checkout
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Setup node
         # v6.1.0
@@ -100,6 +98,26 @@ jobs:
           cat logger-ms.log
           exit 1
 
+      - name: Build and check logger Docker image
+        working-directory: ${{ github.workspace }}
+        run: |
+          docker build \
+            --file developer/logger.dockerfile \
+            --tag dtaas-logger-ms:ci \
+            .
+          container_id=$(docker run --detach --rm \
+            --publish 127.0.0.1:4003:4003 \
+            dtaas-logger-ms:ci)
+          trap 'docker logs "$container_id"; docker stop "$container_id"' EXIT
+          for attempt in 1 2 3 4; do
+            if curl --fail --silent --show-error \
+              http://127.0.0.1:4003/logger/health; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
   get-version:
     permissions:
       contents: read
@@ -108,8 +126,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        # v6.0.1
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
       - name: Install jq
         run: sudo apt-get install -y jq
       - name: get version

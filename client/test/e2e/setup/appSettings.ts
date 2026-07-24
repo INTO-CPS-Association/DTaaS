@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { restoreSessionStorage } from 'test/e2e/setup/authStorage';
 
 export const PRIMARY_RUNNER = process.env.PRIMARY_RUNNER ?? 'linux';
 export const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
@@ -23,6 +24,14 @@ export async function disableRemoteLogging(page: Page) {
       }),
     );
   });
+}
+
+export async function openAuthenticatedApp(page: Page) {
+  await restoreSessionStorage(page);
+  await page.goto('./Library');
+  await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible(
+    { timeout: 30000 },
+  );
 }
 
 export async function saveRunnerSettings(

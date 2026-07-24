@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
 
 // Runner tags are read from client/test/.env (PRIMARY_RUNNER, SECONDARY_RUNNER).
 // They are written to app settings by tests that exercise multi-runner tasks.
@@ -7,14 +8,7 @@ const PRIMARY_RUNNER = process.env.PRIMARY_RUNNER ?? 'linux';
 const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
 
 async function signIn(page: import('@playwright/test').Page) {
-  await page.goto('./');
-  await page.getByRole('button', { name: 'SignIn' }).click();
-  await page
-    .getByRole('button', { name: /Authorize/ })
-    .press('Enter', { timeout: 30000 });
-  await expect(
-    page.getByRole('button', { name: 'Open settings' }),
-  ).toBeVisible();
+  await openAuthenticatedApp(page);
 }
 
 async function openSettingsTab(page: import('@playwright/test').Page) {
@@ -26,6 +20,24 @@ async function openSettingsTab(page: import('@playwright/test').Page) {
   ).toBeVisible();
 }
 
+async function stopMeasurementIfRunning(page: import('@playwright/test').Page) {
+  const stopButton = page.getByRole('button', { name: 'Stop', exact: true });
+  const stopVisible = await stopButton
+    .isVisible({ timeout: 1000 })
+    .catch(() => false);
+  if (!stopVisible || !(await stopButton.isEnabled().catch(() => false))) {
+    return;
+  }
+  await stopButton.click({ timeout: 5000 }).catch(() => undefined);
+  const dialog = page.getByRole('dialog');
+  if (await dialog.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await dialog
+      .getByRole('button', { name: 'Stop' })
+      .click({ timeout: 5000 })
+      .catch(() => undefined);
+  }
+}
+
 test.describe('Measurement Page', () => {
   test.beforeEach(async ({ page }) => {
     await signIn(page);
@@ -35,14 +47,7 @@ test.describe('Measurement Page', () => {
   });
 
   test.afterEach(async ({ page }) => {
-    const stopButton = page.getByRole('button', { name: 'Stop', exact: true });
-    if (await stopButton.isEnabled()) {
-      await stopButton.click();
-      const dialog = page.getByRole('dialog');
-      if (await dialog.isVisible()) {
-        await dialog.getByRole('button', { name: 'Stop' }).click();
-      }
-    }
+    await stopMeasurementIfRunning(page);
   });
 
   test('Should navigate to measurement page successfully', async ({ page }) => {

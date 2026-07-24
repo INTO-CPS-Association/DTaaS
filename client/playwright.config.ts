@@ -14,6 +14,7 @@ dotenv.config({ path: './test/.env', quiet: true });
 
 // const storeState = JSON.parse(fs.readFileSync(path.resolve('./playwright/.auth/user.json'), 'utf-8'));
 const BASE_URI = process.env.REACT_APP_URL ?? 'http://localhost:4000/';
+const ignoreHttpsErrors = process.env.IGNORE_HTTPS_ERRORS === 'true';
 
 export default defineConfig({
   webServer: useExtServer
@@ -54,6 +55,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'on-first-retry', // Will not record trace on Github actions because of no retries
     headless: true,
+    ignoreHTTPSErrors: ignoreHttpsErrors,
   },
   projects: [
     // Setup project

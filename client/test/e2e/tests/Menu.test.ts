@@ -2,18 +2,12 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
+import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
 import links, { workbenchLinks } from './Links';
 
 test.describe('Menu Links from first page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('./');
-    await page.getByRole('button', { name: 'SignIn' }).click();
-    await page
-      .getByRole('button', { name: /Authorize/ })
-      .press('Enter', { timeout: 30000 });
-    await expect(
-      page.getByRole('button', { name: 'Open settings' }),
-    ).toBeVisible();
+    await openAuthenticatedApp(page);
     await expect(page).toHaveURL(/.*Library/);
   });
 
