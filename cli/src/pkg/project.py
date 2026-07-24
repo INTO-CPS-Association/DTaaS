@@ -1,4 +1,4 @@
-"""This file has functions that handle the generate-project cli command"""
+"""Template-copy functions behind 'dtaas config generate' and 'deployment generate'."""
 
 import shutil
 import subprocess
@@ -9,12 +9,21 @@ import click
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
 
+CONFIG_TOML = "dtaas.toml"
 TEMPLATE_FILES = [
-    "dtaas.toml",
+    CONFIG_TOML,
     "users.server.yml",
     "users.server.secure.yml",
     "users.resources.yml",
 ]
+
+# The user-management overlay templates: every template except dtaas.toml,
+# which 'dtaas config generate' now owns exclusively. Listed by exclusion (not
+# positional slicing) so prepending to TEMPLATE_FILES cannot silently drop one
+# of these overlays -- e.g. users.resources.yml carries the per-user cgroup
+# limits, and a silent miss there is a resource-exhaustion footgun. These are
+# copied by 'dtaas deployment generate' so 'dtaas user add' can read them.
+USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != CONFIG_TOML]
 
 DEPLOY_TYPES = {
     "localhost",
@@ -68,11 +77,20 @@ def _try_copy_template(template_name, dest_dir, force):
     return None
 
 
-def generate_project(dest_dir=".", force=False):
-    """Copy project template files and initialize workspace structure."""
+def generate_user_templates(dest_dir=".", force=False):
+    """Copy the user-management overlay templates and workspace skeleton.
+
+    Writes users.server.yml, users.server.secure.yml, and users.resources.yml
+    into dest_dir and creates files/template/. This is the non-config half of
+    the old generate_project, invoked by 'dtaas deployment generate'; dtaas.toml
+    is written separately by 'dtaas config generate'. Existing files are kept
+    unless force is set. Raises OSError on copy failure.
+    """
     _validate_project_inputs(dest_dir)
     errors = list(
-        filter(None, (_try_copy_template(n, dest_dir, force) for n in TEMPLATE_FILES))
+        filter(
+            None, (_try_copy_template(n, dest_dir, force) for n in USER_TEMPLATE_FILES)
+        )
     )
     if errors:
         raise OSError("\n".join(errors))
@@ -91,6 +109,19 @@ def _copy_config_file(template_name, dest_dir, force):
     return skipped
 
 
+def generate_dtaas_toml(dest_dir=".", force=False):
+    """Copy just the dtaas.toml template into dest_dir, without users.csv.
+
+    Returns True if an existing dtaas.toml was kept (skipped), False if it was
+    written. Raises OSError on copy failure. Split out of generate_config so
+    the deprecated 'generate-project' shim can write dtaas.toml without also
+    writing (and, under --force, clobbering) a curated users.csv -- the old
+    generate-project never touched that file.
+    """
+    _validate_project_inputs(dest_dir)
+    return _copy_config_file(CONFIG_TOML, dest_dir, force)
+
+
 def generate_config(dest_dir=".", force=False):
     """Copy the dtaas.toml and sample users.csv templates into dest_dir.
 
@@ -98,8 +129,7 @@ def generate_config(dest_dir=".", force=False):
     written. The users.csv sample is copied alongside it (skipped if present).
     Raises OSError on copy failure.
     """
-    _validate_project_inputs(dest_dir)
-    skipped = _copy_config_file("dtaas.toml", dest_dir, force)
+    skipped = generate_dtaas_toml(dest_dir, force)
     _copy_config_file("users.csv", dest_dir, force)
     return skipped
 

@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from python_on_whales.exceptions import DockerException
 from src.pkg import deploy
+from src.pkg import user_files
 # pylint: disable=protected-access
 
 
@@ -56,7 +57,7 @@ def test_check_within_base_rejects_symlink(tmp_path):
     except (OSError, NotImplementedError):
         pytest.skip("symlink creation is not permitted on this platform")
     with pytest.raises(OSError, match="symlink"):
-        deploy._check_within_base(link, base)
+        user_files._check_within_base(link, base)
 
 
 def test_delete_user_files_reports_when_only_scaffolding(tmp_path):
@@ -64,12 +65,12 @@ def test_delete_user_files_reports_when_only_scaffolding(tmp_path):
     (tmp_path / "files" / "common").mkdir(parents=True)
     (tmp_path / "files" / "template").mkdir()
 
-    assert "nothing to remove" in deploy.delete_user_files(str(tmp_path))
+    assert "nothing to remove" in user_files.delete_user_files(str(tmp_path))
 
 
 def test_delete_user_files_absent(tmp_path):
     """delete_user_files reports when there is no files/ directory at all."""
-    assert "nothing to remove" in deploy.delete_user_files(str(tmp_path))
+    assert "nothing to remove" in user_files.delete_user_files(str(tmp_path))
 
 
 def test_uninstall_removes_user_files(tmp_path):
@@ -82,6 +83,35 @@ def test_uninstall_removes_user_files(tmp_path):
         assert "Removed user files" in message
         assert not (tmp_path / "files" / "bob").exists()
         assert (tmp_path / "files").is_dir()
+
+
+def test_delete_user_files_removes_registry_and_state(tmp_path):
+    """delete_user_files also deletes the registry and runtime state files."""
+    (tmp_path / "files" / "bob").mkdir(parents=True)
+    (tmp_path / "dtaas.users.registry.json").write_text("{}", encoding="utf-8")
+    (tmp_path / ".dtaas.state.json").write_text("{}", encoding="utf-8")
+
+    message = user_files.delete_user_files(str(tmp_path))
+
+    assert not (tmp_path / "dtaas.users.registry.json").exists()
+    assert not (tmp_path / ".dtaas.state.json").exists()
+    assert "dtaas.users.registry.json" in message
+    assert ".dtaas.state.json" in message
+
+
+def test_delete_user_files_keeps_registry_files_untouched_when_absent(tmp_path):
+    """With no registry/state or user dirs present, nothing is removed."""
+    assert "nothing to remove" in user_files.delete_user_files(str(tmp_path))
+
+
+def test_uninstall_without_remove_flag_keeps_registry(tmp_path):
+    """A plain uninstall keeps the registry so a reinstall restores users."""
+    (tmp_path / "docker-compose.yml").write_text("services: {}")
+    (tmp_path / "dtaas.users.registry.json").write_text("{}", encoding="utf-8")
+    with patch("src.pkg.deploy._client"), patch("src.pkg.deploy._down_user_containers"):
+        deploy.uninstall(str(tmp_path))
+
+    assert (tmp_path / "dtaas.users.registry.json").exists()
 
 
 def test_uninstall_downs_user_containers_then_main(tmp_path):

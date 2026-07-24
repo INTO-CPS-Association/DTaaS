@@ -2,6 +2,17 @@ import { TextEncoder, TextDecoder } from 'node:util';
 import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 import { DEFAULT_SETTINGS, DEFAULT_MEASUREMENT } from 'store/settings.slice';
 
+jest.mock('@mui/material/useLazyRipple', () => ({
+  __esModule: true,
+  default: () => ({
+    ref: { current: null },
+    shouldMount: false,
+    pulsate: jest.fn(),
+    start: jest.fn(),
+    stop: jest.fn(),
+  }),
+}));
+
 Object.defineProperty(globalThis, 'TextEncoder', {
   value: TextEncoder,
   writable: true,

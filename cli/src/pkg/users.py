@@ -100,29 +100,63 @@ def _authorise_user(username, users_section):
     add_conf_server_entry(username, email)
 
 
-def _provision_users(ctx):
+def _skip_start_users(users_section):
+    """Registry usernames whose desired_status is not 'running' (paused/stopped)."""
+    return {
+        name
+        for name, details in (users_section or {}).items()
+        if isinstance(details, dict)
+        and details.get("desired_status", "running") != "running"
+    }
+
+
+def _resolve_start_only(start_only, skip_start):
+    """Which users to actually start: start_only minus skip_start, or None.
+
+    None means "start every provisioned user" (used by config reconcile
+    --fix). A list restricts starting to the newly-added users (used by
+    'user add'), never restarting the rest of the registry.
+    """
+    if start_only is None:
+        return None
+    return [name for name in start_only if name not in skip_start]
+
+
+def _provision_users(ctx, start_only=None):
     """Create workspace files, compose entries, and forward-auth rules.
 
     Authorising each user in the forward-auth config happens before starting
     their container: writing conf.server first means a later 'compose up'
-    failure cannot leave the forward-auth rules stale.
+    failure cannot leave the forward-auth rules stale. Every registry user is
+    written to compose (so the file stays complete), but only *start_only*
+    users are started -- None starts all, a list starts just those. A user
+    paused or stopped via 'dtaas user pause'/'stop' is never started --
+    see _skip_start_users.
     """
     create_user_files(ctx.user_list, ctx.config["path"] + "/files")
     err = add_users_to_compose(ctx.user_list, ctx.compose, ctx.config)
     utils.check_error(err)
     for username in ctx.user_list:
         _authorise_user(username, ctx.users_section)
-    finalize_compose(ctx.compose)
+    skip_start = _skip_start_users(ctx.users_section)
+    finalize_compose(
+        ctx.compose, skip_start, _resolve_start_only(start_only, skip_start)
+    )
 
 
-def add_users(config_obj):
-    """add cli command handler"""
+def add_users(config_obj, start_only=None):
+    """add cli command handler.
+
+    *start_only* restricts which users' containers are started (None = all
+    provisioned users; a list = just those). The registry is always fully
+    written to compose regardless, so the file stays complete.
+    """
     try:
         ctx = _load_add_context(config_obj)
         if ctx is None:
             return None  # empty registry: nothing to provision
         setup_compose_structure(ctx.compose)
-        _provision_users(ctx)
+        _provision_users(ctx, start_only)
     except Exception as e:
         return e
     return None

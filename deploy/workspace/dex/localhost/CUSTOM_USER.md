@@ -16,7 +16,7 @@ Update these fields in `config/dex-config.yaml`:
 
 Dex configuration details are documented in [`config/DEX.md`](config/DEX.md).
 
-Edit `.env`.
+Edit `config/.env`.
 
   | URL Path     | Example Value | Explanation                           |
   | :----------- | :------------ | :------------------------------------ |
@@ -24,7 +24,7 @@ Edit `.env`.
 
 ⚠️ Important alignment for local/passwordDB mode:
 
-- In `.env`, set `DEFAULT_USER=<desired-user>`.
+- In `config/.env`, set `DEFAULT_USER=<desired-user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 
@@ -35,13 +35,13 @@ Edit `.env`.
 Start the application:
 
 ```bash
-docker compose up -d
+docker compose --env-file config/.env up -d
 ```
 
 Stop the application:
 
 ```bash
-docker compose down
+docker compose --env-file config/.env down
 ```
 
 ### 🌍 Use
@@ -59,15 +59,9 @@ Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## 🧩 Dex Companion in Detail
+## ℹ️ OAuth Scope Notes
 
-The companion service proxies all Dex endpoints and injects a
-`profile` claim into `/dex/userinfo` when `preferred_username`
-is present. This keeps the setup self-contained
-(no GitLab connector) while matching the DTaaS client
-expectation for username extraction.
-
-ℹ️ Scope note for local/passwordDB mode:
+Scope note for local/passwordDB mode:
 
 - Supported: `openid profile email groups offline_access`
 - Not supported by Dex local passwordDB: `read_user read_repository api`

@@ -45,7 +45,7 @@ Keycloak-specific environment variables are:
 | `KEYCLOAK_CLIENT_SECRET`  | OIDC client secret | `<from-Keycloak>`                       |
 | `KEYCLOAK_ISSUER_URL`     | OIDC issuer URL    | `https://intocps.org/auth/realms/dtaas` |
 
-Edit Keycloak-configuration in `.env`:
+Edit Keycloak-configuration in `config/.env`:
 
 ```bash
 # Keycloak Admin Credentials (for initial setup)
@@ -68,13 +68,13 @@ The following instructions are part of post-install step.
 
 1. Navigate to `https://intocps.org/auth`
 2. Click **Administration Console**
-3. Login with credentials from the `.env` file (default: `admin` / `changeme`)
+3. Login with credentials from the `config/.env` file (default: `admin` / `changeme`)
 
 #### Create a Realm
 
 1. In the top-left dropdown (currently showing "Master"),
    click **Create Realm**  
-2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in `.env`)  
+2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in `config/.env`)  
 3. Click **Create**
 4. Click on **Realm Settings** -> **User Profile**
 5. Click on **Create attribute** with
@@ -110,7 +110,7 @@ The following instructions are part of post-install step.
 2. Click **Create client**
 3. Configure the client:
    - **Client type**: OpenID Connect
-   - **Client ID**: `dtaas-workspace` (match `KEYCLOAK_CLIENT_ID` in `.env`)
+   - **Client ID**: `dtaas-workspace` (match `KEYCLOAK_CLIENT_ID` in `config/.env`)
    - Click **Next**
 4. Capability config:
    - Client authentication: ON
@@ -128,7 +128,7 @@ The following instructions are part of post-install step.
 6. Get the client secret:
    - Go to the **Credentials** tab
    - Copy the **Client secret** value
-   - Update `KEYCLOAK_CLIENT_SECRET` in the `.env` file
+   - Update `KEYCLOAK_CLIENT_SECRET` in the `config/.env` file
 
 #### Create OAuth2 Client for DTaaS Client Service
 
@@ -167,8 +167,8 @@ This requires a **public** client (no client secret) with PKCE enforced.
 After configuring Keycloak, restart the services to apply the new client secret:
 
 ```bash
-docker compose down
-docker compose up -d
+docker compose --env-file config/.env down
+docker compose --env-file config/.env up -d
 ```
 
 ### 4. Test Authentication
@@ -182,7 +182,7 @@ docker compose up -d
 
 To use an external Keycloak instance (recommended for production):
 
-1. Update `KEYCLOAK_ISSUER_URL` in `.env`:
+1. Update `KEYCLOAK_ISSUER_URL` in `config/.env`:
 
    ```bash
    KEYCLOAK_ISSUER_URL=https://keycloak.intocps.org/auth/realms/dtaas
@@ -214,8 +214,8 @@ keycloak:
 
 ### Cannot Access Keycloak Admin Console
 
-- Ensure the Keycloak service is running: `docker compose ps`
-- Check Keycloak logs: `docker compose logs keycloak`
+- Ensure the Keycloak service is running: `docker compose --env-file config/.env ps`
+- Check Keycloak logs: `docker compose --env-file config/.env logs keycloak`
 - Verify port 80/443 is accessible
 
 ### Authentication Loop/Redirect Issues
@@ -233,7 +233,7 @@ keycloak:
 
 ### Forward Auth Not Working
 
-- Check traefik-forward-auth logs: `docker compose logs traefik-forward-auth`
+- Check traefik-forward-auth logs: `docker compose --env-file config/.env logs traefik-forward-auth`
 - Verify environment variables are set correctly
 - Ensure Keycloak is reachable from the traefik-forward-auth container
 

@@ -47,7 +47,7 @@ for creating suitable configuration.
 All the deployment options require user directories for
 storing workspace files. These need to
 be created for `USERNAME1` and `USERNAME2` set in
-`.env` file.
+`config/.env` file.
 
 ```bash
 # create required files
@@ -62,7 +62,7 @@ sudo chown -R 1000:100 files
 To start all services with TLS:
 
 ```bash
-docker compose up -d
+docker compose --env-file config/.env up -d
 ```
 
 This will:
@@ -125,7 +125,7 @@ curl https://intocps.org/user1/services
 
 The endpoint values are dynamically populated with the user's username from the
 `MAIN_USER` environment variable. This variable corresponds to `USERNAME1` of
-`.env` file.
+`config/.env` file.
 
 ## 🔒 Authentication Flow
 
@@ -142,13 +142,13 @@ The endpoint values are dynamically populated with the user's username from the
 To stop all services:
 
 ```bash
-docker compose down
+docker compose --env-file config/.env down
 ```
 
 To stop and remove volumes:
 
 ```bash
-docker compose down -v
+docker compose --env-file config/.env down -v
 ```
 
 ## 🔧 Customisation
@@ -159,7 +159,7 @@ To add additional workspace instances, add a new service in `docker-compose.yml`
 
 ```yaml
   user3:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME3:-user3}
@@ -175,7 +175,7 @@ To add additional workspace instances, add a new service in `docker-compose.yml`
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`.env`](.env):
+Add the desired `USERNAME3` variable in [`config/.env`](config/.env):
 
 ```bash
 # Username Configuration
@@ -207,7 +207,7 @@ sudo chown -R 1000:100 files/<USERNAME3>
 Bring up the user workspace.
 
 ```bash
-docker compose up -d --force-recreate user3
+docker compose --env-file config/.env up -d --force-recreate user3
 ```
 
 ## 🐛 Troubleshooting

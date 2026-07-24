@@ -31,7 +31,7 @@ An illustration of the installation setup is shown here.
 
 All the deployment options require user directories for
 storing workspace files. These need to
-be created for `USERNAME1` and `USERNAME2` set in `.env` file.
+be created for `USERNAME1` and `USERNAME2` set in `config/.env` file.
 
 ```bash
 # create required files
@@ -49,7 +49,7 @@ Follow the pre-installation steps in
 ▶️ Start the application:
 
 ```bash
-docker compose up -d
+docker compose --env-file config/.env up -d
 ```
 
 ### 🌵 Temporary Issues
@@ -64,7 +64,7 @@ Now complete the post-installation steps in
 [`configuration.md`](configuration.md). Restart `traefik-forward-auth`
 
 ```bash
-docker compose up -d --force-recreate traefik-forward-auth
+docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
 The application will be accessible at <https://intocps.org> from web browser.
@@ -73,13 +73,13 @@ Login using the user credentials set in **Keycloak**.
 Stop the demo:
 
 ```bash
-docker compose down
+docker compose --env-file config/.env down
 ```
 
 To stop and remove volumes:
 
 ```bash
-docker compose down -v
+docker compose --env-file config/.env down -v
 ```
 
 ## 🔧 Customisation
@@ -99,7 +99,7 @@ Add a new service in `docker-compose.yml`:
 
 ```yaml
   user3:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME3:-user3}
@@ -115,7 +115,7 @@ Add a new service in `docker-compose.yml`:
       - users
 ```
 
-Add the desired `USERNAME3` variable in `.env`:
+Add the desired `USERNAME3` variable in `config/.env`:
 
 ```bash
 # Username Configuration
@@ -165,12 +165,12 @@ rule.user3_access.whitelist = user3@localhost
 **Solutions**:
 
 - Check service health:
-  `docker compose ps`
+  `docker compose --env-file config/.env ps`
 - View logs: `docker logs`
 - Verify Traefik routes:
-  `docker compose logs traefik`
+  `docker compose --env-file config/.env logs traefik`
 - Test OAuth2 service:
-  `docker compose logs traefik-forward-auth`
+  `docker compose --env-file config/.env logs traefik-forward-auth`
 
 ### Port Conflicts
 

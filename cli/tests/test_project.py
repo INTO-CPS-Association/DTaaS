@@ -4,8 +4,9 @@ import os
 from unittest.mock import patch
 import pytest
 from src.pkg.project import (
-    generate_project,
     generate_config,
+    generate_dtaas_toml,
+    generate_user_templates,
     generate_deploy_project,
     create_user_dirs,
     set_files_permissions,
@@ -27,6 +28,14 @@ def test_generate_config_copies_toml_and_users_csv(tmp_path):
     assert (tmp_path / "dtaas.toml").is_file()
     assert (tmp_path / "users.csv").is_file()
     assert not (tmp_path / "users.server.yml").exists()
+
+
+def test_generate_dtaas_toml_never_touches_users_csv(tmp_path):
+    """generate_dtaas_toml writes only dtaas.toml, unlike generate_config."""
+    assert generate_dtaas_toml(str(tmp_path)) is False
+
+    assert (tmp_path / "dtaas.toml").is_file()
+    assert not (tmp_path / "users.csv").exists()
 
 
 def test_generate_config_skips_existing_users_csv(tmp_path, capsys):
@@ -66,30 +75,36 @@ def test_generate_config_raises_on_copy_failure(tmp_path):
             generate_config(dest)
 
 
-def test_generate_project_skips_existing_file(tmp_path, capsys):
-    """An existing file is skipped and the rest are still copied."""
-    (tmp_path / "dtaas.toml").write_text("existing")
+def test_generate_user_templates_skips_existing_file(tmp_path, capsys):
+    """An existing overlay is skipped and the rest are still copied."""
+    (tmp_path / "users.server.yml").write_text("existing")
 
-    generate_project(str(tmp_path))
+    generate_user_templates(str(tmp_path))
 
-    assert (tmp_path / "dtaas.toml").read_text() == "existing"
+    assert (tmp_path / "users.server.yml").read_text() == "existing"
     captured = capsys.readouterr()
-    assert "'dtaas.toml' already exists, skipping" in captured.out
-
-
-def test_generate_project_copies_resources_overlay(tmp_path):
-    """generate_project ships the users.resources.yml limits overlay."""
-    generate_project(str(tmp_path))
-
+    assert "'users.server.yml' already exists, skipping" in captured.out
     assert (tmp_path / "users.resources.yml").is_file()
 
 
-def test_generate_project_raises_on_copy_failure(tmp_path):
-    """OSError is raised when a file copy fails."""
+def test_generate_user_templates_copies_overlays_not_toml(tmp_path):
+    """generate_user_templates ships the user overlays and skeleton, never dtaas.toml."""
+    generate_user_templates(str(tmp_path))
+
+    assert (tmp_path / "users.server.yml").is_file()
+    assert (tmp_path / "users.server.secure.yml").is_file()
+    assert (tmp_path / "users.resources.yml").is_file()
+    assert (tmp_path / "files" / "template").is_dir()
+    # dtaas.toml is owned by 'config generate', never written here.
+    assert not (tmp_path / "dtaas.toml").exists()
+
+
+def test_generate_user_templates_raises_on_copy_failure(tmp_path):
+    """OSError is raised when an overlay copy fails."""
     dest = str(tmp_path)
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
-            generate_project(dest)
+            generate_user_templates(dest)
 
 
 def test_copy_file_skips_existing(tmp_path, capsys):
@@ -242,12 +257,12 @@ def test_copy_example_files_skips_existing_without_force(tmp_path):
     assert (tmp_path / "a").read_text() == "old"
 
 
-def test_generate_project_raises_when_templates_dir_missing(tmp_path):
-    """generate_project raises RuntimeError when the bundled templates are absent."""
+def test_generate_user_templates_raises_when_templates_dir_missing(tmp_path):
+    """generate_user_templates raises RuntimeError when bundled templates are absent."""
     out = str(tmp_path / "out")
     with patch("src.pkg.project.TEMPLATES_DIR", tmp_path / "no-templates"):
         with pytest.raises(RuntimeError, match="templates directory not found"):
-            generate_project(out)
+            generate_user_templates(out)
 
 
 def test_copy_example_files_raises_on_copy_failure(tmp_path):

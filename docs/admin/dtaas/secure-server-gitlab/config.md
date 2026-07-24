@@ -302,7 +302,7 @@ To add a third user:
 
    ```yaml
    user3:
-     image: intocps/workspace:main-967bc10
+     image: intocps/workspace:main-56c6f68
      restart: unless-stopped
      environment:
        - MAIN_USER=${USERNAME3:-user3}

@@ -1,19 +1,27 @@
 """The CLI-owned user registry, dtaas.users.registry.json.
 
-A store of the *additional* users provisioned by 'dtaas admin user add' /
+A store of the *additional* users provisioned by 'dtaas user add' /
 'delete', mutated directly and atomically by the CLI and never hand-edited,
 the way useradd owns /etc/passwd. Starting users live in dtaas.toml instead;
 deployment settings (server, path, resources, TLS) also come from dtaas.toml.
 
 Shape:
-    {"users": {"alice": {"email": ..., "groups": [...], "load_balance": bool}}}
+    {"users": {"alice": {"email": ..., "groups": [...], "load_balance": bool,
+                          "desired_status": "running"}}}
+
+'desired_status' ('running'/'paused'/'stopped', default 'running' when absent
+for registries written before this field existed) records the outcome of the
+last 'dtaas user pause'/'stop'/'resume' for that user; see
+set_desired_status(). It is intentionally separate from the email/groups/
+load_balance fields 'user add' writes: those describe the user, this
+describes whether the CLI should currently be running their container.
 """
 
 import csv
 import json
 import os
 from pathlib import Path
-from .constants import REGISTRY_FILE
+from .constants import DESIRED_STATUSES, REGISTRY_FILE
 
 
 def load_registry(path=REGISTRY_FILE):
@@ -75,6 +83,28 @@ def remove_from_registry(usernames, path=REGISTRY_FILE):
     return removed
 
 
+def set_desired_status(usernames, status, path=REGISTRY_FILE):
+    """Record each username's intended running state after a pause/stop/resume.
+
+    *status* is one of DESIRED_STATUSES ('running'/'paused'/'stopped'). Only
+    usernames already present in the registry are updated -- callers resolve
+    against the registry first, so an unknown name here is silently skipped
+    rather than treated as an error. email/groups/load_balance are left
+    untouched. Persisted atomically like register_new_users. Returns the
+    usernames actually updated.
+    """
+    if status not in DESIRED_STATUSES:
+        raise ValueError(
+            f"Invalid desired_status '{status}': expected one of {sorted(DESIRED_STATUSES)}"
+        )
+    users = load_registry(path)
+    updated = [name for name in usernames if name in users]
+    for name in updated:
+        users[name]["desired_status"] = status
+    _write_registry(users, path)
+    return updated
+
+
 def _parse_load_balance(value):
     """Parse a true/false load_balance cell; reject other non-empty values.
 
@@ -100,6 +130,7 @@ def _parse_csv_row(row):
         "email": row.get("email", "").strip(),
         "groups": groups or ["additional"],
         "load_balance": _parse_load_balance(row.get("load_balance", "")),
+        "desired_status": "running",
     }
     return row["username"].strip(), details
 

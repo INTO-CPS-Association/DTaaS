@@ -92,7 +92,7 @@ application.
 **`AccountTabData.tsx` — `ProfileTab` and `SettingsTab`**
 
 Both components now call the same resolver functions. When the provider
-does not expose a profile URL (Keycloak default, Dex without companion),
+does not expose a profile URL (Keycloak default, Dex),
 the UI shows "Your OAuth provider did not expose a profile URL." instead
 of rendering a broken link:
 

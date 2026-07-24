@@ -8,6 +8,7 @@ from src.pkg.registry import (
     register_new_users,
     remove_from_registry,
     read_csv_users,
+    set_desired_status,
     _parse_csv_row,
     _partition_new,
 )
@@ -123,6 +124,14 @@ def test_parse_csv_row_defaults_empty_groups_to_additional():
     assert details["groups"] == ["additional"]
 
 
+def test_parse_csv_row_sets_desired_status_running():
+    """A CSV-imported user starts with desired_status 'running'."""
+    _, details = _parse_csv_row(
+        {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "true"}
+    )
+    assert details["desired_status"] == "running"
+
+
 def test_parse_csv_row_rejects_invalid_load_balance():
     """A load_balance value that is neither true nor false is rejected."""
     with pytest.raises(ValueError, match="load_balance"):
@@ -165,6 +174,42 @@ def test_read_csv_users_rejects_duplicate_username(tmp_path):
 
     with pytest.raises(ValueError, match="Duplicate username 'alice'"):
         read_csv_users(csv_file)
+
+
+def test_set_desired_status_updates_only_known_users(tmp_path):
+    """set_desired_status updates registry members, silently skips unknown names."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+
+    updated = set_desired_status(["alice", "ghost"], "paused", path)
+
+    assert updated == ["alice"]
+    assert load_registry(path)["alice"]["desired_status"] == "paused"
+
+
+def test_set_desired_status_preserves_other_fields(tmp_path):
+    """Updating desired_status leaves email/groups/load_balance untouched."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users(
+        {"alice": {"email": "a@x.io", "groups": ["g"], "load_balance": True}}, [], path
+    )
+
+    set_desired_status(["alice"], "stopped", path)
+
+    stored = load_registry(path)["alice"]
+    assert stored["email"] == "a@x.io"
+    assert stored["groups"] == ["g"]
+    assert stored["load_balance"] is True
+    assert stored["desired_status"] == "stopped"
+
+
+def test_set_desired_status_rejects_invalid_status(tmp_path):
+    """An unrecognised status is rejected rather than silently written."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {}}, [], path)
+
+    with pytest.raises(ValueError, match="Invalid desired_status"):
+        set_desired_status(["alice"], "sleeping", path)
 
 
 def test_csv_import_round_trips_through_registry(tmp_path):

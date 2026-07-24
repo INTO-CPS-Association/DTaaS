@@ -114,6 +114,61 @@ def test_delete_users_rejects_invalid_username():
     assert err is not None and "Invalid username" in str(err)
 
 
+def test_skip_start_users_flags_non_running_only():
+    """_skip_start_users flags only registry users whose desired_status isn't
+    'running'; a missing desired_status defaults to 'running' (not skipped)."""
+    users_section = {
+        "alice": {"desired_status": "running"},
+        "bob": {"desired_status": "paused"},
+        "carol": {},
+    }
+    assert users._skip_start_users(users_section) == {"bob"}
+
+
+def test_add_users_skips_starting_paused_or_stopped_users(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """add_users forwards a skip_start set computed from desired_status, so a
+    paused/stopped user is not silently restarted by a later 'user add'."""
+    mock_registry["load"].return_value = {
+        "alice": {"email": "a@x.io", "desired_status": "running"},
+        "bob": {"email": "b@x.io", "desired_status": "stopped"},
+    }
+
+    err = users.add_users(mock_config)
+
+    assert err is None
+    mock_user_operations["finalize"].assert_called_once()
+    assert mock_user_operations["finalize"].call_args.args[1] == {"bob"}
+
+
+def test_resolve_start_only_none_means_all():
+    """start_only None (config reconcile --fix) starts every provisioned user."""
+    assert users._resolve_start_only(None, {"bob"}) is None
+
+
+def test_resolve_start_only_subtracts_skip_start():
+    """A start_only list drops any user that is also paused/stopped."""
+    assert users._resolve_start_only(["alice", "bob"], {"bob"}) == ["alice"]
+
+
+def test_add_users_starts_only_named_users(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """add_users(start_only=[...]) forwards that list to finalize_compose, so
+    adding one user does not restart the rest of the registry."""
+    mock_registry["load"].return_value = {
+        "alice": {"email": "a@x.io"},
+        "bob": {"email": "b@x.io"},
+        "trudy": {"email": "t@x.io"},
+    }
+
+    err = users.add_users(mock_config, start_only=["trudy"])
+
+    assert err is None
+    assert mock_user_operations["finalize"].call_args.args[2] == ["trudy"]
+
+
 def test_add_users_empty_registry_is_noop(
     mock_config, mock_registry, mock_utils, mock_user_operations
 ):

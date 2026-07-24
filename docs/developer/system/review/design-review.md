@@ -141,14 +141,15 @@ proper test tree per service.
    secure-server+GitLab, vagrant single/two-machine). Each scenario
    has its own compose file and CONFIG.md; drift between them is
    already visible (see next point). Every scenario added multiplies
-   the testing and documentation burden — the `workspace.yml` CI job
-   cannot cover this matrix.
+   the testing and documentation burden.
 
-1. *Image version drift and unpinned images.* The `server` scenario
-   pins `intocps/dtaas-web:1.0.2` and `intocps/libms:0.5.9` while the
-   repo releases are 1.3.0 and 0.5.11; `traefik-forward-auth` uses
-   `:latest` of a third-party image whose upstream maintenance has
-   stalled. Compose files are not updated by the release process
+1. *Image version drift and unpinned images.* The docker compose files
+   pin versions of `intocps/dtaas-web` and `intocps/libms` services
+   which might be old versions of the latest releases available on
+   [Docker Hub](https://hub.docker.com/u/intocps).
+   `traefik-forward-auth` uses `:latest` of a third-party image whose
+   upstream maintenance has stalled. Compose files are not updated
+   by the release process
    (see [SI-7](systemic-issues.md#si-7-release-engineering-gaps)).
 
 1. *No resource limits on user workspaces.* Workspace containers in

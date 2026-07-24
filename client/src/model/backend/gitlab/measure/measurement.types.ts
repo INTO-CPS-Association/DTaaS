@@ -36,12 +36,7 @@ export type MeasurementStore = {
 export type Configuration = ExternalConfiguration;
 
 export type Status =
-  | 'NOT_STARTED'
-  | 'PENDING'
-  | 'RUNNING'
-  | 'FAILURE'
-  | 'SUCCESS'
-  | 'STOPPED';
+  'NOT_STARTED' | 'PENDING' | 'RUNNING' | 'FAILURE' | 'SUCCESS' | 'STOPPED';
 
 export type ExecutionResult = {
   dtName: string;

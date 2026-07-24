@@ -14,8 +14,7 @@ template. Duplicate `config/dex-config.yaml.example` to
 
 Set to `http://localhost:5556/dex`.
 
-This must match the URL used by the web client (`REACT_APP_AUTH_AUTHORITY`)
-and the Dex companion/proxy endpoint.
+This must match the URL used by the web client (`REACT_APP_AUTH_AUTHORITY`).
 
 ### `storage.type: memory`
 
@@ -88,13 +87,13 @@ PY
 ✅ Copy the printed hash into `config/dex-config.yaml`
 as the value of `hash`.
 
-## 👤 Username alignment with `.env`
+## 👤 Username alignment with `config/.env`
 
-DTaaS routes and workspace paths use `.env` value `DEFAULT_USER`.
+DTaaS routes and workspace paths use `config/.env` value `DEFAULT_USER`.
 
 For local/passwordDB mode, keep these aligned:
 
-- `.env`: `DEFAULT_USER=<user>`
+- `config/.env`: `DEFAULT_USER=<user>`
 - `config/dex-config.yaml`: set static user `username`
   and `preferredUsername` to the same `<user>`
 

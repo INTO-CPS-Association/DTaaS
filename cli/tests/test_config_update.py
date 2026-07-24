@@ -1,4 +1,4 @@
-"""Tests for the config_update module (admin update --config)."""
+"""Tests for the config_update module (platform update --config)."""
 
 from unittest.mock import patch
 import pytest
@@ -67,7 +67,7 @@ def test_load_toml_parse_error_raises(tmp_path):
 def test_validate_raises_with_field_messages():
     """_validate surfaces every dtaas.toml problem as a field-level message."""
     with pytest.raises(ValueError) as exc:
-        config_update._validate({"common": {}})
+        config_update._validate({"common": {}}, "secure-server")
     message = str(exc.value)
     assert "git-repo is missing" in message
     assert "common.server-dns is missing" in message
@@ -119,7 +119,7 @@ def test_update_config_warns_about_unfilled_secret(tmp_path):
     assert "not substituted" in message
     # The user is told where the value comes from and to re-run.
     assert "GitLab/Keycloak" in message
-    assert "re-run 'dtaas admin update --config'" in message
+    assert "re-run 'dtaas platform update --config'" in message
 
 
 def test_update_config_no_warning_once_secret_filled(tmp_path):

@@ -5,7 +5,7 @@ name: dtaas-workspace
 
 services:
   traefik:
-    image: traefik:v3.6.13
+    image: traefik:v3.7.8
     restart: unless-stopped
     command:
       - "--log.level=INFO"
@@ -32,7 +32,7 @@ services:
       users:
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0.7
+    image: quay.io/keycloak/keycloak:26.7.0
     restart: unless-stopped
     command:
       - "start"
@@ -67,7 +67,7 @@ services:
       - users
 
   client:
-    image: intocps/dtaas-web:1.0.2
+    image: intocps/dtaas-web:1.4.0
     restart: unless-stopped
     volumes:
       - "./config/client.js:/dtaas/client/build/env.js"
@@ -84,7 +84,7 @@ services:
       - frontend
 
   user1:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME1:-user1}
@@ -104,7 +104,7 @@ services:
 
 
   user2:
-    image: intocps/workspace:main-967bc10
+    image: intocps/workspace:main-56c6f68
     restart: unless-stopped
     environment:
       - MAIN_USER=${USERNAME2:-user2}

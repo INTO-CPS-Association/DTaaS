@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="1.0.0"
+version="2.0.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -21,7 +21,7 @@ path="/home/XXX/DTaaS"
 # Enable HTTPS/TLS for secure server deployment
 tls=true
 # Source directory holding the TLS certificates (fullchain.pem, privkey.pem)
-# for secure deployments. generate-deployment copies the latest pair into the
+# for secure deployments. 'dtaas deployment generate' copies the latest pair into the
 # installation's certs/ directory. Leave unset to copy certificates by hand.
 # Certs path on Linux / MacOS
 certs-src='/etc/letsencrypt/archive/intocps.org'
@@ -43,9 +43,9 @@ shm_size="512m" # Shared memory size
 # one self-contained user record; presence here is the desired state, set
 # once at install time, there are no add/delete lists.
 #
-# Additional users added later via `dtaas admin user add` (or
+# Additional users added later via `dtaas user add` (or
 # `--file users.csv`) are NOT tracked here. They live in the CLI-owned
-# dtaas.users.registry.json instead, and `dtaas admin user add`/`delete`
+# dtaas.users.registry.json instead, and `dtaas user add`/`delete`
 # never write to this file.
 [[users]]
 username="username1"

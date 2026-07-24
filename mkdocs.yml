@@ -24,6 +24,7 @@ nav:
           - Overview: user/website/dtaas.md
           - Workspace: user/website/workspace.md
           - Settings: user/website/settings.md
+          - Logs: user/website/logs.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
@@ -88,7 +89,6 @@ nav:
                   - Install: admin/workspace/localhost/install.md
                   - Dex: admin/workspace/localhost/dex.md
                   - Custom User: admin/workspace/localhost/custom-user.md
-                  - Developer: admin/workspace/localhost/developer.md
               - Secure Server:
                   - Install: admin/workspace/secure-server/install.md
                   - Configuration: admin/workspace/secure-server/configuration.md
@@ -125,7 +125,7 @@ nav:
           - Architecture: developer/system/architecture.md
           - Current Status: developer/system/current-status.md
           - Research Overview: developer/system/research-overview.md
-          - Review:
+          - Code Review:
               - Overview: developer/system/review/index.md
               - Architecture Review: developer/system/review/architecture-review.md
               - Design Review: developer/system/review/design-review.md

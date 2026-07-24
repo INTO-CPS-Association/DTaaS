@@ -47,9 +47,14 @@ def _load_toml(output_dir):
     return data
 
 
-def _validate(data):
-    """Raise ValueError listing every dtaas.toml problem, if any."""
-    errors = config_validate.collect_errors(data)
+def _validate(data, deploy_type):
+    """Raise ValueError listing every dtaas.toml problem for *deploy_type*, if any.
+
+    Scoped to the installed deployment type so an unrelated leftover section
+    (e.g. a [workspace-secure-server] block in a secure-server deployment)
+    does not block the update.
+    """
+    errors = config_validate.collect_errors(data, deploy_type)
     if errors:
         listed = "\n".join(f"- {err}" for err in errors)
         raise ValueError(f"Invalid dtaas.toml:\n{listed}")
@@ -58,7 +63,7 @@ def _validate(data):
 _SECRETS_HINT = (
     "Some secrets are still unset. Create the OAuth/OIDC application in your "
     "GitLab/Keycloak, copy the client id and secret into the matching dtaas.toml "
-    "section, then re-run 'dtaas admin update --config'."
+    "section, then re-run 'dtaas platform update --config'."
 )
 
 
@@ -86,7 +91,7 @@ def update_config(output_dir, dry_run=False):
     """
     deploy_type = detect_deploy_type(output_dir)
     data = _load_toml(output_dir)
-    _validate(data)
+    _validate(data, deploy_type)
     specs = deploy_config.build_file_specs(deploy_type, data)
     changed = deploy_config.diff_specs(output_dir, specs)
     if dry_run:

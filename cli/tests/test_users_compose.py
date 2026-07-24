@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users_compose
-from src.pkg.project import generate_project
+from src.pkg.project import generate_user_templates
 # pylint: disable=redefined-outer-name
 
 
@@ -115,7 +115,7 @@ def test_get_compose_config_error():
 @pytest.fixture
 def project_templates(tmp_path, monkeypatch):
     """Generate the real CLI templates into a temp dir and run the CLI from there."""
-    generate_project(str(tmp_path))
+    generate_user_templates(str(tmp_path))
     monkeypatch.chdir(tmp_path)
     return tmp_path
 
@@ -155,7 +155,7 @@ def test_get_compose_config_missing_template(tmp_path, monkeypatch):
     result, err = users_compose.get_compose_config("alice", _limits_config(False))
 
     assert result is None
-    assert err is not None and "generate-project" in str(err)
+    assert err is not None and "deployment generate" in str(err)
 
 
 @pytest.mark.parametrize(
@@ -194,3 +194,30 @@ def test_stop_user_containers_targets_named_services(mock_run):
     assert "down" not in argv
     assert "rm" in argv and "--stop" in argv and "--force" in argv
     assert argv[-2:] == ["alice", "bob"]
+
+
+def test_finalize_compose_starts_everyone_by_default(mock_utils):
+    """With no skip_start, finalize_compose starts every service."""
+    compose = {"services": {"alice": {}, "bob": {}}}
+    with patch(
+        "src.pkg.users_compose.start_user_containers", return_value=None
+    ) as mock_start, patch("src.pkg.users_compose.write_state"):
+        users_compose.finalize_compose(compose)
+
+    assert set(mock_start.call_args.args[0]) == {"alice", "bob"}
+
+
+def test_finalize_compose_skips_paused_or_stopped_users(mock_utils):
+    """A username in skip_start is not passed to start_user_containers.
+
+    This is what makes 'user pause'/'stop' durable: without it, the next
+    'user add' (which re-provisions everyone on every run) would silently
+    restart a user that was intentionally suspended.
+    """
+    compose = {"services": {"alice": {}, "bob": {}}}
+    with patch(
+        "src.pkg.users_compose.start_user_containers", return_value=None
+    ) as mock_start, patch("src.pkg.users_compose.write_state"):
+        users_compose.finalize_compose(compose, skip_start={"bob"})
+
+    assert mock_start.call_args.args[0] == ["alice"]

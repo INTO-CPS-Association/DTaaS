@@ -1,6 +1,6 @@
 """Validate the values in a dtaas.toml configuration file.
 
-Used by 'dtaas admin config validate'. Each check returns a list of human
+Used by 'dtaas config validate'. Each check returns a list of human
 readable problems (empty when acceptable); validate_config aggregates them so
 the user sees every issue at once rather than one at a time. See
 validators.py for the generic, DTaaS-agnostic predicates each check builds on.
@@ -80,6 +80,24 @@ def _duplicate_username_errors(users):
     return [f"users: duplicate username '{n}'" for n in dupes]
 
 
+# Optional [[users]] fields checked when present: (key, predicate, label).
+_OPTIONAL_USER_FIELDS = (
+    ("groups", is_string_list, "must be a list of strings"),
+    ("load_balance", lambda v: isinstance(v, bool), "must be true or false"),
+    ("password", lambda v: isinstance(v, str), "must be a string"),
+)
+
+
+def _optional_user_field_errors(info, name):
+    """Check the optional [[users]] fields (groups/load_balance/password)."""
+    errors = []
+    for field, predicate, label in _OPTIONAL_USER_FIELDS:
+        value = info.get(field)
+        if value is not None and not predicate(value):
+            errors.append(f"users.{name}.{field} {label}")
+    return errors
+
+
 def _user_record_errors(info):
     """Validate one [[users]] record: required username/email, optional tags."""
     if not isinstance(info, dict):
@@ -91,15 +109,7 @@ def _user_record_errors(info):
         name = "?"
     if not is_email(info.get("email", "")):
         errors.append(f"users.{name}.email is not a valid email address")
-    groups = info.get("groups")
-    if groups is not None and not is_string_list(groups):
-        errors.append(f"users.{name}.groups must be a list of strings")
-    load_balance = info.get("load_balance")
-    if load_balance is not None and not isinstance(load_balance, bool):
-        errors.append(f"users.{name}.load_balance must be true or false")
-    password = info.get("password")
-    if password is not None and not isinstance(password, str):
-        errors.append(f"users.{name}.password must be a string")
+    errors += _optional_user_field_errors(info, name)
     return errors
 
 
@@ -130,16 +140,45 @@ _DEPLOY_FIELDS = (
     ("workspace-secure-server", "auth-authority", is_url, "URL"),
 )
 
+# Top-level sections that are specific to one deployment type. The shared
+# '[frontend]' section is not listed, so it is always checked.
+DEPLOYMENT_SECTIONS = frozenset(
+    {
+        "localhost",
+        "insecure-server",
+        "secure-server",
+        "secure-server-gitlab",
+        "workspace-localhost",
+        "workspace-secure-server",
+    }
+)
 
-def _check_deploy_fields(data):
+
+def _field_applies(section, deploy_type):
+    """True if a deployment-section field should be checked for *deploy_type*.
+
+    With deploy_type None (standalone 'config validate') every present section
+    is checked. Scoped to a deploy_type ('update --config'), only that type's
+    section (plus shared sections like [frontend]) is checked, so an unrelated
+    leftover section does not fail the update.
+    """
+    if deploy_type is None or section not in DEPLOYMENT_SECTIONS:
+        return True
+    return section == deploy_type
+
+
+def _check_deploy_fields(data, deploy_type=None):
     """Validate URL/username fields across deployment sections when present."""
     errors = []
     for section, key, predicate, label in _DEPLOY_FIELDS:
+        if not _field_applies(section, deploy_type):
+            continue
         message = f"{section}.{key} must be a valid {label}"
         errors += optional(data, (section, key), (predicate, message))
     return errors
 
 
+# Checks that do not depend on the deployment type.
 _CHECKS = (
     _check_git_repo,
     _check_server_dns,
@@ -147,15 +186,19 @@ _CHECKS = (
     _check_certs_src,
     _check_resources,
     _check_users,
-    _check_deploy_fields,
 )
 
 
-def collect_errors(data):
-    """Run every check against *data* and return the combined list of problems."""
+def collect_errors(data, deploy_type=None):
+    """Run every check against *data* and return the combined list of problems.
+
+    When *deploy_type* is given, only that type's deployment section (plus
+    shared sections) is validated; with None every present section is checked.
+    """
     errors = []
     for check in _CHECKS:
         errors += check(data)
+    errors += _check_deploy_fields(data, deploy_type)
     return errors
 
 

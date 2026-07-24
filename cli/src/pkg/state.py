@@ -1,7 +1,7 @@
 """The CLI-owned runtime state cache, .dtaas.state.json (never git-tracked).
 
 Observed facts about provisioned user containers -- config hash, provisioning
-time, and best-effort container id/status -- written whenever 'dtaas admin user
+time, and best-effort container id/status -- written whenever 'dtaas user
 add'/'delete' changes the running set. Each write fully replaces the file's
 contents with the current set of provisioned services: it is a point-in-time
 snapshot, not an append-only log, so it only ever reflects the most recent
@@ -81,21 +81,24 @@ def _missing(names, other):
     return [name for name in names if name not in other]
 
 
+def _is_drifted(name, state, services):
+    """Whether *name*'s live compose config no longer matches the hash
+    recorded the last time it was provisioned.
+
+    A user with no service or no recorded hash (state cache missing or stale)
+    is never flagged, since there is nothing to compare against -- that gap
+    is exactly what 'missing'/'unexpected' below are for.
+    """
+    service, recorded = services.get(name), state.get(name)
+    if service is None or recorded is None:
+        return False
+    return recorded.get("config_hash") != config_hash(service)
+
+
 def _drifted_users(registry_users, state, services):
     """Registry users whose live compose config no longer matches the hash
-    recorded the last time they were provisioned.
-
-    A user with no recorded hash (state cache missing or stale) is not
-    flagged, since there is nothing to compare against -- that gap is exactly
-    what 'missing'/'unexpected' below are for.
-    """
-    drifted = []
-    for name in registry_users:
-        service, recorded = services.get(name), state.get(name)
-        if service is not None and recorded is not None:
-            if recorded.get("config_hash") != config_hash(service):
-                drifted.append(name)
-    return drifted
+    recorded the last time they were provisioned."""
+    return [name for name in registry_users if _is_drifted(name, state, services)]
 
 
 def find_drift(registry_users, state, services):
