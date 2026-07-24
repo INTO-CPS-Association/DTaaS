@@ -22,6 +22,8 @@ describe('Config service', () => {
     delete process.env.LOGGER_CERTS_DIR;
     delete process.env.LOGGER_LOG_FILE_PATH;
     delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
+    delete process.env.LOGGER_THROTTLE_TTL;
+    delete process.env.LOGGER_THROTTLE_LIMIT;
   });
 
   afterEach(async () => {
@@ -45,6 +47,8 @@ describe('Config service', () => {
       path.resolve(process.cwd(), 'logs/workflow-logs.jsonl'),
     );
     expect(config.getMaxPayloadBytes()).toBe(64 * 1024);
+    expect(config.getThrottleTtl()).toBe(60_000);
+    expect(config.getThrottleLimit()).toBe(120);
   });
 
   it('loads yaml config with relative paths', async () => {
@@ -61,6 +65,8 @@ describe('Config service', () => {
         'certs: ./secure-certs',
         'log-file-path: ./data/events.jsonl',
         'max-payload-bytes: 120000',
+        'throttle-ttl: 30000',
+        'throttle-limit: 600',
       ].join('\n'),
       'utf8',
     );
@@ -81,6 +87,8 @@ describe('Config service', () => {
       path.resolve(tempDir, 'data/events.jsonl'),
     );
     expect(config.getMaxPayloadBytes()).toBe(120000);
+    expect(config.getThrottleTtl()).toBe(30000);
+    expect(config.getThrottleLimit()).toBe(600);
   });
 
   it('uses env vars to override yaml values', async () => {
@@ -107,6 +115,8 @@ describe('Config service', () => {
     process.env.LOGGER_CERTS_DIR = './runtime-certs';
     process.env.LOGGER_LOG_FILE_PATH = './runtime-logs/events.jsonl';
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '50000';
+    process.env.LOGGER_THROTTLE_TTL = '45000';
+    process.env.LOGGER_THROTTLE_LIMIT = '900';
 
     const config = new Config();
 
@@ -123,6 +133,8 @@ describe('Config service', () => {
       path.resolve(process.cwd(), 'runtime-logs/events.jsonl'),
     );
     expect(config.getMaxPayloadBytes()).toBe(50000);
+    expect(config.getThrottleTtl()).toBe(45000);
+    expect(config.getThrottleLimit()).toBe(900);
   });
 
   it('loads multiple yaml cors origins', async () => {
@@ -166,6 +178,8 @@ describe('Config service', () => {
     process.env.LOGGER_CERTS_DIR = '';
     process.env.LOGGER_LOG_FILE_PATH = '   ';
     process.env.LOGGER_MAX_PAYLOAD_BYTES = '';
+    process.env.LOGGER_THROTTLE_TTL = '';
+    process.env.LOGGER_THROTTLE_LIMIT = '';
 
     const config = new Config();
 
@@ -181,6 +195,8 @@ describe('Config service', () => {
       path.resolve(process.cwd(), 'logs/workflow-logs.jsonl'),
     );
     expect(config.getMaxPayloadBytes()).toBe(64 * 1024);
+    expect(config.getThrottleTtl()).toBe(60_000);
+    expect(config.getThrottleLimit()).toBe(120);
   });
 
   it('throws when a boolean env value is invalid', () => {

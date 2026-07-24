@@ -199,6 +199,58 @@ describe('Logger service e2e with auth token configured', () => {
   });
 });
 
+describe('Logger service e2e with a configured throttle', () => {
+  let app: INestApplication;
+  let tempDir = '';
+
+  beforeAll(async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), 'dtaas-logger-e2e-limit-'));
+    process.env.LOGGER_CONFIG_PATH = '';
+    process.env.LOGGER_TLS = 'false';
+    process.env.LOGGER_CERTS_DIR = '';
+    process.env.LOGGER_CORS_ALLOW_ORIGIN = '*';
+    process.env.LOGGER_LOG_FILE_PATH = path.join(tempDir, 'events.jsonl');
+    process.env.LOGGER_MAX_PAYLOAD_BYTES = '65536';
+    process.env.LOGGER_THROTTLE_TTL = '60000';
+    process.env.LOGGER_THROTTLE_LIMIT = '1';
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
+    delete process.env.LOGGER_AUTH_TOKEN;
+
+    app = await createTestApp();
+  });
+
+  afterAll(async () => {
+    await app.close();
+    delete process.env.LOGGER_CONFIG_PATH;
+    delete process.env.LOGGER_TLS;
+    delete process.env.LOGGER_CERTS_DIR;
+    delete process.env.LOGGER_CORS_ALLOW_ORIGIN;
+    delete process.env.LOGGER_LOG_FILE_PATH;
+    delete process.env.LOGGER_MAX_PAYLOAD_BYTES;
+    delete process.env.LOGGER_THROTTLE_TTL;
+    delete process.env.LOGGER_THROTTLE_LIMIT;
+    delete process.env.LOGGER_CORS_ALLOW_CREDENTIALS;
+    delete process.env.LOGGER_AUTH_TOKEN;
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  it('keeps health available after logger ingest is throttled', async () => {
+    const payload = await readPayloadFixture('sample.json');
+    await supertest(app.getHttpServer())
+      .post('/logger')
+      .send(payload)
+      .expect(HttpStatus.NO_CONTENT);
+    await supertest(app.getHttpServer())
+      .post('/logger')
+      .send(payload)
+      .expect(HttpStatus.TOO_MANY_REQUESTS);
+    await supertest(app.getHttpServer())
+      .get('/logger/health')
+      .expect(HttpStatus.OK)
+      .expect({ status: 'ok' });
+  });
+});
+
 describe('Logger service e2e with production body-parser config', () => {
   let app: INestApplication;
   let logFilePath = '';

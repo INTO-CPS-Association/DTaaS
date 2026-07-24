@@ -89,6 +89,7 @@ Important defaults:
 - CORS allow origin: disabled unless configured;
 - CORS credentials: disabled unless configured with explicit origins;
 - auth token: empty, meaning unauthenticated ingest;
+- throttle: 120 requests per 60 seconds per TCP peer;
 - max payload: 64 KiB;
 - log rotation: 50 MiB active file, 5 retained rotated files.
 
@@ -108,7 +109,10 @@ to users.
 
 The deployment compose files route `/logger` through Traefik. Server-style
 deployments use `traefik-forward-auth`; the service also applies an internal
-request throttle for callers that bypass the proxy.
+request throttle for callers that bypass the proxy. The throttle intentionally
+uses the TCP peer rather than forwarded headers, which makes its budget shared
+by all users when Traefik proxies requests. Deployments should scale the
+throttle limit to their aggregate expected request volume.
 
 ## Security considerations
 

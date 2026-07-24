@@ -13,4 +13,6 @@ export interface IConfig {
   getMaxPayloadBytes(): number;
   getLogMaxBytes(): number;
   getLogRetentionFiles(): number;
+  getThrottleTtl(): number;
+  getThrottleLimit(): number;
 }

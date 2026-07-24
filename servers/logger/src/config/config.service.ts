@@ -18,6 +18,8 @@ type ConfigValues = {
   'max-payload-bytes': number;
   'log-max-bytes': number;
   'log-retention-files': number;
+  'throttle-ttl': number;
+  'throttle-limit': number;
 };
 
 const DEFAULT_HOSTNAME = '127.0.0.1';
@@ -30,6 +32,8 @@ const DEFAULT_CORS_ALLOW_ORIGIN = '';
 const DEFAULT_CORS_ALLOW_CREDENTIALS = false;
 const DEFAULT_LOG_MAX_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOG_RETENTION_FILES = 5;
+const DEFAULT_THROTTLE_TTL = 60_000;
+const DEFAULT_THROTTLE_LIMIT = 120;
 
 const booleanSchema = z.preprocess((value) => {
   if (typeof value === 'boolean') {
@@ -76,6 +80,8 @@ const loggerConfigSchema = z
     'max-payload-bytes': z.coerce.number().int().positive().optional(),
     'log-max-bytes': z.coerce.number().int().positive().optional(),
     'log-retention-files': z.coerce.number().int().positive().optional(),
+    'throttle-ttl': z.coerce.number().int().positive().optional(),
+    'throttle-limit': z.coerce.number().int().positive().optional(),
   })
   .strict();
 
@@ -92,6 +98,8 @@ function defaultConfigValues(): ConfigValues {
     'max-payload-bytes': DEFAULT_MAX_PAYLOAD_BYTES,
     'log-max-bytes': DEFAULT_LOG_MAX_BYTES,
     'log-retention-files': DEFAULT_LOG_RETENTION_FILES,
+    'throttle-ttl': DEFAULT_THROTTLE_TTL,
+    'throttle-limit': DEFAULT_THROTTLE_LIMIT,
   };
 }
 
@@ -193,6 +201,14 @@ export default class Config implements IConfig {
     return this.configValues['log-retention-files'];
   }
 
+  getThrottleTtl(): number {
+    return this.configValues['throttle-ttl'];
+  }
+
+  getThrottleLimit(): number {
+    return this.configValues['throttle-limit'];
+  }
+
   private loadYamlConfig(configPath: string): void {
     const resolvedConfigPath = resolveFile(configPath);
     const configDirectory = path.dirname(resolvedConfigPath);
@@ -238,6 +254,12 @@ export default class Config implements IConfig {
     if (yamlValues['log-retention-files'] !== undefined) {
       this.configValues['log-retention-files'] =
         yamlValues['log-retention-files'];
+    }
+    if (yamlValues['throttle-ttl'] !== undefined) {
+      this.configValues['throttle-ttl'] = yamlValues['throttle-ttl'];
+    }
+    if (yamlValues['throttle-limit'] !== undefined) {
+      this.configValues['throttle-limit'] = yamlValues['throttle-limit'];
     }
   }
 
@@ -313,6 +335,22 @@ export default class Config implements IConfig {
     );
     if (retentionFiles !== undefined) {
       this.configValues['log-retention-files'] = retentionFiles;
+    }
+
+    const throttleTtl = parsePositiveIntegerEnv(
+      process.env.LOGGER_THROTTLE_TTL,
+      'LOGGER_THROTTLE_TTL',
+    );
+    if (throttleTtl !== undefined) {
+      this.configValues['throttle-ttl'] = throttleTtl;
+    }
+
+    const throttleLimit = parsePositiveIntegerEnv(
+      process.env.LOGGER_THROTTLE_LIMIT,
+      'LOGGER_THROTTLE_LIMIT',
+    );
+    if (throttleLimit !== undefined) {
+      this.configValues['throttle-limit'] = throttleLimit;
     }
   }
 }

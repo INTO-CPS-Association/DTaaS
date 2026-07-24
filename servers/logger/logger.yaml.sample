@@ -17,3 +17,6 @@ log-file-path: ./logs/workflow-logs.jsonl
 max-payload-bytes: 65536
 log-max-bytes: 52428800
 log-retention-files: 5
+# Limits are per TCP peer; behind a reverse proxy this is a shared budget.
+throttle-ttl: 60000
+throttle-limit: 120

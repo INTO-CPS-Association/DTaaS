@@ -4,14 +4,24 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import AppController from './app.controller.js';
 import LogEventValidationPipe from './log-event-validation.pipe.js';
 import LoggerAuthGuard from './logger-auth.guard.js';
+import Config from './config/config.service.js';
 import LogsModule from './logs/logs.module.js';
 import SocketAddressThrottlerGuard from './socket-address-throttler.guard.js';
 
 @Module({
   imports: [
     LogsModule,
-    ThrottlerModule.forRoot({
-      throttlers: [{ ttl: 60000, limit: 120 }],
+    ThrottlerModule.forRootAsync({
+      imports: [LogsModule],
+      inject: [Config],
+      useFactory: (config: Config) => ({
+        throttlers: [
+          {
+            ttl: config.getThrottleTtl(),
+            limit: config.getThrottleLimit(),
+          },
+        ],
+      }),
     }),
   ],
   controllers: [AppController],

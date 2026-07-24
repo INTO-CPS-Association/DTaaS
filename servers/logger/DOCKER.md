@@ -15,8 +15,14 @@ on port `4003` by default.
 - `LOGGER_CERTS_DIR`
 - `LOGGER_LOG_FILE_PATH`
 - `LOGGER_MAX_PAYLOAD_BYTES`
+- `LOGGER_THROTTLE_TTL`
+- `LOGGER_THROTTLE_LIMIT`
 
 Mount a host directory to `/dtaas/logger/logs` to persist captured events.
+
+The throttle uses the TCP peer address. When the service is behind a reverse
+proxy, this is a shared budget for all proxied requests; size
+`LOGGER_THROTTLE_LIMIT` for the expected aggregate workload.
 
 When `LOGGER_TLS=true`, also mount a cert directory to
 `/dtaas/logger/certs` (or another directory pointed to by

@@ -43,6 +43,8 @@ Environment variables always override YAML values.
 - `max-payload-bytes` (default: `65536`)
 - `log-max-bytes` (default: `52428800`)
 - `log-retention-files` (default: `5` rotated files)
+- `throttle-ttl` (default: `60000` milliseconds)
+- `throttle-limit` (default: `120` requests per throttle window)
 
 Use `logger.yaml.sample` as a template.
 
@@ -60,10 +62,18 @@ Use `logger.yaml.sample` as a template.
 - `LOGGER_MAX_PAYLOAD_BYTES` (default: `65536`)
 - `LOGGER_LOG_MAX_BYTES` (default: `52428800`)
 - `LOGGER_LOG_RETENTION_FILES` (default: `5`)
+- `LOGGER_THROTTLE_TTL` (default: `60000` milliseconds)
+- `LOGGER_THROTTLE_LIMIT` (default: `120`)
 
 External authentication and edge rate limiting are provided by the reverse
 proxy in the deployment compose files. The service also applies an internal
 request throttle for callers that bypass the proxy.
+
+The logger identifies callers by their TCP peer address and deliberately does
+not trust forwarded client-address headers. Behind Traefik, requests therefore
+share the proxy container's throttle budget. Set `throttle-limit` (or
+`LOGGER_THROTTLE_LIMIT`) high enough for the combined request volume of all
+expected users during `throttle-ttl`.
 
 The service sends `Access-Control-Allow-Credentials: true` only when
 `cors-allow-credentials` is enabled. Credentials cannot be enabled with a
