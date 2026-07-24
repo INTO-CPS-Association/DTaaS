@@ -26,4 +26,4 @@ COPY --from=build /dtaas/client/package.json /dtaas/client/package.json
 WORKDIR /dtaas/client
 RUN npm i -g serve
 # Define the command to run your app
-CMD ["yarn", "start"]
+CMD ["serve", "-s", "build", "-l", "4000"]

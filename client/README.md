@@ -28,7 +28,7 @@ The following steps are required to build the client web application.
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd DTaaS/client
 yarn install --production   # install dependencies without Playwright and devDependencies
-yarn build      #build the react app into build/ directory
+yarn build      #typecheck and build the React app into build/ directory
 ```
 
 ### Adjust Configuration
@@ -39,7 +39,7 @@ endpoints of the application.
 See the [config page](../docs/admin/client/config.md)
 for an explanation of client configuration.
 
-Update the configuration in `client/test.js` and execute
+Update the configuration in `client/config/test.js` and execute
 the following commands.
 
 ```bash

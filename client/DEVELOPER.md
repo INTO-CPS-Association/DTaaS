@@ -14,14 +14,12 @@ cd client
 yarn install    #install the nodejs dependencies
 yarn format     #format .ts[x] and .js[x] files with prettier.
 yarn syntax     #perform linting and static analysis
+yarn typecheck  #run TypeScript type checking without building
 yarn graph      # generate dependency graphs in the code
+yarn prep       #format, lint, fix quality checks, and run all tests
 
-yarn build      #build the react app into build/ directory
-                  #  create source maps as well
-yarn build:fast   #build the react app without source maps
-                  #  source maps are not needed for production environment
-yarn build:prod   #build the react app without source maps and eslint plugin
-                  #  both are not needed for production environment
+yarn build      #typecheck and build the React app into build/ with source maps
+yarn build:fast #typecheck and build the React app without source maps
 
 yarn analyze    #shows the source map to help identify under utilized packages
 
@@ -33,11 +31,10 @@ yarn config:test
 
 # develop commands require a configuration
 yarn config:dev
-yarn develop    #start the development server without
+yarn develop    #start the Vite development server without
                 #  building. Great for live edits.
-yarn develop:fast    #start development server without eslint checks
 
-yarn start       #start the application in the foreground
+yarn start       #preview the production build in the foreground
 yarn stop        #stop the application if running in the background
 
 yarn clean       #clean the directory of temporary files but keep node_modules
@@ -50,14 +47,12 @@ Different test suites can be executed with the following `yarn` commands:
 #Tests require installation of devDependencies
 yarn test:unit  #run unit tests
 yarn test:int   #run integration tests
-yarn test:preview:unit #run unit tests on preview code (src/preview)
-yarn test:preview:int #run integration tests on preview code (src/preview)
 yarn test:coverage:int-unit #combine coverage from unit and integration tests
 
 yarn test:e2e   #run end-to-end tests by launching application on localhost
 yarn test:e2e:ext  #run end-to-end tests against application
                    #  running on external server
-yarn test:all   #run all tests including preview tests
+yarn test:all   #run all tests
 ```
 
 ## 🔐 Authorisation

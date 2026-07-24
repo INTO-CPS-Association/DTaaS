@@ -20,6 +20,7 @@ import {
 import { formatName } from 'model/backend/digitalTwin';
 import Editor from 'route/digitaltwins/editor/Editor';
 import { logDismiss } from 'util/logger/logger';
+import { saveChanges } from 'route/digitaltwins/manage/reconfigureDialogHandlers';
 
 export {
   saveChanges,
@@ -63,8 +64,6 @@ function ReconfigureDialog({
 
   const handleConfirmSave = async () => {
     if (digitalTwinData) {
-      const { saveChanges } =
-        await import('route/digitaltwins/manage/reconfigureDialogHandlers');
       const digitalTwinInstance = await createDigitalTwinFromData(
         digitalTwinData,
         name,

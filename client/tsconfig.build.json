@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json", // Keep all settings from main config
+  "compilerOptions": {
+    "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error"],
+    "skipLibCheck": true,
+    "types": ["react"]
+  },
+  "include": ["src"],
+  "exclude": ["test", "node_modules", "dist"]
+}
