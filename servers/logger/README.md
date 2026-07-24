@@ -102,7 +102,8 @@ jq -c '.event' logs/workflow-logs.jsonl
 ```
 
 The active log rotates at `log-max-bytes` and keeps the configured number of
-rotated files. The defaults are 50 MiB and 5 rotated files.
+rotated files. The defaults are 50 MiB and 5 rotated files, so capacity should
+allow for the active file plus those retained rotated files.
 
 Log writes are best-effort analytics storage. Graceful shutdown closes the
 write stream, but recent events may be lost on hard container termination

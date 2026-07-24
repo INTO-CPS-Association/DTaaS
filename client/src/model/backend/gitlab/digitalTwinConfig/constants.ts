@@ -17,10 +17,10 @@ export const EXECUTION_CHECK_INTERVAL = 10000;
 
 // Maps tabs to project folders (based on asset types)
 export enum AssetTypes {
-  'Functions' = 'functions',
-  'Models' = 'models',
-  'Tools' = 'tools',
-  'Data' = 'data',
+  Functions = 'functions',
+  Models = 'models',
+  Tools = 'tools',
+  Data = 'data',
   'Digital Twins' = 'digital_twins',
   'Digital Twin' = 'digital_twin',
 }

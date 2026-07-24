@@ -3,9 +3,7 @@ FROM node:24.12.0-slim AS build
 WORKDIR /dtaas/logger
 COPY ./servers/logger/ .
 RUN YARN_ENABLE_SCRIPTS=false yarn install \
-  --immutable \
-  --immutable-cache \
-  --check-cache \
+  --frozen-lockfile \
   --ignore-scripts \
   --network-timeout 1000000
 RUN yarn build

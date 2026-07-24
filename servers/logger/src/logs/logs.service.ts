@@ -49,6 +49,7 @@ export default class LogsService implements OnModuleDestroy {
   private writeQueue: Promise<void> = Promise.resolve();
   private initialized = false;
   private initializePromise: Promise<void> | null = null;
+  private currentLogBytes = 0;
 
   constructor(config: Config) {
     this.logFilePath = config.getLogFilePath();
@@ -81,6 +82,7 @@ export default class LogsService implements OnModuleDestroy {
       this.writeStream = null;
     }
     this.initialized = false;
+    this.currentLogBytes = 0;
   }
 
   private async ensureReady(): Promise<void> {
@@ -100,7 +102,7 @@ export default class LogsService implements OnModuleDestroy {
 
   private async initialize(): Promise<void> {
     await mkdir(path.dirname(this.logFilePath), { recursive: true });
-    await this.ensureNewlineAtEnd();
+    this.currentLogBytes = await this.ensureNewlineAtEnd();
     this.writeStream = createWriteStream(this.logFilePath, {
       flags: 'a',
       encoding: 'utf8',
@@ -131,13 +133,13 @@ export default class LogsService implements OnModuleDestroy {
     stream.destroy();
   }
 
-  private async ensureNewlineAtEnd(): Promise<void> {
+  private async ensureNewlineAtEnd(): Promise<number> {
     if (!existsSync(this.logFilePath)) {
-      return;
+      return 0;
     }
     const fileStat = await stat(this.logFilePath);
     if (fileStat.size === 0) {
-      return;
+      return 0;
     }
     // Keep the file as valid JSONL even if an external process wrote a line
     // without a trailing newline.
@@ -150,37 +152,34 @@ export default class LogsService implements OnModuleDestroy {
     }
     if (buffer[0] !== 0x0a) {
       await appendFile(this.logFilePath, '\n', 'utf8');
+      return fileStat.size + 1;
     }
+    return fileStat.size;
   }
 
   private async writeLine(line: string): Promise<void> {
-    await this.rotateIfNeeded(Buffer.byteLength(line, 'utf8'));
+    const lineBytes = Buffer.byteLength(line, 'utf8');
+    await this.rotateIfNeeded(lineBytes);
     if (this.writeStream === null) {
       return Promise.reject(
         new Error('Logger write stream is not initialized'),
       );
     }
     const stream = this.writeStream;
-    return writeToStream(stream, line).catch((error: Error) => {
-      this.handleStreamError(error, stream);
+    try {
+      await writeToStream(stream, line);
+      this.currentLogBytes += lineBytes;
+    } catch (error) {
+      this.handleStreamError(error as Error, stream);
       throw error;
-    });
+    }
   }
 
   private async rotateIfNeeded(incomingBytes: number): Promise<void> {
-    const currentSize = await this.currentLogSize();
-    if (currentSize + incomingBytes <= this.maxLogBytes) return;
+    if (this.currentLogBytes + incomingBytes <= this.maxLogBytes) return;
     await this.closeWriteStream();
     await this.rotateLogFiles();
     await this.initialize();
-  }
-
-  private async currentLogSize(): Promise<number> {
-    try {
-      return (await stat(this.logFilePath)).size;
-    } catch {
-      return 0;
-    }
   }
 
   private async rotateLogFiles(): Promise<void> {

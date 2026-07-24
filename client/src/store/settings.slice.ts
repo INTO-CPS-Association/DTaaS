@@ -35,8 +35,6 @@ export const DEFAULT_SETTINGS = {
   BRANCH_NAME,
   loggingEnabled: getDefaultLoggingEnabled(),
   remoteLoggingEnabled: getDefaultRemoteLoggingEnabled(),
-  // Deprecated; kept for persisted settings written before origin-bound consent.
-  remoteLoggerConfiguredAtSave: isRemoteLoggerConfigured(),
   remoteLoggerOriginAtSave: getRemoteLoggerOrigin(),
 };
 
@@ -55,7 +53,6 @@ interface SettingsState {
   disabledTaskNames: string[];
   loggingEnabled: boolean;
   remoteLoggingEnabled: boolean;
-  remoteLoggerConfiguredAtSave: boolean;
   remoteLoggerOriginAtSave: string;
 }
 
@@ -73,7 +70,6 @@ const SettingsSchema = z
     disabledTaskNames: z.array(z.string()),
     loggingEnabled: z.boolean(),
     remoteLoggingEnabled: z.boolean(),
-    remoteLoggerConfiguredAtSave: z.boolean(),
     remoteLoggerOriginAtSave: z.string(),
   })
   .partial();
@@ -90,7 +86,6 @@ export function applyRemoteLoggingConsent(
     return {
       ...persisted,
       remoteLoggingEnabled: false,
-      remoteLoggerConfiguredAtSave: false,
       remoteLoggerOriginAtSave: '',
     };
   }
@@ -100,7 +95,6 @@ export function applyRemoteLoggingConsent(
   return {
     ...persisted,
     remoteLoggingEnabled: getDefaultRemoteLoggingEnabled(),
-    remoteLoggerConfiguredAtSave: true,
     remoteLoggerOriginAtSave: currentOrigin,
   };
 }
@@ -171,7 +165,6 @@ export const settingsSlice = createSlice({
     setRemoteLoggingEnabled: (state, action: PayloadAction<boolean>) => {
       const loggerOrigin = getRemoteLoggerOrigin();
       state.remoteLoggerOriginAtSave = loggerOrigin;
-      state.remoteLoggerConfiguredAtSave = Boolean(loggerOrigin);
       state.remoteLoggingEnabled = action.payload && Boolean(loggerOrigin);
     },
     toggleTaskEnabled: (state, action: PayloadAction<string>) => {

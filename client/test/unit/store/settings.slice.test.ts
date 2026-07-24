@@ -146,7 +146,6 @@ describe('settingsSlice', () => {
       const result = loadInitialSettings();
       expect(result.loggingEnabled).toBe(true);
       expect(result.remoteLoggingEnabled).toBe(false);
-      expect(result.remoteLoggerConfiguredAtSave).toBe(true);
       expect(result.remoteLoggerOriginAtSave).toBe('https://example.com');
     } finally {
       globalThis.env = originalEnv;
@@ -163,7 +162,6 @@ describe('settingsSlice', () => {
       JSON.stringify({
         loggingEnabled: true,
         remoteLoggingEnabled: true,
-        remoteLoggerConfiguredAtSave: true,
         remoteLoggerOriginAtSave: 'https://example.com',
       }),
     );
@@ -210,7 +208,6 @@ describe('settingsSlice', () => {
     jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(
       JSON.stringify({
         remoteLoggingEnabled: true,
-        remoteLoggerConfiguredAtSave: false,
       }),
     );
 
@@ -226,7 +223,6 @@ describe('settingsSlice', () => {
       JSON.stringify({
         loggingEnabled: true,
         remoteLoggingEnabled: true,
-        remoteLoggerConfiguredAtSave: true,
       }),
     );
 

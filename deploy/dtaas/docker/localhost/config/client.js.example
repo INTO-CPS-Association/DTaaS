@@ -13,5 +13,6 @@ if (typeof window !== 'undefined') {
     REACT_APP_REDIRECT_URI: 'http://localhost/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+    LOGGER_URL: 'http://localhost/logger',
   };
 };

@@ -81,7 +81,6 @@ describe('configUtil', () => {
         'settings',
         JSON.stringify({
           remoteLoggingEnabled: true,
-          remoteLoggerConfiguredAtSave: true,
           remoteLoggerOriginAtSave: 'https://logger.example.com',
         }),
       );
@@ -178,7 +177,7 @@ describe('configUtil', () => {
         'settings',
         JSON.stringify({
           remoteLoggingEnabled: true,
-          remoteLoggerConfiguredAtSave: false,
+          remoteLoggerOriginAtSave: 'https://old.example.com',
         }),
       );
       const results: Record<string, ValidationType> =
