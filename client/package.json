@@ -58,7 +58,7 @@
     "@mui/icons-material": "9.2.0",
     "@mui/material": "9.2.0",
     "@mui/system": "9.2.0",
-    "@mui/x-tree-view": "9.9.0",
+    "@mui/x-tree-view": "9.10.1",
     "@reduxjs/toolkit": "^2.10.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/remarkable": "^2.0.8",
