@@ -72,7 +72,7 @@
     "@nestjs/platform-express": "^11.1.9",
     "@nestjs/throttler": "^6.4.0",
     "cross-env": "^10.1.0",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.1.13"
