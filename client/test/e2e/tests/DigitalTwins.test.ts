@@ -1,34 +1,13 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
 import {
   openAuthenticatedApp,
   saveRunnerSettings,
 } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
+import { waitForExecutionCount } from 'test/e2e/tests/execution.helpers';
 
 const TERMINAL_STATUS = /Status: (Completed|Failed|Canceled|Timed out)/;
-
-function getExecutionCount(context: string | null): number {
-  if (!context) return 0;
-  try {
-    const parsed = JSON.parse(context) as {
-      dt?: { executionCount?: number };
-    };
-    return parsed.dt?.executionCount ?? 0;
-  } catch {
-    return 0;
-  }
-}
-
-async function waitForNewExecution(button: Locator, previousCount: number) {
-  await expect
-    .poll(
-      async () =>
-        getExecutionCount(await button.getAttribute('data-logger-context')),
-      { timeout: 30000 },
-    )
-    .toBeGreaterThan(previousCount);
-}
 
 async function stopRunningExecution(page: Page) {
   const dialog = page.getByRole('dialog', {
@@ -86,14 +65,10 @@ test.describe('Digital Twin Log Cleaning', () => {
     const historyButton = helloWorldCard
       .getByRole('button', { name: 'History' })
       .first();
-    const previousCount = getExecutionCount(
-      await historyButton.getAttribute('data-logger-context'),
-    );
-
     // Enforce debounce between requests to avoid overwhelming GitLab
     await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
-    await waitForNewExecution(historyButton, previousCount);
+    await waitForExecutionCount(historyButton, 1);
 
     await historyButton.click();
 

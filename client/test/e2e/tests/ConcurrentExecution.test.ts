@@ -5,6 +5,10 @@ import {
   saveRunnerSettings,
 } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
+import {
+  EXECUTION_START_TIMEOUT,
+  waitForExecutionCount,
+} from 'test/e2e/tests/execution.helpers';
 
 // Increase the test timeout to 10 minutes
 test.setTimeout(600000);
@@ -40,23 +44,21 @@ test.describe('Concurrent Execution', () => {
     const startButton = helloWorldCard
       .getByRole('button', { name: 'Start' })
       .first();
-    await expect(startButton).toBeVisible();
-
-    // Enforce debounce between requests to avoid overwhelming GitLab
-    await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
-    await startButton.click();
-
-    // Button re-enables only once the start request resolves.
-    await expect(startButton).toBeEnabled();
-
-    // Start a second execution
-    await startButton.click();
-
-    // Click the History button (enabled-wait below covers the execution starting)
     const historyButton = helloWorldCard
       .getByRole('button', { name: 'History' })
       .first();
-    await expect(historyButton).toBeEnabled({ timeout: 5000 });
+    await expect(startButton).toBeVisible();
+
+    // Wait for the persisted history entry before triggering another start.
+    await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
+    await startButton.click();
+    await waitForExecutionCount(historyButton, 1);
+    await expect(startButton).toBeEnabled({
+      timeout: EXECUTION_START_TIMEOUT,
+    });
+    await startButton.click();
+    await waitForExecutionCount(historyButton, 2);
+
     await historyButton.click();
 
     // Verify that the execution history dialog is displayed
@@ -70,14 +72,6 @@ test.describe('Concurrent Execution', () => {
     await expect(
       historyDialog.getByText('Execution History', { exact: true }),
     ).toBeVisible();
-
-    const executionAccordions = historyDialog.locator(
-      '.MuiAccordionSummary-root',
-    );
-    await expect(async () => {
-      const count = await executionAccordions.count();
-      expect(count).toBeGreaterThanOrEqual(2);
-    }).toPass({ timeout: 10000 });
 
     // Wait for at least one execution to complete
     // This may take some time as it depends on the GitLab pipeline
