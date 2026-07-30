@@ -6,11 +6,15 @@ import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
 import createGitlabInstance from 'model/backend/gitlab/gitlabFactory';
 import {
   delay,
-  getChildPipelineId,
+  hasTimedOut,
 } from 'model/backend/gitlab/execution/pipelineCore';
 import pollPipelineStatus from 'model/backend/gitlab/execution/pipelinePolling';
 import { isFailureStatus } from 'model/backend/gitlab/execution/statusChecking';
 import { BETWEEN_TRIAL_DELAY } from 'model/backend/gitlab/measure/constants';
+import {
+  MAX_EXECUTION_TIME,
+  PIPELINE_POLL_INTERVAL,
+} from 'model/backend/gitlab/digitalTwinConfig/constants';
 import {
   Configuration,
   ExecutionResult,
@@ -43,12 +47,41 @@ export async function cancelActivePipelines(): Promise<void> {
     try {
       const projectId = backend.getProjectId();
       await backend.api.cancelPipeline(projectId, pipelineId);
-      await backend.api
-        .cancelPipeline(projectId, getChildPipelineId(pipelineId))
-        .catch(() => {});
+      const childPipelineId = await backend
+        .getChildPipelineId(projectId, pipelineId)
+        .catch(() => null);
+      if (childPipelineId != null) {
+        await backend.api
+          .cancelPipeline(projectId, childPipelineId)
+          .catch(() => {});
+      }
     } catch {
       // continue with others
     }
+  }
+}
+
+async function resolveChildPipelineId(
+  backend: BackendInterface,
+  parentPipelineId: number,
+  startTime: number,
+): Promise<number> {
+  const projectId = backend.getProjectId();
+  for (;;) {
+    const childPipelineId = await backend.getChildPipelineId(
+      projectId,
+      parentPipelineId,
+    );
+    if (childPipelineId != null) {
+      return childPipelineId;
+    }
+    if (abortOptions.shouldAbort()) {
+      throw new Error(`Pipeline ${parentPipelineId} stopped by user.`);
+    }
+    if (hasTimedOut(startTime, MAX_EXECUTION_TIME)) {
+      throw new Error(`Pipeline ${parentPipelineId} timed out.`);
+    }
+    await delay(PIPELINE_POLL_INTERVAL);
   }
 }
 
@@ -122,7 +155,18 @@ async function executeDigitalTwinPipeline(
   await consumeStatusGenerator(parentGenerator, pipelineId, 'parent');
   await delay(pipelineTransitionDelayMs);
 
-  const childPipelineId = getChildPipelineId(pipelineId);
+  const childPipelineId = await resolveChildPipelineId(
+    backend,
+    pipelineId,
+    startTime,
+  );
+  const activePipelineEntry = measurementState.activePipelines.find(
+    (pipeline) => pipeline.pipelineId === pipelineId,
+  );
+  if (activePipelineEntry) {
+    activePipelineEntry.childPipelineId = childPipelineId;
+  }
+
   const childGenerator = pollPipelineStatus(
     backend,
     childPipelineId,

@@ -107,7 +107,6 @@ export function createMeasurementExecutionMock(
 export function createPipelineCoreMock() {
   return {
     delay: jest.fn().mockResolvedValue(undefined),
-    getChildPipelineId: jest.fn((id: number) => id + 1),
   };
 }
 

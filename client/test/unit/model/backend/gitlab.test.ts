@@ -259,6 +259,30 @@ describe('GitlabInstance', () => {
     );
   });
 
+  describe('getChildPipelineId', () => {
+    it('should return the downstream pipeline id from a bridge', async () => {
+      jest
+        .spyOn(mockApi, 'getPipelineBridges')
+        .mockResolvedValue([
+          { downstreamPipelineId: null },
+          { downstreamPipelineId: 42 },
+        ]);
+
+      const result = await gitlab.getChildPipelineId(1, 10);
+
+      expect(result).toBe(42);
+      expect(mockApi.getPipelineBridges).toHaveBeenCalledWith(1, 10);
+    });
+
+    it('should return null when no bridge has a downstream pipeline yet', async () => {
+      jest.spyOn(mockApi, 'getPipelineBridges').mockResolvedValue([]);
+
+      const result = await gitlab.getChildPipelineId(1, 10);
+
+      expect(result).toBeNull();
+    });
+  });
+
   it('should get triggerToken', async () => {
     jest.spyOn(mockApi, 'startPipeline').mockResolvedValue({
       id: 1,

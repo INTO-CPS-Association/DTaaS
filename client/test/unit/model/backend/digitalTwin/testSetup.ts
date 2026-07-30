@@ -29,6 +29,7 @@ export const mockGitlabInstance = {
   getProjectId: jest.fn().mockReturnValue(1),
   getCommonProjectId: jest.fn().mockReturnValue(2),
   startPipeline: jest.fn().mockResolvedValue({ id: 123 }),
+  getChildPipelineId: jest.fn(),
 } as unknown as GitlabInstance;
 
 export const files = [
@@ -47,6 +48,7 @@ export const setupBeforeEach = (_dt: ReturnType<typeof createDigitalTwin>) => {
   mockGitlabInstance.getProjectId = jest.fn().mockReturnValue(1);
   mockGitlabInstance.getCommonProjectId = jest.fn().mockReturnValue(2);
   mockGitlabInstance.startPipeline = jest.fn().mockResolvedValue({ id: 123 });
+  mockGitlabInstance.getChildPipelineId = jest.fn();
 
   Object.defineProperty(globalThis, 'sessionStorage', {
     value: {

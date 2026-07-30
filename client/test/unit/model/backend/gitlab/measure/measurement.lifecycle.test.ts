@@ -33,7 +33,6 @@ jest.mock('model/backend/gitlab/measure/measurement.pipeline', () => ({
 }));
 jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
   delay: jest.fn().mockResolvedValue(undefined),
-  getChildPipelineId: jest.fn((id: number) => id + 1),
 }));
 jest.mock('model/backend/gitlab/execution/statusChecking', () => ({
   isFailureStatus: jest.fn(

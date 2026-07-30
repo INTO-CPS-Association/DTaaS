@@ -37,6 +37,7 @@ describe('ExecutionStatusManager - childPipeline', () => {
     spyOnGetPipelineJobs,
     spyOnHandleTimeout,
     spyOnGetPipelineStatus,
+    spyOnGetChildPipelineId,
   } = setup;
 
   Object.defineProperty(AbortSignal, 'timeout', {
@@ -121,6 +122,8 @@ describe('ExecutionStatusManager - childPipeline', () => {
     const delay = jest.spyOn(PipelineCore, 'delay');
     delay.mockImplementation(() => Promise.resolve());
 
+    spyOnGetChildPipelineId(2);
+
     const getPipelineStatusMock = jest.spyOn(
       digitalTwin.backend,
       'getPipelineStatus',
@@ -141,7 +144,7 @@ describe('ExecutionStatusManager - childPipeline', () => {
     expect(getPipelineStatusMock).toHaveBeenCalled();
   });
 
-  it('checks child pipeline status with executionId and calculates child pipelineId', async () => {
+  it('checks child pipeline status with executionId and resolves the real child pipelineId', async () => {
     const executionId = 'test-execution-id';
     const mockExecution = {
       id: executionId,
@@ -155,6 +158,7 @@ describe('ExecutionStatusManager - childPipeline', () => {
     const getExecutionHistorySpy = jest
       .spyOn(digitalTwin, 'getExecutionHistoryById')
       .mockResolvedValue(mockExecution);
+    const getChildPipelineIdSpy = spyOnGetChildPipelineId(501);
     spyOnGetPipelineStatus('success');
     spyOnGetPipelineJobs();
 
@@ -168,9 +172,13 @@ describe('ExecutionStatusManager - childPipeline', () => {
     });
 
     expect(getExecutionHistorySpy).toHaveBeenCalledWith(executionId);
+    expect(getChildPipelineIdSpy).toHaveBeenCalledWith(
+      digitalTwin.backend.getProjectId(),
+      500, // execution.pipelineId, looked up rather than guessed
+    );
     expect(digitalTwin.backend.getPipelineStatus).toHaveBeenCalledWith(
       digitalTwin.backend.getProjectId(),
-      501, // execution.pipelineId + 1
+      501,
     );
     expect(handlePipelineCompletionSpy).toHaveBeenCalled();
 
@@ -184,6 +192,7 @@ describe('ExecutionStatusManager - childPipeline', () => {
     const getExecutionHistorySpy = jest
       .spyOn(digitalTwin, 'getExecutionHistoryById')
       .mockResolvedValue(undefined);
+    const getChildPipelineIdSpy = spyOnGetChildPipelineId(101);
     spyOnGetPipelineStatus('success');
     spyOnGetPipelineJobs();
 
@@ -199,13 +208,43 @@ describe('ExecutionStatusManager - childPipeline', () => {
     });
 
     expect(getExecutionHistorySpy).toHaveBeenCalledWith(executionId);
+    expect(getChildPipelineIdSpy).toHaveBeenCalledWith(
+      digitalTwin.backend.getProjectId(),
+      100, // digitalTwin.pipelineId, looked up rather than guessed
+    );
     expect(digitalTwin.backend.getPipelineStatus).toHaveBeenCalledWith(
       digitalTwin.backend.getProjectId(),
-      101, // digitalTwin.pipelineId + 1
+      101,
     );
     expect(handlePipelineCompletionSpy).toHaveBeenCalled();
 
     getExecutionHistorySpy.mockRestore();
+    handlePipelineCompletionSpy.mockRestore();
+  });
+
+  it('retries when no downstream pipeline exists yet, then resolves once discovered', async () => {
+    const delay = jest.spyOn(PipelineCore, 'delay');
+    delay.mockImplementation(() => Promise.resolve());
+    jest.spyOn(PipelineCore, 'hasTimedOut').mockReset().mockReturnValue(false);
+
+    const getChildPipelineIdSpy = jest
+      .spyOn(digitalTwin.backend, 'getChildPipelineId')
+      .mockResolvedValueOnce(null)
+      .mockResolvedValue(2);
+    getChildPipelineIdSpy.mockClear();
+    spyOnGetPipelineStatus('success');
+    spyOnGetPipelineJobs();
+
+    const handlePipelineCompletionSpy = jest
+      .spyOn(PipelineChecks, 'handlePipelineCompletion')
+      .mockResolvedValue(undefined);
+
+    await PipelineChecks.checkChildPipelineStatus(paramsWithStartTime);
+
+    expect(getChildPipelineIdSpy).toHaveBeenCalledTimes(2);
+    expect(delay).toHaveBeenCalled();
+    expect(handlePipelineCompletionSpy).toHaveBeenCalled();
+
     handlePipelineCompletionSpy.mockRestore();
   });
 });

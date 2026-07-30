@@ -41,14 +41,6 @@ export const determinePipelineId = (
 };
 
 /**
- * Determines the child pipeline ID (parent + 1)
- * @param parentPipelineId The parent pipeline ID
- * @returns The child pipeline ID
- */
-export const getChildPipelineId = (parentPipelineId: number): number =>
-  parentPipelineId + 1;
-
-/**
  * Checks if a pipeline status indicates completion
  * @param status Pipeline status string
  * @returns True if pipeline is completed (success or failed)

@@ -15,6 +15,7 @@ const mockApi = {
   listPipelineJobs: jest.fn(),
   getJobLog: jest.fn(),
   getPipelineStatus: jest.fn(),
+  getPipelineBridges: jest.fn(),
   commitMultipleActions: jest.fn(),
 };
 

@@ -56,11 +56,25 @@ describe('DigitalTwin - stop', () => {
 
   it('should stop the child pipeline and update status', async () => {
     (mockBackendAPI.cancelPipeline as jest.Mock).mockResolvedValue({});
+    (mockGitlabInstance.getChildPipelineId as jest.Mock).mockResolvedValue(124);
+    dt.pipelineId = 123;
 
     await dt.stop(1, 'childPipeline');
 
-    expect(mockBackendAPI.cancelPipeline).toHaveBeenCalled();
+    expect(mockGitlabInstance.getChildPipelineId).toHaveBeenCalledWith(1, 123);
+    expect(mockBackendAPI.cancelPipeline).toHaveBeenCalledWith(1, 124);
     expect(dt.lastExecutionStatus).toBe(ExecutionStatus.CANCELED);
+  });
+
+  it('should not cancel the child pipeline when no downstream pipeline exists yet', async () => {
+    (mockGitlabInstance.getChildPipelineId as jest.Mock).mockResolvedValue(
+      null,
+    );
+    dt.pipelineId = 123;
+
+    await dt.stop(1, 'childPipeline');
+
+    expect(mockBackendAPI.cancelPipeline).not.toHaveBeenCalled();
   });
 
   it('should handle stop error', async () => {
@@ -107,10 +121,12 @@ describe('DigitalTwin - stop', () => {
     };
     mockedIndexedDBService.getById.mockResolvedValue(mockExecution);
     (mockBackendAPI.cancelPipeline as jest.Mock).mockResolvedValue({});
+    (mockGitlabInstance.getChildPipelineId as jest.Mock).mockResolvedValue(124);
 
     await dt.stop(1, 'childPipeline', 'exec1');
 
     expect(mockedIndexedDBService.getById).toHaveBeenCalledWith('exec1');
+    expect(mockGitlabInstance.getChildPipelineId).toHaveBeenCalledWith(1, 123);
     expect(mockBackendAPI.cancelPipeline).toHaveBeenCalledWith(1, 124);
     expect(mockedIndexedDBService.update).toHaveBeenCalledWith({
       ...mockExecution,

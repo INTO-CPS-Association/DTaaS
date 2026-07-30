@@ -3,7 +3,7 @@
  * API. It provides methods to manage pipelines, repository files related to a project,
  * and retrieve project information.
  */
-import { Gitlab } from '@gitbeaker/rest';
+import { Gitlab, BridgeSchema } from '@gitbeaker/rest';
 import {
   BackendAPI,
   CommitAction,
@@ -12,6 +12,7 @@ import {
   RepositoryTreeItem,
   ProjectSummary,
   JobSummary,
+  PipelineBridge,
 } from 'model/backend/interfaces/backendInterfaces';
 import { Pipeline } from 'model/backend/interfaces/execution';
 import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
@@ -155,6 +156,19 @@ export class GitlabAPI implements BackendAPI {
   ): Promise<string> {
     const pipeline = await this.client.Pipelines.show(projectId, pipelineId);
     return pipeline.status;
+  }
+
+  public async getPipelineBridges(
+    projectId: ProjectId,
+    pipelineId: number,
+  ): Promise<PipelineBridge[]> {
+    const bridges = (await this.client.Jobs.allPipelineBridges(
+      projectId,
+      pipelineId,
+    )) as BridgeSchema[];
+    return bridges.map((bridge) => ({
+      downstreamPipelineId: bridge.downstream_pipeline?.id ?? null,
+    }));
   }
 
   public async commitMultipleActions(

@@ -135,6 +135,20 @@ export class GitlabInstance implements BackendInterface {
     return this.api.getPipelineStatus(projectId, pipelineId);
   }
 
+  public async getChildPipelineId(
+    projectId: ProjectId,
+    parentPipelineId: number,
+  ): Promise<number | null> {
+    const bridges = await this.api.getPipelineBridges(
+      projectId,
+      parentPipelineId,
+    );
+    const downstream = bridges.find(
+      (bridge) => bridge.downstreamPipelineId != null,
+    );
+    return downstream?.downstreamPipelineId ?? null;
+  }
+
   public getTriggerToken(): string | null {
     return this.triggerToken;
   }

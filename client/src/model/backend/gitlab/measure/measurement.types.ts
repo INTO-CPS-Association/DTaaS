@@ -49,6 +49,7 @@ export type ExecutionResult = {
 export type ActivePipeline = {
   backend: BackendInterface;
   pipelineId: number;
+  childPipelineId?: number;
   dtName: string;
   config: Configuration;
   status: string;

@@ -17,7 +17,6 @@ import {
   isPipelineCompleted,
   delay,
   hasTimedOut,
-  getChildPipelineId,
 } from 'model/backend/gitlab/execution/pipelineCore';
 import {
   createMockStoreState,
@@ -46,7 +45,6 @@ jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
   isPipelineCompleted: jest.fn(),
   delay: jest.fn().mockResolvedValue(undefined),
   hasTimedOut: jest.fn(),
-  getChildPipelineId: jest.fn((id: number) => id + 1),
 }));
 
 const mockGetState = jest.fn();
@@ -62,16 +60,12 @@ const mockIsPipelineCompleted = isPipelineCompleted as jest.MockedFunction<
 >;
 const mockDelay = delay as jest.MockedFunction<typeof delay>;
 const mockHasTimedOut = hasTimedOut as jest.MockedFunction<typeof hasTimedOut>;
-const mockGetChildPipelineId = getChildPipelineId as jest.MockedFunction<
-  typeof getChildPipelineId
->;
 
 let originalMeasurementState: typeof measurementState;
 let mockBackendInstance: ReturnType<typeof createMockBackend>;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockGetChildPipelineId.mockImplementation((id: number) => id + 1);
   originalMeasurementState = { ...measurementState };
   measurementState.shouldStopPipelines = false;
   measurementState.activePipelines = [];
@@ -110,6 +104,7 @@ beforeEach(() => {
 
   mockIsPipelineCompleted.mockReturnValueOnce(false).mockReturnValue(true);
   mockBackendInstance.getPipelineStatus?.mockResolvedValue('success');
+  mockBackendInstance.getChildPipelineId.mockResolvedValue(456);
   mockHasTimedOut.mockReturnValue(false);
 });
 
@@ -255,6 +250,27 @@ describe('runDigitalTwin', () => {
 
     await expect(runDigitalTwin('hello-world')).rejects.toThrow('timed out');
   });
+
+  it('should retry resolving the child pipeline id until GitLab reports it', async () => {
+    mockDelay.mockResolvedValue(undefined);
+    mockBackendInstance.getChildPipelineId
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValue(456);
+
+    const result = await runDigitalTwin('hello-world');
+
+    expect(mockBackendInstance.getChildPipelineId).toHaveBeenCalledTimes(3);
+    expect(result.pipelineId).toBe(123);
+  });
+
+  it('should time out if the child pipeline never appears', async () => {
+    mockDelay.mockResolvedValue(undefined);
+    mockBackendInstance.getChildPipelineId.mockResolvedValue(null);
+    mockHasTimedOut.mockReturnValueOnce(false).mockReturnValue(true);
+
+    await expect(runDigitalTwin('hello-world')).rejects.toThrow('timed out');
+  });
 });
 
 describe('cancelActivePipelines', () => {
@@ -275,6 +291,33 @@ describe('cancelActivePipelines', () => {
   it('does nothing when there are no active pipelines', async () => {
     measurementState.activePipelines = [];
     await expect(cancelActivePipelines()).resolves.toBeUndefined();
+  });
+
+  it('also cancels the discovered child pipeline', async () => {
+    const mockBackend = createMockBackend(1);
+    mockBackend.getChildPipelineId.mockResolvedValue(11);
+    measurementState.activePipelines = [
+      createMockActivePipeline({ backend: mockBackend, pipelineId: 10 }),
+    ];
+
+    await cancelActivePipelines();
+
+    expect(mockBackend.getChildPipelineId).toHaveBeenCalledWith(1, 10);
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 11);
+  });
+
+  it('does not attempt to cancel a child pipeline that has not been discovered yet', async () => {
+    const mockBackend = createMockBackend(1);
+    mockBackend.getChildPipelineId.mockResolvedValue(null);
+    measurementState.activePipelines = [
+      createMockActivePipeline({ backend: mockBackend, pipelineId: 10 }),
+    ];
+
+    await cancelActivePipelines();
+
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledTimes(1);
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
   });
 
   it('continues cancelling remaining pipelines when one throws', async () => {

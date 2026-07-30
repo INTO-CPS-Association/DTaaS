@@ -119,6 +119,12 @@ describe('PipelineChecks - childPipeline', () => {
     const delaySpy = jest.spyOn(PipelineCore, 'delay');
     delaySpy.mockImplementation(() => Promise.resolve());
 
+    const getChildPipelineIdSpy = jest.spyOn(
+      digitalTwin.backend,
+      'getChildPipelineId',
+    );
+    getChildPipelineIdSpy.mockResolvedValue(2);
+
     const getPipelineStatusSpy = jest.spyOn(
       digitalTwin.backend,
       'getPipelineStatus',
@@ -148,6 +154,7 @@ describe('PipelineChecks - childPipeline', () => {
     expect(delaySpy).toHaveBeenCalled();
 
     delaySpy.mockRestore();
+    getChildPipelineIdSpy.mockRestore();
     getPipelineStatusSpy.mockRestore();
     getPipelineJobsSpy.mockRestore();
     hasTimedOutSpy.mockRestore();

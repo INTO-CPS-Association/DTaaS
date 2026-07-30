@@ -30,6 +30,7 @@ const createMockClient = () => ({
   Jobs: {
     all: jest.fn(),
     showLog: jest.fn(),
+    allPipelineBridges: jest.fn(),
   },
 });
 
@@ -227,6 +228,23 @@ describe('GitlabAPI', () => {
       const result = await api.getPipelineStatus(1, 1);
 
       expect(result).toBe('success');
+    });
+  });
+
+  describe('getPipelineBridges', () => {
+    it('should return bridges with downstream pipeline ids', async () => {
+      mockClient.Jobs.allPipelineBridges.mockResolvedValue([
+        { id: 1, downstream_pipeline: { id: 42 } },
+        { id: 2, downstream_pipeline: undefined },
+      ]);
+
+      const result = await api.getPipelineBridges(1, 10);
+
+      expect(result).toEqual([
+        { downstreamPipelineId: 42 },
+        { downstreamPipelineId: null },
+      ]);
+      expect(mockClient.Jobs.allPipelineBridges).toHaveBeenCalledWith(1, 10);
     });
   });
 

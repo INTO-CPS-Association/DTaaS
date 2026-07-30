@@ -2,7 +2,6 @@ import {
   delay,
   hasTimedOut,
   determinePipelineId,
-  getChildPipelineId,
   isPipelineCompleted,
   isPipelineRunning,
   shouldContinuePolling,
@@ -54,13 +53,6 @@ describe('pipelineCore', () => {
       expect(() => determinePipelineId(undefined, undefined)).toThrow(
         'No pipeline ID available',
       );
-    });
-  });
-
-  describe('getChildPipelineId', () => {
-    it('should return parent pipeline id + 1', () => {
-      expect(getChildPipelineId(100)).toBe(101);
-      expect(getChildPipelineId(999)).toBe(1000);
     });
   });
 

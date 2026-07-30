@@ -44,6 +44,11 @@ export const createExecutionStatusManagerSetup = () => {
       .spyOn(digitalTwin.backend, 'getPipelineStatus')
       .mockResolvedValue(status);
 
+  const spyOnGetChildPipelineId = (childPipelineId: number | null) =>
+    jest
+      .spyOn(digitalTwin.backend, 'getChildPipelineId')
+      .mockResolvedValue(childPipelineId);
+
   const spyOnCheckPipelineStatus = () =>
     jest
       .spyOn(PipelineChecks, 'checkChildPipelineStatus')
@@ -61,6 +66,7 @@ export const createExecutionStatusManagerSetup = () => {
     spyOnGetPipelineJobs,
     spyOnHandleTimeout,
     spyOnGetPipelineStatus,
+    spyOnGetChildPipelineId,
     spyOnCheckPipelineStatus,
   };
 };

@@ -18,8 +18,14 @@ class ExecutionStatusService {
     backend: BackendInterface,
     executionStorage: IExecutionHistoryStorage,
   ): Promise<DTExecutionResult | null> {
-    const childPipelineId = execution.pipelineId + 1;
     try {
+      const childPipelineId = await backend.getChildPipelineId(
+        backend.getProjectId(),
+        execution.pipelineId,
+      );
+      if (childPipelineId == null) {
+        return null;
+      }
       const childPipelineStatus = await backend.getPipelineStatus(
         backend.getProjectId(),
         childPipelineId,

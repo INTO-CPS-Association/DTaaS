@@ -30,7 +30,6 @@ jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
 
 jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
   delay: jest.fn().mockResolvedValue(undefined),
-  getChildPipelineId: jest.fn((id: number) => id + 1),
 }));
 jest.mock('model/backend/gitlab/execution/statusChecking', () => ({
   isFailureStatus: jest.fn(
@@ -276,6 +275,35 @@ describe('measurement.runner', () => {
       handleUnload(harness.isRunningRef);
 
       expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
+    });
+
+    it('also cancels the child pipeline when it was already discovered', () => {
+      const mockBackend = createMockBackend(1);
+      harness.isRunningRef.current = true;
+      harness.state.activePipelines = [
+        createMockActivePipeline({
+          backend: mockBackend,
+          pipelineId: 10,
+          childPipelineId: 11,
+        }),
+      ];
+
+      handleUnload(harness.isRunningRef);
+
+      expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
+      expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 11);
+    });
+
+    it('does not guess a child pipeline id when none has been discovered yet', () => {
+      const mockBackend = createMockBackend(1);
+      harness.isRunningRef.current = true;
+      harness.state.activePipelines = [
+        createMockActivePipeline({ backend: mockBackend, pipelineId: 10 }),
+      ];
+
+      handleUnload(harness.isRunningRef);
+
+      expect(mockBackend.api.cancelPipeline).toHaveBeenCalledTimes(1);
     });
 
     it('only restores settings when not running', () => {

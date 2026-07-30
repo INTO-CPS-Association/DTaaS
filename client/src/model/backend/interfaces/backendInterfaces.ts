@@ -144,6 +144,18 @@ export interface BackendAPI {
   getPipelineStatus(projectId: ProjectId, pipelineId: number): Promise<string>;
 
   /**
+   * Retrieves the bridge (trigger) jobs of a pipeline, each of which may link to a
+   * downstream pipeline it triggered.
+   * @param projectId - The ID of the project containing the pipeline.
+   * @param pipelineId - The ID of the pipeline to retrieve bridges for.
+   * @returns A promise that resolves to an array of pipeline bridges.
+   */
+  getPipelineBridges(
+    projectId: ProjectId,
+    pipelineId: number,
+  ): Promise<PipelineBridge[]>;
+
+  /**
    * Creates a single commit with multiple file actions (create, update, delete).
    * @param projectId - The ID of the project.
    * @param branch - The branch to commit to.
@@ -179,6 +191,15 @@ interface PipelineProvider {
     pipelineId: number,
   ): Promise<JobSummary[]>;
   getJobTrace(projectId: ProjectId, jobId: number): Promise<string>;
+  /**
+   * Resolves the actual downstream pipeline triggered by a parent pipeline, by
+   * inspecting the parent's bridge jobs rather than assuming a numeric ID offset.
+   * @returns The child pipeline ID, or null if no downstream pipeline exists yet.
+   */
+  getChildPipelineId(
+    projectId: ProjectId,
+    parentPipelineId: number,
+  ): Promise<number | null>;
 }
 
 interface LogProvider {
@@ -219,6 +240,10 @@ export type JobSummary = {
   id: number;
   name: string;
   status: string;
+};
+
+export type PipelineBridge = {
+  downstreamPipelineId: number | null;
 };
 
 export type RepositoryFile = {

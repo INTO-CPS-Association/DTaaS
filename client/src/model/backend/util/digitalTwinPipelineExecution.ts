@@ -77,19 +77,22 @@ export async function executeDT(
   }
 }
 
-const calcPipelineId = (pipeline: string, baseId: number): number =>
-  pipeline === 'parentPipeline' ? baseId : baseId + 1;
-
 export async function resolvePipelineIdFn(
   self: DigitalTwin,
+  projectId: ProjectId,
   pipeline: string,
   executionId?: string,
 ): Promise<number | null> {
-  if (executionId) {
-    const execution = await getDB().getById(executionId);
-    return execution ? calcPipelineId(pipeline, execution.pipelineId) : null;
+  const baseId = executionId
+    ? (await getDB().getById(executionId))?.pipelineId
+    : self.pipelineId;
+  if (baseId == null) {
+    return null;
   }
-  return calcPipelineId(pipeline, self.pipelineId!);
+  if (pipeline === 'parentPipeline') {
+    return baseId;
+  }
+  return self.backend.getChildPipelineId(projectId, baseId);
 }
 
 export async function stopDT(
@@ -99,7 +102,12 @@ export async function stopDT(
   executionId?: string,
 ): Promise<void> {
   const runnerTag = getRunnerTag();
-  const pipelineId = await resolvePipelineIdFn(self, pipeline, executionId);
+  const pipelineId = await resolvePipelineIdFn(
+    self,
+    projectId,
+    pipeline,
+    executionId,
+  );
 
   if (!pipelineId) {
     return;

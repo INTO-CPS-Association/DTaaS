@@ -1,5 +1,4 @@
 /* eslint-disable no-await-in-loop */
-import { getChildPipelineId } from 'model/backend/gitlab/execution/pipelineCore';
 import {
   measurementConfig as MeasurementConfig,
   TimedTask,
@@ -270,13 +269,17 @@ export function handleBeforeUnload(
 
 function cancelPipelinesFireAndForget(): void {
   measurementState.shouldStopPipelines = true;
-  for (const { backend, pipelineId } of measurementState.activePipelines) {
+  for (const {
+    backend,
+    pipelineId,
+    childPipelineId,
+  } of measurementState.activePipelines) {
     try {
       const projectId = backend.getProjectId();
       backend.api.cancelPipeline(projectId, pipelineId).catch(() => {});
-      backend.api
-        .cancelPipeline(projectId, getChildPipelineId(pipelineId))
-        .catch(() => {});
+      if (childPipelineId != null) {
+        backend.api.cancelPipeline(projectId, childPipelineId).catch(() => {});
+      }
     } catch {
       // ignore
     }

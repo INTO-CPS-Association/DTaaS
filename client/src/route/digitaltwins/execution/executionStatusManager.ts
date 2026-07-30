@@ -236,15 +236,43 @@ export const checkChildPipelineStatus = async ({
 }: PipelineStatusParams & {
   startTime: number;
 }) => {
-  let pipelineId: number;
+  let parentPipelineId: number;
 
   if (executionId) {
     const execution = await digitalTwin.getExecutionHistoryById(executionId);
-    pipelineId = execution
-      ? execution.pipelineId + 1
-      : digitalTwin.pipelineId! + 1;
+    parentPipelineId = execution
+      ? execution.pipelineId
+      : digitalTwin.pipelineId!;
   } else {
-    pipelineId = digitalTwin.pipelineId! + 1;
+    parentPipelineId = digitalTwin.pipelineId!;
+  }
+
+  const pipelineId = await digitalTwin.backend.getChildPipelineId(
+    digitalTwin.backend.getProjectId(),
+    parentPipelineId,
+  );
+
+  if (pipelineId == null) {
+    if (hasTimedOut(startTime)) {
+      await handleTimeout(
+        digitalTwin.DTName,
+        setButtonText,
+        setLogButtonDisabled,
+        dispatch,
+        executionId,
+      );
+      return;
+    }
+    await delay(PIPELINE_POLL_INTERVAL);
+    await checkChildPipelineStatus({
+      setButtonText,
+      digitalTwin,
+      setLogButtonDisabled,
+      dispatch,
+      startTime,
+      executionId,
+    });
+    return;
   }
 
   const pipelineStatus = await digitalTwin.backend.getPipelineStatus(

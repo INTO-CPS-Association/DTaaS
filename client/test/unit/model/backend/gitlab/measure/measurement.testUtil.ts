@@ -88,6 +88,7 @@ interface MockBackend {
   api: MockBackendApi;
   init?: jest.Mock;
   getPipelineStatus?: jest.Mock;
+  getChildPipelineId: jest.Mock;
 }
 
 export function createMockBackend(projectId: number = 1): MockBackend {
@@ -98,6 +99,7 @@ export function createMockBackend(projectId: number = 1): MockBackend {
     },
     init: jest.fn().mockResolvedValue(undefined),
     getPipelineStatus: jest.fn(),
+    getChildPipelineId: jest.fn().mockResolvedValue(null),
   };
 }
 
@@ -129,6 +131,7 @@ export function createMockActivePipeline(
   overrides: Partial<{
     backend: MockBackend;
     pipelineId: number;
+    childPipelineId: number;
     dtName: string;
     status: string;
     phase: 'parent' | 'child';
@@ -138,6 +141,7 @@ export function createMockActivePipeline(
   return {
     backend: mockBackend as unknown as BackendInterface,
     pipelineId: overrides.pipelineId ?? 100,
+    childPipelineId: overrides.childPipelineId,
     dtName: overrides.dtName ?? 'test-dt',
     config: DEFAULT_CONFIG,
     status: overrides.status ?? 'running',
