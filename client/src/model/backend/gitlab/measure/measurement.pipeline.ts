@@ -42,22 +42,37 @@ function updatePipelineStatus(
   }
 }
 
+async function cancelPipelineAndChild(
+  backend: BackendInterface,
+  pipelineId: number,
+): Promise<void> {
+  try {
+    const projectId = backend.getProjectId();
+    await backend.api.cancelPipeline(projectId, pipelineId);
+    const childPipelineId = await backend
+      .getChildPipelineId(projectId, pipelineId)
+      .catch(() => null);
+    await cancelChildPipeline(backend, projectId, childPipelineId);
+  } catch {
+    // Continue with the remaining pipelines.
+  }
+}
+
+async function cancelChildPipeline(
+  backend: BackendInterface,
+  projectId: ReturnType<BackendInterface['getProjectId']>,
+  childPipelineId: number | null,
+): Promise<void> {
+  if (childPipelineId != null) {
+    await backend.api
+      .cancelPipeline(projectId, childPipelineId)
+      .catch(() => {});
+  }
+}
+
 export async function cancelActivePipelines(): Promise<void> {
   for (const { backend, pipelineId } of measurementState.activePipelines) {
-    try {
-      const projectId = backend.getProjectId();
-      await backend.api.cancelPipeline(projectId, pipelineId);
-      const childPipelineId = await backend
-        .getChildPipelineId(projectId, pipelineId)
-        .catch(() => null);
-      if (childPipelineId != null) {
-        await backend.api
-          .cancelPipeline(projectId, childPipelineId)
-          .catch(() => {});
-      }
-    } catch {
-      // continue with others
-    }
+    await cancelPipelineAndChild(backend, pipelineId);
   }
 }
 
@@ -75,13 +90,20 @@ async function resolveChildPipelineId(
     if (childPipelineId != null) {
       return childPipelineId;
     }
-    if (abortOptions.shouldAbort()) {
-      throw new Error(`Pipeline ${parentPipelineId} stopped by user.`);
-    }
-    if (hasTimedOut(startTime, MAX_EXECUTION_TIME)) {
-      throw new Error(`Pipeline ${parentPipelineId} timed out.`);
-    }
+    ensurePipelineCanContinue(parentPipelineId, startTime);
     await delay(PIPELINE_POLL_INTERVAL);
+  }
+}
+
+function ensurePipelineCanContinue(
+  pipelineId: number,
+  startTime: number,
+): void {
+  if (abortOptions.shouldAbort()) {
+    throw new Error(`Pipeline ${pipelineId} stopped by user.`);
+  }
+  if (hasTimedOut(startTime, MAX_EXECUTION_TIME)) {
+    throw new Error(`Pipeline ${pipelineId} timed out.`);
   }
 }
 
