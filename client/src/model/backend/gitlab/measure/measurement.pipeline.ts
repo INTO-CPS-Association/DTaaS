@@ -9,8 +9,15 @@ import {
   hasTimedOut,
 } from 'model/backend/gitlab/execution/pipelineCore';
 import pollPipelineStatus from 'model/backend/gitlab/execution/pipelinePolling';
-import { isFailureStatus } from 'model/backend/gitlab/execution/statusChecking';
-import { BETWEEN_TRIAL_DELAY } from 'model/backend/gitlab/measure/constants';
+import {
+  isCanceledStatus,
+  isFailureStatus,
+} from 'model/backend/gitlab/execution/statusChecking';
+import retryRequest from 'model/backend/util/requestRetry';
+import {
+  BETWEEN_TRIAL_DELAY,
+  PIPELINE_ACCEPTANCE_DELAY,
+} from 'model/backend/gitlab/measure/constants';
 import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
@@ -114,10 +121,44 @@ async function initializeBackend(): Promise<BackendInterface> {
     throw new Error('Not authenticated. Missing access_token or username.');
   }
 
-  const authority = getAuthority();
-  const backend = createGitlabInstance(username, oauthToken, authority);
-  await backend.init();
-  return backend;
+  return retryRequest(async () => {
+    const backend = createGitlabInstance(username, oauthToken, getAuthority());
+    await backend.init();
+    return backend;
+  });
+}
+
+async function startPipeline(
+  digitalTwin: DigitalTwin,
+  dtName: string,
+  config: Configuration,
+): Promise<number> {
+  const pipelineId = await digitalTwin.execute(
+    true,
+    config['Runner tag'],
+    config['Branch name'],
+  );
+  if (!pipelineId) {
+    throw new Error(`Failed to start pipeline for ${dtName}.`);
+  }
+  return pipelineId;
+}
+
+async function retryRejectedPipeline(
+  digitalTwin: DigitalTwin,
+  dtName: string,
+  backend: BackendInterface,
+  config: Configuration,
+  pipelineId: number,
+): Promise<number> {
+  await delay(PIPELINE_ACCEPTANCE_DELAY);
+  const projectId = backend.getProjectId();
+  const status = await backend
+    .getPipelineStatus(projectId, pipelineId)
+    .catch(() => 'pending');
+  if (!isFailureStatus(status) && !isCanceledStatus(status)) return pipelineId;
+  await backend.api.cancelPipeline(projectId, pipelineId).catch(() => {});
+  return startPipeline(digitalTwin, dtName, config);
 }
 
 async function consumeStatusGenerator(
@@ -142,15 +183,14 @@ async function executeDigitalTwinPipeline(
   measurementState.currentTrialExecutionIndex += 1;
 
   const digitalTwin = new DigitalTwin(dtName, backend);
-  const pipelineId = await digitalTwin.execute(
-    true,
-    config['Runner tag'],
-    config['Branch name'],
+  const startedPipelineId = await startPipeline(digitalTwin, dtName, config);
+  const pipelineId = await retryRejectedPipeline(
+    digitalTwin,
+    dtName,
+    backend,
+    config,
+    startedPipelineId,
   );
-
-  if (!pipelineId) {
-    throw new Error(`Failed to start pipeline for ${dtName}.`);
-  }
 
   measurementState.currentTrialMinPipelineId ??= pipelineId;
 

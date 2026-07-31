@@ -66,6 +66,7 @@ let mockBackendInstance: ReturnType<typeof createMockBackend>;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockDelay.mockResolvedValue(undefined);
   originalMeasurementState = { ...measurementState };
   measurementState.shouldStopPipelines = false;
   measurementState.activePipelines = [];
@@ -206,6 +207,34 @@ describe('runDigitalTwin', () => {
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
       'Failed to start pipeline for test-dt.',
     );
+  });
+
+  it('retries a pipeline GitLab rejects shortly after it starts', async () => {
+    const execute = jest.fn().mockResolvedValueOnce(123).mockResolvedValue(124);
+    mockDigitalTwin.mockImplementation(
+      () => ({ execute }) as unknown as DigitalTwin,
+    );
+    mockBackendInstance
+      .getPipelineStatus!.mockResolvedValueOnce('failed')
+      .mockResolvedValue('success');
+
+    const result = await runDigitalTwin('test-dt');
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(mockBackendInstance.api.cancelPipeline).toHaveBeenCalledWith(1, 123);
+    expect(result.pipelineId).toBe(124);
+  });
+
+  it('does not retry a pending pipeline', async () => {
+    mockBackendInstance
+      .getPipelineStatus!.mockResolvedValueOnce('pending')
+      .mockResolvedValue('success');
+
+    await runDigitalTwin('test-dt');
+
+    const dtInstance = mockDigitalTwin.mock.results[0].value;
+    expect(dtInstance.execute).toHaveBeenCalledTimes(1);
+    expect(mockBackendInstance.api.cancelPipeline).not.toHaveBeenCalled();
   });
 
   it('should return execution result with dtName and pipelineId', async () => {

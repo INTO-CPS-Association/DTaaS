@@ -64,14 +64,11 @@ export default defineConfig({
       testMatch: '**/*.setup.ts',
       use: { browserName: 'chromium' },
     },
-    // Pipeline-dependent tests run sequentially to avoid GitLab runner contention.
-    // Declared before chromium/firefox so the scheduler grants it a worker slot
-    // up front instead of it being starved by the uncapped chromium/firefox jobs
-    // -- saves about a minute
+    // Pipeline-dependent tests have dedicated worker capacity.
     {
       name: 'chromium-sequential',
       testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
-      workers: 1,
+      workers: 3,
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
@@ -101,13 +98,13 @@ export default defineConfig({
     {
       name: 'firefox-sequential',
       testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
-      workers: 1,
+      workers: 3,
       use: {
         ...devices['Desktop Firefox'],
         storageState: 'playwright/.auth/user.json',
       },
       timeout: 2 * 60 * 1000,
-      dependencies: ['chromium-sequential'],
+      dependencies: ['setup'],
     },
   ],
   globalSetup: 'test/e2e/setup/global.setup.ts',

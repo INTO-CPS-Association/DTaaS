@@ -7,5 +7,6 @@ const DEFAULT_MEASUREMENT = {
 };
 
 export const BETWEEN_TRIAL_DELAY = 750;
+export const PIPELINE_ACCEPTANCE_DELAY = 10 * 1000;
 
 export default DEFAULT_MEASUREMENT;
