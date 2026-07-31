@@ -20,9 +20,9 @@ export default defineConfig({
   webServer: useExtServer
     ? undefined
     : {
-      command: 'yarn start',
-      url: BASE_URI,
-    },
+        command: 'yarn start',
+        url: BASE_URI,
+      },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test
   globalTimeout: 25 * 60 * 1000,
