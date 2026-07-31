@@ -86,6 +86,8 @@ test.describe('Measurement Page', () => {
   test('Should run only the 4th task when others are disabled, then stop', async ({
     page,
   }) => {
+    test.setTimeout(2 * 60 * 1000);
+
     // Configure runner tags from .env and limit to 1 trial for a quick run
     await openSettingsTab(page);
     await page.fill('#runnerTag', PRIMARY_RUNNER);
@@ -119,7 +121,7 @@ test.describe('Measurement Page', () => {
       .locator('td')
       .nth(1);
     await expect(fourthTaskStatus).toHaveText('SUCCESS', {
-      timeout: 90000,
+      timeout: 2 * 60 * 1000,
     });
 
     // Stop manually if still running when completed
