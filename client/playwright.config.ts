@@ -20,9 +20,9 @@ export default defineConfig({
   webServer: useExtServer
     ? undefined
     : {
-        command: 'yarn start',
-        url: BASE_URI,
-      },
+      command: 'yarn start',
+      url: BASE_URI,
+    },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test
   globalTimeout: 25 * 60 * 1000,
@@ -68,7 +68,6 @@ export default defineConfig({
     {
       name: 'chromium-sequential',
       testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
-      workers: 3,
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
@@ -98,7 +97,6 @@ export default defineConfig({
     {
       name: 'firefox-sequential',
       testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
-      workers: 3,
       use: {
         ...devices['Desktop Firefox'],
         storageState: 'playwright/.auth/user.json',
