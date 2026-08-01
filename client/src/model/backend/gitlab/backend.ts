@@ -162,6 +162,7 @@ export class GitlabAPI implements BackendAPI {
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<PipelineBridge[]> {
+    // The GitBeaker response wrapper loses the bridge schema for nested fields.
     const bridges = (await this.client.Jobs.allPipelineBridges(
       projectId,
       pipelineId,

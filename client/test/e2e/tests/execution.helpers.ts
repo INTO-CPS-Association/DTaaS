@@ -2,7 +2,7 @@ import { expect, type Locator } from '@playwright/test';
 
 export const EXECUTION_START_TIMEOUT = 120_000;
 
-function getExecutionCount(context: string | null): number {
+function parseExecutionCount(context: string | null): number {
   if (!context) return 0;
 
   try {
@@ -15,15 +15,19 @@ function getExecutionCount(context: string | null): number {
   }
 }
 
+export async function getCurrentExecutionCount(
+  button: Locator,
+): Promise<number> {
+  return parseExecutionCount(await button.getAttribute('data-logger-context'));
+}
+
 export async function waitForExecutionCount(
   button: Locator,
   expectedCount: number,
 ) {
   await expect
-    .poll(
-      async () =>
-        getExecutionCount(await button.getAttribute('data-logger-context')),
-      { timeout: EXECUTION_START_TIMEOUT },
-    )
+    .poll(async () => getCurrentExecutionCount(button), {
+      timeout: EXECUTION_START_TIMEOUT,
+    })
     .toBeGreaterThanOrEqual(expectedCount);
 }

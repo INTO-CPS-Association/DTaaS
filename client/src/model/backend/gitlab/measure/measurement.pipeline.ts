@@ -28,12 +28,20 @@ import {
   Trial,
   Execution,
   measurementState,
+  getStore,
   getDefaultConfig,
 } from 'model/backend/gitlab/measure/measurement.execution';
 
 const abortOptions = {
   shouldAbort: () => measurementState.shouldStopPipelines,
 };
+
+function showCancellationWarning(pipelineId: number): void {
+  getStore().showSnackbar(
+    `Pipeline ${pipelineId} could not be cancelled and may still be running.`,
+    'warning',
+  );
+}
 
 function updatePipelineStatus(
   pipelineId: number,
@@ -56,11 +64,17 @@ async function cancelPipelineAndChild(
   try {
     const projectId = backend.getProjectId();
     await backend.api.cancelPipeline(projectId, pipelineId);
-    const childPipelineId = await backend
-      .getChildPipelineId(projectId, pipelineId)
-      .catch(() => null);
+    const knownChildPipelineId = measurementState.activePipelines.find(
+      (pipeline) => pipeline.pipelineId === pipelineId,
+    )?.childPipelineId;
+    const childPipelineId =
+      knownChildPipelineId ??
+      (await backend
+        .getChildPipelineId(projectId, pipelineId)
+        .catch(() => null));
     await cancelChildPipeline(backend, projectId, childPipelineId);
   } catch {
+    showCancellationWarning(pipelineId);
     // Continue with the remaining pipelines.
   }
 }
@@ -73,7 +87,7 @@ async function cancelChildPipeline(
   if (childPipelineId != null) {
     await backend.api
       .cancelPipeline(projectId, childPipelineId)
-      .catch(() => {});
+      .catch(() => showCancellationWarning(childPipelineId));
   }
 }
 
@@ -90,14 +104,14 @@ async function resolveChildPipelineId(
 ): Promise<number> {
   const projectId = backend.getProjectId();
   for (;;) {
-    const childPipelineId = await backend.getChildPipelineId(
-      projectId,
-      parentPipelineId,
-    );
+    const childPipelineId = await backend
+      .getChildPipelineId(projectId, parentPipelineId)
+      .catch(() => null);
     if (childPipelineId != null) {
       return childPipelineId;
     }
     ensurePipelineCanContinue(parentPipelineId, startTime);
+    // Wait 5 seconds between checks to avoid sending too many requests to GitLab.
     await delay(PIPELINE_POLL_INTERVAL);
   }
 }
@@ -121,11 +135,18 @@ async function initializeBackend(): Promise<BackendInterface> {
     throw new Error('Not authenticated. Missing access_token or username.');
   }
 
-  return retryRequest(async () => {
-    const backend = createGitlabInstance(username, oauthToken, getAuthority());
-    await backend.init();
-    return backend;
-  });
+  return retryRequest(
+    async () => {
+      const backend = createGitlabInstance(
+        username,
+        oauthToken,
+        getAuthority(),
+      );
+      await backend.init();
+      return backend;
+    },
+    { idempotent: true },
+  );
 }
 
 async function startPipeline(
@@ -158,6 +179,7 @@ async function retryRejectedPipeline(
     .catch(() => 'pending');
   if (!isFailureStatus(status) && !isCanceledStatus(status)) return pipelineId;
   await backend.api.cancelPipeline(projectId, pipelineId).catch(() => {});
+  // Replace a rejected initial pipeline once; the replacement is not retried.
   return startPipeline(digitalTwin, dtName, config);
 }
 

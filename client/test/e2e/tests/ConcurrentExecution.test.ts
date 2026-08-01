@@ -7,6 +7,7 @@ import {
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
 import {
   EXECUTION_START_TIMEOUT,
+  getCurrentExecutionCount,
   waitForExecutionCount,
 } from 'test/e2e/tests/execution.helpers';
 
@@ -48,16 +49,17 @@ test.describe('Concurrent Execution', () => {
       .getByRole('button', { name: 'History' })
       .first();
     await expect(startButton).toBeVisible();
+    const previousCount = await getCurrentExecutionCount(historyButton);
 
     // Wait for the persisted history entry before triggering another start.
     await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
-    await waitForExecutionCount(historyButton, 1);
+    await waitForExecutionCount(historyButton, previousCount + 1);
     await expect(startButton).toBeEnabled({
       timeout: EXECUTION_START_TIMEOUT,
     });
     await startButton.click();
-    await waitForExecutionCount(historyButton, 2);
+    await waitForExecutionCount(historyButton, previousCount + 2);
 
     await historyButton.click();
 

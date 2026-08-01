@@ -67,7 +67,10 @@ export const fetchLibraryAssets = async (
   isPrivate: boolean,
 ) => {
   try {
-    const assets = await retryRequest(() => loadLibraryAssets(type, isPrivate));
+    const assets = await retryRequest(
+      () => loadLibraryAssets(type, isPrivate),
+      { idempotent: true },
+    );
 
     for (const asset of assets) {
       dispatch(setAsset(asset));
@@ -83,7 +86,9 @@ export const fetchDigitalTwins = async (
 ) => {
   try {
     await fetchLibraryAssets(dispatch, setError, 'Digital Twins', true);
-    const digitalTwins = await retryRequest(loadDigitalTwins);
+    const digitalTwins = await retryRequest(loadDigitalTwins, {
+      idempotent: true,
+    });
 
     for (const { assetName, digitalTwin } of digitalTwins) {
       const digitalTwinData = extractDataFromDigitalTwin(digitalTwin);
@@ -100,6 +105,7 @@ export async function initDigitalTwin(
   try {
     const digitalTwinGitlabInstance = await retryRequest(
       createInitializedInstance,
+      { idempotent: true },
     );
     return new DigitalTwin(newDigitalTwinName, digitalTwinGitlabInstance);
   } catch (error) {

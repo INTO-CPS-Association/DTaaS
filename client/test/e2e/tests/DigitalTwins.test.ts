@@ -5,7 +5,10 @@ import {
   saveRunnerSettings,
 } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
-import { waitForExecutionCount } from 'test/e2e/tests/execution.helpers';
+import {
+  getCurrentExecutionCount,
+  waitForExecutionCount,
+} from 'test/e2e/tests/execution.helpers';
 
 const TERMINAL_STATUS = /Status: (Completed|Failed|Canceled|Timed out)/;
 
@@ -65,10 +68,11 @@ test.describe('Digital Twin Log Cleaning', () => {
     const historyButton = helloWorldCard
       .getByRole('button', { name: 'History' })
       .first();
+    const previousCount = await getCurrentExecutionCount(historyButton);
     // Enforce debounce between requests to avoid overwhelming GitLab
     await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
-    await waitForExecutionCount(historyButton, 1);
+    await waitForExecutionCount(historyButton, previousCount + 1);
 
     await historyButton.click();
 

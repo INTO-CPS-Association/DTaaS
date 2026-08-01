@@ -20,12 +20,13 @@ export default defineConfig({
   webServer: useExtServer
     ? undefined
     : {
-      command: 'yarn start',
-      url: BASE_URI,
-    },
+        command: 'yarn start',
+        url: BASE_URI,
+      },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test
   globalTimeout: 25 * 60 * 1000,
+  // Run pipeline tests in parallel to test concurrent GitLab requests.
   workers: 3,
   testDir: './test/e2e/tests',
   testMatch: '**/*.test.ts',
@@ -64,7 +65,7 @@ export default defineConfig({
       testMatch: '**/*.setup.ts',
       use: { browserName: 'chromium' },
     },
-    // Pipeline-dependent tests have dedicated worker capacity.
+    // Pipeline tests use the shared worker pool to test concurrent requests.
     {
       name: 'chromium-sequential',
       testMatch: /ConcurrentExecution|DigitalTwins|Measurement/,
@@ -102,6 +103,7 @@ export default defineConfig({
         storageState: 'playwright/.auth/user.json',
       },
       timeout: 2 * 60 * 1000,
+      // Start after setup so Firefox can run pipeline tests alongside Chromium.
       dependencies: ['setup'],
     },
   ],

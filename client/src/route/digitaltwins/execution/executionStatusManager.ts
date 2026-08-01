@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop, no-continue */
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
@@ -247,12 +248,46 @@ export const checkChildPipelineStatus = async ({
     parentPipelineId = digitalTwin.pipelineId!;
   }
 
-  const pipelineId = await digitalTwin.backend.getChildPipelineId(
-    digitalTwin.backend.getProjectId(),
-    parentPipelineId,
-  );
+  while (true) {
+    const pipelineId = await digitalTwin.backend.getChildPipelineId(
+      digitalTwin.backend.getProjectId(),
+      parentPipelineId,
+    );
 
-  if (pipelineId == null) {
+    if (pipelineId == null) {
+      if (hasTimedOut(startTime)) {
+        await handleTimeout(
+          digitalTwin.DTName,
+          setButtonText,
+          setLogButtonDisabled,
+          dispatch,
+          executionId,
+        );
+        return;
+      }
+
+      await delay(PIPELINE_POLL_INTERVAL);
+      continue;
+    }
+
+    const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
+      digitalTwin.backend.getProjectId(),
+      pipelineId,
+    );
+
+    if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
+      await handlePipelineCompletion(
+        pipelineId,
+        digitalTwin,
+        setButtonText,
+        setLogButtonDisabled,
+        dispatch,
+        pipelineStatus,
+        executionId,
+      );
+      return;
+    }
+
     if (hasTimedOut(startTime)) {
       await handleTimeout(
         digitalTwin.DTName,
@@ -263,50 +298,7 @@ export const checkChildPipelineStatus = async ({
       );
       return;
     }
-    await delay(PIPELINE_POLL_INTERVAL);
-    await checkChildPipelineStatus({
-      setButtonText,
-      digitalTwin,
-      setLogButtonDisabled,
-      dispatch,
-      startTime,
-      executionId,
-    });
-    return;
-  }
 
-  const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
-    digitalTwin.backend.getProjectId(),
-    pipelineId,
-  );
-
-  if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
-    await handlePipelineCompletion(
-      pipelineId,
-      digitalTwin,
-      setButtonText,
-      setLogButtonDisabled,
-      dispatch,
-      pipelineStatus,
-      executionId,
-    );
-  } else if (hasTimedOut(startTime)) {
-    await handleTimeout(
-      digitalTwin.DTName,
-      setButtonText,
-      setLogButtonDisabled,
-      dispatch,
-      executionId,
-    );
-  } else {
     await delay(PIPELINE_POLL_INTERVAL);
-    await checkChildPipelineStatus({
-      setButtonText,
-      digitalTwin,
-      setLogButtonDisabled,
-      dispatch,
-      startTime,
-      executionId,
-    });
   }
 };

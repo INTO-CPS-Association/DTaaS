@@ -7,7 +7,9 @@ describe('retryRequest', () => {
       .mockRejectedValueOnce(new TypeError('Failed to fetch'))
       .mockResolvedValue('loaded');
 
-    await expect(retryRequest(request, 2, 0)).resolves.toBe('loaded');
+    await expect(
+      retryRequest(request, { idempotent: true, attempts: 2, retryDelayMs: 0 }),
+    ).resolves.toBe('loaded');
 
     expect(request).toHaveBeenCalledTimes(2);
   });
@@ -16,8 +18,22 @@ describe('retryRequest', () => {
     const error = new Error('Unavailable');
     const request = jest.fn<Promise<void>, []>().mockRejectedValue(error);
 
-    await expect(retryRequest(request, 2, 0)).rejects.toThrow(error);
+    await expect(
+      retryRequest(request, { idempotent: true, attempts: 2, retryDelayMs: 0 }),
+    ).rejects.toThrow(error);
 
     expect(request).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects retries that are not explicitly idempotent', () => {
+    const request = jest.fn<Promise<void>, []>();
+    const options = { idempotent: false } as unknown as {
+      idempotent: true;
+    };
+
+    expect(() => retryRequest(request, options)).toThrow(
+      'Only idempotent requests can be retried.',
+    );
+    expect(request).not.toHaveBeenCalled();
   });
 });
