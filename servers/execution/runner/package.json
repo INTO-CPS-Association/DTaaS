@@ -87,7 +87,7 @@
   "resolutions": {
     "@babel/core": "^7.29.7",
     "@types/node": "^25.9.4",
-    "fast-uri": "^3.1.2",
+    "fast-uri": "^3.1.5",
     "form-data": "^4.0.6",
     "handlebars": "^4.7.9",
     "piscina": "^4.9.3",
