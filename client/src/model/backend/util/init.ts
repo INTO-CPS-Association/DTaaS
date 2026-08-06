@@ -10,7 +10,6 @@ import LibraryAsset, { getLibrarySubfolders } from 'model/backend/libraryAsset';
 import { getDTSubfolders } from 'model/backend/util/digitalTwinUtils';
 import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 import LibraryManager from 'model/backend/libraryManager';
-import retryRequest from 'model/backend/util/requestRetry';
 
 async function createInitializedInstance() {
   const instance = createGitlabInstance(
@@ -67,10 +66,7 @@ export const fetchLibraryAssets = async (
   isPrivate: boolean,
 ) => {
   try {
-    const assets = await retryRequest(
-      () => loadLibraryAssets(type, isPrivate),
-      { idempotent: true },
-    );
+    const assets = await loadLibraryAssets(type, isPrivate);
 
     for (const asset of assets) {
       dispatch(setAsset(asset));
@@ -86,9 +82,7 @@ export const fetchDigitalTwins = async (
 ) => {
   try {
     await fetchLibraryAssets(dispatch, setError, 'Digital Twins', true);
-    const digitalTwins = await retryRequest(loadDigitalTwins, {
-      idempotent: true,
-    });
+    const digitalTwins = await loadDigitalTwins();
 
     for (const { assetName, digitalTwin } of digitalTwins) {
       const digitalTwinData = extractDataFromDigitalTwin(digitalTwin);
@@ -103,10 +97,7 @@ export async function initDigitalTwin(
   newDigitalTwinName: string,
 ): Promise<DigitalTwin> {
   try {
-    const digitalTwinGitlabInstance = await retryRequest(
-      createInitializedInstance,
-      { idempotent: true },
-    );
+    const digitalTwinGitlabInstance = await createInitializedInstance();
     return new DigitalTwin(newDigitalTwinName, digitalTwinGitlabInstance);
   } catch (error) {
     throw new Error(

@@ -13,7 +13,6 @@ import {
   isCanceledStatus,
   isFailureStatus,
 } from 'model/backend/gitlab/execution/statusChecking';
-import retryRequest from 'model/backend/util/requestRetry';
 import {
   BETWEEN_TRIAL_DELAY,
   PIPELINE_ACCEPTANCE_DELAY,
@@ -43,6 +42,13 @@ function showCancellationWarning(pipelineId: number): void {
   );
 }
 
+function showChildDiscoveryWarning(parentPipelineId: number): void {
+  getStore().showSnackbar(
+    `Child pipeline for ${parentPipelineId} could not be verified and may still be running.`,
+    'warning',
+  );
+}
+
 function updatePipelineStatus(
   pipelineId: number,
   status: string,
@@ -61,21 +67,35 @@ async function cancelPipelineAndChild(
   backend: BackendInterface,
   pipelineId: number,
 ): Promise<void> {
+  const projectId = backend.getProjectId();
   try {
-    const projectId = backend.getProjectId();
     await backend.api.cancelPipeline(projectId, pipelineId);
-    const knownChildPipelineId = measurementState.activePipelines.find(
-      (pipeline) => pipeline.pipelineId === pipelineId,
-    )?.childPipelineId;
-    const childPipelineId =
-      knownChildPipelineId ??
-      (await backend
-        .getChildPipelineId(projectId, pipelineId)
-        .catch(() => null));
-    await cancelChildPipeline(backend, projectId, childPipelineId);
   } catch {
     showCancellationWarning(pipelineId);
-    // Continue with the remaining pipelines.
+    return;
+  }
+  const childPipelineId = await getChildPipelineIdForCancellation(
+    backend,
+    projectId,
+    pipelineId,
+  );
+  await cancelChildPipeline(backend, projectId, childPipelineId);
+}
+
+async function getChildPipelineIdForCancellation(
+  backend: BackendInterface,
+  projectId: ReturnType<BackendInterface['getProjectId']>,
+  pipelineId: number,
+): Promise<number | null> {
+  const knownChildPipelineId = measurementState.activePipelines.find(
+    (pipeline) => pipeline.pipelineId === pipelineId,
+  )?.childPipelineId;
+  if (knownChildPipelineId != null) return knownChildPipelineId;
+  try {
+    return await backend.getChildPipelineId(projectId, pipelineId);
+  } catch {
+    showChildDiscoveryWarning(pipelineId);
+    return null;
   }
 }
 
@@ -104,14 +124,14 @@ async function resolveChildPipelineId(
 ): Promise<number> {
   const projectId = backend.getProjectId();
   for (;;) {
-    const childPipelineId = await backend
-      .getChildPipelineId(projectId, parentPipelineId)
-      .catch(() => null);
+    const childPipelineId = await backend.getChildPipelineId(
+      projectId,
+      parentPipelineId,
+    );
     if (childPipelineId != null) {
       return childPipelineId;
     }
     ensurePipelineCanContinue(parentPipelineId, startTime);
-    // Wait 5 seconds between checks to avoid sending too many requests to GitLab.
     await delay(PIPELINE_POLL_INTERVAL);
   }
 }
@@ -135,18 +155,9 @@ async function initializeBackend(): Promise<BackendInterface> {
     throw new Error('Not authenticated. Missing access_token or username.');
   }
 
-  return retryRequest(
-    async () => {
-      const backend = createGitlabInstance(
-        username,
-        oauthToken,
-        getAuthority(),
-      );
-      await backend.init();
-      return backend;
-    },
-    { idempotent: true },
-  );
+  const backend = createGitlabInstance(username, oauthToken, getAuthority());
+  await backend.init();
+  return backend;
 }
 
 async function startPipeline(
@@ -179,7 +190,6 @@ async function retryRejectedPipeline(
     .catch(() => 'pending');
   if (!isFailureStatus(status) && !isCanceledStatus(status)) return pipelineId;
   await backend.api.cancelPipeline(projectId, pipelineId).catch(() => {});
-  // Replace a rejected initial pipeline once; the replacement is not retried.
   return startPipeline(digitalTwin, dtName, config);
 }
 

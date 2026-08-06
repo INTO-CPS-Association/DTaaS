@@ -281,6 +281,19 @@ describe('GitlabInstance', () => {
 
       expect(result).toBeNull();
     });
+
+    it('rejects ambiguous parent pipelines instead of selecting the first child', async () => {
+      jest
+        .spyOn(mockApi, 'getPipelineBridges')
+        .mockResolvedValue([
+          { downstreamPipelineId: 42 },
+          { downstreamPipelineId: 43 },
+        ]);
+
+      await expect(gitlab.getChildPipelineId(1, 10)).rejects.toThrow(
+        'multiple downstream pipelines',
+      );
+    });
   });
 
   it('should get triggerToken', async () => {

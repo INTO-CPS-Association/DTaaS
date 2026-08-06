@@ -36,17 +36,13 @@ async function* pollPipelineStatus(
   while (!isPipelineCompleted(status)) {
     checkAbortConditions(pipelineId, startTime, options);
     await delay(PIPELINE_POLL_INTERVAL);
-    try {
-      const newStatus = await backend.getPipelineStatus(
-        backend.getProjectId(),
-        pipelineId,
-      );
-      if (newStatus && newStatus !== status) {
-        status = newStatus;
-        yield status;
-      }
-    } catch {
-      // continue polling
+    const newStatus = await backend.getPipelineStatus(
+      backend.getProjectId(),
+      pipelineId,
+    );
+    if (newStatus && newStatus !== status) {
+      status = newStatus;
+      yield status;
     }
   }
   return status;

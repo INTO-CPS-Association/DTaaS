@@ -31,3 +31,44 @@ export async function waitForExecutionCount(
     })
     .toBeGreaterThanOrEqual(expectedCount);
 }
+
+function parseExecutionId(context: string | null): string | null {
+  if (!context) return null;
+  try {
+    const parsed = JSON.parse(context) as { dt?: { executionId?: string } };
+    return parsed.dt?.executionId ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getExecutionIds(container: Locator): Promise<string[]> {
+  const summaries = container.locator('.MuiAccordionSummary-root');
+  const contexts = await summaries.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-logger-context')),
+  );
+  return contexts
+    .map(parseExecutionId)
+    .filter((id): id is string => id != null);
+}
+
+export async function waitForNewExecutionIds(
+  container: Locator,
+  knownIds: string[],
+  expectedCount: number,
+): Promise<string[]> {
+  const known = new Set(knownIds);
+  let newIds: string[] = [];
+  await expect
+    .poll(
+      async () => {
+        newIds = (await getExecutionIds(container)).filter(
+          (id) => !known.has(id),
+        );
+        return newIds.length;
+      },
+      { timeout: EXECUTION_START_TIMEOUT },
+    )
+    .toBe(expectedCount);
+  return newIds;
+}

@@ -78,7 +78,57 @@ export const startPipelineStatusCheck = async (
   params: PipelineStatusParams,
 ) => {
   const startTime = Date.now();
-  await checkParentPipelineStatus({ ...params, startTime });
+  try {
+    await checkParentPipelineStatus({ ...params, startTime });
+  } catch (error) {
+    await handlePipelineCheckError(params, error);
+  }
+};
+
+async function markExecutionStatusError(
+  digitalTwin: DigitalTwin,
+  executionId: string | undefined,
+  dispatch: ReturnType<typeof useDispatch>,
+): Promise<void> {
+  if (!executionId) return;
+  await digitalTwin.updateExecutionStatus(executionId, ExecutionStatus.ERROR);
+  dispatch(
+    updateExecutionStatus({ id: executionId, status: ExecutionStatus.ERROR }),
+  );
+}
+
+export const handlePipelineCheckError = async (
+  {
+    setButtonText,
+    digitalTwin,
+    setLogButtonDisabled,
+    dispatch,
+    executionId,
+  }: PipelineStatusParams,
+  error: unknown,
+) => {
+  const message = error instanceof Error ? error.message : String(error);
+  dispatch(
+    showSnackbar({
+      message: `Could not check execution for ${formatName(digitalTwin.DTName)}: ${message}`,
+      severity: 'error',
+    }),
+  );
+  await markExecutionStatusError(digitalTwin, executionId, dispatch);
+  setButtonText('Start');
+  setLogButtonDisabled(false);
+  dispatch(
+    setPipelineCompleted({
+      assetName: digitalTwin.DTName,
+      pipelineCompleted: true,
+    }),
+  );
+  dispatch(
+    setPipelineLoading({
+      assetName: digitalTwin.DTName,
+      pipelineLoading: false,
+    }),
+  );
 };
 
 /**

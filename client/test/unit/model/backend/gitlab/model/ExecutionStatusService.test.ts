@@ -36,9 +36,9 @@ describe('ExecutionStatusService', () => {
     (mockBackendInstance.getPipelineStatus as jest.Mock).mockReset();
     (mockBackendInstance.getChildPipelineId as jest.Mock).mockReset();
 
-    (createDigitalTwinFromData as jest.Mock).mockResolvedValue({
-      backend: mockBackendInstance,
-    });
+    (createDigitalTwinFromData as jest.Mock)
+      .mockReset()
+      .mockResolvedValue({ backend: mockBackendInstance });
     (logFetching.fetchJobLogs as jest.Mock).mockResolvedValue([
       { jobName: 'test-job', log: 'test log' },
     ]);
@@ -189,7 +189,7 @@ describe('ExecutionStatusService', () => {
       expect(mockExecutionStorage.update).not.toHaveBeenCalled();
     });
 
-    it('should handle errors from getChildPipelineId gracefully', async () => {
+    it('marks history as ERROR when child discovery fails', async () => {
       (mockBackendInstance.getPipelineStatus as jest.Mock).mockResolvedValue(
         'success',
       );
@@ -203,8 +203,12 @@ describe('ExecutionStatusService', () => {
         mockExecutionStorage,
       );
 
-      expect(result).toHaveLength(0);
-      expect(mockExecutionStorage.update).not.toHaveBeenCalled();
+      expect(result).toEqual([
+        expect.objectContaining({ status: ExecutionStatus.ERROR }),
+      ]);
+      expect(mockExecutionStorage.update).toHaveBeenCalledWith(
+        expect.objectContaining({ status: ExecutionStatus.ERROR }),
+      );
     });
 
     it('should handle errors gracefully and continue processing', async () => {
@@ -236,16 +240,26 @@ describe('ExecutionStatusService', () => {
         mockExecutionStorage,
       );
 
-      expect(result).toHaveLength(1);
-      expect(result[0].dtName).toBe('test-dt');
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            dtName: 'failing-dt',
+            status: ExecutionStatus.ERROR,
+          }),
+          expect.objectContaining({
+            dtName: 'test-dt',
+            status: ExecutionStatus.FAILED,
+          }),
+        ]),
+      );
     });
 
-    it('should resolve the child pipeline id via the backend instead of guessing', async () => {
+    it('uses the bridge-derived child ID for status checks and logs', async () => {
       (mockBackendInstance.getPipelineStatus as jest.Mock)
         .mockResolvedValueOnce('success')
         .mockResolvedValueOnce('success');
       (mockBackendInstance.getChildPipelineId as jest.Mock).mockResolvedValue(
-        101,
+        102,
       );
 
       await ExecutionStatusService.checkRunningExecutions(
@@ -259,6 +273,14 @@ describe('ExecutionStatusService', () => {
         100,
       );
       expect(mockBackendInstance.getPipelineStatus).toHaveBeenCalledWith(
+        123,
+        102,
+      );
+      expect(logFetching.fetchJobLogs).toHaveBeenCalledWith(
+        mockBackendInstance,
+        102,
+      );
+      expect(mockBackendInstance.getPipelineStatus).not.toHaveBeenCalledWith(
         123,
         101,
       );

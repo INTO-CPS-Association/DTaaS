@@ -18,7 +18,6 @@ import {
   delay,
   hasTimedOut,
 } from 'model/backend/gitlab/execution/pipelineCore';
-import { PIPELINE_POLL_INTERVAL } from 'model/backend/gitlab/digitalTwinConfig/constants';
 import {
   createMockStoreState,
   createMockBackend,
@@ -295,16 +294,16 @@ describe('runDigitalTwin', () => {
     expect(result.pipelineId).toBe(123);
   });
 
-  it('retries child pipeline discovery after a transient backend error', async () => {
-    mockBackendInstance.getChildPipelineId
-      .mockRejectedValueOnce(new Error('GitLab unavailable'))
-      .mockResolvedValue(456);
+  it('returns a failed measurement result when child discovery fails', async () => {
+    mockBackendInstance.getChildPipelineId.mockRejectedValue(
+      new Error('GitLab unavailable'),
+    );
 
-    const result = await runDigitalTwin('hello-world');
+    await expect(runDigitalTwin('hello-world')).rejects.toThrow(
+      'GitLab unavailable',
+    );
 
-    expect(mockBackendInstance.getChildPipelineId).toHaveBeenCalledTimes(2);
-    expect(mockDelay).toHaveBeenCalledWith(PIPELINE_POLL_INTERVAL);
-    expect(result.pipelineId).toBe(123);
+    expect(mockBackendInstance.getChildPipelineId).toHaveBeenCalledTimes(1);
   });
 
   it('should time out if the child pipeline never appears', async () => {
@@ -336,18 +335,19 @@ describe('cancelActivePipelines', () => {
     await expect(cancelActivePipelines()).resolves.toBeUndefined();
   });
 
-  it('also cancels the discovered child pipeline', async () => {
+  it('cancels the bridge-derived child, never an interleaved pipeline', async () => {
     const mockBackend = createMockBackend(1);
-    mockBackend.getChildPipelineId.mockResolvedValue(11);
+    mockBackend.getChildPipelineId.mockResolvedValue(102);
     measurementState.activePipelines = [
-      createMockActivePipeline({ backend: mockBackend, pipelineId: 10 }),
+      createMockActivePipeline({ backend: mockBackend, pipelineId: 100 }),
     ];
 
     await cancelActivePipelines();
 
-    expect(mockBackend.getChildPipelineId).toHaveBeenCalledWith(1, 10);
-    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
-    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 11);
+    expect(mockBackend.getChildPipelineId).toHaveBeenCalledWith(1, 100);
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 100);
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 102);
+    expect(mockBackend.api.cancelPipeline).not.toHaveBeenCalledWith(1, 101);
   });
 
   it('uses the stored child pipeline id without an additional lookup', async () => {
@@ -378,6 +378,26 @@ describe('cancelActivePipelines', () => {
 
     expect(mockBackend.api.cancelPipeline).toHaveBeenCalledTimes(1);
     expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 10);
+  });
+
+  it('warns when child discovery fails but continues with later pipelines', async () => {
+    const failingBackend = createMockBackend(1);
+    const nextBackend = createMockBackend(2);
+    failingBackend.getChildPipelineId.mockRejectedValue(
+      new Error('network error'),
+    );
+    measurementState.activePipelines = [
+      createMockActivePipeline({ backend: failingBackend, pipelineId: 10 }),
+      createMockActivePipeline({ backend: nextBackend, pipelineId: 20 }),
+    ];
+
+    await cancelActivePipelines();
+
+    expect(mockShowSnackbar).toHaveBeenCalledWith(
+      'Child pipeline for 10 could not be verified and may still be running.',
+      'warning',
+    );
+    expect(nextBackend.api.cancelPipeline).toHaveBeenCalledWith(2, 20);
   });
 
   it('warns when a child pipeline cannot be cancelled', async () => {

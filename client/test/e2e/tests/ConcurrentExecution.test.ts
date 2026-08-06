@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
 import {
   openAuthenticatedApp,
@@ -9,10 +9,37 @@ import {
   EXECUTION_START_TIMEOUT,
   getCurrentExecutionCount,
   waitForExecutionCount,
+  getExecutionIds,
+  waitForNewExecutionIds,
 } from 'test/e2e/tests/execution.helpers';
 
 // Increase the test timeout to 10 minutes
 test.setTimeout(600000);
+
+async function expectExecutionLogs(
+  historyDialog: Locator,
+  executionIds: string[],
+  index = 0,
+): Promise<void> {
+  const executionId = executionIds[index];
+  if (!executionId) return;
+  const execution = historyDialog.locator(
+    `[id="execution-${executionId}-header"]`,
+  );
+  await expect(execution).toHaveText(
+    /Status: (Completed|Failed|Canceled)/,
+    { timeout: 300000 },
+  );
+  await execution.click();
+  const logs = historyDialog.locator(
+    `[aria-labelledby="execution-${executionId}-header"]`,
+  );
+  await expect(logs).toContainText(
+    /Running with gitlab-runner|No logs available/,
+    { timeout: 10000 },
+  );
+  await expectExecutionLogs(historyDialog, executionIds, index + 1);
+}
 
 test.describe('Concurrent Execution', () => {
   test.beforeEach(async ({ page }) => {
@@ -51,6 +78,14 @@ test.describe('Concurrent Execution', () => {
     await expect(startButton).toBeVisible();
     const previousCount = await getCurrentExecutionCount(historyButton);
 
+    await historyButton.click();
+    const historyDialog = page.getByRole('dialog', {
+      name: 'Hello world Execution History',
+    });
+    await expect(historyDialog).toBeVisible();
+    const knownExecutionIds = await getExecutionIds(historyDialog);
+    await historyDialog.getByRole('button', { name: 'Close' }).click();
+
     // Wait for the persisted history entry before triggering another start.
     await page.waitForTimeout(DEBOUNCE_TIME); // NOSONAR
     await startButton.click();
@@ -62,9 +97,6 @@ test.describe('Concurrent Execution', () => {
     await waitForExecutionCount(historyButton, previousCount + 2);
 
     await historyButton.click();
-
-    // Verify that the execution history dialog is displayed
-    const historyDialog = page.locator('div[role="dialog"]');
     await expect(historyDialog).toBeVisible();
     await expect(
       page.getByRole('heading', { name: /Hello world Execution History/ }),
@@ -75,109 +107,12 @@ test.describe('Concurrent Execution', () => {
       historyDialog.getByText('Execution History', { exact: true }),
     ).toBeVisible();
 
-    // Wait for at least one execution to complete
-    // This may take some time as it depends on the GitLab pipeline
-    // Use dynamic waiting instead of fixed timeout
-    await expect(async () => {
-      const completedExecutions = historyDialog
-        .locator('.MuiAccordionSummary-root')
-        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
-      const completedCount = await completedExecutions.count();
-      expect(completedCount).toBeGreaterThanOrEqual(1);
-    }).toPass({ timeout: 300000 }); // Increased timeout for GitLab pipeline
-
-    // For the first completed execution, expand the accordion to view the logs
-    const firstCompletedExecution = historyDialog
-      .locator('.MuiAccordionSummary-root')
-      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
-      .first();
-
-    await firstCompletedExecution.click();
-
-    // Wait for accordion to expand and logs to be visible
-    const logsContent = historyDialog
-      .locator('[role="region"][aria-labelledby*="execution-"]')
-      .filter({ hasText: /Running with gitlab-runner|No logs available/ });
-    await expect(logsContent).toBeVisible({ timeout: 10000 });
-
-    // Check another execution's logs if available; poll for terminal status.
-    const secondExecution = historyDialog
-      .locator('.MuiAccordionSummary-root')
-      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
-      .nth(1);
-
-    try {
-      await expect(async () => {
-        expect(await secondExecution.count()).toBeGreaterThan(0);
-      }).toPass({ timeout: 30000 });
-    } catch {
-      // Not ready in time; optional check below is skipped.
-    }
-
-    if ((await secondExecution.count()) > 0) {
-      await secondExecution.click();
-
-      // Verify logs for second execution (wait for them to be visible)
-      const secondLogsContent = historyDialog
-        .locator('[role="region"][aria-labelledby*="execution-"]')
-        .filter({ hasText: /Running with gitlab-runner|No logs available/ });
-      await expect(secondLogsContent).toBeVisible({ timeout: 10000 });
-    }
-
-    // Get all completed executions
-    const completedExecutions = historyDialog
-      .locator('.MuiAccordionSummary-root')
-      .filter({ hasText: /Status: (Completed|Failed|Canceled)/ });
-
-    const completedCount = await completedExecutions.count();
-
-    // Delete each completed execution
-    // Instead of a loop, use a recursive function to avoid linting issues
-    const deleteCompletedExecutions = async (
-      remainingCount: number,
-    ): Promise<void> => {
-      if (remainingCount <= 0) return;
-
-      // Always delete the first one since the list gets rerendered after each deletion
-      const execution = historyDialog
-        .locator('.MuiAccordionSummary-root')
-        .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
-        .first();
-
-      // Find the delete button within the accordion summary
-      await execution.locator('[aria-label="delete"]').click();
-
-      // Wait for confirmation dialog to appear
-      const confirmDialog = page.locator('div[role="dialog"]').nth(1); // Second dialog (confirmation)
-      await expect(confirmDialog).toBeVisible();
-
-      // First click "Cancel" to test the cancel functionality
-      await page.getByRole('button', { name: 'Cancel' }).click();
-      await expect(confirmDialog).not.toBeVisible();
-
-      // Click delete button again
-      await execution.locator('[aria-label="delete"]').click();
-      await expect(confirmDialog).toBeVisible();
-
-      // Now click "DELETE" to confirm
-      await page.getByRole('button', { name: 'DELETE' }).click();
-      await expect(confirmDialog).not.toBeVisible();
-
-      // Wait for the list to reflect the deletion before recursing
-      await expect(async () => {
-        const count = await historyDialog
-          .locator('.MuiAccordionSummary-root')
-          .filter({ hasText: /Status: (Completed|Failed|Canceled)/ })
-          .count();
-        expect(count).toBe(remainingCount - 1);
-      }).toPass({ timeout: 5000 });
-
-      // Recursive call with decremented count
-      await deleteCompletedExecutions(remainingCount - 1);
-    };
-
-    // Start the recursive deletion
-    await deleteCompletedExecutions(completedCount);
+    const startedExecutionIds = await waitForNewExecutionIds(
+      historyDialog,
+      knownExecutionIds,
+      2,
+    );
+    await expectExecutionLogs(historyDialog, startedExecutionIds);
 
     // Close the dialog
     await page.getByRole('button', { name: 'Close' }).click();

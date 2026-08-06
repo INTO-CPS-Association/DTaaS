@@ -143,10 +143,15 @@ export class GitlabInstance implements BackendInterface {
       projectId,
       parentPipelineId,
     );
-    const downstream = bridges.find(
-      (bridge) => bridge.downstreamPipelineId != null,
+    const childPipelineIds = bridges.flatMap((bridge) =>
+      bridge.downstreamPipelineId == null ? [] : [bridge.downstreamPipelineId],
     );
-    return downstream?.downstreamPipelineId ?? null;
+    if (childPipelineIds.length > 1) {
+      throw new Error(
+        `Parent pipeline ${parentPipelineId} has multiple downstream pipelines.`,
+      );
+    }
+    return childPipelineIds[0] ?? null;
   }
 
   public getTriggerToken(): string | null {

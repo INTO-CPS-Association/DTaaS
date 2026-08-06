@@ -3,7 +3,7 @@
  * API. It provides methods to manage pipelines, repository files related to a project,
  * and retrieve project information.
  */
-import { Gitlab, BridgeSchema } from '@gitbeaker/rest';
+import { Gitlab } from '@gitbeaker/rest';
 import {
   BackendAPI,
   CommitAction,
@@ -16,12 +16,34 @@ import {
 } from 'model/backend/interfaces/backendInterfaces';
 import { Pipeline } from 'model/backend/interfaces/execution';
 import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import {
+  getGitlabStatus,
+  retryGitlabRead,
+} from 'model/backend/gitlab/gitlabReadRetry';
+
+type TriggerJob = {
+  downstream_pipeline?: { id?: number } | null;
+};
+
+function normalizeTriggerJobs(jobs: TriggerJob[]): PipelineBridge[] {
+  return jobs.map((job) => {
+    const id = job.downstream_pipeline?.id;
+    if (id != null && !Number.isInteger(id)) {
+      throw new Error('GitLab returned an invalid downstream pipeline ID.');
+    }
+    return { downstreamPipelineId: id ?? null };
+  });
+}
 
 export class GitlabAPI implements BackendAPI {
   public client: InstanceType<typeof Gitlab>;
 
   public constructor(host: string, oauthToken: string) {
     this.client = new Gitlab({ host, oauthToken });
+  }
+
+  private async read<T>(request: () => Promise<T>): Promise<T> {
+    return retryGitlabRead(request);
   }
 
   public async startPipeline(
@@ -104,10 +126,8 @@ export class GitlabAPI implements BackendAPI {
     filePath: string,
     ref: string,
   ): Promise<RepositoryFile> {
-    const response = await this.client.RepositoryFiles.show(
-      projectId,
-      filePath,
-      ref,
+    const response = await this.read(() =>
+      this.client.RepositoryFiles.show(projectId, filePath, ref),
     );
     return { content: atob(response.content) };
   }
@@ -118,11 +138,13 @@ export class GitlabAPI implements BackendAPI {
     ref = getBranchName(),
     recursive = false,
   ): Promise<RepositoryTreeItem[]> {
-    const items = await this.client.Repositories.allRepositoryTrees(projectId, {
-      path,
-      recursive,
-      ref,
-    });
+    const items = await this.read(() =>
+      this.client.Repositories.allRepositoryTrees(projectId, {
+        path,
+        recursive,
+        ref,
+      }),
+    );
 
     return items.map((item) => ({
       name: item.name,
@@ -132,29 +154,31 @@ export class GitlabAPI implements BackendAPI {
   }
 
   public async getGroupByName(groupName: string): Promise<ProjectSummary> {
-    return this.client.Groups.show(groupName);
+    return this.read(() => this.client.Groups.show(groupName));
   }
 
   public async listGroupProjects(groupId: string): Promise<ProjectSummary[]> {
-    return this.client.Groups.allProjects(groupId);
+    return this.read(() => this.client.Groups.allProjects(groupId));
   }
 
   public async listPipelineJobs(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<JobSummary[]> {
-    return this.client.Jobs.all(projectId, { pipelineId });
+    return this.read(() => this.client.Jobs.all(projectId, { pipelineId }));
   }
 
   public async getJobLog(projectId: ProjectId, jobId: number): Promise<string> {
-    return this.client.Jobs.showLog(projectId, jobId);
+    return this.read(() => this.client.Jobs.showLog(projectId, jobId));
   }
 
   public async getPipelineStatus(
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<string> {
-    const pipeline = await this.client.Pipelines.show(projectId, pipelineId);
+    const pipeline = await this.read(() =>
+      this.client.Pipelines.show(projectId, pipelineId),
+    );
     return pipeline.status;
   }
 
@@ -162,14 +186,28 @@ export class GitlabAPI implements BackendAPI {
     projectId: ProjectId,
     pipelineId: number,
   ): Promise<PipelineBridge[]> {
-    // The GitBeaker response wrapper loses the bridge schema for nested fields.
-    const bridges = (await this.client.Jobs.allPipelineBridges(
-      projectId,
-      pipelineId,
-    )) as BridgeSchema[];
-    return bridges.map((bridge) => ({
-      downstreamPipelineId: bridge.downstream_pipeline?.id ?? null,
-    }));
+    try {
+      const jobs = await this.getTriggerJobs(projectId, pipelineId);
+      return normalizeTriggerJobs(jobs);
+    } catch (error) {
+      if (getGitlabStatus(error) !== 404) throw error;
+      const bridges = await this.read(() =>
+        this.client.Jobs.allPipelineBridges(projectId, pipelineId),
+      );
+      return normalizeTriggerJobs(bridges as TriggerJob[]);
+    }
+  }
+
+  private async getTriggerJobs(
+    projectId: ProjectId,
+    pipelineId: number,
+  ): Promise<TriggerJob[]> {
+    const encodedProjectId = encodeURIComponent(String(projectId));
+    const endpoint = `projects/${encodedProjectId}/pipelines/${pipelineId}/trigger_jobs`;
+    const response = await this.read(() =>
+      this.client.Jobs.requester.get<TriggerJob[]>(endpoint),
+    );
+    return response.body;
   }
 
   public async commitMultipleActions(
@@ -185,7 +223,9 @@ export class GitlabAPI implements BackendAPI {
   public async getTriggerToken(projectId: ProjectId): Promise<string | null> {
     let token: string | null = null;
 
-    const triggers = await this.client.PipelineTriggerTokens.all(projectId);
+    const triggers = await this.read(() =>
+      this.client.PipelineTriggerTokens.all(projectId),
+    );
 
     if (triggers && triggers.length > 0) {
       token = triggers[0].token;

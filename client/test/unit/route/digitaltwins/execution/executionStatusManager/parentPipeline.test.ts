@@ -31,6 +31,9 @@ describe('ExecutionStatusManager - parentPipeline', () => {
     digitalTwin,
     params,
     paramsWithStartTime,
+    setButtonText,
+    setLogButtonDisabled,
+    dispatch,
     pipelineId,
     spyOnGetPipelineJobs,
     spyOnHandleTimeout,
@@ -60,6 +63,42 @@ describe('ExecutionStatusManager - parentPipeline', () => {
     await PipelineChecks.startPipelineStatusCheck(params);
 
     expect(checkParentPipelineStatus).toHaveBeenCalled();
+  });
+
+  it('surfaces a persistent status error and releases the execution UI', async () => {
+    jest
+      .spyOn(digitalTwin.backend, 'getPipelineStatus')
+      .mockRejectedValue(new Error('Forbidden'));
+
+    await PipelineChecks.startPipelineStatusCheck(params);
+
+    expect(setButtonText).toHaveBeenCalledWith('Start');
+    expect(setLogButtonDisabled).toHaveBeenCalledWith(false);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'snackbar/showSnackbar' }),
+    );
+  });
+
+  it('records a persistent status error in execution history', async () => {
+    const executionId = 'test-execution-id';
+    (digitalTwin.updateExecutionStatus as jest.Mock).mockResolvedValue(
+      undefined,
+    );
+
+    await PipelineChecks.handlePipelineCheckError(
+      { ...params, executionId },
+      new Error('Forbidden'),
+    );
+
+    expect(digitalTwin.updateExecutionStatus).toHaveBeenCalledWith(
+      executionId,
+      ExecutionStatus.ERROR,
+    );
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining({ id: executionId }),
+      }),
+    );
   });
 
   it('checks parent pipeline status and returns success', async () => {

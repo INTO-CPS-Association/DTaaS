@@ -11,6 +11,7 @@ import {
   isCanceledStatus,
   isSuccessStatus,
 } from 'model/backend/gitlab/execution/statusChecking';
+import { ExecutionStatus } from 'model/backend/interfaces/execution';
 
 class ExecutionStatusService {
   private static async resolveChildPipeline(
@@ -25,9 +26,20 @@ class ExecutionStatusService {
         executionStorage,
       );
     } catch {
-      // Child pipeline might not exist yet or other error - silently ignore
-      return null;
+      return ExecutionStatusService.markExecutionError(
+        execution,
+        executionStorage,
+      );
     }
+  }
+
+  private static async markExecutionError(
+    execution: DTExecutionResult,
+    executionStorage: IExecutionHistoryStorage,
+  ): Promise<DTExecutionResult> {
+    const updated = { ...execution, status: ExecutionStatus.ERROR };
+    await executionStorage.update(updated);
+    return updated;
   }
 
   private static async updateFinishedChildPipeline(
@@ -137,7 +149,10 @@ class ExecutionStatusService {
             executionStorage,
           );
         } catch {
-          return null;
+          return ExecutionStatusService.markExecutionError(
+            execution,
+            executionStorage,
+          );
         }
       }),
     );

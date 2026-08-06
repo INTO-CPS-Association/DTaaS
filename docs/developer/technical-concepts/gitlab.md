@@ -77,6 +77,11 @@ when the corresponding value of the `DTName` variable is provided by the API
 call. The `RunnerTag` variable is used to specify a custom runner tag that will
 execute each job in the DT's pipeline.
 
+For one parent-pipeline execution, the generated `DTName` rules must activate
+exactly one trigger job. The client treats zero downstream pipelines as a
+transitional state and rejects multiple downstream pipelines as a configuration
+error; it never selects the first result by API order.
+
 Below is an explanation of the keywords used in the CI/CD pipeline configuration:
 
 - **Image**: Specifies the Docker image, such as `fedora:41`, providing the

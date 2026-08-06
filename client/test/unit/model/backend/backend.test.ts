@@ -1,6 +1,10 @@
 import GitlabAPI from 'model/backend/gitlab/backend';
+import { GitbeakerRequestError } from '@gitbeaker/rest';
 
-jest.mock('@gitbeaker/rest');
+jest.mock('@gitbeaker/rest', () => ({
+  ...jest.requireActual('@gitbeaker/rest'),
+  Gitlab: jest.fn(),
+}));
 
 const createMockClient = () => ({
   Commits: {
@@ -31,8 +35,24 @@ const createMockClient = () => ({
     all: jest.fn(),
     showLog: jest.fn(),
     allPipelineBridges: jest.fn(),
+    requester: { get: jest.fn() },
   },
 });
+
+function createGitlabError(status: number, retryAfter?: string): Error {
+  const error = Object.create(GitbeakerRequestError.prototype) as Error;
+  Object.defineProperty(error, 'cause', {
+    value: {
+      response: {
+        status,
+        headers: {
+          get: (name: string) => (name === 'retry-after' ? retryAfter : null),
+        },
+      },
+    },
+  });
+  return error;
+}
 
 describe('GitlabAPI', () => {
   let api: GitlabAPI;
@@ -43,6 +63,8 @@ describe('GitlabAPI', () => {
     mockClient = createMockClient();
     api.client = mockClient as unknown as GitlabAPI['client'];
   });
+
+  afterEach(() => jest.useRealTimers());
 
   describe('commitMultipleActions', () => {
     it('should call Commits.create with correct parameters', async () => {
@@ -123,6 +145,18 @@ describe('GitlabAPI', () => {
         { variables: {} },
       );
       expect(result).toEqual({ id: 1, status: 'running' });
+    });
+
+    it('does not retry a failed pipeline trigger', async () => {
+      mockClient.PipelineTriggerTokens.trigger.mockRejectedValue(
+        new TypeError('Network unavailable'),
+      );
+
+      await expect(
+        api.startPipeline(1, 'main', {}, 'trigger-token'),
+      ).rejects.toThrow('Network unavailable');
+
+      expect(mockClient.PipelineTriggerTokens.trigger).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -232,11 +266,13 @@ describe('GitlabAPI', () => {
   });
 
   describe('getPipelineBridges', () => {
-    it('should return bridges with downstream pipeline ids', async () => {
-      mockClient.Jobs.allPipelineBridges.mockResolvedValue([
-        { id: 1, downstream_pipeline: { id: 42 } },
-        { id: 2, downstream_pipeline: undefined },
-      ]);
+    it('prefers trigger jobs and returns their downstream pipeline ids', async () => {
+      mockClient.Jobs.requester.get.mockResolvedValue({
+        body: [
+          { id: 1, downstream_pipeline: { id: 42 } },
+          { id: 2, downstream_pipeline: undefined },
+        ],
+      });
 
       const result = await api.getPipelineBridges(1, 10);
 
@@ -244,7 +280,59 @@ describe('GitlabAPI', () => {
         { downstreamPipelineId: 42 },
         { downstreamPipelineId: null },
       ]);
+      expect(mockClient.Jobs.requester.get).toHaveBeenCalledWith(
+        'projects/1/pipelines/10/trigger_jobs',
+      );
+      expect(mockClient.Jobs.allPipelineBridges).not.toHaveBeenCalled();
+    });
+
+    it('falls back to bridges only when trigger jobs are unavailable', async () => {
+      mockClient.Jobs.requester.get.mockRejectedValue(createGitlabError(404));
+      mockClient.Jobs.allPipelineBridges.mockResolvedValue([
+        { downstream_pipeline: { id: 42 } },
+      ]);
+
+      await expect(api.getPipelineBridges(1, 10)).resolves.toEqual([
+        { downstreamPipelineId: 42 },
+      ]);
+
       expect(mockClient.Jobs.allPipelineBridges).toHaveBeenCalledWith(1, 10);
+    });
+
+    it('encodes a path-style project ID for the raw trigger-jobs request', async () => {
+      mockClient.Jobs.requester.get.mockResolvedValue({ body: [] });
+
+      await api.getPipelineBridges('group/project', 10);
+
+      expect(mockClient.Jobs.requester.get).toHaveBeenCalledWith(
+        'projects/group%2Fproject/pipelines/10/trigger_jobs',
+      );
+    });
+
+    it.each([401, 403, 429, 500])(
+      'does not fall back to bridges for a %s trigger-jobs failure',
+      async (status) => {
+        jest.useFakeTimers();
+        mockClient.Jobs.requester.get.mockRejectedValue(
+          createGitlabError(status),
+        );
+
+        const request = expect(api.getPipelineBridges(1, 10)).rejects.toThrow();
+        await jest.runAllTimersAsync();
+        await request;
+
+        expect(mockClient.Jobs.allPipelineBridges).not.toHaveBeenCalled();
+      },
+    );
+
+    it('rejects malformed downstream pipeline IDs', async () => {
+      mockClient.Jobs.requester.get.mockResolvedValue({
+        body: [{ downstream_pipeline: { id: 'not-a-number' } }],
+      });
+
+      await expect(api.getPipelineBridges(1, 10)).rejects.toThrow(
+        'invalid downstream pipeline ID',
+      );
     });
   });
 
