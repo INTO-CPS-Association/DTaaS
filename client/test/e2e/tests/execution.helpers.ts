@@ -18,7 +18,9 @@ function parseExecutionCount(context: string | null): number {
 export async function getCurrentExecutionCount(
   button: Locator,
 ): Promise<number> {
-  return parseExecutionCount(await button.getAttribute('data-logger-context'));
+  return parseExecutionCount(
+    await button.evaluate((element) => element.dataset.loggerContext),
+  );
 }
 
 export async function waitForExecutionCount(
@@ -45,7 +47,7 @@ function parseExecutionId(context: string | null): string | null {
 export async function getExecutionIds(container: Locator): Promise<string[]> {
   const summaries = container.locator('.MuiAccordionSummary-root');
   const contexts = await summaries.evaluateAll((elements) =>
-    elements.map((element) => element.getAttribute('data-logger-context')),
+    elements.map((element) => element.dataset.loggerContext),
   );
   return contexts
     .map(parseExecutionId)
