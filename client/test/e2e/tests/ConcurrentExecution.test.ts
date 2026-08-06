@@ -26,10 +26,9 @@ async function expectExecutionLogs(
   const execution = historyDialog.locator(
     `[id="execution-${executionId}-header"]`,
   );
-  await expect(execution).toHaveText(
-    /Status: (Completed|Failed|Canceled)/,
-    { timeout: 300000 },
-  );
+  await expect(execution).toHaveText(/Status: (Completed|Failed|Canceled)/, {
+    timeout: 300000,
+  });
   await execution.click();
   const logs = historyDialog.locator(
     `[aria-labelledby="execution-${executionId}-header"]`,
