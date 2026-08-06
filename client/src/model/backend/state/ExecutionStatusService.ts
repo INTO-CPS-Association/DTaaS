@@ -111,6 +111,20 @@ class ExecutionStatusService {
       backend.getProjectId(),
       execution.pipelineId,
     );
+    return ExecutionStatusService.processParentStatus(
+      execution,
+      backend,
+      executionStorage,
+      parentPipelineStatus,
+    );
+  }
+
+  private static async processParentStatus(
+    execution: DTExecutionResult,
+    backend: BackendInterface,
+    executionStorage: IExecutionHistoryStorage,
+    parentPipelineStatus: string,
+  ): Promise<DTExecutionResult | null> {
     if (
       isFailureStatus(parentPipelineStatus) ||
       isCanceledStatus(parentPipelineStatus)
@@ -137,9 +151,6 @@ class ExecutionStatusService {
     digitalTwinsData: { [key: string]: DigitalTwinData },
     executionStorage: IExecutionHistoryStorage,
   ): Promise<DTExecutionResult[]> {
-    if (runningExecutions.length === 0) {
-      return [];
-    }
     const results = await Promise.all(
       runningExecutions.map(async (execution) => {
         try {
