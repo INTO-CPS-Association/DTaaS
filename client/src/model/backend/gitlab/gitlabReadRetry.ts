@@ -16,7 +16,11 @@ export function getGitlabStatus(error: unknown): number | undefined {
 function parseRetryAfter(value: string | undefined): number | undefined {
   if (value == null) return undefined;
   const seconds = Number(value);
-  return Number.isFinite(seconds) ? seconds * 1_000 : undefined;
+  if (Number.isFinite(seconds)) return Math.max(0, seconds * 1_000);
+  const retryDate = Date.parse(value);
+  return Number.isNaN(retryDate)
+    ? undefined
+    : Math.max(0, retryDate - Date.now());
 }
 
 export function getRetryAfterMs(error: unknown): number | undefined {

@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop, no-continue */
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
@@ -28,6 +27,10 @@ export interface PipelineStatusParams {
   dispatch: ReturnType<typeof useDispatch>;
   executionId?: string;
 }
+
+type PipelineStatusParamsWithStartTime = PipelineStatusParams & {
+  startTime: number;
+};
 
 /**
  * Handles execution timeout with UI feedback
@@ -273,82 +276,101 @@ export const handlePipelineCompletion = async (
   }
 };
 
-/**
- * Checks child pipeline status and handles completion
- * @param params Pipeline status parameters with start time
- */
-export const checkChildPipelineStatus = async ({
-  setButtonText,
-  digitalTwin,
-  setLogButtonDisabled,
-  dispatch,
-  startTime,
-  executionId,
-}: PipelineStatusParams & {
-  startTime: number;
-}) => {
-  let parentPipelineId: number;
+async function getParentPipelineId(
+  digitalTwin: DigitalTwin,
+  executionId?: string,
+): Promise<number> {
+  if (!executionId) return digitalTwin.pipelineId!;
+  const execution = await digitalTwin.getExecutionHistoryById(executionId);
+  return execution?.pipelineId ?? digitalTwin.pipelineId!;
+}
 
-  if (executionId) {
-    const execution = await digitalTwin.getExecutionHistoryById(executionId);
-    parentPipelineId = execution
-      ? execution.pipelineId
-      : digitalTwin.pipelineId!;
-  } else {
-    parentPipelineId = digitalTwin.pipelineId!;
-  }
+type CompletedPipeline = {
+  pipelineId: number;
+  status: 'success' | 'failed';
+};
 
+async function pollChildPipelineStatus(
+  digitalTwin: DigitalTwin,
+  parentPipelineId: number,
+  startTime: number,
+): Promise<CompletedPipeline | null> {
+  /* eslint-disable no-await-in-loop */
   while (true) {
     const pipelineId = await digitalTwin.backend.getChildPipelineId(
       digitalTwin.backend.getProjectId(),
       parentPipelineId,
     );
-
-    if (pipelineId == null) {
-      if (hasTimedOut(startTime)) {
-        await handleTimeout(
-          digitalTwin.DTName,
-          setButtonText,
-          setLogButtonDisabled,
-          dispatch,
-          executionId,
-        );
-        return;
-      }
-
-      await delay(PIPELINE_POLL_INTERVAL);
-      continue;
-    }
-
-    const pipelineStatus = await digitalTwin.backend.getPipelineStatus(
-      digitalTwin.backend.getProjectId(),
-      pipelineId,
-    );
-
-    if (pipelineStatus === 'success' || pipelineStatus === 'failed') {
-      await handlePipelineCompletion(
+    if (pipelineId != null) {
+      const status = await digitalTwin.backend.getPipelineStatus(
+        digitalTwin.backend.getProjectId(),
         pipelineId,
-        digitalTwin,
-        setButtonText,
-        setLogButtonDisabled,
-        dispatch,
-        pipelineStatus,
-        executionId,
       );
-      return;
+      if (status === 'success' || status === 'failed') {
+        return { pipelineId, status };
+      }
     }
-
-    if (hasTimedOut(startTime)) {
-      await handleTimeout(
-        digitalTwin.DTName,
-        setButtonText,
-        setLogButtonDisabled,
-        dispatch,
-        executionId,
-      );
-      return;
-    }
-
+    if (hasTimedOut(startTime)) return null;
     await delay(PIPELINE_POLL_INTERVAL);
   }
+  /* eslint-enable no-await-in-loop */
+}
+
+async function handleChildPipelineTimeout({
+  digitalTwin,
+  setButtonText,
+  setLogButtonDisabled,
+  dispatch,
+  executionId,
+}: PipelineStatusParams): Promise<void> {
+  await handleTimeout(
+    digitalTwin.DTName,
+    setButtonText,
+    setLogButtonDisabled,
+    dispatch,
+    executionId,
+  );
+}
+
+async function completeChildPipeline(
+  completedPipeline: CompletedPipeline,
+  {
+    digitalTwin,
+    setButtonText,
+    setLogButtonDisabled,
+    dispatch,
+    executionId,
+  }: PipelineStatusParams,
+): Promise<void> {
+  await handlePipelineCompletion(
+    completedPipeline.pipelineId,
+    digitalTwin,
+    setButtonText,
+    setLogButtonDisabled,
+    dispatch,
+    completedPipeline.status,
+    executionId,
+  );
+}
+
+/**
+ * Checks child pipeline status and handles completion
+ * @param params Pipeline status parameters with start time
+ */
+export const checkChildPipelineStatus = async (
+  params: PipelineStatusParamsWithStartTime,
+) => {
+  const parentPipelineId = await getParentPipelineId(
+    params.digitalTwin,
+    params.executionId,
+  );
+  const completedPipeline = await pollChildPipelineStatus(
+    params.digitalTwin,
+    parentPipelineId,
+    params.startTime,
+  );
+  if (!completedPipeline) {
+    return handleChildPipelineTimeout(params);
+  }
+  return completeChildPipeline(completedPipeline, params);
 };

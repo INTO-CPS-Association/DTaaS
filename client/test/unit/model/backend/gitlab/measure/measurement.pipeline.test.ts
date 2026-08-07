@@ -367,6 +367,25 @@ describe('cancelActivePipelines', () => {
     expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 11);
   });
 
+  it('cancels a known child when parent cancellation fails', async () => {
+    const mockBackend = createMockBackend(1);
+    mockBackend.api.cancelPipeline.mockRejectedValueOnce(
+      new Error('network error'),
+    );
+    measurementState.activePipelines = [
+      createMockActivePipeline({
+        backend: mockBackend,
+        pipelineId: 10,
+        childPipelineId: 11,
+      }),
+    ];
+
+    await cancelActivePipelines();
+
+    expect(mockBackend.getChildPipelineId).not.toHaveBeenCalled();
+    expect(mockBackend.api.cancelPipeline).toHaveBeenCalledWith(1, 11);
+  });
+
   it('does not attempt to cancel a child pipeline that has not been discovered yet', async () => {
     const mockBackend = createMockBackend(1);
     mockBackend.getChildPipelineId.mockResolvedValue(null);

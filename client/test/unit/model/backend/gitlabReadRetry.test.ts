@@ -60,6 +60,13 @@ describe('retryGitlabRead', () => {
     expect(request).toHaveBeenCalledTimes(2);
   });
 
+  it('parses an HTTP-date Retry-After value', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+    const retryAfter = 'Thu, 01 Jan 2026 00:00:03 GMT';
+
+    expect(getRetryAfterMs(createGitlabError(429, retryAfter))).toBe(3_000);
+  });
+
   it('recognizes retryable GitLab responses and Retry-After', () => {
     const rateLimited = createGitlabError(429, '3');
 

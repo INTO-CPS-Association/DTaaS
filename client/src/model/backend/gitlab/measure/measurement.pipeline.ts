@@ -72,7 +72,6 @@ async function cancelPipelineAndChild(
     await backend.api.cancelPipeline(projectId, pipelineId);
   } catch {
     showCancellationWarning(pipelineId);
-    return;
   }
   const childPipelineId = await getChildPipelineIdForCancellation(
     backend,
