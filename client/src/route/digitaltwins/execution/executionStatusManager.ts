@@ -295,25 +295,31 @@ async function pollChildPipelineStatus(
   parentPipelineId: number,
   startTime: number,
 ): Promise<CompletedPipeline | null> {
-  /* eslint-disable no-await-in-loop */
-  while (true) {
-    const pipelineId = await digitalTwin.backend.getChildPipelineId(
-      digitalTwin.backend.getProjectId(),
-      parentPipelineId,
-    );
-    if (pipelineId != null) {
-      const status = await digitalTwin.backend.getPipelineStatus(
-        digitalTwin.backend.getProjectId(),
-        pipelineId,
-      );
-      if (status === 'success' || status === 'failed') {
-        return { pipelineId, status };
-      }
-    }
-    if (hasTimedOut(startTime)) return null;
-    await delay(PIPELINE_POLL_INTERVAL);
-  }
-  /* eslint-enable no-await-in-loop */
+  const completedPipeline = await getCompletedChildPipeline(
+    digitalTwin,
+    parentPipelineId,
+  );
+  if (completedPipeline || hasTimedOut(startTime)) return completedPipeline;
+  await delay(PIPELINE_POLL_INTERVAL);
+  return pollChildPipelineStatus(digitalTwin, parentPipelineId, startTime);
+}
+
+async function getCompletedChildPipeline(
+  digitalTwin: DigitalTwin,
+  parentPipelineId: number,
+): Promise<CompletedPipeline | null> {
+  const pipelineId = await digitalTwin.backend.getChildPipelineId(
+    digitalTwin.backend.getProjectId(),
+    parentPipelineId,
+  );
+  if (pipelineId == null) return null;
+  const status = await digitalTwin.backend.getPipelineStatus(
+    digitalTwin.backend.getProjectId(),
+    pipelineId,
+  );
+  return status === 'success' || status === 'failed'
+    ? { pipelineId, status }
+    : null;
 }
 
 async function handleChildPipelineTimeout({
