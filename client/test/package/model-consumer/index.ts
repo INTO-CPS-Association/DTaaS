@@ -1,3 +1,5 @@
+// The package is installed from its generated tarball by the CI workflow.
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   formatName,
   selectExecutionHistoryById,
