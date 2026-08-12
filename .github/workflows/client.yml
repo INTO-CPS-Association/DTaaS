@@ -148,7 +148,8 @@ jobs:
           mkdir -p "$package_dir" "$consumer_dir"
 
           package_file=$(npm pack --ignore-scripts --silent --pack-destination "$package_dir")
-          unexpected=$(tar -tf "$package_dir/$package_file" | grep -Ev '^package/(package.json|README.md|LICENSE.md|dist/.*)$' || true)
+          allowed_files='^package/(package.json|README.md|LICENSE.md|dist/.*)$'
+          unexpected=$(tar -tf "$package_dir/$package_file" | grep -Ev "$allowed_files" || true)
           test -z "$unexpected"
 
           cp -R "$GITHUB_WORKSPACE/client/test/package/model-consumer/." "$consumer_dir/"
