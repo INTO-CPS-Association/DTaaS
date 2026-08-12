@@ -24,6 +24,16 @@ Typical publish prerequisites:
 3. Test execution.
 4. Registry authentication.
 
+## DTaaS Model Package
+
+`client/src/model` is being prepared as an independently installable npm
+package. The existing model tests run against client source and do not by
+themselves prove that the packed npm artifact installs, imports, or exposes
+valid TypeScript declarations. The `model-package` job in `client.yml`
+therefore builds and packs the package, checks its contents, installs the
+tarball in a fresh consumer, type-checks its root declarations, and runs a
+root-import smoke test.
+
 ## Private Registry Workflow (Development)
 
 Use a private registry (for example Verdaccio) when testing publish/unpublish

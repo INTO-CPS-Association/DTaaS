@@ -5,7 +5,7 @@ export interface EnvironmentState {
 }
 
 export const loadInitialEnvironment = (): EnvironmentState => ({
-  AUTH_AUTHORITY: globalThis.env.REACT_APP_AUTH_AUTHORITY ?? '',
+  AUTH_AUTHORITY: globalThis.env?.REACT_APP_AUTH_AUTHORITY ?? '',
 });
 
 const environmentSlice = createSlice({

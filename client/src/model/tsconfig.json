@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true, // Raise errors for implicit any types.
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default exports.
+    "sourceMap": true, // Generate source maps.
+    "target": "ES2019",
+    "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error"],
+    "types": ["react"], // Keep only react: the model source does not use Node or Jest globals.
+    "module": "esnext", // Emit ES modules.
+    "moduleResolution": "bundler", // Resolve imports as a bundler does.
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "removeComments": true, // Remove comments from emitted JavaScript.
+    "noImplicitReturns": true, // Raise errors for functions without explicit returns on all paths.
+    "noUnusedLocals": true, // Raise errors for unused local declarations.
+    "noUnusedParameters": false, // Do not raise errors for unused parameters.
+    "strict": true, // Enable strict type checking.
+    "skipLibCheck": true,
+    "rootDir": ".",
+    "outDir": "dist",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "model/*": ["./*"]
+    }
+  },
+  "exclude": ["**/node_modules/*", "dist"],
+  "include": ["index.ts", "env.d.ts", "backend/**/*.ts", "store/**/*.ts"]
+}
