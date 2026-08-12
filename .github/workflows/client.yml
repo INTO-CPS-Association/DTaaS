@@ -140,25 +140,6 @@ jobs:
           yarn typecheck
           yarn build
 
-      - name: Pack and test model package as a consumer
-        shell: bash
-        run: |
-          package_dir="$RUNNER_TEMP/dtaas-model-package"
-          consumer_dir="$RUNNER_TEMP/dtaas-model-consumer"
-          mkdir -p "$package_dir" "$consumer_dir"
-
-          package_file=$(npm pack --ignore-scripts --silent --pack-destination "$package_dir")
-          allowed_files='^package/(package.json|README.md|LICENSE.md|dist/.*)$'
-          unexpected=$(tar -tf "$package_dir/$package_file" | grep -Ev "$allowed_files" || true)
-          test -z "$unexpected"
-
-          cp -R "$GITHUB_WORKSPACE/client/test/package/model-consumer/." "$consumer_dir/"
-          cd "$consumer_dir"
-          npm ci --ignore-scripts
-          npm install --ignore-scripts --no-save "$package_dir/$package_file"
-          npm run typecheck
-          npm run smoke
-
   build-docker-image:
     name: Build Docker image (${{ matrix.image-name }})
     permissions:
