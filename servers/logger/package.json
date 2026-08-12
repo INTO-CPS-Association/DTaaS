@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.1.9",
-    "@nestjs/core": "^11.1.9",
+    "@nestjs/core": "^11.1.18",
     "@nestjs/platform-express": "^11.1.9",
     "@nestjs/throttler": "^6.4.0",
     "cross-env": "^10.1.0",
