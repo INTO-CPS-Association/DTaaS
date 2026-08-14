@@ -1,0 +1,60 @@
+name: DT automation npm package
+
+'on':
+  push:
+    paths:
+      - 'servers/execution/dt-automation/**'
+      - '.github/workflows/dt-automation.yml'
+  pull_request:
+    paths:
+      - 'servers/execution/dt-automation/**'
+      - '.github/workflows/dt-automation.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate DT automation npm package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: servers/execution/dt-automation/
+    steps:
+      - name: Checkout
+        # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          lfs: false
+
+      - name: Setup node
+        # v6.4.0
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          cache: yarn
+          cache-dependency-path: servers/execution/dt-automation/yarn.lock
+
+      - name: Install package dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
+
+      - name: Type-check, build, pack, and smoke-test package
+        run: |
+          yarn typecheck
+          yarn build
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_TGZ="$(npm pack --silent)"
+          TMP_DIR="$(mktemp -d)"
+          cd "$TMP_DIR"
+          yarn init -y
+          yarn add \
+            "file:$GITHUB_WORKSPACE/servers/execution/dt-automation/$PACKAGE_TGZ" \
+            react@19.2.0 \
+            react-redux@9.2.0
+          PACKAGE_NAME="$PACKAGE_NAME" node -e "import(process.env.PACKAGE_NAME).then(({ formatName }) => { if (formatName('digital-twin') !== 'Digital twin') throw new Error('Package smoke test failed'); })"
