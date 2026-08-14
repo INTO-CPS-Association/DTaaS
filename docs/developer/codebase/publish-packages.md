@@ -8,6 +8,7 @@ package channels.
 - npm packages (public): `@into-cps-association/*`
 - Docker images: GitHub Container Registry and Docker Hub
 - Python packages: DTaaS CLI and platform-services CLI release flows
+S
 
 ## JavaScript/TypeScript Packages
 
@@ -15,6 +16,7 @@ Notable package roots:
 
 - `servers/lib` -> `@into-cps-association/libms`
 - `servers/execution/runner` -> `@into-cps-association/runner`
+- `servers/execution/dt-automation` -> `dt-automation`
 - `client` -> web client package metadata and build artefacts
 
 Typical publish prerequisites:
@@ -23,6 +25,9 @@ Typical publish prerequisites:
 2. Build output generation.
 3. Test execution.
 4. Registry authentication.
+
+The `dt-automation` workflow validates tarball contents and a clean consumer
+install before publishing.
 
 ## Private Registry Workflow (Development)
 

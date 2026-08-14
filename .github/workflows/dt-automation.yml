@@ -49,7 +49,14 @@ jobs:
           yarn typecheck
           yarn build
           PACKAGE_NAME="$(node -p "require('./package.json').name")"
-          PACKAGE_TGZ="$(npm pack --silent)"
+          PACKAGE_TGZ="$(npm pack --ignore-scripts --silent)"
+          ALLOWED_TARBALL_FILES='^package/(package\.json|README\.md|LICENSE\.md|dist/(index\.js|.*\.d\.ts))$'
+          UNEXPECTED_TARBALL_FILES="$(tar -tf "$PACKAGE_TGZ" | grep -Ev "$ALLOWED_TARBALL_FILES" || true)"
+          if [ -n "$UNEXPECTED_TARBALL_FILES" ]; then
+            echo 'Unexpected files in npm package:'
+            echo "$UNEXPECTED_TARBALL_FILES"
+            exit 1
+          fi
           TMP_DIR="$(mktemp -d)"
           cd "$TMP_DIR"
           yarn init -y
