@@ -1,5 +1,5 @@
 {
-  "name": "dt-automation",
+  "name": "@into-cps-association/dt-automation",
   "version": "0.1.0",
   "description": "The DTaaS's data and business-logic layer including representations of digital twins, communication with data/execution managers like GitLab, file, pipeline and execution operations and maintaining Redux state for UI. Sits between React UI and DTaaS backend.",
   "main": "./dist/index.js",
@@ -51,9 +51,9 @@
     "typescript": "6.0.3"
   },
   "dependencies": {
-    "@gitbeaker/rest": "43.8.0",
-    "@reduxjs/toolkit": "2.10.1",
-    "uuid": "14.0.1"
+    "@gitbeaker/rest": "^43.8.0",
+    "@reduxjs/toolkit": "^2.10.1",
+    "uuid": "^14.0.1"
   },
   "peerDependencies": {
     "react": "^19.2.0",

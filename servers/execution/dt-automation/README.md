@@ -1,6 +1,6 @@
 # DTaaS Model
 
-`dt-automation` is the data and business-logic layer used
+`@into-cps-association/dt-automation` is the data and business-logic layer used
 by the DTaaS web client. It exposes digital-twin, GitLab, execution,
 measurement, and Redux APIs.
 
@@ -8,13 +8,17 @@ Version `0.1.x` is a DTaaS-specific integration package. Its API reflects the
 current client model and is not yet intended as a framework-independent model
 library.
 
+The package is located under `servers/execution` to establish a shared home for
+DT automation logic. It currently targets browser integrations and is not yet
+safe to import in server-side runtimes.
+
 ## Install
 
 React and React Redux are peer dependencies. Install compatible versions in
 the consuming application:
 
 ```bash
-yarn add dt-automation react@^19.2.0 react-redux@^9.2.0
+yarn add @into-cps-association/dt-automation react@^19.2.0 react-redux@^9.2.0
 ```
 
 ## Use
@@ -23,7 +27,7 @@ Import supported APIs from the package root. Deep imports are not part of the
 public package contract.
 
 ```ts
-import { formatName } from 'dt-automation';
+import { formatName } from '@into-cps-association/dt-automation';
 
 const label = formatName('example-digital-twin');
 ```

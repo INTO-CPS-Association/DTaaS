@@ -3,12 +3,14 @@ name: Digital twin runner
 'on':
   push:
     paths:
-      - 'servers/execution/**'
+      - 'servers/execution/runner/**'
       - '.github/workflows/runner.yml'
+      - '.github/workflows/publish-npm.yml'
   pull_request:
     paths:
-      - 'servers/execution/**'
+      - 'servers/execution/runner/**'
       - '.github/workflows/runner.yml'
+      - '.github/workflows/publish-npm.yml'
   workflow_dispatch:
 
 concurrency:

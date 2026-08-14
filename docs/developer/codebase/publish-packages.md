@@ -16,7 +16,7 @@ Notable package roots:
 
 - `servers/lib` -> `@into-cps-association/libms`
 - `servers/execution/runner` -> `@into-cps-association/runner`
-- `servers/execution/dt-automation` -> `dt-automation`
+- `servers/execution/dt-automation` -> `@into-cps-association/dt-automation`
 - `client` -> web client package metadata and build artefacts
 
 Typical publish prerequisites:
