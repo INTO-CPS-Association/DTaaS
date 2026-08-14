@@ -39,10 +39,6 @@
   "testRegex": "/test/.*\\.test.tsx?$",
   "modulePaths": ["<rootDir>/src/"],
   "moduleNameMapper": {
-    "^@gitbeaker/rest$": "<rootDir>/node_modules/@gitbeaker/rest/dist/index.js",
-    "^model/(.*)$": "<rootDir>/src/model/$1",
-    "^react$": "<rootDir>/node_modules/react/index.js",
-    "^react-redux$": "<rootDir>/node_modules/react-redux/dist/cjs/index.js",
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts"

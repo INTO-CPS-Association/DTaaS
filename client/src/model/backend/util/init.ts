@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import type { Dispatch as ReduxDispatch } from '@reduxjs/toolkit';
 import { AssetTypes } from 'model/backend/gitlab/digitalTwinConfig/constants';
 import getAuthority from 'model/backend/util/env';
