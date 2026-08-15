@@ -9,13 +9,18 @@
   ],
   "scripts": {
     "build": "tsup && tsc --project tsconfig.json --emitDeclarationOnly && tsc-alias --project tsconfig.json",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
     "prep": "qlty fmt && yarn format && yarn syntax && qlty check --fix && yarn build && yarn test:all",
     "clean": "node --eval \"const { rmSync } = require('node:fs'); ['coverage', 'dist'].forEach((path) => rmSync(path, { recursive: true, force: true }))\"",
     "format": "prettier --write \"*.ts\" \"backend/**/*.ts\" \"store/**/*.ts\" \"test/**/*.{ts,tsx}\"",
     "syntax": "eslint . --fix",
     "test:all": "yarn test:unit",
-    "test:unit": "jest --config jest.config.json test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
+    "test:unit": "jest --config jest.config.json test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
+    "smoke:package": "yarn build && node scripts/smoke-package.mjs",
+    "validate:package": "yarn typecheck && yarn smoke:package"
   },
+  "// smoke:package": "Builds the package, then verifies that a clean consumer can install and import its tarball.",
+  "// validate:package": "Type-checks the source before running the package smoke test.",
   "prettier": {
     "singleQuote": true,
     "trailingComma": "all"
@@ -48,7 +53,7 @@
     }
   },
   "type": "module",
-  "//": "tsc-alias rewrites internal model/* aliases in emitted declarations to portable relative imports for npm consumers.",
+  "// tsc-alias": "The declaration build rewrites internal model/* aliases to portable relative imports for npm consumers.",
   "devDependencies": {
     "@eslint/eslintrc": "3.3.6",
     "@eslint/js": "10.0.1",
