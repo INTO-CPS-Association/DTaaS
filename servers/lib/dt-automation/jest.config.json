@@ -1,0 +1,36 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "jsx": "react-jsx",
+          "noUnusedLocals": false,
+          "types": ["jest", "node", "react"],
+          "esModuleInterop": true,
+          "baseUrl": ".",
+          "paths": {
+            "model/*": ["./*"],
+            "test/*": ["./test/*"]
+          }
+        }
+      }
+    ]
+  },
+  "collectCoverage": false,
+  "testTimeout": 15000,
+  "modulePathIgnorePatterns": ["dist"],
+  "testRegex": "/test/.*\\.test.tsx?$",
+  "moduleDirectories": ["node_modules"],
+  "modulePaths": ["<rootDir>"],
+  "moduleNameMapper": {
+    "^model/(.*)$": "<rootDir>/$1",
+    "^test/(.*)$": "<rootDir>/test/$1",
+    "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
+    "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts"
+  },
+  "maxWorkers": 3,
+  "setupFiles": ["<rootDir>/test/setupTests.ts"]
+}

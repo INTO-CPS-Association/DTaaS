@@ -1,0 +1,12 @@
+import '@testing-library/jest-dom';
+import 'test/__mocks__/global_mocks';
+
+// Polyfills for Node.js test environment
+import { TextEncoder, TextDecoder } from 'node:util';
+
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
