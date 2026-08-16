@@ -32,6 +32,10 @@ export function isImageFile(fileName: string): boolean {
   return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext));
 }
 
+function isLibraryFile(fileName: string): boolean {
+  return !isImageFile(fileName) && !fileName.endsWith('.fmu');
+}
+
 class FileHandler implements FileHandlerInterface {
   public name: string;
 
@@ -123,41 +127,56 @@ class FileHandler implements FileHandlerInterface {
     filePath: string,
     isPrivate: boolean,
   ): Promise<string[]> {
-    const projectToUse = isPrivate
-      ? this.backend.getProjectId()
-      : this.backend.getCommonProjectId();
-
     try {
-      const response = await this.backend.api.listRepositoryFiles(
-        projectToUse,
-        filePath,
-        undefined,
-        false,
+      const files = await this.listLibraryFiles(filePath, isPrivate);
+      const fileNames = await Promise.all(
+        files.map((file) =>
+          this.expandLibraryFileName(file, filePath, isPrivate),
+        ),
       );
-
-      const fileNames: string[] = [];
-
-      const nestedFilesPromises = response.map(async (file) => {
-        if (file.type === 'tree') {
-          const nestedFiles = await this.getLibraryFileNames(
-            `${filePath}/${file.name}`,
-            isPrivate,
-          );
-          return nestedFiles.map((nestedFile) => `${file.name}/${nestedFile}`);
-        }
-        if (!isImageFile(file.name) && !file.name.endsWith('.fmu')) {
-          return [file.name];
-        }
-        return [];
-      });
-
-      const allNestedFiles = await Promise.all(nestedFilesPromises);
-      allNestedFiles.forEach((files) => fileNames.push(...files));
-
-      return fileNames;
+      return fileNames.flat();
     } catch {
       return [];
     }
+  }
+
+  private async listLibraryFiles(
+    filePath: string,
+    isPrivate: boolean,
+  ): Promise<RepositoryTreeItem[]> {
+    const projectId = isPrivate
+      ? this.backend.getProjectId()
+      : this.backend.getCommonProjectId();
+    return this.backend.api.listRepositoryFiles(
+      projectId,
+      filePath,
+      undefined,
+      false,
+    );
+  }
+
+  private async expandLibraryFileName(
+    file: RepositoryTreeItem,
+    filePath: string,
+    isPrivate: boolean,
+  ): Promise<string[]> {
+    if (file.type === 'tree') {
+      return this.getNestedLibraryFileNames(file, filePath, isPrivate);
+    }
+
+    return isLibraryFile(file.name) ? [file.name] : [];
+  }
+
+  private async getNestedLibraryFileNames(
+    file: RepositoryTreeItem,
+    filePath: string,
+    isPrivate: boolean,
+  ): Promise<string[]> {
+    const nestedFiles = await this.getLibraryFileNames(
+      `${filePath}/${file.name}`,
+      isPrivate,
+    );
+    return nestedFiles.map((nestedFile) => `${file.name}/${nestedFile}`);
   }
 
   async getLibraryConfigFileNames(

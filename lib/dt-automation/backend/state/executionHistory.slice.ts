@@ -224,6 +224,20 @@ export const updateExecution =
     }
   };
 
+type StorageDeletionResult =
+  { success: true } | { success: false; error: unknown };
+
+async function deleteStoredExecution(
+  id: string,
+): Promise<StorageDeletionResult> {
+  try {
+    await storageService.delete(id);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
 export const removeExecution =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
@@ -238,48 +252,65 @@ export const removeExecution =
 
     dispatch(removeExecutionHistoryEntry(id));
 
-    try {
-      await storageService.delete(id);
-      dispatch(setError(null));
-      dispatch({
-        type: 'snackbar/showSnackbar',
-        payload: {
-          message: `Deleted entry ${formatTimestamp(execution.timestamp)} from ${formatName(execution.dtName)} execution history`,
-          severity: 'warning',
-          icon: 'ClearIcon',
-        },
-      });
-    } catch (error) {
-      if (execution) {
-        dispatch(addExecutionHistoryEntry(execution));
-      }
-      dispatch(setError(`Failed to remove execution: ${error}`));
+    const deletion = await deleteStoredExecution(id);
+    if (!deletion.success) {
+      dispatch(addExecutionHistoryEntry(execution));
+      dispatch(setError(`Failed to remove execution: ${deletion.error}`));
+      return;
     }
+
+    dispatch(setError(null));
+    dispatch({
+      type: 'snackbar/showSnackbar',
+      payload: {
+        message: `Deleted entry ${formatTimestamp(execution.timestamp)} from ${formatName(execution.dtName)} execution history`,
+        severity: 'warning',
+        icon: 'ClearIcon',
+      },
+    });
   };
 
-async function deleteDTEntries(entries: DTExecutionResult[]): Promise<void> {
-  await Promise.all(entries.map((entry) => storageService.delete(entry.id)));
+function getDeletableEntries(
+  entries: DTExecutionResult[],
+  dtName: string,
+): DTExecutionResult[] {
+  return entries.filter(
+    (entry) =>
+      entry.dtName === dtName && entry.status !== ExecutionStatus.RUNNING,
+  );
+}
+
+async function deleteDTEntries(
+  entries: DTExecutionResult[],
+): Promise<StorageDeletionResult> {
+  try {
+    await Promise.all(entries.map((entry) => storageService.delete(entry.id)));
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
 }
 
 export const clearExecutionHistoryForDT =
   (dtName: string): AppThunk =>
   async (dispatch, getState) => {
     const state = getState();
-    const entriesToDelete = state.executionHistory.entries.filter(
-      (entry) =>
-        entry.dtName === dtName && entry.status !== ExecutionStatus.RUNNING,
+    const entriesToDelete = getDeletableEntries(
+      state.executionHistory.entries,
+      dtName,
     );
 
-    try {
-      await deleteDTEntries(entriesToDelete);
-    } catch (error) {
-      dispatch(setError(`Failed to clear execution history: ${error}`));
+    const deletion = await deleteDTEntries(entriesToDelete);
+    if (!deletion.success) {
+      dispatch(
+        setError(`Failed to clear execution history: ${deletion.error}`),
+      );
       return;
     }
 
-    for (const entry of entriesToDelete) {
-      dispatch(removeExecutionHistoryEntry(entry.id));
-    }
+    entriesToDelete.forEach((entry) =>
+      dispatch(removeExecutionHistoryEntry(entry.id)),
+    );
     dispatch(setError(null));
     dispatch({
       type: 'snackbar/showSnackbar',
@@ -287,28 +318,40 @@ export const clearExecutionHistoryForDT =
     });
   };
 
+function getRunningExecutions(
+  entries: DTExecutionResult[],
+): DTExecutionResult[] {
+  return entries.filter((entry) => entry.status === ExecutionStatus.RUNNING);
+}
+
+function refreshRunningExecutions(
+  runningExecutions: DTExecutionResult[],
+  digitalTwins: Record<string, DigitalTwinData>,
+): Promise<DTExecutionResult[]> {
+  return runningExecutions.length === 0
+    ? Promise.resolve([])
+    : ExecutionStatusService.checkRunningExecutions(
+        runningExecutions,
+        digitalTwins,
+        storageService,
+      );
+}
+
 export const checkRunningExecutions =
   (): AppThunk => async (dispatch, getState) => {
     const state = getState();
-    const runningExecutions = state.executionHistory.entries.filter(
-      (entry: DTExecutionResult) => entry.status === ExecutionStatus.RUNNING,
+    const runningExecutions = getRunningExecutions(
+      state.executionHistory.entries,
     );
 
-    if (runningExecutions.length === 0) {
-      return;
-    }
-
     try {
-      const updatedExecutions =
-        await ExecutionStatusService.checkRunningExecutions(
-          runningExecutions,
-          state.digitalTwin.digitalTwin,
-          storageService,
-        );
-
-      for (const updatedExecution of updatedExecutions) {
-        dispatch(updateExecutionHistoryEntry(updatedExecution));
-      }
+      const updatedExecutions = await refreshRunningExecutions(
+        runningExecutions,
+        state.digitalTwin.digitalTwin,
+      );
+      updatedExecutions.forEach((execution) =>
+        dispatch(updateExecutionHistoryEntry(execution)),
+      );
     } catch (error) {
       dispatch(setError(`Failed to check execution status: ${error}`));
     }

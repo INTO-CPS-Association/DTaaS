@@ -144,19 +144,29 @@ function markPendingTasks(
   );
 }
 
+async function runTaskIfEnabled(
+  task: TimedTask,
+  taskIndex: number,
+  proxy: ReturnType<typeof wrapSetters>,
+  disabledNames: Set<string>,
+  updateTask: TaskUpdater,
+): Promise<void> {
+  if (disabledNames.has(task['Task Name'])) return;
+
+  await executeTask(taskIndex, task, proxy, updateTask);
+}
+
 async function runEnabledTasks(
   proxy: ReturnType<typeof wrapSetters>,
   disabledNames: Set<string>,
   updateTask: TaskUpdater,
 ): Promise<void> {
   const allTasks = getTasks();
-  for (let i = 0; i < allTasks.length; i += 1) {
+  for (const [taskIndex, task] of allTasks.entries()) {
     if (measurementState.shouldStopPipelines) {
       break;
     }
-    if (!disabledNames.has(allTasks[i]['Task Name'])) {
-      await executeTask(i, allTasks[i], proxy, updateTask);
-    }
+    await runTaskIfEnabled(task, taskIndex, proxy, disabledNames, updateTask);
   }
 }
 

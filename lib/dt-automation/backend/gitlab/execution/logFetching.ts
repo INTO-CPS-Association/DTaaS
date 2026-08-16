@@ -1,8 +1,53 @@
 import { JobLog } from 'model/backend/interfaces/execution';
 import cleanLog from 'model/backend/gitlab/cleanLog';
-import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
+import {
+  BackendInterface,
+  JobSummary,
+  ProjectId,
+} from 'model/backend/interfaces/backendInterfaces';
 
 const jobLog = (jobName: string, log: string): JobLog => ({ jobName, log });
+type JobLogSource = Partial<Pick<JobSummary, 'id' | 'name'>>;
+
+function getJobName(name: unknown): string {
+  return typeof name === 'string' ? name : 'Unknown';
+}
+
+function cleanJobTrace(
+  trace: unknown,
+  cleanLogFn: (log: string) => string,
+): string {
+  return typeof trace === 'string' ? cleanLogFn(trace) : '';
+}
+
+async function fetchJobTrace(
+  backend: BackendInterface,
+  projectId: ProjectId,
+  jobId: number,
+  cleanLogFn: (log: string) => string,
+): Promise<string> {
+  try {
+    return cleanJobTrace(
+      await backend.getJobTrace(projectId, jobId),
+      cleanLogFn,
+    );
+  } catch {
+    return 'Error fetching log content';
+  }
+}
+
+async function fetchJobLog(
+  backend: BackendInterface,
+  projectId: ProjectId,
+  job: JobLogSource,
+  cleanLogFn: (log: string) => string,
+): Promise<JobLog> {
+  const jobName = getJobName(job.name);
+  if (job.id === undefined) return jobLog('Unknown', 'Job ID not available');
+
+  const trace = await fetchJobTrace(backend, projectId, job.id, cleanLogFn);
+  return jobLog(jobName, trace);
+}
 
 /**
  * Fetches job logs from the backend for a specific pipeline
@@ -18,20 +63,10 @@ export const fetchJobLogs = async (
 ): Promise<JobLog[]> => {
   const projectId = backend.getProjectId();
   const jobs = await backend.getPipelineJobs(projectId, pipelineId);
-  const jobLogs = jobs.map(async (job) => {
-    if (job?.id === undefined) {
-      return jobLog('Unknown', 'Job ID not available');
-    }
-    const jobName = typeof job.name === 'string' ? job.name : 'Unknown';
-    try {
-      const rawLog = await backend.getJobTrace(projectId, job.id);
-      const log = typeof rawLog === 'string' ? cleanLogFn(rawLog) : '';
-      return jobLog(jobName, log);
-    } catch {
-      return jobLog(jobName, 'Error fetching log content');
-    }
-  });
-  return (await Promise.all(jobLogs)).reverse();
+  const jobLogs = await Promise.all(
+    jobs.map((job) => fetchJobLog(backend, projectId, job, cleanLogFn)),
+  );
+  return jobLogs.reverse();
 };
 
 /**
@@ -104,27 +139,22 @@ export const findJobLog = (
  * @param logs Array of job logs to analyze
  * @returns Number of jobs that appear to have succeeded
  */
-export const countSuccessfulJobs = (logs: JobLog[]): number => {
-  if (!logs) return 0;
+function logIncludesAny(log: string | undefined, terms: readonly string[]) {
+  const normalizedLog = log?.toLowerCase() ?? '';
+  return terms.some((term) => normalizedLog.includes(term));
+}
 
-  return logs.filter((log) => {
-    if (!log.log) return false;
-    const logContent = log.log.toLowerCase();
-    return logContent.includes('success') || logContent.includes('completed');
-  }).length;
-};
+function countJobsWithTerms(logs: JobLog[], terms: readonly string[]): number {
+  return (logs ?? []).filter((log) => logIncludesAny(log.log, terms)).length;
+}
+
+export const countSuccessfulJobs = (logs: JobLog[]): number =>
+  countJobsWithTerms(logs, ['success', 'completed']);
 
 /**
  * Counts the number of failed jobs based on log content
  * @param logs Array of job logs to analyze
  * @returns Number of jobs that appear to have failed
  */
-export const countFailedJobs = (logs: JobLog[]): number => {
-  if (!logs) return 0;
-
-  return logs.filter((log) => {
-    if (!log.log) return false;
-    const logContent = log.log.toLowerCase();
-    return logContent.includes('error') || logContent.includes('failed');
-  }).length;
-};
+export const countFailedJobs = (logs: JobLog[]): number =>
+  countJobsWithTerms(logs, ['error', 'failed']);

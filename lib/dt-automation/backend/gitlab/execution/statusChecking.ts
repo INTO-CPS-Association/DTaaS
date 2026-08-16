@@ -1,5 +1,35 @@
 import { ExecutionStatus } from 'model/backend/interfaces/execution';
 
+type StatusSeverity = 'success' | 'error' | 'warning' | 'info';
+
+const EXECUTION_STATUSES: Record<string, ExecutionStatus> = {
+  success: ExecutionStatus.COMPLETED,
+  failed: ExecutionStatus.FAILED,
+  running: ExecutionStatus.RUNNING,
+  pending: ExecutionStatus.RUNNING,
+  canceled: ExecutionStatus.CANCELED,
+  cancelled: ExecutionStatus.CANCELED,
+  skipped: ExecutionStatus.FAILED,
+};
+
+const STATUS_DESCRIPTIONS: Record<string, string> = {
+  success: 'Pipeline completed successfully',
+  failed: 'Pipeline failed',
+  running: 'Pipeline is running',
+  pending: 'Pipeline is pending',
+  canceled: 'Pipeline was canceled',
+  cancelled: 'Pipeline was canceled',
+  skipped: 'Pipeline was skipped',
+};
+
+const STATUS_SEVERITIES: Record<string, StatusSeverity> = {
+  success: 'success',
+  failed: 'error',
+  skipped: 'error',
+  canceled: 'warning',
+  cancelled: 'warning',
+};
+
 /**
  * Maps GitLab pipeline status to internal execution status
  * @param gitlabStatus Status string from GitLab API
@@ -7,31 +37,8 @@ import { ExecutionStatus } from 'model/backend/interfaces/execution';
  */
 export const mapGitlabStatusToExecutionStatus = (
   gitlabStatus: string,
-): ExecutionStatus => {
-  let status: ExecutionStatus;
-  switch (gitlabStatus.toLowerCase()) {
-    case 'success':
-      status = ExecutionStatus.COMPLETED;
-      break;
-    case 'failed':
-      status = ExecutionStatus.FAILED;
-      break;
-    case 'running':
-    case 'pending':
-      status = ExecutionStatus.RUNNING;
-      break;
-    case 'canceled':
-    case 'cancelled':
-      status = ExecutionStatus.CANCELED;
-      break;
-    case 'skipped':
-      status = ExecutionStatus.FAILED; // Treat skipped as failed
-      break;
-    default:
-      status = ExecutionStatus.RUNNING; // Default to running for unknown statuses
-  }
-  return status;
-};
+): ExecutionStatus =>
+  EXECUTION_STATUSES[gitlabStatus.toLowerCase()] ?? ExecutionStatus.RUNNING;
 
 /**
  * Determines if a GitLab status indicates success
@@ -86,44 +93,13 @@ export const isFinishedStatus = (status: string): boolean =>
  * @param status GitLab pipeline status
  * @returns Human-readable status description
  */
-export const getStatusDescription = (status: string): string => {
-  let description: string;
-  switch (status.toLowerCase()) {
-    case 'success':
-      description = 'Pipeline completed successfully';
-      break;
-    case 'failed':
-      description = 'Pipeline failed';
-      break;
-    case 'running':
-      description = 'Pipeline is running';
-      break;
-    case 'pending':
-      description = 'Pipeline is pending';
-      break;
-    case 'canceled':
-    case 'cancelled':
-      description = 'Pipeline was canceled';
-      break;
-    case 'skipped':
-      description = 'Pipeline was skipped';
-      break;
-    default:
-      description = `Pipeline status: ${status}`;
-  }
-  return description;
-};
+export const getStatusDescription = (status: string): string =>
+  STATUS_DESCRIPTIONS[status.toLowerCase()] ?? `Pipeline status: ${status}`;
 
 /**
  * Determines the severity level of a status for UI display
  * @param status GitLab pipeline status
  * @returns Severity level ('success', 'error', 'warning', 'info')
  */
-export const getStatusSeverity = (
-  status: string,
-): 'success' | 'error' | 'warning' | 'info' => {
-  if (isSuccessStatus(status)) return 'success';
-  if (isFailureStatus(status)) return 'error';
-  if (isCanceledStatus(status)) return 'warning';
-  return 'info'; // For running, pending, etc.
-};
+export const getStatusSeverity = (status: string): StatusSeverity =>
+  STATUS_SEVERITIES[status.toLowerCase()] ?? 'info';

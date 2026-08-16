@@ -354,6 +354,62 @@ export function createTrialFromError(
   };
 }
 
+function resetTrialState(): void {
+  measurementState.executionResults = [];
+  measurementState.activePipelines = [];
+  measurementState.currentTrialMinPipelineId = null;
+  measurementState.currentTrialExecutionIndex = 0;
+}
+
+function wasStoppedByUser(caughtError: unknown): boolean {
+  const { message } = normalizeError(caughtError);
+  return (
+    measurementState.shouldStopPipelines || message.includes('stopped by user')
+  );
+}
+
+async function runStaggeredExecution(
+  execution: Execution,
+  index: number,
+): Promise<ExecutionResult> {
+  await delay(index * BETWEEN_TRIAL_DELAY);
+  if (measurementState.shouldStopPipelines) {
+    throw new Error('Measurement stopped by user');
+  }
+
+  return runDigitalTwin(execution.dtName, execution.config);
+}
+
+async function runTrialExecutions(
+  executions: Execution[],
+): Promise<ExecutionResult[]> {
+  return Promise.all(
+    executions.map((execution, index) =>
+      runStaggeredExecution(execution, index),
+    ),
+  );
+}
+
+async function runTrial(executions: Execution[]): Promise<Trial> {
+  resetTrialState();
+  const trialStart = new Date();
+
+  try {
+    const results = await runTrialExecutions(executions);
+    return createTrialFromExecution(trialStart, results);
+  } catch (caughtError) {
+    return createTrialFromError(
+      trialStart,
+      caughtError,
+      wasStoppedByUser(caughtError),
+    );
+  }
+}
+
+async function delayBeforeTrial(trialNumber: number): Promise<void> {
+  if (trialNumber > 0) await delay(BETWEEN_TRIAL_DELAY);
+}
+
 export async function runTrials(
   executions: Execution[],
   targetTrials: number,
@@ -369,36 +425,8 @@ export async function runTrials(
     trialNumber += 1
   ) {
     if (measurementState.shouldStopPipelines) break;
-    if (trialNumber > 0) await delay(BETWEEN_TRIAL_DELAY);
-
-    measurementState.executionResults = [];
-    measurementState.activePipelines = [];
-    measurementState.currentTrialMinPipelineId = null;
-    measurementState.currentTrialExecutionIndex = 0;
-    const trialStart = new Date();
-
-    try {
-      const promises = executions.map(({ dtName, config }, i) =>
-        delay(i * BETWEEN_TRIAL_DELAY).then(() => {
-          if (measurementState.shouldStopPipelines) {
-            throw new Error('Measurement stopped by user');
-          }
-          return runDigitalTwin(dtName, config);
-        }),
-      );
-      const results = await Promise.all(promises);
-      trials.push(createTrialFromExecution(trialStart, results));
-    } catch (caughtError) {
-      const errorMessage =
-        caughtError instanceof Error
-          ? caughtError.message
-          : String(caughtError);
-      const wasStopped =
-        measurementState.shouldStopPipelines ||
-        errorMessage.includes('stopped by user');
-      trials.push(createTrialFromError(trialStart, caughtError, wasStopped));
-    }
-
+    await delayBeforeTrial(trialNumber);
+    trials.push(await runTrial(executions));
     measurementState.executionResults = [];
     updateTrials([...trials]);
   }

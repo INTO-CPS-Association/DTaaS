@@ -1,4 +1,7 @@
-import { getDTSubfolders } from 'model/backend/util/digitalTwinUtils';
+import {
+  getDTSubfolders,
+  getUpdatedLibraryFile,
+} from 'model/backend/util/digitalTwinUtils';
 import { getDTDirectory } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
 
 const mockApi = {
@@ -38,5 +41,43 @@ describe('DigitalTwinUtil', () => {
       projectId,
       getDTDirectory(), // recursive is false by default
     );
+  });
+
+  it('finds only a modified library file with the requested identity', () => {
+    const libraryFiles = [
+      {
+        fileName: 'settings.json',
+        assetPath: 'assets/example',
+        fileContent: '{}',
+        isNew: false,
+        isModified: true,
+        isPrivate: true,
+      },
+      {
+        fileName: 'settings.json',
+        assetPath: 'assets/example',
+        fileContent: '{}',
+        isNew: false,
+        isModified: false,
+        isPrivate: false,
+      },
+    ];
+
+    expect(
+      getUpdatedLibraryFile(
+        'settings.json',
+        'assets/example',
+        true,
+        libraryFiles,
+      ),
+    ).toBe(libraryFiles[0]);
+    expect(
+      getUpdatedLibraryFile(
+        'settings.json',
+        'assets/example',
+        false,
+        libraryFiles,
+      ),
+    ).toBeNull();
   });
 });

@@ -49,20 +49,37 @@ export function logError(
   digitalTwin.lastExecutionStatus = ExecutionStatus.ERROR;
 }
 
+function getLibraryFileKey(
+  fileName: string,
+  assetPath: string,
+  isPrivate: boolean,
+): string {
+  return JSON.stringify([fileName, assetPath, isPrivate]);
+}
+
+function isModifiedLibraryFile(
+  libraryFile: LibraryConfigFile,
+  libraryFileKey: string,
+): boolean {
+  const currentKey = getLibraryFileKey(
+    libraryFile.fileName,
+    libraryFile.assetPath,
+    libraryFile.isPrivate,
+  );
+  return libraryFile.isModified && currentKey === libraryFileKey;
+}
+
 export function getUpdatedLibraryFile(
   fileName: string,
   assetPath: string,
   isPrivate: boolean,
   libraryFiles: LibraryConfigFile[],
 ): LibraryConfigFile | null {
+  const libraryFileKey = getLibraryFileKey(fileName, assetPath, isPrivate);
   return (
-    libraryFiles.find(
-      (libFile) =>
-        libFile.fileName === fileName &&
-        libFile.assetPath === assetPath &&
-        libFile.isPrivate === isPrivate &&
-        libFile.isModified,
-    ) || null
+    libraryFiles.find((libraryFile) =>
+      isModifiedLibraryFile(libraryFile, libraryFileKey),
+    ) ?? null
   );
 }
 

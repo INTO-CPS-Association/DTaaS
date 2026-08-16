@@ -45,6 +45,25 @@ const upsertLibraryFile = (
   }
 };
 
+const isValidLibraryFile = ({
+  fileName,
+  assetPath,
+}: LibraryConfigFile): boolean => Boolean(fileName && assetPath);
+
+const shouldInitializeLibraryFile = (
+  state: LibraryConfigFile[],
+  file: LibraryConfigFile,
+): boolean => {
+  const { fileName, assetPath, isNew, isPrivate } = file;
+  const index = findLibraryFileIndex(state, {
+    fileName,
+    assetPath,
+    isNew,
+    isPrivate,
+  });
+  return isValidLibraryFile(file) && index < 0;
+};
+
 const libraryFilesSlice = createSlice({
   name: 'libraryConfigFiles',
   initialState,
@@ -89,15 +108,7 @@ const libraryFilesSlice = createSlice({
       state,
       action: PayloadAction<LibraryConfigFile>,
     ) => {
-      const { fileName, assetPath, isNew, isPrivate } = action.payload;
-      if (!fileName || !assetPath) return;
-      const index = findLibraryFileIndex(state, {
-        fileName,
-        assetPath,
-        isNew,
-        isPrivate,
-      });
-      if (index < 0) {
+      if (shouldInitializeLibraryFile(state, action.payload)) {
         state.push({ ...action.payload, isModified: false });
       }
     },

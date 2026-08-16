@@ -70,7 +70,12 @@ jobs:
             "file:$GITHUB_WORKSPACE/lib/dt-automation/$PACKAGE_TGZ" \
             react@19.2.0 \
             react-redux@9.2.0
-          PACKAGE_NAME="$PACKAGE_NAME" node -e "import(process.env.PACKAGE_NAME).then(({ formatName }) => { if (formatName('digital-twin') !== 'Digital twin') throw new Error('Package smoke test failed'); })"
+          PACKAGE_NAME="$PACKAGE_NAME" node --input-type=module <<'EOF'
+          const { formatName } = await import(process.env.PACKAGE_NAME);
+          if (formatName('digital-twin') !== 'Digital twin') {
+            throw new Error('Package smoke test failed');
+          }
+          EOF
 
   publish-package-github:
     permissions:

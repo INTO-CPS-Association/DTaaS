@@ -3,6 +3,7 @@ import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
 } from 'model/backend/gitlab/digitalTwinConfig/constants';
+import { ProjectId } from 'model/backend/interfaces/backendInterfaces';
 
 /**
  * Creates a delay promise for polling operations
@@ -85,6 +86,39 @@ export interface StopPipelineResult {
   error?: Error;
 }
 
+function hasPipelineToStop(
+  digitalTwin: DigitalTwin,
+  executionId?: string,
+): boolean {
+  return Boolean(executionId || digitalTwin.pipelineId);
+}
+
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error('Unknown error');
+}
+
+function stopPipeline(
+  digitalTwin: DigitalTwin,
+  projectId: ProjectId,
+  pipelineName: 'parentPipeline' | 'childPipeline',
+  executionId?: string,
+): Promise<void> {
+  return executionId === undefined
+    ? digitalTwin.stop(projectId, pipelineName)
+    : digitalTwin.stop(projectId, pipelineName, executionId);
+}
+
+async function stopAvailablePipelines(
+  digitalTwin: DigitalTwin,
+  executionId?: string,
+): Promise<void> {
+  const projectId = digitalTwin.backend.getProjectId();
+  if (!projectId || !hasPipelineToStop(digitalTwin, executionId)) return;
+
+  await stopPipeline(digitalTwin, projectId, 'parentPipeline', executionId);
+  await stopPipeline(digitalTwin, projectId, 'childPipeline', executionId);
+}
+
 /**
  * Stops both parent and child pipelines for a digital twin
  * @param digitalTwin Digital twin instance
@@ -96,21 +130,9 @@ export const stopPipelines = async (
   executionId?: string,
 ): Promise<StopPipelineResult> => {
   try {
-    const projectId = digitalTwin.backend.getProjectId();
-    if (projectId) {
-      if (executionId) {
-        await digitalTwin.stop(projectId, 'parentPipeline', executionId);
-        await digitalTwin.stop(projectId, 'childPipeline', executionId);
-      } else if (digitalTwin.pipelineId) {
-        await digitalTwin.stop(projectId, 'parentPipeline');
-        await digitalTwin.stop(projectId, 'childPipeline');
-      }
-    }
+    await stopAvailablePipelines(digitalTwin, executionId);
     return { success: true };
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error : new Error('Unknown error'),
-    };
+    return { success: false, error: toError(error) };
   }
 };

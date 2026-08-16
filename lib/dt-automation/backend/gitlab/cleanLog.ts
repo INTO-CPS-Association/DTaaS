@@ -7,21 +7,21 @@ const COMPLETE_SECTION_LINE = /^section_(start|end):[0-9]+:[a-zA-Z0-9_-]+$/;
 const SECTION_START = /section_start:[0-9]+:[a-zA-Z0-9_-]+/g;
 const SECTION_END = /section_end:[0-9]+:[a-zA-Z0-9_-]+/g;
 
-const cleanLog = (log: string): string => {
-  if (!log) return '';
+function removeAnsiSequences(log: string): string {
+  return log.replace(ANSI_COLOR_ESCAPE, '').replace(ANSI_ESCAPE_SEQUENCES, '');
+}
 
-  let logCache = log.replace(ANSI_COLOR_ESCAPE, '');
+function cleanLogLine(line: string): string {
+  return COMPLETE_SECTION_LINE.test(line)
+    ? ''
+    : line.replace(SECTION_START, '').replace(SECTION_END, '').trim();
+}
 
-  logCache = logCache.replace(ANSI_ESCAPE_SEQUENCES, '');
-
-  const lines = logCache.split('\n');
-  const cleanedLines = lines.map((line) => {
-    if (line.match(COMPLETE_SECTION_LINE)) {
-      return '';
-    }
-    return line.replace(SECTION_START, '').replace(SECTION_END, '').trim();
-  });
-  return cleanedLines.filter((line) => line.length > 0).join('\n');
-};
+const cleanLog = (log: string): string =>
+  removeAnsiSequences(log)
+    .split('\n')
+    .map(cleanLogLine)
+    .filter((line) => line.length > 0)
+    .join('\n');
 
 export default cleanLog;

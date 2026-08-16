@@ -2,6 +2,36 @@ import DigitalTwin from 'model/backend/digitalTwin';
 import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 import { initDigitalTwin } from 'model/backend/util/init';
 
+function copyIfPresent<Property extends keyof DigitalTwin>(
+  digitalTwin: DigitalTwin,
+  property: Property,
+  value: DigitalTwin[Property] | undefined,
+): void {
+  if (value) digitalTwin[property] = value;
+}
+
+function applyDigitalTwinData(
+  digitalTwin: DigitalTwin,
+  digitalTwinData: DigitalTwinData,
+): void {
+  copyIfPresent(digitalTwin, 'pipelineId', digitalTwinData.pipelineId);
+  copyIfPresent(
+    digitalTwin,
+    'currentExecutionId',
+    digitalTwinData.currentExecutionId,
+  );
+  copyIfPresent(
+    digitalTwin,
+    'lastExecutionStatus',
+    digitalTwinData.lastExecutionStatus,
+  );
+
+  digitalTwin.jobLogs = digitalTwinData.jobLogs ?? [];
+  digitalTwin.pipelineLoading = digitalTwinData.pipelineLoading;
+  digitalTwin.pipelineCompleted = digitalTwinData.pipelineCompleted;
+  digitalTwin.description = digitalTwinData.description;
+}
+
 /**
  * Creates a DigitalTwin instance from DigitalTwinData
  * This is the way to bridge Redux state and business logic
@@ -19,21 +49,7 @@ export const createDigitalTwinFromData = async (
     throw new Error(`Failed to initialize DigitalTwin for asset: ${assetName}`);
   }
 
-  if (digitalTwinData.pipelineId) {
-    digitalTwinInstance.pipelineId = digitalTwinData.pipelineId;
-  }
-  if (digitalTwinData.currentExecutionId) {
-    digitalTwinInstance.currentExecutionId = digitalTwinData.currentExecutionId;
-  }
-  if (digitalTwinData.lastExecutionStatus) {
-    digitalTwinInstance.lastExecutionStatus =
-      digitalTwinData.lastExecutionStatus;
-  }
-
-  digitalTwinInstance.jobLogs = digitalTwinData.jobLogs || [];
-  digitalTwinInstance.pipelineLoading = digitalTwinData.pipelineLoading;
-  digitalTwinInstance.pipelineCompleted = digitalTwinData.pipelineCompleted;
-  digitalTwinInstance.description = digitalTwinData.description;
+  applyDigitalTwinData(digitalTwinInstance, digitalTwinData);
 
   return digitalTwinInstance;
 };

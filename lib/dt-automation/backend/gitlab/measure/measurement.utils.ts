@@ -234,27 +234,64 @@ function mergeRunningOnly(
   ];
 }
 
+function formatActiveExecution(
+  activePipeline: ActivePipeline | undefined,
+  executionIndex: number,
+): ExecutionResult | undefined {
+  return activePipeline
+    ? formatPipelineExecution(activePipeline, executionIndex)
+    : undefined;
+}
+
+function createPendingExecution(
+  execution: Execution,
+  executionIndex: number,
+  defaultConfig: Configuration,
+): ExecutionResult {
+  return {
+    dtName: execution.dtName,
+    pipelineId: null,
+    status: '—',
+    config: { ...defaultConfig, ...execution.config },
+    executionIndex,
+  };
+}
+
+function resolveExecutionStatus(
+  execution: Execution,
+  executionIndex: number,
+  activePipelines: ActivePipeline[],
+  completedResults: ExecutionResult[],
+  defaultConfig: Configuration,
+): ExecutionResult {
+  const completed = completedResults.find(
+    (result) => result.executionIndex === executionIndex,
+  );
+  const active = activePipelines.find(
+    (pipeline) => pipeline.executionIndex === executionIndex,
+  );
+  return (
+    completed ??
+    formatActiveExecution(active, executionIndex) ??
+    createPendingExecution(execution, executionIndex, defaultConfig)
+  );
+}
+
 export function mergeExecutionStatus(
   executions: Execution[],
   activePipelines: ActivePipeline[],
   completedResults: ExecutionResult[],
   defaultConfig: Configuration,
 ): ExecutionResult[] {
-  if (executions.length === 0) {
-    return mergeRunningOnly(activePipelines, completedResults);
-  }
-
-  return executions.map((expected, i) => {
-    const completed = completedResults.find((r) => r.executionIndex === i);
-    if (completed) return completed;
-    const active = activePipelines.find((p) => p.executionIndex === i);
-    if (active) return formatPipelineExecution(active, i);
-    return {
-      dtName: expected.dtName,
-      pipelineId: null,
-      status: '—',
-      config: { ...defaultConfig, ...expected.config },
-      executionIndex: i,
-    };
-  });
+  return executions.length === 0
+    ? mergeRunningOnly(activePipelines, completedResults)
+    : executions.map((execution, index) =>
+        resolveExecutionStatus(
+          execution,
+          index,
+          activePipelines,
+          completedResults,
+          defaultConfig,
+        ),
+      );
 }
