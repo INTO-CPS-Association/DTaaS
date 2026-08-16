@@ -5,10 +5,12 @@ name: DT automation npm package
     paths:
       - 'servers/lib/dt-automation/**'
       - '.github/workflows/dt-automation.yml'
+      - '.github/workflows/publish-npm.yml'
   pull_request:
     paths:
       - 'servers/lib/dt-automation/**'
       - '.github/workflows/dt-automation.yml'
+      - '.github/workflows/publish-npm.yml'
   workflow_dispatch:
 
 concurrency:
@@ -69,3 +71,37 @@ jobs:
             react@19.2.0 \
             react-redux@9.2.0
           PACKAGE_NAME="$PACKAGE_NAME" node -e "import(process.env.PACKAGE_NAME).then(({ formatName }) => { if (formatName('digital-twin') !== 'Digital twin') throw new Error('Package smoke test failed'); })"
+
+  publish-package-github:
+    permissions:
+      contents: read  # Required for checking out the code
+      packages: write  # Required for GitHub Packages
+    if: |
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/feature/distributed-demo'
+    name: Publish to GitHub Packages
+    needs: validate
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: '24'
+      registry-url: 'https://npm.pkg.github.com/'
+      directory: servers/lib/dt-automation
+    secrets:
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-package-npm:
+    permissions:
+      contents: read  # Required for checking out the code
+      packages: write  # Required by the publish-npm reusable workflow
+    if: |
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/feature/distributed-demo'
+    name: Publish to npm
+    needs: validate
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      node-version: '24'
+      registry-url: 'https://registry.npmjs.org'
+      directory: servers/lib/dt-automation
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
