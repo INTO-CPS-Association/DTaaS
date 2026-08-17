@@ -423,9 +423,7 @@ async function runTrialIteration(
 }
 
 function shouldRunTrial(trialNumber: number, targetTrials: number): boolean {
-  return (
-    trialNumber < targetTrials && !measurementState.shouldStopPipelines
-  );
+  return trialNumber < targetTrials && !measurementState.shouldStopPipelines;
 }
 
 async function runTrialLoop(

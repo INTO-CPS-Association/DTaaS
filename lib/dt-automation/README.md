@@ -8,9 +8,9 @@ Version `0.1.x` is a DTaaS-specific integration package. Its API reflects the
 current client model and is not yet intended as a framework-independent model
 library.
 
-The package is located under `servers/execution` to establish a shared home for
-DT automation logic. It currently targets browser integrations and is not yet
-safe to import in server-side runtimes.
+The package source lives under `lib/dt-automation` and is published as
+`@into-cps-association/dt-automation`. It currently targets browser
+integrations and is not yet safe to import in server-side runtimes.
 
 ## Install
 

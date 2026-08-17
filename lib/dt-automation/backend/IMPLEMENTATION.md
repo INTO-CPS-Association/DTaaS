@@ -35,7 +35,7 @@ await gitlabInstance.init();
 
 This will create both the GitlabInstance and the GitlabAPI based on session
 storage (username and access token) as well as the OAuth2 authority from the
-configuration files from the `config` folder. If the `triggerToken` does not
+consuming application's environment store. If the `triggerToken` does not
 exist, it will throw a suitable error.
 
 ### Backend Class
@@ -77,16 +77,18 @@ is not provided upon execution of a pipeline, it will also throw an error.
 
 ## Configuration Requirements
 
-### Environment Variables
+### Runtime Configuration
 
-You must have `REACT_APP_AUTH_AUTHORITY` defined in config. This specifies where
-the Gitlab instance is hosted. The remaining config must also be valid to fill
-out the session storage items of `access_token` and `username` upon signing in,
-used by the backend.
+The consuming application must register an environment store with
+`setEnvironmentStore`. Its `environment.AUTH_AUTHORITY` value specifies where
+the GitLab instance is hosted. The application must also populate the
+`access_token` and `username` session-storage entries upon signing in; the
+backend uses those entries for authenticated requests.
 
-Example:
+An application may optionally expose the initial authority before loading the
+package:
 
-`REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com`
+`globalThis.env.REACT_APP_AUTH_AUTHORITY = 'https://gitlab.com'`
 
 ### External Service Setup
 

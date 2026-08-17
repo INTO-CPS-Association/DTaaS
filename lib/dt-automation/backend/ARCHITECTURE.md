@@ -200,7 +200,7 @@ Below is a detailed guide:
 1. Modify the backend builder to use the new backend.
 1. Add both unit and integration tests for these files.
 1. Create and place new backends inside
-   `./dt-automation/backend/[YOUR BACKEND'S NAME]` folder.
+   `dt-automation/backend/[YOUR BACKEND'S NAME]` folder.
 1. Name as [`backend name`] and [`backend name`]API respectively.
 
 ### Extending Existing Functionality
