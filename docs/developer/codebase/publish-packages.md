@@ -8,7 +8,6 @@ package channels.
 - npm packages (public): `@into-cps-association/*`
 - Docker images: GitHub Container Registry and Docker Hub
 - Python packages: DTaaS CLI and platform-services CLI release flows
-S
 
 ## JavaScript/TypeScript Packages
 
@@ -16,7 +15,8 @@ Notable package roots:
 
 - `servers/lib` -> `@into-cps-association/libms`
 - `servers/execution/runner` -> `@into-cps-association/runner`
-- `servers/execution/dt-automation` -> `@into-cps-association/dt-automation`
+- `servers/logger` -> `@into-cps-association/logger-ms`
+- `lib/dt-automation` -> `@into-cps-association/dt-automation`
 - `client` -> web client package metadata and build artefacts
 
 Typical publish prerequisites:
@@ -44,8 +44,9 @@ npm set registry http://localhost:4873/
 
 ## Docker Artifacts
 
-The repository includes dedicated Docker build configurations under `docker/`
-and deployment-level compose definitions under `deploy/`.
+The repository includes dedicated Docker build configurations under `developer/`,
+`client/`, `servers/lib/`, `servers/logger/`, and `deploy/dtaas/docker/`.
+Deployment-level compose definitions are under `deploy/`.
 
 When changing runtime dependencies, validate image builds and scenario startup
 paths before release tagging.

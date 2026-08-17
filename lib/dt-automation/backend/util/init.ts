@@ -53,7 +53,7 @@ async function loadDigitalTwins() {
   return Promise.all(
     subfolders.map(async (asset) => {
       const digitalTwin = new DigitalTwin(asset.name, dtInstance);
-      await digitalTwin.getDescription();
+      await digitalTwin.initialize();
       return { assetName: asset.name, digitalTwin };
     }),
   );
@@ -98,7 +98,12 @@ export async function initDigitalTwin(
 ): Promise<DigitalTwin> {
   try {
     const digitalTwinGitlabInstance = await createInitializedInstance();
-    return new DigitalTwin(newDigitalTwinName, digitalTwinGitlabInstance);
+    const digitalTwin = new DigitalTwin(
+      newDigitalTwinName,
+      digitalTwinGitlabInstance,
+    );
+    await digitalTwin.initialize();
+    return digitalTwin;
   } catch (error) {
     throw new Error(
       `Failed to initialize DigitalTwin for ${newDigitalTwinName}`,

@@ -45,8 +45,8 @@ example illustrates how backends are connected to key objects:
 The Instance is responsible for linking the DTaaS application to the selected backend.
 This entails keeping track of logs, project ids and keeping associated backend API
 instances for further operations as described below. The interface is described
-in `./backendInterfaces.ts` with a concrete implementation being
-`./instance.ts`. It is
+in `./interfaces/backendInterfaces.ts` with a concrete implementation being
+`./gitlab/instance.ts`. It is
 either created on an instance basis or passed from instance to instance when
 creating other instances. These then use the enriched project information to
 execute API commands, as demonstrated above. Detailed Logs are kept for any
@@ -56,8 +56,8 @@ Digital Twin executions, describing the success and job processing.
 
 The Backend communicates directly with the backend server for pipeline execution,
 log retrieval, and or file management. The interface is described in
-`./backendInterfaces.ts` with a concrete implementation being
-`./backend.ts`. It is
+`./interfaces/backendInterfaces.ts` with a concrete implementation being
+`./gitlab/backend.ts`. It is
 created before the Instance to be injected and may be initialised there. After
 this, it may be called through the Instance directly (e.g.
 `myInstance.api.cancelPipeline(...)`). It may contain a client field from a
@@ -199,12 +199,12 @@ Below is a detailed guide:
 1. Implement Backend (Instance) and BackendAPI (Backend) interfaces in 2 files
 1. Modify the backend builder to use the new backend.
 1. Add both unit and integration tests for these files.
-1. Create and place new backends inside `src/model/backend/[YOUR BACKEND'S NAME]`
-   folder.
+1. Create and place new backends inside
+   `./dt-automation/backend/[YOUR BACKEND'S NAME]` folder.
 1. Name as [`backend name`] and [`backend name`]API respectively.
 
 ### Extending Existing Functionality
 
-To extend general backend capabilities, update the `./UtiliyInterfaces.ts` file.
-Otherwise, just implement it on a class level. Consider SOLID principles in this
-process.
+To extend general backend capabilities, update the
+`./interfaces/sharedInterfaces.ts` file. Otherwise, just implement it on a
+class level. Consider SOLID principles in this process.

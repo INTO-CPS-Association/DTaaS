@@ -15,8 +15,9 @@ and `BackendAPI` interfaces.
 
 This class implements the Backend interface. Its primary responsibility is to
 create the backend API instance, and to obtain the private and common project IDs
-from the username and the group name defined in [constants.ts](./constants.ts)
-as well as in the settings.
+from the username and the group name defined in
+[constants.ts](./gitlab/digitalTwinConfig/constants.ts) as well as in the
+settings.
 After this, it keeps track of execution log entries and gives high-level access
 to pipeline information and execution, job traces and ids for further processing
 by the Backend API, which has to be Gitlab. It is only dependent on its backend
@@ -89,10 +90,10 @@ Example:
 
 ### External Service Setup
 
-Please follow [config guide](../docs/admin/client/config.md) for setting up the
-configuration. You may also wish to change certain constants, like
-`COMMON_LIBRARY_PROJECT_NAME` and `DT_DIRECTORY` in the [constants](./constants.ts)
-file or in the settings tab.
+You may also wish to change certain constants, like
+`COMMON_LIBRARY_PROJECT_NAME` and `DT_DIRECTORY` in the
+[constants](./gitlab/digitalTwinConfig/constants.ts) file or in the settings
+tab.
 
 <!--
 Maybe something about setting up the folder structure.

@@ -79,9 +79,6 @@ threshold = 4
 [smells.function_complexity]
 threshold = 5
 
-[plugins.definitions.prettier.drivers.format]
-max_batch = 16
-
 [[source]]
 name = "default"
 default = true

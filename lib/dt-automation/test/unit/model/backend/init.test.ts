@@ -50,7 +50,7 @@ import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 describe('fetchAssets', () => {
   const dispatch = jest.fn();
   const setError = jest.fn();
-  const mockDTGetDescription = jest.fn().mockResolvedValue('Mock description');
+  const mockDTInitialize = jest.fn().mockResolvedValue(undefined);
   const mockLibraryGetDescription = jest
     .fn()
     .mockResolvedValue('Mock library description');
@@ -65,9 +65,7 @@ describe('fetchAssets', () => {
       { name: 'asset1', path: 'path1', type: 'models', isPrivate: false },
       { name: 'asset2', path: 'path2', type: 'models', isPrivate: false },
     ]);
-    DigitalTwin.mockImplementation(() => ({
-      getDescription: mockDTGetDescription,
-    }));
+    DigitalTwin.mockImplementation(() => ({ initialize: mockDTInitialize }));
     setDigitalTwin.mockImplementation(() => {});
     mockLibraryAsset.mockImplementation(() => ({
       getDescription: mockLibraryGetDescription,
@@ -114,7 +112,7 @@ describe('fetchAssets', () => {
 
     expect(createGitlabInstance).toHaveBeenCalledTimes(3);
     expect(mockBackendInstance.init).toHaveBeenCalledTimes(3);
-    expect(mockDTGetDescription).toHaveBeenCalledTimes(2);
+    expect(mockDTInitialize).toHaveBeenCalledTimes(2);
     expect(dispatch).toHaveBeenCalledTimes(4);
 
     const { calls } = setDigitalTwin.mock;

@@ -18,7 +18,7 @@ const assetsSlice = createSlice({
       state.items = action.payload;
     },
     setAsset: (state, action: PayloadAction<LibraryAsset>) => {
-      const existingAsset = state.items.find(
+      const existingAsset = state.items.some(
         (asset) =>
           asset.path === action.payload.path &&
           asset.isPrivate === action.payload.isPrivate,
