@@ -238,36 +238,53 @@ async function deleteStoredExecution(
   }
 }
 
+function findExecutionById(
+  entries: DTExecutionResult[],
+  id: string,
+): DTExecutionResult | undefined {
+  return entries.find((entry) => entry.id === id);
+}
+
+type AppDispatch = Parameters<AppThunk>[0];
+
+async function removeExecutionAndNotify(
+  dispatch: AppDispatch,
+  id: string,
+  execution: DTExecutionResult,
+): Promise<void> {
+  dispatch(removeExecutionHistoryEntry(id));
+
+  const deletion = await deleteStoredExecution(id);
+  if (!deletion.success) {
+    dispatch(addExecutionHistoryEntry(execution));
+    dispatch(setError(`Failed to remove execution: ${deletion.error}`));
+    return;
+  }
+
+  dispatch(setError(null));
+  dispatch({
+    type: 'snackbar/showSnackbar',
+    payload: {
+      message: `Deleted entry ${formatTimestamp(execution.timestamp)} from ${formatName(execution.dtName)} execution history`,
+      severity: 'warning',
+      icon: 'ClearIcon',
+    },
+  });
+}
+
 export const removeExecution =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
-    const state = getState();
-    const execution = state.executionHistory.entries.find(
-      (entry: DTExecutionResult) => entry.id === id,
+    const execution = findExecutionById(
+      getState().executionHistory.entries,
+      id,
     );
 
     if (!execution) {
       return;
     }
 
-    dispatch(removeExecutionHistoryEntry(id));
-
-    const deletion = await deleteStoredExecution(id);
-    if (!deletion.success) {
-      dispatch(addExecutionHistoryEntry(execution));
-      dispatch(setError(`Failed to remove execution: ${deletion.error}`));
-      return;
-    }
-
-    dispatch(setError(null));
-    dispatch({
-      type: 'snackbar/showSnackbar',
-      payload: {
-        message: `Deleted entry ${formatTimestamp(execution.timestamp)} from ${formatName(execution.dtName)} execution history`,
-        severity: 'warning',
-        icon: 'ClearIcon',
-      },
-    });
+    await removeExecutionAndNotify(dispatch, id, execution);
   };
 
 function getDeletableEntries(

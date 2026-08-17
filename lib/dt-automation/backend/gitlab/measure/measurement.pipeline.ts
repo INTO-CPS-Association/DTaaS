@@ -410,6 +410,34 @@ async function delayBeforeTrial(trialNumber: number): Promise<void> {
   if (trialNumber > 0) await delay(BETWEEN_TRIAL_DELAY);
 }
 
+async function runTrialIteration(
+  executions: Execution[],
+  trialNumber: number,
+  trials: Trial[],
+  updateTrials: (trials: Trial[]) => void,
+): Promise<void> {
+  await delayBeforeTrial(trialNumber);
+  trials.push(await runTrial(executions));
+  measurementState.executionResults = [];
+  updateTrials([...trials]);
+}
+
+async function runTrialLoop(
+  executions: Execution[],
+  targetTrials: number,
+  trials: Trial[],
+  updateTrials: (trials: Trial[]) => void,
+): Promise<void> {
+  for (
+    let trialNumber = trials.length;
+    trialNumber < targetTrials;
+    trialNumber += 1
+  ) {
+    if (measurementState.shouldStopPipelines) break;
+    await runTrialIteration(executions, trialNumber, trials, updateTrials);
+  }
+}
+
 export async function runTrials(
   executions: Execution[],
   targetTrials: number,
@@ -417,19 +445,6 @@ export async function runTrials(
   updateTrials: (trials: Trial[]) => void,
 ): Promise<Trial[]> {
   const trials: Trial[] = [...existingTrials];
-  const startTrialNumber = existingTrials.length;
-
-  for (
-    let trialNumber = startTrialNumber;
-    trialNumber < targetTrials;
-    trialNumber += 1
-  ) {
-    if (measurementState.shouldStopPipelines) break;
-    await delayBeforeTrial(trialNumber);
-    trials.push(await runTrial(executions));
-    measurementState.executionResults = [];
-    updateTrials([...trials]);
-  }
-
+  await runTrialLoop(executions, targetTrials, trials, updateTrials);
   return trials;
 }
