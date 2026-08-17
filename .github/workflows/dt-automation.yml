@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        node-version: [18.20.0, 24]
+        node-version: [24]
     defaults:
       run:
         working-directory: lib/dt-automation/
