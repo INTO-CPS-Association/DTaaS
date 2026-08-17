@@ -57,7 +57,11 @@ jobs:
           PACKAGE_TGZ='dt-automation.tgz'
           yarn pack --filename "$PACKAGE_TGZ"
           ALLOWED_TARBALL_FILES='^package/(package\.json|README\.md|LICENSE\.md|dist/(index\.js|.*\.d\.ts))$'
-          UNEXPECTED_TARBALL_FILES="$(tar -tf "$PACKAGE_TGZ" | grep -Ev "$ALLOWED_TARBALL_FILES" || true)"
+          UNEXPECTED_TARBALL_FILES="$(
+            tar -tvf "$PACKAGE_TGZ" |
+              awk '$1 ~ /^-/ { print $6 }' |
+              grep -Ev "$ALLOWED_TARBALL_FILES" || true
+          )"
           if [ -n "$UNEXPECTED_TARBALL_FILES" ]; then
             echo 'Unexpected files in npm package:'
             echo "$UNEXPECTED_TARBALL_FILES"
