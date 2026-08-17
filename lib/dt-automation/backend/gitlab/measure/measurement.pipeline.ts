@@ -422,6 +422,12 @@ async function runTrialIteration(
   updateTrials([...trials]);
 }
 
+function shouldRunTrial(trialNumber: number, targetTrials: number): boolean {
+  return (
+    trialNumber < targetTrials && !measurementState.shouldStopPipelines
+  );
+}
+
 async function runTrialLoop(
   executions: Execution[],
   targetTrials: number,
@@ -430,10 +436,9 @@ async function runTrialLoop(
 ): Promise<void> {
   for (
     let trialNumber = trials.length;
-    trialNumber < targetTrials;
+    shouldRunTrial(trialNumber, targetTrials);
     trialNumber += 1
   ) {
-    if (measurementState.shouldStopPipelines) break;
     await runTrialIteration(executions, trialNumber, trials, updateTrials);
   }
 }

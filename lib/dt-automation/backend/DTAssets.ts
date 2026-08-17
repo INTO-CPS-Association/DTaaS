@@ -217,7 +217,7 @@ class DTAssets implements DTAssetsInterface {
       const fileContent = await this.fileHandler.getFileContent(filePath);
 
       const triggerPattern = new RegExp(
-        `\\n?\\s*trigger_${this.DTName}:.*?(?=\\n\\s*trigger_|$)`,
+        String.raw`\n?\s*trigger_${this.DTName}:.*?(?=\n\s*trigger_|$)`,
         'gs',
       );
 
