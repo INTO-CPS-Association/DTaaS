@@ -1,6 +1,6 @@
-"""Tests for GitLab input validation helpers (_validators.py)."""
+"""Tests for GitLab input validation helpers (validators.py)."""
 
-from dtaas_services.pkg.services.gitlab import validators
+from dtaas_gitlab import validators
 # pylint: disable=W0212
 
 TEST_EMAIL = "test@example.com"
