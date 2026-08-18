@@ -6,11 +6,8 @@ measurement, and Redux APIs.
 
 Version `0.1.x` is a DTaaS-specific integration package. Its API reflects the
 current client model and is not yet intended as a framework-independent model
-library.
-
-The package source lives under `lib/dt-automation` and is published as
-`@into-cps-association/dt-automation`. It currently targets browser
-integrations and is not yet safe to import in server-side runtimes.
+library. It targets browser integrations and is not safe to import in
+server-side runtimes.
 
 ## Install
 
@@ -95,13 +92,5 @@ The package root exports the selectors used by the DTaaS client:
 - `selectExecutionHistoryLoading`
 - `selectExecutionHistoryError`
 
-## Build
-
-```bash
-yarn typecheck
-yarn build
-```
-
-The JavaScript bundle is produced by tsup. TypeScript declarations are emitted
-separately by `tsc`, then `tsc-alias` rewrites internal `model/*` aliases to
-portable relative imports in `dist`.
+See [DEVELOPER.md](./DEVELOPER.md) for source-layout, development, and build
+instructions.
