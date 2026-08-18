@@ -25,7 +25,7 @@ yarn clean
 ## Build
 
 The JavaScript bundle is produced by `tsup`. TypeScript declarations are emitted
-separately by `tsc`, then `tsc-alias` rewrites internal `model/*` aliases to
+separately by `tsc`, then `tsc-alias` rewrites internal `src/*` aliases to
 portable relative imports in `dist`.
 
 The package smoke test builds a tarball and verifies that a clean consumer can

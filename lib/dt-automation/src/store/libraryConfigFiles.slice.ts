@@ -1,6 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LibraryConfigFile } from 'model/interfaces/sharedInterfaces';
-import type { LibraryConfigFilesStoreSlice } from 'model/store/modelRootState';
+import { LibraryConfigFile } from 'src/interfaces/sharedInterfaces';
+import type { LibraryConfigFilesStoreSlice } from 'src/store/modelRootState';
 
 const initialState: LibraryConfigFile[] = [];
 

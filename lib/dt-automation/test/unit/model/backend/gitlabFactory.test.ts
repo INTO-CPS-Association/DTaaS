@@ -1,15 +1,15 @@
-import GitlabAPI from 'model/gitlab/backend';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import createGitlabInstance from 'model/gitlab/gitlabFactory';
+import GitlabAPI from 'src/gitlab/backend';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import createGitlabInstance from 'src/gitlab/gitlabFactory';
 
-jest.mock('model/gitlab/backend', () => ({
+jest.mock('src/gitlab/backend', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => jest.fn()),
 }));
 
-jest.mock('model/gitlab/gitlabFactory', () => ({
+jest.mock('src/gitlab/gitlabFactory', () => ({
   __esModule: true,
-  ...jest.requireActual('model/gitlab/gitlabFactory'),
+  ...jest.requireActual('src/gitlab/gitlabFactory'),
 }));
 
 describe('gitlabFactory', () => {

@@ -1,10 +1,10 @@
-import getAuthority from 'model/util/env';
+import getAuthority from 'src/util/env';
 import {
   getGroupName,
   getDTDirectory,
   getBranchName,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
-import { ExecutionStatus, JobLog } from 'model/interfaces/execution';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
+import { ExecutionStatus, JobLog } from 'src/interfaces/execution';
 import {
   FileState,
   FileType,
@@ -12,25 +12,25 @@ import {
   DTAssetsInterface,
   LibraryAssetInterface,
   LibraryConfigFile,
-} from 'model/interfaces/sharedInterfaces';
+} from 'src/interfaces/sharedInterfaces';
 import {
   BackendInterface,
   ProjectId,
-} from 'model/interfaces/backendInterfaces';
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
-import DTAssets from 'model/DTAssets';
-import { executeDT, stopDT } from 'model/util/digitalTwinPipelineExecution';
+} from 'src/interfaces/backendInterfaces';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
+import DTAssets from 'src/DTAssets';
+import { executeDT, stopDT } from 'src/util/digitalTwinPipelineExecution';
 import {
   getExecutionHistoryFn,
   getExecutionHistoryByIdFn,
   updateExecutionLogsFn,
   updateExecutionStatusFn,
-} from 'model/util/digitalTwinExecutionHistory';
+} from 'src/util/digitalTwinExecutionHistory';
 import {
   getAssetFilesFn,
   prepareAllAssetFilesFn,
   createDT,
-} from 'model/util/digitalTwinFileManagement';
+} from 'src/util/digitalTwinFileManagement';
 
 export const formatName = (name: string) =>
   name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase()); // replaceAll not supported

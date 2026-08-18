@@ -1,7 +1,7 @@
-import type DigitalTwin from 'model/digitalTwin';
-import { ExecutionStatus, JobLog } from 'model/interfaces/execution';
-import type { IExecutionHistory } from 'model/interfaces/execution';
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
+import type DigitalTwin from 'src/digitalTwin';
+import { ExecutionStatus, JobLog } from 'src/interfaces/execution';
+import type { IExecutionHistory } from 'src/interfaces/execution';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
 
 let dbService: IExecutionHistory | null = null;
 

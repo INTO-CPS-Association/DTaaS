@@ -1,4 +1,4 @@
-import type { EnvironmentState } from 'model/store/environment.slice';
+import type { EnvironmentState } from 'src/store/environment.slice';
 
 type StoreReader = { getState: () => { environment: EnvironmentState } };
 

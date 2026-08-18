@@ -1,17 +1,17 @@
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import { createDigitalTwinFromData } from 'model/util/digitalTwinAdapter';
-import { IExecutionHistoryStorage } from 'model/interfaces/sharedInterfaces';
-import { fetchJobLogs } from 'model/gitlab/execution/logFetching';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import { createDigitalTwinFromData } from 'src/util/digitalTwinAdapter';
+import { IExecutionHistoryStorage } from 'src/interfaces/sharedInterfaces';
+import { fetchJobLogs } from 'src/gitlab/execution/logFetching';
 import {
   mapGitlabStatusToExecutionStatus,
   isFinishedStatus,
   isFailureStatus,
   isCanceledStatus,
   isSuccessStatus,
-} from 'model/gitlab/execution/statusChecking';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/gitlab/execution/statusChecking';
+import { ExecutionStatus } from 'src/interfaces/execution';
 
 class ExecutionStatusService {
   private static async resolveChildPipeline(

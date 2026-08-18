@@ -6,7 +6,7 @@ import {
   ActivePipeline,
   Execution,
   Configuration,
-} from 'model/gitlab/measure/measurement.execution';
+} from 'src/gitlab/measure/measurement.execution';
 
 export function isTaskComplete(item: { Status: Status }): boolean {
   return item.Status === 'SUCCESS' || item.Status === 'FAILURE';

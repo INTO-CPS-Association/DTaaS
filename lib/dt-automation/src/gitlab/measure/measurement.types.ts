@@ -4,8 +4,8 @@
  * Used by measurement.execution.ts, measurement.settings.ts, and most other
  * files in this directory.
  */
-import type { Configuration as ExternalConfiguration } from 'model/gitlab/execution/executionTypes';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
+import type { Configuration as ExternalConfiguration } from 'src/gitlab/execution/executionTypes';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
 
 export type MeasurementStoreState = {
   settings: {

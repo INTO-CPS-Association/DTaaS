@@ -5,7 +5,7 @@ import fileSlice, {
   removeAllFiles,
   removeAllModifiedFiles,
   renameFile,
-} from 'model/store/file.slice';
+} from 'src/store/file.slice';
 
 describe('file reducer', () => {
   const emptyFiles: {

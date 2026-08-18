@@ -1,5 +1,5 @@
-import assetsSlice, { deleteAsset, setAssets } from 'model/store/assets.slice';
-import LibraryAsset from 'model/libraryAsset';
+import assetsSlice, { deleteAsset, setAssets } from 'src/store/assets.slice';
+import LibraryAsset from 'src/libraryAsset';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 
 describe('assets reducer', () => {

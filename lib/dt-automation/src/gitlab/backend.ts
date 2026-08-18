@@ -13,10 +13,10 @@ import {
   ProjectSummary,
   JobSummary,
   PipelineBridge,
-} from 'model/interfaces/backendInterfaces';
-import { Pipeline } from 'model/interfaces/execution';
-import { getBranchName } from 'model/gitlab/digitalTwinConfig/settingsUtility';
-import { getGitlabStatus, retryGitlabRead } from 'model/gitlab/gitlabReadRetry';
+} from 'src/interfaces/backendInterfaces';
+import { Pipeline } from 'src/interfaces/execution';
+import { getBranchName } from 'src/gitlab/digitalTwinConfig/settingsUtility';
+import { getGitlabStatus, retryGitlabRead } from 'src/gitlab/gitlabReadRetry';
 
 type TriggerJob = {
   downstream_pipeline?: { id?: number } | null;

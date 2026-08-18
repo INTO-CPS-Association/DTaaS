@@ -1,4 +1,4 @@
-import { FileType } from 'model/interfaces/sharedInterfaces';
+import { FileType } from 'src/interfaces/sharedInterfaces';
 
 const FILE_TYPE_MAP: Record<string, FileType> = {
   md: FileType.DESCRIPTION,

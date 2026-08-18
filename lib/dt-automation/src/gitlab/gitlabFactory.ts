@@ -1,6 +1,6 @@
-import GitlabInstance from 'model/gitlab/instance';
-import GitlabAPI from 'model/gitlab/backend';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
+import GitlabInstance from 'src/gitlab/instance';
+import GitlabAPI from 'src/gitlab/backend';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
 
 export const createGitlabInstance = (
   projectName: string,

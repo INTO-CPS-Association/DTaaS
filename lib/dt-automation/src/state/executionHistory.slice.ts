@@ -4,14 +4,14 @@ import {
   ThunkAction,
   Action,
 } from '@reduxjs/toolkit';
-import { DTExecutionResult, JobLog } from 'model/gitlab/types/executionHistory';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import { ExecutionStatus } from 'model/interfaces/execution';
+import { DTExecutionResult, JobLog } from 'src/gitlab/types/executionHistory';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import { ExecutionStatus } from 'src/interfaces/execution';
 import {
   ShowNotificationPayload,
   IExecutionHistoryStorage,
-} from 'model/interfaces/sharedInterfaces';
-import ExecutionStatusService from 'model/state/ExecutionStatusService';
+} from 'src/interfaces/sharedInterfaces';
+import ExecutionStatusService from 'src/state/ExecutionStatusService';
 
 const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);

@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FileState } from 'model/interfaces/sharedInterfaces';
-import getFileTypeFromExtension from 'model/interfaces/fileTypeUtils';
-import type { FilesStoreSlice } from 'model/store/modelRootState';
+import { FileState } from 'src/interfaces/sharedInterfaces';
+import getFileTypeFromExtension from 'src/interfaces/fileTypeUtils';
+import type { FilesStoreSlice } from 'src/store/modelRootState';
 
 const initialState: FileState[] = [];
 

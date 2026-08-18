@@ -1,51 +1,51 @@
 /* eslint-disable import/first */
 const getDTSubfolders = jest.fn();
-jest.mock('model/util/digitalTwinUtils', () => ({
+jest.mock('src/util/digitalTwinUtils', () => ({
   getDTSubfolders,
 }));
 
 const DigitalTwin = jest.fn();
-jest.mock('model/digitalTwin', () => ({
+jest.mock('src/digitalTwin', () => ({
   __esModule: true,
   default: DigitalTwin,
 }));
 
 const mockGetLibrarySubfolders = jest.fn();
 const mockLibraryAsset = jest.fn();
-jest.mock('model/libraryAsset', () => ({
+jest.mock('src/libraryAsset', () => ({
   __esModule: true,
   getLibrarySubfolders: mockGetLibrarySubfolders,
   default: mockLibraryAsset,
 }));
 
 const setAsset = jest.fn();
-jest.mock('model/store/assets.slice', () => ({
+jest.mock('src/store/assets.slice', () => ({
   __esModule: true,
   setAsset,
   default: (state = {}) => state,
 }));
 
 const setDigitalTwin = jest.fn();
-jest.mock('model/state/digitalTwin.slice', () => ({
+jest.mock('src/state/digitalTwin.slice', () => ({
   __esModule: true,
   setDigitalTwin,
   default: (state = {}) => state,
 }));
 
-jest.deepUnmock('model/util/init');
+jest.deepUnmock('src/util/init');
 
 import {
   fetchDigitalTwins,
   fetchLibraryAssets,
   initDigitalTwin,
-} from 'model/util/init';
-import { getLibrarySubfolders } from 'model/libraryAsset';
+} from 'src/util/init';
+import { getLibrarySubfolders } from 'src/libraryAsset';
 import {
   mockAuthority,
   mockBackendAPI,
   mockBackendInstance,
 } from 'test/__mocks__/global_mocks';
-import { createGitlabInstance } from 'model/gitlab/gitlabFactory';
+import { createGitlabInstance } from 'src/gitlab/gitlabFactory';
 
 describe('fetchAssets', () => {
   const dispatch = jest.fn();

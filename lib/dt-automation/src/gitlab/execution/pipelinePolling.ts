@@ -1,15 +1,15 @@
 /* eslint-disable no-await-in-loop */
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import { PollOptions } from 'model/interfaces/execution';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import { PollOptions } from 'src/interfaces/execution';
 import {
   isPipelineCompleted,
   delay,
   hasTimedOut,
-} from 'model/gitlab/execution/pipelineCore';
+} from 'src/gitlab/execution/pipelineCore';
 import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
-} from 'model/gitlab/digitalTwinConfig/constants';
+} from 'src/gitlab/digitalTwinConfig/constants';
 
 function checkAbortConditions(
   pipelineId: number,

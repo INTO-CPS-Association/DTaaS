@@ -1,6 +1,6 @@
-import DigitalTwin from 'model/digitalTwin';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import { initDigitalTwin } from 'model/util/init';
+import DigitalTwin from 'src/digitalTwin';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import { initDigitalTwin } from 'src/util/init';
 
 function copyIfPresent<Property extends keyof DigitalTwin>(
   digitalTwin: DigitalTwin,

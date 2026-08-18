@@ -13,15 +13,15 @@ import {
   getTasks,
   clearPersistedResults,
   getStore,
-} from 'model/gitlab/measure/measurement.execution';
+} from 'src/gitlab/measure/measurement.execution';
 import {
   cancelActivePipelines,
   runTrials,
-} from 'model/gitlab/measure/measurement.pipeline';
+} from 'src/gitlab/measure/measurement.pipeline';
 import {
   computeAverageTime,
   computeFinalStatus,
-} from 'model/gitlab/measure/measurement.utils';
+} from 'src/gitlab/measure/measurement.utils';
 
 interface MeasurementDB {
   add(task: TimedTask): Promise<string>;

@@ -1,9 +1,9 @@
-import DigitalTwin from 'model/digitalTwin';
+import DigitalTwin from 'src/digitalTwin';
 import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
-} from 'model/gitlab/digitalTwinConfig/constants';
-import { ProjectId } from 'model/interfaces/backendInterfaces';
+} from 'src/gitlab/digitalTwinConfig/constants';
+import { ProjectId } from 'src/interfaces/backendInterfaces';
 
 /**
  * Creates a delay promise for polling operations

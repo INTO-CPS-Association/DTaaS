@@ -1,4 +1,4 @@
-import { ExecutionStatus } from 'model/interfaces/execution';
+import { ExecutionStatus } from 'src/interfaces/execution';
 
 type StatusSeverity = 'success' | 'error' | 'warning' | 'info';
 

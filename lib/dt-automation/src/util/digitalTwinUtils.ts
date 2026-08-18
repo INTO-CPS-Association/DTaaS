@@ -2,16 +2,16 @@ import {
   BackendAPI,
   ProjectId,
   RepositoryTreeItem,
-} from 'model/interfaces/backendInterfaces';
+} from 'src/interfaces/backendInterfaces';
 import {
   DigitalTwinInterface,
   LibraryConfigFile,
-} from 'model/interfaces/sharedInterfaces';
-import { Asset } from 'model/Asset';
-import { AssetTypes } from 'model/gitlab/digitalTwinConfig/constants';
-import { getDTDirectory } from 'model/gitlab/digitalTwinConfig/settingsUtility';
-import GitlabInstance from 'model/gitlab/instance';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/interfaces/sharedInterfaces';
+import { Asset } from 'src/Asset';
+import { AssetTypes } from 'src/gitlab/digitalTwinConfig/constants';
+import { getDTDirectory } from 'src/gitlab/digitalTwinConfig/settingsUtility';
+import GitlabInstance from 'src/gitlab/instance';
+import { ExecutionStatus } from 'src/interfaces/execution';
 
 export function isValidInstance(digitalTwin: DigitalTwinInterface): boolean {
   const { backend } = digitalTwin;

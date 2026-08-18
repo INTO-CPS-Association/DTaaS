@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useDispatch, useSelector } from 'react-redux';
-import useCart from 'model/store/CartAccess';
-import * as cart from 'model/store/cart.slice';
+import useCart from 'src/store/CartAccess';
+import * as cart from 'src/store/cart.slice';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 
 jest.mock('react-redux', () => ({
@@ -9,7 +9,7 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-jest.mock('model/store/cart.slice', () => ({
+jest.mock('src/store/cart.slice', () => ({
   addToCart: jest.fn(),
   removeFromCart: jest.fn(),
   clearCart: jest.fn(),

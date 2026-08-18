@@ -1,4 +1,4 @@
-import { FileType } from 'model/interfaces/sharedInterfaces';
+import { FileType } from 'src/interfaces/sharedInterfaces';
 
 // Default project settings
 export const GROUP_NAME = 'DTaaS';

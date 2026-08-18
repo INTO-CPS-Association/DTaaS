@@ -7,9 +7,9 @@ import {
   updateExecutionHistoryEntry,
   updateExecutionStatus,
   updateExecutionLogs,
-} from 'model/state/executionHistory.slice';
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/state/executionHistory.slice';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
+import { ExecutionStatus } from 'src/interfaces/execution';
 import { setupStore } from './testSetup';
 
 describe('executionHistory slice - reducers (basic)', () => {

@@ -1,7 +1,7 @@
 import reducer, {
   loadInitialEnvironment,
   updateAuthority,
-} from 'model/store/environment.slice';
+} from 'src/store/environment.slice';
 
 describe('environment slice', () => {
   it('starts without an application-specific authority', () => {

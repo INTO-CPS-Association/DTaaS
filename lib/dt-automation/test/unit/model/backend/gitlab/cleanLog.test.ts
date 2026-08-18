@@ -1,4 +1,4 @@
-import cleanLog from 'model/gitlab/cleanLog';
+import cleanLog from 'src/gitlab/cleanLog';
 
 describe('cleanLog', () => {
   it('removes ANSI color codes', () => {

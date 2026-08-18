@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
 import {
   TimedTask,
   Trial,
@@ -10,8 +10,8 @@ import {
   measurementConfig,
   measurementState,
   getTasks,
-} from 'model/gitlab/measure/measurement.execution';
-import type { MeasurementStoreState } from 'model/gitlab/measure/measurement.execution';
+} from 'src/gitlab/measure/measurement.execution';
+import type { MeasurementStoreState } from 'src/gitlab/measure/measurement.execution';
 
 // Writable version of measurementConfig for use in tests that mock the module.
 export type MockMeasurementConfig = {

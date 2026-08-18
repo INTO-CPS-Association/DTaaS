@@ -4,10 +4,10 @@ import digitalTwinReducer, {
   setPipelineLoading,
   updateDescription,
   clearDigitalTwins,
-} from 'model/state/digitalTwin.slice';
-import { extractDataFromDigitalTwin } from 'model/util/digitalTwinAdapter';
-import DigitalTwin from 'model/digitalTwin';
-import { createGitlabInstance } from 'model/gitlab/gitlabFactory';
+} from 'src/state/digitalTwin.slice';
+import { extractDataFromDigitalTwin } from 'src/util/digitalTwinAdapter';
+import DigitalTwin from 'src/digitalTwin';
+import { createGitlabInstance } from 'src/gitlab/gitlabFactory';
 
 describe('digitalTwin reducer', () => {
   const digitalTwinInitialState = {

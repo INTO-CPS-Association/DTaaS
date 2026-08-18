@@ -21,6 +21,7 @@
   },
   "// smoke:package": "Builds the package, then verifies that a clean consumer can install and import its tarball.",
   "// validate:package": "Type-checks the source before running the package smoke test.",
+  "// tsup": "Builds the package's ESM JavaScript file at dist/index.js.",
   "prettier": {
     "singleQuote": true,
     "trailingComma": "all"
@@ -53,7 +54,7 @@
     }
   },
   "type": "module",
-  "// tsc-alias": "The declaration build rewrites internal model/* aliases to portable relative imports for npm consumers.",
+  "// tsc-alias": "The declaration build rewrites internal src/* aliases to portable relative imports for npm consumers.",
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",

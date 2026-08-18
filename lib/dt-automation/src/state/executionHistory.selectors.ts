@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import type { ExecutionHistoryStoreSlice } from 'model/store/modelRootState';
+import type { ExecutionHistoryStoreSlice } from 'src/store/modelRootState';
 
 export const selectExecutionHistoryEntries = (
   state: ExecutionHistoryStoreSlice,

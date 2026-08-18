@@ -1,9 +1,9 @@
-import { TaskDefinition } from 'model/gitlab/measure/tasks/taskDefinition';
-import validSetupExecution from 'model/gitlab/measure/tasks/validSetupExecution';
-import multipleIdenticalDTs from 'model/gitlab/measure/tasks/multipleIdenticalDTs';
-import multipleDifferentDTs from 'model/gitlab/measure/tasks/multipleDifferentDTs';
-import differentRunnersSameDT from 'model/gitlab/measure/tasks/differentRunnersSameDT';
-import differentRunnersDifferentDTs from 'model/gitlab/measure/tasks/differentRunnersDifferentDTs';
+import { TaskDefinition } from 'src/gitlab/measure/tasks/taskDefinition';
+import validSetupExecution from 'src/gitlab/measure/tasks/validSetupExecution';
+import multipleIdenticalDTs from 'src/gitlab/measure/tasks/multipleIdenticalDTs';
+import multipleDifferentDTs from 'src/gitlab/measure/tasks/multipleDifferentDTs';
+import differentRunnersSameDT from 'src/gitlab/measure/tasks/differentRunnersSameDT';
+import differentRunnersDifferentDTs from 'src/gitlab/measure/tasks/differentRunnersDifferentDTs';
 
 export const taskDefinitions: readonly TaskDefinition[] = [
   validSetupExecution,
@@ -13,4 +13,4 @@ export const taskDefinitions: readonly TaskDefinition[] = [
   differentRunnersDifferentDTs,
 ];
 
-export type { TaskDefinition } from 'model/gitlab/measure/tasks/taskDefinition';
+export type { TaskDefinition } from 'src/gitlab/measure/tasks/taskDefinition';

@@ -1,13 +1,13 @@
-import DigitalTwin from 'model/digitalTwin';
-import { LibraryAssetInterface } from 'model/interfaces/sharedInterfaces';
+import DigitalTwin from 'src/digitalTwin';
+import { LibraryAssetInterface } from 'src/interfaces/sharedInterfaces';
 import {
   getAssetFilesFn,
   prepareAllAssetFilesFn,
-} from 'model/util/digitalTwinFileManagement';
+} from 'src/util/digitalTwinFileManagement';
 import { mockBackendInstance, mockDTAssets } from 'test/__mocks__/global_mocks';
 
-jest.mock('model/util/digitalTwinUtils', () => ({
-  ...jest.requireActual('model/util/digitalTwinUtils'),
+jest.mock('src/util/digitalTwinUtils', () => ({
+  ...jest.requireActual('src/util/digitalTwinUtils'),
   getUpdatedLibraryFile: jest.fn(),
 }));
 
@@ -132,7 +132,7 @@ describe('digitalTwinFileManagement - Asset Files', () => {
 
     it('should use updated library file content when available', async () => {
       const { getUpdatedLibraryFile } = jest.requireMock(
-        'model/util/digitalTwinUtils',
+        'src/util/digitalTwinUtils',
       );
       getUpdatedLibraryFile.mockReturnValue({
         fileContent: 'modified content',

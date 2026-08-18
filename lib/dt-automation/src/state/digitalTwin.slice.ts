@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { JobLog } from 'model/gitlab/types/executionHistory';
-import { ProjectId } from 'model/interfaces/backendInterfaces';
-import { ExecutionStatus } from 'model/interfaces/execution';
+import { JobLog } from 'src/gitlab/types/executionHistory';
+import { ProjectId } from 'src/interfaces/backendInterfaces';
+import { ExecutionStatus } from 'src/interfaces/execution';
 
 export interface DigitalTwinData {
   DTName: string;

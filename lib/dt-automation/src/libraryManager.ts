@@ -1,10 +1,10 @@
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
 import {
   LibraryManagerInterface,
   FileState,
   FileType,
-} from 'model/interfaces/sharedInterfaces';
-import FileHandler from 'model/fileHandler';
+} from 'src/interfaces/sharedInterfaces';
+import FileHandler from 'src/fileHandler';
 
 export function getFilePath(
   file: FileState,

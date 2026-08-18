@@ -1,16 +1,16 @@
-import { AssetTypes } from 'model/gitlab/digitalTwinConfig/constants';
+import { AssetTypes } from 'src/gitlab/digitalTwinConfig/constants';
 import {
   getBranchName,
   getGroupName,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
-import { Asset } from 'model/Asset';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
+import { Asset } from 'src/Asset';
 import {
   BackendInterface,
   ProjectId,
   RepositoryTreeItem,
-} from 'model/interfaces/backendInterfaces';
-import { LibraryAssetInterface } from 'model/interfaces/sharedInterfaces';
-import LibraryManager from 'model/libraryManager';
+} from 'src/interfaces/backendInterfaces';
+import { LibraryAssetInterface } from 'src/interfaces/sharedInterfaces';
+import LibraryManager from 'src/libraryManager';
 
 class LibraryAsset implements LibraryAssetInterface {
   public name: string;

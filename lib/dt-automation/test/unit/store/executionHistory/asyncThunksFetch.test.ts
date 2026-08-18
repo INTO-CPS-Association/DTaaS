@@ -5,8 +5,8 @@ import {
   fetchAllExecutionHistory,
   addExecution,
   updateExecution,
-} from 'model/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/state/executionHistory.slice';
+import { ExecutionStatus } from 'src/interfaces/execution';
 import { setupStore } from './testSetup';
 
 describe('executionHistory slice - async thunks (fetch & write)', () => {

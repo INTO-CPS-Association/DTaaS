@@ -1,4 +1,4 @@
-import GitlabAPI from 'model/gitlab/backend';
+import GitlabAPI from 'src/gitlab/backend';
 import { GitbeakerRequestError } from '@gitbeaker/rest';
 
 jest.mock('@gitbeaker/rest', () => ({

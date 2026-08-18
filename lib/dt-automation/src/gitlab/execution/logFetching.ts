@@ -1,10 +1,10 @@
-import { JobLog } from 'model/interfaces/execution';
-import cleanLog from 'model/gitlab/cleanLog';
+import { JobLog } from 'src/interfaces/execution';
+import cleanLog from 'src/gitlab/cleanLog';
 import {
   BackendInterface,
   JobSummary,
   ProjectId,
-} from 'model/interfaces/backendInterfaces';
+} from 'src/interfaces/backendInterfaces';
 
 const jobLog = (jobName: string, log: string): JobLog => ({ jobName, log });
 type JobLogSource = Partial<Pick<JobSummary, 'id' | 'name'>>;

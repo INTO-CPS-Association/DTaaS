@@ -1,15 +1,15 @@
-import type DigitalTwin from 'model/digitalTwin';
+import type DigitalTwin from 'src/digitalTwin';
 import {
   FileState,
   FileType,
   LibraryAssetInterface,
   LibraryConfigFile,
-} from 'model/interfaces/sharedInterfaces';
-import { getUpdatedLibraryFile } from 'model/util/digitalTwinUtils';
+} from 'src/interfaces/sharedInterfaces';
+import { getUpdatedLibraryFile } from 'src/util/digitalTwinUtils';
 import {
   getBranchName,
   getDTDirectory,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
 
 type FolderEntry = { assetPath: string; fileNames: string[] };
 

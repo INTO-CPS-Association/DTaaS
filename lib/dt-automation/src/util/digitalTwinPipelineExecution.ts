@@ -1,20 +1,20 @@
-import type DigitalTwin from 'model/digitalTwin';
+import type DigitalTwin from 'src/digitalTwin';
 import {
   getRunnerTag,
   getBranchName,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
 import {
   ExecutionStatus,
   type IExecutionHistory,
-} from 'model/interfaces/execution';
-import { ProjectId } from 'model/interfaces/backendInterfaces';
+} from 'src/interfaces/execution';
+import { ProjectId } from 'src/interfaces/backendInterfaces';
 import { v4 as uuidv4 } from 'uuid';
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
 import {
   isValidInstance,
   logError,
   logSuccess,
-} from 'model/util/digitalTwinUtils';
+} from 'src/util/digitalTwinUtils';
 
 let dbService: IExecutionHistory | null = null;
 

@@ -3,7 +3,7 @@ import {
   getRetryAfterMs,
   isRetryableGitlabReadError,
   retryGitlabRead,
-} from 'model/gitlab/gitlabReadRetry';
+} from 'src/gitlab/gitlabReadRetry';
 
 function createGitlabError(status: number, retryAfter?: string): Error {
   const error = Object.create(GitbeakerRequestError.prototype) as Error;

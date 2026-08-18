@@ -1,14 +1,14 @@
-import LibraryAsset, { getLibrarySubfolders } from 'model/libraryAsset';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import LibraryManager from 'model/libraryManager';
-import { AssetTypes } from 'model/gitlab/digitalTwinConfig/constants';
+import LibraryAsset, { getLibrarySubfolders } from 'src/libraryAsset';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import LibraryManager from 'src/libraryManager';
+import { AssetTypes } from 'src/gitlab/digitalTwinConfig/constants';
 import {
   getBranchName,
   getGroupName,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
 import { mockLibraryManager } from 'test/__mocks__/global_mocks';
 
-jest.mock('model/libraryManager');
+jest.mock('src/libraryManager');
 
 const authority = 'https://example.com/AUTHORITY';
 

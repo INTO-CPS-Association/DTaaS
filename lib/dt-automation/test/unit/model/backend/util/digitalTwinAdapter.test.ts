@@ -1,10 +1,10 @@
-import type DigitalTwin from 'model/digitalTwin';
-import { ExecutionStatus } from 'model/interfaces/execution';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import { createDigitalTwinFromData } from 'model/util/digitalTwinAdapter';
-import { initDigitalTwin } from 'model/util/init';
+import type DigitalTwin from 'src/digitalTwin';
+import { ExecutionStatus } from 'src/interfaces/execution';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import { createDigitalTwinFromData } from 'src/util/digitalTwinAdapter';
+import { initDigitalTwin } from 'src/util/init';
 
-jest.mock('model/util/init', () => ({
+jest.mock('src/util/init', () => ({
   initDigitalTwin: jest.fn(),
 }));
 

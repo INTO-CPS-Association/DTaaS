@@ -1,14 +1,14 @@
-import LibraryAsset from 'model/libraryAsset';
-import LibraryManager from 'model/libraryManager';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import DigitalTwin from 'model/digitalTwin';
-import FileHandler from 'model/fileHandler';
-import DTAssets from 'model/DTAssets';
+import LibraryAsset from 'src/libraryAsset';
+import LibraryManager from 'src/libraryManager';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import DigitalTwin from 'src/digitalTwin';
+import FileHandler from 'src/fileHandler';
+import DTAssets from 'src/DTAssets';
 import { mockBackendInstance } from 'test/__mocks__/mockBackendData';
 import {
   mockAuthority,
 } from 'test/__mocks__/mockEnvConstants';
-import { setEnvironmentStore, resetEnvironmentStore } from 'model/util/env';
+import { setEnvironmentStore, resetEnvironmentStore } from 'src/util/env';
 
 export {
   mockBackendAPI,
@@ -44,7 +44,7 @@ afterEach(() => {
   resetEnvironmentStore();
 });
 
-jest.mock('model/gitlab/gitlabFactory', () => {
+jest.mock('src/gitlab/gitlabFactory', () => {
   const createGitlabInstance = jest.fn(() => mockBackendInstance);
   return {
     __esModule: true,
@@ -226,8 +226,8 @@ export const resetIndexedDBServiceMocks = () => {
 };
 
 // Mock the initDigitalTwin function
-jest.mock('model/util/init', () => ({
-  ...jest.requireActual('model/util/init'),
+jest.mock('src/util/init', () => ({
+  ...jest.requireActual('src/util/init'),
   initDigitalTwin: createAsyncMock(mockDigitalTwin),
   fetchLibraryAssets: jest.fn().mockResolvedValue(undefined),
   fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),

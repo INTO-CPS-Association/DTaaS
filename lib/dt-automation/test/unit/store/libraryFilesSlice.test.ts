@@ -2,8 +2,8 @@ import libraryFilesSlice, {
   addOrUpdateLibraryFile,
   initializeLibraryFile,
   removeAllModifiedLibraryFiles,
-} from 'model/store/libraryConfigFiles.slice';
-import { LibraryConfigFile } from 'model/interfaces/sharedInterfaces';
+} from 'src/store/libraryConfigFiles.slice';
+import { LibraryConfigFile } from 'src/interfaces/sharedInterfaces';
 
 describe('libraryFilesSlice', () => {
   const libraryFilesInitialState: LibraryConfigFile[] = [];

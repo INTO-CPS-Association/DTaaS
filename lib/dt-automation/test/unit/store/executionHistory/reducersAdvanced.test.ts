@@ -5,8 +5,8 @@ import {
   removeEntriesForDT,
   setSelectedExecutionId,
   clearEntries,
-} from 'model/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/state/executionHistory.slice';
+import { ExecutionStatus } from 'src/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 describe('executionHistory slice - reducers (advanced)', () => {

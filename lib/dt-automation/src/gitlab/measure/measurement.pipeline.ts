@@ -1,23 +1,23 @@
 // GitLab pipeline lifecycle (trigger, poll, cancel, collect results)
 /* eslint-disable no-await-in-loop */
-import getAuthority from 'model/util/env';
-import DigitalTwin from 'model/digitalTwin';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import createGitlabInstance from 'model/gitlab/gitlabFactory';
-import { delay, hasTimedOut } from 'model/gitlab/execution/pipelineCore';
-import pollPipelineStatus from 'model/gitlab/execution/pipelinePolling';
+import getAuthority from 'src/util/env';
+import DigitalTwin from 'src/digitalTwin';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import createGitlabInstance from 'src/gitlab/gitlabFactory';
+import { delay, hasTimedOut } from 'src/gitlab/execution/pipelineCore';
+import pollPipelineStatus from 'src/gitlab/execution/pipelinePolling';
 import {
   isCanceledStatus,
   isFailureStatus,
-} from 'model/gitlab/execution/statusChecking';
+} from 'src/gitlab/execution/statusChecking';
 import {
   BETWEEN_TRIAL_DELAY,
   PIPELINE_ACCEPTANCE_DELAY,
-} from 'model/gitlab/measure/constants';
+} from 'src/gitlab/measure/constants';
 import {
   MAX_EXECUTION_TIME,
   PIPELINE_POLL_INTERVAL,
-} from 'model/gitlab/digitalTwinConfig/constants';
+} from 'src/gitlab/digitalTwinConfig/constants';
 import {
   Configuration,
   ExecutionResult,
@@ -26,7 +26,7 @@ import {
   measurementState,
   getStore,
   getDefaultConfig,
-} from 'model/gitlab/measure/measurement.execution';
+} from 'src/gitlab/measure/measurement.execution';
 
 const abortOptions = {
   shouldAbort: () => measurementState.shouldStopPipelines,

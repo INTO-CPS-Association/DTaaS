@@ -1,16 +1,16 @@
 import {
   getBranchName,
   getDTDirectory,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
 import {
   FileType,
   FileState,
   FileHandlerInterface,
-} from 'model/interfaces/sharedInterfaces';
+} from 'src/interfaces/sharedInterfaces';
 import {
   BackendInterface,
   RepositoryTreeItem,
-} from 'model/interfaces/backendInterfaces';
+} from 'src/interfaces/backendInterfaces';
 
 export function isValidFileType(
   item: { type: string; name: string; path: string },

@@ -1,8 +1,8 @@
-import FileHandler from 'model/fileHandler';
-import GitlabInstance from 'model/gitlab/instance';
+import FileHandler from 'src/fileHandler';
+import GitlabInstance from 'src/gitlab/instance';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import { FileType } from 'model/interfaces/sharedInterfaces';
-import { getBranchName } from 'model/gitlab/digitalTwinConfig/settingsUtility';
+import { FileType } from 'src/interfaces/sharedInterfaces';
+import { getBranchName } from 'src/gitlab/digitalTwinConfig/settingsUtility';
 
 const mockApi = mockBackendAPI;
 

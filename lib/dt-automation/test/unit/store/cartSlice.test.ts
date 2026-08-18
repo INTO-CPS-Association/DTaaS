@@ -2,8 +2,8 @@ import cartSlice, {
   addToCart,
   clearCart,
   removeFromCart,
-} from 'model/store/cart.slice';
-import LibraryAsset from 'model/libraryAsset';
+} from 'src/store/cart.slice';
+import LibraryAsset from 'src/libraryAsset';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 
 describe('cart reducer', () => {

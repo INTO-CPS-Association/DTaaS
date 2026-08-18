@@ -1,16 +1,16 @@
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
-import { DigitalTwinData } from 'model/state/digitalTwin.slice';
-import { ExecutionStatus } from 'model/interfaces/execution';
-import { IExecutionHistoryStorage } from 'model/interfaces/sharedInterfaces';
-import { createDigitalTwinFromData } from 'model/util/digitalTwinAdapter';
-import * as logFetching from 'model/gitlab/execution/logFetching';
-import * as statusChecking from 'model/gitlab/execution/statusChecking';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
+import { DigitalTwinData } from 'src/state/digitalTwin.slice';
+import { ExecutionStatus } from 'src/interfaces/execution';
+import { IExecutionHistoryStorage } from 'src/interfaces/sharedInterfaces';
+import { createDigitalTwinFromData } from 'src/util/digitalTwinAdapter';
+import * as logFetching from 'src/gitlab/execution/logFetching';
+import * as statusChecking from 'src/gitlab/execution/statusChecking';
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
-import ExecutionStatusService from 'model/state/ExecutionStatusService';
+import ExecutionStatusService from 'src/state/ExecutionStatusService';
 
-jest.mock('model/util/digitalTwinAdapter');
-jest.mock('model/gitlab/execution/logFetching');
-jest.mock('model/gitlab/execution/statusChecking');
+jest.mock('src/util/digitalTwinAdapter');
+jest.mock('src/gitlab/execution/logFetching');
+jest.mock('src/gitlab/execution/statusChecking');
 
 describe('ExecutionStatusService', () => {
   let mockExecutionStorage: IExecutionHistoryStorage;

@@ -6,16 +6,16 @@
 import {
   getGroupName,
   getCommonLibraryProjectName,
-} from 'model/gitlab/digitalTwinConfig/settingsUtility';
-import GitlabAPI from 'model/gitlab/backend';
+} from 'src/gitlab/digitalTwinConfig/settingsUtility';
+import GitlabAPI from 'src/gitlab/backend';
 import {
   BackendInterface,
   LogEntry,
   ProjectId,
   JobSummary,
   ProjectSummary,
-} from 'model/interfaces/backendInterfaces';
-import { Pipeline } from 'model/interfaces/execution';
+} from 'src/interfaces/backendInterfaces';
+import { Pipeline } from 'src/interfaces/execution';
 
 const normalizeProjectKey = (value: string | undefined): string =>
   value?.toLowerCase() ?? '';

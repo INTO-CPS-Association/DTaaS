@@ -1,9 +1,9 @@
-import type { AssetsState } from 'model/store/assets.slice';
+import type { AssetsState } from 'src/store/assets.slice';
 import type {
   FileState,
   LibraryConfigFile,
-} from 'model/interfaces/sharedInterfaces';
-import type { ExecutionHistoryState } from 'model/state/executionHistory.slice';
+} from 'src/interfaces/sharedInterfaces';
+import type { ExecutionHistoryState } from 'src/state/executionHistory.slice';
 
 export type AssetsStoreSlice = { assets: AssetsState };
 export type FilesStoreSlice = { files: FileState[] };

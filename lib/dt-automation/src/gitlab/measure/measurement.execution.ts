@@ -4,7 +4,7 @@
  * Central module for mutable measurement state. measurement.runner.ts drives
  * execution; measurement.pipeline.ts handles individual pipeline operations.
  */
-import { taskDefinitions } from 'model/gitlab/measure/tasks';
+import { taskDefinitions } from 'src/gitlab/measure/tasks';
 import type {
   MeasurementSetters,
   ActivePipeline,

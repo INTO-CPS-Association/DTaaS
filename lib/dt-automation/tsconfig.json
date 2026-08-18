@@ -20,7 +20,7 @@
     "outDir": "dist",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "model/*": ["./src/*"],
+      "src/*": ["./src/*"],
       "test/*": ["./test/*"]
     }
   },

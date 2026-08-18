@@ -3,7 +3,7 @@ import {
   saveOriginalSettings,
   restoreOriginalSettings,
   setMeasurementStore,
-} from 'model/gitlab/measure/measurement.execution';
+} from 'src/gitlab/measure/measurement.execution';
 import { createMockStoreState } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
 import { setupSessionStorage } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
 

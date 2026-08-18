@@ -5,13 +5,13 @@
 import {
   DigitalTwinPipelineState,
   ExecutionStatus,
-} from 'model/interfaces/execution';
+} from 'src/interfaces/execution';
 import {
   ProjectId,
   BackendInterface,
   CommitAction,
-} from 'model/interfaces/backendInterfaces';
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
+} from 'src/interfaces/backendInterfaces';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
 
 /**
  * Logical categories for Digital Twin files.

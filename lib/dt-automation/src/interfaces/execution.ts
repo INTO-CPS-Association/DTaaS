@@ -1,4 +1,4 @@
-import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
+import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
 
 export interface PollOptions {
   shouldAbort?: () => boolean;

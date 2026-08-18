@@ -1,6 +1,6 @@
 import { Gitlab } from '@gitbeaker/core';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import GitlabAPI from 'model/gitlab/backend';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import GitlabAPI from 'src/gitlab/backend';
 
 export const mockGitlabClient = new Gitlab({
   host: 'mockedHost',

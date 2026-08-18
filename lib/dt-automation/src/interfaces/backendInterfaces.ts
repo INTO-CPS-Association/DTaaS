@@ -1,4 +1,4 @@
-import { Pipeline } from 'model/interfaces/execution';
+import { Pipeline } from 'src/interfaces/execution';
 
 /**
  * Interface for interacting directly with Gitlab-like APIs (Github, Azure DevOps, etc.)

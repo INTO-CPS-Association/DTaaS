@@ -1,4 +1,4 @@
-import { measurementConfig as MeasurementConfig } from 'model/gitlab/measure/measurement.execution';
+import { measurementConfig as MeasurementConfig } from 'src/gitlab/measure/measurement.execution';
 import { TaskDefinition } from './taskDefinition';
 
 const differentRunnersSameDT: TaskDefinition = {

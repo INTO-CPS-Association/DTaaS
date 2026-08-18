@@ -1,15 +1,15 @@
 import {
   BackendInterface,
   CommitAction,
-} from 'model/interfaces/backendInterfaces';
+} from 'src/interfaces/backendInterfaces';
 import {
   DTAssetsInterface,
   FileHandlerInterface,
   FileState,
   FileType,
-} from 'model/interfaces/sharedInterfaces';
-import FileHandler from 'model/fileHandler';
-import { getDTDirectory } from 'model/gitlab/digitalTwinConfig/settingsUtility';
+} from 'src/interfaces/sharedInterfaces';
+import FileHandler from 'src/fileHandler';
+import { getDTDirectory } from 'src/gitlab/digitalTwinConfig/settingsUtility';
 
 type CreateFileInput =
   | FileState

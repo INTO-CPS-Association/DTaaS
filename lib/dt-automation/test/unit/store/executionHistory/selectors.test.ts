@@ -3,7 +3,7 @@ import {
   setSelectedExecutionId,
   setLoading,
   setError,
-} from 'model/state/executionHistory.slice';
+} from 'src/state/executionHistory.slice';
 import {
   selectExecutionHistoryEntries,
   selectExecutionHistoryByDTName,
@@ -12,8 +12,8 @@ import {
   selectSelectedExecution,
   selectExecutionHistoryLoading,
   selectExecutionHistoryError,
-} from 'model/state/executionHistory.selectors';
-import { ExecutionStatus } from 'model/interfaces/execution';
+} from 'src/state/executionHistory.selectors';
+import { ExecutionStatus } from 'src/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 type ExecutionHistoryStoreState = Parameters<

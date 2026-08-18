@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
-import LibraryAsset from 'model/libraryAsset';
-import * as cart from 'model/store/cart.slice';
-import type { CartState } from 'model/store/cart.slice';
+import LibraryAsset from 'src/libraryAsset';
+import * as cart from 'src/store/cart.slice';
+import type { CartState } from 'src/store/cart.slice';
 
 function useCart() {
   const dispatch = useDispatch();

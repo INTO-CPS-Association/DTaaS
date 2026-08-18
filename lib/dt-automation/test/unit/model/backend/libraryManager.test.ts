@@ -1,11 +1,11 @@
-import LibraryManager, { getFilePath } from 'model/libraryManager';
-import { BackendInterface } from 'model/interfaces/backendInterfaces';
-import FileHandler from 'model/fileHandler';
+import LibraryManager, { getFilePath } from 'src/libraryManager';
+import { BackendInterface } from 'src/interfaces/backendInterfaces';
+import FileHandler from 'src/fileHandler';
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
-import { FileState, FileType } from 'model/interfaces/sharedInterfaces';
+import { FileState, FileType } from 'src/interfaces/sharedInterfaces';
 
-jest.mock('model/fileHandler');
-jest.mock('model/interfaces/sharedInterfaces');
+jest.mock('src/fileHandler');
+jest.mock('src/interfaces/sharedInterfaces');
 
 describe('LibraryManager', () => {
   let backend: BackendInterface;
