@@ -1,36 +1,39 @@
-# DT Automation Developer Instructions
+# Working on DT Automation
 
-See [README](./README.md) for installation and package usage.
+See [README](./README.md) for installation and package usage instructions.
 
-The package contains framework-neutral Redux state and business logic. React
-components and React Redux hooks belong in the consuming application.
+This package uses shared data, state, and application rules. React
+components and other React-specific code belong in the client application, not here.
 
-## Package source
+## Source code placement
 
-The package source lives under `lib/dt-automation` and is published as
+The source code is in `lib/dt-automation`. The package is published as
 `@into-cps-association/dt-automation`.
 
-## Developer commands
+## Common commands
+
+You can run these commands from `lib/dt-automation`:
 
 ```bash
-yarn install
-yarn syntax
-yarn format
-yarn typecheck
-yarn test:unit
-yarn build
-yarn smoke:package
-yarn validate:package
-yarn prep
-yarn clean
+yarn install          # Install the required tools and packages.
+yarn syntax           # Check the code for common mistakes.
+yarn format           # Format the source files.
+yarn typecheck        # Check the TypeScript types.
+yarn test:unit        # Run the unit tests.
+yarn build            # Build the package.
+yarn smoke:package    # Check that a consumer can install the package.
+yarn validate:package # Run the type check and package check.
+yarn prep             # Run the full preparation process.
+yarn clean            # Remove generated files.
 ```
 
-## Build
+## Building and validating the package
 
-The JavaScript bundle is produced by `tsup`. TypeScript declarations are emitted
-separately by `tsc`, then `tsc-alias` rewrites internal `src/*` aliases to
-portable relative imports in `dist`.
+How to build the package and validate that it works:
 
-The package smoke test builds a tarball and verifies that a clean consumer can
-install and import it. Use `yarn validate:package` for typechecking followed
-by this smoke test.
+`yarn build` creates the JavaScript files and TypeScript type information that
+are included in the published package.
+
+`yarn smoke:package` creates a temporary package, installs the built package,
+and checks that it can be imported by another project. Use
+`yarn validate:package` to run the type check and this package check together.

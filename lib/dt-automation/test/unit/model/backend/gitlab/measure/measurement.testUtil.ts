@@ -12,7 +12,7 @@ import {
 } from 'src/gitlab/measure/measurement.execution';
 import type { MeasurementStoreState } from 'src/gitlab/measure/measurement.execution';
 
-// Writable version of measurementConfig for use in tests that mock the module.
+// Test configuration that can be changed when the module is mocked.
 export type MockMeasurementConfig = {
   trials: number;
   primaryRunnerTag: string;
@@ -174,7 +174,7 @@ export function createMockSetters(resultsStateRef: {
   };
 }
 
-// --- Shared test harness for measurement.runner and measurement.lifecycle tests ---
+// Helpers shared by measurement runner and lifecycle tests.
 
 export interface TestMeasurementState {
   shouldStopPipelines: boolean;
@@ -215,8 +215,8 @@ export function initMeasurementResults(resultsRef: { current: TimedTask[] }) {
 }
 
 /**
- * Common beforeEach setup for measurement runner/lifecycle tests.
- * Returns { state, setters, isRunningRef, resultsRef }.
+ * Creates the shared state and mocks used by measurement tests.
+ * Call reset before each test to restore the default state.
  */
 export function setupMeasurementTestHarness() {
   const state = measurementState as unknown as TestMeasurementState;

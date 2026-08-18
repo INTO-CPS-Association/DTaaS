@@ -1,5 +1,10 @@
 import { FileType } from 'src/interfaces/sharedInterfaces';
 
+// Read retry settings for execution
+export const MAX_ATTEMPTS = 3;
+export const BASE_DELAY_MS = 250;
+export const MAX_DELAY_MS = 4_000;
+
 // Default project settings
 export const GROUP_NAME = 'DTaaS';
 export const DT_DIRECTORY = 'digital_twins';

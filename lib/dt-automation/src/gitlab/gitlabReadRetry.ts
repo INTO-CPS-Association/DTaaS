@@ -1,8 +1,9 @@
 import { GitbeakerRequestError } from '@gitbeaker/rest';
-
-const MAX_ATTEMPTS = 3;
-const BASE_DELAY_MS = 250;
-const MAX_DELAY_MS = 4_000;
+import {
+  BASE_DELAY_MS,
+  MAX_ATTEMPTS,
+  MAX_DELAY_MS,
+} from 'src/gitlab/digitalTwinConfig/constants';
 
 function getResponse(error: unknown): Response | undefined {
   if (!(error instanceof GitbeakerRequestError)) return undefined;

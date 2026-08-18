@@ -16,6 +16,7 @@ import {
 import { ExecutionStatus } from 'src/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 
+// The store state accepted by the execution-history selector.
 type ExecutionHistoryStoreState = Parameters<
   typeof selectExecutionHistoryEntries
 >[0];

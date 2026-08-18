@@ -1,8 +1,10 @@
-// src
+// Public exports for the DT Automation package.
+
+// Core package exports
 export type { Asset } from './src/Asset';
 export { default as DigitalTwin, formatName } from './src/digitalTwin';
 
-// src/gitlab/digitalTwinConfig
+// GitLab configuration
 export {
   BRANCH_NAME,
   COMMON_LIBRARY_PROJECT_NAME,
@@ -20,7 +22,7 @@ export {
   setSettingsStore,
 } from './src/gitlab/digitalTwinConfig/settingsUtility';
 
-// src/gitlab/execution
+// GitLab execution
 export { fetchJobLogs } from './src/gitlab/execution/logFetching';
 export {
   delay,
@@ -28,7 +30,7 @@ export {
   stopPipelines,
 } from './src/gitlab/execution/pipelineCore';
 
-// src/gitlab/measure
+// Measurement
 export { default as DEFAULT_MEASUREMENT } from './src/gitlab/measure/constants';
 export {
   attachSetters,
@@ -68,13 +70,13 @@ export {
   secondsDifference,
 } from './src/gitlab/measure/measurement.utils';
 
-// src/gitlab/types
+// GitLab types
 export type {
   DTExecutionResult,
   JobLog,
 } from './src/gitlab/types/executionHistory';
 
-// src/interfaces
+// Shared interfaces
 export { ExecutionStatus } from './src/interfaces/execution';
 export type { IExecutionHistory } from './src/interfaces/execution';
 export { default as getFileTypeFromExtension } from './src/interfaces/fileTypeUtils';
@@ -85,10 +87,10 @@ export type {
   ShowNotificationPayload,
 } from './src/interfaces/sharedInterfaces';
 
-// src/libraryAsset
+// Library assets
 export { default as LibraryAsset } from './src/libraryAsset';
 
-// src/state
+// Application state
 export {
   default as digitalTwinSlice,
   clearDigitalTwins,
@@ -122,7 +124,7 @@ export {
   updateExecutionStatus,
 } from './src/state/executionHistory.slice';
 
-// src/util
+// Utility functions
 export {
   createDigitalTwinFromData,
   extractDataFromDigitalTwin,
@@ -136,7 +138,7 @@ export {
   initDigitalTwin,
 } from './src/util/init';
 
-// src/store
+// Redux state
 export {
   default as assetsSlice,
   deleteAsset,
