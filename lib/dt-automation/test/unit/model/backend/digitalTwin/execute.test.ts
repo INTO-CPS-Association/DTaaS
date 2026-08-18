@@ -1,11 +1,11 @@
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
-import * as dtUtils from 'model/backend/util/digitalTwinUtils';
+import DigitalTwin, { formatName } from 'model/digitalTwin';
+import * as dtUtils from 'model/util/digitalTwinUtils';
 import {
   getBranchName,
   getRunnerTag,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from 'model/gitlab/digitalTwinConfig/settingsUtility';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from 'model/interfaces/execution';
 import {
   mockGitlabInstance,
   mockedIndexedDBService,

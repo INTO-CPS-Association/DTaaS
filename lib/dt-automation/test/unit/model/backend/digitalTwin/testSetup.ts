@@ -1,12 +1,12 @@
-import GitlabInstance from 'model/backend/gitlab/instance';
-import DigitalTwin from 'model/backend/digitalTwin';
+import GitlabInstance from 'model/gitlab/instance';
+import DigitalTwin from 'model/digitalTwin';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import type { IExecutionHistory } from 'model/backend/interfaces/execution';
-import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
-import { setPipelineExecutionDB } from 'model/backend/util/digitalTwinPipelineExecution';
+import type { IExecutionHistory } from 'model/interfaces/execution';
+import { setExecutionHistoryDB } from 'model/util/digitalTwinExecutionHistory';
+import { setPipelineExecutionDB } from 'model/util/digitalTwinPipelineExecution';
 
-jest.mock('model/backend/util/digitalTwinUtils', () => ({
-  ...jest.requireActual('model/backend/util/digitalTwinUtils'),
+jest.mock('model/util/digitalTwinUtils', () => ({
+  ...jest.requireActual('model/util/digitalTwinUtils'),
   getUpdatedLibraryFile: jest.fn(),
 }));
 

@@ -4,8 +4,8 @@ import {
   getTasks,
   resetTasks,
   setMeasurementStore,
-} from 'model/backend/gitlab/measure/measurement.execution';
-import { taskDefinitions } from 'model/backend/gitlab/measure/tasks';
+} from 'model/gitlab/measure/measurement.execution';
+import { taskDefinitions } from 'model/gitlab/measure/tasks';
 
 const mockStoreState = {
   settings: {

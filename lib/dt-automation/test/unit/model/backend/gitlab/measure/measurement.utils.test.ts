@@ -7,7 +7,7 @@ import {
   areAllMeasurementsComplete,
   getMeasurementStatus,
   mergeExecutionStatus,
-} from 'model/backend/gitlab/measure/measurement.utils';
+} from 'model/gitlab/measure/measurement.utils';
 import {
   createMockTask,
   createMockTrial,

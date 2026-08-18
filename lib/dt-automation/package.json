@@ -12,7 +12,7 @@
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "prep": "qlty fmt && yarn format && yarn syntax && qlty check --fix && yarn build && yarn test:all",
     "clean": "node --eval \"const { rmSync } = require('node:fs'); ['coverage', 'dist'].forEach((path) => rmSync(path, { recursive: true, force: true }))\"",
-    "format": "prettier --write \"*.ts\" \"backend/**/*.ts\" \"store/**/*.ts\" \"test/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"*.ts\" \"src/**/*.ts\" \"test/**/*.{ts,tsx}\"",
     "syntax": "eslint . --fix",
     "test:all": "yarn test:unit",
     "test:unit": "jest --config jest.config.json test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",

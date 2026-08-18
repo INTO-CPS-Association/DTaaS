@@ -20,10 +20,10 @@
     "outDir": "dist",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "model/*": ["./*"],
+      "model/*": ["./src/*"],
       "test/*": ["./test/*"]
     }
   },
   "exclude": ["**/node_modules/*", "dist"],
-  "include": ["index.ts", "env.d.ts", "backend/**/*.ts", "store/**/*.ts"]
+  "include": ["index.ts", "env.d.ts", "src/**/*.ts"]
 }

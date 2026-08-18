@@ -12,7 +12,7 @@ const DEFAULT_MOCK_VALUES = {
 };
 
 /**
- * Create a mock for the model/backend/gitlab/settingsUtility module
+ * Create a mock for the model/gitlab/settingsUtility module
  * @param overrides - Override specific values from the defaults
  * @returns The mock object that can be used with jest.mock
  */
@@ -67,10 +67,7 @@ export const constantsMock = createConstantsMock();
 export { createSettingsUtilityMock, createConstantsMock };
 
 jest.mock(
-  'model/backend/gitlab/digitalTwinConfig/settingsUtility',
+  'model/gitlab/digitalTwinConfig/settingsUtility',
   () => settingsUtilityMock,
 );
-jest.mock(
-  'model/backend/gitlab/digitalTwinConfig/constants',
-  () => constantsMock,
-);
+jest.mock('model/gitlab/digitalTwinConfig/constants', () => constantsMock);

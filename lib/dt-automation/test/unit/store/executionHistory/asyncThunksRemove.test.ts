@@ -4,8 +4,8 @@ import {
   removeExecution,
   clearExecutionHistoryForDT,
   checkRunningExecutions,
-} from 'model/backend/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+} from 'model/state/executionHistory.slice';
+import { ExecutionStatus } from 'model/interfaces/execution';
 import { setupStore, createMockDTExecutionResult } from './testSetup';
 
 describe('executionHistory slice - async thunks (remove & clear)', () => {

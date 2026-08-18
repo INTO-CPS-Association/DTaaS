@@ -1,23 +1,23 @@
 import {
   measurementState,
   setMeasurementStore,
-} from 'model/backend/gitlab/measure/measurement.execution';
+} from 'model/gitlab/measure/measurement.execution';
 import {
   runDigitalTwin,
   cancelActivePipelines,
   createTrialFromExecution,
   createTrialFromError,
   runTrials,
-} from 'model/backend/gitlab/measure/measurement.pipeline';
-import type { Trial } from 'model/backend/gitlab/measure/measurement.execution';
-import getAuthority from 'model/backend/util/env';
-import createGitlabInstance from 'model/backend/gitlab/gitlabFactory';
-import DigitalTwin from 'model/backend/digitalTwin';
+} from 'model/gitlab/measure/measurement.pipeline';
+import type { Trial } from 'model/gitlab/measure/measurement.execution';
+import getAuthority from 'model/util/env';
+import createGitlabInstance from 'model/gitlab/gitlabFactory';
+import DigitalTwin from 'model/digitalTwin';
 import {
   isPipelineCompleted,
   delay,
   hasTimedOut,
-} from 'model/backend/gitlab/execution/pipelineCore';
+} from 'model/gitlab/execution/pipelineCore';
 import {
   createMockStoreState,
   createMockBackend,
@@ -29,19 +29,19 @@ import {
   setupSessionStorageAuth,
 } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
 
-jest.mock('model/backend/util/env', () => ({
+jest.mock('model/util/env', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
-jest.mock('model/backend/gitlab/gitlabFactory', () => ({
+jest.mock('model/gitlab/gitlabFactory', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
-jest.mock('model/backend/digitalTwin', () => ({
+jest.mock('model/digitalTwin', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+jest.mock('model/gitlab/execution/pipelineCore', () => ({
   isPipelineCompleted: jest.fn(),
   delay: jest.fn().mockResolvedValue(undefined),
   hasTimedOut: jest.fn(),

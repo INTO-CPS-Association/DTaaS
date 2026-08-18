@@ -1,8 +1,8 @@
-// backend
-export type { Asset } from './backend/Asset';
-export { default as DigitalTwin, formatName } from './backend/digitalTwin';
+// src
+export type { Asset } from './src/Asset';
+export { default as DigitalTwin, formatName } from './src/digitalTwin';
 
-// backend/gitlab/digitalTwinConfig
+// src/gitlab/digitalTwinConfig
 export {
   BRANCH_NAME,
   COMMON_LIBRARY_PROJECT_NAME,
@@ -13,23 +13,23 @@ export {
   PIPELINE_POLL_INTERVAL,
   RUNNER_TAG,
   defaultFiles,
-} from './backend/gitlab/digitalTwinConfig/constants';
+} from './src/gitlab/digitalTwinConfig/constants';
 export {
   getLoggingEnabled,
   getRemoteLoggingEnabled,
   setSettingsStore,
-} from './backend/gitlab/digitalTwinConfig/settingsUtility';
+} from './src/gitlab/digitalTwinConfig/settingsUtility';
 
-// backend/gitlab/execution
-export { fetchJobLogs } from './backend/gitlab/execution/logFetching';
+// src/gitlab/execution
+export { fetchJobLogs } from './src/gitlab/execution/logFetching';
 export {
   delay,
   hasTimedOut,
   stopPipelines,
-} from './backend/gitlab/execution/pipelineCore';
+} from './src/gitlab/execution/pipelineCore';
 
-// backend/gitlab/measure
-export { default as DEFAULT_MEASUREMENT } from './backend/gitlab/measure/constants';
+// src/gitlab/measure
+export { default as DEFAULT_MEASUREMENT } from './src/gitlab/measure/constants';
 export {
   attachSetters,
   detachSetters,
@@ -37,7 +37,7 @@ export {
   getTasks,
   measurementState,
   setMeasurementStore,
-} from './backend/gitlab/measure/measurement.execution';
+} from './src/gitlab/measure/measurement.execution';
 export {
   handleBeforeUnload,
   handleUnload,
@@ -46,8 +46,8 @@ export {
   setMeasurementDB,
   startMeasurement,
   stopAllPipelines,
-} from './backend/gitlab/measure/measurement.runner';
-export { updateFrozenSettings } from './backend/gitlab/measure/measurement.settings';
+} from './src/gitlab/measure/measurement.runner';
+export { updateFrozenSettings } from './src/gitlab/measure/measurement.settings';
 export type {
   Execution,
   ExecutionResult,
@@ -56,7 +56,7 @@ export type {
   Status,
   TimedTask,
   Trial,
-} from './backend/gitlab/measure/measurement.types';
+} from './src/gitlab/measure/measurement.types';
 export {
   downloadResultsJson,
   downloadTaskResultJson,
@@ -66,29 +66,29 @@ export {
   isTaskComplete,
   mergeExecutionStatus,
   secondsDifference,
-} from './backend/gitlab/measure/measurement.utils';
+} from './src/gitlab/measure/measurement.utils';
 
-// backend/gitlab/types
+// src/gitlab/types
 export type {
   DTExecutionResult,
   JobLog,
-} from './backend/gitlab/types/executionHistory';
+} from './src/gitlab/types/executionHistory';
 
-// backend/interfaces
-export { ExecutionStatus } from './backend/interfaces/execution';
-export type { IExecutionHistory } from './backend/interfaces/execution';
-export { default as getFileTypeFromExtension } from './backend/interfaces/fileTypeUtils';
-export { FileType } from './backend/interfaces/sharedInterfaces';
+// src/interfaces
+export { ExecutionStatus } from './src/interfaces/execution';
+export type { IExecutionHistory } from './src/interfaces/execution';
+export { default as getFileTypeFromExtension } from './src/interfaces/fileTypeUtils';
+export { FileType } from './src/interfaces/sharedInterfaces';
 export type {
   FileState,
   LibraryConfigFile,
   ShowNotificationPayload,
-} from './backend/interfaces/sharedInterfaces';
+} from './src/interfaces/sharedInterfaces';
 
-// backend/libraryAsset
-export { default as LibraryAsset } from './backend/libraryAsset';
+// src/libraryAsset
+export { default as LibraryAsset } from './src/libraryAsset';
 
-// backend/state
+// src/state
 export {
   default as digitalTwinSlice,
   clearDigitalTwins,
@@ -98,8 +98,8 @@ export {
   setPipelineLoading,
   setShouldFetchDigitalTwins,
   updateDescription,
-} from './backend/state/digitalTwin.slice';
-export type { DigitalTwinData } from './backend/state/digitalTwin.slice';
+} from './src/state/digitalTwin.slice';
+export type { DigitalTwinData } from './src/state/digitalTwin.slice';
 export {
   selectExecutionHistoryById,
   selectExecutionHistoryByDTName,
@@ -108,7 +108,7 @@ export {
   selectExecutionHistoryLoading,
   selectSelectedExecution,
   selectSelectedExecutionId,
-} from './backend/state/executionHistory.selectors';
+} from './src/state/executionHistory.selectors';
 export {
   default as executionHistorySlice,
   checkRunningExecutions,
@@ -120,32 +120,32 @@ export {
   setStorageService,
   updateExecutionLogs,
   updateExecutionStatus,
-} from './backend/state/executionHistory.slice';
+} from './src/state/executionHistory.slice';
 
-// backend/util
+// src/util
 export {
   createDigitalTwinFromData,
   extractDataFromDigitalTwin,
-} from './backend/util/digitalTwinAdapter';
-export { setExecutionHistoryDB } from './backend/util/digitalTwinExecutionHistory';
-export { setPipelineExecutionDB } from './backend/util/digitalTwinPipelineExecution';
-export { setEnvironmentStore } from './backend/util/env';
+} from './src/util/digitalTwinAdapter';
+export { setExecutionHistoryDB } from './src/util/digitalTwinExecutionHistory';
+export { setPipelineExecutionDB } from './src/util/digitalTwinPipelineExecution';
+export { setEnvironmentStore } from './src/util/env';
 export {
   fetchDigitalTwins,
   fetchLibraryAssets,
   initDigitalTwin,
-} from './backend/util/init';
+} from './src/util/init';
 
-// store
-export { default as useCart } from './store/CartAccess';
+// src/store
+export { default as useCart } from './src/store/CartAccess';
 export {
   default as assetsSlice,
   deleteAsset,
   selectAssetByPathAndPrivacy,
   selectAssetsByTypeAndPrivacy,
-} from './store/assets.slice';
-export { default as cartSlice } from './store/cart.slice';
-export { default as environmentSlice } from './store/environment.slice';
+} from './src/store/assets.slice';
+export { default as cartSlice } from './src/store/cart.slice';
+export { default as environmentSlice } from './src/store/environment.slice';
 export {
   default as fileSlice,
   addOrUpdateFile,
@@ -154,7 +154,7 @@ export {
   removeAllModifiedFiles,
   renameFile,
   selectModifiedFiles,
-} from './store/file.slice';
+} from './src/store/file.slice';
 export {
   default as libraryConfigFilesSlice,
   addOrUpdateLibraryFile,
@@ -162,4 +162,4 @@ export {
   removeAllFiles,
   removeAllModifiedLibraryFiles,
   selectModifiedLibraryFiles,
-} from './store/libraryConfigFiles.slice';
+} from './src/store/libraryConfigFiles.slice';

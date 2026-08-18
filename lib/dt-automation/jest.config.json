@@ -12,7 +12,7 @@
           "esModuleInterop": true,
           "baseUrl": ".",
           "paths": {
-            "model/*": ["./*"],
+            "model/*": ["./src/*"],
             "test/*": ["./test/*"]
           }
         }
@@ -26,7 +26,7 @@
   "moduleDirectories": ["node_modules"],
   "modulePaths": ["<rootDir>"],
   "moduleNameMapper": {
-    "^model/(.*)$": "<rootDir>/$1",
+    "^model/(.*)$": "<rootDir>/src/$1",
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts"

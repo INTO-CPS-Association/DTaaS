@@ -1,13 +1,13 @@
-import DigitalTwin from 'model/backend/digitalTwin';
-import { getUpdatedLibraryFile } from 'model/backend/util/digitalTwinUtils';
+import DigitalTwin from 'model/digitalTwin';
+import { getUpdatedLibraryFile } from 'model/util/digitalTwinUtils';
 import {
   mockGitlabInstance,
   setupBeforeEach,
   createDigitalTwin,
 } from './testSetup';
 
-jest.mock('model/backend/util/digitalTwinUtils', () => ({
-  ...jest.requireActual('model/backend/util/digitalTwinUtils'),
+jest.mock('model/util/digitalTwinUtils', () => ({
+  ...jest.requireActual('model/util/digitalTwinUtils'),
   getUpdatedLibraryFile: jest.fn(),
 }));
 

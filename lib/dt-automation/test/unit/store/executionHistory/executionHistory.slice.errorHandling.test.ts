@@ -6,12 +6,12 @@ import {
   updateExecution,
   clearExecutionHistoryForDT,
   checkRunningExecutions,
-} from 'model/backend/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import ExecutionStatusService from 'model/backend/state/ExecutionStatusService';
+} from 'model/state/executionHistory.slice';
+import { ExecutionStatus } from 'model/interfaces/execution';
+import ExecutionStatusService from 'model/state/ExecutionStatusService';
 import { setupStore } from './testSetup';
 
-jest.mock('model/backend/state/ExecutionStatusService', () => ({
+jest.mock('model/state/ExecutionStatusService', () => ({
   __esModule: true,
   default: { checkRunningExecutions: jest.fn() },
 }));

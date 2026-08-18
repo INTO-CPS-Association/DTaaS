@@ -1,10 +1,10 @@
-import DigitalTwin from 'model/backend/digitalTwin';
+import DigitalTwin from 'model/digitalTwin';
 import {
   FileType,
   LibraryAssetInterface,
-} from 'model/backend/interfaces/sharedInterfaces';
-import { getBranchName } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
-import { createDT } from 'model/backend/util/digitalTwinFileManagement';
+} from 'model/interfaces/sharedInterfaces';
+import { getBranchName } from 'model/gitlab/digitalTwinConfig/settingsUtility';
+import { createDT } from 'model/util/digitalTwinFileManagement';
 import { mockBackendInstance, mockDTAssets } from 'test/__mocks__/global_mocks';
 
 describe('digitalTwinFileManagement', () => {

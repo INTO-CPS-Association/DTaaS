@@ -7,7 +7,7 @@ import {
   getRunnerTag,
   resetSettingsStore,
   setSettingsStore,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from 'model/gitlab/digitalTwinConfig/settingsUtility';
 
 const settings = {
   GROUP_NAME: 'dtaas',

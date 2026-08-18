@@ -1,5 +1,5 @@
 import { TextEncoder, TextDecoder } from 'node:util';
-import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import { setSettingsStore } from 'model/gitlab/digitalTwinConfig/settingsUtility';
 
 const testSettings = {
   GROUP_NAME: 'dtaas',

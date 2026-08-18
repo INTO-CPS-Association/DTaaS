@@ -1,10 +1,10 @@
-import DigitalTwin from 'model/backend/digitalTwin';
+import DigitalTwin from 'model/digitalTwin';
 import {
   getBranchName,
   getGroupName,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from 'model/gitlab/digitalTwinConfig/settingsUtility';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import getAuthority from 'model/backend/util/env';
+import getAuthority from 'model/util/env';
 import {
   mockGitlabInstance,
   setupBeforeEach,

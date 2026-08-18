@@ -1,6 +1,6 @@
-import DigitalTwin from 'model/backend/digitalTwin';
+import DigitalTwin from 'model/digitalTwin';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from 'model/interfaces/execution';
 import {
   mockGitlabInstance,
   mockedIndexedDBService,

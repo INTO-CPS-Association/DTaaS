@@ -1,7 +1,7 @@
 import {
   downloadResultsJson,
   downloadTaskResultJson,
-} from 'model/backend/gitlab/measure/measurement.utils';
+} from 'model/gitlab/measure/measurement.utils';
 import {
   createMockTask,
   createMockTrial,

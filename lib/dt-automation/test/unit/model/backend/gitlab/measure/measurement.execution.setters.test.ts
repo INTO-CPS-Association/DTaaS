@@ -8,7 +8,7 @@ import {
   measurementConfig,
   TimedTask,
   setMeasurementStore,
-} from 'model/backend/gitlab/measure/measurement.execution';
+} from 'model/gitlab/measure/measurement.execution';
 import {
   createMockStoreState,
   createMockSetters,

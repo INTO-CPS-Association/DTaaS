@@ -1,12 +1,12 @@
-import GitlabInstance from 'model/backend/gitlab/instance';
-import GitlabAPI from 'model/backend/gitlab/backend';
-import { JobSummary } from 'model/backend/interfaces/backendInterfaces';
+import GitlabInstance from 'model/gitlab/instance';
+import GitlabAPI from 'model/gitlab/backend';
+import { JobSummary } from 'model/interfaces/backendInterfaces';
 import {
   getCommonLibraryProjectName,
   getGroupName,
   getDTDirectory,
   getBranchName,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from 'model/gitlab/digitalTwinConfig/settingsUtility';
 import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 
 jest.mock('@gitbeaker/rest');

@@ -3,7 +3,7 @@ import libraryFilesSlice, {
   initializeLibraryFile,
   removeAllModifiedLibraryFiles,
 } from 'model/store/libraryConfigFiles.slice';
-import { LibraryConfigFile } from 'model/backend/interfaces/sharedInterfaces';
+import { LibraryConfigFile } from 'model/interfaces/sharedInterfaces';
 
 describe('libraryFilesSlice', () => {
   const libraryFilesInitialState: LibraryConfigFile[] = [];

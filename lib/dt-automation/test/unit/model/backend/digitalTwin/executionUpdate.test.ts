@@ -1,5 +1,5 @@
-import DigitalTwin from 'model/backend/digitalTwin';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import DigitalTwin from 'model/digitalTwin';
+import { ExecutionStatus } from 'model/interfaces/execution';
 import {
   mockGitlabInstance,
   mockedIndexedDBService,

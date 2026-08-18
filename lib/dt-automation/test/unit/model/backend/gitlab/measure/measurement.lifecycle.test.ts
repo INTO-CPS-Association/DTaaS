@@ -2,14 +2,14 @@ import {
   restartMeasurement,
   handleBeforeUnload,
   handleUnload,
-} from 'model/backend/gitlab/measure/measurement.runner';
+} from 'model/gitlab/measure/measurement.runner';
 import {
   restoreOriginalSettings,
   resetTasks,
-} from 'model/backend/gitlab/measure/measurement.execution';
-import type { Configuration } from 'model/backend/gitlab/measure/measurement.types';
-import { cancelActivePipelines } from 'model/backend/gitlab/measure/measurement.pipeline';
-import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
+} from 'model/gitlab/measure/measurement.execution';
+import type { Configuration } from 'model/gitlab/measure/measurement.types';
+import { cancelActivePipelines } from 'model/gitlab/measure/measurement.pipeline';
+import { BackendInterface } from 'model/interfaces/backendInterfaces';
 import { setupMeasurementTestHarness } from './measurement.testUtil';
 
 const STUB_CONFIG: Configuration = {
@@ -20,21 +20,21 @@ const STUB_CONFIG: Configuration = {
   'Runner tag': 'linux',
 };
 
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
+jest.mock('model/gitlab/measure/measurement.execution', () => {
   const { createMeasurementExecutionMock } = jest.requireActual(
     './measurement.envSetup',
   );
   return createMeasurementExecutionMock();
 });
 
-jest.mock('model/backend/gitlab/measure/measurement.pipeline', () => ({
+jest.mock('model/gitlab/measure/measurement.pipeline', () => ({
   cancelActivePipelines: jest.fn().mockResolvedValue(undefined),
   runTrials: jest.fn().mockResolvedValue([]),
 }));
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+jest.mock('model/gitlab/execution/pipelineCore', () => ({
   delay: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock('model/backend/gitlab/execution/statusChecking', () => ({
+jest.mock('model/gitlab/execution/statusChecking', () => ({
   isFailureStatus: jest.fn(
     (s: string) =>
       s.toLowerCase() === 'failed' || s.toLowerCase() === 'skipped',

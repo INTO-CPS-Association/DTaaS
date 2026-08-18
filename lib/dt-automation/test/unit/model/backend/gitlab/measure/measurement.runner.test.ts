@@ -6,38 +6,38 @@ import {
   handleBeforeUnload,
   handleUnload,
   setMeasurementDB,
-} from 'model/backend/gitlab/measure/measurement.runner';
+} from 'model/gitlab/measure/measurement.runner';
 import {
   saveOriginalSettings,
   restoreOriginalSettings,
-} from 'model/backend/gitlab/measure/measurement.execution';
+} from 'model/gitlab/measure/measurement.execution';
 import {
   cancelActivePipelines,
   runTrials,
-} from 'model/backend/gitlab/measure/measurement.pipeline';
+} from 'model/gitlab/measure/measurement.pipeline';
 import {
   setupMeasurementTestHarness,
   createMockActivePipeline,
   createMockBackend,
 } from './measurement.testUtil';
 
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
+jest.mock('model/gitlab/measure/measurement.execution', () => {
   const { createMeasurementExecutionMock } = jest.requireActual(
     './measurement.envSetup',
   );
   return createMeasurementExecutionMock({ runDigitalTwin: jest.fn() });
 });
 
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+jest.mock('model/gitlab/execution/pipelineCore', () => ({
   delay: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock('model/backend/gitlab/execution/statusChecking', () => ({
+jest.mock('model/gitlab/execution/statusChecking', () => ({
   isFailureStatus: jest.fn(
     (s: string) =>
       s.toLowerCase() === 'failed' || s.toLowerCase() === 'skipped',
   ),
 }));
-jest.mock('model/backend/gitlab/measure/measurement.pipeline', () => ({
+jest.mock('model/gitlab/measure/measurement.pipeline', () => ({
   runDigitalTwin: jest.fn(),
   cancelActivePipelines: jest.fn().mockResolvedValue(undefined),
   runTrials: jest.fn().mockResolvedValue([]),
@@ -74,7 +74,7 @@ describe('measurement.runner', () => {
   it('dispatches completion snackbar when all tasks finish without stopping', async () => {
     const mockShowSnackbar = jest.fn();
     const { getStore } = jest.requireMock(
-      'model/backend/gitlab/measure/measurement.execution',
+      'model/gitlab/measure/measurement.execution',
     );
     (getStore as jest.Mock).mockReturnValue({
       showSnackbar: mockShowSnackbar,
@@ -93,7 +93,7 @@ describe('measurement.runner', () => {
   it('does not dispatch completion snackbar when stopped', async () => {
     const mockShowSnackbar = jest.fn();
     const { getStore } = jest.requireMock(
-      'model/backend/gitlab/measure/measurement.execution',
+      'model/gitlab/measure/measurement.execution',
     );
     (getStore as jest.Mock).mockReturnValue({
       showSnackbar: mockShowSnackbar,
@@ -308,7 +308,7 @@ describe('measurement.runner', () => {
 
     it('only restores settings when not running', () => {
       const { restoreOriginalSettings: mockRestore } = jest.requireMock(
-        'model/backend/gitlab/measure/measurement.execution',
+        'model/gitlab/measure/measurement.execution',
       );
       harness.isRunningRef.current = false;
 

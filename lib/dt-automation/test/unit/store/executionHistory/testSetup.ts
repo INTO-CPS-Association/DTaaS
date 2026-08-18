@@ -1,10 +1,10 @@
 import executionHistoryReducer, {
   setStorageService,
-} from 'model/backend/state/executionHistory.slice';
+} from 'model/state/executionHistory.slice';
 import { configureStore } from '@reduxjs/toolkit';
-import { IExecutionHistoryStorage } from 'model/backend/interfaces/sharedInterfaces';
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { IExecutionHistoryStorage } from 'model/interfaces/sharedInterfaces';
+import { DTExecutionResult } from 'model/gitlab/types/executionHistory';
+import { ExecutionStatus } from 'model/interfaces/execution';
 
 export const createMockStorageService =
   (): jest.Mocked<IExecutionHistoryStorage> => ({

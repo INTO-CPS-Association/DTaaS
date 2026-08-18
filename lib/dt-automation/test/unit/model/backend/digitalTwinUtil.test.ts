@@ -1,8 +1,8 @@
 import {
   getDTSubfolders,
   getUpdatedLibraryFile,
-} from 'model/backend/util/digitalTwinUtils';
-import { getDTDirectory } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from 'model/util/digitalTwinUtils';
+import { getDTDirectory } from 'model/gitlab/digitalTwinConfig/settingsUtility';
 
 const mockApi = {
   init: jest.fn(),

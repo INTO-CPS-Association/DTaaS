@@ -7,8 +7,8 @@ import {
   isFinishedStatus,
   getStatusDescription,
   getStatusSeverity,
-} from 'model/backend/gitlab/execution/statusChecking';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+} from 'model/gitlab/execution/statusChecking';
+import { ExecutionStatus } from 'model/interfaces/execution';
 
 describe('statusChecking', () => {
   describe('mapGitlabStatusToExecutionStatus', () => {

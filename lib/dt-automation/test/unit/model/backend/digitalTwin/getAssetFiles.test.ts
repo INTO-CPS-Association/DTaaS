@@ -1,4 +1,4 @@
-import DigitalTwin from 'model/backend/digitalTwin';
+import DigitalTwin from 'model/digitalTwin';
 import {
   mockGitlabInstance,
   setupBeforeEach,

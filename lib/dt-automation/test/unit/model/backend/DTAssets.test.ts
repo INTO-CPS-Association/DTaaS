@@ -1,11 +1,11 @@
-import { FileType } from 'model/backend/interfaces/sharedInterfaces';
-import DTAssets, { getFilePath } from 'model/backend/DTAssets';
+import { FileType } from 'model/interfaces/sharedInterfaces';
+import DTAssets, { getFilePath } from 'model/DTAssets';
 import {
   mockBackendInstance,
   mockFileHandler,
 } from 'test/__mocks__/global_mocks';
 
-jest.mock('model/backend/fileHandler', () => ({
+jest.mock('model/fileHandler', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => mockFileHandler),
 }));

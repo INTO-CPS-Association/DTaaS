@@ -7,7 +7,7 @@ import {
   shouldContinuePolling,
   getPollingInterval,
   stopPipelines,
-} from 'model/backend/gitlab/execution/pipelineCore';
+} from 'model/gitlab/execution/pipelineCore';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 
 describe('pipelineCore', () => {
