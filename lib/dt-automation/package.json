@@ -55,6 +55,9 @@
   },
   "type": "module",
   "// tsc-alias": "The declaration build rewrites internal src/* aliases to portable relative imports for npm consumers.",
+  "resolutions": {
+    "esbuild": "0.28.1"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",
