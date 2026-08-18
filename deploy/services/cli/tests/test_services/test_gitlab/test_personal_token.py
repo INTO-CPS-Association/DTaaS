@@ -11,7 +11,6 @@ from dtaas_services.pkg.services.gitlab import personal_token as pt
 # pylint: disable=W0212
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-TEST_USERNAME = "testuser"
 BASE_URL = "https://example.com:8090/gitlab"
 
 
@@ -272,41 +271,3 @@ def test_load_pat_from_tokens_success(mocker, tmp_path):
     success, pat = pt._load_pat_from_tokens()
     assert success is True
     assert pat == TEST_TOKEN
-
-
-def test_create_user_pat_success():
-    """Test creating a PAT for a user succeeds."""
-    gl = MagicMock()
-    mock_user = Mock()
-    mock_pat = Mock()
-    mock_pat.token = TEST_TOKEN
-    mock_user.personal_access_tokens.create.return_value = mock_pat
-    gl.users.get.return_value = mock_user
-
-    success, token = pt.create_user_pat(gl, 42, TEST_USERNAME)
-    assert success is True
-    assert token == TEST_TOKEN
-
-
-def test_create_user_pat_request_failure():
-    """Test creating a PAT fails on API error."""
-    gl = MagicMock()
-    gl.users.get.side_effect = GitlabError("timeout")
-
-    success, error = pt.create_user_pat(gl, 42, TEST_USERNAME)
-    assert success is False
-    assert "timeout" in error
-
-
-def test_create_user_pat_empty_token():
-    """Test creating a PAT that returns an empty token."""
-    gl = MagicMock()
-    mock_user = Mock()
-    mock_pat = Mock()
-    mock_pat.token = ""
-    mock_user.personal_access_tokens.create.return_value = mock_pat
-    gl.users.get.return_value = mock_user
-
-    success, error = pt.create_user_pat(gl, 42, TEST_USERNAME)
-    assert success is False
-    assert "Empty token" in error

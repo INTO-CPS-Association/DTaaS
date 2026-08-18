@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 PAT_NAME = "dtaas-services"
 TOKENS_FILENAME = "gitlab_tokens.json"
-USER_PAT_NAME = "dtaas"
-USER_PAT_SCOPES = ["api", "read_repository", "write_repository"]
 ROOT_USER_ID = 1
 
 
@@ -192,32 +190,3 @@ def _load_pat_from_tokens() -> Tuple[bool, str]:
             "Run 'dtaas-services install -s gitlab' first."
         )
     return _read_tokens_file(tokens_path)
-
-
-def create_user_pat(gl: gitlab.Gitlab, user_id: int, username: str) -> Tuple[bool, str]:
-    """Create a Personal Access Token for a GitLab user via the admin API.
-
-    Args:
-        gl: Authenticated gitlab.Gitlab client
-        user_id: GitLab user ID
-        username: Username (for log messages)
-
-    Returns:
-        Tuple of (success, token_or_error)
-    """
-    expires_at = (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d")
-    try:
-        user = gl.users.get(user_id)
-        pat = user.personal_access_tokens.create(
-            {
-                "name": USER_PAT_NAME,
-                "scopes": USER_PAT_SCOPES,
-                "expires_at": expires_at,
-            }
-        )
-        token = pat.token
-        if not token:
-            return False, f"Empty token in PAT response for '{username}'"
-        return True, token
-    except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to create PAT for '{username}': {exc}"

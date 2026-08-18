@@ -1,10 +1,10 @@
 """GitLab API client factory using python-gitlab."""
 
 import os
-import warnings
 
 import gitlab
-import urllib3
+
+from dtaas_gitlab import get_gitlab_client as _build_client
 
 
 def get_ssl_verify() -> bool:
@@ -65,10 +65,10 @@ def build_base_url() -> str:
 
 
 def get_gitlab_client(private_token: str) -> gitlab.Gitlab:
-    """Create an authenticated python-gitlab client.
+    """Create an authenticated python-gitlab client for this deployment.
 
-    When SSL verification is disabled (SSL_VERIFY=false), urllib3 warnings
-    are suppressed since the user has explicitly opted out of verification.
+    Resolves the instance URL and SSL setting from the environment, then
+    delegates client construction to dtaas_gitlab.get_gitlab_client.
 
     Args:
         private_token: GitLab Personal Access Token
@@ -76,11 +76,4 @@ def get_gitlab_client(private_token: str) -> gitlab.Gitlab:
     Returns:
         Configured gitlab.Gitlab instance
     """
-    url = build_base_url()
-    verify = get_ssl_verify()
-    if not verify:
-        warnings.filterwarnings(
-            "ignore",
-            category=urllib3.exceptions.InsecureRequestWarning,
-        )
-    return gitlab.Gitlab(url, private_token=private_token, ssl_verify=verify)
+    return _build_client(build_base_url(), private_token, ssl_verify=get_ssl_verify())
