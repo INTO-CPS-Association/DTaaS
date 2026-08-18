@@ -49,9 +49,7 @@ function createMockState(): MockMeasurementState {
 export function createMeasurementExecutionMock(
   extras: Record<string, unknown> = {},
 ) {
-  const actual = jest.requireActual(
-    'src/gitlab/measure/measurement.execution',
-  );
+  const actual = jest.requireActual('src/gitlab/measure/measurement.execution');
 
   const bs = createMockState();
 

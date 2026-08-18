@@ -6,9 +6,8 @@
       "ts-jest",
       {
         "tsconfig": {
-          "jsx": "react-jsx",
           "noUnusedLocals": false,
-          "types": ["jest", "node", "react"],
+          "types": ["jest", "node"],
           "esModuleInterop": true,
           "baseUrl": ".",
           "paths": {

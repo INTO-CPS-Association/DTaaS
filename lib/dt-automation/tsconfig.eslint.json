@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "noUnusedLocals": false,
-    "types": ["jest", "node", "react"]
+    "types": ["jest", "node"]
   },
   "include": [
     "*.ts",

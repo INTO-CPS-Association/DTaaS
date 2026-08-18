@@ -5,7 +5,7 @@
     "sourceMap": true, // Generate source maps.
     "target": "ES2019",
     "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error"],
-    "types": ["react"], // Keep only react: the model source does not use Node or Jest globals.
+    "types": [], // Keep the package free from test and UI framework globals.
     "module": "esnext", // Emit ES modules.
     "moduleResolution": "bundler", // Resolve imports as a bundler does.
     "declaration": true,

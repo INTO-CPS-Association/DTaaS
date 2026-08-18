@@ -23,6 +23,8 @@ import {
   computeFinalStatus,
 } from 'src/gitlab/measure/measurement.utils';
 
+type MutableRef<T> = { current: T };
+
 interface MeasurementDB {
   add(task: TimedTask): Promise<string>;
   purge(): Promise<void>;
@@ -172,7 +174,7 @@ async function runEnabledTasks(
 
 export async function startMeasurement(
   setters: MeasurementSetters,
-  isRunningRef: React.MutableRefObject<boolean>,
+  isRunningRef: MutableRef<boolean>,
 ): Promise<void> {
   if (isRunningRef.current) {
     return;
@@ -231,7 +233,7 @@ export async function purgeMeasurementData(): Promise<void> {
 
 export async function restartMeasurement(
   setters: MeasurementSetters,
-  isRunningRef: React.MutableRefObject<boolean>,
+  isRunningRef: MutableRef<boolean>,
 ): Promise<void> {
   if (isRestarting) {
     return;
@@ -270,7 +272,7 @@ export async function restartMeasurement(
 
 export function handleBeforeUnload(
   event: BeforeUnloadEvent,
-  isRunningRef: React.MutableRefObject<boolean>,
+  isRunningRef: MutableRef<boolean>,
 ): void {
   if (isRunningRef.current && measurementState.activePipelines.length > 0) {
     event.preventDefault();
@@ -301,9 +303,7 @@ function cancelPipelineAndKnownChild({
   }
 }
 
-export function handleUnload(
-  isRunningRef: React.MutableRefObject<boolean>,
-): void {
+export function handleUnload(isRunningRef: MutableRef<boolean>): void {
   if (isRunningRef.current && measurementState.activePipelines.length > 0) {
     cancelPipelinesFireAndForget();
   }

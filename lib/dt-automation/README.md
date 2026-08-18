@@ -11,11 +11,10 @@ server-side runtimes.
 
 ## Install
 
-React and React Redux are peer dependencies. Install compatible versions in
-the consuming application:
+The package has no React dependency. Install it directly:
 
 ```bash
-yarn add @into-cps-association/dt-automation react@^19.2.0 react-redux@^9.2.0
+yarn add @into-cps-association/dt-automation
 ```
 
 ## Use
@@ -50,7 +49,6 @@ runtime services that the DTaaS client provides:
   corresponding execution APIs.
 - A measurement store and database registered with `setMeasurementStore` and
   `setMeasurementDB` when using measurement APIs.
-- A React Redux `Provider` when using `useCart`.
 
 The consuming application can use the exported `environmentSlice` and
 `updateAuthority` action, or provide a compatible environment reducer of its
@@ -75,6 +73,29 @@ const store = configureStore({
 store.dispatch(updateAuthority(appConfig.gitlabAuthority));
 setEnvironmentStore(store);
 ```
+
+## Cart state
+
+The package exports the `cartSlice` reducer and its `addToCart`,
+`removeFromCart`, and `clearCart` actions. Add the reducer to the consuming
+application’s Redux Toolkit store and use the actions from that application’s
+UI layer. The package does not provide React hooks or require a React Redux
+`Provider`.
+
+```ts
+import { configureStore } from '@reduxjs/toolkit';
+import { addToCart, cartSlice } from '@into-cps-association/dt-automation';
+
+const store = configureStore({
+  reducer: { cart: cartSlice },
+});
+
+store.dispatch(addToCart(asset));
+const assetsInCart = store.getState().cart.assets;
+```
+
+The consuming application may connect this store to any UI framework, or use it
+without a UI framework at all.
 
 The package targets browser integrations. GitLab and measurement flows use
 browser facilities including `sessionStorage`, `document`, `Blob`, and object

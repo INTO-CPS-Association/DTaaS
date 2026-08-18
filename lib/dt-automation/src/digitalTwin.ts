@@ -13,10 +13,7 @@ import {
   LibraryAssetInterface,
   LibraryConfigFile,
 } from 'src/interfaces/sharedInterfaces';
-import {
-  BackendInterface,
-  ProjectId,
-} from 'src/interfaces/backendInterfaces';
+import { BackendInterface, ProjectId } from 'src/interfaces/backendInterfaces';
 import { DTExecutionResult } from 'src/gitlab/types/executionHistory';
 import DTAssets from 'src/DTAssets';
 import { executeDT, stopDT } from 'src/util/digitalTwinPipelineExecution';

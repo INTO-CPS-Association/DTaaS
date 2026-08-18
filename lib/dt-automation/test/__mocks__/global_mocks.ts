@@ -5,9 +5,7 @@ import DigitalTwin from 'src/digitalTwin';
 import FileHandler from 'src/fileHandler';
 import DTAssets from 'src/DTAssets';
 import { mockBackendInstance } from 'test/__mocks__/mockBackendData';
-import {
-  mockAuthority,
-} from 'test/__mocks__/mockEnvConstants';
+import { mockAuthority } from 'test/__mocks__/mockEnvConstants';
 import { setEnvironmentStore, resetEnvironmentStore } from 'src/util/env';
 
 export {
@@ -110,7 +108,7 @@ export const createMockDigitalTwinData = (dtName: string): DigitalTwinData => ({
   gitlabProjectId: 123,
 });
 
-const createAsyncMock = <T,>(value: T) => jest.fn().mockResolvedValue(value);
+const createAsyncMock = <T>(value: T) => jest.fn().mockResolvedValue(value);
 
 export const mockFileHandler = {
   name: 'mockedName',

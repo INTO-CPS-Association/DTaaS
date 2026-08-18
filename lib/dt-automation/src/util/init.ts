@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from 'react';
 import type { Dispatch as ReduxDispatch } from '@reduxjs/toolkit';
 import { AssetTypes } from 'src/gitlab/digitalTwinConfig/constants';
 import getAuthority from 'src/util/env';
@@ -10,6 +9,8 @@ import LibraryAsset, { getLibrarySubfolders } from 'src/libraryAsset';
 import { getDTSubfolders } from 'src/util/digitalTwinUtils';
 import { createGitlabInstance } from 'src/gitlab/gitlabFactory';
 import LibraryManager from 'src/libraryManager';
+
+type ErrorSetter = (message: string | null) => void;
 
 async function createInitializedInstance() {
   const instance = createGitlabInstance(
@@ -61,7 +62,7 @@ async function loadDigitalTwins() {
 
 export const fetchLibraryAssets = async (
   dispatch: ReduxDispatch,
-  setError: Dispatch<SetStateAction<string | null>>,
+  setError: ErrorSetter,
   type: string,
   isPrivate: boolean,
 ) => {
@@ -78,7 +79,7 @@ export const fetchLibraryAssets = async (
 
 export const fetchDigitalTwins = async (
   dispatch: ReduxDispatch,
-  setError: Dispatch<SetStateAction<string | null>>,
+  setError: ErrorSetter,
 ) => {
   try {
     await fetchLibraryAssets(dispatch, setError, 'Digital Twins', true);

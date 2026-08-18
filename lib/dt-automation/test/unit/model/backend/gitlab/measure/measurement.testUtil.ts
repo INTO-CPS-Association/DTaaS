@@ -1,4 +1,3 @@
-import React from 'react';
 import { BackendInterface } from 'src/interfaces/backendInterfaces';
 import {
   TimedTask,
@@ -163,13 +162,15 @@ export function createMockSetters(resultsStateRef: {
     setIsRunning: jest.fn(),
     setCurrentExecutions: jest.fn(),
     setCurrentTaskIndex: jest.fn(),
-    setResults: jest.fn((updater: React.SetStateAction<TimedTask[]>) => {
-      if (typeof updater === 'function') {
-        resultsStateRef.current = updater(resultsStateRef.current || []);
-      } else {
-        resultsStateRef.current = updater;
-      }
-    }),
+    setResults: jest.fn(
+      (updater: TimedTask[] | ((previous: TimedTask[]) => TimedTask[])) => {
+        if (typeof updater === 'function') {
+          resultsStateRef.current = updater(resultsStateRef.current || []);
+        } else {
+          resultsStateRef.current = updater;
+        }
+      },
+    ),
   };
 }
 
@@ -221,7 +222,7 @@ export function setupMeasurementTestHarness() {
   const state = measurementState as unknown as TestMeasurementState;
   const resultsRef: { current: TimedTask[] } = { current: [] };
   const setters = createMockSetters(resultsRef);
-  const isRunningRef: React.MutableRefObject<boolean> = { current: false };
+  const isRunningRef: { current: boolean } = { current: false };
   const mockMeasurementConfig =
     measurementConfig as unknown as MockMeasurementConfig;
 

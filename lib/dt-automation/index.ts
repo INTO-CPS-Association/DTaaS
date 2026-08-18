@@ -137,14 +137,18 @@ export {
 } from './src/util/init';
 
 // src/store
-export { default as useCart } from './src/store/CartAccess';
 export {
   default as assetsSlice,
   deleteAsset,
   selectAssetByPathAndPrivacy,
   selectAssetsByTypeAndPrivacy,
 } from './src/store/assets.slice';
-export { default as cartSlice } from './src/store/cart.slice';
+export {
+  default as cartSlice,
+  addToCart,
+  removeFromCart,
+  clearCart,
+} from './src/store/cart.slice';
 export {
   default as environmentSlice,
   updateAuthority,

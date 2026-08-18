@@ -2,6 +2,9 @@
 
 See [README](./README.md) for installation and package usage.
 
+The package contains framework-neutral Redux state and business logic. React
+components and React Redux hooks belong in the consuming application.
+
 ## Package source
 
 The package source lives under `lib/dt-automation` and is published as
