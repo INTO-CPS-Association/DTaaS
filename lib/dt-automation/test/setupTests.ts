@@ -30,12 +30,6 @@ Object.defineProperty(globalThis, 'TextDecoder', {
 
 Element.prototype.scrollIntoView ??= () => {};
 
-if (!globalThis.env) {
-  globalThis.env = {} as typeof globalThis.env;
-}
-const testEnvironment = globalThis.env;
-testEnvironment.REACT_APP_AUTH_AUTHORITY ??= 'https://gitlab.example.com/';
-
 setSettingsStore({
   getState: () => ({
     settings: testSettings,

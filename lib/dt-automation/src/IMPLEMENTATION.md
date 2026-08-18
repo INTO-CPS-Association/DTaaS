@@ -85,10 +85,10 @@ the GitLab instance is hosted. The application must also populate the
 `access_token` and `username` session-storage entries upon signing in; the
 backend uses those entries for authenticated requests.
 
-An application may optionally expose the initial authority before loading the
-package:
-
-`globalThis.env.REACT_APP_AUTH_AUTHORITY = 'https://gitlab.com'`
+The package does not read application globals. Consumers should initialize the
+authority through the registered environment store before using GitLab-backed
+features. The package exports `environmentSlice` and `updateAuthority` for
+applications that use the package reducer.
 
 ### External Service Setup
 

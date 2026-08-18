@@ -145,7 +145,11 @@ export {
   selectAssetsByTypeAndPrivacy,
 } from './src/store/assets.slice';
 export { default as cartSlice } from './src/store/cart.slice';
-export { default as environmentSlice } from './src/store/environment.slice';
+export {
+  default as environmentSlice,
+  updateAuthority,
+} from './src/store/environment.slice';
+export type { EnvironmentState } from './src/store/environment.slice';
 export {
   default as fileSlice,
   addOrUpdateFile,

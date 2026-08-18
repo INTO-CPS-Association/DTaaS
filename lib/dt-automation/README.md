@@ -32,8 +32,9 @@ import { formatName } from '@into-cps-association/dt-automation';
 const label = formatName('example-digital-twin');
 ```
 
-The root module is safe to import when `globalThis.env` is absent. In that
-case, the initial GitLab authority is an empty string.
+The package does not read application globals. Its environment reducer starts
+with an empty GitLab authority, which the consuming application must populate
+through its environment store before using GitLab-backed features.
 
 ## Integration requirements
 
@@ -54,9 +55,29 @@ runtime services that the DTaaS client provides:
   `setMeasurementDB` when using measurement APIs.
 - A React Redux `Provider` when using `useCart`.
 
-The DTaaS client may load `globalThis.env.REACT_APP_AUTH_AUTHORITY` before the
-application module as the initial environment value. This global is optional;
-the registered environment store is the authority used by GitLab operations.
+The consuming application can use the exported `environmentSlice` and
+`updateAuthority` action, or provide a compatible environment reducer of its
+own. The registered environment store is the authority used by GitLab
+operations.
+
+For applications using the package reducer, initialize it before invoking
+GitLab-backed functions:
+
+```ts
+import { configureStore } from '@reduxjs/toolkit';
+import {
+  environmentSlice,
+  setEnvironmentStore,
+  updateAuthority,
+} from '@into-cps-association/dt-automation';
+
+const store = configureStore({
+  reducer: { environment: environmentSlice },
+});
+
+store.dispatch(updateAuthority(appConfig.gitlabAuthority));
+setEnvironmentStore(store);
+```
 
 The package targets browser integrations. GitLab and measurement flows use
 browser facilities including `sessionStorage`, `document`, `Blob`, and object

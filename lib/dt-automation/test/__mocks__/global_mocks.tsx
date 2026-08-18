@@ -6,12 +6,7 @@ import FileHandler from 'model/fileHandler';
 import DTAssets from 'model/DTAssets';
 import { mockBackendInstance } from 'test/__mocks__/mockBackendData';
 import {
-  mockAppURL,
-  mockClientID,
   mockAuthority,
-  mockRedirectURI,
-  mockLogoutRedirectURI,
-  mockGitLabScopes,
 } from 'test/__mocks__/mockEnvConstants';
 import { setEnvironmentStore, resetEnvironmentStore } from 'model/util/env';
 
@@ -48,23 +43,6 @@ beforeEach(() => {
 afterEach(() => {
   resetEnvironmentStore();
 });
-
-globalThis.env = {
-  ...globalThis.env,
-  REACT_APP_ENVIRONMENT: 'test',
-  REACT_APP_URL: mockAppURL,
-  REACT_APP_URL_BASENAME: 'mock_url_basename',
-  REACT_APP_URL_DTLINK: '/lab',
-  REACT_APP_URL_LIBLINK: '',
-  REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
-  REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
-
-  REACT_APP_CLIENT_ID: mockClientID,
-  REACT_APP_AUTH_AUTHORITY: mockAuthority,
-  REACT_APP_REDIRECT_URI: mockRedirectURI,
-  REACT_APP_LOGOUT_REDIRECT_URI: mockLogoutRedirectURI,
-  REACT_APP_GITLAB_SCOPES: mockGitLabScopes,
-};
 
 jest.mock('model/gitlab/gitlabFactory', () => {
   const createGitlabInstance = jest.fn(() => mockBackendInstance);
