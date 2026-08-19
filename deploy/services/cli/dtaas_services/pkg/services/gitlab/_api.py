@@ -6,7 +6,7 @@ import warnings
 import gitlab
 import urllib3
 
-from ....gitlab_core import get_gitlab_client as _build_client
+from ....gitlab_common import get_gitlab_client as _build_client
 
 
 def get_ssl_verify() -> bool:
@@ -70,12 +70,12 @@ def get_gitlab_client(private_token: str) -> gitlab.Gitlab:
     """Create an authenticated python-gitlab client for this deployment.
 
     Resolves the instance URL and SSL setting from the environment, then
-    delegates client construction to gitlab_core.get_gitlab_client.
+    delegates client construction to gitlab_common.get_gitlab_client.
 
     When SSL verification is disabled (SSL_VERIFY=false), urllib3 warnings
     are suppressed since the user has explicitly opted out of verification.
     The suppression lives here, in the application entry point, rather than
-    in gitlab_core, so importing the shared module never silences warnings
+    in gitlab_common, so importing the shared module never silences warnings
     for an unrelated consumer.
 
     Args:

@@ -70,3 +70,6 @@ config/password.env.current
 # GitLab runtime directories (Docker compose bind mounts)
 config/gitlab/
 log/gitlab/
+
+# gitlab_common is vendored (copied) from lib/gitlab_common 
+dtaas_services/gitlab_common/

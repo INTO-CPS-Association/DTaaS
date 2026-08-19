@@ -90,6 +90,13 @@ jobs:
       - name: Install dev dependencies
         run: poetry install --with dev
 
+      - name: Run project build script
+        if: inputs.run-build-script
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
+        run: poetry run python -m "$SRC_DIR.pkg.build"
+        shell: bash
+
       - name: Check Docker availability (Linux)
         if: runner.os == 'Linux'
         run: docker --version
@@ -163,9 +170,11 @@ jobs:
       - name: Install runtime dependencies
         run: poetry install --only main
 
-      - name: Build deploy templates
+      - name: Run project build script
         if: inputs.run-build-script
-        run: python -m src.pkg.build
+        env:
+          SRC_DIR: ${{ inputs.src-directory }}
+        run: poetry run python -m "$SRC_DIR.pkg.build"
 
       - name: Build wheel and sdist
         run: |

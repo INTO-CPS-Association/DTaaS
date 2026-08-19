@@ -8,6 +8,7 @@ readme = "README.md"
 packages = [{include = "dtaas_services"}]
 include = [
     { path = "dtaas_services/templates/**/*", format = ["sdist", "wheel"] },
+    { path = "dtaas_services/gitlab_common/**/*", format = ["sdist", "wheel"] },
     { path = "dtaas_services/py.typed", format = ["sdist", "wheel"] }
 ]
 

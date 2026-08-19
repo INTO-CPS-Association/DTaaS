@@ -8,7 +8,7 @@ from typing import Tuple
 
 import gitlab
 
-from ....gitlab_core import CreateOutcome, PatOptions, create_user, create_user_pat
+from ....gitlab_common import CreateOutcome, PatOptions, create_user, create_user_pat
 from ...config import Config
 from ...utils import get_credentials_path, write_secret_file
 from ._api import get_gitlab_client
@@ -21,7 +21,7 @@ USER_PAT_OPTIONS = PatOptions(scopes=("api", "read_repository", "write_repositor
 
 
 def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | None]:
-    """Create one GitLab user from a CSV row via gitlab_core.create_user.
+    """Create one GitLab user from a CSV row via gitlab_common.create_user.
 
     Extracts and trims the username/email/password columns, then delegates
     validation and creation to the shared module, mapping its result back to

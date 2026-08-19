@@ -68,6 +68,21 @@ To verify the installation:
 dtaas-services --help
 ```
 
+### Build from Source
+
+The shared `gitlab_common` package is not committed to this repository, so a
+fresh clone must copy it in before tests or packaging will work:
+
+```bash
+cd DTaaS/deploy/services/cli
+poetry install
+poetry run python -m dtaas_services.pkg.build   # required before poetry build
+poetry build
+```
+
+The build script copies `lib/gitlab_common/gitlab_common/` into
+`dtaas_services/gitlab_common/`. See [DEVELOPER.md](DEVELOPER.md) for details.
+
 ## Quick Start
 
 1. Navigate to the desired setup location and generate the project

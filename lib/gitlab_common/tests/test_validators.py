@@ -1,6 +1,6 @@
 """Tests for shared GitLab input validation (gitlab_core/validators.py)."""
 
-from dtaas_services.gitlab_core import validators
+from gitlab_common import validators
 # pylint: disable=W0212
 
 TEST_EMAIL = "test@example.com"

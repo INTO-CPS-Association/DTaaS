@@ -24,6 +24,17 @@ pip install poetry
 poetry install
 ```
 
+The shared `gitlab_common` package is not committed to this repository.
+Before running tests or building the package, copy it from its source:
+
+```bash
+poetry run python -m dtaas_services.pkg.build
+```
+
+This populates `dtaas_services/gitlab_common/` from `lib/gitlab_common`.
+Re-run it whenever that source directory changes. Without it, importing
+`dtaas_services` fails with `ModuleNotFoundError: dtaas_services.gitlab_common`.
+
 ## Development Workflow
 
 ### Running Commands in Development
@@ -73,8 +84,10 @@ cli/
 │   │   ├── user_ops.py     # User management commands (user add, user reset-password)
 │   │   └── utility.py      # Command utilities
 │   ├── templates/          # Package-bundled templates used by generate-project (committed)
+│   ├── gitlab_common/      # Vendored from lib/gitlab_common by pkg/build.py (gitignored)
 │   └── pkg/
 │       ├── __init__.py
+│       ├── build.py        # Copies lib/gitlab_common into dtaas_services/gitlab_common
 │       ├── config.py       # Configuration loader
 │       ├── cert.py         # TLS certificate operations
 │       ├── formatter.py    # Output formatting utilities
@@ -192,6 +205,14 @@ cli/
 
 **Note:** `dtaas_services/templates/` is generated during the build process by copying
 `cli/templates/` and is gitignored. Edit source files in `cli/templates/` instead.
+
+**Note:** `dtaas_services/gitlab_common/` is likewise generated and gitignored.
+Its single source of truth is `lib/gitlab_common/gitlab_common/`, a standalone
+Poetry package with its own tests. Edit and test it there, then re-run
+`poetry run python -m dtaas_services.pkg.build`. It is copied rather than
+depended on so that `dtaas-services` and the DTaaS CLI stay independent of
+each other, and so no local path dependency ends up in published wheel
+metadata (PyPI rejects those).
 
 ## Code Organization
 
@@ -668,8 +689,19 @@ Aim for high test coverage, especially for:
 
 ## Building the package
 
+Run the build script first so the shared `gitlab_common` source is present,
+then build:
+
 ```bash
+poetry run python -m dtaas_services.pkg.build
 poetry build
 ```
 
 The built wheel and sdist are written to `cli/dist/`.
+
+`dtaas_services/gitlab_common/` is gitignored, so a fresh clone has nothing
+to package until the build script runs. It is deliberately a plain script
+rather than a Poetry build hook (`build = "build.py"` in `pyproject.toml`):
+a build hook makes poetry-core emit a platform-specific wheel
+(`cp312-…-win_amd64`) instead of the `py3-none-any` wheel this package
+needs. The same approach is used by the DTaaS CLI in `cli/src/pkg/build.py`.

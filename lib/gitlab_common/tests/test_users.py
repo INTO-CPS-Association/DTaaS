@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock
 
 from gitlab.exceptions import GitlabCreateError, GitlabError
-from dtaas_services.gitlab_core import (
+from gitlab_common import (
     CreateOutcome,
     PatOptions,
     create_user,
