@@ -7,54 +7,24 @@ from pathlib import Path
 from typing import Tuple
 
 import gitlab
-import gitlab.exceptions
+
+from dtaas_gitlab import create_user, create_user_pat
 
 from ...config import Config
 from ...utils import get_credentials_path, write_secret_file
 from ._api import get_gitlab_client
-from .validators import validate_user_row
-from .personal_token import _load_pat_from_tokens, create_user_pat
+from .personal_token import _load_pat_from_tokens
 
 logger = logging.getLogger(__name__)
 
 USER_TOKENS_FILENAME = "gitlab_user_tokens.json"
 
 
-def _extract_and_validate_user_fields(row: dict) -> Tuple[bool, str, dict]:
-    """Extract and validate CSV user fields, returning API payload on success."""
-    username = (row.get("username") or "").strip()
-    email = (row.get("email") or "").strip()
-    password = (row.get("password") or "").strip()
-
-    is_valid, validation_error = validate_user_row(username, email, password)
-    if not is_valid:
-        return False, validation_error, {}
-
-    return (
-        True,
-        "",
-        {
-            "username": username,
-            "email": email,
-            "password": password,
-            "name": username,
-            "skip_confirmation": True,
-        },
-    )
-
-
-def _handle_gitlab_create_error(
-    username: str, exc: gitlab.exceptions.GitlabCreateError
-) -> Tuple[bool, str, int | None]:
-    """Map GitLab create-user API errors to CLI return contract."""
-    if exc.response_code == 409:
-        logger.info("GitLab user already exists: %s", username)
-        return True, "", None
-    return False, f"Failed to create user '{username}': {exc}", None
-
-
 def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | None]:
-    """Create one GitLab user via the python-gitlab library.
+    """Create one GitLab user from a CSV row via dtaas_gitlab.create_user.
+
+    Extracts and trims the username/email/password columns, then delegates
+    validation and creation to the shared library.
 
     Args:
         gl: Authenticated gitlab.Gitlab client
@@ -63,20 +33,12 @@ def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | 
     Returns:
         Tuple of (success, error_message, user_id_or_None)
     """
-    is_valid, validation_error, payload = _extract_and_validate_user_fields(row)
-    if not is_valid:
-        return False, validation_error, None
-
-    username = payload["username"]
-
-    try:
-        user = gl.users.create(payload)
-        logger.info("Created GitLab user: %s", username)
-        return True, "", user.id
-    except gitlab.exceptions.GitlabCreateError as exc:
-        return _handle_gitlab_create_error(username, exc)
-    except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to create user '{username}': {exc}", None
+    return create_user(
+        gl,
+        username=(row.get("username") or "").strip(),
+        email=(row.get("email") or "").strip(),
+        password=(row.get("password") or "").strip(),
+    )
 
 
 def _create_user_and_pat(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, str]:
