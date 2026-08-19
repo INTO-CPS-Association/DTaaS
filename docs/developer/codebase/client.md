@@ -22,12 +22,6 @@ client/
 │   ├── routes.tsx
 │   ├── components/
 │   ├── database/
-│   ├── model/
-│   │   └── backend/
-│   │       ├── interfaces/
-│   │       ├── gitlab/
-│   │       ├── util/
-│   │       └── ...
 │   ├── page/
 │   ├── route/
 │   ├── store/
@@ -43,9 +37,12 @@ client/
 └── package.json
 ```
 
+The shared backend package lives under `lib/dt-automation/` and is consumed
+through `@into-cps-association/dt-automation`.
+
 ## Backend Integration Layer
 
-The backend model layer in `src/model/backend/` encapsulates GitLab-backed operations.
+The `dt-automation` package encapsulates GitLab-backed operations.
 
 Key classes:
 
@@ -73,6 +70,6 @@ yarn build
 
 ## Notes for Contributors
 
-- Keep GitLab-specific logic in backend implementation modules.
+- Keep GitLab-specific logic in `lib/dt-automation/`.
 - Keep route/view components focused on presentation and user workflows.
-- Prefer typed interfaces in `model/backend/interfaces/` when extending API contracts.
+- Prefer typed interfaces in `lib/dt-automation/src/interfaces/` when extending API contracts.

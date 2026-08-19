@@ -47,7 +47,8 @@ DTaaS/
 - Use React Testing Library for component testing
 - Follow the existing folder structure: `client/src/components/`,
   `client/src/page/`, `client/src/route/`
-- Keep GitLab-specific API behavior in `client/src/model/backend/`
+- Keep GitLab-specific API behavior in `lib/dt-automation/` and consume it
+  through the package root from client code.
 
 ### Python (Admin CLI Package)
 
@@ -97,7 +98,7 @@ DTaaS/
 - **Testing**: Use Jest, React and Playwright Testing Libraries
 - **Styling**: Follow existing CSS/styling patterns
 - **API Integration**: Use the GitLab API integration patterns in
-  `client/src/model/backend/`
+  `lib/dt-automation/` through the package root.
 - **Execution History**: Keep pipeline status/log handling consistent
   with existing utility modules
 

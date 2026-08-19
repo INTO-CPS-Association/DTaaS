@@ -8,6 +8,7 @@ import {
   setExecutionHistoryDB,
   setPipelineExecutionDB,
   setMeasurementDB,
+  updateAuthority,
 } from '@into-cps-association/dt-automation';
 import indexedDBService from 'database/executionHistoryDB';
 import measurementDBService from 'database/measurementHistoryDB';
@@ -61,7 +62,10 @@ const store = configureStore({
     }).concat(settingsPersistMiddleware),
 });
 
-// Dependency injection: wire store and services into model modules
+// Keep the package environment store aligned with the runtime configuration.
+store.dispatch(updateAuthority(globalThis.env?.REACT_APP_AUTH_AUTHORITY ?? ''));
+
+// Dependency injection: wire the client-owned services into package modules.
 setEnvironmentStore(store);
 setSettingsStore(store);
 setMeasurementStore({
