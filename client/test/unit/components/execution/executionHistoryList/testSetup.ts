@@ -1,11 +1,12 @@
 import { act } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
-import digitalTwinReducer, {
+import {
+  DTExecutionResult,
+  digitalTwinSlice as digitalTwinReducer,
   DigitalTwinData,
-} from 'model/backend/state/digitalTwin.slice';
-import executionHistoryReducer from 'model/backend/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+  executionHistorySlice as executionHistoryReducer,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const mockExecutions: DTExecutionResult[] = [

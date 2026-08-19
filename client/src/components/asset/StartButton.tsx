@@ -3,13 +3,15 @@ import { Button, CircularProgress, Box } from '@mui/material';
 import { handleStart } from 'route/digitaltwins/execution';
 import { useSelector, useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/snackbar.slice';
-import { formatName } from 'model/backend/digitalTwin';
+import {
+  formatName,
+  selectExecutionHistoryByDTName,
+  createDigitalTwinFromData,
+  ExecutionStatus,
+  DEBOUNCE_TIME,
+  DTExecutionResult,
+} from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import { selectExecutionHistoryByDTName } from 'model/backend/state/executionHistory.selectors';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { DEBOUNCE_TIME } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
 
 interface StartButtonProps {
   readonly assetName: string;

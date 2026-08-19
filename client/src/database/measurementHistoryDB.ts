@@ -1,8 +1,8 @@
-import { TimedTask } from 'model/backend/gitlab/measure/measurement.execution';
+import { TimedTask } from '@into-cps-association/dt-automation';
 import BaseIndexedDBService from 'database/BaseIndexedDBService';
-import type { MeasurementRecord } from 'model/backend/gitlab/measure/measurement.types';
+import type { MeasurementRecord } from '@into-cps-association/dt-automation';
 
-export type { MeasurementRecord } from 'model/backend/gitlab/measure/measurement.types';
+export type { MeasurementRecord } from '@into-cps-association/dt-automation';
 
 const STORE = 'measurementHistory';
 

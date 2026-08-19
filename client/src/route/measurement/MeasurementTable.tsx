@@ -11,7 +11,7 @@ import {
 import {
   TimedTask,
   ExecutionResult,
-} from 'model/backend/gitlab/measure/measurement.execution';
+} from '@into-cps-association/dt-automation';
 import MeasurementTableRow from 'route/measurement/MeasurementTableRow';
 
 export { TaskControls } from 'route/measurement/MeasurementTableCells';

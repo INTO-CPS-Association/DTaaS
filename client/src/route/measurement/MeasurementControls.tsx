@@ -10,12 +10,12 @@ import {
   DialogContentText,
   DialogActions,
 } from '@mui/material';
-import { TimedTask } from 'model/backend/gitlab/measure/measurement.execution';
 import {
+  TimedTask,
   getTotalTime,
   downloadResultsJson,
   isTaskComplete,
-} from 'model/backend/gitlab/measure/measurement.utils';
+} from '@into-cps-association/dt-automation';
 import { logDismiss } from 'util/logger/logger';
 import type { LogContext } from 'util/logger/logEvent';
 

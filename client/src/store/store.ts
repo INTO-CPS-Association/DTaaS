@@ -1,6 +1,14 @@
 import { Middleware } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { setStorageService } from 'model/backend/state/executionHistory.slice';
+import {
+  setStorageService,
+  setEnvironmentStore,
+  setSettingsStore,
+  setMeasurementStore,
+  setExecutionHistoryDB,
+  setPipelineExecutionDB,
+  setMeasurementDB,
+} from '@into-cps-association/dt-automation';
 import indexedDBService from 'database/executionHistoryDB';
 import measurementDBService from 'database/measurementHistoryDB';
 import { rootReducer } from 'store/storeTypes';
@@ -11,12 +19,6 @@ import {
   setSecondaryRunnerTag,
 } from 'store/settings.slice';
 import { showSnackbar } from 'store/snackbar.slice';
-import { setEnvironmentStore } from 'model/backend/util/env';
-import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
-import { setMeasurementStore } from 'model/backend/gitlab/measure/measurement.execution';
-import { setExecutionHistoryDB } from 'model/backend/util/digitalTwinExecutionHistory';
-import { setPipelineExecutionDB } from 'model/backend/util/digitalTwinPipelineExecution';
-import { setMeasurementDB } from 'model/backend/gitlab/measure/measurement.runner';
 import { setLoggerStore } from 'util/logger/logger';
 
 setStorageService(indexedDBService);

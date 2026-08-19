@@ -1,14 +1,20 @@
 import * as PipelineHandlers from 'route/digitaltwins/execution/executionButtonHandlers';
-import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
+import * as PipelineCore from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
   DigitalTwinData,
-} from 'model/backend/state/digitalTwin.slice';
-import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
+  extractDataFromDigitalTwin,
+  formatName,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
-import { formatName } from 'model/backend/digitalTwin';
+
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  stopPipelines: jest.fn().mockResolvedValue({ success: true }),
+}));
 
 const store = configureStore({
   reducer: {
@@ -84,12 +90,11 @@ describe('PipelineHandler Integration Tests', () => {
   });
 
   it('handles stop and catches error', async () => {
-    const stopPipelinesMock = jest
-      .spyOn(PipelineCore, 'stopPipelines')
-      .mockResolvedValueOnce({
-        success: false,
-        error: new Error('error'),
-      });
+    const stopPipelinesMock = PipelineCore.stopPipelines as jest.Mock;
+    stopPipelinesMock.mockResolvedValueOnce({
+      success: false,
+      error: new Error('error'),
+    });
 
     const { dispatch } = store;
 
@@ -102,6 +107,6 @@ describe('PipelineHandler Integration Tests', () => {
       `Execution stop failed for ${formatName(digitalTwin.DTName)}`,
     );
 
-    stopPipelinesMock.mockRestore();
+    stopPipelinesMock.mockReset();
   });
 });

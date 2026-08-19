@@ -2,38 +2,41 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import AssetBoard from 'components/asset/AssetBoard';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import assetsReducer, { setAssets } from 'model/store/assets.slice';
-import digitalTwinReducer, {
+import {
+  assetsSlice as assetsReducer,
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
   setShouldFetchDigitalTwins,
-} from 'model/backend/state/digitalTwin.slice';
-import executionHistoryReducer from 'model/backend/state/executionHistory.slice';
+  executionHistorySlice as executionHistoryReducer,
+  fileSlice,
+  addOrUpdateFile,
+  LibraryAsset,
+  libraryConfigFilesSlice,
+  FileState,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
 import {
   createMockDigitalTwinData,
   mockLibraryAsset,
 } from 'test/__mocks__/global_mocks';
-import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
-import LibraryAsset from 'model/backend/libraryAsset';
-import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
-import { storeResetAll } from 'test/integration/integration.testUtil';
+import {
+  setAssets,
+  storeResetAll,
+} from 'test/integration/integration.testUtil';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
 }));
 
-jest.mock('model/backend/util/digitalTwinAdapter', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.ADAPTER_MOCKS;
-});
-jest.mock('model/backend/util/init', () => {
-  const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.INIT_MOCKS;
-});
-jest.mock('model/backend/gitlab/instance', () => {
-  const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.GITLAB_MOCKS;
+  return {
+    ...actual,
+    ...adapterMocks.ADAPTER_MOCKS,
+    ...adapterMocks.INIT_MOCKS,
+    ...adapterMocks.GITLAB_MOCKS,
+  };
 });
 
 jest.useFakeTimers();

@@ -5,8 +5,10 @@ import {
   previewStore as store,
 } from 'test/integration/integration.testUtil';
 import { JobSchema } from '@gitbeaker/rest';
-import DigitalTwin from 'model/backend/digitalTwin';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import {
+  DigitalTwin,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { mockBackendInstance } from 'test/__mocks__/global_mocks';
 import setupDigitalTwinBeforeEach from './testSetup';
 
@@ -124,7 +126,7 @@ describe('PipelineUtils - execution history', () => {
     const mockExecutionId = 'exec-error';
     const mockPipelineId = 999;
 
-    (mockBackendInstance.getPipelineJobs as jest.Mock).mockRejectedValue(
+    mockBackendInstance.getPipelineJobs.mockRejectedValue(
       new Error('Network error'),
     );
 
@@ -144,10 +146,8 @@ describe('PipelineUtils - execution history', () => {
     const mockPipelineId = 888;
     const mockJob = { id: 1, name: 'empty-job' } as JobSchema;
 
-    (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue([
-      mockJob,
-    ]);
-    (mockBackendInstance.getJobTrace as jest.Mock).mockResolvedValue('   ');
+    mockBackendInstance.getPipelineJobs.mockResolvedValue([mockJob]);
+    mockBackendInstance.getJobTrace.mockResolvedValue('   ');
 
     const result = await PipelineUtils.fetchLogsAndUpdateExecution(
       digitalTwin,
@@ -171,12 +171,8 @@ describe('PipelineUtils - execution history', () => {
       status: ExecutionStatus.RUNNING,
     });
 
-    (mockBackendInstance.getPipelineJobs as jest.Mock).mockResolvedValue([
-      mockJob,
-    ]);
-    (mockBackendInstance.getJobTrace as jest.Mock).mockResolvedValue(
-      'Valid log content',
-    );
+    mockBackendInstance.getPipelineJobs.mockResolvedValue([mockJob]);
+    mockBackendInstance.getJobTrace.mockResolvedValue('Valid log content');
 
     digitalTwin.updateExecutionLogs = jest.fn().mockResolvedValue(undefined);
     digitalTwin.updateExecutionStatus = jest.fn().mockResolvedValue(undefined);

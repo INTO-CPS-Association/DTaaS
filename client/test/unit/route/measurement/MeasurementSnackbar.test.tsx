@@ -81,20 +81,17 @@ jest.mock('route/measurement/MeasurementTable', () => ({
 const mockStartMeasurement = jest.fn().mockResolvedValue(undefined);
 const mockStopAllPipelines = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('model/backend/gitlab/measure/measurement.runner', () => ({
-  startMeasurement: (...args: unknown[]) => mockStartMeasurement(...args),
-  stopAllPipelines: (...args: unknown[]) => mockStopAllPipelines(...args),
-  restartMeasurement: jest.fn().mockResolvedValue(undefined),
-  handleBeforeUnload: jest.fn(),
-  handleUnload: jest.fn(),
-  purgeMeasurementData: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
-  const actual = jest.requireActual(
-    'model/backend/gitlab/measure/measurement.utils',
-  );
+jest.mock('@into-cps-association/dt-automation', () => {
+  const setup = jest.requireActual('./measurement.testSetup');
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
+    startMeasurement: (...args: unknown[]) => mockStartMeasurement(...args),
+    stopAllPipelines: (...args: unknown[]) => mockStopAllPipelines(...args),
+    restartMeasurement: jest.fn().mockResolvedValue(undefined),
+    handleBeforeUnload: jest.fn(),
+    handleUnload: jest.fn(),
+    purgeMeasurementData: jest.fn().mockResolvedValue(undefined),
     getMeasurementStatus: jest.fn(() => ({
       hasStarted: false,
       completedTasks: 0,
@@ -104,15 +101,6 @@ jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
     mergeExecutionStatus: jest.fn(() => []),
     areAllMeasurementsComplete: actual.areAllMeasurementsComplete,
     downloadTaskResultJson: jest.fn(),
-  };
-});
-
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
-  const setup = jest.requireActual('./measurement.testSetup');
-  const actual = jest.requireActual(
-    'model/backend/gitlab/measure/measurement.execution',
-  );
-  return {
     measurementState: { ...setup.MOCK_MEASUREMENT_STATE },
     DEFAULT_MEASUREMENT: actual.DEFAULT_MEASUREMENT,
     attachSetters: jest.fn(),
@@ -220,7 +208,7 @@ describe('Measurement snackbar and polling', () => {
   it('updates currentExecutions from measurementState when running', async () => {
     jest.useFakeTimers();
     const measurementStateMock = jest.requireMock(
-      'model/backend/gitlab/measure/measurement.execution',
+      '@into-cps-association/dt-automation',
     ).measurementState;
 
     measurementStateMock.activePipelines = [
@@ -256,7 +244,7 @@ describe('Measurement snackbar and polling', () => {
     });
 
     const { mergeExecutionStatus } = jest.requireMock(
-      'model/backend/gitlab/measure/measurement.utils',
+      '@into-cps-association/dt-automation',
     );
     expect(mergeExecutionStatus).toHaveBeenCalled();
 

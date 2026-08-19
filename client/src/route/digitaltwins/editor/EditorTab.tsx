@@ -8,8 +8,10 @@ import {
 } from 'react';
 import Editor from '@monaco-editor/react';
 import { useDispatch } from 'react-redux';
-import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
-import { addOrUpdateFile } from 'model/store/file.slice';
+import {
+  addOrUpdateLibraryFile,
+  addOrUpdateFile,
+} from '@into-cps-association/dt-automation';
 import { log } from 'util/logger/logger';
 
 const EDIT_LOG_DEBOUNCE_MS = 2000;

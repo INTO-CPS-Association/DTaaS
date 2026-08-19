@@ -12,19 +12,15 @@ import {
   attachSetters,
   detachSetters,
   getTasks,
-} from 'model/backend/gitlab/measure/measurement.execution';
-import {
   startMeasurement,
   stopAllPipelines,
   restartMeasurement,
   handleBeforeUnload,
   handleUnload,
   purgeMeasurementData,
-} from 'model/backend/gitlab/measure/measurement.runner';
-import {
   getMeasurementStatus,
   downloadTaskResultJson,
-} from 'model/backend/gitlab/measure/measurement.utils';
+} from '@into-cps-association/dt-automation';
 import { toggleTaskEnabled } from 'store/settings.slice';
 import MeasurementControls, {
   CompletionSummary,

@@ -3,14 +3,11 @@ import { Provider, useSelector } from 'react-redux';
 import AssetLibrary from 'components/asset/AssetLibrary';
 import store, { RootState } from 'store/store';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
-import { selectAssetsByTypeAndPrivacy } from 'model/store/assets.slice';
+import { selectAssetsByTypeAndPrivacy } from '@into-cps-association/dt-automation';
 
-jest.mock('model/store/assets.slice', () => ({
-  ...jest.requireActual('model/store/assets.slice'),
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   selectAssetsByTypeAndPrivacy: jest.fn(() => []),
-}));
-
-jest.mock('model/backend/util/init', () => ({
   fetchLibraryAssets: jest.fn(() => Promise.resolve()),
 }));
 

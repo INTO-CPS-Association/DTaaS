@@ -126,7 +126,9 @@ export function getClientID(): string {
   return globalThis.env.REACT_APP_CLIENT_ID;
 }
 
-export { default as getAuthority } from 'model/backend/util/env';
+export function getAuthority(): string {
+  return globalThis.env.REACT_APP_AUTH_AUTHORITY;
+}
 
 export function getRedirectURI(): string {
   return globalThis.env.REACT_APP_REDIRECT_URI;

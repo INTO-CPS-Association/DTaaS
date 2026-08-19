@@ -1,5 +1,5 @@
-import useCart from 'model/store/CartAccess';
-import LibraryAsset from 'model/backend/libraryAsset';
+import useCart from 'store/CartAccess';
+import { LibraryAsset } from '@into-cps-association/dt-automation';
 
 function CartList() {
   const { state } = useCart();

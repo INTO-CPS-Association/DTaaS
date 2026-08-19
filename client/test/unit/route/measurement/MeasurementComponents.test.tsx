@@ -3,16 +3,14 @@ import '@testing-library/jest-dom';
 import { RunnerTagBadge } from 'route/measurement/MeasurementComponents';
 import { CompletionSummary } from 'route/measurement/MeasurementControls';
 import { TaskControls } from 'route/measurement/MeasurementTable';
-import { getRunnerTags } from 'model/backend/gitlab/measure/measurement.utils';
+import { getRunnerTags } from '@into-cps-association/dt-automation';
 import {
   createMockTrial,
   createMockTaskPending as createMockTask,
-} from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
+} from 'test/support/measurementFixtures';
 
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
-  const actual = jest.requireActual(
-    'model/backend/gitlab/measure/measurement.utils',
-  );
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
     ...actual,
     getTotalTime: jest.fn(),
@@ -20,9 +18,7 @@ jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
   };
 });
 
-const mockUtils = jest.requireMock(
-  'model/backend/gitlab/measure/measurement.utils',
-);
+const mockUtils = jest.requireMock('@into-cps-association/dt-automation');
 const mockGetTotalTime = mockUtils.getTotalTime as jest.Mock;
 
 describe('MeasurementComponents', () => {

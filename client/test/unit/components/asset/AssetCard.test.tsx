@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { AssetCardExecute } from 'components/asset/AssetCard';
 import * as React from 'react';
-import { formatName } from 'model/backend/digitalTwin';
+import { formatName } from '@into-cps-association/dt-automation';
 import { asset, setupMockStore, renderComponent } from './assetCard.testUtil';
 
 jest.mock('react-redux', () => ({

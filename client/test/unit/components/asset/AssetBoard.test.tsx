@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import AssetBoard from 'components/asset/AssetBoard';
 import store from 'store/store';
-import { fetchDigitalTwins } from 'model/backend/util/init';
+import { fetchDigitalTwins } from '@into-cps-association/dt-automation';
 
 jest.mock('components/asset/AssetCardManage', () => ({
   __esModule: true,
@@ -17,11 +17,8 @@ jest.mock('components/asset/AssetCard', () => ({
   AssetCardExecute: () => <div>Asset Card Execute</div>,
 }));
 
-jest.mock('model/store/assets.slice', () => ({
-  ...jest.requireActual('model/store/assets.slice'),
-}));
-
-jest.mock('model/backend/util/init', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   fetchDigitalTwins: jest.fn(),
 }));
 

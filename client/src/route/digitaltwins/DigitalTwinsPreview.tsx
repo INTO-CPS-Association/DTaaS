@@ -5,8 +5,10 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import AssetBoard from 'components/asset/AssetBoard';
-import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { addOrUpdateFile } from 'model/store/file.slice';
+import {
+  defaultFiles,
+  addOrUpdateFile,
+} from '@into-cps-association/dt-automation';
 import tabs from 'route/digitaltwins/DigitalTwinTabDataPreview';
 import CreatePage from 'route/digitaltwins/create/CreatePage';
 

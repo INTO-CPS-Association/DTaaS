@@ -54,6 +54,7 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
     "@gitbeaker/rest": "^43.8.0",
+    "@into-cps-association/dt-automation": "0.1.0",
     "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "9.2.0",
     "@mui/material": "9.2.0",

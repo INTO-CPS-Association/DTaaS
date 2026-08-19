@@ -13,7 +13,7 @@ import { addLog } from 'util/logger/indexedDBLogger';
 import {
   getLoggingEnabled,
   getRemoteLoggingEnabled,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+} from '@into-cps-association/dt-automation';
 import { sanitizeLogContext } from 'util/logger/contextUtils';
 
 const PERSISTENCE_FAILURE_MESSAGE =
