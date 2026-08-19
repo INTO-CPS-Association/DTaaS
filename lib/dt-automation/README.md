@@ -1,21 +1,24 @@
 # DT Automation
 
-`@into-cps-association/dt-automation` is the logic behind the custom DTaaS UI
-for creating, sharing and executing DTs. It provides digital-twin models and
-Redux state, together with
-GitLab, file, pipeline, execution-history, and measurement operations.
+`@into-cps-association/dt-automation` provides the shared data, state, and
+business logic for creating, managing, and executing Digital Twins in DTaaS.
 
-The package has no React dependency, and instead relies on browser APIs such as `sessionStorage`,
-`document`, `Blob`, and object URLs.
+The package contains Digital Twin models, Redux state, and operations for
+GitLab, files, pipelines, execution history, and measurements.
 
-## Install and import
+It has no React dependency. React components, hooks, and other UI-specific code
+belong in the consuming application.
+
+**NOTE**: Some features use browser APIs such as `sessionStorage`, `document`,
+`Blob`, and object URLs.
+
+## Install
 
 ```bash
 yarn add @into-cps-association/dt-automation
 ```
 
-Import supported APIs from the package root. Implementation specific imports
-are not part of the public API. Example import:
+Import supported APIs from the package root:
 
 ```ts
 import { formatName } from '@into-cps-association/dt-automation';
@@ -23,23 +26,26 @@ import { formatName } from '@into-cps-association/dt-automation';
 const label = formatName('example-digital-twin');
 ```
 
-## Application setup
+Imports from `src` are implementation-specific and are not part of the public
+API.
 
-Register the services required by the features your application uses:
+## Application Setup
 
-- Environment store: register it with `setEnvironmentStore`; its state must
-  provide `environment.AUTH_AUTHORITY`.
-- Settings store: register it with `setSettingsStore`; it provides the GitLab
-  group, directory, library project, branch, runner tags, and logging settings.
-- Authentication: set `sessionStorage.username` and
-  `sessionStorage.access_token` before making authenticated GitLab requests.
-- Execution history: register `setStorageService`, `setExecutionHistoryDB`, and
-  `setPipelineExecutionDB` when using execution-history features.
-- Measurements: register `setMeasurementStore` and `setMeasurementDB` when
-  using measurement features.
+Register the services required by the features used by the application.
 
-The package provides `environmentSlice` and `updateAuthority` for the
-environment store. Initialise it before calling GitLab-backed operations:
+| Feature           | Setup                                                                  |
+| :---------------- | :--------------------------------------------------------------------- |
+| Environment       | `setEnvironmentStore`                                                  |
+| GitLab settings   | `setSettingsStore`                                                     |
+| Authentication    | `sessionStorage.username` and `sessionStorage.access_token`            |
+| Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB` |
+| Measurements      | `setMeasurementStore`, `setMeasurementDB`                              |
+
+### Environment
+
+GitLab-backed operations require `environment.AUTH_AUTHORITY`.
+
+The package provides `environmentSlice` and `updateAuthority`:
 
 ```ts
 import { configureStore } from '@reduxjs/toolkit';
@@ -57,12 +63,32 @@ store.dispatch(updateAuthority(appConfig.gitlabAuthority));
 setEnvironmentStore(store);
 ```
 
-## Cart state
+Register the environment store before calling operations that use the backend
+authority.
 
-`cartSlice` and the `addToCart`, `removeFromCart`, and `clearCart` actions are
-ordinary Redux exports. Add the reducer to the application's store and connect
-it to the UI in the application. This package provides neither React hooks nor
-a React Redux `Provider`, so these must be made on importing side.
+### Settings
+
+Register the application settings store with `setSettingsStore`.
+
+The `settings` state provides the GitLab group, Digital Twin directory, common
+library project, branch, runner tag, and logging settings.
+
+### Authentication
+
+Set the GitLab credentials before making authenticated requests:
+
+```ts
+sessionStorage.setItem('username', username);
+sessionStorage.setItem('access_token', accessToken);
+```
+
+## Redux State
+
+The package exports Redux reducers and actions for Digital Twins, assets, cart
+state, files, library configuration, environment configuration, and execution
+history.
+
+For example, add the cart reducer to the application store:
 
 ```ts
 import { configureStore } from '@reduxjs/toolkit';
@@ -73,20 +99,47 @@ const store = configureStore({
 });
 
 store.dispatch(addToCart(asset));
-const assetsInCart = store.getState().cart.assets;
 ```
 
-## Execution-history selectors
+The package does not provide React hooks or a React Redux `Provider`.
 
-The package root also exports execution-history selectors:
+## Execution History
 
-- `selectExecutionHistoryEntries`
-- `selectExecutionHistoryById`
-- `selectExecutionHistoryByDTName`
-- `selectSelectedExecutionId`
-- `selectSelectedExecution`
-- `selectExecutionHistoryLoading`
-- `selectExecutionHistoryError`
+Register the required storage services before using execution-history features:
 
-See [DEVELOPER.md](./DEVELOPER.md) for development, build, and package
-verification guidance.
+```ts
+setStorageService(executionHistoryStorage);
+setExecutionHistoryDB(executionHistoryStorage);
+setPipelineExecutionDB(executionHistoryStorage);
+```
+
+The package root exports the following selectors:
+
+* `selectExecutionHistoryEntries`
+* `selectExecutionHistoryById`
+* `selectExecutionHistoryByDTName`
+* `selectSelectedExecutionId`
+* `selectSelectedExecution`
+* `selectExecutionHistoryLoading`
+* `selectExecutionHistoryError`
+
+## Measurements
+
+Register `setMeasurementStore` and `setMeasurementDB` when using measurement
+features.
+
+The measurement API provides operations for starting and stopping measurements,
+managing active pipelines, storing results, and downloading measurement data.
+
+## Backend Architecture
+
+Backend communication uses interfaces and dependency injection. GitLab is the
+current backend implementation.
+
+See [`src/ARCHITECTURE.md`](./src/ARCHITECTURE.md) for the backend structure and
+extension points.
+
+## Development
+
+See [`DEVELOPER.md`](./DEVELOPER.md) for development, build, test, and package
+validation instructions.

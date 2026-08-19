@@ -2,6 +2,11 @@
   "name": "@into-cps-association/dt-automation",
   "version": "0.1.0",
   "description": "The DTaaS's data and business-logic layer including representations of digital twins, communication with data/execution managers like GitLab, file, pipeline and execution operations and maintaining Redux state for UI. Sits between the consuming application and DTaaS backend.",
+  "contributors": [
+    "Enok Maj",
+    "Marcus Neble Jensen",
+    "Vanessa Scherma"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -10,11 +15,10 @@
   "scripts": {
     "build": "tsup && tsc --project tsconfig.json --emitDeclarationOnly && tsc-alias --project tsconfig.json",
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "prep": "qlty fmt && yarn format && yarn syntax && qlty check --fix && yarn build && yarn test:all",
+    "prep": "qlty fmt && yarn format && yarn syntax && qlty check --fix && yarn build && yarn test:unit",
     "clean": "node --eval \"const { rmSync } = require('node:fs'); ['coverage', 'dist'].forEach((path) => rmSync(path, { recursive: true, force: true }))\"",
     "format": "prettier --write \"*.ts\" \"src/**/*.ts\" \"test/**/*.{ts,tsx}\"",
     "syntax": "eslint . --fix",
-    "test:all": "yarn test:unit",
     "test:unit": "jest --config jest.config.json test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts",
     "smoke:package": "yarn build && node scripts/smoke-package.mjs",
     "validate:package": "yarn typecheck && yarn smoke:package"

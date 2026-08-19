@@ -78,7 +78,7 @@ jobs:
       contents: read  # Required for checking out the code
     name: Get version and variables
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: *job_timeout
     steps:
       - name: Checkout Repository
         # v7.0.0

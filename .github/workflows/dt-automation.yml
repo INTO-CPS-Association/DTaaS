@@ -49,6 +49,12 @@ jobs:
       - name: Install package dependencies
         run: yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
+      - name: Run the linting checks
+        run: yarn syntax
+
+      - name: Run package unit tests
+        run: yarn test:unit
+
       - name: Type-check, build, pack, and smoke-test package
         run: |
           yarn typecheck
