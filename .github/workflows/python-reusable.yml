@@ -172,6 +172,15 @@ jobs:
           poetry build --format wheel
           poetry build --format sdist
 
+      - name: Reject direct-URL dependencies in built metadata
+        run: |
+          if unzip -p dist/*.whl '*.dist-info/METADATA' |
+              grep -E '^Requires-Dist:.*@ (file|git\+|https?)://'; then
+            echo "::error::Built wheel has a direct-URL dependency (shown above)."
+            exit 1
+          fi
+          echo "OK: no direct-URL dependencies in wheel metadata."
+
       - name: Upload dist artefacts
         # v7.0.1
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

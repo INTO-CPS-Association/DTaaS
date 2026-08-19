@@ -70,6 +70,10 @@ deploy/services/cli/
 │   │       ├── postgres/
 │   │       ├── thingsboard/
 │   │       └── gitlab/
+│   ├── gitlab_core/
+│   │   ├── client.py
+│   │   ├── users.py
+│   │   └── validators.py
 │   └── templates/
 ├── tests/
 ├── README.md
@@ -106,6 +110,25 @@ Files in `dtaas_services/pkg/` provide reusable logic:
 - `thingsboard/`: setup, sysadmin/tenant workflows, credential-driven user setup.
 - `influxdb/`, `rabbitmq.py`, `mongodb.py`, `postgres/`: permissions,
   readiness checks, and account/bootstrap routines.
+
+### Shared GitLab Layer
+
+`dtaas_services/gitlab_core/` holds provider-agnostic GitLab operations
+(`get_gitlab_client`, `validate_user_row`, `create_user`, `create_user_pat`).
+Every function takes explicit arguments and performs no environment,
+filesystem, console, or process-global state changes, so the DTaaS CLI can
+reuse it by depending on `dtaas-services`.
+
+Deployment-specific glue stays in `pkg/services/gitlab/`: URL derivation from
+`GITLAB_PORT`/`HOSTNAME`, token-file persistence, docker health checks, and
+Rich console output. Two consequences are deliberate:
+
+- Suppressing urllib3's `InsecureRequestWarning` when `SSL_VERIFY=false`
+  happens in `pkg/services/gitlab/_api.py`, not in `gitlab_core`, so importing
+  the shared module never silences warnings for unrelated consumers.
+- `gitlab_core` defaults Personal Access Tokens to least-privilege
+  repository-only scopes. `pkg/services/gitlab/users.py` opts into the broader
+  `api` scope explicitly via `PatOptions`.
 
 ## Configuration Inputs
 

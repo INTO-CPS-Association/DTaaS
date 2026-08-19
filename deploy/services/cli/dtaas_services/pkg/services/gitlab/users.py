@@ -8,8 +8,7 @@ from typing import Tuple
 
 import gitlab
 
-from dtaas_gitlab import create_user, create_user_pat
-
+from ....gitlab_core import CreateOutcome, PatOptions, create_user, create_user_pat
 from ...config import Config
 from ...utils import get_credentials_path, write_secret_file
 from ._api import get_gitlab_client
@@ -18,13 +17,17 @@ from .personal_token import _load_pat_from_tokens
 logger = logging.getLogger(__name__)
 
 USER_TOKENS_FILENAME = "gitlab_user_tokens.json"
+USER_PAT_OPTIONS = PatOptions(scopes=("api", "read_repository", "write_repository"))
 
 
 def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | None]:
-    """Create one GitLab user from a CSV row via dtaas_gitlab.create_user.
+    """Create one GitLab user from a CSV row via gitlab_core.create_user.
 
     Extracts and trims the username/email/password columns, then delegates
-    validation and creation to the shared library.
+    validation and creation to the shared module, mapping its result back to
+    this module's (success, error, user_id) contract. A user that already
+    exists is reported as success with no id, so no PAT is issued for an
+    account this run did not create.
 
     Args:
         gl: Authenticated gitlab.Gitlab client
@@ -33,12 +36,15 @@ def _create_single_user(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, int | 
     Returns:
         Tuple of (success, error_message, user_id_or_None)
     """
-    return create_user(
+    result = create_user(
         gl,
         username=(row.get("username") or "").strip(),
         email=(row.get("email") or "").strip(),
         password=(row.get("password") or "").strip(),
     )
+    if result.outcome is CreateOutcome.FAILED:
+        return False, result.error, None
+    return True, "", result.user_id
 
 
 def _create_user_and_pat(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, str]:
@@ -57,7 +63,7 @@ def _create_user_and_pat(gl: gitlab.Gitlab, row: dict) -> Tuple[bool, str, str]:
         return False, error, ""
     if user_id is None:
         return True, "", ""
-    success, token_or_error = create_user_pat(gl, user_id, username)
+    success, token_or_error = create_user_pat(gl, user_id, username, USER_PAT_OPTIONS)
     if not success:
         return False, token_or_error, ""
     return True, "", token_or_error

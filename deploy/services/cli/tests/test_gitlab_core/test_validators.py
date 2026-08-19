@@ -1,6 +1,6 @@
-"""Tests for GitLab input validation helpers (validators.py)."""
+"""Tests for shared GitLab input validation (gitlab_core/validators.py)."""
 
-from dtaas_gitlab import validators
+from dtaas_services.gitlab_core import validators
 # pylint: disable=W0212
 
 TEST_EMAIL = "test@example.com"
@@ -41,6 +41,18 @@ def test_validate_email_rejects_multiple_at_signs():
 def test_validate_email_rejects_missing_domain_dot():
     """Test email validation rejects addresses without a dotted domain."""
     assert validators._validate_email("test@example") == validators.INVALID_EMAIL_ERROR
+
+
+def test_validate_email_rejects_missing_local_part():
+    """Test email validation rejects addresses with an empty local part."""
+    assert (
+        validators._validate_email("@example.com") == validators.INVALID_EMAIL_ERROR
+    )
+
+
+def test_validate_email_rejects_missing_domain():
+    """Test email validation rejects addresses with an empty domain."""
+    assert validators._validate_email("test@") == validators.INVALID_EMAIL_ERROR
 
 
 def test_validate_email_rejects_whitespace():
