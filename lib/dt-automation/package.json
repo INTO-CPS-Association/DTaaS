@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dt-automation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The DTaaS's data and business-logic layer including representations of digital twins, communication with data/execution managers like GitLab, file, pipeline and execution operations and maintaining Redux state for UI. Sits between the consuming application and DTaaS backend.",
   "contributors": [
     "Enok Maj",
