@@ -21,7 +21,8 @@ usable across deployments.
    only implementation is GitLab, and the interfaces expose GitLab
    concepts directly — `getTriggerToken`, `Pipeline`, pipeline refs
    and job artifacts (`lib/dt-automation/src/interfaces/execution.ts`,
-   `lib/dt-automation/src/gitlab/instance.ts`). A second backend (e.g. Gitea) could not be
+   `lib/dt-automation/src/gitlab/instance.ts`). A second backend (e.g. Gitea)
+   could not be
    written against these interfaces without changing them, which is
    the definition of a leaky abstraction. Either commit to GitLab and
    simplify, or lift the abstraction to lifecycle verbs
@@ -42,9 +43,9 @@ usable across deployments.
    sharing for.
 
 1. *Parallel `util/` and `utils/` directories* (`src/util/`,
-   `src/utils/`) and separate client/package store trees (`client/src/store/`
-   and `lib/dt-automation/src/store/`) require clear ownership. Small, but it is the
-   kind of drift that spreads.
+   `src/utils/`) and separate client/package store trees
+   (`client/src/store/` and `lib/dt-automation/src/store/`) require clear
+   ownership. Small, but it is the kind of drift that spreads.
 
 1. *Benchmark/measurement task code ships with the product client.*
    `lib/dt-automation/src/gitlab/measure/tasks/` (multiple-identical-DTs,

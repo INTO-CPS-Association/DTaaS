@@ -72,4 +72,5 @@ yarn build
 
 - Keep GitLab-specific logic in `lib/dt-automation/`.
 - Keep route/view components focused on presentation and user workflows.
-- Prefer typed interfaces in `lib/dt-automation/src/interfaces/` when extending API contracts.
+- Prefer typed interfaces in `lib/dt-automation/src/interfaces/` when
+  extending API contracts.

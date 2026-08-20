@@ -15,7 +15,7 @@ implementation status, recovered from code:
 | :---------- | :----- | :------------- |
 | Author | Implemented | User workspaces (containers), integrated GitLab |
 | Consolidate | Implemented | Library microservice, client library pages |
-| Configure | Partial | Client editors (`client/src/route/digitaltwins/editor`, Monaco) |
+| Configure | Partial | Client editors and Monaco |
 | Execute | Partial | GitLab CI pipelines triggered from the browser; DT Runner |
 | Explore | Partial | Client DevOps pages, IndexedDB execution history |
 | Save | Not implemented | — |
@@ -71,8 +71,9 @@ intended-architecture diagram:
    resolving projects, fetching trigger tokens, starting pipelines,
    polling status, collecting logs — runs client-side
    (`lib/dt-automation/src/gitlab/execution/pipelinePolling.ts`,
-   `lib/dt-automation/src/gitlab/instance.ts`). Execution history is persisted in the browser's
-   IndexedDB (`client/src/database/executionHistoryDB.ts`), so the
+   `lib/dt-automation/src/gitlab/instance.ts`).
+   Execution history is persisted in the browser's IndexedDB
+   (`client/src/database/executionHistoryDB.ts`), so the
    platform itself holds no record of DT executions.
 
 1. **Security is perimeter-only.** Traefik routes by path prefix and
