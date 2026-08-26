@@ -10,6 +10,9 @@ DESIRED_STATUSES = frozenset({"running", "paused", "stopped"})
 # For state.py
 STATE_FILE = ".dtaas.state.json"
 
+# For pkg/users.py: GitLab provisioning token storage
+GITLAB_USER_TOKENS_FILE = "gitlab_user_tokens.json"
+
 # For utils.py
 LOCALHOST_SERVER = "localhost"
 

@@ -67,6 +67,19 @@ email="username3@intocps.org"
 groups=["default","dtaas","beta-testers","load-balanced-tier1"]
 load_balance=true
 
+# --- GitLab user provisioning for users added with 'dtaas user add' --------
+# When enabled, 'user add' creates each new user's GitLab account and a
+# Personal Access Token, using a provisioning PAT configured here. Disabled
+# by default; existing deployments are unaffected unless this is set.
+# The PAT needs to be able to create users (an admin token). Keep dtaas.toml
+# out of version control when it carries a live token, or supply the value
+# via the DTAAS_GITLAB_PAT environment variable instead.
+[gitlab]
+provision=false
+api_url="https://gitlab.com"
+pat="glpat-xxxxxxxxxxxxxxxxxxxx"
+ssl_verify=true
+
 # Installation-specific configuration
 # For non-localhost deployments, the starting usernames (USERNAME1,
 # USERNAME2, ...) are taken from the [[users]] records above.

@@ -7,6 +7,7 @@ from src.pkg.registry import (
     load_registry,
     register_new_users,
     remove_from_registry,
+    read_csv_passwords,
     read_csv_users,
     set_desired_status,
     _parse_csv_row,
@@ -174,6 +175,46 @@ def test_read_csv_users_rejects_duplicate_username(tmp_path):
 
     with pytest.raises(ValueError, match="Duplicate username 'alice'"):
         read_csv_users(csv_file)
+
+
+def test_read_csv_passwords_parses_password_column(tmp_path):
+    """read_csv_passwords extracts {username: password} for GitLab provisioning."""
+    csv_path = tmp_path / "users.csv"
+    csv_path.write_text(
+        "username,email,groups,load_balance,password\n"
+        "alice,alice@intocps.org,additional,true,S3cur3-p4ss\n"
+        "bob,bob@intocps.org,additional,false,An0ther-p4ss\n",
+        encoding="utf-8",
+    )
+
+    passwords = read_csv_passwords(str(csv_path))
+
+    assert passwords == {"alice": "S3cur3-p4ss", "bob": "An0ther-p4ss"}
+
+
+def test_read_csv_passwords_omits_blank_cells(tmp_path):
+    """A blank password cell is omitted, not stored as an empty string."""
+    csv_path = tmp_path / "users.csv"
+    csv_path.write_text(
+        "username,email,groups,load_balance,password\n"
+        "alice,alice@intocps.org,additional,true,\n",
+        encoding="utf-8",
+    )
+
+    passwords = read_csv_passwords(str(csv_path))
+
+    assert not passwords
+
+
+def test_read_csv_passwords_missing_column_returns_empty(tmp_path):
+    """A CSV with no password column at all yields no passwords, not an error."""
+    csv_path = tmp_path / "users.csv"
+    csv_path.write_text(
+        "username,email,groups,load_balance\nalice,alice@intocps.org,additional,true\n",
+        encoding="utf-8",
+    )
+
+    assert not read_csv_passwords(str(csv_path))
 
 
 def test_set_desired_status_updates_only_known_users(tmp_path):

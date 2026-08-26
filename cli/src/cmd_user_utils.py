@@ -42,6 +42,7 @@ class UserAddInput:
     email: str | None
     groups: tuple
     load_balance: bool
+    password: str | None = None
 
 
 def _users_from_args(user_input):
@@ -86,14 +87,38 @@ def _register_users(new_users):
     return added
 
 
+def _passwords_to_add(user_input):
+    """Collect GitLab-provisioning passwords to use, keyed by username.
+
+    Kept independent of _users_to_add's registry-details dict so a password
+    is never accidentally merged into what gets persisted to
+    dtaas.users.registry.json -- passwords are transient and used only for
+    GitLab account creation, never stored.
+    """
+    if user_input.csv_file:
+        return _read_csv_passwords(user_input.csv_file)
+    if user_input.username and user_input.password:
+        return {user_input.username: user_input.password}
+    return {}
+
+
+def _read_csv_passwords(csv_file):
+    """Parse a users CSV's password column, mapping parse errors to ClickException."""
+    try:
+        return registryPkg.read_csv_passwords(csv_file)
+    except (OSError, KeyError, ValueError) as exc:
+        raise click.ClickException(f"Error importing users file: {exc}") from exc
+
+
 def stage_users_for_add(user_input):
     """Merge CLI/CSV users into the registry before provisioning.
 
     Rejects malformed usernames and, with a warning, skips any already in
     dtaas.toml's starting list or the registry. Raises ClickException on bad
     or missing input: a USERNAME or --file is required, and not both. Returns
-    the usernames actually added, so only those are started (not the whole
-    registry).
+    (added, passwords): the usernames actually added (so only those are
+    started, not the whole registry), and a {username: password} map limited
+    to those same added usernames, for GitLab provisioning.
     """
     if user_input.username and user_input.csv_file:
         raise click.ClickException("Pass either a USERNAME or --file, not both.")
@@ -102,7 +127,9 @@ def stage_users_for_add(user_input):
             "Provide a USERNAME (e.g. 'dtaas user add alice --email "
             "a@x.io') or --file <users.csv> to add users."
         )
-    return _register_users(_users_to_add(user_input))
+    added = _register_users(_users_to_add(user_input))
+    passwords = _passwords_to_add(user_input)
+    return added, {name: passwords[name] for name in added if name in passwords}
 
 
 def resolve_usernames(usernames, csv_file, verb="delete", allow_all=False):

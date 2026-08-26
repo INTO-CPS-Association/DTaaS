@@ -5,7 +5,16 @@ import stat
 from pathlib import Path
 
 import pytest
-from src.pkg.build import build, main, _copy_one, _ignore, _SOURCES, _DEST_ROOT
+from src.pkg.build import (
+    build,
+    main,
+    vendor_gitlab_common,
+    _copy_one,
+    _ignore,
+    _SOURCES,
+    _DEST_ROOT,
+    _GITLAB_COMMON_DEST,
+)
 from src.pkg.constants import SECRET_FILENAMES, SECRET_SUFFIXES
 
 
@@ -111,3 +120,29 @@ def test_main_returns_zero(capsys):
     result = main()
     assert result == 0
     assert str(len(_SOURCES)) in capsys.readouterr().out
+
+
+def test_build_vendors_gitlab_common():
+    """build() also vendors gitlab_common from lib/gitlab_common."""
+    assert _GITLAB_COMMON_DEST.is_dir()
+    assert (_GITLAB_COMMON_DEST / "__init__.py").is_file()
+    assert (_GITLAB_COMMON_DEST / "client.py").is_file()
+    assert (_GITLAB_COMMON_DEST / "users.py").is_file()
+    assert (_GITLAB_COMMON_DEST / "validators.py").is_file()
+
+
+def test_vendor_gitlab_common_raises_when_source_missing(monkeypatch):
+    """vendor_gitlab_common raises FileNotFoundError when lib/gitlab_common is absent."""
+    monkeypatch.setattr(
+        "src.pkg.build._GITLAB_COMMON_SOURCE",
+        _DEST_ROOT / "nonexistent-gitlab-common-source",
+    )
+    with pytest.raises(FileNotFoundError, match="Source not found"):
+        vendor_gitlab_common()
+
+
+def test_vendor_gitlab_common_overwrites_existing_dest():
+    """vendor_gitlab_common removes and recreates an existing destination."""
+    assert _GITLAB_COMMON_DEST.exists(), "fixture must have vendored it first"
+    vendor_gitlab_common()
+    assert _GITLAB_COMMON_DEST.is_dir()

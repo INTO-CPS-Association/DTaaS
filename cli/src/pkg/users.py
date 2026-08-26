@@ -4,9 +4,13 @@ Loads registry/deploy config, then drives the compose/container plumbing in
 users_compose.py to provision or deprovision the requested users.
 """
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
+import click
+from . import gitlab as gitlabPkg
 from . import utils
-from .constants import COMPOSE_USERS_YML
+from .constants import COMPOSE_USERS_YML, GITLAB_USER_TOKENS_FILE
 from .registry import load_registry, remove_from_registry
 from .state import write_state
 from .users_compose import (
@@ -144,12 +148,77 @@ def _provision_users(ctx, start_only=None):
     )
 
 
-def add_users(config_obj, start_only=None):
+def _gitlab_target_usernames(ctx, start_only):
+    """Which users to attempt GitLab provisioning for.
+
+    Mirrors _provision_users' start_only scoping: only users actually being
+    started this run (the newly-added ones), never the whole registry --
+    passwords are only ever supplied for users just passed to 'user add', not
+    for a bare reconcile of the existing registry.
+    """
+    if start_only is None:
+        return ctx.user_list
+    return [name for name in start_only if name in ctx.user_list]
+
+
+def _save_gitlab_tokens(tokens):
+    """Persist newly issued GitLab PATs, merging with any already saved."""
+    path = Path(GITLAB_USER_TOKENS_FILE)
+    existing = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    existing.update(tokens)
+    utils.write_secret_file(path, json.dumps(existing, indent=2))
+
+
+def _provision_gitlab_users(config_obj, ctx, start_only, passwords):
+    """Create each targeted user's GitLab account and PAT, when enabled.
+
+    Non-fatal: a GitLab failure for one user is reported and does not affect
+    container provisioning (already done by this point) or other users, so a
+    GitLab outage never masks otherwise-successful container provisioning.
+    """
+    provision, err = config_obj.get_gitlab_provision()
+    utils.check_error(err)
+    if not provision:
+        return
+
+    candidates = _gitlab_target_usernames(ctx, start_only)
+    if not candidates:
+        return
+
+    gl, err = gitlabPkg.resolve_client(config_obj)
+    if err is not None:
+        click.echo(f"GitLab provisioning skipped: {err}")
+        return
+
+    tokens = {}
+    for username in candidates:
+        password = passwords.get(username)
+        if not password:
+            click.echo(
+                f"GitLab provisioning skipped for '{username}': no password supplied."
+            )
+            continue
+        email = (ctx.users_section.get(username) or {}).get("email", "")
+        result = gitlabPkg.ensure_user_resources(gl, username, email, password)
+        if not result.ok:
+            click.echo(f"GitLab provisioning failed for '{username}': {result.message}")
+        elif result.token:
+            tokens[username] = result.token
+
+    if tokens:
+        _save_gitlab_tokens(tokens)
+
+
+def add_users(config_obj, start_only=None, passwords=None):
     """add cli command handler.
 
     *start_only* restricts which users' containers are started (None = all
     provisioned users; a list = just those). The registry is always fully
-    written to compose regardless, so the file stays complete.
+    written to compose regardless, so the file stays complete. *passwords*
+    ({username: password}) drives GitLab provisioning when
+    [gitlab].provision is enabled; omit it (or pass an empty/None mapping)
+    to skip GitLab provisioning entirely, e.g. from 'config reconcile --fix',
+    which has no passwords to provision with.
     """
     try:
         ctx = _load_add_context(config_obj)
@@ -157,6 +226,8 @@ def add_users(config_obj, start_only=None):
             return None  # empty registry: nothing to provision
         setup_compose_structure(ctx.compose)
         _provision_users(ctx, start_only)
+        if passwords:
+            _provision_gitlab_users(config_obj, ctx, start_only, passwords)
     except Exception as e:
         return e
     return None

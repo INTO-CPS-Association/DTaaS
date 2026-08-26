@@ -1,5 +1,6 @@
 "This file has generic helper functions and variables for dtaas cli"
 
+import os
 from pathlib import Path
 import yaml
 import tomlkit
@@ -115,3 +116,30 @@ def check_error(err):
     """Checks if error is not None and raises it"""
     if err is not None:
         raise err
+
+
+def write_secret_file(path, content, encoding="utf-8"):
+    """Write *content* to *path* with mode 0o600 (owner read/write only).
+
+    Creates parent directories as needed. Uses a temporary file and an
+    atomic rename so the destination is never visible with world-readable
+    permissions.
+
+    Args:
+        path: Destination file path.
+        content: Text content to write.
+        encoding: Text encoding (default UTF-8).
+
+    Raises:
+        OSError: If the write or rename fails.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    try:
+        tmp.write_text(content, encoding=encoding)
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, path)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise

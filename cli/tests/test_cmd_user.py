@@ -21,6 +21,7 @@ def mock_user_pkg():
         "src.cmd_user.userPkg.delete_users"
     ) as mock_delete, patch("src.cmd_utils.configPkg.Config") as mock_cfg:
         mock_cfg.return_value = MagicMock()
+        mock_cfg.return_value.get_gitlab_provision.return_value = (False, None)
         yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
 
 
@@ -122,11 +123,12 @@ def test_add_users_with_file(runner, mock_user_pkg, tmp_path):
     csv_file.write_text("username,email,groups,load_balance\nalice,a@x.io,g,true\n")
 
     with patch("src.cmd_user.stage_users_for_add") as mock_stage:
+        mock_stage.return_value = (["alice"], {})
         result = runner.invoke(dtaas, ["user", "add", "--file", str(csv_file)])
 
     assert result.exit_code == 0
     mock_stage.assert_called_once_with(
-        UserAddInput(None, str(csv_file), None, (), True)
+        UserAddInput(None, str(csv_file), None, (), True, None)
     )
     mock_user_pkg["add"].assert_called_once()
 
@@ -136,10 +138,13 @@ def test_add_single_user(runner, mock_user_pkg):
     mock_user_pkg["add"].return_value = None
 
     with patch("src.cmd_user.stage_users_for_add") as mock_stage:
+        mock_stage.return_value = (["alice"], {})
         result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
 
     assert result.exit_code == 0
-    mock_stage.assert_called_once_with(UserAddInput("alice", None, "a@x.io", (), True))
+    mock_stage.assert_called_once_with(
+        UserAddInput("alice", None, "a@x.io", (), True, None)
+    )
     mock_user_pkg["add"].assert_called_once()
 
 

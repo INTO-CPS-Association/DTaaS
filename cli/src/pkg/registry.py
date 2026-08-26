@@ -149,3 +149,22 @@ def read_csv_users(csv_path):
                 raise ValueError(f"Duplicate username '{username}' in {csv_path}")
             users[username] = details
     return users
+
+
+def read_csv_passwords(csv_path):
+    """Return {username: password} parsed from a users CSV file's optional
+    'password' column, for GitLab provisioning.
+
+    A blank or missing password cell is omitted rather than stored as an
+    empty string. Kept independent of read_csv_users so a password can never
+    be accidentally merged into the registry-persisted user details --
+    passwords are transient and must never reach dtaas.users.registry.json.
+    """
+    passwords = {}
+    with open(csv_path, newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            username = row.get("username", "").strip()
+            password = row.get("password", "").strip()
+            if username and password:
+                passwords[username] = password
+    return passwords

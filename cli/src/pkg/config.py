@@ -132,3 +132,47 @@ class Config:
             return False, Exception("Config file error: security section is not a dict")
         tls = security.get("tls", False)
         return bool(tls), None
+
+    def get_gitlab_section(self):
+        """Gets the '[gitlab]' section of config, or {} when absent."""
+        conf, err = self.get_config()
+        if err is not None or conf is None:
+            return None, err
+        section = conf.get("gitlab", {})
+        if not isinstance(section, dict):
+            return None, Exception("Config file error: [gitlab] section is not a table")
+        return section, None
+
+    def get_gitlab_provision(self):
+        """Gets [gitlab].provision (default False): enables GitLab user
+        provisioning on 'user add'. Existing deployments are unaffected
+        unless this is explicitly set."""
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return False, err
+        return bool(section.get("provision", False)), None
+
+    def get_gitlab_api_url(self):
+        """Gets [gitlab].api_url, required when provisioning is enabled."""
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return None, err
+        api_url = str(section.get("api_url", "")).strip()
+        if not api_url:
+            return None, Exception("Config file error: [gitlab].api_url is not set")
+        return api_url, None
+
+    def get_gitlab_pat(self):
+        """Gets [gitlab].pat, or '' when absent so callers can fall back to
+        the DTAAS_GITLAB_PAT environment variable."""
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return "", err
+        return str(section.get("pat", "")).strip(), None
+
+    def get_gitlab_ssl_verify(self):
+        """Gets [gitlab].ssl_verify (default True)."""
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return True, err
+        return bool(section.get("ssl_verify", True)), None

@@ -3,6 +3,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users
+from src.pkg.gitlab.provisioner import ProvisionResult
 # pylint: disable=redefined-outer-name,unused-argument,protected-access
 
 
@@ -18,6 +19,7 @@ def mock_config():
     )
     mock.get_tls.return_value = (False, None)
     mock.get_set_limits.return_value = (True, None)
+    mock.get_gitlab_provision.return_value = (False, None)
     return mock
 
 
@@ -257,3 +259,148 @@ def test_delete_users_dry_run_makes_no_changes(
     out = capsys.readouterr().out
     assert "Would deprovision and stop: user1" in out
     assert "Would remove from registry: user1, ghost" in out
+
+
+# GitLab provisioning tests
+
+
+def test_gitlab_target_usernames_start_only_none_means_all_registry_users():
+    """start_only=None (config reconcile --fix) targets every registry user."""
+    ctx = MagicMock(user_list=["alice", "bob"])
+    assert users._gitlab_target_usernames(ctx, None) == ["alice", "bob"]
+
+
+def test_gitlab_target_usernames_scoped_to_start_only_and_registry():
+    """Only names in both start_only and the registry are targeted."""
+    ctx = MagicMock(user_list=["alice", "bob"])
+    assert users._gitlab_target_usernames(ctx, ["alice", "trudy"]) == ["alice"]
+
+
+def test_add_users_skips_gitlab_when_provision_disabled(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """No GitLab client is built when [gitlab].provision is False, even with
+    passwords supplied."""
+    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
+
+    with patch("src.pkg.users.gitlabPkg.resolve_client") as mock_resolve:
+        err = users.add_users(
+            mock_config, start_only=["alice"], passwords={"alice": "pw"}
+        )
+
+    assert err is None
+    mock_resolve.assert_not_called()
+
+
+def test_add_users_skips_gitlab_when_no_passwords_supplied(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """No GitLab client is built when no passwords are supplied (e.g. from
+    'config reconcile --fix'), even if provisioning is enabled."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
+
+    with patch("src.pkg.users.gitlabPkg.resolve_client") as mock_resolve:
+        err = users.add_users(mock_config, start_only=["alice"], passwords=None)
+
+    assert err is None
+    mock_resolve.assert_not_called()
+
+
+def test_add_users_provisions_gitlab_and_saves_token(
+    mock_config, mock_registry, mock_utils, mock_user_operations
+):
+    """An enabled, successful GitLab provision saves the issued PAT."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {"alice": {"email": "alice@x.io"}}
+    gl = MagicMock()
+
+    with patch(
+        "src.pkg.users.gitlabPkg.resolve_client", return_value=(gl, None)
+    ) as mock_resolve, patch(
+        "src.pkg.users.gitlabPkg.ensure_user_resources",
+        return_value=ProvisionResult("alice", True, "created", "glpat-token"),
+    ) as mock_ensure, patch("src.pkg.users.utils.write_secret_file") as mock_write:
+        err = users.add_users(
+            mock_config, start_only=["alice"], passwords={"alice": "S3cur3-p4ss"}
+        )
+
+    assert err is None
+    mock_resolve.assert_called_once_with(mock_config)
+    mock_ensure.assert_called_once_with(gl, "alice", "alice@x.io", "S3cur3-p4ss")
+    mock_write.assert_called_once()
+    saved_content = mock_write.call_args.args[1]
+    assert "glpat-token" in saved_content
+
+
+def test_add_users_gitlab_skips_user_with_no_password(
+    mock_config, mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A targeted user missing from the passwords map is skipped with a
+    warning, not silently ignored or fatal."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {
+        "alice": {"email": "a@x.io"},
+        "bob": {"email": "b@x.io"},
+    }
+    gl = MagicMock()
+
+    with patch(
+        "src.pkg.users.gitlabPkg.resolve_client", return_value=(gl, None)
+    ), patch(
+        "src.pkg.users.gitlabPkg.ensure_user_resources",
+        return_value=ProvisionResult("alice", True, "created", "glpat-token"),
+    ) as mock_ensure, patch("src.pkg.users.utils.write_secret_file"):
+        err = users.add_users(
+            mock_config,
+            start_only=["alice", "bob"],
+            passwords={"alice": "S3cur3-p4ss"},
+        )
+
+    assert err is None
+    mock_ensure.assert_called_once()
+    assert "no password supplied" in capsys.readouterr().out
+
+
+def test_add_users_gitlab_client_failure_is_non_fatal(
+    mock_config, mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A GitLab client/PAT resolution failure is reported but does not fail
+    add_users -- container provisioning already succeeded by this point."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
+
+    with patch(
+        "src.pkg.users.gitlabPkg.resolve_client",
+        return_value=(None, Exception("no PAT configured")),
+    ):
+        err = users.add_users(
+            mock_config, start_only=["alice"], passwords={"alice": "pw"}
+        )
+
+    assert err is None
+    assert "GitLab provisioning skipped" in capsys.readouterr().out
+
+
+def test_add_users_gitlab_provisioning_failure_is_non_fatal(
+    mock_config, mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A per-user GitLab provisioning failure is reported but does not fail
+    add_users, and no token is saved for that user."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
+    gl = MagicMock()
+
+    with patch(
+        "src.pkg.users.gitlabPkg.resolve_client", return_value=(gl, None)
+    ), patch(
+        "src.pkg.users.gitlabPkg.ensure_user_resources",
+        return_value=ProvisionResult("alice", False, "GitLab unreachable"),
+    ), patch("src.pkg.users.utils.write_secret_file") as mock_write:
+        err = users.add_users(
+            mock_config, start_only=["alice"], passwords={"alice": "pw"}
+        )
+
+    assert err is None
+    mock_write.assert_not_called()
+    assert "GitLab provisioning failed for 'alice'" in capsys.readouterr().out

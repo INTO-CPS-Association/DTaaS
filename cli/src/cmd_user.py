@@ -59,6 +59,14 @@ def user_group():
     default=True,
     help="Mark USERNAME for load balancing (default: enabled).",
 )
+@click.option(
+    "--password",
+    help=(
+        "Initial GitLab password for USERNAME. Only used when GitLab "
+        "provisioning ([gitlab].provision in dtaas.toml) is enabled; "
+        "prompted for interactively if omitted."
+    ),
+)
 def add(**kwargs):
     """Add users to a running DTaaS instance.
 
@@ -72,6 +80,9 @@ def add(**kwargs):
     or --file is required (not both). Requires a running deployment (run
     'dtaas platform install' first). To (re)provision every registry user, use
     'dtaas config reconcile --fix'.
+
+    When [gitlab].provision is enabled in dtaas.toml, each newly-added user's
+    GitLab account and Personal Access Token are also created; see --password.
     """
     user_input = UserAddInput(**kwargs)
 
@@ -79,10 +90,27 @@ def add(**kwargs):
         """Stage the registry only once dtaas.toml has loaded successfully.
 
         Only the newly-added users are started, so adding one user does not
-        recreate every other registry user's container.
+        recreate every other registry user's container. A single-user add
+        with GitLab provisioning enabled and no --password prompts for one
+        interactively (hidden input) rather than requiring it on the command
+        line, where it would be visible in shell history and the process list.
         """
-        added = stage_users_for_add(user_input)
-        return userPkg.add_users(config_obj, start_only=added)
+        provision, err = config_obj.get_gitlab_provision()
+        if err is not None:
+            raise click.ClickException(f"Error while adding users: {err}")
+        if (
+            provision
+            and user_input.username
+            and not user_input.csv_file
+            and not user_input.password
+        ):
+            user_input.password = click.prompt(
+                f"GitLab password for '{user_input.username}'",
+                hide_input=True,
+                confirmation_prompt=True,
+            )
+        added, passwords = stage_users_for_add(user_input)
+        return userPkg.add_users(config_obj, start_only=added, passwords=passwords)
 
     run_user_command(
         _stage_then_add, "Users added successfully", "Error while adding users"

@@ -568,6 +568,7 @@ the CLI-owned `dtaas.users.registry.json`
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below) |
 
 Add a single user:
 
@@ -607,6 +608,37 @@ users are left untouched, so adding one user never recreates the rest. A
 username already declared in `dtaas.toml`'s `[[users]]` or the registry is
 **skipped with a warning**: it is never added twice or overwritten.
 
+**GitLab provisioning (optional)**
+
+When `[gitlab].provision = true` in `dtaas.toml` (off by default), `user add`
+also creates each new user's GitLab account and a Personal Access Token:
+
+```toml
+[gitlab]
+provision = true
+api_url = "https://gitlab.example.com"
+pat = "glpat-xxxxxxxxxxxxxxxxxxxx"   # or set DTAAS_GITLAB_PAT instead
+```
+
+Each provisioned user needs an initial GitLab password, supplied via
+`--password` (prompted interactively with hidden input if omitted, for a
+single-user add) or via a `password` column in `users.csv`:
+
+```csv
+username,email,groups,load_balance,password
+alice,alice@intocps.org,additional,true,S3cur3-p4ss
+bob,bob@intocps.org,additional;beta-testers,false,An0ther-p4ss
+```
+
+The password is used only to create the GitLab account and is never written
+to `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. A user missing
+a password when provisioning is enabled has their GitLab step skipped (with a
+warning) rather than failing the whole command; an already-existing GitLab
+account is left with its current password and issued no new token. Issued
+tokens are saved to `gitlab_user_tokens.json`. A GitLab failure for one user,
+or for the whole step (e.g. an unreachable instance), is reported
+independently and does not affect container provisioning or other users.
+
 A `USERNAME` or `--file` is required (not both) — a bare `dtaas user add`
 with neither is rejected rather than silently reprovisioning the whole
 registry. To (re)provision **every** registry user at once (e.g. after
@@ -622,6 +654,7 @@ instead.
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below) |
 
 For each username the CLI checks whether `files/<username>/` already exists.
 If not, a new directory with the correct structure is created from

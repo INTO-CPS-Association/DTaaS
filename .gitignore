@@ -235,6 +235,7 @@ deploy/dtaas/docker/secure-server/certs/privkey.pem
 
 # CLI deploy templates (generated at build/test time by src/pkg/build.py;
 cli/src/templates/deploy/
+cli/src/gitlab_common/
 
 # dtaas secure server with integrated gitlab
 deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env

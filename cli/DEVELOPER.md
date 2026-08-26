@@ -37,6 +37,10 @@ The CLI is written in Python and uses the following libraries:
 
 - [Pyright](https://github.com/microsoft/pyright) : Used for static type checking.
 
+- [python-gitlab](https://python-gitlab.readthedocs.io/) : GitLab API client,
+  used via the shared `gitlab_common` module (see below) for GitLab user
+  provisioning.
+
 ## 🏗️ Code Structure
 
 The CLI has two layers of code:
@@ -106,7 +110,7 @@ for **both** the core services and the user-added `compose.users.yml` workloads,
 so `platform status` reports the whole installation (and `user status` narrows
 it to the user rows). The suspend verbs `stop`/`start`/`pause`/`unpause`, by
 contrast, map onto `docker compose stop`/`start`/`pause`/`unpause` on the
-**core services only** -- per-user containers are suspended individually through
+**core services only** per-user containers are suspended individually through
 _users_lifecycle.py_ (`dtaas user stop`/`pause`/`resume`), keeping the platform
 and user axes orthogonal. `_state_name` presents Docker's `exited` status as
 `stopped` so the reported state matches the `platform stop` verb. To keep one
@@ -134,6 +138,38 @@ unrelated section -- e.g. a stale `[workspace-secure-server]` block in a
 `secure-server` deployment -- does not block the update. Standalone
 `config validate` passes no deploy_type and still checks every present
 section.
+
+### GitLab user provisioning
+
+`src/pkg/gitlab/` is built on `gitlab_common` (vendored from
+`lib/gitlab_common` by `src/pkg/build.py`, like the deploy templates below
+see [lib/gitlab_common/README.md](../lib/gitlab_common/README.md) for why it
+is copied rather than depended on) for the client and user/PAT primitives, so
+no GitLab client or idempotency code is reimplemented in the CLI:
+
+- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` and
+  `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
+  variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
+  instance.
+- `provisioner.py`'s `ensure_user_resources(gl, username, email, password)`
+  creates the user's GitLab account and Personal Access Token via
+  `gitlab_common.create_user`/`create_user_pat`. It is idempotent: an
+  already-existing account is left with its current credentials and gets no
+  new PAT.
+
+This is wired into `dtaas user add` (`pkg/users.py`'s `_provision_gitlab_users`)
+behind the `[gitlab].provision` flag (default `false`, so existing
+deployments are unaffected). A password is required per user via
+`--password`, prompted interactively (hidden input) for a single-user add
+when omitted, or via `users.csv`'s `password` column for bulk adds and is
+used only to create the account; it is never written to
+`dtaas.users.registry.json`, `.dtaas.state.json`, or logs. Issued PATs are
+saved to `gitlab_user_tokens.json` (mode `0600`, via
+`utils.write_secret_file`). A GitLab failure for one user (or for the whole
+step, e.g. an unreachable instance) is reported and does not affect container
+provisioning, which has already completed by that point, nor other users.
+Scoped today to what `gitlab_common` provides user creation and PAT
+issuance; group/project provisioning is not implemented.
 
 ### User registry and runtime state
 
@@ -319,15 +355,18 @@ cd cli                           # switch to the cli directory
 poetry install                   # install all required python packages
 ```
 
-The deploy templates are not committed to the repository.
-Before running tests or building the package, copy them from their sources:
+Two things are generated and not committed to the repository. Before running
+tests or building the package, copy them from their sources:
 
 ```bash
 python src/pkg/build.py
 ```
 
 This populates `src/templates/deploy/` from `deploy/dtaas` and
-`deploy/workspace`. Re-run it whenever those source directories change.
+`deploy/workspace`, and `src/gitlab_common/` from `lib/gitlab_common` (see
+[GitLab user provisioning](#gitlab-user-provisioning) above). Re-run it
+whenever either source changes. Without it, `import src.cmd` fails with
+`ModuleNotFoundError: No module named 'src.gitlab_common'`.
 
 ## 🔧 Development
 
@@ -335,8 +374,9 @@ Make changes to _cli/src_.
 To test changes locally:
 
 ```bash
-poetry shell   # activate the poetry virtual environment
-poetry build   # build the python package
+poetry shell            # activate the poetry virtual environment
+python src/pkg/build.py # required before build/tests see Setup above
+poetry build            # build the python package
 ```
 
 ## 🔍 Linting

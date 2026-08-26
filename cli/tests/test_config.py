@@ -288,3 +288,89 @@ def test_get_tls_security_not_dict(mock_utils):
     assert tls is False
     assert err is not None
     assert "security section is not a dict" in str(err)
+
+
+def test_get_gitlab_provision_defaults_to_false(mock_utils):
+    """get_gitlab_provision returns False when [gitlab] is absent."""
+    mock_utils.return_value = ({"common": {}}, None)
+    cfg = config.Config()
+    provision, err = cfg.get_gitlab_provision()
+    assert provision is False
+    assert err is None
+
+
+def test_get_gitlab_provision_reads_true(mock_utils):
+    """get_gitlab_provision reads an explicit true value."""
+    mock_utils.return_value = ({"gitlab": {"provision": True}}, None)
+    cfg = config.Config()
+    provision, err = cfg.get_gitlab_provision()
+    assert provision is True
+    assert err is None
+
+
+def test_get_gitlab_section_not_dict(mock_utils):
+    """get_gitlab_section errors when [gitlab] is not a table."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    section, err = cfg.get_gitlab_section()
+    assert section is None
+    assert err is not None
+    assert "[gitlab] section is not a table" in str(err)
+
+
+def test_get_gitlab_api_url_success(mock_utils):
+    """get_gitlab_api_url reads the configured URL."""
+    mock_utils.return_value = (
+        {"gitlab": {"api_url": "https://gitlab.example.com"}},
+        None,
+    )
+    cfg = config.Config()
+    api_url, err = cfg.get_gitlab_api_url()
+    assert api_url == "https://gitlab.example.com"
+    assert err is None
+
+
+def test_get_gitlab_api_url_missing_errors(mock_utils):
+    """get_gitlab_api_url errors when unset, so provisioning fails loudly."""
+    mock_utils.return_value = ({"gitlab": {}}, None)
+    cfg = config.Config()
+    api_url, err = cfg.get_gitlab_api_url()
+    assert api_url is None
+    assert err is not None
+
+
+def test_get_gitlab_pat_reads_config_value(mock_utils):
+    """get_gitlab_pat reads [gitlab].pat when present."""
+    mock_utils.return_value = ({"gitlab": {"pat": "glpat-abc"}}, None)
+    cfg = config.Config()
+    pat, err = cfg.get_gitlab_pat()
+    assert pat == "glpat-abc"
+    assert err is None
+
+
+def test_get_gitlab_pat_defaults_to_empty_string(mock_utils):
+    """get_gitlab_pat returns '' (not an error) when unset, so callers can
+    fall back to the DTAAS_GITLAB_PAT environment variable."""
+    mock_utils.return_value = ({"gitlab": {}}, None)
+    cfg = config.Config()
+    pat, err = cfg.get_gitlab_pat()
+    assert pat == ""
+    assert err is None
+
+
+def test_get_gitlab_ssl_verify_defaults_to_true(mock_utils):
+    """get_gitlab_ssl_verify defaults to True when unset."""
+    mock_utils.return_value = ({"gitlab": {}}, None)
+    cfg = config.Config()
+    ssl_verify, err = cfg.get_gitlab_ssl_verify()
+    assert ssl_verify is True
+    assert err is None
+
+
+def test_get_gitlab_ssl_verify_reads_false(mock_utils):
+    """get_gitlab_ssl_verify reads an explicit false value."""
+    mock_utils.return_value = ({"gitlab": {"ssl_verify": False}}, None)
+    cfg = config.Config()
+    ssl_verify, err = cfg.get_gitlab_ssl_verify()
+    assert ssl_verify is False
+    assert err is None

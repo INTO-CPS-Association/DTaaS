@@ -31,11 +31,12 @@ def test_stage_single_user_requires_email():
 def test_stage_single_user_registers(tmp_path, monkeypatch):
     """A valid single-user add writes the user into the registry."""
     monkeypatch.chdir(tmp_path)
-    added = stage_users_for_add(
+    added, passwords = stage_users_for_add(
         UserAddInput("alice", None, "a@intocps.org", ("team",), False)
     )
 
     assert added == ["alice"]
+    assert not passwords
     store = load_registry()
     assert store["alice"]["email"] == "a@intocps.org"
     assert store["alice"]["groups"] == ["team"]
@@ -43,14 +44,31 @@ def test_stage_single_user_registers(tmp_path, monkeypatch):
     assert store["alice"]["desired_status"] == "running"
 
 
+def test_stage_single_user_password_returned_for_added_user(tmp_path, monkeypatch):
+    """A single-user add with --password returns it, keyed by username, for
+    GitLab provisioning -- and never inside the registry-persisted details."""
+    monkeypatch.chdir(tmp_path)
+    added, passwords = stage_users_for_add(
+        UserAddInput("alice", None, "a@intocps.org", (), True, "S3cur3-p4ss")
+    )
+
+    assert added == ["alice"]
+    assert passwords == {"alice": "S3cur3-p4ss"}
+    store = load_registry()
+    assert "password" not in store["alice"]
+
+
 def test_stage_returns_only_newly_added(tmp_path, monkeypatch):
     """stage_users_for_add returns just the new users, not skipped duplicates."""
     monkeypatch.chdir(tmp_path)
     stage_users_for_add(UserAddInput("alice", None, "a@intocps.org", (), True))
 
-    added = stage_users_for_add(UserAddInput("alice", None, "a@intocps.org", (), True))
+    added, passwords = stage_users_for_add(
+        UserAddInput("alice", None, "a@intocps.org", (), True)
+    )
 
-    assert added == []
+    assert not added
+    assert not passwords
 
 
 def test_stage_single_user_defaults_group_to_additional(tmp_path, monkeypatch):
