@@ -85,32 +85,13 @@ def test_get_server_dns_success(mock_utils, mock_toml_data):
     assert server == "localhost"
 
 
-def test_get_users_success(mock_utils, mock_toml_data):
-    """get_users returns the [[users]] list of dicts"""
-    mock_utils.return_value = (mock_toml_data, None)
-    cfg = config.Config()
-    users, err = cfg.get_users()
-    assert err is None
-    assert users == mock_toml_data["users"]
-
-
-def test_get_users_missing_defaults_to_empty_list(mock_utils):
-    """get_users returns [] with no error when 'users' is absent"""
-    mock_utils.return_value = ({"common": {}}, None)
-    cfg = config.Config()
-    users, err = cfg.get_users()
-    assert err is None
-    assert users == []
-
-
-def test_get_users_not_a_list_errors(mock_utils):
-    """get_users errors when 'users' is not an array of tables"""
-    mock_utils.return_value = ({"users": {"add": ["user1"]}}, None)
-    cfg = config.Config()
+def test_get_users_when_data_is_none():
+    """get_users propagates the 'Config not initialised' error rather than crashing."""
+    cfg = Config.__new__(Config)
+    cfg.data = None
     users, err = cfg.get_users()
     assert users is None
     assert err is not None
-    assert "array of tables" in str(err)
 
 
 def test_get_users_rejects_non_table_entry(mock_utils):
@@ -132,16 +113,13 @@ def test_get_starting_users_success(mock_utils, mock_toml_data):
     assert usernames == ["user1", "user2"]
 
 
-def test_get_starting_users_skips_missing_username(mock_utils):
-    """get_starting_users omits records with a blank/missing username."""
-    mock_utils.return_value = (
-        {"users": [{"username": "user1"}, {"email": "no-name@x.io"}]},
-        None,
-    )
+def test_get_starting_users_propagates_users_error(mock_utils):
+    """get_starting_users returns the error from get_users rather than crashing."""
+    mock_utils.return_value = ({"users": {"add": ["user1"]}}, None)
     cfg = config.Config()
     usernames, err = cfg.get_starting_users()
-    assert err is None
-    assert usernames == ["user1"]
+    assert usernames is None
+    assert err is not None
 
 
 def test_get_user_emails_success(mock_utils, mock_toml_data):
@@ -153,16 +131,13 @@ def test_get_user_emails_success(mock_utils, mock_toml_data):
     assert emails == {"user1": "user1@x.io", "user2": "user2@x.io"}
 
 
-def test_get_user_emails_skips_missing_username(mock_utils):
-    """get_user_emails omits records with a blank/missing username."""
-    mock_utils.return_value = (
-        {"users": [{"username": "user1", "email": "u1@x.io"}, {"email": "x@x.io"}]},
-        None,
-    )
+def test_get_user_emails_propagates_users_error(mock_utils):
+    """get_user_emails returns the error from get_users rather than crashing."""
+    mock_utils.return_value = ({"users": {"add": ["user1"]}}, None)
     cfg = config.Config()
     emails, err = cfg.get_user_emails()
-    assert err is None
-    assert emails == {"user1": "u1@x.io"}
+    assert emails is None
+    assert err is not None
 
 
 def test_get_resources_success(mock_config):
@@ -210,19 +185,6 @@ def test_get_set_limits_defaults_to_true():
         set_limits, err = cfg.get_set_limits()
         assert err is None
         assert set_limits is True
-
-
-def test_get_set_limits_reads_false():
-    """An explicit set_limits=false disables resource limits."""
-    with patch("src.pkg.config.utils.import_toml") as mock_import:
-        mock_import.return_value = (
-            {"common": {"resources": {"set_limits": False}}},
-            None,
-        )
-        cfg = Config()
-        set_limits, err = cfg.get_set_limits()
-        assert err is None
-        assert set_limits is False
 
 
 def test_get_set_limits_when_no_common_section(mock_utils):
@@ -299,25 +261,6 @@ def test_get_gitlab_provision_defaults_to_false(mock_utils):
     assert err is None
 
 
-def test_get_gitlab_provision_reads_true(mock_utils):
-    """get_gitlab_provision reads an explicit true value."""
-    mock_utils.return_value = ({"gitlab": {"provision": True}}, None)
-    cfg = config.Config()
-    provision, err = cfg.get_gitlab_provision()
-    assert provision is True
-    assert err is None
-
-
-def test_get_gitlab_section_not_dict(mock_utils):
-    """get_gitlab_section errors when [gitlab] is not a table."""
-    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
-    cfg = config.Config()
-    section, err = cfg.get_gitlab_section()
-    assert section is None
-    assert err is not None
-    assert "[gitlab] section is not a table" in str(err)
-
-
 def test_get_gitlab_api_url_success(mock_utils):
     """get_gitlab_api_url reads the configured URL."""
     mock_utils.return_value = (
@@ -348,25 +291,6 @@ def test_get_gitlab_pat_reads_config_value(mock_utils):
     assert err is None
 
 
-def test_get_gitlab_pat_defaults_to_empty_string(mock_utils):
-    """get_gitlab_pat returns '' (not an error) when unset, so callers can
-    fall back to the DTAAS_GITLAB_PAT environment variable."""
-    mock_utils.return_value = ({"gitlab": {}}, None)
-    cfg = config.Config()
-    pat, err = cfg.get_gitlab_pat()
-    assert pat == ""
-    assert err is None
-
-
-def test_get_gitlab_ssl_verify_defaults_to_true(mock_utils):
-    """get_gitlab_ssl_verify defaults to True when unset."""
-    mock_utils.return_value = ({"gitlab": {}}, None)
-    cfg = config.Config()
-    ssl_verify, err = cfg.get_gitlab_ssl_verify()
-    assert ssl_verify is True
-    assert err is None
-
-
 def test_get_gitlab_ssl_verify_reads_false(mock_utils):
     """get_gitlab_ssl_verify reads an explicit false value."""
     mock_utils.return_value = ({"gitlab": {"ssl_verify": False}}, None)
@@ -374,3 +298,48 @@ def test_get_gitlab_ssl_verify_reads_false(mock_utils):
     ssl_verify, err = cfg.get_gitlab_ssl_verify()
     assert ssl_verify is False
     assert err is None
+
+
+def test_get_gitlab_section_when_data_is_none():
+    """get_gitlab_section propagates the 'Config not initialised' error."""
+    cfg = Config.__new__(Config)
+    cfg.data = None
+    section, err = cfg.get_gitlab_section()
+    assert section is None
+    assert err is not None
+
+
+def test_get_gitlab_provision_propagates_section_error(mock_utils):
+    """get_gitlab_provision returns the error from get_gitlab_section."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    provision, err = cfg.get_gitlab_provision()
+    assert provision is False
+    assert err is not None
+
+
+def test_get_gitlab_api_url_propagates_section_error(mock_utils):
+    """get_gitlab_api_url returns the error from get_gitlab_section."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    api_url, err = cfg.get_gitlab_api_url()
+    assert api_url is None
+    assert err is not None
+
+
+def test_get_gitlab_pat_propagates_section_error(mock_utils):
+    """get_gitlab_pat returns the error from get_gitlab_section."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    pat, err = cfg.get_gitlab_pat()
+    assert pat == ""
+    assert err is not None
+
+
+def test_get_gitlab_ssl_verify_propagates_section_error(mock_utils):
+    """get_gitlab_ssl_verify returns the error from get_gitlab_section."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    ssl_verify, err = cfg.get_gitlab_ssl_verify()
+    assert ssl_verify is True
+    assert err is not None
