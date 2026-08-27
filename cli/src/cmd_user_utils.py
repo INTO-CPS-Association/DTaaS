@@ -128,13 +128,15 @@ def stage_users_for_add(user_input):
     return added, passwords
 
 
-def resolve_usernames(usernames, csv_file, verb="delete", allow_all=False):
+def resolve_usernames(
+    usernames, csv_file, missing_hint="USERNAMES or --file <users.csv> to delete users"
+):
     """Resolve the usernames to act on from positional USERNAMES or --file/-f.
 
-    Only the username column of the CSV is used. Raises ClickException if
-    both or neither are given. Shared by 'user delete'/'pause'/'stop'/
-    'resume'; *verb* only affects the error text, and *allow_all* adds
-    '--all' as a third option in that error (the lifecycle verbs only).
+    Only the username column of the CSV is used. Raises ClickException if both
+    are given, or *missing_hint* (the target options plus verb, e.g. "USERNAMES,
+    --file <users.csv>, or --all to pause users") if neither is. Shared by
+    'user delete'/'pause'/'stop'/'resume'.
     """
     if usernames and csv_file:
         raise click.ClickException("Pass either USERNAMES or --file, not both.")
@@ -142,12 +144,7 @@ def resolve_usernames(usernames, csv_file, verb="delete", allow_all=False):
         return list(_read_users_csv(csv_file))
     if usernames:
         return list(usernames)
-    target_hint = (
-        "USERNAMES, --file <users.csv>, or --all"
-        if allow_all
-        else "USERNAMES or --file <users.csv>"
-    )
-    raise click.ClickException(f"Provide one or more {target_hint} to {verb} users.")
+    raise click.ClickException(f"Provide one or more {missing_hint}.")
 
 
 def reject_starting_users(usernames, verb):

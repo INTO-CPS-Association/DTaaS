@@ -2,12 +2,17 @@
 
 from unittest.mock import MagicMock, Mock
 from gitlab.exceptions import GitlabCreateError, GitlabError
-from src.pkg.gitlab.provisioner import ensure_user_resources
+from src.pkg.gitlab.provisioner import GitlabUser, ensure_user_resources
 
 USERNAME = "alice"
 EMAIL = "alice@example.org"
 PASSWORD = "S3cur3-p4ss"  # noqa: S105 # NOSONAR
 TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+
+
+def _user(username=USERNAME, existing_user_id=None):
+    """A GitlabUser for the standard test account."""
+    return GitlabUser(username, EMAIL, PASSWORD, existing_user_id=existing_user_id)
 
 
 def _gl_with_pat(token):
@@ -28,7 +33,7 @@ def test_ensure_user_resources_creates_user_and_pat():
     mock_user.id = 7
     gl.users.create.return_value = mock_user
 
-    result = ensure_user_resources(gl, USERNAME, EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user())
 
     assert result.ok is True
     assert result.token == TOKEN
@@ -45,7 +50,7 @@ def test_ensure_user_resources_pat_failure_reports_user_id_for_a_later_retry():
     gl.users.create.return_value = mock_user
     gl.users.get.side_effect = GitlabError("timeout")
 
-    result = ensure_user_resources(gl, USERNAME, EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user())
 
     assert result.ok is False
     assert result.user_id == 7
@@ -56,9 +61,7 @@ def test_ensure_user_resources_retries_pat_with_existing_user_id():
     create_user entirely and reissues a PAT directly against that id."""
     gl = _gl_with_pat(TOKEN)
 
-    result = ensure_user_resources(
-        gl, USERNAME, EMAIL, PASSWORD, existing_user_id=7
-    )
+    result = ensure_user_resources(gl, _user(existing_user_id=7))
 
     assert result.ok is True
     assert result.token == TOKEN
@@ -74,9 +77,7 @@ def test_ensure_user_resources_retry_pat_failure_is_reported():
     gl = MagicMock()
     gl.users.get.side_effect = GitlabError("timeout")
 
-    result = ensure_user_resources(
-        gl, USERNAME, EMAIL, PASSWORD, existing_user_id=7
-    )
+    result = ensure_user_resources(gl, _user(existing_user_id=7))
 
     assert result.ok is False
     assert result.user_id == 7
@@ -91,7 +92,7 @@ def test_ensure_user_resources_already_exists_is_idempotent_noop():
     gl = MagicMock()
     gl.users.create.side_effect = GitlabCreateError(response_code=409)
 
-    result = ensure_user_resources(gl, USERNAME, EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user())
 
     assert result.ok is True
     assert result.token == ""
@@ -105,7 +106,7 @@ def test_ensure_user_resources_create_failure_is_reported():
     gl = MagicMock()
     gl.users.create.side_effect = GitlabError("connection refused")
 
-    result = ensure_user_resources(gl, USERNAME, EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user())
 
     assert result.ok is False
     assert "connection refused" in result.message
@@ -117,7 +118,7 @@ def test_ensure_user_resources_invalid_input_rejected_before_api_call():
     GitLab API call is made."""
     gl = MagicMock()
 
-    result = ensure_user_resources(gl, "bad username", EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user(username="bad username"))
 
     assert result.ok is False
     assert "Invalid user input" in result.message
@@ -132,7 +133,7 @@ def test_ensure_user_resources_pat_failure_after_user_created():
     gl.users.create.return_value = mock_user
     gl.users.get.side_effect = GitlabError("timeout")
 
-    result = ensure_user_resources(gl, USERNAME, EMAIL, PASSWORD)
+    result = ensure_user_resources(gl, _user())
 
     assert result.ok is False
     assert "PAT issuance failed" in result.message

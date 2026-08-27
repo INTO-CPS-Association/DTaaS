@@ -32,15 +32,17 @@ def _load_template(server, tls):
     Returns:
         Tuple of (template dict, error if any)
     """
+    err = None
     if server == LOCALHOST_SERVER:
-        return None, Exception("user add is not supported for localhost installations")
-    name = "users.server.secure.yml" if tls else "users.server.yml"
-    template, err = utils.import_yaml(name)
-    if err is not None:
-        return None, err
-    if not template:
-        return None, _missing_template_error(name)
-    return template, None
+        err = Exception("user add is not supported for localhost installations")
+        template = None
+    else:
+        name = "users.server.secure.yml" if tls else "users.server.yml"
+        template, err = utils.import_yaml(name)
+        if err is None and not template:
+            err = _missing_template_error(name)
+            template = None
+    return template, err
 
 
 def _apply_resource_limits(service, config):

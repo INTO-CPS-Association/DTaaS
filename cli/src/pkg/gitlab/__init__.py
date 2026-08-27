@@ -12,6 +12,6 @@ dtaas_services keeps that glue out of the shared module.
 """
 
 from .client import resolve_client
-from .provisioner import ProvisionResult, ensure_user_resources
+from .provisioner import GitlabUser, ProvisionResult, ensure_user_resources
 
-__all__ = ["resolve_client", "ProvisionResult", "ensure_user_resources"]
+__all__ = ["resolve_client", "GitlabUser", "ProvisionResult", "ensure_user_resources"]

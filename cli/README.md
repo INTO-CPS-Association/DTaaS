@@ -109,7 +109,7 @@ Manage `dtaas.toml` independently of the rest of the project. This is the
 first step in the setup workflow generate a template, fill it in, then
 validate before running any other command.
 
-**Generate a fresh template**
+#### Generate a fresh template
 
 ```bash
 dtaas config generate
@@ -118,7 +118,7 @@ dtaas config generate
 This writes `dtaas.toml` and a sample `users.csv` (bulk input for
 `dtaas user add --file`) into the target directory.
 
-**Validate an existing file**
+#### Validate an existing file
 
 ```bash
 dtaas config validate
@@ -187,7 +187,7 @@ dtaas deployment generate --type <name>
 | `--output-dir PATH` | `.` | Target directory (must already exist) |
 | `--force` | off | Overwrite files that already exist |
 
-**Available types**
+#### Available types
 
 | `--type` | Deployment scenario | Support level |
 |---|---|---|
@@ -608,7 +608,7 @@ users are left untouched, so adding one user never recreates the rest. A
 username already declared in `dtaas.toml`'s `[[users]]` or the registry is
 **skipped with a warning**: it is never added twice or overwritten.
 
-**GitLab provisioning (optional)**
+#### GitLab provisioning (optional)
 
 When `[gitlab].provision = true` in `dtaas.toml` (off by default), `user add`
 also creates each new user's GitLab account and a Personal Access Token:
@@ -722,7 +722,7 @@ the container for the change to take effect:
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
-**Resource limits (optional)**
+#### Resource limits (optional)
 
 By default each user container is created with the CPU, memory, process, and
 shared-memory caps from `[common.resources]`, merged in from the
@@ -954,7 +954,7 @@ Optional ○
 
 Not-Used —
 
-**Server deployments**
+#### Server deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 |---|:---:|:---:|:---:|:---:|
@@ -968,7 +968,7 @@ Not-Used —
 | `[secure-server]` | — | — | ✅ | — |
 | `[secure-server-gitlab]` | — | — | — | ✅ |
 
-**Workspace deployments**
+#### Workspace deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 |---|:---:|:---:|

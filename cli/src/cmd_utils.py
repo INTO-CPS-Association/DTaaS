@@ -99,6 +99,13 @@ def _echo_status_drift(status_drift):
         click.echo(f"- {name}: desired '{desired}' but container is '{actual}'")
 
 
+def _echo_no_drift(docker_reachable):
+    """Echo the all-clear line, but only when Docker state was verified -- with
+    Docker unreachable, absence of *detected* drift is not proof of 'In sync'."""
+    if docker_reachable:
+        click.echo("In sync: no drift detected.")
+
+
 def _echo_reconcile(report, status_drift, docker_reachable=True):
     """Print membership + desired-status drift, noting when everything is in
     sync. When Docker was unreachable, container state (absent/desired-status)
@@ -107,8 +114,7 @@ def _echo_reconcile(report, status_drift, docker_reachable=True):
     if not docker_reachable:
         click.echo("Warning: could not query Docker; container state was not verified.")
     if not any(report.values()) and not status_drift:
-        if docker_reachable:
-            click.echo("In sync: no drift detected.")
+        _echo_no_drift(docker_reachable)
         return
     _echo_membership_drift(report)
     _echo_status_drift(status_drift)
@@ -150,49 +156,47 @@ def _fix_reconcile(report, status_drift):
         click.echo("Enforced desired status on drifted users.")
 
 
-def run_reconcile(output_dir, fix=False):
-    """Report drift between dtaas.users.registry.json (desired) and what is
-    actually running, then optionally fix it.
-
-    - Membership drift (registry vs the live compose.users.yml services)
-    - Desired-status drift (a provisioned user whose live container state
-    does not match its registry desired_status).
-    A registry user that is provisioned (has a compose.users.yml service) but
-    whose live container has disappeared entirely -- e.g. an interrupted
-    'user add' -- is reported separately as 'absent', distinct from 'missing'
-    (which means no compose service exists at all). With --fix, an 'absent'
-    user's container alone is restarted, without touching already-running
-    users.
-
-    --fix reprovisions via 'dtaas user add', which operates on the current
-    directory unconditionally. Combining --fix with an --output-dir other
-    than the cwd would report on one deployment but fix another, so that
-    combination is rejected outright rather than silently acting on the
-    wrong directory.
-    """
-    if fix and Path(output_dir).resolve() != Path.cwd():
-        raise click.ClickException(
-            "--fix operates on the current directory; run it from the "
-            "deployment directory instead of passing --output-dir."
-        )
+def _load_reconcile_state(output_dir):
+    """Load the registry users, provisioning state, and compose services that
+    the drift report compares. Raises ClickException on an unreadable compose."""
     registry_users = registryPkg.load_registry(str(Path(output_dir) / REGISTRY_FILE))
     state = statePkg.load_state(str(Path(output_dir) / STATE_FILE))
     compose, err = utilsPkg.import_yaml(str(Path(output_dir) / COMPOSE_USERS_YML))
     if err is not None:
         raise click.ClickException(f"Error reading {COMPOSE_USERS_YML}: {err}")
     services = compose.get("services", {}) if isinstance(compose, dict) else {}
+    return registry_users, state, services
+
+
+def _run_reconcile_fix(report, status_drift, docker_reachable):
+    """Apply --fix, refusing when Docker state could not be verified."""
+    if not docker_reachable:
+        raise click.ClickException(
+            "Cannot --fix: Docker is unreachable, so container state could not "
+            "be verified. Start Docker and retry."
+        )
+    _fix_reconcile(report, status_drift)
+
+
+def run_reconcile(output_dir, fix=False):
+    """Report drift between registry (desired) and running state, optionally fix.
+
+    With --fix, reprovisions via 'dtaas user add', which requires running
+    from the deployment directory (--output-dir is rejected).
+    """
+    if fix and Path(output_dir).resolve() != Path.cwd():
+        raise click.ClickException(
+            "--fix operates on the current directory; run it from the "
+            "deployment directory instead of passing --output-dir."
+        )
+    registry_users, state, services = _load_reconcile_state(output_dir)
     report = statePkg.find_drift(registry_users, state, services)
     status_drift, report["absent"], docker_reachable = (
         usersLifecyclePkg.reconcile_drift(output_dir)
     )
     _echo_reconcile(report, status_drift, docker_reachable)
     if fix:
-        if not docker_reachable:
-            raise click.ClickException(
-                "Cannot --fix: Docker is unreachable, so container state could not "
-                "be verified. Start Docker and retry."
-            )
-        _fix_reconcile(report, status_drift)
+        _run_reconcile_fix(report, status_drift, docker_reachable)
 
 
 def run_config_update(output_dir, dry_run):

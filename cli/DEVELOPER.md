@@ -53,7 +53,8 @@ The CLI has two layers of code:
   (`deployment generate`), _src/cmd_platform.py_
   (`platform install|uninstall|update` plus the lifecycle verbs from
   _src/cmd_lifecycle.py_), and _src/cmd_user.py_
-  (`user add|delete|status|pause|stop|resume`). Options reused across nouns
+  (`user add|delete|status`, plus the `pause|stop|resume` verbs from
+  _src/cmd_user_lifecycle.py_). Options reused across nouns
   live in _src/cmd_options.py_. The CLI functions call the Package layer
   functions. Non-command helpers shared by the command definitions are split
   by concern to keep each file within a reasonable line count:
@@ -120,8 +121,9 @@ re-deriving it. `cmd_lifecycle.py` renders the status records as a table or
 (`--json`) as JSON via `echo_status` (shared with `user status`), and
 `_run_suspend` reports the "nothing installed" case as an exit-0 no-op so the
 commands are safe in CI/ops scripts. The commands are attached to the
-`platform` group by `add_lifecycle_commands`, mirroring how `cmd_user.py` wires
-its `user` subcommands.
+`platform` group by `add_lifecycle_commands`, mirroring how
+`cmd_user_lifecycle.py`'s `add_user_lifecycle_commands` attaches
+`user pause|stop|resume` to the `user` group.
 
 _src/pkg/deploy.py_'s local-file cleanup for `uninstall --remove-user-files`
 lives in a separate _src/pkg/user_files.py_ (pure filesystem work, no docker):
@@ -151,13 +153,14 @@ no GitLab client or idempotency code is reimplemented in the CLI:
   `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
   variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
   instance.
-- `provisioner.py`'s `ensure_user_resources(gl, username, email, password)`
+- `provisioner.py`'s `ensure_user_resources(gl, user)` (a `GitlabUser` of
+  username/email/password, plus an optional registry-stored user id)
   creates the user's GitLab account and Personal Access Token via
   `gitlab_common.create_user`/`create_user_pat`. It is idempotent: an
   already-existing account is left with its current credentials and gets no
   new PAT.
 
-This is wired into `dtaas user add` (`pkg/users.py`'s `_provision_gitlab_users`)
+This is wired into `dtaas user add` (`pkg/users_gitlab.py`'s `provision_gitlab_users`)
 behind the `[gitlab].provision` flag (default `false`, so existing
 deployments are unaffected). A password is required per user via
 `--password`, prompted interactively (hidden input) for a single-user add

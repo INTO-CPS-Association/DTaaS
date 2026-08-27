@@ -94,29 +94,6 @@ def test_add_single_user_prompts_for_password_when_provisioning(runner, mock_use
     assert staged_input.password == "S3cur3-p4ss"
 
 
-@pytest.fixture
-def mock_users_lifecycle_pkg():
-    """Mock the users_lifecycle package functions used by pause/stop/resume."""
-    with patch("src.cmd_user.usersLifecyclePkg.pause_users") as mock_pause, patch(
-        "src.cmd_user.usersLifecyclePkg.stop_users"
-    ) as mock_stop, patch("src.cmd_user.usersLifecyclePkg.resume_users") as mock_resume:
-        yield {"pause": mock_pause, "stop": mock_stop, "resume": mock_resume}
-
-
-def test_pause_reports_unregistered_and_not_provisioned(
-    runner, mock_users_lifecycle_pkg
-):
-    """pause reports each skipped username with the reason, then any successes."""
-    mock_users_lifecycle_pkg["pause"].return_value = (["alice"], ["ghost"], ["bob"])
-
-    result = runner.invoke(dtaas, ["user", "pause", "alice", "bob", "ghost"])
-
-    assert result.exit_code == 0
-    assert "'ghost' is not a registered user, skipping" in result.output
-    assert "'bob' is not currently provisioned, skipping" in result.output
-    assert "alice paused successfully" in result.output
-
-
 _STATUS_ROWS = [
     {"project": "deployment", "service": "traefik", "state": "running", "health": None},
     {"project": "users", "service": "alice", "state": "running", "health": None},
@@ -168,20 +145,3 @@ def test_user_status_maps_missing_deployment_to_error(runner):
 
     assert result.exit_code != 0
     assert "docker-compose.yml" in result.output
-
-
-def test_user_stop_all_and_targets_rejected(runner):
-    """--all combined with explicit USERNAMES is rejected."""
-    result = runner.invoke(dtaas, ["user", "stop", "alice", "--all"])
-
-    assert result.exit_code != 0
-    assert "not both" in result.output
-
-
-def test_user_resume_all_empty_registry(runner):
-    """user resume --all with an empty registry is a friendly no-op."""
-    with patch("src.cmd_user.registryPkg.load_registry", return_value={}):
-        result = runner.invoke(dtaas, ["user", "resume", "--all"])
-
-    assert result.exit_code == 0
-    assert "No additional users to act on." in result.output

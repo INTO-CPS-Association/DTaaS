@@ -4,14 +4,10 @@ Loads registry/deploy config, then drives the compose/container plumbing in
 users_compose.py to provision or deprovision the requested users.
 """
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
-import click
-from . import gitlab as gitlabPkg
 from . import utils
-from .constants import COMPOSE_USERS_YML, GITLAB_USER_TOKENS_FILE
-from .registry import load_registry, remove_from_registry, set_gitlab_user_ids
+from .constants import COMPOSE_USERS_YML
+from .registry import load_registry, remove_from_registry
 from .state import write_state
 from .users_compose import (
     add_users_to_compose,
@@ -19,6 +15,11 @@ from .users_compose import (
     finalize_compose,
     setup_compose_structure,
     stop_user_containers,
+)
+from .users_gitlab import (
+    gitlab_candidates,
+    gitlab_failure_exc,
+    provision_gitlab_users,
 )
 from .users_utils import (
     add_conf_server_entry,
@@ -145,86 +146,20 @@ def _provision_users(ctx, start_only=None):
     )
 
 
-def _gitlab_target_usernames(ctx, start_only, passwords):
-    """Registry users to attempt GitLab provisioning for this run.
+def _add_users(config_obj, start_only, passwords):
+    """Provision the registry's users; return an Exception to surface, or None.
 
-    Mirrors _provision_users' start_only scoping, plus any already-registered
-    user who supplied a password again this run even though their container
-    isn't being (re)started the explicit retry path after a prior PAT-
-    issuance failure, without touching anyone else.
+    Raises propagate to add_users, which catches and returns them.
     """
-    if start_only is None:
-        started = ctx.user_list
-    else:
-        started = [name for name in start_only if name in ctx.user_list]
-    retries = [
-        name for name in passwords if name in ctx.user_list and name not in started
-    ]
-    return started + retries
-
-
-def _save_gitlab_tokens(tokens):
-    """Persist newly issued GitLab PATs, merging with any already saved."""
-    path = Path(GITLAB_USER_TOKENS_FILE)
-    existing = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
-    existing.update(tokens)
-    utils.write_secret_file(path, json.dumps(existing, indent=2))
-
-
-def _provision_gitlab_users(config_obj, ctx, start_only, passwords):
-    """Create each targeted user's GitLab account and PAT, when enabled.
-
-    Container provisioning is unaffected by a GitLab failure. Returns the
-    usernames that could not be provisioned, so add_users can surface a
-    command failure (a missing password is not counted). A candidate with a
-    registry-stored gitlab_user_id retries PAT issuance directly against it
-    rather than calling create_user again; any new id is persisted.
-    """
-    provision, err = config_obj.get_gitlab_provision()
-    utils.check_error(err)
-    if not provision:
-        return []
-
-    candidates = _gitlab_target_usernames(ctx, start_only, passwords)
-    if not candidates:
-        return []
-
-    gl, err = gitlabPkg.resolve_client(config_obj)
-    if err is not None:
-        click.echo(f"GitLab provisioning skipped: {err}")
-        return list(candidates)
-
-    tokens = {}
-    new_user_ids = {}
-    failed = []
-    for username in candidates:
-        password = passwords.get(username)
-        if not password:
-            click.echo(
-                f"GitLab provisioning skipped for '{username}': no password supplied."
-            )
-            continue
-        details = ctx.users_section.get(username) or {}
-        email = details.get("email", "")
-        existing_user_id = details.get("gitlab_user_id")
-        result = gitlabPkg.ensure_user_resources(
-            gl, username, email, password, existing_user_id=existing_user_id
-        )
-        if result.user_id is not None and result.user_id != existing_user_id:
-            new_user_ids[username] = result.user_id
-        if not result.ok:
-            click.echo(f"GitLab provisioning failed for '{username}': {result.message}")
-            failed.append(username)
-        elif result.already_exists:
-            click.echo(f"Warning: GitLab provisioning for '{username}': {result.message}")
-        elif result.token:
-            tokens[username] = result.token
-
-    if new_user_ids:
-        set_gitlab_user_ids(new_user_ids)
-    if tokens:
-        _save_gitlab_tokens(tokens)
-    return failed
+    ctx = _load_add_context(config_obj)
+    if ctx is None:
+        return None  # empty registry: nothing to provision
+    setup_compose_structure(ctx.compose)
+    _provision_users(ctx, start_only)
+    if not passwords:
+        return None
+    candidates = gitlab_candidates(ctx, start_only, passwords)
+    return gitlab_failure_exc(provision_gitlab_users(config_obj, candidates))
 
 
 def add_users(config_obj, start_only=None, passwords=None):
@@ -238,22 +173,9 @@ def add_users(config_obj, start_only=None, passwords=None):
     returned as an error (non-zero exit) without undoing container work.
     """
     try:
-        ctx = _load_add_context(config_obj)
-        if ctx is None:
-            return None  # empty registry: nothing to provision
-        setup_compose_structure(ctx.compose)
-        _provision_users(ctx, start_only)
-        if passwords:
-            failed = _provision_gitlab_users(config_obj, ctx, start_only, passwords)
-            if failed:
-                return Exception(
-                    "GitLab provisioning failed for: "
-                    + ", ".join(failed)
-                    + " (their containers were still provisioned)"
-                )
+        return _add_users(config_obj, start_only, passwords)
     except Exception as e:
         return e
-    return None
 
 
 def _delete_context(usernames):

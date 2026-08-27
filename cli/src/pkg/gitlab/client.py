@@ -19,15 +19,13 @@ def resolve_pat(config_obj):
     pat, err = config_obj.get_gitlab_pat()
     if err is not None:
         return None, err
-    if pat:
-        return pat, None
-    env_pat = os.environ.get(PAT_ENV_VAR, "").strip()
-    if env_pat:
-        return env_pat, None
-    return None, Exception(
-        "GitLab provisioning is enabled but no PAT is configured. "
-        f"Set [gitlab].pat in dtaas.toml or the {PAT_ENV_VAR} environment variable."
-    )
+    pat = pat or os.environ.get(PAT_ENV_VAR, "").strip()
+    if not pat:
+        return None, Exception(
+            "GitLab provisioning is enabled but no PAT is configured. "
+            f"Set [gitlab].pat in dtaas.toml or the {PAT_ENV_VAR} environment variable."
+        )
+    return pat, None
 
 
 def resolve_client(config_obj):
@@ -36,16 +34,17 @@ def resolve_client(config_obj):
     Returns:
         Tuple of (client, err)
     """
-    api_url, err = config_obj.get_gitlab_api_url()
-    if err is not None:
-        return None, err
-    pat, err = resolve_pat(config_obj)
-    if err is not None:
-        return None, err
-    assert pat is not None  # resolve_pat guarantees this whenever err is None
-    ssl_verify, err = config_obj.get_gitlab_ssl_verify()
-    if err is not None:
-        return None, err
+    values = []
+    for getter in (
+        config_obj.get_gitlab_api_url,
+        lambda: resolve_pat(config_obj),
+        config_obj.get_gitlab_ssl_verify,
+    ):
+        value, err = getter()
+        if err is not None:
+            return None, err
+        values.append(value)
+    api_url, pat, ssl_verify = values
     if ssl_verify is False:
         click.echo(
             "Warning: [gitlab].ssl_verify is disabled -- GitLab API traffic "

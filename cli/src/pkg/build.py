@@ -57,14 +57,19 @@ def _ignore(_directory: str, names: list[str]) -> list[str]:
     return [n for n in names if n in SECRET_FILENAMES or n.endswith(SECRET_SUFFIXES)]
 
 
+def _copy_tree(src: Path, dest: Path, ignore_func=None) -> None:
+    """Copy src tree to dest, removing dest first if it exists."""
+    if dest.exists():
+        shutil.rmtree(dest)
+    shutil.copytree(src, dest, ignore=ignore_func, copy_function=shutil.copy)
+
+
 def _copy_one(deploy_type: str, rel_source: str) -> None:
     src = _REPO_ROOT / rel_source
     if not src.is_dir():
         raise FileNotFoundError(f"Source not found: {src}")
     dest = _DEST_ROOT / deploy_type
-    if dest.exists():
-        shutil.rmtree(dest)
-    shutil.copytree(src, dest, ignore=_ignore, copy_function=shutil.copy)
+    _copy_tree(src, dest, ignore_func=_ignore)
 
 
 def build_templates() -> None:
@@ -98,9 +103,7 @@ def vendor_gitlab_common() -> None:
             f"Source not found: {_GITLAB_COMMON_SOURCE}\n"
             "Expected the DTaaS monorepo layout with lib/gitlab_common present."
         )
-    if _GITLAB_COMMON_DEST.exists():
-        shutil.rmtree(_GITLAB_COMMON_DEST)
-    shutil.copytree(_GITLAB_COMMON_SOURCE, _GITLAB_COMMON_DEST)
+    _copy_tree(_GITLAB_COMMON_SOURCE, _GITLAB_COMMON_DEST)
     init_file = _GITLAB_COMMON_DEST / "__init__.py"
     init_file.write_text(
         init_file.read_text(encoding="utf-8")
