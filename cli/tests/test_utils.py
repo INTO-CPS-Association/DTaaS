@@ -223,11 +223,8 @@ def test_replace_dict_with_nested_error():
 def test_check_error_with_exception():
     """Test check_error raises exception"""
     err = Exception("Test error")
-    try:
+    with pytest.raises(Exception, match="Test error"):
         utils.check_error(err)
-        assert False, "Expected exception to be raised"
-    except Exception as e:  # pylint: disable=broad-except
-        assert str(e) == "Test error"
 
 
 def test_write_secret_file_writes_content(tmp_path):
