@@ -1,9 +1,9 @@
 """Validate the values in a dtaas.toml configuration file.
 
-Used by 'dtaas config validate'. Each check returns a list of human
-readable problems (empty when acceptable); validate_config aggregates them so
-the user sees every issue at once rather than one at a time. See
-validators.py for the generic, DTaaS-agnostic predicates each check builds on.
+Used by 'dtaas config validate'. Each check returns a list of problems
+(empty when acceptable); validate_config aggregates them so the user sees
+every issue at once. See validators.py for the generic predicates each
+check builds on.
 """
 
 from . import utils
@@ -126,6 +126,41 @@ def _check_users(data):
     return errors
 
 
+def _check_gitlab(data):
+    """[gitlab], when present, must have well-typed fields and a valid
+    api_url -- required when provision is true, so a malformed or missing
+    URL is caught before 'user add' runs, not after containers already
+    exist."""
+    gitlab = get_nested(data, "gitlab")
+    if gitlab is None:
+        return []
+    if not isinstance(gitlab, dict):
+        return ["gitlab section is not a table"]
+
+    errors = []
+    provision = gitlab.get("provision")
+    if provision is not None and not isinstance(provision, bool):
+        errors.append("gitlab.provision must be true or false")
+
+    api_url_check = required if provision is True else optional
+    errors += api_url_check(
+        data, ("gitlab", "api_url"), (is_url, "gitlab.api_url must be a valid URL")
+    )
+
+    pat = gitlab.get("pat")
+    if pat is not None and not str(pat).strip():
+        errors.append(
+            "gitlab.pat is set but empty; remove the key to use "
+            "DTAAS_GITLAB_PAT instead, or provide a real token"
+        )
+
+    ssl_verify = gitlab.get("ssl_verify")
+    if ssl_verify is not None and not isinstance(ssl_verify, (bool, str)):
+        errors.append("gitlab.ssl_verify must be true, false, or a CA bundle path")
+
+    return errors
+
+
 # Deployment-section fields checked when present: (section, key, predicate, label).
 _DEPLOY_FIELDS = (
     ("frontend", "react-app-oauth-url", is_url, "URL"),
@@ -186,6 +221,7 @@ _CHECKS = (
     _check_certs_src,
     _check_resources,
     _check_users,
+    _check_gitlab,
 )
 
 

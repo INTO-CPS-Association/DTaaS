@@ -1,20 +1,12 @@
 """The CLI-owned user registry, dtaas.users.registry.json.
 
-A store of the *additional* users provisioned by 'dtaas user add' /
-'delete', mutated directly and atomically by the CLI and never hand-edited,
-the way useradd owns /etc/passwd. Starting users live in dtaas.toml instead;
-deployment settings (server, path, resources, TLS) also come from dtaas.toml.
+A store of the *additional* users provisioned by 'dtaas user add'/'delete',
+mutated atomically by the CLI and never hand-edited, the way useradd owns
+/etc/passwd. Starting users and deployment settings live in dtaas.toml.
 
-Shape:
-    {"users": {"alice": {"email": ..., "groups": [...], "load_balance": bool,
-                          "desired_status": "running"}}}
-
-'desired_status' ('running'/'paused'/'stopped', default 'running' when absent
-for registries written before this field existed) records the outcome of the
-last 'dtaas user pause'/'stop'/'resume' for that user; see
-set_desired_status(). It is intentionally separate from the email/groups/
-load_balance fields 'user add' writes: those describe the user, this
-describes whether the CLI should currently be running their container.
+Shape: {"users": {"alice": {"email": ..., "groups": [...],
+"load_balance": bool, "desired_status": "running", "gitlab_user_id": 42}}}.
+See set_desired_status()/set_gitlab_user_ids() for those two fields.
 """
 
 import csv
@@ -86,12 +78,9 @@ def remove_from_registry(usernames, path=REGISTRY_FILE):
 def set_desired_status(usernames, status, path=REGISTRY_FILE):
     """Record each username's intended running state after a pause/stop/resume.
 
-    *status* is one of DESIRED_STATUSES ('running'/'paused'/'stopped'). Only
-    usernames already present in the registry are updated -- callers resolve
-    against the registry first, so an unknown name here is silently skipped
-    rather than treated as an error. email/groups/load_balance are left
-    untouched. Persisted atomically like register_new_users. Returns the
-    usernames actually updated.
+    *status* is one of DESIRED_STATUSES. Only usernames already present in
+    the registry are updated; an unknown name is silently skipped. Persisted
+    atomically like register_new_users. Returns the usernames updated.
     """
     if status not in DESIRED_STATUSES:
         raise ValueError(
@@ -101,6 +90,22 @@ def set_desired_status(usernames, status, path=REGISTRY_FILE):
     updated = [name for name in usernames if name in users]
     for name in updated:
         users[name]["desired_status"] = status
+    _write_registry(users, path)
+    return updated
+
+
+def set_gitlab_user_ids(user_ids, path=REGISTRY_FILE):
+    """Record each username's GitLab numeric user_id after account creation.
+
+    Lets a later retry reissue a PAT directly via create_user_pat, bypassing
+    create_user's ambiguous ALREADY_EXISTS/409 path. Only usernames already
+    in the registry are updated (an unknown name is skipped). Persisted
+    atomically; returns the usernames updated.
+    """
+    users = load_registry(path)
+    updated = [name for name in user_ids if name in users]
+    for name in updated:
+        users[name]["gitlab_user_id"] = user_ids[name]
     _write_registry(users, path)
     return updated
 

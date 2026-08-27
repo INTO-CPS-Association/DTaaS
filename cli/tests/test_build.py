@@ -146,3 +146,11 @@ def test_vendor_gitlab_common_overwrites_existing_dest():
     assert _GITLAB_COMMON_DEST.exists(), "fixture must have vendored it first"
     vendor_gitlab_common()
     assert _GITLAB_COMMON_DEST.is_dir()
+
+
+def test_vendor_gitlab_common_stamps_source_version():
+    """Each vendored copy records the git commit it was copied from, so a
+    divergence between an installed wheel and lib/gitlab_common is traceable."""
+    vendor_gitlab_common()
+    init_contents = (_GITLAB_COMMON_DEST / "__init__.py").read_text(encoding="utf-8")
+    assert "__source_version__ = " in init_contents

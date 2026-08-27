@@ -1,4 +1,4 @@
-"""Tests for shared GitLab user provisioning (gitlab_core/users.py)."""
+"""Tests for shared GitLab user provisioning (gitlab_common/users.py)."""
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock

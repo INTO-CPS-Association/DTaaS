@@ -14,6 +14,7 @@ CLI. Run this before running tests or packaging.
 """
 
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -22,6 +23,23 @@ _PROJECT_ROOT = _PKG_ROOT.parent  # deploy/services/cli/
 _REPO_ROOT = _PROJECT_ROOT.parent.parent.parent
 _SOURCE = _REPO_ROOT / "lib" / "gitlab_common" / "gitlab_common"
 _DEST = _PKG_ROOT / "gitlab_common"
+
+
+def _source_version() -> str:
+    """Git commit hash of lib/gitlab_common's last change, or "unknown"
+    outside a git checkout (e.g. building from an sdist) -- lets a vendored
+    copy be traced back to the source commit it was copied from."""
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%H", "--", "lib/gitlab_common"],
+            cwd=_REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip() or "unknown"
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
 
 
 def build() -> None:
@@ -34,6 +52,12 @@ def build() -> None:
     if _DEST.exists():
         shutil.rmtree(_DEST)
     shutil.copytree(_SOURCE, _DEST)
+    init_file = _DEST / "__init__.py"
+    init_file.write_text(
+        init_file.read_text(encoding="utf-8")
+        + f'\n__source_version__ = "{_source_version()}"\n',
+        encoding="utf-8",
+    )
 
 
 def main() -> int:

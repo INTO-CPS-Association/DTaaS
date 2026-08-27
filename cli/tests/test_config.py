@@ -300,6 +300,19 @@ def test_get_gitlab_ssl_verify_reads_false(mock_utils):
     assert err is None
 
 
+def test_get_gitlab_ssl_verify_reads_ca_bundle_path_unchanged(mock_utils):
+    """A non-empty ssl_verify string (a CA bundle path) passes through as-is
+    instead of being coerced to True by bool()."""
+    mock_utils.return_value = (
+        {"gitlab": {"ssl_verify": "/etc/ssl/certs/corp-ca.pem"}},
+        None,
+    )
+    cfg = config.Config()
+    ssl_verify, err = cfg.get_gitlab_ssl_verify()
+    assert ssl_verify == "/etc/ssl/certs/corp-ca.pem"
+    assert err is None
+
+
 def test_get_gitlab_section_when_data_is_none():
     """get_gitlab_section propagates the 'Config not initialised' error."""
     cfg = Config.__new__(Config)

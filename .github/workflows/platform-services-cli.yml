@@ -6,11 +6,13 @@ name: Platform Services CLI
       - 'feature/distributed-demo'
     paths:
       - 'deploy/services/cli/**'
+      - 'lib/**'
       - '.github/workflows/platform-services-cli.yml'
 
   pull_request:
     paths:
       - 'deploy/services/cli/**'
+      - 'lib/**'
       - '.github/workflows/platform-services-cli.yml'
   workflow_dispatch:
 

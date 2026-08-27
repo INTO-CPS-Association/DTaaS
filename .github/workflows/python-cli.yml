@@ -6,10 +6,12 @@ name: CLI for DTaaS
       - 'feature/distributed-demo'
     paths:
       - 'cli/**'
+      - 'lib/**'
       - '.github/workflows/python-cli.yml'
   pull_request:
     paths:
       - 'cli/**'
+      - 'lib/**'
       - '.github/workflows/python-cli.yml'
   workflow_dispatch:
 

@@ -149,6 +149,10 @@ dist
 dist-server/
 build/
 
+# Bash crash dump files
+bash.exe.stackdump
+*.stackdump
+
 # Test reports
 coverage/
 playwright-report/
@@ -250,3 +254,13 @@ deploy/dtaas/docker/secure-server_with_integrated-gitlab/data
 
 # dtaas CLI runtime state cache (machine-owned, never committed)
 .dtaas.state.json
+
+# dtaas CLI generated config: dtaas.toml may carry the GitLab provisioning
+# PAT, users.csv an optional plaintext password column, and
+# gitlab_user_tokens.json the PATs issued to provisioned users. The shipped
+# templates under cli/src/templates/ are tracked and re-included below.
+dtaas.toml
+users.csv
+gitlab_user_tokens.json
+!cli/src/templates/dtaas.toml
+!cli/src/templates/users.csv

@@ -1,10 +1,11 @@
 """Provider-agnostic GitLab operations shared across DTaaS packages.
 
 Every function here takes explicit arguments (URL, token, user fields) and
-performs no environment, filesystem, console, or process-global state changes,
-so it can be reused unchanged by the DTaaS CLI. Deployment-specific glue --
-URL derivation, token persistence, credential files, docker, and terminal
-output -- lives in ``dtaas_services.pkg.services.gitlab``.
+performs no environment, filesystem, console, or process-global state
+changes, so it is reused unchanged by both consumers. Deployment-specific
+glue URL derivation, token persistence, credential files, docker, and
+terminal output lives in each consumer instead: ``dtaas_services.pkg.
+services.gitlab`` and the DTaaS CLI's ``pkg.gitlab``.
 """
 
 from .client import get_gitlab_client

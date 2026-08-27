@@ -241,15 +241,33 @@ def test_write_secret_file_writes_content(tmp_path):
 
 
 def test_write_secret_file_cleans_up_tmp_on_failure(tmp_path):
-    """A failed write removes the temp file and re-raises the error."""
+    """A failed rename removes the temp file and re-raises the error."""
     target = tmp_path / "secret.txt"
 
-    with patch("src.pkg.utils.os.chmod", side_effect=OSError("boom")):
+    with patch("src.pkg.utils.os.replace", side_effect=OSError("boom")):
         with pytest.raises(OSError, match="boom"):
             utils.write_secret_file(str(target), "top-secret")
 
     assert not target.with_suffix(target.suffix + ".tmp").exists()
     assert not target.exists()
+
+
+def test_write_secret_file_refuses_a_preexisting_symlink(tmp_path):
+    """O_EXCL refuses a pre-existing temp-name entry (e.g. a symlink planted
+    by another user) instead of writing through it."""
+    target = tmp_path / "secret.txt"
+    tmp = target.with_suffix(target.suffix + ".tmp")
+    link_target = tmp_path / "attacker-owned.txt"
+    link_target.write_text("not touched", encoding="utf-8")
+    try:
+        tmp.symlink_to(link_target)
+    except OSError as exc:
+        pytest.skip(f"symlink creation not permitted in this environment: {exc}")
+
+    with pytest.raises(FileExistsError):
+        utils.write_secret_file(str(target), "top-secret")
+
+    assert link_target.read_text(encoding="utf-8") == "not touched"
 
 
 def get_test_compose_object():

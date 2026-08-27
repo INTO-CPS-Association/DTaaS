@@ -10,6 +10,7 @@ from src.pkg.registry import (
     read_csv_passwords,
     read_csv_users,
     set_desired_status,
+    set_gitlab_user_ids,
     _parse_csv_row,
     _partition_new,
 )
@@ -251,6 +252,34 @@ def test_set_desired_status_rejects_invalid_status(tmp_path):
 
     with pytest.raises(ValueError, match="Invalid desired_status"):
         set_desired_status(["alice"], "sleeping", path)
+
+
+def test_set_gitlab_user_ids_updates_only_known_users(tmp_path):
+    """set_gitlab_user_ids updates registry members, silently skips unknown
+    names."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+
+    updated = set_gitlab_user_ids({"alice": 42, "ghost": 99}, path)
+
+    assert updated == ["alice"]
+    assert load_registry(path)["alice"]["gitlab_user_id"] == 42
+
+
+def test_set_gitlab_user_ids_preserves_other_fields(tmp_path):
+    """Recording a gitlab_user_id leaves email/groups/load_balance untouched."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users(
+        {"alice": {"email": "a@x.io", "groups": ["g"], "load_balance": True}}, [], path
+    )
+
+    set_gitlab_user_ids({"alice": 42}, path)
+
+    stored = load_registry(path)["alice"]
+    assert stored["email"] == "a@x.io"
+    assert stored["groups"] == ["g"]
+    assert stored["load_balance"] is True
+    assert stored["gitlab_user_id"] == 42
 
 
 def test_csv_import_round_trips_through_registry(tmp_path):

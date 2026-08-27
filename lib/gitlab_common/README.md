@@ -1,8 +1,9 @@
 # gitlab-common
 
 Provider-agnostic [python-gitlab](https://python-gitlab.readthedocs.io/)
-operations shared across DTaaS Python packages (`dtaas-services` and, in a
-future phase, the DTaaS CLI).
+operations shared across DTaaS Python packages: `dtaas-services` (service
+provisioning) and `dtaas-cli` (`dtaas user add` GitLab account/PAT
+provisioning).
 
 Every function takes explicit arguments (URL, token, user fields) and performs
 **no** environment, filesystem, console, or process-global-state I/O.
@@ -19,14 +20,19 @@ resolve on any other machine (this was tried and reverted -- see git history).
 
 Instead, each consumer **vendors** (copies) this package's `gitlab_common/`
 source directory into its own tree at build/test time, via its own
-`pkg/build.py`:
+`pkg/build.py`, which also stamps the copy with the git commit it came from
+(`__source_version__` in `gitlab_common/__init__.py`) so a divergence between
+an installed wheel and this source is traceable:
 
 ```
 lib/gitlab_common/gitlab_common/   <-- single source of truth (this directory)
         |
         |  copied by each consumer's own pkg/build.py
-        v
-dtaas_services/gitlab_common/      <-- gitignored, regenerated, never committed
+        +---------------------------------------------+
+        v                                               v
+dtaas_services/gitlab_common/       cli/src/gitlab_common/
+(deploy/services/cli)               (the DTaaS CLI)
+gitignored, regenerated, never committed either way
 ```
 
 This keeps `dtaas-services` and the DTaaS CLI fully independent of each other

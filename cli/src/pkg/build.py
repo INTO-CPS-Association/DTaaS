@@ -19,6 +19,7 @@ Run this script before packaging or running tests.
 """
 
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -73,6 +74,23 @@ def build_templates() -> None:
         _copy_one(deploy_type, rel_source)
 
 
+def _source_version() -> str:
+    """Git commit hash of lib/gitlab_common's last change, or "unknown"
+    outside a git checkout (e.g. building from an sdist) -- lets a vendored
+    copy be traced back to the source commit it was copied from."""
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%H", "--", "lib/gitlab_common"],
+            cwd=_REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip() or "unknown"
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+
+
 def vendor_gitlab_common() -> None:
     """Copy gitlab_common's source into src/, replacing any prior copy."""
     if not _GITLAB_COMMON_SOURCE.is_dir():
@@ -83,6 +101,12 @@ def vendor_gitlab_common() -> None:
     if _GITLAB_COMMON_DEST.exists():
         shutil.rmtree(_GITLAB_COMMON_DEST)
     shutil.copytree(_GITLAB_COMMON_SOURCE, _GITLAB_COMMON_DEST)
+    init_file = _GITLAB_COMMON_DEST / "__init__.py"
+    init_file.write_text(
+        init_file.read_text(encoding="utf-8")
+        + f'\n__source_version__ = "{_source_version()}"\n',
+        encoding="utf-8",
+    )
 
 
 def build() -> None:

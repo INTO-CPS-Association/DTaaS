@@ -1,9 +1,7 @@
 """User-input resolution/validation shared by cmd_user.py's commands.
 
-Split out of cmd_utils.py (which now holds only the uninstall/reconcile/
-update orchestration) to keep both files within a reasonable line count,
-mirroring the cmd_deploy_utils.py split for the deployment-generation
-helpers.
+Split out of cmd_utils.py to keep both files within a reasonable line
+count, mirroring the cmd_deploy_utils.py split.
 """
 
 from dataclasses import dataclass
@@ -90,10 +88,9 @@ def _register_users(new_users):
 def _passwords_to_add(user_input):
     """Collect GitLab-provisioning passwords to use, keyed by username.
 
-    Kept independent of _users_to_add's registry-details dict so a password
-    is never accidentally merged into what gets persisted to
-    dtaas.users.registry.json -- passwords are transient and used only for
-    GitLab account creation, never stored.
+    Kept independent of _users_to_add's registry-details dict: a password is
+    transient, used only for GitLab account creation, and must never reach
+    dtaas.users.registry.json.
     """
     if user_input.csv_file:
         return _read_csv_passwords(user_input.csv_file)
@@ -113,12 +110,11 @@ def _read_csv_passwords(csv_file):
 def stage_users_for_add(user_input):
     """Merge CLI/CSV users into the registry before provisioning.
 
-    Rejects malformed usernames and, with a warning, skips any already in
-    dtaas.toml's starting list or the registry. Raises ClickException on bad
-    or missing input: a USERNAME or --file is required, and not both. Returns
-    (added, passwords): the usernames actually added (so only those are
-    started, not the whole registry), and a {username: password} map limited
-    to those same added usernames, for GitLab provisioning.
+    Rejects malformed usernames and skips (with a warning) any already
+    registered. Raises ClickException on bad input (a USERNAME or --file is
+    required, not both). Returns (added, passwords): newly-added usernames,
+    and every named user's password -- including an already-registered
+    one, which retries just their GitLab step (see add_users).
     """
     if user_input.username and user_input.csv_file:
         raise click.ClickException("Pass either a USERNAME or --file, not both.")
@@ -129,17 +125,16 @@ def stage_users_for_add(user_input):
         )
     added = _register_users(_users_to_add(user_input))
     passwords = _passwords_to_add(user_input)
-    return added, {name: passwords[name] for name in added if name in passwords}
+    return added, passwords
 
 
 def resolve_usernames(usernames, csv_file, verb="delete", allow_all=False):
     """Resolve the usernames to act on from positional USERNAMES or --file/-f.
 
-    Only the username column of the CSV is used; email/groups/load_balance are
-    ignored. Raises ClickException if both or neither are given. Shared by
-    'user delete'/'pause'/'stop'/'resume'; *verb* only affects the error text.
-    *allow_all* names '--all' as a third option in that error -- set by the
-    lifecycle verbs, which have it, but not by 'delete', which doesn't.
+    Only the username column of the CSV is used. Raises ClickException if
+    both or neither are given. Shared by 'user delete'/'pause'/'stop'/
+    'resume'; *verb* only affects the error text, and *allow_all* adds
+    '--all' as a third option in that error (the lifecycle verbs only).
     """
     if usernames and csv_file:
         raise click.ClickException("Pass either USERNAMES or --file, not both.")
@@ -159,9 +154,8 @@ def reject_starting_users(usernames, verb):
     """Raise ClickException if any *usernames* is a dtaas.toml starting user.
 
     'user pause'/'stop'/'resume' only manage additional, registry-tracked
-    users; starting users are baked into the main compose file and are
-    suspended/resumed as part of the whole installation instead, via
-    'dtaas platform pause'/'stop'/'resume'.
+    users; starting users are suspended/resumed as part of the whole
+    installation instead, via 'dtaas platform pause'/'stop'/'resume'.
     """
     hits = sorted(set(usernames) & set(_starting_usernames()))
     if hits:

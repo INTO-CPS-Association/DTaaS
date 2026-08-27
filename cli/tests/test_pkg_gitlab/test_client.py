@@ -71,3 +71,24 @@ def test_resolve_client_propagates_pat_resolution_failure(monkeypatch):
     gl, err = resolve_client(_config(pat=""))
     assert gl is None
     assert err is not None
+
+
+def test_resolve_client_warns_when_ssl_verify_disabled(monkeypatch, capsys):
+    """Disabling TLS verification is not silent: it warns, since it means
+    the admin PAT and provisioned users' passwords travel unverified."""
+    monkeypatch.delenv(PAT_ENV_VAR, raising=False)
+    gl, err = resolve_client(_config(api_url=API_URL, pat=PAT, ssl_verify=False))
+    assert err is None
+    assert gl.ssl_verify is False
+    assert "ssl_verify is disabled" in capsys.readouterr().err
+
+
+def test_resolve_client_does_not_warn_for_a_ca_bundle_path(monkeypatch, capsys):
+    """A CA bundle path is a deliberate, verified configuration -- no warning."""
+    monkeypatch.delenv(PAT_ENV_VAR, raising=False)
+    gl, err = resolve_client(
+        _config(api_url=API_URL, pat=PAT, ssl_verify="/etc/ssl/certs/corp-ca.pem")
+    )
+    assert err is None
+    assert gl.ssl_verify == "/etc/ssl/certs/corp-ca.pem"
+    assert capsys.readouterr().err == ""

@@ -1,4 +1,4 @@
-"""Tests for shared GitLab input validation (gitlab_core/validators.py)."""
+"""Tests for shared GitLab input validation (gitlab_common/validators.py)."""
 
 from gitlab_common import validators
 # pylint: disable=W0212

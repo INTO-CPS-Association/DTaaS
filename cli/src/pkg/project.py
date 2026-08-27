@@ -27,12 +27,21 @@ DEPLOY_TYPES = {
 
 
 def _copy_template(template_name, dest_dir, force=False):
-    """Copy a template file, returning True if skipped."""
+    """Copy a template file, returning True if skipped.
+
+    Secret-bearing templates are chmod'd 0600 even when the copy is skipped:
+    shutil.copy2 would otherwise carry the packaged template's world-readable
+    mode over, and a file generated before this hardening must stop being
+    world-readable on the next run too -- matching _copy_example and
+    deploy_config._apply_to_file.
+    """
     dest = Path(dest_dir) / template_name
-    if dest.exists() and not force:
-        return True
-    shutil.copy2(TEMPLATES_DIR / template_name, dest)
-    return False
+    skipped = dest.exists() and not force
+    if not skipped:
+        shutil.copy2(TEMPLATES_DIR / template_name, dest)
+    if dest.name in SECRET_FILENAMES:
+        dest.chmod(0o600)
+    return skipped
 
 
 def _create_workspace_dirs(dest_dir):

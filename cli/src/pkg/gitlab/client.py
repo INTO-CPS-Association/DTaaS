@@ -2,6 +2,8 @@
 
 import os
 
+import click
+
 from ...gitlab_common import get_gitlab_client
 
 PAT_ENV_VAR = "DTAAS_GITLAB_PAT"
@@ -44,4 +46,11 @@ def resolve_client(config_obj):
     ssl_verify, err = config_obj.get_gitlab_ssl_verify()
     if err is not None:
         return None, err
+    if ssl_verify is False:
+        click.echo(
+            "Warning: [gitlab].ssl_verify is disabled -- GitLab API traffic "
+            "(including the admin PAT and provisioned users' passwords) is "
+            "not certificate-verified.",
+            err=True,
+        )
     return get_gitlab_client(api_url, pat, ssl_verify=ssl_verify), None

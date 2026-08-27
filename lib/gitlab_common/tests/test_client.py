@@ -1,4 +1,4 @@
-"""Tests for the shared GitLab client factory (gitlab_core/client.py)."""
+"""Tests for the shared GitLab client factory (gitlab_common/client.py)."""
 
 import warnings
 

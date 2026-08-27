@@ -183,12 +183,29 @@ jobs:
 
       - name: Reject direct-URL dependencies in built metadata
         run: |
-          if unzip -p dist/*.whl '*.dist-info/METADATA' |
-              grep -E '^Requires-Dist:.*@ (file|git\+|https?)://'; then
+          set -o pipefail
+
+          wheel_metadata=$(unzip -p dist/*.whl '*.dist-info/METADATA')
+          if [ -z "$wheel_metadata" ]; then
+            echo "::error::Failed to extract wheel METADATA (empty output)."
+            exit 1
+          fi
+          if echo "$wheel_metadata" | grep -E '^Requires-Dist:.*@ (file|git\+|https?)://'; then
             echo "::error::Built wheel has a direct-URL dependency (shown above)."
             exit 1
           fi
-          echo "OK: no direct-URL dependencies in wheel metadata."
+
+          sdist_metadata=$(tar -xOzf dist/*.tar.gz --wildcards '*/PKG-INFO')
+          if [ -z "$sdist_metadata" ]; then
+            echo "::error::Failed to extract sdist PKG-INFO (empty output)."
+            exit 1
+          fi
+          if echo "$sdist_metadata" | grep -E '^Requires-Dist:.*@ (file|git\+|https?)://'; then
+            echo "::error::Built sdist has a direct-URL dependency (shown above)."
+            exit 1
+          fi
+
+          echo "OK: no direct-URL dependencies in wheel or sdist metadata."
 
       - name: Upload dist artefacts
         # v7.0.1

@@ -568,7 +568,7 @@ the CLI-owned `dtaas.users.registry.json`
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below) |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
 
 Add a single user:
 
@@ -617,8 +617,31 @@ also creates each new user's GitLab account and a Personal Access Token:
 [gitlab]
 provision = true
 api_url = "https://gitlab.example.com"
-pat = "glpat-xxxxxxxxxxxxxxxxxxxx"   # or set DTAAS_GITLAB_PAT instead
 ```
+
+The provisioning token must be able to create users (an admin token), so it is
+read from the `DTAAS_GITLAB_PAT` environment variable and is deliberately not
+part of the generated template:
+
+```bash
+export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
+```
+
+A `[gitlab].pat` key is still honoured if you prefer to set one, and takes
+precedence over the environment variable.
+
+For a self-hosted GitLab behind an internal CA, set `[gitlab].ssl_verify` to
+the CA bundle's path instead of leaving TLS verification on the system trust
+store (which will fail) or disabling it outright:
+
+```toml
+[gitlab]
+ssl_verify = "/etc/ssl/certs/corp-ca.pem"  # or true (default) / false
+```
+
+Setting `ssl_verify = false` disables certificate verification for all
+GitLab API traffic, including the admin PAT and every provisioned user's
+password, the CLI prints a warning whenever it is disabled.
 
 Each provisioned user needs an initial GitLab password, supplied via
 `--password` (prompted interactively with hidden input if omitted, for a
@@ -630,14 +653,44 @@ alice,alice@intocps.org,additional,true,S3cur3-p4ss
 bob,bob@intocps.org,additional;beta-testers,false,An0ther-p4ss
 ```
 
+`--password` is visible in shell history and to anyone on the host who can
+list processes (`ps`), since the OS records a command's actual arguments.
+For a single interactive add, omit it and use the hidden prompt instead. For
+scripted/non-interactive use, prefer the CSV `password` column above and
+`chmod 600 users.csv` -- the CLI does not manage permissions on a CSV path
+you supply yourself (it only chmods the sample file `dtaas config generate`
+writes).
+
+Re-running `dtaas user add` with the same `USERNAME`/CSV row and password
+retries GitLab provisioning for an already-registered user without touching
+their container e.g. after account creation failed outright (a network
+blip), or after the account was created but PAT issuance failed. The CLI
+tracks the GitLab account id it created internally, so a retry reissues a
+token directly rather than asking GitLab to create the account again (whose
+"already exists" response can't be trusted to mean "created by this CLI"
+it could just as easily be someone else's account with the same name).
+
 The password is used only to create the GitLab account and is never written
 to `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. A user missing
-a password when provisioning is enabled has their GitLab step skipped (with a
-warning) rather than failing the whole command; an already-existing GitLab
-account is left with its current password and issued no new token. Issued
-tokens are saved to `gitlab_user_tokens.json`. A GitLab failure for one user,
-or for the whole step (e.g. an unreachable instance), is reported
-independently and does not affect container provisioning or other users.
+a password when provisioning is enabled has their GitLab step skipped with a
+warning. An already-existing GitLab account is left with its current
+password and issued no new token, and is reported with an explicit warning
+(its credentials were not created by this run and are unknown to it) rather
+than as an unremarkable success. Container provisioning is unaffected by any
+GitLab outcome containers are already up by the time GitLab provisioning
+runs but a GitLab failure (a missing/skipped password does not count) now
+makes the `user add` command itself exit non-zero, so scripts can detect it.
+
+Issued tokens are saved to `gitlab_user_tokens.json` as `{"username":
+"token"}`, in the current working directory alongside `dtaas.toml` and
+`dtaas.users.registry.json` (not fixed to `--output-dir`). Each `user add`
+run merges newly issued tokens into the existing file rather than
+overwriting it, so it accumulates every token ever issued -- treat it as a
+credential store, the same as `dtaas.toml`.
+
+`dtaas.toml`, `users.csv`, and `gitlab_user_tokens.json` are all written mode
+`0600` and are gitignored, since each can hold a credential: the provisioning
+PAT, user passwords, and the issued user tokens respectively.
 
 A `USERNAME` or `--file` is required (not both) — a bare `dtaas user add`
 with neither is rejected rather than silently reprovisioning the whole
@@ -654,7 +707,7 @@ instead.
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below) |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
 
 For each username the CLI checks whether `files/<username>/` already exists.
 If not, a new directory with the correct structure is created from

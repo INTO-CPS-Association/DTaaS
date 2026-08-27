@@ -69,15 +69,16 @@ load_balance=true
 
 # --- GitLab user provisioning for users added with 'dtaas user add' --------
 # When enabled, 'user add' creates each new user's GitLab account and a
-# Personal Access Token, using a provisioning PAT configured here. Disabled
+# Personal Access Token, using an admin provisioning PAT. Disabled
 # by default; existing deployments are unaffected unless this is set.
-# The PAT needs to be able to create users (an admin token). Keep dtaas.toml
-# out of version control when it carries a live token, or supply the value
-# via the DTAAS_GITLAB_PAT environment variable instead.
+# The provisioning PAT must be able to create users (an admin token), so it is
+# deliberately NOT a key here: export it as DTAAS_GITLAB_PAT instead and keep
+# the token off disk entirely. A [gitlab].pat key is still honoured if you add
+# one, this file is generated mode 0600 and gitignored, but the
+# environment variable is preferred.
 [gitlab]
 provision=false
 api_url="https://gitlab.com"
-pat="glpat-xxxxxxxxxxxxxxxxxxxx"
 ssl_verify=true
 
 # Installation-specific configuration

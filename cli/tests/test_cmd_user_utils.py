@@ -60,6 +60,22 @@ def test_stage_returns_only_newly_added(tmp_path, monkeypatch):
     assert not passwords
 
 
+def test_stage_returns_password_for_already_registered_retry(tmp_path, monkeypatch):
+    """Naming an already-registered user again with --password still returns
+    their password -- the explicit retry path for a user whose GitLab PAT
+    issuance failed on a prior run (add_users targets every username with a
+    supplied password, not just newly-added ones)."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add(UserAddInput("alice", None, "a@intocps.org", (), True))
+
+    added, passwords = stage_users_for_add(
+        UserAddInput("alice", None, "a@intocps.org", (), True, "S3cur3-p4ss")
+    )
+
+    assert not added  # already registered: skipped, not re-added
+    assert passwords == {"alice": "S3cur3-p4ss"}
+
+
 def test_stage_rejects_invalid_username(tmp_path, monkeypatch):
     """A shell-unsafe username is rejected before registration."""
     monkeypatch.chdir(tmp_path)

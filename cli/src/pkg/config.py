@@ -171,8 +171,14 @@ class Config:
         return str(section.get("pat", "")).strip(), None
 
     def get_gitlab_ssl_verify(self):
-        """Gets [gitlab].ssl_verify (default True)."""
+        """Gets [gitlab].ssl_verify (default True): True/False, or the path
+        to a CA bundle to verify a self-hosted GitLab's own CA against. A
+        non-empty string is passed through unchanged rather than coerced by
+        bool()."""
         section, err = self.get_gitlab_section()
         if err is not None or section is None:
             return True, err
-        return bool(section.get("ssl_verify", True)), None
+        value = section.get("ssl_verify", True)
+        if isinstance(value, str) and value.strip():
+            return value.strip(), None
+        return bool(value), None
