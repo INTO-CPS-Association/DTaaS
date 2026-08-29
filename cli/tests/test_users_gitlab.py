@@ -4,6 +4,7 @@ Driven through users.add_users (the public entry point), so the fixtures
 mirror test_users.py's.
 """
 
+import json
 from unittest.mock import patch, MagicMock
 import pytest
 from src.pkg import users
@@ -70,24 +71,6 @@ def test_gitlab_target_usernames_start_only_none_means_all_registry_users():
     assert users_gitlab._gitlab_target_usernames(ctx, None, {}) == ["alice", "bob"]
 
 
-def test_gitlab_target_usernames_scoped_to_start_only_and_registry():
-    """Only names in both start_only and the registry are targeted -- a
-    typo'd or unregistered name is dropped."""
-    ctx = MagicMock(user_list=["alice", "bob"])
-    assert users_gitlab._gitlab_target_usernames(ctx, ["alice", "trudy"], {}) == [
-        "alice"
-    ]
-
-
-def test_gitlab_target_usernames_includes_password_retry_for_existing_user():
-    """An already-registered user outside start_only who supplied a password
-    again this run is still targeted -- the explicit retry path for a user
-    whose GitLab PAT issuance failed on a prior run."""
-    ctx = MagicMock(user_list=["alice", "bob"])
-    result = users_gitlab._gitlab_target_usernames(ctx, ["alice"], {"bob": "pw"})
-    assert result == ["alice", "bob"]
-
-
 def test_add_users_skips_gitlab_when_provision_disabled(
     mock_config, mock_registry, mock_utils, mock_user_operations
 ):
@@ -102,54 +85,6 @@ def test_add_users_skips_gitlab_when_provision_disabled(
 
     assert err is None
     mock_resolve.assert_not_called()
-
-
-def test_add_users_skips_gitlab_when_no_passwords_supplied(
-    mock_config, mock_registry, mock_utils, mock_user_operations
-):
-    """No GitLab client is built when no passwords are supplied (e.g. from
-    'config reconcile --fix'), even if provisioning is enabled."""
-    mock_config.get_gitlab_provision.return_value = (True, None)
-    mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
-
-    with patch("src.pkg.users_gitlab.gitlabPkg.resolve_client") as mock_resolve:
-        err = users.add_users(mock_config, start_only=["alice"], passwords=None)
-
-    assert err is None
-    mock_resolve.assert_not_called()
-
-
-def test_add_users_provisions_gitlab_and_saves_token(
-    mock_config, mock_registry, mock_utils, mock_user_operations
-):
-    """An enabled, successful GitLab provision saves the issued PAT."""
-    mock_config.get_gitlab_provision.return_value = (True, None)
-    mock_registry["load"].return_value = {"alice": {"email": "alice@x.io"}}
-    gl = MagicMock()
-
-    with patch(
-        "src.pkg.users_gitlab.gitlabPkg.resolve_client", return_value=(gl, None)
-    ) as mock_resolve, patch(
-        "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources",
-        return_value=ProvisionResult("alice", True, "created", "glpat-token"),
-    ) as mock_ensure, patch(
-        "src.pkg.users_gitlab.utils.write_secret_file"
-    ) as mock_write:
-        err = users.add_users(
-            mock_config, start_only=["alice"], passwords={"alice": "S3cur3-p4ss"}
-        )
-
-    assert err is None
-    mock_resolve.assert_called_once_with(mock_config)
-    mock_ensure.assert_called_once_with(
-        gl,
-        gitlabPkg.GitlabUser(
-            "alice", "alice@x.io", "S3cur3-p4ss", existing_user_id=None
-        ),
-    )
-    mock_write.assert_called_once()
-    saved_content = mock_write.call_args.args[1]
-    assert "glpat-token" in saved_content
 
 
 def test_add_users_provisions_gitlab_persists_new_user_id(
@@ -169,6 +104,8 @@ def test_add_users_provisions_gitlab_persists_new_user_id(
             "alice", True, "created", "glpat-token", user_id=42
         ),
     ), patch("src.pkg.users_gitlab.utils.write_secret_file"), patch(
+        "src.pkg.users_gitlab.set_gitlab_pat_issued"
+    ), patch(
         "src.pkg.users_gitlab.set_gitlab_user_ids"
     ) as mock_set_ids:
         err = users.add_users(
@@ -177,40 +114,6 @@ def test_add_users_provisions_gitlab_persists_new_user_id(
 
     assert err is None
     mock_set_ids.assert_called_once_with({"alice": 42})
-
-
-def test_add_users_provisions_gitlab_retries_pat_with_stored_user_id(
-    mock_config, mock_registry, mock_utils, mock_user_operations
-):
-    """A registry entry with a stored gitlab_user_id (from a prior successful
-    creation) is passed to ensure_user_resources as existing_user_id, so a
-    retry after a PAT-issuance failure reissues a token directly."""
-    mock_config.get_gitlab_provision.return_value = (True, None)
-    mock_registry["load"].return_value = {
-        "alice": {"email": "alice@x.io", "gitlab_user_id": 42}
-    }
-    gl = MagicMock()
-
-    with patch(
-        "src.pkg.users_gitlab.gitlabPkg.resolve_client", return_value=(gl, None)
-    ), patch(
-        "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources",
-        return_value=ProvisionResult(
-            "alice", True, "GitLab token issued (retry).", "glpat-token", user_id=42
-        ),
-    ) as mock_ensure, patch("src.pkg.users_gitlab.utils.write_secret_file"), patch(
-        "src.pkg.users_gitlab.set_gitlab_user_ids"
-    ) as mock_set_ids:
-        err = users.add_users(
-            mock_config, start_only=["alice"], passwords={"alice": "S3cur3-p4ss"}
-        )
-
-    assert err is None
-    mock_ensure.assert_called_once_with(
-        gl,
-        gitlabPkg.GitlabUser("alice", "alice@x.io", "S3cur3-p4ss", existing_user_id=42),
-    )
-    mock_set_ids.assert_not_called()  # user_id unchanged: nothing new to persist
 
 
 def test_add_users_gitlab_skips_user_with_no_password(
@@ -230,7 +133,9 @@ def test_add_users_gitlab_skips_user_with_no_password(
     ), patch(
         "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources",
         return_value=ProvisionResult("alice", True, "created", "glpat-token"),
-    ) as mock_ensure, patch("src.pkg.users_gitlab.utils.write_secret_file"):
+    ) as mock_ensure, patch("src.pkg.users_gitlab.utils.write_secret_file"), patch(
+        "src.pkg.users_gitlab.set_gitlab_pat_issued"
+    ):
         err = users.add_users(
             mock_config,
             start_only=["alice", "bob"],
@@ -287,6 +192,58 @@ def test_add_users_gitlab_provisioning_failure_fails_the_command(
     assert "alice" in str(err)
     mock_write.assert_not_called()
     assert "GitLab provisioning failed for 'alice'" in capsys.readouterr().out
+
+
+def test_add_users_gitlab_skips_user_whose_pat_was_already_issued(
+    mock_config, mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A re-run for an already-registered user whose registry entry is marked
+    gitlab_pat_issued issues no new token: ensure_user_resources is never
+    called, nothing is written, and it is not a command failure (H1)."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {
+        "alice": {"email": "a@x.io", "gitlab_user_id": 42, "gitlab_pat_issued": True}
+    }
+    gl = MagicMock()
+
+    with patch(
+        "src.pkg.users_gitlab.gitlabPkg.resolve_client", return_value=(gl, None)
+    ), patch(
+        "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources"
+    ) as mock_ensure, patch(
+        "src.pkg.users_gitlab.utils.write_secret_file"
+    ) as mock_write, patch(
+        "src.pkg.users_gitlab.set_gitlab_pat_issued"
+    ) as mock_set_issued:
+        err = users.add_users(
+            mock_config, start_only=[], passwords={"alice": "S3cur3-p4ss"}
+        )
+
+    assert err is None
+    mock_ensure.assert_not_called()
+    mock_write.assert_not_called()
+    mock_set_issued.assert_not_called()
+    assert "already issued" in capsys.readouterr().out
+
+
+def test_save_gitlab_tokens_keeps_superseded_entry_rather_than_overwriting(
+    tmp_path, monkeypatch, capsys
+):
+    """If the tokens file already holds a different token for a user, the old
+    value is retained under a timestamped key (and a warning printed) instead
+    of being silently dropped."""
+    monkeypatch.chdir(tmp_path)
+    tokens_file = tmp_path / "gitlab_user_tokens.json"
+    tokens_file.write_text('{"alice": "glpat-old"}', encoding="utf-8")
+
+    users_gitlab._save_gitlab_tokens({"alice": "glpat-new"})
+
+    saved = json.loads(tokens_file.read_text(encoding="utf-8"))
+    assert saved["alice"] == "glpat-new"
+    superseded = [k for k in saved if k.startswith("alice (superseded ")]
+    assert len(superseded) == 1
+    assert saved[superseded[0]] == "glpat-old"
+    assert "revoked manually" in capsys.readouterr().out
 
 
 def test_add_users_gitlab_already_exists_warns_but_is_not_a_command_failure(

@@ -17,7 +17,7 @@ from .pkg import lifecycle as lifecyclePkg
 from .pkg import registry as registryPkg
 from .cmd_utils import run_user_command
 from .cmd_lifecycle import echo_status
-from .cmd_options import json_option
+from .cmd_options import file_option, json_option
 from .cmd_user_lifecycle import add_user_lifecycle_commands
 from .cmd_user_utils import (
     UserAddInput,
@@ -53,13 +53,7 @@ def _should_prompt_password(user_input, provision):
 
 @user_group.command()
 @click.argument("username", required=False)
-@click.option(
-    "--file",
-    "-f",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-add users from a CSV file into the registry.",
-)
+@file_option("Bulk-add users from a CSV file into the registry.")
 @click.option("--email", help="Email for USERNAME (enables forward-auth routing).")
 @click.option(
     "--group",
@@ -127,12 +121,8 @@ def add(**kwargs):
 
 @user_group.command()
 @click.argument("usernames", nargs=-1, required=False)
-@click.option(
-    "--file",
-    "-f",
-    "csv_file",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Bulk-delete users listed in a CSV file (only the username column is used).",
+@file_option(
+    "Bulk-delete users listed in a CSV file (only the username column is used)."
 )
 @click.option(
     "--dry-run",

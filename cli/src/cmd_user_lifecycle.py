@@ -13,6 +13,7 @@ cmd_user_utils.reject_starting_users.
 import click
 from .pkg import users_lifecycle as usersLifecyclePkg
 from .pkg import registry as registryPkg
+from .cmd_options import file_option
 from .cmd_user_utils import reject_starting_users, resolve_usernames
 
 
@@ -134,12 +135,8 @@ def _make_lifecycle_command(verb):
 
     @click.command(name=verb, help=_lifecycle_help(verb))
     @click.argument("usernames", nargs=-1, required=False)
-    @click.option(
-        "--file",
-        "-f",
-        "csv_file",
-        type=click.Path(exists=True, dir_okay=False),
-        help="Bulk-target users listed in a CSV file (only the username column is used).",
+    @file_option(
+        "Bulk-target users listed in a CSV file (only the username column is used)."
     )
     @click.option(
         "--all",

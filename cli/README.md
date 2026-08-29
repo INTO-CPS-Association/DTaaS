@@ -670,6 +670,13 @@ token directly rather than asking GitLab to create the account again (whose
 "already exists" response can't be trusted to mean "created by this CLI"
 it could just as easily be someone else's account with the same name).
 
+A retry only fills gaps: once a token has been issued for a user, the CLI
+records that in the registry (`gitlab_pat_issued`) and a further re-run
+issues no second token, reporting the user as skipped. This keeps a repeated
+`user add` (the natural response to a partial failure) from minting a fresh
+365-day PAT on every pass and leaving the earlier ones live but untracked. If
+a token really is lost or revoked, issue a replacement from GitLab directly.
+
 The password is used only to create the GitLab account and is never written
 to `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. A user missing
 a password when provisioning is enabled has their GitLab step skipped with a
@@ -685,8 +692,12 @@ Issued tokens are saved to `gitlab_user_tokens.json` as `{"username":
 "token"}`, in the current working directory alongside `dtaas.toml` and
 `dtaas.users.registry.json` (not fixed to `--output-dir`). Each `user add`
 run merges newly issued tokens into the existing file rather than
-overwriting it, so it accumulates every token ever issued -- treat it as a
-credential store, the same as `dtaas.toml`.
+overwriting it, so it accumulates one token per user across runs (the
+`gitlab_pat_issued` guard above stops a second token being issued for a user
+who already has one). If a user's entry is ever replaced, the previous value
+is kept under a `"<username> (superseded <timestamp>)"` key and a warning is
+printed the old token is still live on GitLab and needs manual revocation.
+Treat the file as a credential store, the same as `dtaas.toml`.
 
 `dtaas.toml`, `users.csv`, and `gitlab_user_tokens.json` are all written mode
 `0600` and are gitignored, since each can hold a credential: the provisioning

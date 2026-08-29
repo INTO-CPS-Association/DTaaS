@@ -8,12 +8,13 @@ container provisioning users.py has already done.
 
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 import click
 from . import gitlab as gitlabPkg
 from . import utils
 from .constants import GITLAB_USER_TOKENS_FILE
-from .registry import set_gitlab_user_ids
+from .registry import set_gitlab_pat_issued, set_gitlab_user_ids
 
 
 def _gitlab_target_usernames(ctx, start_only, passwords):
@@ -35,10 +36,28 @@ def _gitlab_target_usernames(ctx, start_only, passwords):
 
 
 def _save_gitlab_tokens(tokens):
-    """Persist newly issued GitLab PATs, merging with any already saved."""
+    """Persist newly issued GitLab PATs, merging with any already saved.
+
+    A username should not already be present -- the gitlab_pat_issued guard
+    in _provision_one_gitlab_user stops a re-run from reaching here. If one
+    is (e.g. a prior run saved a token then died before recording it in the
+    registry), keep the old value under a timestamped key and warn, rather
+    than dropping it silently: the old token is still live on GitLab and
+    needs manual revocation.
+    """
     path = Path(GITLAB_USER_TOKENS_FILE)
     existing = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
-    existing.update(tokens)
+    for username, token in tokens.items():
+        prior = existing.get(username)
+        if prior and prior != token:
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            existing[f"{username} (superseded {stamp})"] = prior
+            click.echo(
+                f"Warning: replaced the saved GitLab token for '{username}'; the "
+                "previous token is still valid on GitLab and must be revoked "
+                "manually."
+            )
+        existing[username] = token
     utils.write_secret_file(path, json.dumps(existing, indent=2))
 
 
@@ -50,6 +69,7 @@ class _GitlabCandidate:
     email: str
     existing_user_id: object
     password: object
+    pat_issued: bool = False
 
 
 @dataclass
@@ -77,6 +97,7 @@ def gitlab_candidates(ctx, start_only, passwords):
                 details.get("email", ""),
                 details.get("gitlab_user_id"),
                 passwords.get(username),
+                bool(details.get("gitlab_pat_issued")),
             )
         )
     return candidates
@@ -99,6 +120,13 @@ def _provision_one_gitlab_user(gl, candidate):
         click.echo(
             f"GitLab provisioning skipped for '{candidate.username}': "
             "no password supplied."
+        )
+        return _GitlabUserResult(candidate.username, None, None, False)
+    if candidate.pat_issued:
+        click.echo(
+            f"GitLab provisioning skipped for '{candidate.username}': a Personal "
+            "Access Token was already issued on an earlier run (see "
+            f"{GITLAB_USER_TOKENS_FILE}). A re-run does not reissue one."
         )
         return _GitlabUserResult(candidate.username, None, None, False)
     result = gitlabPkg.ensure_user_resources(
@@ -125,13 +153,18 @@ def _provision_one_gitlab_user(gl, candidate):
 
 
 def _persist_gitlab_results(results):
-    """Persist changed GitLab user ids and newly issued PATs."""
+    """Persist changed GitLab user ids and newly issued PATs.
+
+    Recording gitlab_pat_issued alongside the saved token is what stops a
+    later re-run from minting a second PAT for the same account.
+    """
     new_user_ids = {r.username: r.new_id for r in results if r.new_id is not None}
     if new_user_ids:
         set_gitlab_user_ids(new_user_ids)
     tokens = {r.username: r.token for r in results if r.token}
     if tokens:
         _save_gitlab_tokens(tokens)
+        set_gitlab_pat_issued(list(tokens))
 
 
 def _issue_gitlab_resources(gl, candidates):
@@ -150,7 +183,9 @@ def provision_gitlab_users(config_obj, candidates):
     usernames that could not be provisioned, so add_users can surface a
     command failure (a missing password is not counted). A candidate with a
     registry-stored gitlab_user_id retries PAT issuance directly against it
-    rather than calling create_user again; any new id is persisted.
+    rather than calling create_user again; any new id is persisted. A
+    candidate already marked gitlab_pat_issued is skipped, so re-running the
+    command never mints a second token for the same account.
     """
     provision, err = config_obj.get_gitlab_provision()
     utils.check_error(err)

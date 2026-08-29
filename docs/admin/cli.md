@@ -636,6 +636,7 @@ instead.
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups |
 | `--load-balance` / `--no-load-balance` | on | Mark `USERNAME` for load balancing |
+| `--password TEXT` | — | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Prefer the `users.csv` `password` column or the interactive prompt a command-line value is visible in shell history and the process list |
 
 The command checks for the existence of the `files/<username>` directory.
 If it does not exist, a new directory with the correct file structure is
@@ -651,6 +652,47 @@ effect:
 ```bash
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
+
+#### 🦊 GitLab provisioning (optional)
+
+When `[gitlab].provision = true` in `dtaas.toml` (off by default), `admin user
+add` also creates each new user's GitLab account and a Personal Access Token:
+
+```toml
+[gitlab]
+provision = true
+api_url = "https://gitlab.example.com"
+```
+
+The provisioning token must be able to create users (an admin token). It is
+read from the `DTAAS_GITLAB_PAT` environment variable and is deliberately not
+part of the generated template; a `[gitlab].pat` key is honoured too and takes
+precedence.
+
+```bash
+export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
+```
+
+Each provisioned user needs an initial GitLab password, supplied via
+`--password` (prompted interactively with hidden input if omitted, for a
+single-user add) or a `password` column in `users.csv`:
+
+```csv
+username,email,groups,load_balance,password
+alice,alice@intocps.org,additional,true,S3cur3-p4ss
+```
+
+The password is used only to create the account and is never written to
+`dtaas.users.registry.json`, `.dtaas.state.json`, or logs. Issued tokens are
+saved to `gitlab_user_tokens.json` (mode `0600`) treat it as a credential
+store. Re-running `admin user add` for an already-provisioned user retries
+only the parts that failed before; once a token has been issued for a user it
+is not reissued on a later run. An already-existing GitLab account is left
+untouched and reported with a warning. A GitLab failure does not affect
+container provisioning (containers are already up by then) but does make the
+command exit non-zero. For a self-hosted GitLab behind an internal CA, set
+`[gitlab].ssl_verify` to the CA bundle's path; `false` disables verification
+entirely and prints a warning.
 
 #### ⚖️ Resource limits (optional)
 

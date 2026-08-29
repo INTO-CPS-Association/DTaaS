@@ -5,8 +5,9 @@ mutated atomically by the CLI and never hand-edited, the way useradd owns
 /etc/passwd. Starting users and deployment settings live in dtaas.toml.
 
 Shape: {"users": {"alice": {"email": ..., "groups": [...],
-"load_balance": bool, "desired_status": "running", "gitlab_user_id": 42}}}.
-See set_desired_status()/set_gitlab_user_ids() for those two fields.
+"load_balance": bool, "desired_status": "running", "gitlab_user_id": 42,
+"gitlab_pat_issued": true}}}. See set_desired_status()/set_gitlab_user_ids()/
+set_gitlab_pat_issued() for the last three fields.
 """
 
 import csv
@@ -75,6 +76,20 @@ def remove_from_registry(usernames, path=REGISTRY_FILE):
     return removed
 
 
+def _apply_user_field(field, values, path):
+    """Set users[name][field] = values[name] for every *name* already in the
+    registry, persisted atomically. Unknown names are skipped. Returns the
+    usernames updated. Shared by set_desired_status / set_gitlab_user_ids /
+    set_gitlab_pat_issued so the same atomic read-modify-write isn't repeated.
+    """
+    users = load_registry(path)
+    updated = [name for name in values if name in users]
+    for name in updated:
+        users[name][field] = values[name]
+    _write_registry(users, path)
+    return updated
+
+
 def set_desired_status(usernames, status, path=REGISTRY_FILE):
     """Record each username's intended running state after a pause/stop/resume.
 
@@ -86,12 +101,7 @@ def set_desired_status(usernames, status, path=REGISTRY_FILE):
         raise ValueError(
             f"Invalid desired_status '{status}': expected one of {sorted(DESIRED_STATUSES)}"
         )
-    users = load_registry(path)
-    updated = [name for name in usernames if name in users]
-    for name in updated:
-        users[name]["desired_status"] = status
-    _write_registry(users, path)
-    return updated
+    return _apply_user_field("desired_status", {n: status for n in usernames}, path)
 
 
 def set_gitlab_user_ids(user_ids, path=REGISTRY_FILE):
@@ -102,12 +112,18 @@ def set_gitlab_user_ids(user_ids, path=REGISTRY_FILE):
     in the registry are updated (an unknown name is skipped). Persisted
     atomically; returns the usernames updated.
     """
-    users = load_registry(path)
-    updated = [name for name in user_ids if name in users]
-    for name in updated:
-        users[name]["gitlab_user_id"] = user_ids[name]
-    _write_registry(users, path)
-    return updated
+    return _apply_user_field("gitlab_user_id", user_ids, path)
+
+
+def set_gitlab_pat_issued(usernames, path=REGISTRY_FILE):
+    """Mark that a GitLab PAT has been issued for each username.
+
+    Checked by 'dtaas user add' before issuing: re-running it for an
+    already-provisioned user must not mint a second token, which would leave
+    the first live on GitLab for its full lifetime with no record of it. Only
+    usernames already in the registry are updated; persisted atomically.
+    """
+    return _apply_user_field("gitlab_pat_issued", {n: True for n in usernames}, path)
 
 
 def _parse_load_balance(value):

@@ -22,6 +22,24 @@ json_option = click.option(
     help="Emit machine-readable JSON instead of a human-readable table.",
 )
 
+
+def file_option(help_text):
+    """The '--file'/'-f' CSV-path option shared by the 'user' subcommands.
+
+    A factory rather than a plain decorator because only the help text varies
+    between call sites ('user add' / 'delete' / 'pause'|'stop'|'resume'); the
+    option block itself was otherwise duplicated across cmd_user.py and
+    cmd_user_lifecycle.py (pylint R0801).
+    """
+    return click.option(
+        "--file",
+        "-f",
+        "csv_file",
+        type=click.Path(exists=True, dir_okay=False),
+        help=help_text,
+    )
+
+
 # Shared by the generation commands ('deployment generate' and the deprecated
 # 'generate-project' shim), which write into a target directory rather than an
 # existing installation.

@@ -168,7 +168,10 @@ when omitted, or via `users.csv`'s `password` column for bulk adds and is
 used only to create the account; it is never written to
 `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. Issued PATs are
 saved to `gitlab_user_tokens.json` (mode `0600`, via
-`utils.write_secret_file`). A GitLab failure for one user (or for the whole
+`utils.write_secret_file`), and the successful issuance is recorded in the
+registry as `gitlab_pat_issued` so a repeated `user add` (e.g. re-running the
+same CSV after a partial failure) skips a user who already has a token rather
+than minting a second one. A GitLab failure for one user (or for the whole
 step, e.g. an unreachable instance) is reported and does not affect container
 provisioning, which has already completed by that point, nor other users.
 Scoped today to what `gitlab_common` provides user creation and PAT

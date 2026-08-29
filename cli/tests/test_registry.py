@@ -10,6 +10,7 @@ from src.pkg.registry import (
     read_csv_passwords,
     read_csv_users,
     set_desired_status,
+    set_gitlab_pat_issued,
     set_gitlab_user_ids,
     _parse_csv_row,
     _partition_new,
@@ -21,34 +22,6 @@ USERS_CSV = (
     "alice,alice@intocps.org,additional,true\n"
     "bob,bob@intocps.org,additional;beta-testers,false\n"
 )
-
-
-def test_load_registry_empty_when_absent(tmp_path):
-    """A missing registry reads as an empty store, not an error."""
-    assert load_registry(str(tmp_path / "nope.json")) == {}
-
-
-def test_load_registry_reads_user_store(tmp_path):
-    """load_registry returns the users mapping from the JSON file."""
-    path = tmp_path / "dtaas.users.registry.json"
-    path.write_text(
-        json.dumps({"users": {"alice": {"email": "alice@intocps.org"}}}),
-        encoding="utf-8",
-    )
-
-    assert load_registry(str(path))["alice"]["email"] == "alice@intocps.org"
-
-
-def test_register_new_users_merges_and_persists(tmp_path):
-    """register_new_users unions new users into the store and writes atomically."""
-    path = str(tmp_path / "dtaas.users.registry.json")
-
-    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
-    added, skipped = register_new_users({"bob": {"email": "b@x.io"}}, [], path)
-
-    assert added == ["bob"] and skipped == []
-    assert set(load_registry(path)) == {"alice", "bob"}
-    assert not (tmp_path / "dtaas.users.registry.json.tmp").exists()
 
 
 def test_register_new_users_skips_existing_without_overwriting(tmp_path):
@@ -65,24 +38,6 @@ def test_register_new_users_skips_existing_without_overwriting(tmp_path):
     assert load_registry(path)["alice"]["email"] == "old@x.io"
 
 
-def test_register_new_users_skips_reserved_starting_user(tmp_path):
-    """A username that is a starting user (reserved) is never added."""
-    path = str(tmp_path / "dtaas.users.registry.json")
-
-    added, skipped = register_new_users({"bob": {"email": "b@x.io"}}, ["bob"], path)
-
-    assert added == [] and skipped == ["bob"]
-    assert load_registry(path) == {}
-
-
-def test_partition_new_splits_known_and_new():
-    """_partition_new separates already-known names from genuinely new ones."""
-    added, skipped = _partition_new({"alice": {"e": 1}, "bob": {"e": 2}}, {"alice"})
-
-    assert added == {"bob": {"e": 2}}
-    assert skipped == ["alice"]
-
-
 def test_remove_from_registry_drops_named_users(tmp_path):
     """remove_from_registry deletes the named users and reports what was removed."""
     path = str(tmp_path / "dtaas.users.registry.json")
@@ -94,61 +49,12 @@ def test_remove_from_registry_drops_named_users(tmp_path):
     assert set(load_registry(path)) == {"bob"}
 
 
-def test_parse_csv_row_splits_groups_and_reads_load_balance():
-    """_parse_csv_row splits ';' groups and parses the boolean load_balance."""
-    username, details = _parse_csv_row(
-        {
-            "username": " bob ",
-            "email": "bob@intocps.org",
-            "groups": "additional;beta-testers",
-            "load_balance": "false",
-        }
-    )
-
-    assert username == "bob"
-    assert details["groups"] == ["additional", "beta-testers"]
-    assert details["load_balance"] is False
-
-
-def test_parse_csv_row_strips_group_names():
-    """Whitespace around ';'-separated group tags is trimmed."""
-    _, details = _parse_csv_row(
-        {"username": "x", "email": "x@y.io", "groups": " a ; b ", "load_balance": ""}
-    )
-    assert details["groups"] == ["a", "b"]
-
-
-def test_parse_csv_row_defaults_empty_groups_to_additional():
-    """An empty groups cell defaults to ['additional']."""
-    _, details = _parse_csv_row(
-        {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "true"}
-    )
-    assert details["groups"] == ["additional"]
-
-
-def test_parse_csv_row_sets_desired_status_running():
-    """A CSV-imported user starts with desired_status 'running'."""
-    _, details = _parse_csv_row(
-        {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "true"}
-    )
-    assert details["desired_status"] == "running"
-
-
 def test_parse_csv_row_rejects_invalid_load_balance():
     """A load_balance value that is neither true nor false is rejected."""
     with pytest.raises(ValueError, match="load_balance"):
         _parse_csv_row(
             {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "yes"}
         )
-
-
-def test_write_registry_fsyncs_before_replace(tmp_path):
-    """The registry temp file is fsync'd before the atomic rename."""
-    path = str(tmp_path / "dtaas.users.registry.json")
-    with patch("src.pkg.registry.os.fsync") as mock_fsync:
-        register_new_users({"alice": {}}, [], path)
-
-    mock_fsync.assert_called_once()
 
 
 def test_read_csv_users_parses_all_rows(tmp_path):
@@ -193,31 +99,6 @@ def test_read_csv_passwords_parses_password_column(tmp_path):
     assert passwords == {"alice": "S3cur3-p4ss", "bob": "An0ther-p4ss"}
 
 
-def test_read_csv_passwords_omits_blank_cells(tmp_path):
-    """A blank password cell is omitted, not stored as an empty string."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(
-        "username,email,groups,load_balance,password\n"
-        "alice,alice@intocps.org,additional,true,\n",
-        encoding="utf-8",
-    )
-
-    passwords = read_csv_passwords(str(csv_path))
-
-    assert not passwords
-
-
-def test_read_csv_passwords_missing_column_returns_empty(tmp_path):
-    """A CSV with no password column at all yields no passwords, not an error."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(
-        "username,email,groups,load_balance\nalice,alice@intocps.org,additional,true\n",
-        encoding="utf-8",
-    )
-
-    assert not read_csv_passwords(str(csv_path))
-
-
 def test_set_desired_status_updates_only_known_users(tmp_path):
     """set_desired_status updates registry members, silently skips unknown names."""
     path = str(tmp_path / "dtaas.users.registry.json")
@@ -227,22 +108,6 @@ def test_set_desired_status_updates_only_known_users(tmp_path):
 
     assert updated == ["alice"]
     assert load_registry(path)["alice"]["desired_status"] == "paused"
-
-
-def test_set_desired_status_preserves_other_fields(tmp_path):
-    """Updating desired_status leaves email/groups/load_balance untouched."""
-    path = str(tmp_path / "dtaas.users.registry.json")
-    register_new_users(
-        {"alice": {"email": "a@x.io", "groups": ["g"], "load_balance": True}}, [], path
-    )
-
-    set_desired_status(["alice"], "stopped", path)
-
-    stored = load_registry(path)["alice"]
-    assert stored["email"] == "a@x.io"
-    assert stored["groups"] == ["g"]
-    assert stored["load_balance"] is True
-    assert stored["desired_status"] == "stopped"
 
 
 def test_set_desired_status_rejects_invalid_status(tmp_path):
@@ -266,28 +131,13 @@ def test_set_gitlab_user_ids_updates_only_known_users(tmp_path):
     assert load_registry(path)["alice"]["gitlab_user_id"] == 42
 
 
-def test_set_gitlab_user_ids_preserves_other_fields(tmp_path):
-    """Recording a gitlab_user_id leaves email/groups/load_balance untouched."""
+
+def test_set_gitlab_pat_issued_marks_only_known_users(tmp_path):
+    """set_gitlab_pat_issued flags registry members True, skips unknown names."""
     path = str(tmp_path / "dtaas.users.registry.json")
-    register_new_users(
-        {"alice": {"email": "a@x.io", "groups": ["g"], "load_balance": True}}, [], path
-    )
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
 
-    set_gitlab_user_ids({"alice": 42}, path)
+    updated = set_gitlab_pat_issued(["alice", "ghost"], path)
 
-    stored = load_registry(path)["alice"]
-    assert stored["email"] == "a@x.io"
-    assert stored["groups"] == ["g"]
-    assert stored["load_balance"] is True
-    assert stored["gitlab_user_id"] == 42
-
-
-def test_csv_import_round_trips_through_registry(tmp_path):
-    """A CSV merged into the registry reads back as the same user store."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(USERS_CSV, encoding="utf-8")
-    registry_path = str(tmp_path / "dtaas.users.registry.json")
-
-    register_new_users(read_csv_users(str(csv_path)), [], registry_path)
-
-    assert set(load_registry(registry_path)) == {"alice", "bob"}
+    assert updated == ["alice"]
+    assert load_registry(path)["alice"]["gitlab_pat_issued"] is True

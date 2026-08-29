@@ -18,6 +18,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[common]` | ✅ | ✅ | ✅ | ✅ |
 | `[common.security]` | — | — | ✅ | ✅ |
 | `[common.resources]` | ○ | ○ | ○ | ○ |
+| `[gitlab]` | ○ | ○ | ○ | ○ |
 | `[[users]]` | ✅ | ✅ | ✅ | ✅ |
 | `[frontend]` | — | ✅ | ✅ | ✅ |
 | `[localhost]` | ✅ | — | — | — |
@@ -32,6 +33,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[common]` | ✅ | ✅ |
 | `[common.security]` | — | ✅ |
 | `[common.resources]` | ○ | ○ |
+| `[gitlab]` | ○ | ○ |
 | `[[users]]` | ✅ | ✅ |
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
@@ -105,6 +107,21 @@ load_balance = false
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
 
+# ── GitLab user provisioning (optional, all types) ───────────────────────────
+# Off by default. When provision = true, `dtaas admin user add` also creates
+# each new user's GitLab account and a Personal Access Token (see
+# "Add Users" in cli.md). The provisioning token must be able to create users
+# (an admin token); supply it via the DTAAS_GITLAB_PAT environment variable
+# rather than committing it here. A [gitlab].pat key overrides the env var if
+# set. ssl_verify may be a CA-bundle path for a GitLab behind an internal CA;
+# false disables verification (a warning is printed) and true (default) uses
+# the system trust store.
+[gitlab]
+provision  = false
+api_url    = "https://gitlab.example.com"
+# pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
+# ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
+
 # ── localhost deployment (dev / demo only) ────────────────────────────────────
 [localhost]
 default-user   = "alice"
@@ -176,6 +193,10 @@ first, then the current directory) and reports all problems at once:
 | `[[users]].groups` | When present, must be a list of strings |
 | `[[users]].load_balance` | When present, must be `true` or `false` |
 | `[[users]].password` | When present, must be a string |
+| `[gitlab].provision` | When present, `true` or `false` (default `false`) |
+| `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise |
+| `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
+| `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
