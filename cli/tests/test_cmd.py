@@ -181,6 +181,33 @@ def test_config_validate_missing_file(runner):
     assert "dtaas.toml not found" in result.output
 
 
+def test_permission_error_appends_sudo_hint(runner):
+    """A permission-denied failure tells the user to re-run with sudo -E."""
+    with patch(
+        "src.cmd_config.configValidatePkg.validate_config",
+        side_effect=PermissionError(
+            "[Errno 13] Permission denied: '/etc/letsencrypt/archive/x'"
+        ),
+    ):
+        result = runner.invoke(dtaas, ["config", "validate"])
+
+    assert result.exit_code != 0
+    assert "Permission denied" in result.output
+    assert 'sudo -E env PATH="$PATH" dtaas <command>' in result.output
+
+
+def test_non_permission_error_has_no_sudo_hint(runner):
+    """An unrelated failure is not decorated with the sudo hint."""
+    with patch(
+        "src.cmd_config.configValidatePkg.validate_config",
+        side_effect=ValueError("malformed toml"),
+    ):
+        result = runner.invoke(dtaas, ["config", "validate"])
+
+    assert result.exit_code != 0
+    assert "sudo -E env" not in result.output
+
+
 @pytest.fixture
 def mock_deploy_pkg():
     """Mock the deploy package handlers used by install/uninstall."""

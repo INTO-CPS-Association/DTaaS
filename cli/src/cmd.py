@@ -18,15 +18,42 @@ from .cmd_aliases import register_aliases
 # operate the platform, then manage users. dtaas --help lists them in this order.
 _WORKFLOW_ORDER = ("config", "deployment", "platform", "user")
 
+_PERMISSION_HINT = (
+    "This looks like a permissions error. If the path is root-owned (for "
+    "example TLS certificates under /etc/letsencrypt), re-run the command as "
+    'root:\n  sudo -E env PATH="$PATH" dtaas <command>'
+)
+
+
+def _is_permission_message(text):
+    """True when *text* reads like an OS permission-denied/not-permitted error."""
+    lowered = text.lower()
+    return "permission denied" in lowered or "operation not permitted" in lowered
+
 
 class WorkflowGroup(click.Group):
-    """Root group that lists its noun commands in workflow order, not A-Z."""
+    """Root group that lists its noun commands in workflow order, not A-Z, and
+    appends a 'run with sudo' hint to permission-denied failures (mirroring the
+    dtaas-services CLI, whose commands touch the same root-owned host paths)."""
 
     def list_commands(self, ctx):
         names = super().list_commands(ctx)
         ordered = [name for name in _WORKFLOW_ORDER if name in names]
         extras = [name for name in names if name not in _WORKFLOW_ORDER]
         return ordered + extras
+
+    def invoke(self, ctx):
+        try:
+            return super().invoke(ctx)
+        except click.ClickException as exc:
+            message = exc.format_message()
+            if _is_permission_message(message):
+                raise click.ClickException(
+                    f"{message}\n\n{_PERMISSION_HINT}"
+                ) from exc
+            raise
+        except PermissionError as exc:
+            raise click.ClickException(f"{exc}\n\n{_PERMISSION_HINT}") from exc
 
 
 @click.group(cls=WorkflowGroup)

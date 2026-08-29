@@ -153,7 +153,10 @@ and `[workspace-secure-server]`; each is checked only when its section is
 present.
 
 `path` and `certs-src` are checked against the local filesystem, run
-`validate` on the deployment host.
+`validate` on the deployment host. If a check fails with a permission error
+(e.g. `certs-src` points under `/etc/letsencrypt`, which is root-owned), the
+CLI says so and prints the elevated form to re-run:
+`sudo -E env PATH="$PATH" dtaas <command>`.
 
 The `[common.resources]` limit fields (`cpus`, `pids_limit`, `mem_limit`,
 `shm_size`) are required only when `set_limits` is `true` (the default). With
