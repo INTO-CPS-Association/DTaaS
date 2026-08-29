@@ -7,10 +7,12 @@ name: gitlab-common library
     paths:
       - 'lib/gitlab_common/**'
       - '.github/workflows/gitlab-common.yml'
+      - '.github/workflows/python-reusable.yml'
   pull_request:
     paths:
       - 'lib/gitlab_common/**'
       - '.github/workflows/gitlab-common.yml'
+      - '.github/workflows/python-reusable.yml'
   workflow_dispatch:
 
 concurrency:
@@ -24,49 +26,13 @@ jobs:
   test-gitlab-common:
     name: Test gitlab-common
     permissions:
-      contents: read  # Required for checking out the code
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: lib/gitlab_common
-
-    steps:
-      - name: Checkout Repository
-        # v7.0.0
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-        with:
-          lfs: false
-
-      - name: Setup Python
-        # v6.2.0
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
-        with:
-          python-version: "3.12"
-
-      - name: Install Poetry
-        env:
-          POETRY_HOME: ${{ runner.temp }}/poetry
-        run: |
-          python -m pip install --upgrade pip
-          curl -sSL https://install.python-poetry.org | python -
-
-      - name: Add Poetry to PATH
-        run: echo "${{ runner.temp }}/poetry/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: poetry install --with dev
-
-      - name: Run pytest (with coverage)
-        run: |
-          poetry run pytest --cov=gitlab_common --cov-report=xml \
-            --cov-report=term-missing
-
-      - name: Upload coverage to Codecov
-        # v7.0.0
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
-        with:
-          files: lib/gitlab_common/coverage.xml
-          flags: gitlab-common-tests
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+      contents: read
+      actions: write
+    uses: ./.github/workflows/python-reusable.yml
+    with:
+      working-directory: lib/gitlab_common
+      src-directory: gitlab_common
+      tests-directory: tests
+      coverage-file: lib/gitlab_common/coverage.xml
+      artifact-name: gitlab-common
+      run-pyright: true
