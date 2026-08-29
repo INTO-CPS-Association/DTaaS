@@ -101,7 +101,7 @@ def set_desired_status(usernames, status, path=REGISTRY_FILE):
         raise ValueError(
             f"Invalid desired_status '{status}': expected one of {sorted(DESIRED_STATUSES)}"
         )
-    return _apply_user_field("desired_status", {n: status for n in usernames}, path)
+    return _apply_user_field("desired_status", dict.fromkeys(usernames, status), path)
 
 
 def set_gitlab_user_ids(user_ids, path=REGISTRY_FILE):
@@ -123,7 +123,7 @@ def set_gitlab_pat_issued(usernames, path=REGISTRY_FILE):
     the first live on GitLab for its full lifetime with no record of it. Only
     usernames already in the registry are updated; persisted atomically.
     """
-    return _apply_user_field("gitlab_pat_issued", {n: True for n in usernames}, path)
+    return _apply_user_field("gitlab_pat_issued", dict.fromkeys(usernames, True), path)
 
 
 def _parse_load_balance(value):
