@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dtaas-web-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dtaas-web
+  template:
+    metadata:
+      labels:
+        app: dtaas-web
+    spec:
+      containers:
+      - name: dtaas-web
+        image: intocps/dtaas-web:0.10.2
+        ports:
+        - containerPort: 4000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /dtaas/client/build/env.js
+          subPath: env.js
+      volumes:
+      - name: config-volume
+        configMap:
+          name: dtaas-web-config
