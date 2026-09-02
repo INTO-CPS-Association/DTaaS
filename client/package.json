@@ -46,7 +46,7 @@
     "singleQuote": true
   },
   "resolutions": {
-    "fast-uri": "^4.1.0",
+    "fast-uri": "^4.1.4",
     "@babel/plugin-transform-modules-systemjs": "8.0.1"
   },
   "dependencies": {
