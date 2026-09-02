@@ -3225,9 +3225,9 @@ fast-levenshtein@^2.0.6:
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
 fast-uri@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-4.1.0.tgz#9cc0acef4505deb71f87afc35ccfbfa61fcba4b1"
-  integrity sha512-ZodJ2cRiLVWGi9IgPb3mbgSqM4CD3LexCHkuv0FfBXHJI1ADfucTD06m6clO2Cy5RZYsw/SiCVl/dyrFI/SYWA==
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-4.1.4.tgz#2076a9d7bce86a86aa31ac40650b935fd5b1cd60"
+  integrity sha512-dODXrIxlS9JSdgAnhIUKOosKV1oMtU2VtVw87QRaHzyl5jxO290Ii5tEZfCfzfWNHi3jKWwBSdQj0qIyshdZdQ==
 
 fastq@^1.6.0:
   version "1.20.1"
