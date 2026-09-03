@@ -1,4 +1,8 @@
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
+import {
+  createDigitalTwinFromData,
+  selectModifiedFiles,
+  selectModifiedLibraryFiles,
+} from '@into-cps-association/dt-automation';
 import {
   act,
   fireEvent,
@@ -14,24 +18,22 @@ import store, { RootState } from 'store/store';
 import { showSnackbar } from 'store/snackbar.slice';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import { selectModifiedFiles } from 'model/store/file.slice';
-import { selectModifiedLibraryFiles } from 'model/store/libraryConfigFiles.slice';
 
-jest.mock('model/store/file.slice', () => {
-  const actual = jest.requireActual('model/store/file.slice');
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
     ...actual,
     selectModifiedFiles: jest.fn(),
-    default: actual.default, // ensure the reducer is not mocked
-  };
-});
-jest.mock('model/backend/state/digitalTwin.slice', () => {
-  const actual = jest.requireActual('model/backend/state/digitalTwin.slice');
-  return {
-    ...actual,
     updateDescription: jest.fn(),
     selectDigitalTwinByName: jest.fn(),
-    default: actual.default, // ensure the reducer is not mocked
+    formatName: jest.fn().mockReturnValue('TestDigitalTwin'),
+    createDigitalTwinFromData: jest.fn().mockResolvedValue({
+      DTName: 'TestDigitalTwin',
+      DTAssets: {
+        updateFileContent: jest.fn().mockResolvedValue(undefined),
+        updateLibraryFileContent: jest.fn().mockResolvedValue(undefined),
+      },
+    }),
   };
 });
 jest.mock('store/snackbar.slice', () => {
@@ -47,20 +49,6 @@ jest.mock('store/snackbar.slice', () => {
 jest.mock('route/digitaltwins/editor/Sidebar', () => ({
   __esModule: true,
   default: () => <div>Sidebar</div>,
-}));
-
-jest.mock('model/backend/digitalTwin', () => ({
-  formatName: jest.fn().mockReturnValue('TestDigitalTwin'),
-}));
-
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
-  createDigitalTwinFromData: jest.fn().mockResolvedValue({
-    DTName: 'TestDigitalTwin',
-    DTAssets: {
-      updateFileContent: jest.fn().mockResolvedValue(undefined),
-      updateLibraryFileContent: jest.fn().mockResolvedValue(undefined),
-    },
-  }),
 }));
 
 describe('ReconfigureDialog', () => {

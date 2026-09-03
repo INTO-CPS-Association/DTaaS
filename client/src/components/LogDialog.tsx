@@ -7,11 +7,11 @@ import {
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { formatName } from 'model/backend/digitalTwin';
 import {
+  formatName,
   fetchExecutionHistory,
   clearExecutionHistoryForDT,
-} from 'model/backend/state/executionHistory.slice';
+} from '@into-cps-association/dt-automation';
 import { ThunkDispatch, Action } from '@reduxjs/toolkit';
 import { RootState } from 'store/store';
 import { selectExecutionHistoryByDTName } from 'route/digitaltwins/execution';

@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
-import { ExecutionHistoryEntry } from 'model/backend/gitlab/types/executionHistory';
+import type { DTExecutionResult } from '@into-cps-association/dt-automation';
 import indexedDBService from 'database/executionHistoryDB';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from '@into-cps-association/dt-automation';
 import { createMockDTExecutionResult } from 'test/unit/store/executionHistory/testSetup';
 import { resetDBConnection } from 'database/dbConnection';
 
@@ -320,7 +320,7 @@ describe('IndexedDBService (Real Implementation)', () => {
   });
 
   it('should preserve data types and structure', async () => {
-    const entry: ExecutionHistoryEntry = {
+    const entry: DTExecutionResult = {
       id: 'integrity-test',
       dtName: 'integrity-dt',
       pipelineId: 12345,

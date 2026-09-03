@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Measurement from 'route/measurement/Measurement';
-import { measurementState } from 'model/backend/gitlab/measure/measurement.execution';
+import { measurementState } from '@into-cps-association/dt-automation';
 import {
   MOCK_MEASUREMENT_STATE,
   setupMeasurementComponentTest,
@@ -27,35 +27,30 @@ const mockMergeExecutionStatus = jest.fn(
   ) => [],
 );
 
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => ({
-  getMeasurementStatus: jest.fn(() => ({
-    hasStarted: false,
-    completedTasks: 0,
-    completedTrials: 0,
-  })),
-  mergeExecutionStatus: (
-    executions: unknown,
-    activePipelines: unknown,
-    completedResults: unknown,
-    defaultConfig: unknown,
-  ) =>
-    mockMergeExecutionStatus(
-      executions,
-      activePipelines,
-      completedResults,
-      defaultConfig,
-    ),
-  downloadTaskResultJson: jest.fn(),
-}));
-
-jest.mock('model/backend/gitlab/measure/measurement.runner', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const setup = jest.requireActual('./measurement.testSetup');
-  return setup.createRunnerStubs();
-});
-
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
-  const setup = jest.requireActual('./measurement.testSetup');
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
+    ...setup.createRunnerStubs(),
+    getMeasurementStatus: jest.fn(() => ({
+      hasStarted: false,
+      completedTasks: 0,
+      completedTrials: 0,
+    })),
+    mergeExecutionStatus: (
+      executions: unknown,
+      activePipelines: unknown,
+      completedResults: unknown,
+      defaultConfig: unknown,
+    ) =>
+      mockMergeExecutionStatus(
+        executions,
+        activePipelines,
+        completedResults,
+        defaultConfig,
+      ),
+    downloadTaskResultJson: jest.fn(),
     measurementState: { ...setup.MOCK_MEASUREMENT_STATE },
     attachSetters: jest.fn(),
     detachSetters: jest.fn(),

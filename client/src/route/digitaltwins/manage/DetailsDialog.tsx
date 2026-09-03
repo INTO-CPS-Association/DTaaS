@@ -5,7 +5,7 @@ import 'katex/dist/katex.min.css';
 // @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
 import RemarkableKatexModule from 'remarkable-katex';
 import { useSelector } from 'react-redux';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 
 const RemarkableKatex =

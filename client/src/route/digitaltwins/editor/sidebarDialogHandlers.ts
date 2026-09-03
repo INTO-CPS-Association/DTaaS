@@ -1,5 +1,7 @@
-import { addOrUpdateFile } from 'model/store/file.slice';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import {
+  addOrUpdateFile,
+  FileState,
+} from '@into-cps-association/dt-automation';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 import { getFileTypeFromExtension } from 'util/fileUtils';

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ExecutionHistoryList from 'components/execution/ExecutionHistoryList';
 import { Provider } from 'react-redux';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from '@into-cps-association/dt-automation';
 import {
   mockExecutions,
   createTestStore,
@@ -13,10 +13,11 @@ import {
 } from './testSetup';
 
 jest.mock('route/digitaltwins/execution/executionButtonHandlers');
-jest.mock('model/backend/util/digitalTwinAdapter', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  const actual = jest.requireActual('model/backend/util/digitalTwinAdapter');
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
     ...adapterMocks.ADAPTER_MOCKS,
     extractDataFromDigitalTwin: actual.extractDataFromDigitalTwin,
   };

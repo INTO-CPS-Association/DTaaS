@@ -1,8 +1,7 @@
 import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
 import * as FileUtils from 'util/fileUtils';
 import * as SidebarFetchers from 'route/digitaltwins/editor/sidebarFetchers';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
-import DigitalTwin from 'model/backend/digitalTwin';
+import { FileState, DigitalTwin } from '@into-cps-association/dt-automation';
 import { mockDTAssets } from 'test/__mocks__/global_mocks';
 
 jest.mock('util/fileUtils');
@@ -144,9 +143,7 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
       .spyOn(FileUtils, 'updateFileState')
       .mockImplementation(jest.fn());
 
-    (mockDTAssets.getLibraryFileContent as jest.Mock).mockResolvedValue(
-      'fetched content',
-    );
+    mockDTAssets.getLibraryFileContent.mockResolvedValue('fetched content');
 
     await SidebarFunctions.handleReconfigureFileClick(
       { fileName: 'lib.md', asset: createMockDT(), files: testFiles },
@@ -181,9 +178,7 @@ describe('SidebarFunctions - handleReconfigureFileClick', () => {
       .spyOn(FileUtils, 'updateFileState')
       .mockImplementation(jest.fn());
 
-    (mockDTAssets.getLibraryFileContent as jest.Mock).mockResolvedValue(
-      'content',
-    );
+    mockDTAssets.getLibraryFileContent.mockResolvedValue('content');
 
     await SidebarFunctions.handleReconfigureFileClick(
       { fileName: 'lib.md', asset: createMockDT(), files: [] },

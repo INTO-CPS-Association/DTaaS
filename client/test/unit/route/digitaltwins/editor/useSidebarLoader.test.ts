@@ -6,10 +6,13 @@ import {
   mockLibraryAsset,
   createMockDigitalTwinData,
 } from 'test/__mocks__/global_mocks';
-import * as digitalTwinAdapter from 'model/backend/util/digitalTwinAdapter';
+import * as digitalTwinAdapter from '@into-cps-association/dt-automation';
 import * as sidebarFetchers from 'route/digitaltwins/editor/sidebarFetchers';
 
-jest.mock('model/backend/util/digitalTwinAdapter');
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  createDigitalTwinFromData: jest.fn(),
+}));
 jest.mock('route/digitaltwins/editor/sidebarFetchers');
 
 const mockCreateDT = digitalTwinAdapter.createDigitalTwinFromData as jest.Mock;

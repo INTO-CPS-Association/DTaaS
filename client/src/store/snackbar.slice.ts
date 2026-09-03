@@ -1,6 +1,6 @@
 import { AlertColor } from '@mui/material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
+import { ShowNotificationPayload } from '@into-cps-association/dt-automation';
 
 const MAX_SNACKBARS = 3;
 

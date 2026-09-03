@@ -3,11 +3,11 @@ import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import {
   removeAllCreationFiles,
   addOrUpdateFile,
-} from 'model/store/file.slice';
+  defaultFiles,
+  FileState,
+} from '@into-cps-association/dt-automation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
 import {
   buildAssetsLogContext,
   buildActionLogContext,

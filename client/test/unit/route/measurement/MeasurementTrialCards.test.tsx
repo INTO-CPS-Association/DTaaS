@@ -7,7 +7,7 @@ import {
 import {
   createMockExecution,
   createMockTrial,
-} from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
+} from 'test/support/measurementFixtures';
 
 jest.mock('react-router-dom', () => ({
   Link: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
@@ -15,10 +15,8 @@ jest.mock('react-router-dom', () => ({
   ),
 }));
 
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
-  const actual = jest.requireActual(
-    'model/backend/gitlab/measure/measurement.utils',
-  );
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
     ...actual,
     secondsDifference: jest.fn((start?: Date, end?: Date) => {
@@ -28,9 +26,7 @@ jest.mock('model/backend/gitlab/measure/measurement.utils', () => {
   };
 });
 
-const mockUtils = jest.requireMock(
-  'model/backend/gitlab/measure/measurement.utils',
-);
+const mockUtils = jest.requireMock('@into-cps-association/dt-automation');
 const mockSecondsDifference = mockUtils.secondsDifference as jest.Mock;
 
 describe('MeasurementTrialCards', () => {

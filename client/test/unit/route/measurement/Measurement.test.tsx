@@ -123,35 +123,28 @@ const mockStopAllPipelines = jest.fn().mockResolvedValue(undefined);
 const mockDownloadTaskResultJson = jest.fn();
 const mockPurgeMeasurementData = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('model/backend/gitlab/measure/measurement.runner', () => ({
-  startMeasurement: (...args: unknown[]) => mockStartMeasurement(...args),
-  stopAllPipelines: (...args: unknown[]) => mockStopAllPipelines(...args),
-  restartMeasurement: (...args: unknown[]) => mockRestartMeasurement(...args),
-  handleBeforeUnload: jest.fn(),
-  handleUnload: jest.fn(),
-  purgeMeasurementData: (...args: unknown[]) =>
-    mockPurgeMeasurementData(...args),
-}));
-
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => ({
-  getMeasurementStatus: jest.fn(() => ({
-    hasStarted: false,
-    completedTasks: 0,
-    completedTrials: 0,
-    totalTasks: 2,
-  })),
-  mergeExecutionStatus: jest.fn(() => []),
-  areAllMeasurementsComplete: jest.fn(() => false),
-  downloadTaskResultJson: (...args: unknown[]) =>
-    mockDownloadTaskResultJson(...args),
-}));
-
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const setup = jest.requireActual('./measurement.testSetup');
-  const actual = jest.requireActual(
-    'model/backend/gitlab/measure/measurement.execution',
-  );
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
+    startMeasurement: (...args: unknown[]) => mockStartMeasurement(...args),
+    stopAllPipelines: (...args: unknown[]) => mockStopAllPipelines(...args),
+    restartMeasurement: (...args: unknown[]) => mockRestartMeasurement(...args),
+    handleBeforeUnload: jest.fn(),
+    handleUnload: jest.fn(),
+    purgeMeasurementData: (...args: unknown[]) =>
+      mockPurgeMeasurementData(...args),
+    getMeasurementStatus: jest.fn(() => ({
+      hasStarted: false,
+      completedTasks: 0,
+      completedTrials: 0,
+      totalTasks: 2,
+    })),
+    mergeExecutionStatus: jest.fn(() => []),
+    areAllMeasurementsComplete: jest.fn(() => false),
+    downloadTaskResultJson: (...args: unknown[]) =>
+      mockDownloadTaskResultJson(...args),
     measurementState: { ...setup.MOCK_MEASUREMENT_STATE },
     DEFAULT_MEASUREMENT: actual.DEFAULT_MEASUREMENT,
     attachSetters: jest.fn(),

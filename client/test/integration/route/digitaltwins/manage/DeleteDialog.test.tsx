@@ -3,11 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import DeleteDialog from 'route/digitaltwins/manage/DeleteDialog';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
+  DigitalTwin,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
-import DigitalTwin from 'model/backend/digitalTwin';
 import {
   mockBackendInstance,
   createMockDigitalTwinData,

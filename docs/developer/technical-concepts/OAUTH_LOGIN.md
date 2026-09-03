@@ -132,8 +132,9 @@ unencoded into URL paths such as:
 ${authority}/${group}/${username}/-/raw/${branch}/...
 ```
 
-(`model/backend/digitalTwin.ts`, `model/backend/libraryAsset.ts`, and the
-workbench/service links in `util/envUtil.ts` and `route/workbench`).
+(`lib/dt-automation/src/digitalTwin.ts`,
+`lib/dt-automation/src/libraryAsset.ts`, and the workbench/service links in
+`util/envUtil.ts` and `route/workbench`).
 
 Two consequences follow:
 

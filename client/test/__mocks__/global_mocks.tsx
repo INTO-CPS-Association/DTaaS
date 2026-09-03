@@ -1,9 +1,8 @@
-import LibraryAsset from 'model/backend/libraryAsset';
-import LibraryManager from 'model/backend/libraryManager';
-import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
-import DigitalTwin from 'model/backend/digitalTwin';
-import FileHandler from 'model/backend/fileHandler';
-import DTAssets from 'model/backend/DTAssets';
+import type {
+  DigitalTwin,
+  DigitalTwinData,
+  LibraryAsset,
+} from '@into-cps-association/dt-automation';
 import { mockBackendInstance } from 'test/__mocks__/mockBackendData';
 import {
   mockAppURL,
@@ -16,10 +15,6 @@ import {
   mockLogoutRedirectURI,
   mockGitLabScopes,
 } from 'test/__mocks__/mockEnvConstants';
-import {
-  setEnvironmentStore,
-  resetEnvironmentStore,
-} from 'model/backend/util/env';
 
 export {
   mockBackendAPI,
@@ -64,16 +59,23 @@ jest.mock('util/envUtil', () => ({
   ],
 }));
 
-beforeEach(() => {
+function setTestEnvironment(authority: string): void {
+  const { setEnvironmentStore } = jest.requireActual(
+    '@into-cps-association/dt-automation',
+  );
   setEnvironmentStore({
     getState: () => ({
-      environment: { AUTH_AUTHORITY: mockAuthority },
+      environment: { AUTH_AUTHORITY: authority },
     }),
   });
+}
+
+beforeEach(() => {
+  setTestEnvironment(mockAuthority);
 });
 
 afterEach(() => {
-  resetEnvironmentStore();
+  setTestEnvironment('');
 });
 
 globalThis.env = {
@@ -92,15 +94,6 @@ globalThis.env = {
   REACT_APP_LOGOUT_REDIRECT_URI: mockLogoutRedirectURI,
   REACT_APP_GITLAB_SCOPES: mockGitLabScopes,
 };
-
-jest.mock('model/backend/gitlab/gitlabFactory', () => {
-  const createGitlabInstance = jest.fn(() => mockBackendInstance);
-  return {
-    __esModule: true,
-    createGitlabInstance,
-    default: createGitlabInstance,
-  };
-});
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'test-uuid-1234'),
@@ -134,7 +127,7 @@ const createCommonMocks = () => ({
   getConfigFiles: jest.fn(),
 });
 
-export const mockLibraryManager: LibraryManager = {
+export const mockLibraryManager = {
   DTName: 'mockedDTName',
   backend: mockBackendInstance,
   assets: [],
@@ -143,9 +136,9 @@ export const mockLibraryManager: LibraryManager = {
   getAsset: jest.fn(),
   deleteAsset: jest.fn(),
   getFileContent: jest.fn(),
-} as unknown as LibraryManager;
+};
 
-export const mockLibraryAsset: LibraryAsset = {
+export const mockLibraryAsset = {
   name: 'Asset 1',
   path: 'path',
   type: 'Digital Twins',
@@ -156,7 +149,7 @@ export const mockLibraryAsset: LibraryAsset = {
   libraryManager: mockLibraryManager,
   configFiles: [],
   ...createCommonMocks(),
-};
+} as unknown as LibraryAsset;
 
 /**
  * Creates a mock DigitalTwinData object for Redux state
@@ -189,7 +182,7 @@ export const mockFileHandler = {
   getLibraryFileNames: jest.fn(),
   getLibraryConfigFileNames: jest.fn(),
   getFolders: jest.fn(),
-} as unknown as FileHandler;
+};
 
 export const mockDTAssets = {
   DTName: 'mockedDTName',
@@ -212,7 +205,7 @@ export const mockDTAssets = {
   getLibraryFileContent: jest.fn(),
   getLibraryConfigFileNames: jest.fn(),
   getFolders: jest.fn(),
-} as unknown as DTAssets;
+};
 
 export const mockDigitalTwin: DigitalTwin = {
   DTName: 'mockedDTName',
@@ -291,9 +284,9 @@ export const resetIndexedDBServiceMocks = () => {
   }
 };
 
-// Mock the initDigitalTwin function
-jest.mock('model/backend/util/init', () => ({
-  ...jest.requireActual('model/backend/util/init'),
+jest.doMock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  createGitlabInstance: jest.fn(() => mockBackendInstance),
   initDigitalTwin: createAsyncMock(mockDigitalTwin),
   fetchLibraryAssets: jest.fn().mockResolvedValue(undefined),
   fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
