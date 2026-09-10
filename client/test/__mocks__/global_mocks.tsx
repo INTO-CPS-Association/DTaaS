@@ -57,11 +57,14 @@ jest.mock('util/envUtil', () => ({
   getLogoutRedirectURI: () => mockLogoutRedirectURI,
   getGitLabScopes: () => mockGitLabScopes,
   getURLforWorkbench: () => mockURLforWorkbench,
-  useWorkbenchLinkValues: () => [
+  // A jest.fn and not a plain arrow, so a test that needs a different answer,
+  // an empty workspace for instance, can override it for one case. The
+  // default is what every other suite already expects.
+  useWorkbenchLinkValues: jest.fn(() => [
     { key: '1', link: 'link1' },
     { key: '2', link: 'link2' },
     { key: '3', link: 'link3' },
-  ],
+  ]),
 }));
 
 beforeEach(() => {

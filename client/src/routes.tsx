@@ -10,6 +10,7 @@ import Account from 'route/account/Account';
 import Config from 'route/config/Config';
 import Measurement from 'route/measurement/Measurement';
 import LogViewer from 'page/LogViewer';
+import NotFound from 'page/NotFound';
 
 export const routes = [
   {
@@ -99,6 +100,12 @@ export const routes = [
         <LogViewer />
       </PrivateRoute>
     ),
+  },
+  // Anything the list above does not match. Without it the router falls back
+  // to its own developer-facing error screen.
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ];
 

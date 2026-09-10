@@ -26,7 +26,7 @@ describe('Digital Twins', () => {
     });
 
     expect(
-      screen.getByText('The Digital Twin as a Service'),
+      screen.getByText('DTaaS - Digital Twin as a Service'),
     ).toBeInTheDocument();
   });
 });

@@ -15,7 +15,7 @@ test.describe('Menu Links from first page (Layout)', () => {
     await links.reduce(async (previousPromise, link) => {
       await previousPromise;
       const linkElement = await page.locator(
-        `div[role="button"]:has-text("${link.text}")`,
+        `a[role="link"]:has-text("${link.text}")`,
       );
       await expect(linkElement).toBeVisible();
     }, Promise.resolve());
@@ -24,14 +24,14 @@ test.describe('Menu Links from first page (Layout)', () => {
   test('Menu Links are clickable', async ({ page }) => {
     await links.reduce(async (previousPromise, link) => {
       await previousPromise;
-      await page.locator(`div[role="button"]:has-text("${link.text}")`).click();
+      await page.locator(`a[role="link"]:has-text("${link.text}")`).click();
       await expect(page).toHaveURL(link.url);
       await expect(page.locator('text=404 Not Found')).not.toBeVisible();
     }, Promise.resolve());
   });
 
   test('Workbench Links are visible', async ({ page }) => {
-    await page.locator(`div[role="button"]:has-text("Workbench")`).click();
+    await page.locator(`a[role="link"]:has-text("Workbench")`).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {
       await previousPromise;
@@ -41,7 +41,7 @@ test.describe('Menu Links from first page (Layout)', () => {
   });
 
   test('Workbench Links open in new windows', async ({ page }) => {
-    await page.locator(`div[role="button"]:has-text("Workbench")`).click();
+    await page.locator(`a[role="link"]:has-text("Workbench")`).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {
       await previousPromise;

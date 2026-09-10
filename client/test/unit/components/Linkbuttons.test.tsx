@@ -67,7 +67,11 @@ describe('LinkButtons component default size', () => {
     await buttons.reduce(async (promise, button) => {
       await promise;
       await userEvent.click(getButton(button.key));
-      expect(globalThis.open).toHaveBeenCalledWith(button.link, '_blank');
+      expect(globalThis.open).toHaveBeenCalledWith(
+        button.link,
+        '_blank',
+        'noopener,noreferrer',
+      );
     }, Promise.resolve());
 
     expect(globalThis.open).toHaveBeenCalledTimes(buttons.length);

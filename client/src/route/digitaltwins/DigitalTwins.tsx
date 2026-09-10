@@ -3,8 +3,9 @@ import TabComponent from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import { useURLforDT } from 'util/envUtil';
-import { Typography } from '@mui/material';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
+import PageShell from 'components/PageShell';
+import TabDescription from 'components/tab/TabDescription';
 
 function DTContent() {
   const DTurl = useURLforDT();
@@ -13,18 +14,20 @@ function DTContent() {
     label: tab.label,
     body: (
       <>
-        <Typography variant="body1">{tab.body}</Typography>
-        <>
-          {' '}
-          <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />{' '}
-        </>
+        <TabDescription>{tab.body}</TabDescription>
+        <Iframe title={`JupyterLight-Demo-${tab.label}`} url={DTurl} />
       </>
     ),
   }));
 
   return (
-    <Layout sx={{ display: 'flex' }}>
-      <TabComponent assetType={DTTab} scope={[]} />
+    <Layout>
+      <PageShell
+        title="Digital Twins"
+        description="Create, run and analyse the digital twins in your workspace."
+      >
+        <TabComponent assetType={DTTab} scope={[]} />
+      </PageShell>
     </Layout>
   );
 }

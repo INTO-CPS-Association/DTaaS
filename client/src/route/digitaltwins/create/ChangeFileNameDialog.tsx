@@ -48,7 +48,7 @@ const ChangeFileNameDialog: React.FC<ChangeFileNameDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={setOpenChangeFileNameDialog}>
-      <DialogTitle>Change the file name</DialogTitle>
+      <DialogTitle>Change the File Name</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus

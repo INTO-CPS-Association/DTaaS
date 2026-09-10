@@ -47,15 +47,15 @@ describe('Menu', () => {
     const libraryButton = screen.getByRole('link', { name: /Library/ });
     expect(libraryButton).toBeInTheDocument();
 
-    expect(screen.getByTestId(/ExtensionIcon/)).toBeInTheDocument();
+    expect(screen.getByTestId(/ExtensionRoundedIcon/)).toBeInTheDocument();
 
     expect(
       screen.getByRole('link', { name: /Digital Twins/ }),
     ).toBeInTheDocument();
-    expect(screen.getByTestId(/PeopleIcon/)).toBeInTheDocument();
+    expect(screen.getByTestId(/PeopleRoundedIcon/)).toBeInTheDocument();
 
     expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
-    expect(screen.getByTestId(/EngineeringIcon/)).toBeInTheDocument();
+    expect(screen.getByTestId(/HandymanRoundedIcon/)).toBeInTheDocument();
   });
 
   it('changes the width of the drawer when the isOpen state changes', () => {

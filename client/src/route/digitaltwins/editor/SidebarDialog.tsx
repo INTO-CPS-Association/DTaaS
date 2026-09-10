@@ -36,7 +36,7 @@ const SidebarDialog = ({
   dispatch,
 }: SidebarDialogProps) => (
   <Dialog open={isOpen}>
-    <DialogTitle>Enter the file name</DialogTitle>
+    <DialogTitle>Enter the File Name</DialogTitle>
     <DialogContent>
       <TextField
         autoFocus
