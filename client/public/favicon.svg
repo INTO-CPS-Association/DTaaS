@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="DTaaS">
+  <!--
+    The same geometry as src/components/BrandMark.tsx, in a concrete colour,
+    because a browser tab has no theme to inherit from.
+
+    AU blue, Pantone 287, RGB 0 61 115, as the university publishes it.
+  -->
+  <defs>
+    <clipPath id="built"><rect x="0" y="0" width="12" height="24"/></clipPath>
+    <clipPath id="drawn"><rect x="12" y="0" width="12" height="24"/></clipPath>
+  </defs>
+  <g clip-path="url(#built)">
+    <circle cx="12" cy="7.8" r="4.1" fill="#003d73" stroke="#003d73" stroke-width="1.7"/>
+    <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="#003d73" stroke="#003d73" stroke-width="1.7" stroke-linejoin="round"/>
+  </g>
+  <g clip-path="url(#drawn)">
+    <circle cx="12" cy="7.8" r="4.1" fill="none" stroke="#003d73" stroke-width="1.7"/>
+    <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="none" stroke="#003d73" stroke-width="1.7" stroke-linejoin="round"/>
+  </g>
+</svg>

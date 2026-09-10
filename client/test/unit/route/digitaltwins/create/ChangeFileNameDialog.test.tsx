@@ -24,7 +24,7 @@ describe('ChangeFileNameDialog', () => {
 
   it('renders the ChangeFileNameDialog', () => {
     renderDialog();
-    expect(screen.getByText(/Change the file name/i)).toBeInTheDocument();
+    expect(screen.getByText(/Change the File Name/i)).toBeInTheDocument();
   });
 
   it('handles close dialog', async () => {

@@ -2,6 +2,7 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import tabs from 'route/account/AccountTabData';
+import PageShell from 'components/PageShell';
 
 function AccountContent() {
   const AccountTab: TabData[] = tabs.map((tab) => ({
@@ -11,8 +12,13 @@ function AccountContent() {
   }));
 
   return (
-    <Layout sx={{ display: 'flex' }}>
-      <TabComponent assetType={AccountTab} scope={[]} />
+    <Layout>
+      <PageShell
+        title="Account"
+        description="Your profile as GitLab knows it, and the settings this application keeps."
+      >
+        <TabComponent assetType={AccountTab} scope={[]} />
+      </PageShell>
     </Layout>
   );
 }

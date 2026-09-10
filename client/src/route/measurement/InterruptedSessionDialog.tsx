@@ -29,7 +29,7 @@ function InterruptedSessionDialog({
         onClose();
       }}
     >
-      <DialogTitle>Previous session interrupted</DialogTitle>
+      <DialogTitle>Previous Session Interrupted</DialogTitle>
       <DialogContent>
         <DialogContentText>
           A measurement was running when you last left this page. Active tasks

@@ -1,11 +1,17 @@
 import { createElement, Children, ReactNode } from 'react';
 import { useAuth } from 'react-oidc-context';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import TabDescription from 'components/tab/TabDescription';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import SettingsForm from 'route/account/SettingsForm';
 import {
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
+import { radius } from 'theme/tokens';
+import { isSafeHttpUrl } from 'util/safeUrl';
 
 function ListGroups(groups: string[]): ReactNode[] {
   const boldGroups = groups.map((group) =>
@@ -32,19 +38,19 @@ function GroupParagraph(groups: string[], name: ReactNode) {
   const userBelongsToAnyGroups = groups.length > 0;
   if (!userBelongsToAnyGroups) {
     return (
-      <p>
+      <TabDescription>
         <b>{name}</b> does not belong to any groups.
-      </p>
+      </TabDescription>
     );
   }
 
   const groupListing = ListGroups(groups);
   const groupSuffix = groups.length > 1 ? 's' : '';
   return (
-    <p>
+    <TabDescription>
       <b>{name}</b> belongs to {Children.toArray(groupListing)} group
       {groupSuffix}.
-    </p>
+    </TabDescription>
   );
 }
 
@@ -52,7 +58,8 @@ function ProfileTab() {
   const { user } = useAuth();
   const username = resolveOAuthUsername(user?.profile);
   const pfp = user?.profile.picture;
-  const profileUrl = resolveOAuthProfileUrl(user?.profile);
+  const claimedUrl = resolveOAuthProfileUrl(user?.profile);
+  const profileUrl = isSafeHttpUrl(claimedUrl) ? claimedUrl : undefined;
 
   const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
   const isGroupsAString = typeof groups === 'string';
@@ -61,17 +68,15 @@ function ProfileTab() {
   const profileSettingsText = (
     <>
       You can edit your profile details and change password on{' '}
-      <b>
-        <a
-          href={profileUrl}
-          target="_blank"
-          rel="noreferrer"
-          data-logger-element="link"
-          data-logger-label="SSO Profile"
-        >
-          SSO OAuth Provider.
-        </a>
-      </b>
+      <Link
+        href={profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-logger-element="link"
+        data-logger-label="SSO Profile"
+      >
+        SSO OAuth Provider.
+      </Link>
     </>
   );
   const profileNotAvailableText = (
@@ -79,41 +84,61 @@ function ProfileTab() {
   );
 
   return (
-    <div>
-      <h2>Profile</h2>
-      <img src={pfp} alt="Avatar" data-testid="profile-picture" />
-      <p>
+    <Box>
+      <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
+        Profile
+      </Typography>
+      <Box
+        component="img"
+        src={pfp}
+        alt="Avatar"
+        data-testid="profile-picture"
+        sx={{
+          display: 'block',
+          width: 96,
+          height: 96,
+          objectFit: 'cover',
+          borderRadius: `${radius}px`,
+          border: 1,
+          borderColor: 'divider',
+          mb: 2,
+        }}
+      />
+      <TabDescription>
         The username is <b>{username}</b>.{' '}
         {profileUrl ? profileSettingsText : profileNotAvailableText}
-      </p>
+      </TabDescription>
       {groupParagraph}
-    </div>
+    </Box>
   );
 }
 
 function SettingsTab() {
-  const profileUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
+  const claimedUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
+  const profileUrl = isSafeHttpUrl(claimedUrl) ? claimedUrl : undefined;
   const profileSettingsText = profileUrl ? (
-    <b>
-      <a
-        href={profileUrl}
-        data-logger-element="link"
-        data-logger-label="SSO Settings"
-      >
-        SSO OAuth Provider.
-      </a>
-    </b>
+    <Link
+      href={profileUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-logger-element="link"
+      data-logger-label="SSO Settings"
+    >
+      SSO OAuth Provider.
+    </Link>
   ) : (
     'your SSO OAuth Provider account page.'
   );
 
   return (
-    <div>
-      <h2>Settings</h2>
-      <p>Edit the profile on {profileSettingsText}</p>
+    <Box>
+      <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
+        Settings
+      </Typography>
+      <TabDescription>Edit the profile on {profileSettingsText}</TabDescription>
 
       <SettingsForm />
-    </div>
+    </Box>
   );
 }
 

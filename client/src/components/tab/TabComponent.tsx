@@ -1,5 +1,7 @@
 import TabRender, { TabData } from 'components/tab/subcomponents/TabRender';
 import {
+  ScopeTab,
+  ScopeTabList,
   Tab,
   TabList,
   TabPanel,
@@ -20,12 +22,14 @@ function renderScopeTabList(
   scope: TabData[][],
   subIndex: number,
 ): React.ReactElement {
+  // The inner level is a segmented control instead of a second row of tabs,
+  // so the two levels are told apart by shape.
   return (
-    <TabList>
+    <ScopeTabList>
       {scope &&
         scope[subIndex] &&
         scope[subIndex].map((tab) => (
-          <Tab
+          <ScopeTab
             key={tab.label}
             data-logger-element="subtab"
             data-logger-label={tab.label}
@@ -34,9 +38,9 @@ function renderScopeTabList(
             }
           >
             {tab.label}
-          </Tab>
+          </ScopeTab>
         ))}
-    </TabList>
+    </ScopeTabList>
   );
 }
 
@@ -80,10 +84,15 @@ export function TabComponent(props: {
       {props.assetType.map((subtab, subIndex) => (
         <TabPanel key={subIndex}>
           <TabRender index={subIndex}>{subtab}</TabRender>
-          <Tabs>
-            {renderScopeTabList(props.scope, subIndex)}
-            {renderScopeTabPanels(props.scope, subIndex)}
-          </Tabs>
+          {/* The account and digital twin pages have no second level. Drawing
+              the control for an empty one leaves a small empty pill on the
+              page, since it carries a background and a border of its own. */}
+          {props.scope[subIndex]?.length > 0 && (
+            <Tabs>
+              {renderScopeTabList(props.scope, subIndex)}
+              {renderScopeTabPanels(props.scope, subIndex)}
+            </Tabs>
+          )}
         </TabPanel>
       ))}
     </Tabs>

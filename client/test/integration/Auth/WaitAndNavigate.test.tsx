@@ -43,7 +43,7 @@ describe('WaitAndNavigate', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/SignIn/i)).toBeVisible();
+      expect(screen.getByRole('button', { name: /Sign In/i })).toBeVisible();
     });
   });
 

@@ -251,12 +251,19 @@ export async function testAccountSettings(mockUser: mockUserType) {
       screen.getByRole('heading', { level: 2, name: 'Settings' }),
     ).toBeInTheDocument();
 
+    // The link is checked by its role and its attributes, not by the markup
+    // around it, so a change of component does not fail a test about a link.
     const profileUrl = resolveOAuthProfileUrl(mockUser.profile);
-    const settingsParagraph = screen.getByText(/Edit the profile on/);
-    const expectedInnerHTML = profileUrl
-      ? `Edit the profile on <b><a href="${profileUrl}" data-logger-element="link" data-logger-label="SSO Settings">SSO OAuth Provider.</a></b>`
-      : 'Edit the profile on your SSO OAuth Provider account page.';
-    expect(settingsParagraph).toHaveProperty('innerHTML', expectedInnerHTML);
+    if (profileUrl) {
+      const link = screen.getByRole('link', { name: 'SSO OAuth Provider.' });
+      expect(link).toHaveAttribute('href', profileUrl);
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    } else {
+      expect(
+        screen.getByText(/your SSO OAuth Provider account page\./),
+      ).toBeInTheDocument();
+    }
   });
 
   expect(screen.getByLabelText(/group name/i)).toBeInTheDocument();

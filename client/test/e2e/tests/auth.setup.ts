@@ -16,7 +16,7 @@ const testPassword = process.env.REACT_APP_TEST_PASSWORD ?? '';
 setup('authenticate', async ({ page }) => {
   // Perform authentication steps for authentication process.
   await page.goto('./');
-  await page.getByRole('button', { name: 'SignIn' }).click({ timeout: 30000 });
+  await page.getByRole('button', { name: 'Sign In' }).click({ timeout: 30000 });
   await page.waitForSelector('label[for="user_login"]', { timeout: 30000 }); // wait up to 30 seconds
   await page.locator('label').filter({ hasText: 'Remember me' }).click();
   await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.
