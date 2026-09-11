@@ -81,7 +81,9 @@ describe('Redux and Authentication integration test', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/SignIn/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Sign In/i }),
+      ).toBeInTheDocument();
     });
     expect(authReducer(undefined, { type: 'unknown' })).toEqual(
       initialState.auth,
@@ -109,7 +111,9 @@ describe('Redux and Authentication integration test', () => {
       isAuthenticated: false,
     });
     await waitFor(() => {
-      expect(screen.getByText(/SignIn/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Sign In/i }),
+      ).toBeInTheDocument();
     });
     expect(store.getState().userName).toBe(undefined);
   });

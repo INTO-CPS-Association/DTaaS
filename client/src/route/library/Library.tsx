@@ -3,17 +3,18 @@ import { useEffect } from 'react';
 import TabComponent, { constructURL } from 'components/tab/TabComponent';
 import Iframe from 'components/Iframe';
 import { useURLforLIB } from 'util/envUtil';
-import { Typography } from '@mui/material';
 import { useAuth } from 'react-oidc-context';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
 import { assetType, scope } from 'route/library/LibraryTabData';
+import PageShell from 'components/PageShell';
+import TabDescription from 'components/tab/TabDescription';
 
 export function createTabs() {
   return assetType.map((tab) => ({
     label: tab.label,
     body: (
       <>
-        <Typography variant="body1">{tab.body}</Typography>
+        <TabDescription>{tab.body}</TabDescription>
       </>
     ),
   }));
@@ -25,7 +26,7 @@ export function createCombinedTabs() {
       label: `${subtab.label}`,
       body: (
         <>
-          <Typography variant="body1">{subtab.body}</Typography>
+          <TabDescription>{subtab.body}</TabDescription>
           <Iframe
             title={`${tab.label}`}
             url={constructURL(tab.label, subtab.label, useURLforLIB())}
@@ -50,8 +51,13 @@ function LibraryContent() {
   const combinedData = createCombinedTabs();
 
   return (
-    <Layout sx={{ display: 'flex' }}>
-      <TabComponent assetType={tabsData} scope={combinedData} />
+    <Layout>
+      <PageShell
+        title="Library"
+        description="Reusable assets in your workspace: functions, models, tools, data and digital twins."
+      >
+        <TabComponent assetType={tabsData} scope={combinedData} />
+      </PageShell>
     </Layout>
   );
 }

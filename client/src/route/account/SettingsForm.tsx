@@ -271,10 +271,10 @@ const SettingsForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', mt: 2 }}>
+    <Box sx={{ width: '100%' }}>
       <Paper
         ref={paperRef}
-        elevation={2}
+        variant="outlined"
         sx={{ p: 3, maxHeight: paperMaxHeight, overflowY: 'auto' }}
       >
         <ApplicationSettingsFields {...fieldProps} />

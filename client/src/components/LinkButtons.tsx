@@ -67,8 +67,12 @@ interface LinkButtonProps {
           >
             <IconLabel>
               <IconButton
+                color="inherit"
                 onClick={() => {
-                  globalThis.open(button.link, '_blank');
+                  // 'noopener' severs window.opener, so the page that opens
+                  // cannot reach back into this one. Older WebKit and Edge do
+                  // not imply it from 'noreferrer'.
+                  globalThis.open(button.link, '_blank', 'noopener,noreferrer');
                 }}
                 role="link"
                 {...(button.name !== 'ToolbarIcon' && {

@@ -1,8 +1,6 @@
 import { screen, within, waitFor, act } from '@testing-library/react';
-import {
-  itShowsTheTooltipWhenHoveringButton,
-  setupIntegrationTest,
-} from 'test/integration/integration.testUtil';
+import userEvent from '@testing-library/user-event';
+import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 import { testLayout } from 'test/integration/Routes/routes.testUtil';
 import store from 'store/store';
 import { setWorkbenchServices, resetWorkbench } from 'store/workbench.slice';
@@ -38,14 +36,33 @@ const mockServices = {
   },
 };
 
-async function testTool(toolTipText: string, name: string) {
-  const toolDiv = screen.getByLabelText(toolTipText);
-  expect(toolDiv).toBeInTheDocument();
-  const toolHeading = within(toolDiv).getByRole('heading', { level: 6 });
-  expect(toolHeading).toBeInTheDocument();
+async function testTool(url: string, name: string) {
+  // Each tool is a card that is one link. The assertions name the role and the
+  // destination, which is what has to keep working, and not the markup the
+  // card happens to be built from.
+  const toolLink = screen.getByRole('link', { name: new RegExp(name) });
+  expect(toolLink).toBeInTheDocument();
+  expect(toolLink).toHaveAttribute('href', url);
+  expect(toolLink).toHaveAttribute('target', '_blank');
+  expect(toolLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+  const toolHeading = within(toolLink).getByRole('heading', { level: 2 });
   expect(toolHeading).toHaveTextContent(name);
-  const toolButton = within(toolDiv).getByTitle(`${name}-btn`);
-  expect(toolButton).toBeInTheDocument();
+}
+
+async function itShowsTheAddressWhenHoveringTool(name: string, url: string) {
+  const toolLink = screen.getByRole('link', { name: new RegExp(name) });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+  await userEvent.hover(toolLink);
+  await waitFor(() => {
+    expect(screen.getByRole('tooltip')).toHaveTextContent(url);
+  });
+
+  await userEvent.unhover(toolLink);
+  await waitFor(() => {
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
 }
 
 const setup = async () => {
@@ -73,7 +90,9 @@ describe('Workbench', () => {
   it('renders the Workbench and Layout correctly', async () => {
     await testLayout();
 
-    const mainHeading = screen.getByRole('heading', { level: 4 });
+    // The page title is the page's h1 now. It was an h4 before, which made
+    // the document start its heading outline at level four.
+    const mainHeading = screen.getByRole('heading', { level: 1 });
     expect(mainHeading).toBeInTheDocument();
     expect(mainHeading).toHaveTextContent(/Workbench Tools/);
 
@@ -86,9 +105,12 @@ describe('Workbench', () => {
   });
 
   it('shows the tooltip when hovering over the tools', async () => {
-    await itShowsTheTooltipWhenHoveringButton(desktopLabel);
-    await itShowsTheTooltipWhenHoveringButton(VSCodeLabel);
-    await itShowsTheTooltipWhenHoveringButton(jupyterLabLabel);
-    await itShowsTheTooltipWhenHoveringButton(jupyterNotebookLabel);
+    await itShowsTheAddressWhenHoveringTool('Desktop', desktopLabel);
+    await itShowsTheAddressWhenHoveringTool('VSCode', VSCodeLabel);
+    await itShowsTheAddressWhenHoveringTool('JupyterLab', jupyterLabLabel);
+    await itShowsTheAddressWhenHoveringTool(
+      'Jupyter Notebook',
+      jupyterNotebookLabel,
+    );
   });
 });
