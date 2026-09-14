@@ -16,10 +16,12 @@ export function isSafeHttpUrl(url: string | undefined): url is string {
   }
 
   try {
-    const { protocol } = new URL(url, globalThis.location?.href);
+    const { protocol } = new URL(url, globalThis.location.href);
     return protocol === 'http:' || protocol === 'https:';
   } catch {
     // A URL the parser rejects is not one to hand to the browser either.
+    // This also covers a context with no `location` to resolve against, which
+    // is why the base is read without an optional chain.
     return false;
   }
 }

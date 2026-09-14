@@ -81,8 +81,6 @@ function MenuToolbar({
   };
   return (
     <AppBar position="fixed" open={open} drawerwidth={drawerwidth}>
-      {/* Relative, because the title is centred over the bar instead of
-          laid out between the two groups of controls. */}
       {/* Three columns, the outer two equal, so the title is centred on the
           bar whatever the sides hold. The left cell stays even when the drawer
           button is hidden, which is what keeps the middle cell in the middle. */}

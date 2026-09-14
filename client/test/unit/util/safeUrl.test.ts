@@ -22,4 +22,13 @@ describe('isSafeHttpUrl', () => {
   it.each([undefined, ''])('rejects %s', (url) => {
     expect(isSafeHttpUrl(url)).toBe(false);
   });
+
+  // A malformed address is what the identity provider can put in the claim,
+  // and the parser throws on it instead of returning something to inspect.
+  it.each(['http://[', 'http://a b', 'https://%', 'http://:80'])(
+    'rejects %s, which the parser refuses outright',
+    (url) => {
+      expect(isSafeHttpUrl(url)).toBe(false);
+    },
+  );
 });
