@@ -8,14 +8,14 @@
     Generated from docs/assets/brand/build_brand.py. Do not edit by hand.
   -->
   <defs>
-    <clipPath id="builtmw"><rect x="0" y="0" width="12" height="24"/></clipPath>
-    <clipPath id="drawnmw"><rect x="12" y="0" width="12" height="24"/></clipPath>
+    <clipPath id="dtaas-built-mw"><rect x="0" y="0" width="12" height="24"/></clipPath>
+    <clipPath id="dtaas-drawn-mw"><rect x="12" y="0" width="12" height="24"/></clipPath>
   </defs>
-  <g clip-path="url(#builtmw)">
+  <g clip-path="url(#dtaas-built-mw)">
     <circle cx="12" cy="7.8" r="4.1" fill="#ffffff" stroke="#ffffff" stroke-width="1.7"/>
     <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linejoin="round"/>
   </g>
-  <g clip-path="url(#drawnmw)">
+  <g clip-path="url(#dtaas-drawn-mw)">
     <circle cx="12" cy="7.8" r="4.1" fill="none" stroke="#37a0cb" stroke-width="1.7"/>
     <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="none" stroke="#37a0cb" stroke-width="1.7" stroke-linejoin="round"/>
   </g>

@@ -27,7 +27,7 @@ on a light page and a dark one, which is why there is no separate light form.
 | To place it in a diagram or a slide | `dtaas-brand.drawio`, one page per variant |
 | Anything on the web, at any size | the `.svg` files |
 | A fixed size, or a tool that cannot read SVG | `png/`, seven sizes for the mark and four heights for each lockup |
-| A favicon | `png/dtaas-mark-32.png`, or `client/public/favicon.svg` |
+| A favicon | `dtaas-mark.svg`, which is what both mkdocs configs use. `client/public/favicon.svg` is the application's own copy of the same geometry |
 
 ## The Variants
 
@@ -72,21 +72,30 @@ The palette is also the last page of the drawio file, as swatches.
 The SVG files are the source. The PNG files and the drawio file are built from
 them, so edit the generator and never the output.
 
-Run all three from the repository root, in this order. The rasteriser takes
-the brand folder and a scratch directory, both as arguments, and both have to
-be absolute: a relative path leaves headless Chrome unable to resolve the SVG
-and it writes blank images without failing.
+The two Python files are one-shot generators. They resolve their output from
+their own location, so they can be run from anywhere, and they read the colours
+from `client/src/theme/tokens.ts` instead of repeating them, so there is one
+place to change a colour and not two. They are not part of the application and
+are not covered by its checks.
+
+`render_png.py` takes the Chrome or Chromium binary from `CHROME` and falls
+back to the usual paths on macOS and on Linux, so it runs in CI as well as
+here. It prints which binary it used.
+
+Run all three, in this order, from anywhere. Each resolves its paths from its
+own location.
 
 ```sh
 python3 docs/assets/brand/build_brand.py    # the SVG variants
 python3 docs/assets/brand/build_drawio.py   # the drawio file
-bash docs/assets/brand/render_png.sh "$PWD/docs/assets/brand" "$(mktemp -d)"
+python3 docs/assets/brand/render_png.py
 ```
 
 The PNG files are rasterised with headless Chrome, which resolves the same
-font stack a browser would, so the wordmark matches what the site shows. Open
-one afterwards and look at it: a blank render is the failure mode, and it is
-silent.
+font stack a browser would, so the wordmark matches what the site shows. A
+browser that cannot resolve the image writes a blank file and exits zero, so
+the script checks the size of every file it writes and stops on the first
+empty one.
 
 ## Where It Is Already Used
 
@@ -104,17 +113,27 @@ Changing the mark changes these, so check them after a rebuild.
 The last two are separate copies of the same geometry, on purpose: a component
 takes its colour from the theme and a browser tab has no theme to take it from.
 
-## One Limitation, Stated
+## Which File Is Portable, And Which Is Not
 
-The lockup SVG files carry their wordmark as text and not as outlines, so they
-need Inter, or a fallback from the same stack, to be installed where they are
-opened. The PNG files have no such dependency, which is why they are here.
-Converting the text to outlines needs a font tool this project does not carry,
-and the fonts on this machine belong to the university and not to the
-association.
+This is the one caveat in the kit, and it decides which file to hand somebody.
 
-The mark alone has no text, so `dtaas-mark*.svg` is portable with no
-conditions at all.
+| File | Portable? |
+| --- | --- |
+| `dtaas-mark*.svg` | Yes, with no conditions. It carries no text |
+| `png/*` | Yes, with no conditions. The text is already pixels |
+| `dtaas-logo*.svg` and `dtaas-logo-full*.svg` | Only where Inter is installed |
+
+The lockup SVG files carry their wordmark as a `<text>` element and not as
+outlines, and their `viewBox` is computed from Inter's metrics. On a machine
+without Inter the wordmark falls back to another face and no longer fits that
+box. Converting the text to outlines needs a font tool this project does not
+carry, and the fonts on this machine are licensed to the university and not to
+the association.
+
+So: a web page that loads Inter, or this application, can use the lockup SVG.
+Anything else, a slide, a poster, a document, a partner's site, takes the PNG.
+If a resolution-independent lockup is needed outside those contexts, that is a
+font-tooling task and it is not done here.
 
 ## If the Drawio File Opens Empty
 

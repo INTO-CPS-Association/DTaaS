@@ -8,10 +8,13 @@ and this file is generated from them.
 
 import base64
 import pathlib
+import re
 import urllib.parse
 import xml.etree.ElementTree as ET
 
-BRAND = pathlib.Path('docs/assets/brand')
+# Resolved from this file, so the output lands beside the generator
+# whatever directory the command was run from.
+BRAND = pathlib.Path(__file__).resolve().parent
 
 # Page name, file, width, height. The mark is square, the lockups are not.
 PAGES = [
@@ -26,12 +29,22 @@ PAGES = [
     ('Digital Twin as a Service, mono', 'dtaas-logo-mono-full.svg', 464, 48),
 ]
 
+# Read from the theme, which the README names as authoritative, so the swatch
+# page cannot drift from what the interface uses.
+def token(name):
+    tokens = pathlib.Path(__file__).resolve().parents[3] / 'client/src/theme/tokens.ts'
+    match = re.search(rf"^\s*{name}:\s*'(#[0-9a-fA-F]{{6}})'", tokens.read_text(), re.M)
+    if match is None:
+        raise SystemExit(f'{name} not found in {tokens}')
+    return match.group(1)
+
+
 PALETTE = [
-    ('Primary', '#003d73', 'AU blue, Pantone 287, RGB 0 61 115'),
-    ('Primary dark', '#002546', 'The navy of a solid AU field, and the mark ground'),
-    ('Primary tint', '#eaf1fb', 'Behind a selected row or a quiet panel'),
-    ('Accent', '#00aba4', 'The turquoise of the secondary palette'),
-    ('Mark accent', '#37a0cb', 'The cyan, on the drawn half of the mark'),
+    ('Primary', token('primary'), 'AU blue, Pantone 287, RGB 0 61 115'),
+    ('Primary dark', token('primaryDark'), 'The navy of a solid AU field, and the mark ground'),
+    ('Primary tint', token('primaryTint'), 'Behind a selected row or a quiet panel'),
+    ('Accent', token('accent'), 'The turquoise of the secondary palette'),
+    ('Mark accent', token('markAccent'), 'The cyan, on the drawn half of the mark'),
     ('White', '#ffffff', 'On the primary, and the mark on a dark ground'),
     ('Black', '#000000', 'The mono mark, for one colour printing'),
 ]

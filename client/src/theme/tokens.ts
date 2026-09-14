@@ -61,11 +61,13 @@ interface Brand {
 /**
  * Inter, the typeface the dashboard template sets. It is under the SIL Open
  * Font License 1.1 and ships with the application, so the interface renders
- * with no external network. AU Passata cannot ship in a public repository:
+ * with no external network. Only Inter is named before the system fonts,
+ * because only Inter is shipped: naming a family the build does not carry
+ * promises a face the browser cannot find. AU Passata cannot ship in a public repository:
  * its licence covers AU staff and students, not redistribution.
  */
 const fontStack =
-  '"Inter", "Roboto", "Segoe UI", system-ui, -apple-system, Arial, sans-serif';
+  '"Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif';
 
 /**
  * Aarhus University colours, as the university publishes them.

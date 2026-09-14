@@ -19,6 +19,8 @@ import Typography from '@mui/material/Typography';
 import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerrorredRounded';
 import { Link, useLocation } from 'react-router-dom';
 import LayoutPublic from 'page/LayoutPublic';
+import Layout from 'page/Layout';
+import { useAuth } from 'react-oidc-context';
 
 function NotFoundContent() {
   const { pathname } = useLocation();
@@ -52,8 +54,10 @@ function NotFoundContent() {
             width: 48,
             height: 48,
             borderRadius: 2,
-            backgroundColor: 'primary.light',
-            color: 'primary.dark',
+            // The icon reports a failure, so it takes the colour the theme
+            // gives a failure. In the brand blue it read as decoration.
+            backgroundColor: 'error.light',
+            color: 'error.dark',
             mb: 1,
           }}
         >
@@ -97,11 +101,18 @@ function NotFoundContent() {
 }
 
 function NotFound() {
+  const auth = useAuth();
   const content = <NotFoundContent />;
 
   // Embedded errors already sit inside the parent application's layout.
   if (typeof window !== 'undefined' && window.self !== window.top) {
     return content;
+  }
+
+  // A signed-in person who mistypes a path keeps the navigation, so the page
+  // they wanted is one click away instead of a sign-in away.
+  if (auth?.isAuthenticated) {
+    return <Layout>{content}</Layout>;
   }
 
   return <LayoutPublic containerMaxWidth="md">{content}</LayoutPublic>;

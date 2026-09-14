@@ -23,22 +23,29 @@ interface ToolCardProps {
 }
 
 function ToolCard({ name, link, description, icon }: Readonly<ToolCardProps>) {
-  const href = isSafeHttpUrl(link) ? link : undefined;
+  const usable = isSafeHttpUrl(link);
 
   return (
-    // The card carries no padding of its own, so the link fills it and there
-    // is no ring of dead space around a surface that is meant to be one link.
-    <Card sx={{ height: '100%', p: 0 }}>
+    <Card sx={{ height: '100%' }}>
       {/* The tooltip wraps the link and not the card, so the address it names
           is announced on the element a keyboard can actually reach.
           `describeChild` makes it the description: without it MUI would use
           the address as the link's name, and the name is the tool. */}
-      <Tooltip title={link} describeChild>
+      <Tooltip
+        title={
+          usable
+            ? link
+            : `${name} is configured with an address this application will not open: ${link}`
+        }
+        describeChild
+      >
         <CardActionArea
-          component="a"
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
+          component={usable ? 'a' : 'div'}
+          href={usable ? link : undefined}
+          target={usable ? '_blank' : undefined}
+          rel={usable ? 'noopener noreferrer' : undefined}
+          disabled={!usable}
+          aria-disabled={usable ? undefined : true}
           sx={{
             height: '100%',
             p: 2.5,
@@ -89,6 +96,14 @@ function ToolCard({ name, link, description, icon }: Readonly<ToolCardProps>) {
           {description && (
             <Typography variant="body2" color="text.secondary">
               {description}
+            </Typography>
+          )}
+
+          {/* A tool whose address this application will not open says so, in
+              place of looking clickable and doing nothing. */}
+          {!usable && (
+            <Typography variant="body2" color="error">
+              This tool is misconfigured and cannot be opened.
             </Typography>
           )}
         </CardActionArea>

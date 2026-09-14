@@ -19,6 +19,7 @@
 
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import BrandMark from 'components/BrandMark';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -123,9 +124,14 @@ function RenderFooter() {
       <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
         <Grid container spacing={{ xs: 3, md: 4 }}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="subtitle2" component="h2" sx={{ mb: 0.5 }}>
-              DTaaS
-            </Typography>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}
+            >
+              <BrandMark size={44} />
+              <Typography variant="subtitle2" component="h2">
+                DTaaS
+              </Typography>
+            </Box>
             <Typography
               variant="body2"
               color="text.secondary"

@@ -15,6 +15,7 @@
  * files for everything outside the application.
  */
 
+import { useId } from 'react';
 import Box from '@mui/material/Box';
 import { brand, white } from 'theme/tokens';
 
@@ -26,6 +27,11 @@ interface BrandMarkProps {
 }
 
 function BrandMark({ size = 28 }: Readonly<BrandMarkProps>) {
+  // Two marks in one document would otherwise share a clip path id, and the
+  // second would be clipped by the first.
+  const uid = useId();
+  const builtId = `brand-mark-built-${uid}`;
+  const drawnId = `brand-mark-drawn-${uid}`;
   const ground = brand.primaryDark;
   const built = white;
   const drawn = brand.markAccent;
@@ -45,16 +51,16 @@ function BrandMark({ size = 28 }: Readonly<BrandMarkProps>) {
       }}
     >
       <defs>
-        <clipPath id="brand-mark-built">
+        <clipPath id={builtId}>
           <rect x="0" y="0" width="12" height="24" />
         </clipPath>
-        <clipPath id="brand-mark-drawn">
+        <clipPath id={drawnId}>
           <rect x="12" y="0" width="12" height="24" />
         </clipPath>
       </defs>
       <rect width="24" height="24" rx="5.28" fill={ground} />
       <g transform="translate(4.08,4.08) scale(0.66)">
-        <g clipPath="url(#brand-mark-built)">
+        <g clipPath={`url(#${builtId})`}>
           <circle
             cx="12"
             cy="7.8"
@@ -71,7 +77,7 @@ function BrandMark({ size = 28 }: Readonly<BrandMarkProps>) {
             strokeLinejoin="round"
           />
         </g>
-        <g clipPath="url(#brand-mark-drawn)">
+        <g clipPath={`url(#${drawnId})`}>
           <circle
             cx="12"
             cy="7.8"

@@ -142,8 +142,6 @@ export default function createAppTheme(): Theme {
         defaultProps: { elevation: 0, variant: 'outlined' },
         styleOverrides: {
           root: {
-            padding: 16,
-            gap: 16,
             borderRadius: radius,
             border: `1px solid ${surfaces.border}`,
             backgroundColor: surfaces.surface,

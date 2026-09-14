@@ -7,20 +7,37 @@ client/public/favicon.svg.
 """
 
 import pathlib
+import re
 
-OUT = pathlib.Path('docs/assets/brand')
+# Resolved from this file, so the output lands beside the generator
+# whatever directory the command was run from.
+OUT = pathlib.Path(__file__).resolve().parent
 OUT.mkdir(parents=True, exist_ok=True)
 
+# The colours are read from client/src/theme/tokens.ts, which the brand README
+# names as authoritative. Repeating them here would mean two places to change
+# and one of them silently stale.
+TOKENS = pathlib.Path(__file__).resolve().parents[3] / 'client/src/theme/tokens.ts'
+
+
+def token(name):
+    """One `name: '#value'` entry from the theme's brand block."""
+    match = re.search(rf"^\s*{name}:\s*'(#[0-9a-fA-F]{{6}})'", TOKENS.read_text(), re.M)
+    if match is None:
+        raise SystemExit(f'{name} not found in {TOKENS}')
+    return match.group(1)
+
+
 # AU blue, Pantone 287, RGB 0 61 115, as the university publishes it.
-BLUE = '#003d73'
+BLUE = token('primary')
 # The navy the university's own site uses for a solid field. It appears ninety
 # times in cdn.au.dk/2016/assets/css/app.css, as text and as background, where
 # #003d73 appears thirteen, so this is what a block of AU colour looks like in
 # practice.
-NAVY = '#002546'
+NAVY = token('primaryDark')
 # The cyan of the secondary palette. It carries the drawn half, and it is read
 # on the navy field and never on white, which is where it would fail contrast.
-CYAN = '#37a0cb'
+CYAN = token('markAccent')
 WHITE = '#ffffff'
 BLACK = '#000000'
 
@@ -33,14 +50,14 @@ TILE_SCALE = 1 - 0.17 * 2
 SHOULDERS = 'M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z'
 
 FIGURE = """  <defs>
-    <clipPath id="built{u}"><rect x="0" y="0" width="12" height="24"/></clipPath>
-    <clipPath id="drawn{u}"><rect x="12" y="0" width="12" height="24"/></clipPath>
+    <clipPath id="dtaas-built-{u}"><rect x="0" y="0" width="12" height="24"/></clipPath>
+    <clipPath id="dtaas-drawn-{u}"><rect x="12" y="0" width="12" height="24"/></clipPath>
   </defs>
-  <g clip-path="url(#built{u})">
+  <g clip-path="url(#dtaas-built-{u})">
     <circle cx="12" cy="7.8" r="4.1" fill="{a}" stroke="{a}" stroke-width="1.7"/>
     <path d="%s" fill="{a}" stroke="{a}" stroke-width="1.7" stroke-linejoin="round"/>
   </g>
-  <g clip-path="url(#drawn{u})">
+  <g clip-path="url(#dtaas-drawn-{u})">
     <circle cx="12" cy="7.8" r="4.1" fill="none" stroke="{b}" stroke-width="1.7"/>
     <path d="%s" fill="none" stroke="{b}" stroke-width="1.7" stroke-linejoin="round"/>
   </g>""" % (SHOULDERS, SHOULDERS)

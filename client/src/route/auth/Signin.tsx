@@ -48,7 +48,7 @@ function BoxForSignIn(props: { children: React.ReactNode }) {
           gap: 1,
         }}
       >
-        <BrandMark size={40} />
+        <BrandMark size={56} />
         <Typography variant="h2" component="h1" sx={{ mt: 1 }}>
           Sign In
         </Typography>
