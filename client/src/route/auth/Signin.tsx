@@ -11,10 +11,10 @@ import BrandMark from 'components/BrandMark';
  *
  * It is the first screen anyone sees, and it used to be a single button
  * floating below the toolbar with nothing around it. The button, its label and
- * what it does are unchanged: this gives it a card, says which platform is
- * being signed into, and says where the sign in goes, because a redirect to a
- * GitLab the person did not expect is the most common way this step confuses
- * someone.
+ * what it does are unchanged: this gives it a card and says that the sign in
+ * leaves the application and comes back, because a redirect the person did not
+ * expect is the most common way this step confuses someone. The server is not
+ * named, because a deployment chooses it: GitLab and Keycloak are both used.
  */
 function SignIn() {
   const auth = useAuth();
@@ -53,7 +53,7 @@ function BoxForSignIn(props: { children: React.ReactNode }) {
           Sign In
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Sign in with your GitLab account. You will be taken there to
+          Sign in with the authentication server. You will be taken there to
           authorise, and brought back afterwards.
         </Typography>
         {props.children}

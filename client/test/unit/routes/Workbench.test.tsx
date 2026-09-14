@@ -64,6 +64,67 @@ describe('Workbench', () => {
     unmount();
   });
 
+  it('follows a preview page in this tab, so the session is kept', () => {
+    // A new tab starts with an empty sessionStorage, which is where the OIDC
+    // session lives, so opening a page of this application in one lands on the
+    // sign in page. This is the regression that made the two preview cards
+    // bounce to sign in.
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
+      { key: 'LIBRARY_PREVIEW', link: '/preview/library', opensInApp: true },
+    ]);
+
+    const { unmount } = render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: /Library Page Preview/ });
+    expect(link).toHaveAttribute('href', '/preview/library');
+    expect(link).not.toHaveAttribute('target');
+    expect(link).not.toHaveAttribute('rel');
+    unmount();
+  });
+
+  it('opens a workspace service in a new tab, though it shares this origin', () => {
+    // The workbench serves its tools from this same host, so deciding by
+    // origin would hand /user/lab to the router and land on Not Found.
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
+      { key: 'JUPYTERLAB', link: '/user/lab' },
+    ]);
+
+    const { unmount } = render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: /JupyterLab/ });
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    unmount();
+  });
+
+  it('does not hand a full URL to the router, even when marked as a page', () => {
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
+      {
+        key: 'LIBRARY_PREVIEW',
+        link: 'https://example.com/preview/library',
+        opensInApp: true,
+      },
+    ]);
+
+    const { unmount } = render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: /Library Page Preview/ });
+    expect(link).toHaveAttribute('target', '_blank');
+    unmount();
+  });
+
   it('renders each tool as a link that opens in a new tab', () => {
     // The tools used to be icon buttons calling window.open while carrying
     // role="link". They are anchors now, so this asserts the role and not a

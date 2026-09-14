@@ -72,6 +72,7 @@ function WorkBenchContent() {
                     link={tool.link}
                     description={toolDescriptions[tool.key.toUpperCase()]}
                     icon={iconData.icon}
+                    opensInApp={tool.opensInApp}
                   />
                 </Grid>
               );

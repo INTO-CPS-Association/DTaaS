@@ -1,4 +1,4 @@
-import { isSafeHttpUrl } from 'util/safeUrl';
+import { isSafeHttpUrl, isInAppPath } from 'util/safeUrl';
 
 describe('isSafeHttpUrl', () => {
   it.each(['https://example.com/path', 'http://localhost:4000', './library'])(
@@ -31,4 +31,26 @@ describe('isSafeHttpUrl', () => {
       expect(isSafeHttpUrl(url)).toBe(false);
     },
   );
+});
+
+describe('isInAppPath', () => {
+  it.each(['/preview/library', '/preview/digitaltwins', '/'])(
+    'accepts %s',
+    (url) => {
+      expect(isInAppPath(url)).toBe(true);
+    },
+  );
+
+  // A workbench tool is served from this same origin, so a full URL and a
+  // protocol-relative one are separate services and not routes of this
+  // application. Handing either to the router lands on Not Found.
+  it.each([
+    'https://example.com/preview/library',
+    'http://localhost:4000/preview/library',
+    '//example.com/preview/library',
+    'preview/library',
+    '',
+  ])('rejects %s', (url) => {
+    expect(isInAppPath(url)).toBe(false);
+  });
 });
