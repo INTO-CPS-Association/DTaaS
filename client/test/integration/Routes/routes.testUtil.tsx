@@ -4,6 +4,7 @@ import {
   closestDiv,
   itShowsTheTooltipWhenHoveringButton,
 } from 'test/integration/integration.testUtil';
+import { mockUser } from 'test/__mocks__/mockEnvConstants';
 
 export async function testLayout() {
   testFooter();
@@ -69,7 +70,17 @@ async function testSettingsButton() {
 
   // The avatar carries a letter and no image, so nothing is fetched from the
   // identity provider on every page.
-  expect(within(settingsButton).getByText('A')).toBeInTheDocument();
+  // The signed-in user's initial, taken from the same mock the provider is
+  // built from instead of written here as a letter. It used to be a fixed A,
+  // so every user saw the same avatar whoever they were.
+  //
+  // The mock's picture claim is `pfp.jpg`, a relative value that the protocol
+  // allowlist rejects, so this also covers the fallback: a picture the
+  // application will not load leaves the initial in place.
+  const initial = (mockUser.profile.preferred_username ?? '')
+    .charAt(0)
+    .toUpperCase();
+  expect(within(settingsButton).getByText(initial)).toBeInTheDocument();
 
   // Has visible tooltip
   await itShowsTheTooltipWhenHoveringButton(labelText);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { clearAccessToken } from 'util/auth/accessToken';
 import { useNavigate } from 'react-router-dom';
 
 import { wait } from 'util/auth/Authentication';
@@ -27,6 +28,7 @@ const WaitNavigateAndReload = () => {
     if (shouldNavigate) {
       navigate('/', { replace: true });
       sessionStorage.clear();
+      clearAccessToken();
       reloadPage();
     }
   }, [shouldNavigate, navigate]);

@@ -1,9 +1,10 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 import { useLogger } from 'util/logger/useLogger';
+import { setAccessToken } from 'util/auth/accessToken';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -26,7 +27,7 @@ function storeAccessToken(
 ): void {
   if (!isAuthenticated) return;
   if (!user) throw new Error('Access token was not available...');
-  sessionStorage.setItem('access_token', user.access_token);
+  setAccessToken(user.access_token);
 }
 
 function renderRouteState(
@@ -57,9 +58,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const auth = useAuth();
   useLogger();
 
-  useEffect(() => {
-    storeAccessToken(auth.isAuthenticated, auth.user);
-  }, [auth.isAuthenticated, auth.user]);
+  // During render and not in an effect. An effect runs after the children,
+  // and a child that fetches on mount would find no token on the first render
+  // after a reload. Assigning a module variable has no other consequence.
+  storeAccessToken(auth.isAuthenticated, auth.user);
 
   const routeState = getRouteState(auth);
   return renderRouteState(routeState, auth.error, children);

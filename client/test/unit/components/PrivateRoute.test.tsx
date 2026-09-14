@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
+import { getAccessToken } from 'util/auth/accessToken';
 
 jest.mock('routes', () => {
   const MockSignin = () => <div>Signin</div>;
@@ -102,10 +103,22 @@ describe('PrivateRoute', () => {
     expect(screen.getByText('Mock WaitNavigateAndReload')).toBeInTheDocument();
   });
 
-  test('stores access_token in sessionStorage when authenticated', () => {
+  test('holds the access token in memory when authenticated', () => {
     setupTest({ isLoading: false, error: null, isAuthenticated: true });
 
-    expect(sessionStorage.getItem('access_token')).toBe('example_token');
+    expect(getAccessToken()).toBe('example_token');
+  });
+
+  test('keeps the access token out of sessionStorage', () => {
+    // It used to be written there, where script on this origin can read it,
+    // including script inside the same-origin iframes the library and digital
+    // twin pages embed without a sandbox attribute.
+    setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+    const stored = Object.keys(sessionStorage).map((k) =>
+      sessionStorage.getItem(k),
+    );
+    expect(stored).not.toContain('example_token');
   });
 
   test('throws when authenticated but user is null', () => {

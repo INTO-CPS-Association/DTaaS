@@ -8,6 +8,9 @@ const USERNAME_CLAIM_PRIORITY = [
 ] as const;
 
 const PROFILE_URL_CLAIM_PRIORITY = ['profile', 'html_url'] as const;
+// GitLab fills in `picture`. `avatar_url` is what several other providers
+// call the same thing, so both are read and the first usable one wins.
+const PICTURE_URL_CLAIM_PRIORITY = ['picture', 'avatar_url'] as const;
 const ALLOWED_PROFILE_URL_PROTOCOLS = new Set(['http:', 'https:']);
 const SAFE_USERNAME_PATTERN = /^[A-Za-z0-9._@+-]+$/;
 
@@ -94,6 +97,27 @@ export function resolveOAuthUsername(profile: OAuthProfile): string {
     getClaim(profile, 'sub'),
   ].find((value) => value !== undefined && isSafeUsername(value));
   return username ?? '';
+}
+
+/**
+ * The avatar the identity provider supplies, or undefined.
+ *
+ * The value is a URL the provider controls, so it goes through the same
+ * protocol allowlist the profile link uses. Returning undefined is a normal
+ * outcome and not a failure: a provider that supplies no picture, an
+ * installation with no route to the provider's image host, and a claim that
+ * is not an http URL all land here, and the caller falls back to a letter.
+ */
+export function resolveOAuthPictureUrl(
+  profile: OAuthProfile,
+): string | undefined {
+  const pictureUrl = firstDefinedValue(
+    PICTURE_URL_CLAIM_PRIORITY.map((claim) => getClaim(profile, claim)),
+  );
+  if (!pictureUrl) {
+    return undefined;
+  }
+  return isSafeExternalUrl(pictureUrl) ? pictureUrl : undefined;
 }
 
 export function resolveOAuthProfileUrl(

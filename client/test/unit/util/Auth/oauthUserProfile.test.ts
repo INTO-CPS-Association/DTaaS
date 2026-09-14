@@ -1,4 +1,5 @@
 import {
+  resolveOAuthPictureUrl,
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
@@ -164,6 +165,56 @@ describe('oauthUserProfile', () => {
           profile: 'not-a-valid-url',
         }),
       ).toBeUndefined();
+    });
+  });
+  describe('resolveOAuthPictureUrl', () => {
+    it('resolves the picture claim, which is the one GitLab fills in', () => {
+      expect(
+        resolveOAuthPictureUrl({
+          picture: 'https://gitlab.example.com/uploads/avatar.png',
+        }),
+      ).toBe('https://gitlab.example.com/uploads/avatar.png');
+    });
+
+    it('falls back to avatar_url, which other providers use for the same thing', () => {
+      expect(
+        resolveOAuthPictureUrl({
+          avatar_url: 'https://idp.example.com/a.png',
+        }),
+      ).toBe('https://idp.example.com/a.png');
+    });
+
+    it('prefers picture when a provider sends both', () => {
+      expect(
+        resolveOAuthPictureUrl({
+          picture: 'https://gitlab.example.com/a.png',
+          avatar_url: 'https://idp.example.com/b.png',
+        }),
+      ).toBe('https://gitlab.example.com/a.png');
+    });
+
+    it('returns undefined when the provider supplies no picture', () => {
+      // The ordinary case for a provider with avatars turned off. The caller
+      // shows the user's initial, so this is not an error path.
+      expect(resolveOAuthPictureUrl({})).toBeUndefined();
+    });
+
+    it.each([
+      // The value under test is the one being rejected, so it has to appear.
+      // eslint-disable-next-line no-script-url
+      ['a javascript URL', 'javascript:alert(1)'],
+      ['a data URL', 'data:image/svg+xml,<svg onload=alert(1)>'],
+      ['a malformed URL', 'not-a-valid-url'],
+    ])('rejects %s, since the provider controls this value', (_name, value) => {
+      expect(resolveOAuthPictureUrl({ picture: value })).toBeUndefined();
+    });
+
+    it.each([
+      ['not a string', { picture: 42 }],
+      ['empty', { picture: '' }],
+      ['no profile at all', null],
+    ])('returns undefined when the claim is %s', (_name, profile) => {
+      expect(resolveOAuthPictureUrl(profile)).toBeUndefined();
     });
   });
 });

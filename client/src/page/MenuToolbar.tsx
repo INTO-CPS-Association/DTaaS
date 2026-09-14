@@ -21,6 +21,10 @@ import LinkButtons from 'components/LinkButtons';
 import AppTitle from 'components/AppTitle';
 import toolbarLinkValues from 'util/toolbarUtil';
 import { useSignOut } from 'util/auth/Authentication';
+import {
+  resolveOAuthPictureUrl,
+  resolveOAuthUsername,
+} from 'util/auth/oauthUserProfile';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -71,6 +75,13 @@ function MenuToolbar({
   anchorElUser,
 }: MenuToolbarProps) {
   const auth = useAuth();
+  // `auth` and not `auth.user`: useAuth returns undefined outside a provider,
+  // which is how several tests render this toolbar. The initial was a fixed
+  // letter A, so every user saw the same avatar whoever they were.
+  const profile = auth?.user?.profile;
+  const pictureUrl = resolveOAuthPictureUrl(profile);
+  const username = resolveOAuthUsername(profile);
+  const initial = username.charAt(0).toUpperCase() || 'A';
   const root = document.getElementById('root');
   const signOut = useSignOut();
 
@@ -139,7 +150,13 @@ function MenuToolbar({
                 height: 'auto',
               }}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
+              <Avatar
+                src={pictureUrl}
+                alt={username}
+                sx={{ width: 32, height: 32 }}
+              >
+                {initial}
+              </Avatar>
             </IconButton>
           </Tooltip>
           <Menu
