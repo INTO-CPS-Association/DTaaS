@@ -43,15 +43,14 @@ describe('Digital Twins', () => {
   });
 
   it('carries the page heading, as the digital twins page it mirrors does', async () => {
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <DigitalTwinsPreview />
-          </MemoryRouter>
-        </Provider>,
-      );
-    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <DigitalTwinsPreview />
+        </MemoryRouter>
+      </Provider>,
+    );
+    // The timers still need one, because advancing them updates state.
     await act(async () => {
       jest.runAllTimers();
     });
