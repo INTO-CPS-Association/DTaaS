@@ -24,7 +24,7 @@ function AppTitle() {
         minWidth: 0,
       }}
     >
-      <BrandMark size={26} />
+      <BrandMark size={30} />
       <Typography
         variant="h6"
         noWrap

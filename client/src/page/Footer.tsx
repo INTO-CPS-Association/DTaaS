@@ -127,8 +127,8 @@ function RenderFooter() {
             <Box
               sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}
             >
-              <BrandMark size={44} />
-              <Typography variant="subtitle2" component="h2">
+              <BrandMark size={13} />
+              <Typography variant="subtitle1" component="h2">
                 DTaaS
               </Typography>
             </Box>

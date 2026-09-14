@@ -88,7 +88,7 @@ FONT = ("Inter, 'Inter var', -apple-system, BlinkMacSystemFont, "
         "'Segoe UI', Roboto, Helvetica, Arial, sans-serif")
 
 
-def mark(body, uid=''):
+def mark(body):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
             f'role="img" aria-label="DTaaS">\n{NOTE}\n' + body + '\n</svg>\n')
 
