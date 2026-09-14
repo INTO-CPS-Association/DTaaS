@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232 24" role="img" aria-label="Digital Twin as a Service">
+  <!--
+    One figure, built on one side and drawn on the other, because a twin is one
+    thing in two states. The drawn half is a continuous outline and not a
+    dashed one: a dash breaks into specks at the sixteen pixels a browser tab
+    gives it.
+
+    Generated from docs/assets/brand/build_brand.py. Do not edit by hand.
+  -->
+  <g>
+    <defs>
+      <clipPath id="builtfm"><rect x="0" y="0" width="12" height="24"/></clipPath>
+      <clipPath id="drawnfm"><rect x="12" y="0" width="12" height="24"/></clipPath>
+    </defs>
+    <g clip-path="url(#builtfm)">
+      <circle cx="12" cy="7.8" r="4.1" fill="#000000" stroke="#000000" stroke-width="1.7"/>
+      <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="#000000" stroke="#000000" stroke-width="1.7" stroke-linejoin="round"/>
+    </g>
+    <g clip-path="url(#drawnfm)">
+      <circle cx="12" cy="7.8" r="4.1" fill="none" stroke="#000000" stroke-width="1.7"/>
+      <path d="M3.6 21.5 c0 -4.7 3.8 -7.4 8.4 -7.4 s8.4 2.7 8.4 7.4 Z" fill="none" stroke="#000000" stroke-width="1.7" stroke-linejoin="round"/>
+    </g>
+  </g>
+  <text x="30" y="16.6" fill="#000000" font-family="Inter, 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.1">Digital Twin as a Service</text>
+</svg>

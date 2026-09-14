@@ -7,8 +7,8 @@ copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
 theme:
   name: material
   locale: en
-  logo: assets/dtaas-logo.png
-  favicon: assets/dtaas-logo.png
+  logo: assets/brand/dtaas-mark-white.svg
+  favicon: assets/brand/dtaas-mark.svg
   features:
     - navigation.tabs
     - navigation.tracking
@@ -207,7 +207,7 @@ plugins:
   - with-pdf:
       author: "DTaaS Development Team"
       cover: true
-      cover_logo: assets/dtaas-logo.png
+      cover_logo: assets/brand/png/dtaas-logo-full-192h.png
       cover_subtitle: ""
       enabled_if_env: MKDOCS_ENABLE_PDF_EXPORT
       output_path: pdf/DTaaS-docs.pdf

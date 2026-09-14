@@ -48,11 +48,13 @@ export const minTouchTarget = 44;
 
 interface Brand {
   readonly primary: string;
-  /** Hover, and text on a light tint. */
+  /** Hover, text on a light tint, and the ground of the mark. */
   readonly primaryDark: string;
   /** Selected rows and subtle fills. */
   readonly primaryTint: string;
   readonly accent: string;
+  /** The drawn half of the mark. Read on the mark's own field, never on white. */
+  readonly markAccent: string;
   readonly fontFamily: string;
 }
 
@@ -68,9 +70,12 @@ const fontStack =
 /**
  * Aarhus University colours, as the university publishes them.
  *
- * AU blue is Pantone 287, CMYK 100 80 0 15, RGB 0 61 115. The dark step is
- * that colour mixed with 75 percent black, which is the tint the design guide
- * allows, and the accent is the turquoise of the secondary palette.
+ * AU blue is Pantone 287, CMYK 100 80 0 15, RGB 0 61 115. The dark step is the
+ * navy the university's own site uses for a solid field: it appears ninety
+ * times in `cdn.au.dk/2016/assets/css/app.css` where AU blue appears thirteen,
+ * so it is what a block of AU colour looks like in practice. The accent is the
+ * turquoise of the secondary palette, and `markAccent` the cyan, which carries
+ * the drawn half of the mark on that navy field.
  *
  * They replace the template's blue, `hsl(210, 98%, 48%)`, and that is the only
  * substitution: the greys, the type scale, the radii and the typeface stay as
@@ -78,8 +83,9 @@ const fontStack =
  */
 export const brand: Brand = {
   primary: '#003d73',
-  primaryDark: '#002e56',
+  primaryDark: '#002546',
   primaryTint: '#eaf1fb',
   accent: '#00aba4',
+  markAccent: '#37a0cb',
   fontFamily: fontStack,
 };
