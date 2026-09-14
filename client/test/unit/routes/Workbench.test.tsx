@@ -45,6 +45,25 @@ describe('Workbench', () => {
     unmount();
   });
 
+  it('says so when a tool carries an address it will not open', () => {
+    // The address comes from the deployment's configuration, so a scheme this
+    // application refuses is a misconfiguration a person has to see.
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
+      // eslint-disable-next-line no-script-url -- the refused URL is the subject
+      { key: 'VSCODE', link: 'javascript:alert(1)' },
+    ]);
+
+    const { unmount } = render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/cannot be opened/i)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /VSCode/ })).toBeNull();
+    unmount();
+  });
+
   it('renders each tool as a link that opens in a new tab', () => {
     // The tools used to be icon buttons calling window.open while carrying
     // role="link". They are anchors now, so this asserts the role and not a

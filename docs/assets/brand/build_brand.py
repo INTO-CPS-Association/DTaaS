@@ -28,8 +28,6 @@ def token(name):
     return match.group(1)
 
 
-# AU blue, Pantone 287, RGB 0 61 115, as the university publishes it.
-BLUE = token('primary')
 # The navy the university's own site uses for a solid field. It appears ninety
 # times in cdn.au.dk/2016/assets/css/app.css, as text and as background, where
 # #003d73 appears thirteen, so this is what a block of AU colour looks like in

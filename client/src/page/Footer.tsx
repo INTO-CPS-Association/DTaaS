@@ -127,8 +127,15 @@ function RenderFooter() {
             <Box
               sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}
             >
-              <BrandMark size={13} />
-              <Typography variant="subtitle1" component="h2">
+              {/* A tenth larger than the word beside it: `subtitle1` is
+                  1.125rem, eighteen pixels, and a square glyph reads smaller
+                  than letters of the same size. */}
+              <BrandMark size={20} />
+              <Typography
+                variant="subtitle1"
+                component="h2"
+                sx={{ fontWeight: 700 }}
+              >
                 DTaaS
               </Typography>
             </Box>
