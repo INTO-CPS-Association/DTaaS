@@ -41,4 +41,26 @@ describe('Digital Twins', () => {
     const tabComponent = screen.getByTestId('tab-component');
     expect(tabComponent).toBeInTheDocument();
   });
+
+  it('carries the page heading, as the digital twins page it mirrors does', async () => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <MemoryRouter>
+            <DigitalTwinsPreview />
+          </MemoryRouter>
+        </Provider>,
+      );
+    });
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      screen.getAllByRole('heading', {
+        level: 1,
+        name: 'Digital Twins Page Preview',
+      }).length,
+    ).toBeGreaterThan(0);
+  });
 });

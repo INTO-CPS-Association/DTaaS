@@ -90,7 +90,7 @@ function MenuToolbar({
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label="Open drawer"
             onClick={handleDrawerOpen}
             edge="start"
             data-logger-element="button"

@@ -2,6 +2,7 @@ import Layout from 'page/Layout';
 import TabComponent from 'components/tab/TabComponent';
 import { Paper, Typography } from '@mui/material';
 import ShoppingCart from 'components/cart/ShoppingCart';
+import PageShell from 'components/PageShell';
 import AssetLibrary from 'components/asset/AssetLibrary';
 import { assetType, scope } from 'route/library/cart/LibraryTabDataPreview';
 
@@ -53,7 +54,9 @@ function LibraryContent() {
 
   return (
     <Layout>
-      <TabComponent assetType={tabsData} scope={combinedData} />
+      <PageShell title="Library Page Preview">
+        <TabComponent assetType={tabsData} scope={combinedData} />
+      </PageShell>
     </Layout>
   );
 }
