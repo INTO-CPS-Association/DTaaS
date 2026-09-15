@@ -1,4 +1,4 @@
-import { renderMarkdown } from 'util/markdown';
+import { renderMarkdown, interopDefault } from 'util/markdown';
 
 /**
  * Tests for rendering user-authored markdown.
@@ -103,5 +103,17 @@ describe('renderMarkdown, on input that is not a document', () => {
     ['whitespace only', '   \n  '],
   ])('handles %s without throwing', (_name, input) => {
     expect(() => renderMarkdown(input)).not.toThrow();
+  });
+});
+
+describe('interopDefault', () => {
+  it('returns the default export when the module wraps one', () => {
+    const inner = () => 'plugin';
+    expect(interopDefault({ default: inner })).toBe(inner);
+  });
+
+  it('returns the module itself when there is no default export', () => {
+    const mod = () => 'plugin';
+    expect(interopDefault(mod)).toBe(mod);
   });
 });

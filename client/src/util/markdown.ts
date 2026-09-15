@@ -18,9 +18,15 @@ import { Remarkable } from 'remarkable';
 // @ts-expect-error: no type definitions are published for 'remarkable-katex'.
 import RemarkableKatexModule from 'remarkable-katex';
 
-const RemarkableKatex =
-  (RemarkableKatexModule as { default?: unknown }).default ??
-  RemarkableKatexModule;
+/**
+ * Some bundlers expose a CommonJS module's export under `.default` and some
+ * expose it directly. This picks whichever one is there.
+ */
+export function interopDefault<T>(mod: T): T {
+  return (mod as { default?: T }).default ?? mod;
+}
+
+const RemarkableKatex = interopDefault(RemarkableKatexModule);
 
 const renderer = new Remarkable({
   html: false,
