@@ -125,6 +125,27 @@ def format_container_status(
     console.print(table)
 
 
+def _service_name(container: Union[Container, RemovedServiceEntry]) -> str:
+    """Return the compose service name of a container, else its name."""
+    labels = getattr(getattr(container, "config", None), "labels", None)
+    if isinstance(labels, dict):
+        return labels.get("com.docker.compose.service", container.name)
+    return container.name
+
+
+def build_status_json(
+    containers: List[Union[Container, RemovedServiceEntry]],
+) -> dict[str, dict[str, str]]:
+    """Map each service name to its container name and effective status."""
+    return {
+        _service_name(container): {
+            "container": container.name,
+            "status": _effective_status(container),
+        }
+        for container in sorted(containers, key=_service_name)
+    }
+
+
 def _sort_service_names(
     services: dict, all_services: List[str], table: Table
 ) -> List[str]:

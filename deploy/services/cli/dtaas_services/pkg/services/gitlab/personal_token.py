@@ -178,7 +178,7 @@ def _read_tokens_file(tokens_path: Path) -> Tuple[bool, str]:
 def _load_pat_from_tokens() -> Tuple[bool, str]:
     """Load the admin Personal Access Token from the install-time tokens file.
 
-    The tokens file is created by ``dtaas-services install -s gitlab``.
+    The tokens file is created by ``dtaas-services service install -s gitlab``.
 
     Returns:
         Tuple of (success, pat_or_error)
@@ -187,6 +187,6 @@ def _load_pat_from_tokens() -> Tuple[bool, str]:
     if not tokens_path.exists():
         return False, (
             f"Token file not found: {tokens_path}\n"
-            "Run 'dtaas-services install -s gitlab' first."
+            "Run 'dtaas-services service install -s gitlab' first."
         )
     return _read_tokens_file(tokens_path)

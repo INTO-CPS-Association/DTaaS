@@ -79,11 +79,14 @@ cli/
 │   ├── cmd.py              # CLI entry point (imports from commands/)
 │   ├── commands/           # CLI command modules
 │   │   ├── __init__.py
-│   │   ├── service_ops.py  # Service lifecycle commands (start, stop, restart, status, remove, clean)
-│   │   ├── setup_ops.py    # Setup commands (generate-project, setup, install)
+│   │   ├── aliases.py      # Deprecated old spellings forwarding to new commands
+│   │   ├── host_ops.py     # host setup
+│   │   ├── install_helpers.py # ThingsBoard and GitLab install flows
+│   │   ├── project_ops.py  # project generate
+│   │   ├── service_ops.py  # service install, start, stop, restart, status, remove, clean
 │   │   ├── user_ops.py     # User management commands (user add, user reset-password)
 │   │   └── utility.py      # Command utilities
-│   ├── templates/          # Package-bundled templates used by generate-project (committed)
+│   ├── templates/          # Package-bundled templates used by project generate (committed)
 │   ├── gitlab_common/      # Vendored from lib/gitlab_common by pkg/build.py (gitignored)
 │   └── pkg/
 │       ├── __init__.py
@@ -150,8 +153,10 @@ cli/
     │   ├── __init__.py
     │   ├── conftest.py
     │   ├── test_cmd.py
+    │   ├── test_host_ops.py
+    │   ├── test_project_ops.py
+    │   ├── test_service_install.py
     │   ├── test_service_ops.py
-    │   ├── test_setup_ops.py
     │   └── test_user_ops.py
     ├── test_lib/
     │   ├── __init__.py
@@ -222,10 +227,18 @@ The package uses a modular, three-layer architecture:
 
 #### Command Layer (`commands/`)
 
-* **`service_ops.py`**: Service lifecycle commands (start, stop, restart, status,
- remove, clean)
-* **`setup_ops.py`**: Setup and installation commands (generate-project, setup,
- install)
+Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
+`project`, `host`, `service` and `user` in workflow order.
+
+* **`project_ops.py`**: `project generate`
+* **`host_ops.py`**: `host setup`
+* **`service_ops.py`**: `service install`, `start`, `stop`, `restart`,
+ `status`, `remove`, `clean`
+* **`install_helpers.py`**: ThingsBoard and GitLab install flows used by
+ `service install`
+* **`aliases.py`**: hidden deprecated top level spellings (for example
+ `start`) that warn on stderr and forward to the new command; remove at
+ the next major version
 * **`user_ops.py`**: User management commands (`user add`, `user reset-password`)
 * **`utility.py`**: Shared command utilities
 
@@ -339,9 +352,9 @@ default: `https`)
 
 OAuth 2.0 application settings are loaded from a JSON config file at
 `config/gitlab_oauth.json`. This file is generated automatically from
-`config/gitlab_oauth.json.template` by `dtaas-services generate-project`
+`config/gitlab_oauth.json.template` by `dtaas-services project generate`
 and can be edited to customise app registrations before running
-`dtaas-services install -s gitlab`.
+`dtaas-services service install -s gitlab`.
 
 The filename can be overridden by setting the `OAUTH_APPS` environment
 variable to a different filename (looked up in `config/`).
@@ -359,7 +372,7 @@ Each entry's `redirect_uri` is the **full callback URL** registered with GitLab
 OAuth 2.0 applications are configured via a JSON file. The default file is
 `config/gitlab_oauth.json`, which defines two applications: Server Authorisation
 (for Traefik Forward-Auth) and Client Authorisation (for the React client).
-These are created during `dtaas-services install -s gitlab`.
+These are created during `dtaas-services service install -s gitlab`.
 
 **To use custom OAuth settings:**
 
@@ -409,23 +422,23 @@ and how to change it in `services.env`.
 
 ### Cleanup and Reset
 
-#### Clean Command (`dtaas-services clean`)
+#### Clean Command (`dtaas-services service clean`)
 
 Removes data and log files for services, useful for resetting to a clean state:
 
-* **Basic clean**: `dtaas-services clean` - Removes data and log files
-* **With certificates**: `dtaas-services clean --certs` - Also removes TLS certificates
-* **Specific services**: `dtaas-services clean -s mongodb,influxdb`
+* **Basic clean**: `dtaas-services service clean` - Removes data and log files
+* **With certificates**: `dtaas-services service clean --certs` - Also removes TLS certificates
+* **Specific services**: `dtaas-services service clean -s mongodb,influxdb`
 
 **Note**: Services must be stopped before cleaning. The command will prompt
 for confirmation before deleting files.
 
-#### Remove Command (`dtaas-services remove`)
+#### Remove Command (`dtaas-services service remove`)
 
 Stops and removes Docker containers:
 
-* **Basic remove**: `dtaas-services remove` - Removes containers
-* **With volumes**: `dtaas-services remove -v` - Also removes Docker volumes
+* **Basic remove**: `dtaas-services service remove` - Removes containers
+* **With volumes**: `dtaas-services service remove --volumes` - Also removes Docker volumes
 
 ### User Management Best Practices
 
@@ -466,11 +479,11 @@ Stops and removes Docker containers:
 
 #### GitLab Users
 
-* **Prerequisites**: `dtaas-services install -s gitlab` must be run to
+* **Prerequisites**: `dtaas-services service install -s gitlab` must be run to
   complete post-install setup (health check → password reset → PAT creation).
   The install command is non-blocking: if GitLab is still starting it returns
   immediately with a status hint. Re-run the command once
-  `dtaas-services status -s gitlab` shows the container as healthy.
+  `dtaas-services service status -s gitlab` shows the container as healthy.
   The PAT stored in `config/gitlab_tokens.json` is used for all subsequent API calls.
 * **Credentials File**: GitLab users are created from `config/credentials.csv`
   (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.
@@ -482,7 +495,7 @@ Stops and removes Docker containers:
 * **Root user**: The `root` admin account (user ID `1`) is created automatically
   by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the
   auto-generated password and resets it to `GITLAB_ROOT_NEW_PASSWORD`.
-  During `dtaas-services install -s gitlab`, the root password is automatically
+  During `dtaas-services service install -s gitlab`, the root password is automatically
   changed to `GITLAB_ROOT_NEW_PASSWORD` and recorded in
   `config/current.passwords.env`.
 * **Password Reset**: The root password can be reset independently using
@@ -496,7 +509,7 @@ Stops and removes Docker containers:
 
 #### ThingsBoard Users
 
-* **Install**: Running `dtaas-services install` only initialises the ThingsBoard
+* **Install**: Running `dtaas-services service install` only initialises the ThingsBoard
   database schema. It does NOT create the tenant or tenant admin. After install,
   start ThingsBoard manually.
 * **User Add**: Running `dtaas-services user add -s thingsboard` first
@@ -530,8 +543,8 @@ It is managed by `pkg/password_store.py`.
   or edit this file manually.
 * **Updated** automatically whenever a password is changed via
   `dtaas-services user reset-password` or during
-  `dtaas-services install -s gitlab`.
-* **Cleaned** when a service is removed via `dtaas-services remove`.
+  `dtaas-services service install -s gitlab`.
+* **Cleaned** when a service is removed via `dtaas-services service remove`.
   Only entries belonging to the removed service are deleted.
 
 ### Error Handling Pattern

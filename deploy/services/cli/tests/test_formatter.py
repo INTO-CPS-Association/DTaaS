@@ -7,6 +7,7 @@ from rich.console import Console
 from python_on_whales import Container
 
 from dtaas_services.pkg.formatter import (
+    build_status_json,
     format_container_status,
     format_service_list_status,
     RemovedServiceEntry,
@@ -77,3 +78,22 @@ def test_format_container_status_unhealthy():
     format_container_status(containers, console)
     output = string_io.getvalue()
     assert "not ready" in output
+
+
+def test_build_status_json_uses_compose_service_label():
+    """JSON keys use the compose service label, so thingsboard maps to thingsboard-ce"""
+    container = make_mock_container("thingsboard", "exited")
+    container.config.labels = {"com.docker.compose.service": "thingsboard-ce"}
+    containers = cast(
+        List[Union[Container, RemovedServiceEntry]],
+        [container, RemovedServiceEntry("postgres")],
+    )
+    assert build_status_json(containers) == {
+        "postgres": {"container": "postgres", "status": "removed"},
+        "thingsboard-ce": {"container": "thingsboard", "status": "exited"},
+    }
+
+
+def test_build_status_json_empty():
+    """No containers gives an empty object"""
+    assert not build_status_json([])

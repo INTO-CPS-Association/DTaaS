@@ -79,7 +79,8 @@ class Manager(Status):
         if _is_thingsboard_container_running(self.docker):
             err = ValueError(
                 "Cannot stop PostgreSQL while ThingsBoard is running. "
-                "Stop or remove ThingsBoard first with: dtaas-services stop -s thingsboard"
+                "Stop or remove ThingsBoard first with: "
+                "dtaas-services service stop -s thingsboard"
             )
             return err, str(err)
 

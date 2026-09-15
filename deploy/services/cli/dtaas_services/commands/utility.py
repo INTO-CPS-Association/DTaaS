@@ -156,7 +156,8 @@ def check_running_services_for_clean(
                 f" and must be stopped first:[/yellow] {', '.join(services_to_stop)}"
             )
             console.print(
-                f"[yellow]Run:[/yellow] dtaas-services stop -s {','.join(services_to_stop)}"
+                "[yellow]Run:[/yellow] dtaas-services service stop "
+                f"-s {','.join(services_to_stop)}"
             )
             raise click.ClickException(
                 "Cannot clean running services. Stop them first."
@@ -166,7 +167,7 @@ def check_running_services_for_clean(
             f"[yellow]⚠️  Some services are still \n"
             f"running:[/yellow] {', '.join(running_services)}"
         )
-        console.print("[yellow]Run:[/yellow] dtaas-services stop")
+        console.print("[yellow]Run:[/yellow] dtaas-services service stop")
         raise click.ClickException(
             "Cannot clean while services are running. Stop all services first."
         )

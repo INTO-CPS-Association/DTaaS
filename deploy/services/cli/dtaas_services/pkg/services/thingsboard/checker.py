@@ -111,7 +111,7 @@ def _prompt_thingsboard_installation() -> None:
     """Display ThingsBoard installation warning and prompt."""
     console = Console()
     console.print("[yellow]⚠️  ThingsBoard is not installed yet.[/yellow]")
-    console.print("[cyan]You need to run 'dtaas-services install' [/cyan]")
+    console.print("[cyan]You need to run 'dtaas-services service install' [/cyan]")
 
 
 def _confirm_continue_without_thingsboard() -> None:
@@ -151,7 +151,7 @@ def check_thingsboard_installation(
 
     _prompt_thingsboard_installation()
     _confirm_continue_without_thingsboard()
-    Console().print("[cyan]Remember to run: dtaas-services install[/cyan]")
+    Console().print("[cyan]Remember to run: dtaas-services service install[/cyan]")
 
 
 def check_postgres_dependency(
@@ -175,7 +175,8 @@ def check_postgres_dependency(
     if _is_thingsboard_container_running(self.docker):
         err = ValueError(
             "Cannot remove PostgreSQL while ThingsBoard is running. "
-            "Stop or remove ThingsBoard first with: dtaas-services stop -s thingsboard"
+            "Stop or remove ThingsBoard first with: "
+            "dtaas-services service stop -s thingsboard"
         )
         return err, str(err)
 
