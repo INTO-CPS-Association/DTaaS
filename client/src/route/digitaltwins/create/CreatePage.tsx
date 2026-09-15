@@ -34,7 +34,7 @@ function DigitalTwinNameInput({
       <TextField
         fullWidth
         variant="outlined"
-        label="Insert digital twin name"
+        label="Insert Digital Twin Name"
         value={value}
         onChange={onChange}
         slotProps={{

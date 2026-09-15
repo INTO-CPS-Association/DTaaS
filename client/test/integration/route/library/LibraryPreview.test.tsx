@@ -36,4 +36,21 @@ describe('Library Preview', () => {
 
     expect(screen.getByText('Selection')).toBeInTheDocument();
   });
+
+  it('carries the page heading, as the library page it mirrors does', async () => {
+    // The page frame is what renders the only h1. This preview had none, which
+    // no test caught because nothing asserted the heading.
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <LibraryPreview />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(
+      screen.getAllByRole('heading', { level: 1, name: 'Library Page Preview' })
+        .length,
+    ).toBeGreaterThan(0);
+  });
 });

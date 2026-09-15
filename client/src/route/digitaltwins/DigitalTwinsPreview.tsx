@@ -8,6 +8,7 @@ import AssetBoard from 'components/asset/AssetBoard';
 import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
 import { addOrUpdateFile } from 'model/store/file.slice';
 import tabs from 'route/digitaltwins/DigitalTwinTabDataPreview';
+import PageShell from 'components/PageShell';
 import CreatePage from 'route/digitaltwins/create/CreatePage';
 
 interface DTTabProps {
@@ -65,15 +66,15 @@ export const DTContent = () => {
 
   return (
     <Layout>
-      <Typography variant="body1" sx={{ marginBottom: 0 }}>
-        This page demonstrates integration of DTaaS with GitLab CI/CD workflows.
-        The feature is experimental and requires certain GitLab setup in order
-        for it to work.
-      </Typography>
-      <TabComponent
-        assetType={createDTTab({ newDigitalTwinName, setNewDigitalTwinName })}
-        scope={[]}
-      />
+      <PageShell
+        title="Digital Twins Page Preview"
+        description="This page demonstrates integration of DTaaS with GitLab CI/CD workflows. The feature is experimental and requires certain GitLab setup in order for it to work."
+      >
+        <TabComponent
+          assetType={createDTTab({ newDigitalTwinName, setNewDigitalTwinName })}
+          scope={[]}
+        />
+      </PageShell>
     </Layout>
   );
 };

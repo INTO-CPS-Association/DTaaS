@@ -22,7 +22,9 @@ describe('SignIn', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('button', { name: /SignIn/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Sign In/i }),
+    ).toBeInTheDocument();
   });
 
   it('handles button click', () => {
@@ -33,7 +35,7 @@ describe('SignIn', () => {
     );
 
     const signInButton = screen.getByRole('button', {
-      name: /SignIn/i,
+      name: /Sign In/i,
     });
     fireEvent.click(signInButton);
 

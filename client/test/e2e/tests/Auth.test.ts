@@ -9,7 +9,7 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Homepage has correct title and signin link', async ({ page }) => {
-    await page.getByRole('button', { name: 'SignIn' }).click();
+    await page.getByRole('button', { name: 'Sign In' }).click();
     await page
       .getByRole('button', { name: /Authorize/ })
       .press('Enter', { timeout: 30000 });
@@ -20,7 +20,7 @@ test.describe('Tests on Authentication Flow', () => {
   });
 
   test('Account Button Contents and Links', async ({ page, baseURL }) => {
-    await page.getByRole('button', { name: 'SignIn' }).click();
+    await page.getByRole('button', { name: 'Sign In' }).click();
     await page
       .getByRole('button', { name: /Authorize/ })
       .press('Enter', { timeout: 30000 });
@@ -46,7 +46,7 @@ test.describe('Tests on Authentication Flow', () => {
       await previousPromise;
       await page.goto(link.url.charAt(1).toUpperCase());
       await expect(page).toHaveURL(baseURL?.replace(/\/$/, '') ?? './');
-      await expect(page.locator('button:has-text("SignIn")')).toBeVisible({
+      await expect(page.locator('button:has-text("Sign In")')).toBeVisible({
         timeout: 10000,
       });
     }, Promise.resolve());

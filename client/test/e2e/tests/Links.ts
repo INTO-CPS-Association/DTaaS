@@ -19,14 +19,14 @@ const links: LinkType[] = [
 
 export const workbenchLinks: LinkType[] = [
   {
-    text: 'Desktop-btn',
+    text: 'Desktop',
     url: `./${testUsername}/tools/vnc?path=${testUsername}%2Ftools%2Fvnc%2Fwebsockify`,
   },
-  { text: 'VSCode-btn', url: `./${testUsername}/tools/vscode` },
-  { text: 'JupyterLab-btn', url: `./${testUsername}/lab` },
-  { text: 'Jupyter Notebook-btn', url: `./${testUsername}` },
-  { text: 'Library page preview-btn', url: `./preview/library` },
-  { text: 'Digital Twins page preview-btn', url: `./preview/digitaltwins` },
+  { text: 'VSCode', url: `./${testUsername}/tools/vscode` },
+  { text: 'JupyterLab', url: `./${testUsername}/lab` },
+  { text: 'Jupyter Notebook', url: `./${testUsername}` },
+  { text: 'Library Page Preview', url: `./preview/library` },
+  { text: 'Digital Twins Page Preview', url: `./preview/digitaltwins` },
 ];
 
 export default links;

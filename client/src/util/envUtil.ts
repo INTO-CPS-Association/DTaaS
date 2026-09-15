@@ -47,6 +47,12 @@ export function useAppURL(): string {
 export interface KeyLinkPair {
   key: string;
   link: string;
+  /**
+   * True when the link is a page of this application and not a separate
+   * service. Set here because this is where the two preview pages are named,
+   * and a second list elsewhere would drift from this one.
+   */
+  opensInApp?: boolean;
 }
 
 /**
@@ -110,6 +116,7 @@ export function useWorkbenchLinkValues(): KeyLinkPair[] {
           workbenchLinkValues.push({
             key: keyWithoutPrefix,
             link: value,
+            opensInApp: true,
           });
         }
       }

@@ -19,12 +19,13 @@ describe('Digital Twins', () => {
   it('renders the Digital Twins page and Layout correctly', async () => {
     await testLayout();
 
+    // One level of tabs. This page passes no scope, and the second level is
+    // not drawn for an empty one: the control carries a background and a
+    // border, so an empty one is a small stray pill on the page.
     const tablists = screen.getAllByRole('tablist');
-    expect(tablists).toHaveLength(2);
+    expect(tablists).toHaveLength(1);
 
-    // The div of the Digital Twins (Create, Execute and Analyze) tabs
-    const mainTabsDiv = closestDiv(tablists[0]);
-    const mainTablist = within(mainTabsDiv).getAllByRole('tablist')[0];
+    const mainTablist = tablists[0];
     const mainTabs = within(mainTablist).getAllByRole('tab');
     expect(mainTabs).toHaveLength(3);
 

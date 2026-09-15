@@ -30,7 +30,7 @@ const FIELD_CONFIGS: FieldConfig[] = [
   },
   {
     id: 'commonLibraryProjectName',
-    label: 'Common Library Project name',
+    label: 'Common Library Project Name',
     errorMsg: 'Common library project name is required',
     helpMsg: 'Project name for the common library',
   },

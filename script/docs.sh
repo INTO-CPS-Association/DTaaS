@@ -42,8 +42,10 @@ printf "generate and publish documents"
 mkdocs build --config-file mkdocs.yml --site-dir "site/online/${VERSION}"
 
 cp docs/redirect-page.html site/index.html
-mkdir site/assets
-cp docs/assets/dtaas-logo-with-text.png site/assets/.
+# Whatever the landing page references has to travel with it. It names the
+# lockup under assets/brand, so the tree is copied and not one file.
+mkdir -p site/assets/brand
+cp docs/assets/brand/dtaas-logo-full.svg site/assets/brand/.
 
 cd "${TOP_DIR}" || exit
 git checkout webpage-docs

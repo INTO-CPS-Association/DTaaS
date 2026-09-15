@@ -41,4 +41,25 @@ describe('Digital Twins', () => {
     const tabComponent = screen.getByTestId('tab-component');
     expect(tabComponent).toBeInTheDocument();
   });
+
+  it('carries the page heading, as the digital twins page it mirrors does', async () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <DigitalTwinsPreview />
+        </MemoryRouter>
+      </Provider>,
+    );
+    // The timers still need one, because advancing them updates state.
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    expect(
+      screen.getAllByRole('heading', {
+        level: 1,
+        name: 'Digital Twins Page Preview',
+      }).length,
+    ).toBeGreaterThan(0);
+  });
 });

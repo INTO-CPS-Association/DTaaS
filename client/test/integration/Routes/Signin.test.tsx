@@ -23,7 +23,7 @@ describe('Signin', () => {
 
   it('renders the SignIn page with the Public Layout correctly', async () => {
     await testPublicLayout();
-    expect(screen.getByRole('button', { name: /SignIn/i })).toBeVisible();
+    expect(screen.getByRole('button', { name: /Sign In/i })).toBeVisible();
     expect(
       screen.getAllByTestId(/LockOutlinedIcon/i).length,
     ).toBeGreaterThanOrEqual(1);
