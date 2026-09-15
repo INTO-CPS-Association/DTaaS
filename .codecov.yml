@@ -11,16 +11,6 @@ coverage:
     patch:
       default:
         informational: true
-# The client uploads coverage under two flags, and the end to end one carries
-# `continue-on-error` and needs a live stack, so on a pull request it produces
-# no report. Without `carryforward` every line only that suite exercises counts
-# as uncovered and the project percentage falls with no line changing, which is
-# what produced a drop from 96 to 78 percent on #1765.
-flag_management:
-  individual_flags:
-    - name: client-e2e-tests
-      carryforward: true
-
 codecov:
   require_ci_to_pass: false
   notify:
