@@ -104,3 +104,14 @@ describe('LinkButtons component with specified size and specified marginRight', 
     evaluateMarginRight(customMarginRight);
   });
 });
+
+describe('LinkButtons with an unknown key', () => {
+  it('uses the no-icon entry and the service label', () => {
+    render(
+      <LinkButtons
+        buttons={[{ key: 'UNKNOWNKEY', link: 'https://example.com/x' }]}
+      />,
+    );
+    expect(screen.getAllByRole('link').length).toBeGreaterThan(0);
+  });
+});

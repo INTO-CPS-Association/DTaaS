@@ -27,7 +27,7 @@ function getEmailLocalPart(identifier: string | undefined): string | undefined {
   if (!identifier) {
     return undefined;
   }
-  const localPart = identifier.split('@')[0]?.trim();
+  const localPart = identifier.split('@')[0].trim();
   return localPart && localPart.length > 0 ? localPart : undefined;
 }
 

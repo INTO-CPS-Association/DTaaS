@@ -141,3 +141,54 @@ describe('Workbench', () => {
     });
   });
 });
+
+describe('Workbench initial services fetch', () => {
+  it('fetches the services when the status is idle and a user is known', () => {
+    const dispatch = jest.fn();
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValue([]);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      dispatch,
+    );
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: object) => unknown) =>
+        selector({
+          auth: { userName: 'username' },
+          workbench: { status: 'idle', services: {} },
+        }),
+    );
+
+    render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    expect(dispatch).toHaveBeenCalled();
+  });
+});
+
+describe('Workbench with no known user', () => {
+  it('renders when the user name is absent', () => {
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValue([]);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      jest.fn(),
+    );
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: object) => unknown) =>
+        selector({
+          auth: { userName: undefined },
+          workbench: { status: 'idle', services: {} },
+        }),
+    );
+
+    render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: /Workbench Tools/ }),
+    ).toBeInTheDocument();
+  });
+});
