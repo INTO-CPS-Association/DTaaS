@@ -37,7 +37,7 @@ def host():
 host.add_command(host_ops.setup)
 
 
-@services.group()
+@services.group(cls=WorkflowGroup)
 def service():
     """Service containers: install, start, stop, restart, status, remove, clean."""
 

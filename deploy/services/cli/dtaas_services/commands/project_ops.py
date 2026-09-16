@@ -18,7 +18,10 @@ from ..pkg.template import generate_project_structure
     default=False,
     help=(
         "Overwrite existing compose files and package files under config/. "
-        "services.env, credentials.csv and gitlab_oauth.json are never overwritten."
+        "Generated credentials (services.env, credentials.csv, "
+        "gitlab_oauth.json and the token files) and service configuration "
+        "(mongod.conf.secure, rabbitmq.conf, rabbitmq.enabled_plugins) are "
+        "never overwritten. Each one is reported as kept."
     ),
 )
 def generate(path, force):

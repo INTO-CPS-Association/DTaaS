@@ -81,17 +81,34 @@ def test_format_container_status_unhealthy():
 
 
 def test_build_status_json_uses_compose_service_label():
-    """JSON keys use the compose service label, so thingsboard maps to thingsboard-ce"""
+    """Service names come from the compose label, so thingsboard maps to thingsboard-ce"""
     container = make_mock_container("thingsboard", "exited")
     container.config.labels = {"com.docker.compose.service": "thingsboard-ce"}
     containers = cast(
         List[Union[Container, RemovedServiceEntry]],
         [container, RemovedServiceEntry("postgres")],
     )
-    assert build_status_json(containers) == {
-        "postgres": {"container": "postgres", "status": "removed"},
-        "thingsboard-ce": {"container": "thingsboard", "status": "exited"},
-    }
+    assert build_status_json(containers) == [
+        {"service": "postgres", "container": "postgres", "status": "removed"},
+        {
+            "service": "thingsboard-ce",
+            "container": "thingsboard",
+            "status": "exited",
+        },
+    ]
+
+
+def test_build_status_json_keeps_replicas_of_one_service():
+    """Containers sharing a compose service label each get their own entry"""
+    replicas = []
+    for name in ("gitlab-1", "gitlab-2"):
+        container = make_mock_container(name, "running")
+        container.config.labels = {"com.docker.compose.service": "gitlab"}
+        replicas.append(container)
+    containers = cast(List[Union[Container, RemovedServiceEntry]], replicas)
+    entries = build_status_json(containers)
+    assert [entry["container"] for entry in entries] == ["gitlab-1", "gitlab-2"]
+    assert {entry["service"] for entry in entries} == {"gitlab"}
 
 
 def test_build_status_json_empty():

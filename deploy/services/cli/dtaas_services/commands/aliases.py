@@ -38,7 +38,7 @@ def _deprecated_alias(
     return click.Command(
         name=old_name,
         callback=forward,
-        params=target.params,
+        params=list(target.params),
         help=f"Deprecated: use 'dtaas-services {new_name}'.",
         hidden=True,
     )

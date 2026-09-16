@@ -8,7 +8,11 @@ from ..pkg.lib import Service
 from ..pkg.formatter import build_status_json, format_container_status
 from ..pkg.password_store import remove_service_passwords
 from ..pkg.utils import check_root_unix
-from .install_helpers import install_services, resolve_install_targets
+from .install_helpers import (
+    install_services,
+    resolve_install_selection,
+    resolve_install_targets,
+)
 from .utility import (
     services_command_runner,
     parse_service_list,
@@ -54,19 +58,17 @@ def install(service_names, legacy_service):
 
     Must be run only once after initial setup.
     """
-    selected = service_names or legacy_service
     try:
         check_root_unix()
-        targets = resolve_install_targets(parse_service_list(selected))
+        selection = resolve_install_selection(service_names, legacy_service)
+        targets = resolve_install_targets(selection)
         install_services(Console(), Service(), targets)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except click.ClickException:
         raise
     except Exception as e:
-        raise click.ClickException(
-            f"Installation failed for {selected}: {str(e)}"
-        ) from e
+        raise click.ClickException(f"Installation failed: {str(e)}") from e
 
 
 @click.command()
@@ -122,10 +124,15 @@ def _print_status(containers: list, as_json: bool) -> None:
     "as_json",
     is_flag=True,
     default=False,
-    help="Print status as JSON keyed by service name.",
+    help="Print status as a JSON array, one object per container.",
 )
 def status(service_names, as_json):
-    """Show the status of the platform services."""
+    """Show the status of the platform services.
+
+    With --json, each container is printed as an object with its service
+    name, container name and status. Failures are still reported as text on
+    stderr, so a machine consumer reads stdout only.
+    """
     try:
         setup_obj = Service()
 

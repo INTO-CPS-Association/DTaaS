@@ -135,15 +135,20 @@ def _service_name(container: Union[Container, RemovedServiceEntry]) -> str:
 
 def build_status_json(
     containers: List[Union[Container, RemovedServiceEntry]],
-) -> dict[str, dict[str, str]]:
-    """Map each service name to its container name and effective status."""
-    return {
-        _service_name(container): {
+) -> list[dict[str, str]]:
+    """List each container with its service name and effective status.
+
+    A list, not a mapping: replicas of one compose service share a service
+    label, and keying on it would silently drop all but one of them.
+    """
+    return [
+        {
+            "service": _service_name(container),
             "container": container.name,
             "status": _effective_status(container),
         }
         for container in sorted(containers, key=_service_name)
-    }
+    ]
 
 
 def _sort_service_names(

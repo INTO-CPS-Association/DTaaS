@@ -47,9 +47,12 @@ deploy/services/cli/
 ├── dtaas_services/
 │   ├── cmd.py
 │   ├── commands/
-│   │   ├── setup_ops.py
+│   │   ├── project_ops.py
+│   │   ├── host_ops.py
 │   │   ├── service_ops.py
+│   │   ├── install_helpers.py
 │   │   ├── user_ops.py
+│   │   ├── aliases.py
 │   │   └── utility.py
 │   ├── pkg/
 │   │   ├── config.py
@@ -86,10 +89,15 @@ deploy/services/cli/
 
 Files in `dtaas_services/commands/` define Click commands and high-level flows:
 
-- `setup_ops.py`: project generation, TLS setup, service install flows.
-- `service_ops.py`: lifecycle operations (`start`, `stop`, `status`, `remove`,
-  `clean`).
+- `project_ops.py`: project scaffold generation (`project generate`).
+- `host_ops.py`: TLS certificate and permission setup (`host setup`).
+- `service_ops.py`: service verbs (`install`, `start`, `stop`, `restart`,
+  `status`, `remove`, `clean`).
+- `install_helpers.py`: selector validation and the ThingsBoard and GitLab
+  install flows used by `service install`.
 - `user_ops.py`: user provisioning and password reset orchestration.
+- `aliases.py`: deprecated top level spellings that warn and forward to their
+  `<noun> <verb>` replacement.
 
 ### Core Library Layer
 
@@ -162,17 +170,17 @@ Critical GitLab-related environment variables include `HOSTNAME`,
 ## Typical Workflow
 
 1. Generate project files:
-   - `dtaas-services generate-project`
+   - `dtaas-services project generate`
 2. Edit configuration:
    - `config/services.env`
    - `config/credentials.csv`
 3. Set up certs and permissions:
-   - `dtaas-services setup`
+   - `dtaas-services host setup`
 4. Start selected services:
-   - `dtaas-services start [-s ...]`
+   - `dtaas-services service start [-s ...]`
 5. Run post-install setup where needed:
-   - `dtaas-services install -s thingsboard`
-   - `dtaas-services install -s gitlab`
+   - `dtaas-services service install -s thingsboard`
+   - `dtaas-services service install -s gitlab`
 6. Provision users:
    - `dtaas-services user add`
 

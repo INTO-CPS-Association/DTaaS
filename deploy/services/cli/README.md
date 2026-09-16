@@ -120,8 +120,13 @@ structure:
 **Options:**
 
 * `--path` Directory to generate project structure (default: current directory)
-* `--force` Overwrite existing compose files and package files under `config/`;
-  `services.env`, `credentials.csv` and `gitlab_oauth.json` are never overwritten
+* `--force` Overwrite existing compose files and package files under `config/`.
+  Generated credentials (`services.env`, `credentials.csv`,
+  `gitlab_oauth.json` and the token files) and service configuration
+  (`mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`) are never
+  overwritten; each one is listed as kept. Overwritten files keep the
+  permissions they had; re-run `dtaas-services host setup` if certificate or
+  service file permissions were affected.
 
 **Example:**
 
@@ -185,6 +190,17 @@ Show the status of the services, or print it as JSON for scripts:
 dtaas-services service status
 dtaas-services service status --json
 ```
+
+`--json` prints one object per container on stdout:
+
+```json
+[
+  { "service": "gitlab", "container": "gitlab", "status": "starting" },
+  { "service": "grafana", "container": "grafana", "status": "running" }
+]
+```
+
+Failures are reported as text on stderr, so a script reads stdout only.
 
 ### User Account Management
 

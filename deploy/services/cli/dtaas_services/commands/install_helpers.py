@@ -8,6 +8,7 @@ from ..pkg.services.postgres.postgres import wait_for_postgres_ready
 from ..pkg.services.thingsboard.tb_utility import run_thingsboard_install
 from ..pkg.services.thingsboard.sysadmin_util import update_sysadmin_email_in_db
 from ..pkg.services.gitlab import setup_gitlab
+from .utility import parse_service_list
 
 # Accepted selector names mapped to the install flow they run.
 INSTALL_FLOWS = {
@@ -19,8 +20,53 @@ INSTALL_FLOWS = {
 DEFAULT_INSTALL_TARGETS = ["thingsboard", "gitlab"]
 
 
+def _parse_required_selection(selected: Optional[str]) -> Optional[list[str]]:
+    """Parse a selector, rejecting one that was given but names no service.
+
+    Raises:
+        click.ClickException: If the selector holds only blanks or commas
+    """
+    parsed = parse_service_list(selected)
+    if selected is not None and parsed is None:
+        raise click.ClickException(
+            "No service named in the selector. Name the services to install, "
+            "or omit the flag to install both ThingsBoard and GitLab."
+        )
+    return parsed
+
+
+def _warn_legacy_service_option(legacy_service: Optional[str]) -> None:
+    """Warn on stderr when the deprecated --service spelling is used."""
+    if legacy_service is not None:
+        click.echo(
+            "Warning: '--service' is deprecated; use '--services'.",
+            err=True,
+        )
+
+
+def resolve_install_selection(
+    service_names: Optional[str], legacy_service: Optional[str]
+) -> Optional[list[str]]:
+    """Merge --services and the deprecated --service into one service list.
+
+    Raises:
+        click.ClickException: If both spellings are passed, or the selector
+            names no service
+    """
+    if service_names is not None and legacy_service is not None:
+        raise click.ClickException(
+            "Pass only --services; --service is a deprecated spelling of it."
+        )
+    _warn_legacy_service_option(legacy_service)
+    selected = service_names if service_names is not None else legacy_service
+    return _parse_required_selection(selected)
+
+
 def resolve_install_targets(service_list: Optional[list[str]]) -> list[str]:
     """Validate selected services and return the install flows to run, in order.
+
+    The caller order is kept, so -s gitlab,thingsboard installs GitLab first.
+    Neither flow depends on the other today; keep it that way, or sort here.
 
     Raises:
         click.ClickException: If any service is not supported

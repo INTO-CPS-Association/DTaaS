@@ -18,10 +18,17 @@ class OperationMeta:
 
 
 def parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
-    """Parse comma-separated service names into a list."""
+    """Parse comma-separated service names into a list.
+
+    Blank elements are dropped, so a trailing comma (thingsboard,) does not
+    produce an empty service name. Returns None when the selector names no
+    service, which every caller reads as "all services"; install rejects that
+    case instead, see resolve_install_selection.
+    """
     if not service_names:
         return None
-    return [s.strip() for s in service_names.split(",")]
+    parsed = [name.strip() for name in service_names.split(",") if name.strip()]
+    return parsed or None
 
 
 def _print_operation_status(

@@ -40,7 +40,7 @@ def test_status_success(runner, mock_service_setup):
 
 
 def test_status_json(runner, mock_service_setup):
-    """Test status --json prints machine readable output keyed by service"""
+    """Test status --json prints one machine readable object per container"""
     instance = mock_service_setup["service_instance"]
     instance.get_status.return_value = (
         None,
@@ -48,11 +48,20 @@ def test_status_json(runner, mock_service_setup):
     )
     result = runner.invoke(services, ["service", "status", "--json", "-s", "gitlab,grafana"])
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == {
-        "gitlab": {"container": "gitlab", "status": "starting"},
-        "grafana": {"container": "grafana", "status": "removed"},
-    }
+    assert json.loads(result.stdout) == [
+        {"service": "gitlab", "container": "gitlab", "status": "starting"},
+        {"service": "grafana", "container": "grafana", "status": "removed"},
+    ]
     instance.get_status.assert_called_once_with(["gitlab", "grafana"])
+
+
+def test_status_json_drops_blank_selector_elements(runner, mock_service_setup):
+    """A trailing comma does not reach the status lookup as an empty name"""
+    instance = mock_service_setup["service_instance"]
+    instance.get_status.return_value = (None, [])
+    result = runner.invoke(services, ["service", "status", "-s", "gitlab, ,"])
+    assert result.exit_code == 0
+    instance.get_status.assert_called_once_with(["gitlab"])
 
 
 @pytest.mark.parametrize(

@@ -122,6 +122,44 @@ def test_install_gitlab_start_fails(runner, mock_service_setup):
     assert "Failed to start GitLab" in result.output
 
 
+@pytest.mark.parametrize("selector", ["", "   ", ",", " , "])
+def test_install_rejects_blank_selector(runner, mock_service_setup, selector):
+    """A selector naming no service is an error, never 'install everything'"""
+    result = runner.invoke(services, INSTALL + ["-s", selector])
+    assert result.exit_code != 0
+    assert "No service named in the selector" in result.output
+    mock_service_setup["service_instance"].manage_services.assert_not_called()
+
+
+def test_install_rejects_both_selector_spellings(runner, mock_service_setup):
+    """Passing --services and the deprecated --service together is an error"""
+    result = runner.invoke(
+        services, INSTALL + ["-s", "gitlab", "--service", "thingsboard"]
+    )
+    assert result.exit_code != 0
+    assert "Pass only --services" in result.output
+    mock_service_setup["service_instance"].manage_services.assert_not_called()
+
+
+@pytest.mark.usefixtures("gitlab_started")
+def test_install_legacy_selector_warns(runner, mock_setup_gitlab):
+    """The deprecated --service spelling warns on stderr before forwarding"""
+    mock_setup_gitlab.return_value = (True, "GitLab setup completed")
+    result = runner.invoke(
+        services, INSTALL + ["--service", "gitlab"], catch_exceptions=False
+    )
+    assert result.exit_code == 0
+    assert "'--service' is deprecated; use '--services'" in result.stderr
+
+
+def test_install_drops_blank_selector_elements(runner, mocker, mock_service_setup):
+    """A trailing comma does not reach validation as an empty service name"""
+    mocker.patch(f"{HELPERS}._install_gitlab")
+    result = runner.invoke(services, INSTALL + ["-s", "gitlab,"])
+    assert result.exit_code == 0
+    assert mock_service_setup["service"].called
+
+
 def test_install_runs_selected_services_in_order(runner, mocker, mock_service_setup):
     """A comma list installs each selected service once, in the given order"""
     calls = []
