@@ -263,8 +263,9 @@ kernel and cannot be set during an image build.
 1. Inside: `node -v` reports v24.21.0, `python3 -V` reports 3.14.x, and
    `poetry`, `mkdocs`, `mdl`, `shellcheck`, `madge`, `pre-commit` all
    report a version.
-1. `cd client && yarn install && yarn jest . --coverage=false` matches
-   the host's result for the same command.
+1. `cd client && yarn install && yarn build && yarn config:test &&
+   yarn test:unit && yarn test:int` passes. These scripts supply
+   `--setupFilesAfterEnv`; invoking `jest` directly omits it and fails.
 1. `cd client && yarn test:e2e` passes after `yarn playwright install`.
 1. `cd servers/lib && yarn install && yarn build && yarn test:all`
    passes. `test:nocov` additionally needs a configured `.env` and a

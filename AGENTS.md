@@ -1,52 +1,89 @@
-# Coding Assistant Guidelines
+# Agent Contract
 
-## ROLE
+Guidance for coding agents working on DTaaS. Claude Code reads
+`CLAUDE.md`, which points here. Both describe the same contract.
 
-The coding assistant acts as an expert software developer.
+## Autonomy
 
-## GOALS
+Work through the full cycle for routine changes without pausing at each
+step. Pause only for irreversible actions (force-push, history rewrite,
+deletion, publishing) or requirements with two defensible readings that
+lead to materially different work.
 
-- Produce clean, readable, and maintainable code
-- Keep functions below 25 lines and files below 250 lines
-- Follow recognised best practice and industry standards
-- Provide clear explanations and documentation
-- Support users in improving technical understanding
+## Behaviour
 
-## PRINCIPLES
+**Think before coding.** State assumptions. Where several readings
+exist, present them rather than choosing silently.
 
-- **Clarity over cleverness**: code should remain easy to understand.
-- **Modularity**: complex problems should be decomposed into manageable units.
-- **Testing**: tests should accompany proposed code changes.
-- **Performance**: efficiency is important, but readability takes priority.
+**Simplicity first.** Write the minimum that solves the stated problem.
+No speculative abstraction, unrequested configurability, or defensive
+handling for impossible states.
 
-## CODE STYLE
+**Surgical changes.** Every changed line traces to the task. Match local
+style. Remove imports your change orphans; report pre-existing dead code
+instead of deleting it in the same diff.
 
-- Use consistent naming conventions.
-- Follow language-specific style guides.
-- Keep functions concise and focused.
-- Use meaningful symbol names.
-- Add comments only where logic is non-obvious.
+**Goal-driven execution.** Turn the task into a check you can run.
+"Fix the bug" becomes "write a failing test, then make it pass."
 
-## BEST PRACTICES
+## Build and test commands
 
-- **DRY (Don't Repeat Yourself)**: avoid unnecessary duplication.
-- **SOLID principles**: apply object-oriented design principles where relevant.
-- **Error handling**: handle potential errors in a controlled manner.
-- **Security**: account for security implications in all changes.
-- **Version control**: use clear and descriptive commit messages.
+Non-obvious. Use these rather than guessing a script name.
 
-## COMMUNICATION
+| Project | Command |
+| :--- | :--- |
+| `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int` |
+| `servers/lib` | `yarn build && yarn test:all` |
+| `servers/logger` | `yarn test` |
+| `lib/dt-automation` | `yarn test:unit` |
+| `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
+| `lib/gitlab_common` | `poetry run pytest` |
+| `deploy/services/cli` | `poetry run python -m dtaas_services.pkg.build && CI=true poetry run pytest --ignore=tests/system_tests` |
 
-- Explain the intended approach before implementation.
-- Break complex solutions into clear steps.
-- Provide examples where they add value.
-- Request clarification when requirements are ambiguous.
+Why each is written that way:
 
-## RESTRICTIONS
+- The client scripts pass `--setupFilesAfterEnv`, which installs the
+  `react-redux` mock. Bare `jest` omits it and roughly 150 tests fail
+  for that reason alone.
+- `servers/lib`'s `test:nocov` adds `test/cloudcmd`, which needs a
+  configured `.env` and a running libms under pm2.
+- `lib/dt-automation` has no `test` script.
+- `cli` and `deploy/services/cli` vendor shared code before their tests
+  can be collected.
+- `dtaas-services` checks for root before validating arguments, so
+  non-root runs need `CI=true`. Its `system_tests` shell out to
+  `docker`.
 
-- Explicit approval is required before introducing breaking changes.
-- Unnecessary dependencies should not be added.
-- Existing codebase patterns and conventions should be respected.
-- Files should remain under 250 lines (except 3D model files).
-- Functions should remain under 25 lines.
-- Implementations should be tested when practical.
+`developer/devenv/` provides a container with every one of these
+toolchains. Docker-driven work runs on the host; see its README.
+
+## Verifying a change
+
+Run the commands above for the projects you touched. Compare against the
+merge base before reporting a regression: run the same command there and
+compare counts. Report pre-existing failures; do not fix them in the
+same diff.
+
+Claim something passes only after seeing it pass.
+
+## Shipping
+
+1. Branch from the default branch. Never commit to it directly.
+1. Commit with a concise imperative subject and a body listing concrete
+   changes.
+1. Sweep documentation your change made stale. Search the repository for
+   paths, names and numbers you moved.
+1. Open a pull request.
+1. Wait for CI. Read the failures rather than re-running blindly.
+1. Address review, then merge.
+
+## Code standards
+
+Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
+`.markdownlint.yaml`, `.mdl_style.rb`, `.yamllint.yml`, and the
+`.pre-commit-config.yaml` hooks. Run them rather than reasoning about
+style.
+
+Beyond those: prefer clarity to cleverness, keep functions focused, name
+symbols meaningfully, comment only non-obvious logic, and handle errors
+deliberately. Add a dependency only when the task requires it.

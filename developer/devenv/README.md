@@ -53,13 +53,18 @@ file must exist first either way.
 ## Working inside
 
 ```sh
-cd client            && yarn install && yarn jest . --coverage=false
+cd client            && yarn install && yarn build && yarn config:test \
+                     && yarn test:unit && yarn test:int
 cd servers/lib       && yarn install && yarn build && yarn test:all
 cd servers/logger    && yarn install && yarn test
 cd lib/dt-automation && yarn install && yarn test:unit
 cd cli               && poetry install && poetry run pytest
 cd lib/gitlab_common && poetry install && poetry run pytest
 ```
+
+The client's `test:unit` and `test:int` scripts pass
+`--setupFilesAfterEnv`, which registers the `react-redux` mock. Running
+`jest` directly without it fails across the suite; use the scripts.
 
 `servers/lib`'s `test:nocov` additionally runs `test/cloudcmd`, which
 needs a configured `.env` and a running libms instance. CI prepares that

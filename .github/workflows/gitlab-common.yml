@@ -35,4 +35,5 @@ jobs:
       tests-directory: tests
       coverage-file: lib/gitlab_common/coverage.xml
       artifact-name: gitlab-common
+      artifact-path: dist
       run-pyright: true
