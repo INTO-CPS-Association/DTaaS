@@ -1,0 +1,49 @@
+{
+  "name": "DTaaS Development Environment",
+
+  // One definition of the environment, shared with plain Docker users.
+  // developer/devenv/.env must exist first:
+  //   cd developer/devenv
+  //   printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
+  "dockerComposeFile": "../developer/devenv/docker-compose.yml",
+  "service": "devenv",
+  "workspaceFolder": "/workspace/DTaaS",
+  "shutdownAction": "stopCompose",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "AlexShen.classdiagram-ts",
+        "christian-kohler.npm-intellisense",
+        "DavidAnson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "humao.rest-client",
+        "johnpapa.vscode-peacock",
+        "mhutchie.git-graph",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "ms-vscode.vscode-js-profile-table",
+        "redhat.vscode-yaml",
+        "SimonSiefke.svg-preview",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "vscode-icons-team.vscode-icons"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "peacock.color": "#5f18a4"
+      }
+    }
+  },
+
+  "forwardPorts": [4000, 4001, 4003, 8000],
+
+  "postCreateCommand": "mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json",
+
+  "remoteUser": "dtaas"
+}

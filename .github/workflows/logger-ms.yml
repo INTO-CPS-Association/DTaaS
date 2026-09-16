@@ -4,12 +4,12 @@ name: Logger microservice
   push:
     paths:
       - 'servers/logger/**'
-      - 'developer/logger.dockerfile'
+      - 'developer/check/logger.dockerfile'
       - '.github/workflows/logger-ms.yml'
   pull_request:
     paths:
       - 'servers/logger/**'
-      - 'developer/logger.dockerfile'
+      - 'developer/check/logger.dockerfile'
       - '.github/workflows/logger-ms.yml'
   workflow_dispatch:
 
@@ -102,7 +102,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           docker build \
-            --file developer/logger.dockerfile \
+            --file developer/check/logger.dockerfile \
             --tag dtaas-logger-ms:ci \
             .
           container_id=$(docker run --detach --rm \

@@ -8,9 +8,15 @@ for using Docker workflows.
 
 ## Run
 
-Follow the instructions in `developer/README.md` to spawn a localhost development
-instance of DTaaS. It is an end-to-end testing of the current codebase
-as it exists in the local git directory.
+The `developer/` directory holds two distinct things:
+
+- `developer/check/` checks that DTaaS *functions* on a developer
+  machine. Follow the instructions in `developer/check/README.md` to
+  spawn a localhost instance. It is an end-to-end test of the current
+  codebase as it exists in the local git directory.
+- `developer/devenv/` is the containerised *developer environment*: the
+  Node, Python and documentation toolchains needed to work on the code.
+  See `developer/devenv/README.md`.
 
 ## CI Dockerfile Validation
 
@@ -22,9 +28,9 @@ the existing test jobs to avoid increasing build time.
 
 | Workflow | Dockerfile validated | Notes |
 | :--- | :--- | :--- |
-| `.github/workflows/client.yml` | `developer/client.dockerfile` | Full multi-stage build inside Docker |
-| `.github/workflows/client.yml` | `developer/client.built.dockerfile` | Validates the publish image Dockerfile |
-| `.github/workflows/lib-ms.yml` | `developer/libms.dockerfile` | Full multi-stage build inside Docker |
+| `.github/workflows/client.yml` | `developer/check/client.dockerfile` | Full multi-stage build inside Docker |
+| `.github/workflows/client.yml` | `developer/check/client.built.dockerfile` | Validates the publish image Dockerfile |
+| `.github/workflows/lib-ms.yml` | `developer/check/libms.dockerfile` | Full multi-stage build inside Docker |
 
 The Docker build checks run on pull requests and also on pushes when
 `.github/workflows/client.yml` or `.github/workflows/lib-ms.yml` is
@@ -72,7 +78,7 @@ A brief explanation of the packages is given below.
 ### React Website
 
 ```sh
-docker build -t intocps/dtaas-web:latest -f ./developer/client.built.dockerfile .
+docker build -t intocps/dtaas-web:latest -f ./developer/check/client.built.dockerfile .
 docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
 docker push intocps/dtaas-web:latest
 docker push intocps/dtaas-web:<version>
@@ -99,10 +105,10 @@ This argument helps pick the right package version from <http://npmjs.com>.
 
 ```sh
 docker login -u <username> -p <password>
-docker build -t intocps/libms:latest -f ./developer/libms.npm.dockerfile .
+docker build -t intocps/libms:latest -f ./developer/check/libms.npm.dockerfile .
 docker push intocps/libms:latest
 docker build --build-arg="VERSION=<version>" \
-  -t intocps/libms:<version> -f ./developer/libms.npm.dockerfile .
+  -t intocps/libms:<version> -f ./developer/check/libms.npm.dockerfile .
 docker push intocps/libms:<version>
 ```
 
@@ -110,7 +116,7 @@ To tag version 0.3.1 for example, use
 
 ```sh
 docker build --build-arg="VERSION=0.3.1" \
-  -t intocps/libms:0.3.1 -f ./developer/libms.npm.dockerfile .
+  -t intocps/libms:0.3.1 -f ./developer/check/libms.npm.dockerfile .
 ```
 
 To test the library microservice on localhost, please use

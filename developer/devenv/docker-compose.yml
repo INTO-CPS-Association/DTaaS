@@ -1,0 +1,43 @@
+name: dtaas-devenv
+
+services:
+  # Long-running development shell. Attach with:
+  #   docker compose exec devenv zsh
+  devenv:
+    build: &devenv-build
+      context: ../../
+      dockerfile: developer/devenv/Dockerfile
+      args:
+        UID: ${UID:?run "printf 'UID=%s\nGID=%s\n' \"$(id -u)\" \"$(id -g)\" > .env"}
+        GID: ${GID:?run "printf 'UID=%s\nGID=%s\n' \"$(id -u)\" \"$(id -g)\" > .env"}
+    image: dtaas/devenv:latest
+    init: true
+    command: sleep infinity
+    volumes: &devenv-volumes
+      - ../../:/workspace/DTaaS
+      - client-node-modules:/workspace/DTaaS/client/node_modules
+      - libms-node-modules:/workspace/DTaaS/servers/lib/node_modules
+      - logger-node-modules:/workspace/DTaaS/servers/logger/node_modules
+      - dt-automation-node-modules:/workspace/DTaaS/lib/dt-automation/node_modules
+      - home-cache:/home/dtaas/.cache
+    ports:
+      - "${CLIENT_PORT:-4000}:4000"
+      - "${LIBMS_PORT:-4001}:4001"
+      - "${LOGGER_PORT:-4003}:4003"
+
+  # Live documentation preview, so mkdocs does not occupy the shell.
+  docs:
+    build: *devenv-build
+    image: dtaas/devenv:latest
+    init: true
+    command: mkdocs serve --config-file mkdocs.yml --dev-addr 0.0.0.0:8000
+    volumes: *devenv-volumes
+    ports:
+      - "${DOCS_PORT:-8000}:8000"
+
+volumes:
+  client-node-modules:
+  libms-node-modules:
+  logger-node-modules:
+  dt-automation-node-modules:
+  home-cache:

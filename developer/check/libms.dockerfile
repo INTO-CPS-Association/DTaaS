@@ -23,7 +23,7 @@ COPY --from=build --chown=node:node /dtaas/libms/dist ./dist
 COPY --from=build --chown=node:node /dtaas/libms/node_modules ./node_modules
 COPY --from=build --chown=node:node /dtaas/libms/package.json ./package.json
 COPY --from=build --chown=node:node /dtaas/libms/config ./config
-COPY --chown=node:node ./developer/config/libms.dev.yaml.example libms.yaml
+COPY --chown=node:node ./developer/check/config/libms.dev.yaml.example libms.yaml
 
 USER node
 

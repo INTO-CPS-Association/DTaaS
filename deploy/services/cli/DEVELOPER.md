@@ -5,6 +5,11 @@ for the DTaaS Services CLI package.
 
 ## Development Setup
 
+A ready-made container with Python, Poetry and the rest of the toolchain
+is available; see
+[developer/devenv/README.md](../../../developer/devenv/README.md). It
+saves installing these on your host.
+
 ### Prerequisites
 
 * Python 3.10 or higher

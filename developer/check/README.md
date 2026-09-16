@@ -52,7 +52,7 @@ to build the required images locally for use during development.
 The images can be built using:
 
 ```sh
-cd developer
+cd developer/check
 cp config/.env.example config/.env
 cp config/client.js.example config/client.js
 cp config/conf.dev.example config/conf.dev
@@ -74,22 +74,22 @@ This scenario is intended for software developers.
 
 The following configuration files require updating:
 
-1. **developer/config/.env** :
+1. **developer/check/config/.env** :
   Refer to the [Docker installation
   documentation](../../admin/dtaas/server/install.md) for
    guidance on updating this configuration file.
-1. **developer/config/conf.dev** :
+1. **developer/check/config/conf.dev** :
   Refer to the [Docker installation
   documentation](../../admin/dtaas/server/install.md) for
    guidance on updating this configuration file.
-1. **developer/config/client.js** :
+1. **developer/check/config/client.js** :
    Refer to the [client configuration documentation](../../admin/client/config.md)
    for guidance on updating this configuration file.
-1. **developer/config/libms.dev.yaml** :
+1. **developer/check/config/libms.dev.yaml** :
    Refer to the [library microservice configuration documentation](../../admin/servers/lib/docker.md)
    for guidance on updating this configuration file.
 
-The docker commands need to be executed from the `developer` directory.
+The docker commands need to be executed from the `developer/check` directory.
 The relevant docker commands are:
 
 ```bash
@@ -142,7 +142,7 @@ A brief explanation of the packages is given below.
 ### React Website
 
 ```sh
-docker build -t intocps/dtaas-web:latest -f ./developer/client.built.dockerfile .
+docker build -t intocps/dtaas-web:latest -f ./developer/check/client.built.dockerfile .
 docker tag intocps/dtaas-web:latest intocps/dtaas-web:<version>
 docker push intocps/dtaas-web:latest
 docker push intocps/dtaas-web:<version>
@@ -169,10 +169,10 @@ This argument helps pick the right package version from <http://npmjs.com>.
 
 ```sh
 docker login -u <username> -p <password>
-docker build -t intocps/libms:latest -f ./developer/libms.npm.dockerfile .
+docker build -t intocps/libms:latest -f ./developer/check/libms.npm.dockerfile .
 docker push intocps/libms:latest
 docker build --build-arg="VERSION=<version>" \
-  -t intocps/libms:<version> -f ./developer/libms.npm.dockerfile .
+  -t intocps/libms:<version> -f ./developer/check/libms.npm.dockerfile .
 docker push intocps/libms:<version>
 ```
 
@@ -180,7 +180,7 @@ To tag version 0.3.1 for example, use
 
 ```sh
 docker build --build-arg="VERSION=0.3.1" \
-  -t intocps/libms:0.3.1 -f ./developer/libms.npm.dockerfile .
+  -t intocps/libms:0.3.1 -f ./developer/check/libms.npm.dockerfile .
 ```
 
 To test the library microservice on localhost, please use

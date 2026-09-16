@@ -7,8 +7,8 @@ name: React website
   pull_request:
     paths:
       - 'client/**'
-      - 'developer/client.dockerfile'
-      - 'developer/client.built.dockerfile'
+      - 'developer/check/client.dockerfile'
+      - 'developer/check/client.built.dockerfile'
       - '.github/workflows/client.yml'
       - '.github/workflows/docker-build.yml'
   workflow_dispatch:

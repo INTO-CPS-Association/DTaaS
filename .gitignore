@@ -202,8 +202,8 @@ test.svg
 *.pem
 
 # developer config files (tracked via .example counterparts only)
-developer/config/*
-!developer/config/*.example
+developer/check/config/*
+!developer/check/config/*.example
 
 # execution runner
 servers/execution/runner/lifecycle*
@@ -264,3 +264,6 @@ users.csv
 gitlab_user_tokens.json
 !cli/src/templates/dtaas.toml
 !cli/src/templates/users.csv
+
+# developer environment (generated per host user)
+developer/devenv/.env
