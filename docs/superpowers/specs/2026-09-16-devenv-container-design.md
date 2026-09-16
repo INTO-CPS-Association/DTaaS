@@ -300,6 +300,7 @@ separately. If a dependency lacks a 3.14 wheel, step 8, 9 or 10 will
 expose it during implementation.
 
 Renaming paths under `developer/` touches six workflow files. A mistake
-surfaces only when the affected workflow next runs. Step 13 and
-`actionlint` are the guard; each edited workflow is also re-read against
-its callers.
+surfaces only when the affected workflow next runs. The `git grep` step
+and `yamllint` are the guard; each edited workflow is also re-read
+against its callers, and the pull request's own CI exercises the
+renamed Dockerfile paths.

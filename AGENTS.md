@@ -80,9 +80,17 @@ Claim something passes only after seeing it pass.
 ## Code standards
 
 Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
-`.markdownlint.yaml`, `.mdl_style.rb`, `.yamllint.yml`, and the
-`.pre-commit-config.yaml` hooks. Run them rather than reasoning about
-style.
+`.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`. Run them
+rather than reasoning about style.
+
+`pre-commit run --hook-stage pre-commit` is safe and fast; it covers
+formatting, markdown and shell checks.
+
+Do not rely on the pre-push hooks. Two of them invoke commands that fail
+on a clean checkout: `yarn-jest-client` runs bare `jest`, which omits the
+setup file and fails ~150 client tests, and `yarn-test-lib` runs
+`test:nocov`, which needs a running libms. Use the command table above
+instead.
 
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors
