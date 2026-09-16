@@ -92,12 +92,41 @@ dtaas-services --help
 **Options:**
 
 * `--path` Directory to generate project structure (default: current directory)
+* `--force` Refresh the packaged files of an existing project (see below)
 
 **Example:**
 
 ```bash
 dtaas-services project generate --path /path/to/project
 ```
+
+### Refreshing an existing project
+
+By default an item that already exists is skipped, so re-running the command
+is safe but picks up nothing new. After upgrading the package, `--force`
+refreshes the files that ship with it:
+
+```bash
+dtaas-services project generate --force
+```
+
+It overwrites the three `compose.*.yml` files and the packaged files under
+`config/`. It never touches `data/`, `log/` or `certs/`, and it never
+overwrites these files, which are reported as kept:
+
+* `services.env`, `credentials.csv`, `gitlab_oauth.json`
+* `gitlab_tokens.json`, `gitlab_user_tokens.json`, `current.passwords.env`
+* `mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`
+
+The first six hold your settings and live credentials; the last three are
+service configuration you may have hardened locally. Overwritten files and
+existing directories keep the permissions they already had, so a tightened
+`config/` stays tightened. To adopt the packaged version of a kept file, copy
+it aside, delete it and run the command again.
+
+Review the refreshed files before starting the services, and re-run
+`dtaas-services host setup` if certificate or service file permissions were
+affected.
 
 ## Usage
 
@@ -147,6 +176,29 @@ dtaas-services service remove --volumes
 # Specify
 dtaas-services service remove --volumes -s <service_name>
 ```
+
+`service status` prints a table by default. For scripting, `--json` prints a
+JSON array on stdout, one object per container, so services that share a
+container label are all listed:
+
+```bash
+dtaas-services service status --json
+```
+
+```json
+[
+  { "service": "gitlab", "container": "gitlab", "status": "running" },
+  { "service": "grafana", "container": "grafana", "status": "removed" }
+]
+```
+
+Failures are still reported as text on stderr, so a script can read stdout
+only.
+
+> **Note:** `-s` accepts a comma separated list. A selector that names no
+> service, such as `-s ""` from an unset shell variable, is an error rather
+> than a silent "all services", so a mistyped selector cannot remove or clean
+> more than you intended. Omit the flag entirely to act on all services.
 
 ### User Account Management
 

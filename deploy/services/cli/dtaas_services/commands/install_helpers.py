@@ -20,21 +20,6 @@ INSTALL_FLOWS = {
 DEFAULT_INSTALL_TARGETS = ["thingsboard", "gitlab"]
 
 
-def _parse_required_selection(selected: Optional[str]) -> Optional[list[str]]:
-    """Parse a selector, rejecting one that was given but names no service.
-
-    Raises:
-        click.ClickException: If the selector holds only blanks or commas
-    """
-    parsed = parse_service_list(selected)
-    if selected is not None and parsed is None:
-        raise click.ClickException(
-            "No service named in the selector. Name the services to install, "
-            "or omit the flag to install both ThingsBoard and GitLab."
-        )
-    return parsed
-
-
 def _warn_legacy_service_option(legacy_service: Optional[str]) -> None:
     """Warn on stderr when the deprecated --service spelling is used."""
     if legacy_service is not None:
@@ -59,7 +44,7 @@ def resolve_install_selection(
         )
     _warn_legacy_service_option(legacy_service)
     selected = service_names if service_names is not None else legacy_service
-    return _parse_required_selection(selected)
+    return parse_service_list(selected)
 
 
 def resolve_install_targets(service_list: Optional[list[str]]) -> list[str]:

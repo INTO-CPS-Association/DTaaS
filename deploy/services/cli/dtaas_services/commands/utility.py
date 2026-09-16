@@ -21,14 +21,23 @@ def parse_service_list(service_names: Optional[str]) -> Optional[list[str]]:
     """Parse comma-separated service names into a list.
 
     Blank elements are dropped, so a trailing comma (thingsboard,) does not
-    produce an empty service name. Returns None when the selector names no
-    service, which every caller reads as "all services"; install rejects that
-    case instead, see resolve_install_selection.
+    produce an empty service name. Omitting the flag returns None, which every
+    caller reads as "all services". A selector that was given but names no
+    service is rejected here rather than in each command, so an unset shell
+    variable cannot silently widen a command to every service.
+
+    Raises:
+        click.ClickException: If the selector holds only blanks or commas
     """
-    if not service_names:
+    if service_names is None:
         return None
     parsed = [name.strip() for name in service_names.split(",") if name.strip()]
-    return parsed or None
+    if not parsed:
+        raise click.ClickException(
+            "No service named in the selector. Name at least one service, "
+            "or omit the flag entirely."
+        )
+    return parsed
 
 
 def _print_operation_status(

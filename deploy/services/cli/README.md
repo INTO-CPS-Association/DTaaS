@@ -124,9 +124,11 @@ structure:
   Generated credentials (`services.env`, `credentials.csv`,
   `gitlab_oauth.json` and the token files) and service configuration
   (`mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`) are never
-  overwritten; each one is listed as kept. Overwritten files keep the
-  permissions they had; re-run `dtaas-services host setup` if certificate or
-  service file permissions were affected.
+  overwritten; each one is listed as kept. To adopt the packaged version of a
+  kept file, copy it aside, delete it and run the command again. Overwritten
+  files and existing directories keep the permissions they had, so a tightened
+  `config/` stays tightened; re-run `dtaas-services host setup` if certificate
+  or service file permissions were affected.
 
 **Example:**
 
@@ -201,6 +203,11 @@ dtaas-services service status --json
 ```
 
 Failures are reported as text on stderr, so a script reads stdout only.
+
+> **Note:** `-s` accepts a comma separated list. A selector that names no
+> service, such as `-s ""` from an unset shell variable, is an error rather
+> than a silent "all services", so a mistyped selector cannot remove or clean
+> more than intended. Omit the flag entirely to act on all services.
 
 ### User Account Management
 

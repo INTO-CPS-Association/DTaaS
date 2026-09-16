@@ -96,6 +96,7 @@ cli/
 │       ├── formatter.py    # Output formatting utilities
 │       ├── password_store.py # Tracks current service passwords in current.passwords.env
 │       ├── template.py     # Project structure and template file management
+│       ├── force_overwrite.py # --force overwrite policy and protected names
 │       ├── docker_utils.py # Docker command execution with retry logic
 │       ├── utils.py        # Shared utilities (credentials, container state)
 │       ├── lib/            # Core service management
@@ -252,6 +253,8 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
   tracks the last-known password for each service account so that
   `reset-password` can be run repeatedly
 * **`template.py`**: Project structure and template file management
+* **`force_overwrite.py`**: `--force` overwrite policy: overwritable items,
+  protected config names, and copies that keep destination permissions
 * **`docker_utils.py`**: Docker command execution helpers `execute_docker_command`
 * **`utils.py`**: Shared utilities (credentials file handling, container state
   helpers, root-check, CI detection)

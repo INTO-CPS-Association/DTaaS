@@ -58,6 +58,7 @@ deploy/services/cli/
 │   │   ├── config.py
 │   │   ├── cert.py
 │   │   ├── template.py
+│   │   ├── force_overwrite.py
 │   │   ├── utils.py
 │   │   ├── password_store.py
 │   │   ├── lib/
@@ -105,6 +106,8 @@ Files in `dtaas_services/pkg/` provide reusable logic:
 
 - `config.py`: environment/config loading.
 - `template.py`: generated project scaffolding and template copying.
+- `force_overwrite.py`: what `project generate --force` may replace, what it
+  must never replace, and permission preserving copies.
 - `cert.py`: certificate placement and normalization.
 - `password_store.py`: current admin-password tracking for supported services.
 - `lib/*`: compose command execution and service-state management.

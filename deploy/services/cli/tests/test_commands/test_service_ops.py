@@ -55,6 +55,28 @@ def test_status_json(runner, mock_service_setup):
     instance.get_status.assert_called_once_with(["gitlab", "grafana"])
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        ["service", "start"],
+        ["service", "stop"],
+        ["service", "restart"],
+        ["service", "status"],
+        ["service", "remove"],
+        ["service", "clean"],
+        ["user", "add"],
+        ["user", "reset-password"],
+    ],
+)
+@pytest.mark.parametrize("selector", ["", "   ", ",", " , "])
+@pytest.mark.usefixtures("mock_service_setup")
+def test_blank_selector_is_rejected(runner, command, selector):
+    """A selector naming no service never widens a command to all services"""
+    result = runner.invoke(services, command + ["-s", selector])
+    assert result.exit_code != 0
+    assert "No service named in the selector" in result.output
+
+
 def test_status_json_drops_blank_selector_elements(runner, mock_service_setup):
     """A trailing comma does not reach the status lookup as an empty name"""
     instance = mock_service_setup["service_instance"]
