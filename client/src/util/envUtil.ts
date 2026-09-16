@@ -47,12 +47,6 @@ export function useAppURL(): string {
 export interface KeyLinkPair {
   key: string;
   link: string;
-  /**
-   * True when the link is a page of this application and not a separate
-   * service. Set here because this is where the two preview pages are named,
-   * and a second list elsewhere would drift from this one.
-   */
-  opensInApp?: boolean;
 }
 
 /**
@@ -75,7 +69,8 @@ function buildUserLink(
  * Workspace tool links (Desktop, VS Code, Jupyter Lab, Jupyter Notebook) are derived from the
  * services JSON fetched from `{appURL}/{username}/services` and stored in the Redux store.
  *
- * Preview links (LIBRARY_PREVIEW, DT_PREVIEW) continue to be read from environment variables.
+ * The library and digital twins previews are no longer workbench links: they
+ * are pages of this application, reached from the Automation page instead.
  */
 export function useWorkbenchLinkValues(): KeyLinkPair[] {
   const username = cleanUsername(
@@ -101,26 +96,6 @@ export function useWorkbenchLinkValues(): KeyLinkPair[] {
       });
     }
   });
-
-  const prefix = 'REACT_APP_WORKBENCHLINK_';
-  Object.keys(globalThis.env)
-    .filter((key) => key.startsWith(prefix))
-    .forEach((key) => {
-      const value = globalThis.env[key];
-      if (value !== undefined) {
-        const keyWithoutPrefix = key.slice(prefix.length);
-        if (
-          keyWithoutPrefix === 'DT_PREVIEW' ||
-          keyWithoutPrefix === 'LIBRARY_PREVIEW'
-        ) {
-          workbenchLinkValues.push({
-            key: keyWithoutPrefix,
-            link: value,
-            opensInApp: true,
-          });
-        }
-      }
-    });
 
   return workbenchLinkValues;
 }

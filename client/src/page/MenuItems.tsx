@@ -5,6 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import {
   LibraryIcon,
   DigitalTwinsIcon,
+  AutomationIcon,
   WorkbenchIcon,
   BuildingModelsIcon,
 } from 'components/appIcons';
@@ -27,7 +28,13 @@ const menuItems: MenuItemEntry[] = [
   },
   {
     index: 3,
-    name: 'Building Models',
+    name: 'Automation',
+    icon: <AutomationIcon />,
+    link: '/automation',
+  },
+  {
+    index: 4,
+    name: 'Buildings',
     icon: <BuildingModelsIcon />,
     link: '/bim',
   },

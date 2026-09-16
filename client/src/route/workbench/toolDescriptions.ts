@@ -10,10 +10,6 @@ const toolDescriptions: Readonly<Record<string, string>> = {
   VSCODE: 'The editor, with your workspace already open.',
   JUPYTERLAB: 'Notebooks, terminals and a file browser.',
   JUPYTERNOTEBOOK: 'The classic notebook interface.',
-  LIBRARY_PREVIEW:
-    'The library page on its own, without the platform around it.',
-  DT_PREVIEW:
-    'The digital twins page on its own, without the platform around it.',
 };
 
 export default toolDescriptions;

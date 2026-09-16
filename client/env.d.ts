@@ -8,8 +8,6 @@ declare global {
       REACT_APP_URL_BASENAME: string;
       REACT_APP_URL_DTLINK: string;
       REACT_APP_URL_LIBLINK: string;
-      REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: string;
-      REACT_APP_WORKBENCHLINK_DT_PREVIEW: string;
 
       REACT_APP_CLIENT_ID: string;
       REACT_APP_AUTH_AUTHORITY: string;

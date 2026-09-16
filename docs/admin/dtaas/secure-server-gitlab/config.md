@@ -106,8 +106,6 @@ cp config/client.js.example config/client.js
 | `REACT_APP_URL_BASENAME`                  | `''`                                           | Optional URL base path (leave empty for root hosting)                        |
 | `REACT_APP_URL_DTLINK`                    | `/lab`                                         | URL path for the Digital Twin workbench                                      |
 | `REACT_APP_URL_LIBLINK`                   | `''`                                           | URL path for the Library                                                     |
-| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library`                             | Library preview page                                                         |
-| `REACT_APP_WORKBENCHLINK_DT_PREVIEW`      | `/preview/digitaltwins`                        | Digital Twins preview page                                                   |
 | `REACT_APP_CLIENT_ID`                     | _(from GitLab)_                                | Application ID from the **DTaaS Client Authorization** OAuth 2.0 application |
 | `REACT_APP_AUTH_AUTHORITY`                | `https://intocps.org/gitlab`                   | URL of the GitLab instance (OAuth 2.0 issuer)                                |
 | `REACT_APP_REDIRECT_URI`                  | `https://intocps.org/Library`                  | Where GitLab sends users after sign-in                                       |
@@ -124,8 +122,6 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_BASENAME: '',
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
-    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
-    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
     REACT_APP_CLIENT_ID: '<APPLICATION_ID>',
     REACT_APP_AUTH_AUTHORITY: 'https://intocps.org/gitlab',
     REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',

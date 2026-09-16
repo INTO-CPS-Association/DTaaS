@@ -7,6 +7,8 @@ import MenuItems from 'page/MenuItems';
 const menuEntries = [
   { name: 'Library', link: '/library' },
   { name: 'Digital Twins', link: '/digitaltwins' },
+  { name: 'Automation', link: '/automation' },
+  { name: 'Buildings', link: '/bim' },
   { name: 'Workbench', link: '/workbench' },
 ];
 

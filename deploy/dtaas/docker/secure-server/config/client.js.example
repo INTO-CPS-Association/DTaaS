@@ -6,8 +6,6 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
 
-    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
-    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
     REACT_APP_CLIENT_ID: 'your_client_id_here',
     REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com',
     REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',

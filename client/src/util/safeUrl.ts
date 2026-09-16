@@ -26,17 +26,4 @@ export function isSafeHttpUrl(url: string | undefined): url is string {
   }
 }
 
-/**
- * Whether a configured link is a route of this application.
- *
- * Only a path with a single leading slash is one. A full URL is not, even on
- * this host, and neither is a protocol-relative `//host/path`. The distinction
- * matters because the workbench serves its tools from this same origin:
- * `/{user}/lab` is JupyterLab behind the proxy and not a React route, so
- * comparing origins would route it into the application and land on Not Found.
- */
-export function isInAppPath(url: string): boolean {
-  return url.startsWith('/') && !url.startsWith('//');
-}
-
 export default isSafeHttpUrl;
