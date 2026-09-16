@@ -98,9 +98,13 @@ def _restore_directory_modes(modes: dict[Path, int]) -> None:
     copytree copies directory metadata itself, once per level, without going
     through copy_function, so a locally tightened config/ would otherwise be
     widened to the mode shipped in the wheel.
+
+    Runs from a finally block, so a directory that no longer exists is skipped
+    rather than raising over the error that interrupted the copy.
     """
     for path, mode in modes.items():
-        os.chmod(path, mode)
+        if path.is_dir():
+            os.chmod(path, mode)
 
 
 def overwrite_directory_or_file(
@@ -118,14 +122,18 @@ def overwrite_directory_or_file(
         return [f"  Overwrote {item_name}"]
     protected = ProtectedFilter(src_path, item_name)
     directory_modes = _existing_directory_modes(dest_path)
-    shutil.copytree(
-        src_path,
-        dest_path,
-        dirs_exist_ok=True,
-        ignore=protected,
-        copy_function=_copy_preserving_mode,
-    )
-    _restore_directory_modes(directory_modes)
+    try:
+        shutil.copytree(
+            src_path,
+            dest_path,
+            dirs_exist_ok=True,
+            ignore=protected,
+            copy_function=_copy_preserving_mode,
+        )
+    finally:
+        # copytree widens directories as it goes and can still fail afterwards,
+        # so a failed run must not leave them at the packaged modes.
+        _restore_directory_modes(directory_modes)
     messages = [f"  Overwrote {item_name}/"]
     messages.extend(f"  Kept {kept} (protected)" for kept in protected.kept)
     return messages

@@ -117,3 +117,22 @@ def test_force_keeps_destination_permissions(
     target.chmod(mode)
     generate_project_structure(edited_project, package_root, force=True)
     assert stat.S_IMODE(target.stat().st_mode) == mode
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX permission test")
+def test_failed_force_still_restores_directory_permissions(
+    edited_project, package_root, mocker
+):
+    """A copy that fails partway must not leave config/ at the packaged mode"""
+    config_dir = edited_project / "config"
+    config_dir.chmod(0o700)
+    mocker.patch(
+        "dtaas_services.pkg.force_overwrite._copy_preserving_mode",
+        side_effect=OSError("disk full"),
+    )
+    success, message = generate_project_structure(
+        edited_project, package_root, force=True
+    )
+    assert success is False
+    assert "Failed to generate project" in message
+    assert stat.S_IMODE(config_dir.stat().st_mode) == 0o700
