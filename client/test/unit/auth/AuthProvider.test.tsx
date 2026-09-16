@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import AuthProvider from 'route/auth/AuthProvider';
+import AuthProvider, { onSigninCallback } from 'route/auth/AuthProvider';
 import { useOidcConfig } from 'util/auth/useOidcConfig';
 
 jest.mock('react-oidc-context', () => {
@@ -48,5 +48,22 @@ describe('AuthProvider', () => {
     const { getByText } = renderAuthProvider(<DummyComponent />);
 
     expect(getByText('Dummy Component')).toBeInTheDocument();
+  });
+});
+
+describe('onSigninCallback', () => {
+  it('strips the authorization code and state from the address bar', () => {
+    const replaceState = jest
+      .spyOn(globalThis.history, 'replaceState')
+      .mockImplementation(() => {});
+    globalThis.history.pushState({}, '', '/Library?code=abc&state=xyz');
+
+    onSigninCallback();
+
+    // Called with the bare path, so the spent code and state leave the URL
+    // while the page a deep link points at survives.
+    expect(replaceState).toHaveBeenCalledWith({}, document.title, '/Library');
+
+    replaceState.mockRestore();
   });
 });
