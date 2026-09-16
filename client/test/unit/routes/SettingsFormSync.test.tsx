@@ -7,7 +7,8 @@ import { renderWithRouter } from 'test/unit/unit.testUtil';
 
 jest.mock('routes', () => ({ __esModule: true, default: [] }));
 
-jest.mock('model/backend/util/init', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
 }));
 

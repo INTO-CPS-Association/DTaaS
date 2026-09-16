@@ -2,8 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import EditorTab, {
   handleEditorChange,
 } from 'route/digitaltwins/editor/EditorTab';
-import { addOrUpdateFile } from 'model/store/file.slice';
-import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
+import {
+  addOrUpdateFile,
+  addOrUpdateLibraryFile,
+} from '@into-cps-association/dt-automation';
 
 jest.mock('@monaco-editor/react', () => ({
   __esModule: true,
@@ -22,7 +24,8 @@ jest.mock('@monaco-editor/react', () => ({
   ),
 }));
 
-jest.mock('model/store/file.slice', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   addOrUpdateFile: jest.fn(),
 }));
 

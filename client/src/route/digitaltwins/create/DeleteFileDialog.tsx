@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogActions, DialogContent, Button } from '@mui/material';
-import { deleteFile } from 'model/store/file.slice';
+import { deleteFile } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 
 interface DeleteFileDialogProps {

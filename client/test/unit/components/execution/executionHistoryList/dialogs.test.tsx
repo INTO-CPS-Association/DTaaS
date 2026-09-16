@@ -2,8 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ExecutionHistoryList from 'components/execution/ExecutionHistoryList';
 import { Provider, useSelector } from 'react-redux';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { setSelectedExecutionId } from 'model/backend/state/executionHistory.slice';
+import {
+  ExecutionStatus,
+  setSelectedExecutionId,
+} from '@into-cps-association/dt-automation';
 import {
   createTestStore,
   waitForAccordionTransitions,
@@ -14,10 +16,11 @@ import {
 } from './testSetup';
 
 jest.mock('route/digitaltwins/execution/executionButtonHandlers');
-jest.mock('model/backend/util/digitalTwinAdapter', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  const actual = jest.requireActual('model/backend/util/digitalTwinAdapter');
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
     ...adapterMocks.ADAPTER_MOCKS,
     extractDataFromDigitalTwin: actual.extractDataFromDigitalTwin,
   };

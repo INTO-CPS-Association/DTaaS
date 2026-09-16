@@ -9,7 +9,7 @@ individual packages.
 **Strengths.** The client is the most mature package: ~16 kLOC of
 source with ~28 kLOC of tests (unit, integration, and Playwright e2e
 under `client/test/`), a documented internal architecture
-(`client/src/model/backend/ARCHITECTURE.md`), typed Redux slices, and
+(`lib/dt-automation/src/ARCHITECTURE.md`), typed Redux slices, and
 runtime configuration injection via `env.js` that keeps one build
 usable across deployments.
 
@@ -20,8 +20,9 @@ usable across deployments.
    described in `ARCHITECTURE.md` promise swappable backends, but the
    only implementation is GitLab, and the interfaces expose GitLab
    concepts directly — `getTriggerToken`, `Pipeline`, pipeline refs
-   and job artifacts (`model/backend/interfaces/execution.ts`,
-   `gitlab/instance.ts`). A second backend (e.g. Gitea) could not be
+   and job artifacts (`lib/dt-automation/src/interfaces/execution.ts`,
+   `lib/dt-automation/src/gitlab/instance.ts`). A second backend (e.g. Gitea)
+   could not be
    written against these interfaces without changing them, which is
    the definition of a leaky abstraction. Either commit to GitLab and
    simplify, or lift the abstraction to lifecycle verbs
@@ -42,12 +43,12 @@ usable across deployments.
    sharing for.
 
 1. *Parallel `util/` and `utils/` directories* (`src/util/`,
-   `src/utils/`) and parallel store trees (`src/store/` and
-   `src/model/store/`) blur module boundaries. Small, but it is the
-   kind of drift that spreads.
+   `src/utils/`) and separate client/package store trees
+   (`client/src/store/` and `lib/dt-automation/src/store/`) require clear
+   ownership. Small, but it is the kind of drift that spreads.
 
 1. *Benchmark/measurement task code ships with the product client.*
-   `model/backend/gitlab/measure/tasks/` (multiple-identical-DTs,
+   `lib/dt-automation/src/gitlab/measure/tasks/` (multiple-identical-DTs,
    different-runners scenarios) is experiment tooling embedded in the
    production bundle; it belongs in a separate package or at least
    behind a build flag.

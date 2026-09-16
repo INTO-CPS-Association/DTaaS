@@ -7,11 +7,14 @@ import {
   Typography,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
+import {
+  createDigitalTwinFromData,
+  DigitalTwin,
+  formatName,
+  DigitalTwinData,
+} from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
 import { showSnackbar } from 'store/snackbar.slice';
-import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 
 interface DeleteDialogProps {
   readonly showDialog: boolean;

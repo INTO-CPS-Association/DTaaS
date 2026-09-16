@@ -2,10 +2,12 @@ import CreateDTDialog from 'route/digitaltwins/create/CreateDTDialog';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import fileSlice from 'model/store/file.slice';
+import {
+  fileSlice,
+  initDigitalTwin,
+  cartSlice,
+} from '@into-cps-association/dt-automation';
 import { validateFiles } from 'util/fileUtils';
-import { initDigitalTwin } from 'model/backend/util/init';
-import cartSlice from 'model/store/cart.slice';
 
 jest.mock('util/fileUtils', () => ({
   validateFiles: jest.fn(),
@@ -14,7 +16,8 @@ jest.mock('util/fileUtils', () => ({
 jest.mock('util/fileActions', () => ({
   addDefaultFiles: jest.fn(),
 }));
-jest.mock('model/backend/util/init', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   initDigitalTwin: jest.fn(),
 }));
 

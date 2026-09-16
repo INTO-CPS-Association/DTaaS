@@ -10,12 +10,12 @@ import {
 import {
   TimedTask,
   Trial,
-} from 'model/backend/gitlab/measure/measurement.execution';
+  isTaskComplete,
+} from '@into-cps-association/dt-automation';
 import {
   TrialCard,
   RunnerTagBadge,
 } from 'route/measurement/MeasurementComponents';
-import { isTaskComplete } from 'model/backend/gitlab/measure/measurement.utils';
 
 export function TaskControls({
   task,

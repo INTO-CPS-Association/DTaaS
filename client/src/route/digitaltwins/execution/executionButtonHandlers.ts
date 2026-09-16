@@ -1,7 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { ThunkDispatch, Action } from '@reduxjs/toolkit';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
-import { fetchExecutionHistory } from 'model/backend/state/executionHistory.slice';
+import {
+  DigitalTwin,
+  formatName,
+  fetchExecutionHistory,
+  stopPipelines,
+} from '@into-cps-association/dt-automation';
 import type { RootState } from 'store/store';
 import {
   startPipeline,
@@ -9,8 +13,7 @@ import {
   updatePipelineStateOnStop,
 } from 'route/digitaltwins/execution/executionStatusHandlers';
 import { startPipelineStatusCheck } from 'route/digitaltwins/execution/executionStatusManager';
-import { stopPipelines } from 'model/backend/gitlab/execution/pipelineCore';
-import type { ShowNotificationPayload } from 'model/backend/interfaces/sharedInterfaces';
+import type { ShowNotificationPayload } from '@into-cps-association/dt-automation';
 
 export type PipelineHandlerDispatch = ThunkDispatch<
   RootState,

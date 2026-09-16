@@ -76,10 +76,7 @@ jobs:
           TMP_DIR="$(mktemp -d)"
           cd "$TMP_DIR"
           yarn init -y
-          yarn add \
-            "file:$GITHUB_WORKSPACE/lib/dt-automation/$PACKAGE_TGZ" \
-            react@19.2.0 \
-            react-redux@9.2.0
+          yarn add "file:$GITHUB_WORKSPACE/lib/dt-automation/$PACKAGE_TGZ"
           PACKAGE_NAME="$PACKAGE_NAME" node --input-type=module <<'EOF'
           const { formatName } = await import(process.env.PACKAGE_NAME);
           if (formatName('digital-twin') !== 'Digital twin') {

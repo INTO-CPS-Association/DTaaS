@@ -1,12 +1,14 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
-import LibraryAsset from 'model/backend/libraryAsset';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
+import {
+  selectAssetByPathAndPrivacy,
+  LibraryAsset,
+  createDigitalTwinFromData,
+  DigitalTwinData,
+} from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import { getAuthority } from 'util/envUtil';
-import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 
 interface DetailsButtonProps {
   readonly assetName: string;

@@ -1,22 +1,22 @@
-import executionHistoryReducer, {
+import {
+  executionHistorySlice as executionHistoryReducer,
   setStorageService,
-} from 'model/backend/state/executionHistory.slice';
+  IExecutionHistory,
+  DTExecutionResult,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { configureStore } from '@reduxjs/toolkit';
-import { IExecutionHistoryStorage } from 'model/backend/interfaces/sharedInterfaces';
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
 
-export const createMockStorageService =
-  (): jest.Mocked<IExecutionHistoryStorage> => ({
-    init: jest.fn().mockResolvedValue(undefined),
-    add: jest.fn().mockResolvedValue('mock-id'),
-    update: jest.fn().mockResolvedValue(undefined),
-    getById: jest.fn().mockResolvedValue(null),
-    getByDTName: jest.fn().mockResolvedValue([]),
-    getAll: jest.fn().mockResolvedValue([]),
-    delete: jest.fn().mockResolvedValue(undefined),
-    deleteByDTName: jest.fn().mockResolvedValue(undefined),
-  });
+export const createMockStorageService = (): jest.Mocked<IExecutionHistory> => ({
+  init: jest.fn().mockResolvedValue(undefined),
+  add: jest.fn().mockResolvedValue('mock-id'),
+  update: jest.fn().mockResolvedValue(undefined),
+  getById: jest.fn().mockResolvedValue(null),
+  getByDTName: jest.fn().mockResolvedValue([]),
+  getAll: jest.fn().mockResolvedValue([]),
+  delete: jest.fn().mockResolvedValue(undefined),
+  deleteByDTName: jest.fn().mockResolvedValue(undefined),
+});
 
 const digitalTwinInitialState = { digitalTwin: {} };
 const digitalTwinReducer = (state = digitalTwinInitialState) => state;

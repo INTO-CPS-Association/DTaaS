@@ -2,7 +2,7 @@ import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
 import * as FileUtils from 'util/fileUtils';
 import * as SidebarFetchers from 'route/digitaltwins/editor/sidebarFetchers';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import { FileState } from '@into-cps-association/dt-automation';
 
 jest.mock('util/fileUtils');
 jest.mock('route/digitaltwins/editor/sidebarFetchers');

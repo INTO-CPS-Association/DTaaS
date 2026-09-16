@@ -8,8 +8,10 @@ import {
 import '@testing-library/jest-dom';
 import ExecutionHistoryList from 'components/execution/ExecutionHistoryList';
 import { Provider, useDispatch } from 'react-redux';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
+import {
+  ExecutionStatus,
+  DigitalTwinData,
+} from '@into-cps-association/dt-automation';
 import { PipelineHandlerDispatch } from 'route/digitaltwins/execution/executionButtonHandlers';
 import {
   createTestStore,
@@ -20,10 +22,11 @@ import {
 } from './testSetup';
 
 jest.mock('route/digitaltwins/execution/executionButtonHandlers');
-jest.mock('model/backend/util/digitalTwinAdapter', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  const actual = jest.requireActual('model/backend/util/digitalTwinAdapter');
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   return {
+    ...actual,
     ...adapterMocks.ADAPTER_MOCKS,
     extractDataFromDigitalTwin: actual.extractDataFromDigitalTwin,
   };
@@ -58,7 +61,7 @@ describe('ExecutionHistoryList - stop execution', () => {
   it('handles stop execution correctly', async () => {
     mockDispatch.mockClear();
 
-    const adapter = jest.requireMock('model/backend/util/digitalTwinAdapter');
+    const adapter = jest.requireMock('@into-cps-association/dt-automation');
     adapter.createDigitalTwinFromData.mockImplementation(
       async (digitalTwinData: DigitalTwinData, name: string) => ({
         DTName: name || digitalTwinData.DTName || 'test-dt',

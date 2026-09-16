@@ -2,7 +2,7 @@ import { fireEvent, render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { handleStart } from 'route/digitaltwins/execution/executionButtonHandlers';
 import StartButton from 'components/asset/StartButton';
-import { ExecutionStatus, JobLog } from 'model/backend/interfaces/execution';
+import { ExecutionStatus, JobLog } from '@into-cps-association/dt-automation';
 import * as redux from 'react-redux';
 
 // Mock dependencies
@@ -11,31 +11,31 @@ jest.mock('route/digitaltwins/execution/executionButtonHandlers', () => ({
 }));
 
 // Mock the digitalTwin adapter to avoid real initialization
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
-  createDigitalTwinFromData: jest.fn().mockResolvedValue({
-    DTName: 'testAssetName',
-    execute: jest.fn().mockResolvedValue(123),
-    jobLogs: [],
-    pipelineLoading: false,
-    pipelineCompleted: false,
-    pipelineId: null,
-    currentExecutionId: null,
-    lastExecutionStatus: null,
-  }),
-}));
-
-// Mock the initDigitalTwin function to avoid real GitLab initialization
-jest.mock('model/backend/util/init', () => ({
-  initDigitalTwin: jest.fn().mockResolvedValue({
-    DTName: 'testAssetName',
-    pipelineId: null,
-    currentExecutionId: null,
-    lastExecutionStatus: null,
-    jobLogs: [],
-    pipelineLoading: false,
-    pipelineCompleted: false,
-  }),
-}));
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
+  return {
+    ...actual,
+    createDigitalTwinFromData: jest.fn().mockResolvedValue({
+      DTName: 'testAssetName',
+      execute: jest.fn().mockResolvedValue(123),
+      jobLogs: [],
+      pipelineLoading: false,
+      pipelineCompleted: false,
+      pipelineId: null,
+      currentExecutionId: null,
+      lastExecutionStatus: null,
+    }),
+    initDigitalTwin: jest.fn().mockResolvedValue({
+      DTName: 'testAssetName',
+      pipelineId: null,
+      currentExecutionId: null,
+      lastExecutionStatus: null,
+      jobLogs: [],
+      pipelineLoading: false,
+      pipelineCompleted: false,
+    }),
+  };
+});
 
 // Mock CircularProgress component
 jest.mock('@mui/material/CircularProgress', () => ({

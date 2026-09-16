@@ -2,10 +2,13 @@ import CreateDTDialog from 'route/digitaltwins/create/CreateDTDialog';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from 'store/store';
-import { initDigitalTwin } from 'model/backend/util/init';
+import {
+  initDigitalTwin,
+  FileState,
+  FileType,
+} from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { validateFiles } from 'util/fileUtils';
-import { FileState, FileType } from 'model/backend/interfaces/sharedInterfaces';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -23,11 +26,9 @@ jest.mock('util/fileActions', () => ({
   addDefaultFiles: jest.fn(),
 }));
 
-jest.mock('model/backend/digitalTwin', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
-}));
-
-jest.mock('model/backend/util/init', () => ({
   initDigitalTwin: jest.fn(),
 }));
 

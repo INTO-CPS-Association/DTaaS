@@ -1,12 +1,14 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
+  fileSlice,
+  addOrUpdateFile,
+} from '@into-cps-association/dt-automation';
 import * as React from 'react';
 import { createMockDigitalTwinData } from 'test/__mocks__/global_mocks';
 import { Provider } from 'react-redux';
 import { act, render, screen } from '@testing-library/react';
-import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
 import PreviewTab from 'route/digitaltwins/editor/PreviewTab';
 
 describe('PreviewTab', () => {

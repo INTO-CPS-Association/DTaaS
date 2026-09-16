@@ -4,16 +4,18 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActions, Grid } from '@mui/material';
 import styled from '@emotion/styled';
-import { formatName } from 'model/backend/digitalTwin';
+import {
+  formatName,
+  selectAssetByPathAndPrivacy,
+  Asset,
+} from '@into-cps-association/dt-automation';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import { RootState } from 'store/store';
 import LogDialog from 'components/LogDialog';
 import DetailsDialog from 'route/digitaltwins/manage/DetailsDialog';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 import HistoryButton from 'components/asset/HistoryButton';
 import StartButton from 'components/asset/StartButton';
-import { Asset } from 'model/backend/Asset';
 import AddToCartButton from 'components/asset/AddToCartButton';
 import DetailsButton from 'components/asset/DetailsButton';
 

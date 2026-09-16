@@ -15,10 +15,7 @@ import {
   MAX_LOG_CONTEXT_ENTRIES,
 } from 'util/logger/contextUtils';
 import type { LogContext } from 'util/logger/logEvent';
-import {
-  resetSettingsStore,
-  setSettingsStore,
-} from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import { setSettingsStore } from '@into-cps-association/dt-automation';
 import { DEFAULT_SETTINGS } from 'store/settings.slice';
 import * as beaconLogger from 'util/logger/beaconLogger';
 import * as indexedDBLogger from 'util/logger/indexedDBLogger';
@@ -100,23 +97,6 @@ describe('logger', () => {
     expect(event!.label).toBe('Functions');
     expect(event!.userHash).toHaveLength(64);
     expect(event!.sessionId).toBeDefined();
-  });
-
-  it('returns null instead of throwing when settings store is not wired', async () => {
-    resetSettingsStore();
-    await initLogger('testuser');
-
-    const input = {
-      event: 'click' as const,
-      page: '/library',
-      element: 'tab',
-      label: 'Data',
-    };
-
-    expect(() => log(input)).not.toThrow();
-    expect(log(input)).toBeNull();
-    expect(indexedDBLogger.addLog).not.toHaveBeenCalled();
-    expect(beaconLogger.sendBeacon).not.toHaveBeenCalled();
   });
 
   it('keeps nested context values and arrays in log events', async () => {

@@ -6,7 +6,7 @@ import {
   createMockTaskPending,
   createMockTrial,
   createMockExecution,
-} from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
+} from 'test/support/measurementFixtures';
 
 jest.mock('route/measurement/MeasurementComponents', () => ({
   TrialCard: ({

@@ -3,23 +3,25 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import ReconfigureDialog from 'route/digitaltwins/manage/ReconfigureDialog';
-import assetsReducer from 'model/store/assets.slice';
-import digitalTwinReducer, {
+import {
+  assetsSlice as assetsReducer,
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
-import snackbarSlice, { showSnackbar } from 'store/snackbar.slice';
-import fileSlice, { removeAllModifiedFiles } from 'model/store/file.slice';
-import libraryConfigFilesSlice, {
+  fileSlice,
+  removeAllModifiedFiles,
+  libraryConfigFilesSlice,
   removeAllModifiedLibraryFiles,
-} from 'model/store/libraryConfigFiles.slice';
-import DigitalTwin from 'model/backend/digitalTwin';
+  DigitalTwin,
+} from '@into-cps-association/dt-automation';
+import snackbarSlice, { showSnackbar } from 'store/snackbar.slice';
 import {
   mockBackendInstance,
   createMockDigitalTwinData,
 } from 'test/__mocks__/global_mocks';
 import { storeResetAll } from 'test/integration/integration.testUtil';
 
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   createDigitalTwinFromData: jest.fn().mockResolvedValue({
     DTName: 'Asset 1',
     DTAssets: {

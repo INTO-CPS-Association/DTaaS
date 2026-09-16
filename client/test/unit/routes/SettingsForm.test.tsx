@@ -19,12 +19,13 @@ import {
   setRemoteLoggingEnabled,
 } from 'store/settings.slice';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
-import { clearDigitalTwins } from 'model/backend/state/digitalTwin.slice';
+import { clearDigitalTwins } from '@into-cps-association/dt-automation';
 import setupSettingsFormTest from './settingsForm.testSetup';
 
 jest.mock('routes', () => ({ __esModule: true, default: [] }));
 
-jest.mock('model/backend/util/init', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -265,7 +266,7 @@ describe('SettingsForm', () => {
 
     beforeEach(() => {
       fetchDigitalTwinsMock = jest.requireMock(
-        'model/backend/util/init',
+        '@into-cps-association/dt-automation',
       ).fetchDigitalTwins;
       fetchDigitalTwinsMock.mockClear();
       mockDispatch.mockClear();

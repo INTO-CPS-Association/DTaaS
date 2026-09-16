@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
-import executionHistorySlice from 'model/backend/state/executionHistory.slice';
-import digitalTwinSlice from 'model/backend/state/digitalTwin.slice';
-import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
+import {
+  executionHistorySlice,
+  digitalTwinSlice,
+  libraryConfigFilesSlice,
+  assetsSlice,
+  environmentSlice,
+  fileSlice,
+  cartSlice,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
-import assetsSlice from 'model/store/assets.slice';
-import environmentSlice from 'model/store/environment.slice';
-import fileSlice from 'model/store/file.slice';
-import cartSlice from 'model/store/cart.slice';
 import menuSlice from 'store/menu.slice';
 import authSlice from 'store/auth.slice';
 import settingsSlice from 'store/settings.slice';

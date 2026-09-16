@@ -2,21 +2,25 @@ import Editor from 'route/digitaltwins/editor/Editor';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import assetsReducer, { setAssets } from 'model/store/assets.slice';
-import digitalTwinReducer, {
+import {
+  assetsSlice as assetsReducer,
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
+  fileSlice,
+  addOrUpdateFile,
+  DigitalTwin,
+  LibraryAsset,
+  cartSlice,
+  addToCart,
+  FileState,
+} from '@into-cps-association/dt-automation';
 import {
   mockBackendInstance,
   mockLibraryAsset,
   createMockDigitalTwinData,
 } from 'test/__mocks__/global_mocks';
-import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
-import DigitalTwin from 'model/backend/digitalTwin';
 import { handleFileClick } from 'route/digitaltwins/editor/sidebarFunctions';
-import LibraryAsset from 'model/backend/libraryAsset';
-import cartSlice, { addToCart } from 'model/store/cart.slice';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import { setAssets } from 'test/integration/integration.testUtil';
 
 describe('Editor', () => {
   const fileName = 'file1.md';

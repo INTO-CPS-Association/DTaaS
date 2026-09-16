@@ -14,17 +14,17 @@ The DevOps integration in the client is responsible for:
 
 ## Current Module Map
 
-Primary implementation lives in `client/src/model/backend/`:
+Primary implementation lives in `lib/dt-automation/`:
 
-- `gitlab/backend.ts`: `GitlabAPI` concrete `BackendAPI` implementation.
-- `gitlab/instance.ts`: `GitlabInstance` project context and trigger-token holder.
-- `digitalTwin.ts`: DT lifecycle operations, execution orchestration hooks.
-- `DTAssets.ts`, `fileHandler.ts`, `libraryAsset.ts`, `libraryManager.ts`:
+- `src/gitlab/backend.ts`: `GitlabAPI` concrete `BackendAPI` implementation.
+- `src/gitlab/instance.ts`: `GitlabInstance` project context and trigger-token holder.
+- `src/digitalTwin.ts`: DT lifecycle operations, execution orchestration hooks.
+- `src/DTAssets.ts`, `src/fileHandler.ts`, `src/libraryAsset.ts`, `src/libraryManager.ts`:
   file and asset management primitives.
-- `util/digitalTwinPipelineExecution.ts`: start/stop execution paths.
-- `util/digitalTwinExecutionHistory.ts`: execution history and log updates.
-- `state/`: Redux state for execution history and status views.
-- `interfaces/backendInterfaces.ts`: backend contracts and shared types.
+- `src/util/digitalTwinPipelineExecution.ts`: start/stop execution paths.
+- `src/util/digitalTwinExecutionHistory.ts`: execution history and log updates.
+- `src/state/`: Redux state for execution history and status views.
+- `src/interfaces/backendInterfaces.ts`: backend contracts and shared types.
 
 ## Architectural Roles
 
@@ -76,7 +76,7 @@ GitLab implementation and call sites.
 
 ## Contributor Guidance
 
-- Keep GitLab-specific details inside `model/backend/gitlab/`.
+- Keep GitLab-specific details inside `lib/dt-automation/src/gitlab/`.
 - Keep route/page components focused on presentation and user interaction.
 - Reuse utility/state modules for execution history instead of introducing
   ad-hoc polling in UI components.

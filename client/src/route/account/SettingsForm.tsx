@@ -20,9 +20,11 @@ import ApplicationSettingsFields from 'route/account/ApplicationSettingsFields';
 import LoggingSettingsFields from 'route/account/LoggingSettingsFields';
 import MeasurementSettingsFields from 'route/account/MeasurementSettingsFields';
 import SettingsFormButtons from 'route/account/SettingsFormButtons';
-import { fetchDigitalTwins } from 'model/backend/util/init';
-import { clearDigitalTwins } from 'model/backend/state/digitalTwin.slice';
-import { updateFrozenSettings } from 'model/backend/gitlab/measure/measurement.settings';
+import {
+  fetchDigitalTwins,
+  clearDigitalTwins,
+  updateFrozenSettings,
+} from '@into-cps-association/dt-automation';
 import useAvailableHeight from 'util/useAvailableHeight';
 
 export interface SettingsFieldProps {

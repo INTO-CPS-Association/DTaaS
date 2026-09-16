@@ -4,9 +4,9 @@ import {
   TimedTask,
   ExecutionResult,
   Trial,
-} from 'model/backend/gitlab/measure/measurement.execution';
+  getRunnerTags,
+} from '@into-cps-association/dt-automation';
 import { statusColorMap } from 'route/measurement/MeasurementComponents';
-import { getRunnerTags } from 'model/backend/gitlab/measure/measurement.utils';
 import {
   AverageTimeCell,
   ExpandedDescriptionRow,

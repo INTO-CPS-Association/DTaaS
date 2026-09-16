@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 import {
   fetchAllExecutionHistory,
   checkRunningExecutions,
-} from 'model/backend/state/executionHistory.slice';
+  EXECUTION_CHECK_INTERVAL,
+} from '@into-cps-association/dt-automation';
 import { ThunkDispatch, Action } from '@reduxjs/toolkit';
 import { RootState } from 'store/store';
-import { EXECUTION_CHECK_INTERVAL } from 'model/backend/gitlab/digitalTwinConfig/constants';
 
 const ExecutionHistoryLoader: React.FC = () => {
   const dispatch =

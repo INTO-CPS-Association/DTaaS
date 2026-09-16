@@ -1,6 +1,4 @@
 import { Gitlab } from '@gitbeaker/core';
-import { BackendInterface } from 'model/backend/interfaces/backendInterfaces';
-import GitlabAPI from 'model/backend/gitlab/backend';
 
 export const mockGitlabClient = new Gitlab({
   host: 'mockedHost',
@@ -24,9 +22,9 @@ export const mockBackendAPI = {
   getPipelineBridges: jest.fn().mockResolvedValue([]),
   getTriggerToken: jest.fn(),
   commitMultipleActions: jest.fn(),
-} as unknown as GitlabAPI;
+};
 
-export const mockBackendInstance: BackendInterface = {
+export const mockBackendInstance = {
   projectName: 'mockedUsername',
   api: mockBackendAPI,
   logs: [],

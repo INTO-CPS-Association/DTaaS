@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import AddToCartButton from 'components/asset/AddToCartButton';
-import * as cartAccess from 'model/store/CartAccess';
+import * as cartAccess from 'store/CartAccess';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from '@into-cps-association/dt-automation';
 
 describe('AddToCartButton', () => {
   const addMock = jest.fn();

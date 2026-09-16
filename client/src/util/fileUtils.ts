@@ -2,9 +2,9 @@ import {
   LibraryConfigFile,
   FileState,
   FileType,
-} from 'model/backend/interfaces/sharedInterfaces';
+  getFileTypeFromExtension,
+} from '@into-cps-association/dt-automation';
 import { Dispatch, SetStateAction } from 'react';
-import getFileTypeFromExtension from 'model/backend/interfaces/fileTypeUtils';
 
 export const isFileModifiable = (fileName: string) =>
   !['README.md', 'description.md', '.gitlab-ci.yml'].includes(fileName);
