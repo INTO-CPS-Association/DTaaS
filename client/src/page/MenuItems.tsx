@@ -6,6 +6,7 @@ import {
   LibraryIcon,
   DigitalTwinsIcon,
   WorkbenchIcon,
+  BuildingModelsIcon,
 } from 'components/appIcons';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -23,6 +24,12 @@ const menuItems: MenuItemEntry[] = [
     name: 'Digital Twins',
     icon: <DigitalTwinsIcon />,
     link: '/digitaltwins',
+  },
+  {
+    index: 3,
+    name: 'Building Models',
+    icon: <BuildingModelsIcon />,
+    link: '/bim',
   },
   {
     index: 5,

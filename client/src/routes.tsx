@@ -11,6 +11,7 @@ import Config from 'route/config/Config';
 import Measurement from 'route/measurement/Measurement';
 import LogViewer from 'page/LogViewer';
 import NotFound from 'page/NotFound';
+import Bim from 'route/bim/Bim';
 
 export const routes = [
   {
@@ -50,6 +51,14 @@ export const routes = [
     element: (
       <PrivateRoute>
         <DigitalTwins />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'bim',
+    element: (
+      <PrivateRoute>
+        <Bim />
       </PrivateRoute>
     ),
   },

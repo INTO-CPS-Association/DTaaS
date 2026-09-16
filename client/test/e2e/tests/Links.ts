@@ -14,6 +14,7 @@ type LinkType = {
 const links: LinkType[] = [
   { text: 'Library', url: './library' },
   { text: 'Digital Twins', url: './digitaltwins' },
+  { text: 'Building Models', url: './bim' },
   { text: 'Workbench', url: './workbench' },
 ];
 

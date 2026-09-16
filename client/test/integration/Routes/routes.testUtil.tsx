@@ -33,6 +33,7 @@ export async function testDrawer() {
   expect(screen.getByTestId(/ChevronLeftIcon/)).toBeInTheDocument();
   testDrawerItem(/^Library$/, /ExtensionRoundedIcon/);
   testDrawerItem(/^Digital Twins$/, /PeopleRoundedIcon/);
+  testDrawerItem(/Building Models/, /ViewInArRoundedIcon/);
   testDrawerItem(/Workbench/, /HandymanRoundedIcon/);
 
   await itOpensAndClosesTheDrawer();

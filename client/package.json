@@ -10,7 +10,7 @@
     "Emre Temel",
     "Enok Maj",
     "Marcus Neble Jensen",
-    "Mathias Brændgaard",
+    "Mathias Br\u00e6ndgaard",
     "Omar Suleiman",
     "Vanessa Scherma"
   ],
@@ -50,6 +50,8 @@
     "@babel/plugin-transform-modules-systemjs": "8.0.1"
   },
   "dependencies": {
+    "@into-cps-association/bim-kit": "file:./into-cps-association-bim-kit-0.1.1.tgz",
+    "three": "0.185.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/inter": "5.3.0",
@@ -87,6 +89,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@types/three": "0.185.4",
     "@babel/core": "^8.0.1",
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^10.0.1",

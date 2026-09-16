@@ -9,7 +9,9 @@
 import ExtensionRoundedIcon from '@mui/icons-material/ExtensionRounded';
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import HandymanRoundedIcon from '@mui/icons-material/HandymanRounded';
+import ViewInArRoundedIcon from '@mui/icons-material/ViewInArRounded';
 
 export const LibraryIcon = ExtensionRoundedIcon;
 export const DigitalTwinsIcon = PeopleRoundedIcon;
 export const WorkbenchIcon = HandymanRoundedIcon;
+export const BuildingModelsIcon = ViewInArRoundedIcon;

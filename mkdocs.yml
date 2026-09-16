@@ -25,6 +25,7 @@ nav:
           - Workspace: user/website/workspace.md
           - Settings: user/website/settings.md
           - Logs: user/website/logs.md
+          - Building Models: user/website/bim.md
       - Reusable Assets:
           - Concept: user/servers/lib/assets.md
           - Microservice: user/servers/lib/LIB-MS.md
