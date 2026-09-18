@@ -25,7 +25,7 @@ export const mockUser: mockUserType = {
   access_token: 'example_token',
   profile: {
     groups: 'group-one',
-    picture: 'pfp.jpg',
+    picture: 'https://gitlab.example.com/uploads/user/avatar/1/pfp.jpg',
     preferred_username: 'username',
     profile: 'https://example.com/username',
   },

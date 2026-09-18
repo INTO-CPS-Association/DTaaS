@@ -21,7 +21,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import { Link as RouterLink } from 'react-router-dom';
-import { isSafeHttpUrl, isInAppPath } from 'util/safeUrl';
+import { isSafeHttpUrl, isInAppPath } from 'util/configuredLink';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 interface ToolCardProps {

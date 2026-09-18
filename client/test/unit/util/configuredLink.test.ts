@@ -1,4 +1,4 @@
-import { isSafeHttpUrl, isInAppPath } from 'util/safeUrl';
+import { isSafeHttpUrl, isInAppPath } from 'util/configuredLink';
 
 describe('isSafeHttpUrl', () => {
   it.each(['https://example.com/path', 'http://localhost:4000', './library'])(

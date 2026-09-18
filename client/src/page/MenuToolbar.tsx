@@ -81,7 +81,10 @@ function MenuToolbar({
   const profile = auth?.user?.profile;
   const pictureUrl = resolveOAuthPictureUrl(profile);
   const username = resolveOAuthUsername(profile);
-  const initial = username.charAt(0).toUpperCase() || 'A';
+  // Empty when no claim resolves to a name. Falling back to a letter here
+  // would put back the fixed A this set out to remove, so the avatar shows a
+  // person icon instead.
+  const initial = username.charAt(0).toUpperCase();
   const root = document.getElementById('root');
   const signOut = useSignOut();
 
@@ -153,9 +156,16 @@ function MenuToolbar({
               <Avatar
                 src={pictureUrl}
                 alt={username}
+                // The picture is fetched from the provider's own host. GitLab
+                // falls back to Gravatar by default, so without this every
+                // page load would disclose the referring page to a third
+                // party. Loading it lazily keeps it off the first paint.
+                slotProps={{
+                  img: { referrerPolicy: 'no-referrer', loading: 'lazy' },
+                }}
                 sx={{ width: 32, height: 32 }}
               >
-                {initial}
+                {initial || <PersonRoundedIcon />}
               </Avatar>
             </IconButton>
           </Tooltip>
