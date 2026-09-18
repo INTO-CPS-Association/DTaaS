@@ -49,7 +49,7 @@ describe('Library Preview', () => {
     );
 
     expect(
-      screen.getAllByRole('heading', { level: 1, name: 'Library Page Preview' })
+      screen.getAllByRole('heading', { level: 1, name: 'Library Page' })
         .length,
     ).toBeGreaterThan(0);
   });

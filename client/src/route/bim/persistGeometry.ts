@@ -38,8 +38,11 @@ export function geometryPathFor(ifcPath: string): string {
 /**
  * The XSRF token the Jupyter server set, or undefined when there is none.
  *
- * The server rejects a write without it, so its absence is worth reporting up
- * front instead of as an opaque failure from the server.
+ * A Jupyter server configured with XSRF protection rejects a write that does
+ * not echo it. A server without that protection sets no `_xsrf` cookie and
+ * accepts the write regardless, which is the case for the workspace image this
+ * runs against. So the token is sent when present and left out when it is not,
+ * instead of blocking the write on its absence.
  */
 export function readXsrfToken(): string | undefined {
   const match = document.cookie.match(/(?:^|;\s*)_xsrf=([^;]+)/);
@@ -66,19 +69,22 @@ export function toBase64(bytes: Uint8Array): string {
 /**
  * Write the geometry beside its model, so it is not reconverted next time.
  *
- * Rejects when the token is missing or the server does not accept the write.
- * The caller treats a rejection as a missed optimisation and not an error: the
- * model already drew from the in-browser conversion, and it will convert again
- * next time instead of loading a file that was never written.
+ * Rejects when the server does not accept the write. The caller treats a
+ * rejection as a missed optimisation and not an error: the model already drew
+ * from the in-browser conversion, and it will convert again next time instead
+ * of loading a file that was never written.
  */
 export async function uploadGeometry(
   libraryUrl: string,
   ifcPath: string,
   glb: Uint8Array,
 ): Promise<void> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
   const token = readXsrfToken();
-  if (!token) {
-    throw new Error('no XSRF token, so the workspace would reject the write');
+  if (token) {
+    headers['X-XSRFToken'] = token;
   }
 
   const path = geometryPathFor(ifcPath);
@@ -86,10 +92,7 @@ export async function uploadGeometry(
   const response = await fetch(url, {
     method: 'PUT',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-XSRFToken': token,
-    },
+    headers,
     body: JSON.stringify({
       type: 'file',
       format: 'base64',

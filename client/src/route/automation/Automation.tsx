@@ -23,19 +23,29 @@ import { Link as RouterLink } from 'react-router-dom';
 import { LibraryIcon, DigitalTwinsIcon } from 'components/appIcons';
 
 const DESCRIPTION =
-  'The digital twins and library previews in one place. These features '
-  + 'demonstrate the DTaaS integration with GitLab CI/CD and are experimental.';
+  'The digital twins and library previews in one place. These features ' +
+  'demonstrate the DTaaS integration with GitLab CI/CD and are experimental.';
 
 interface AutomationCard {
   name: string;
+  description: string;
   to: string;
   icon: React.ReactElement;
 }
 
+// Each card says what the page is, the way the workbench cards do, so the
+// destination is readable without opening it.
 const cards: AutomationCard[] = [
-  { name: 'Library', to: '/preview/library', icon: <LibraryIcon /> },
   {
-    name: 'Digital Twins',
+    name: 'Library Page',
+    description: 'The library page on its own, without the platform around it.',
+    to: '/preview/library',
+    icon: <LibraryIcon />,
+  },
+  {
+    name: 'Digital Twins Page',
+    description:
+      'The digital twins page on its own, without the platform around it.',
     to: '/preview/digitaltwins',
     icon: <DigitalTwinsIcon />,
   },
@@ -84,6 +94,9 @@ function Automation() {
                 </Box>
                 <Typography variant="h6" component="h2">
                   {card.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {card.description}
                 </Typography>
               </CardActionArea>
             </Card>

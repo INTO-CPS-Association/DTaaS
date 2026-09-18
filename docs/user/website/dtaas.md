@@ -255,11 +255,11 @@ Screenshots of the pages opened by clicking on first four icons are shown:
 
 The hyperlinks open in new browser tabs.
 
-The **workbench** also has two links to DevOps-based implementation of
+The **Automation** page has two links to DevOps-based implementation of
 composable digital twins.
 
-* Library Page Preview
-* Digital Twins Page Preview
+* Library Page
+* Digital Twins Page
 
 ### Library Preview Page
 

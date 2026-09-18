@@ -85,14 +85,18 @@ describe('uploadGeometry', () => {
     jest.restoreAllMocks();
   });
 
-  it('refuses the write when there is no token instead of letting the server reject it', async () => {
-    const fetchMock = jest.fn();
+  it('writes without the XSRF header when the workspace sets no token', async () => {
+    // The workspace image this runs against sets no _xsrf cookie and accepts
+    // the write regardless, so a missing token must not block the write.
+    const fetchMock = jest.fn().mockResolvedValue({ ok: true, status: 201 });
     globalThis.fetch = fetchMock;
 
-    await expect(uploadGeometry(libraryUrl, ifcPath, glb)).rejects.toThrow(
-      /XSRF/,
-    );
-    expect(fetchMock).not.toHaveBeenCalled();
+    await uploadGeometry(libraryUrl, ifcPath, glb);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.method).toBe('PUT');
+    expect(init.headers['X-XSRFToken']).toBeUndefined();
   });
 
   it('puts the geometry to the contents API with the token and a base64 body', async () => {

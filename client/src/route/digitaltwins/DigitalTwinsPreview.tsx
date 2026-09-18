@@ -67,7 +67,7 @@ export const DTContent = () => {
   return (
     <Layout>
       <PageShell
-        title="Digital Twins Page Preview"
+        title="Digital Twins Page"
         description="This page demonstrates integration of DTaaS with GitLab CI/CD workflows. The feature is experimental and requires certain GitLab setup in order for it to work."
       >
         <TabComponent
