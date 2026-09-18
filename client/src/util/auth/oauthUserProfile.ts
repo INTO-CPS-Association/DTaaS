@@ -31,8 +31,11 @@ function getEmailLocalPart(identifier: string | undefined): string | undefined {
   if (!identifier) {
     return undefined;
   }
-  const localPart = identifier.split('@')[0]?.trim();
-  return localPart && localPart.length > 0 ? localPart : undefined;
+  // `split` always yields at least one element, so the first is never
+  // undefined and needs no optional chain.
+  const localPart = identifier.split('@')[0].trim();
+  // A string is falsy only when empty, so the length test is the whole guard.
+  return localPart.length > 0 ? localPart : undefined;
 }
 
 function pathFromProfileUrl(profileUrl: string): string | undefined {

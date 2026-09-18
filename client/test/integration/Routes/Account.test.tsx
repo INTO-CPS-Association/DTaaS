@@ -22,6 +22,26 @@ describe('Account', () => {
     await testAccountSettings(mockUser);
   });
 
+  it('says so when the provider exposes no profile URL', async () => {
+    // A provider is free to omit the claim, and the resolver returns undefined
+    // for anything that is not an http URL. Both tabs then have to say where
+    // the profile is edited without offering a link that goes nowhere.
+    const noUrl = {
+      ...mockUser,
+      profile: { ...mockUser.profile, profile: undefined },
+    };
+    await setup(noUrl);
+
+    expect(
+      screen.getByText(/Your OAuth provider did not expose a profile URL\./),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'SSO OAuth Provider.' }),
+    ).toBeNull();
+
+    await testAccountSettings(noUrl);
+  });
+
   it('renders the Account page with different amounts of groups', async () => {
     await setup({ ...mockUser, profile: { ...mockUser.profile, groups: [] } });
     expect(screen.getByText(/belong to/)).toHaveProperty(

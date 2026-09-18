@@ -54,6 +54,16 @@ describe('oauthUserProfile', () => {
       ).toBe('dex-user');
     });
 
+    it('ignores an email whose local part is empty', () => {
+      // A provider is free to send a malformed claim. An empty local part is
+      // not a name, and falling through to the next claim is what keeps it
+      // from becoming one.
+      expect(resolveOAuthUsername({ email: '@example.com' })).toBe('');
+      expect(
+        resolveOAuthUsername({ email: ' @example.com', sub: 'subject-id' }),
+      ).toBe('subject-id');
+    });
+
     it('resolves username from upn local part for azure profiles', () => {
       expect(
         resolveOAuthUsername({
