@@ -4,6 +4,7 @@ import 'katex/dist/katex.min.css';
 import { useSelector } from 'react-redux';
 import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
+import MarkdownStyles from 'components/MarkdownStyles';
 import { renderMarkdown } from 'util/markdown';
 
 interface DetailsDialogProps {
@@ -63,27 +64,7 @@ function DetailsDialog({
           Close
         </Button>
       </DialogActions>
-      <style>{`
-        img {
-          max-width: 100%;
-          height: auto;
-          display: block;
-          margin: 0 auto;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 20px 0;
-        }
-        th, td {
-          border: 1px solid #ccc;
-          padding: 8px;
-          text-align: left;
-        }
-        th {
-          background-color: #f0f0f0;
-        }
-      `}</style>
+      <MarkdownStyles />
     </Dialog>
   );
 }

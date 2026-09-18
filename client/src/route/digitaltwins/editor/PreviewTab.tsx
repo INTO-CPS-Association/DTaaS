@@ -1,5 +1,6 @@
 import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import MarkdownStyles from 'components/MarkdownStyles';
 import { renderMarkdown } from 'util/markdown';
 
 interface PreviewProps {
@@ -29,27 +30,7 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
             maxWidth: '100%',
           }}
         />
-        <style>{`
-          img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-          }
-          th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            background-color: #f0f0f0;
-          }
-        `}</style>
+        <MarkdownStyles />
       </div>
     );
   }
