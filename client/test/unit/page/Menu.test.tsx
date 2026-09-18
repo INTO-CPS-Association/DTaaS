@@ -54,6 +54,13 @@ describe('Menu', () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId(/PeopleRoundedIcon/)).toBeInTheDocument();
 
+    expect(
+      screen.getByRole('link', { name: /Automation/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(/PrecisionManufacturingRoundedIcon/),
+    ).toBeInTheDocument();
+
     expect(screen.getByRole('link', { name: /Workbench/ })).toBeInTheDocument();
     expect(screen.getByTestId(/HandymanRoundedIcon/)).toBeInTheDocument();
   });

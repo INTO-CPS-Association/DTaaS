@@ -58,7 +58,7 @@ describe('Digital Twins', () => {
     expect(
       screen.getAllByRole('heading', {
         level: 1,
-        name: 'Digital Twins Page Preview',
+        name: 'Digital Twins Page',
       }).length,
     ).toBeGreaterThan(0);
   });

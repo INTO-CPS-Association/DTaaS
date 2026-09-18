@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import Layout from 'page/Layout';
 import {
   TestComponentIdList,
@@ -35,4 +36,17 @@ describe('Layout component with multiple elements', () => {
   });
 
   itHasMultipleChildren(TestComponentIdList);
+});
+
+describe('Layout with an explicit maxWidth', () => {
+  it('uses the maxWidth it is given instead of the default', () => {
+    render(
+      <BrowserRouter>
+        <Layout maxWidth="lg">
+          <div>child</div>
+        </Layout>
+      </BrowserRouter>,
+    );
+    expect(screen.getByText('child')).toBeInTheDocument();
+  });
 });

@@ -167,3 +167,13 @@ describe('oauthUserProfile', () => {
     });
   });
 });
+
+describe('oauthUserProfile empty and edge claims', () => {
+  it('treats a whitespace-only claim as absent', () => {
+    expect(resolveOAuthUsername({ preferred_username: '   ' })).toBe('');
+  });
+
+  it('treats an email with no local part as absent', () => {
+    expect(resolveOAuthUsername({ email: '@example.com' })).toBe('');
+  });
+});

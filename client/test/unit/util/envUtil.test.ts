@@ -47,8 +47,6 @@ describe('envUtil', () => {
     REACT_APP_URL_BASENAME: testBasename,
     REACT_APP_URL_DTLINK: testDT,
     REACT_APP_URL_LIBLINK: testLIB,
-    REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW: '/preview/library',
-    REACT_APP_WORKBENCHLINK_DT_PREVIEW: '/preview/digitaltwins',
 
     REACT_APP_CLIENT_ID: testAppID,
     REACT_APP_AUTH_AUTHORITY: testAuthority,
@@ -114,19 +112,17 @@ describe('envUtil', () => {
     );
   });
 
-  // Test that preview links come from env vars unchanged
-  it('should include LIBRARY_PREVIEW and DT_PREVIEW from env vars', () => {
+  // The previews are no longer workbench links, so nothing but the workspace
+  // services appears here.
+  it('should not include the library or digital twins previews', () => {
     const result = useWorkbenchLinkValues();
 
-    const libraryPreview = result.find((el) => el.key === 'LIBRARY_PREVIEW');
-    expect(libraryPreview?.link).toBe('/preview/library');
-
-    const dtPreview = result.find((el) => el.key === 'DT_PREVIEW');
-    expect(dtPreview?.link).toBe('/preview/digitaltwins');
+    expect(result.find((el) => el.key === 'LIBRARY_PREVIEW')).toBeUndefined();
+    expect(result.find((el) => el.key === 'DT_PREVIEW')).toBeUndefined();
   });
 
-  // Test that no workspace links appear when services are empty
-  it('should return only preview links when services are empty', () => {
+  // With no services reported, the workbench has nothing to list.
+  it('should return an empty array when services are empty', () => {
     const emptyState = {
       auth: { userName: testUsername },
       workbench: { services: {}, status: 'idle' },
@@ -135,18 +131,7 @@ describe('envUtil', () => {
       (selector: (state: typeof emptyState) => unknown) => selector(emptyState),
     );
 
-    const result = useWorkbenchLinkValues();
-    const workspaceKeys = [
-      'VNCDESKTOP',
-      'VSCODE',
-      'JUPYTERLAB',
-      'JUPYTERNOTEBOOK',
-    ];
-    workspaceKeys.forEach((key) => {
-      expect(result.find((el) => el.key === key)).toBeUndefined();
-    });
-    expect(result.find((el) => el.key === 'LIBRARY_PREVIEW')).toBeDefined();
-    expect(result.find((el) => el.key === 'DT_PREVIEW')).toBeDefined();
+    expect(useWorkbenchLinkValues()).toEqual([]);
   });
 
   it('cleanURL should remove leading and trailing slashes', () => {

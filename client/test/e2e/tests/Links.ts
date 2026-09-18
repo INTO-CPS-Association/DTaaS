@@ -14,6 +14,8 @@ type LinkType = {
 const links: LinkType[] = [
   { text: 'Library', url: './library' },
   { text: 'Digital Twins', url: './digitaltwins' },
+  { text: 'Automation', url: './automation' },
+  { text: 'Buildings', url: './bim' },
   { text: 'Workbench', url: './workbench' },
 ];
 
@@ -25,8 +27,6 @@ export const workbenchLinks: LinkType[] = [
   { text: 'VSCode', url: `./${testUsername}/tools/vscode` },
   { text: 'JupyterLab', url: `./${testUsername}/lab` },
   { text: 'Jupyter Notebook', url: `./${testUsername}` },
-  { text: 'Library Page Preview', url: `./preview/library` },
-  { text: 'Digital Twins Page Preview', url: `./preview/digitaltwins` },
 ];
 
 export default links;

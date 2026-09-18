@@ -88,8 +88,6 @@ cp config/client.js.example config/client.js
 | `REACT_APP_URL_BASENAME`                  | `''`                                           | Optional URL base path                                       |
 | `REACT_APP_URL_DTLINK`                    | `/lab`                                         | URL path for the Digital Twin workbench                      |
 | `REACT_APP_URL_LIBLINK`                   | `''`                                           | URL path for the Library                                     |
-| `REACT_APP_WORKBENCHLINK_LIBRARY_PREVIEW` | `/preview/library`                             | Library preview page                                         |
-| `REACT_APP_WORKBENCHLINK_DT_PREVIEW`      | `/preview/digitaltwins`                        | Digital Twins preview page                                   |
 | `REACT_APP_CLIENT_ID`                     | _(from GitLab)_                                | Application ID from **DTaaS Client Authorization** OAuth app |
 | `REACT_APP_AUTH_AUTHORITY`                | `https://gitlab.com`                           | OAuth issuer URL                                             |
 | `REACT_APP_REDIRECT_URI`                  | `https://intocps.org/Library`                  | Redirect URI after sign-in                                   |

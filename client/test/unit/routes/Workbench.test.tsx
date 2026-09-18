@@ -64,31 +64,7 @@ describe('Workbench', () => {
     unmount();
   });
 
-  it('follows a preview page in this tab, so the session is kept', () => {
-    // A new tab starts with an empty sessionStorage, which is where the OIDC
-    // session lives, so opening a page of this application in one lands on the
-    // sign in page. This is the regression that made the two preview cards
-    // bounce to sign in.
-    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
-      { key: 'LIBRARY_PREVIEW', link: '/preview/library', opensInApp: true },
-    ]);
-
-    const { unmount } = render(
-      <MemoryRouter>
-        <WorkBench />
-      </MemoryRouter>,
-    );
-
-    const link = screen.getByRole('link', { name: /Library Page Preview/ });
-    expect(link).toHaveAttribute('href', '/preview/library');
-    expect(link).not.toHaveAttribute('target');
-    expect(link).not.toHaveAttribute('rel');
-    unmount();
-  });
-
-  it('opens a workspace service in a new tab, though it shares this origin', () => {
-    // The workbench serves its tools from this same host, so deciding by
-    // origin would hand /user/lab to the router and land on Not Found.
+  it('opens a workspace service in a new tab', () => {
     (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
       { key: 'JUPYTERLAB', link: '/user/lab' },
     ]);
@@ -102,26 +78,6 @@ describe('Workbench', () => {
     const link = screen.getByRole('link', { name: /JupyterLab/ });
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    unmount();
-  });
-
-  it('does not hand a full URL to the router, even when marked as a page', () => {
-    (useWorkbenchLinkValues as jest.Mock).mockReturnValueOnce([
-      {
-        key: 'LIBRARY_PREVIEW',
-        link: 'https://example.com/preview/library',
-        opensInApp: true,
-      },
-    ]);
-
-    const { unmount } = render(
-      <MemoryRouter>
-        <WorkBench />
-      </MemoryRouter>,
-    );
-
-    const link = screen.getByRole('link', { name: /Library Page Preview/ });
-    expect(link).toHaveAttribute('target', '_blank');
     unmount();
   });
 
@@ -139,5 +95,56 @@ describe('Workbench', () => {
       expect(link).toHaveAttribute('target', '_blank');
       expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     });
+  });
+});
+
+describe('Workbench initial services fetch', () => {
+  it('fetches the services when the status is idle and a user is known', () => {
+    const dispatch = jest.fn();
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValue([]);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      dispatch,
+    );
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: object) => unknown) =>
+        selector({
+          auth: { userName: 'username' },
+          workbench: { status: 'idle', services: {} },
+        }),
+    );
+
+    render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    expect(dispatch).toHaveBeenCalled();
+  });
+});
+
+describe('Workbench with no known user', () => {
+  it('renders when the user name is absent', () => {
+    (useWorkbenchLinkValues as jest.Mock).mockReturnValue([]);
+    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
+      jest.fn(),
+    );
+    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
+      (selector: (state: object) => unknown) =>
+        selector({
+          auth: { userName: undefined },
+          workbench: { status: 'idle', services: {} },
+        }),
+    );
+
+    render(
+      <MemoryRouter>
+        <WorkBench />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: /Workbench Tools/ }),
+    ).toBeInTheDocument();
   });
 });

@@ -54,7 +54,7 @@ function LibraryContent() {
 
   return (
     <Layout>
-      <PageShell title="Library Page Preview">
+      <PageShell title="Library Page">
         <TabComponent assetType={tabsData} scope={combinedData} />
       </PageShell>
     </Layout>
