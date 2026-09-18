@@ -131,17 +131,6 @@ export function setupSessionStorage() {
   });
 }
 
-export function setupSessionStorageAuth(
-  token = 'test-token',
-  username = 'test-user',
-) {
-  (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-    if (key === 'access_token') return token;
-    if (key === 'username') return username;
-    return null;
-  });
-}
-
 export async function clearDatabase(measurementDBService: {
   getAll: () => Promise<Array<{ id: string }>>;
   delete: (id: string) => Promise<void>;

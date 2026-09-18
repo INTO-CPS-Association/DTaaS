@@ -109,10 +109,11 @@ describe('PrivateRoute', () => {
     expect(getAccessToken()).toBe('example_token');
   });
 
-  test('keeps the access token out of sessionStorage', () => {
-    // It used to be written there, where script on this origin can read it,
-    // including script inside the same-origin iframes the library and digital
-    // twin pages embed without a sandbox attribute.
+  test('does not write the access token to sessionStorage', () => {
+    // This client used to write a second copy there, where script on this
+    // origin can read it, including script inside the same-origin iframes the
+    // library and digital twin pages embed without a sandbox attribute. The
+    // OIDC user store keeps its own copy, which this change does not touch.
     setupTest({ isLoading: false, error: null, isAuthenticated: true });
 
     const stored = Object.keys(sessionStorage).map((k) =>

@@ -38,10 +38,13 @@ describe('the access token', () => {
     expect(getAccessToken()).toBe('');
   });
 
-  it('never reaches sessionStorage', () => {
+  it('is not written to sessionStorage by this module', () => {
     // The defect this module exists to close. Reading the whole of
     // sessionStorage instead of one key, so a rename cannot hide a
     // reintroduction.
+    //
+    // This covers this module only. The OIDC user store writes the same token
+    // under oidc.user:{authority}:{client_id} and no test here sees it.
     setAccessToken('a-token');
 
     const stored = Object.keys(sessionStorage).map((k) =>

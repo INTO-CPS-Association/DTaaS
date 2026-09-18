@@ -68,8 +68,6 @@ async function testSettingsButton() {
   });
   expect(settingsButton).toBeInTheDocument();
 
-  // The avatar carries a letter and no image, so nothing is fetched from the
-  // identity provider on every page.
   // The signed-in user's initial, taken from the same mock the provider is
   // built from instead of written here as a letter. It used to be a fixed A,
   // so every user saw the same avatar whoever they were.

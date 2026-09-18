@@ -4,7 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 import { useLogger } from 'util/logger/useLogger';
-import { setAccessToken } from 'util/auth/accessToken';
+import { clearAccessToken, setAccessToken } from 'util/auth/accessToken';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -25,7 +25,13 @@ function storeAccessToken(
   isAuthenticated: boolean,
   user: ReturnType<typeof useAuth>['user'],
 ): void {
-  if (!isAuthenticated) return;
+  // Clear rather than return, so a session that ends, or a move to a public
+  // route, does not leave the last token in the module for the life of the
+  // document.
+  if (!isAuthenticated) {
+    clearAccessToken();
+    return;
+  }
   if (!user) throw new Error('Access token was not available...');
   setAccessToken(user.access_token);
 }
