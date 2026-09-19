@@ -21,6 +21,10 @@ import LinkButtons from 'components/LinkButtons';
 import AppTitle from 'components/AppTitle';
 import toolbarLinkValues from 'util/toolbarUtil';
 import { useSignOut } from 'util/auth/Authentication';
+import {
+  resolveOAuthPictureUrl,
+  resolveOAuthUsername,
+} from 'util/auth/oauthUserProfile';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -71,6 +75,16 @@ function MenuToolbar({
   anchorElUser,
 }: MenuToolbarProps) {
   const auth = useAuth();
+  // `auth` and not `auth.user`: useAuth returns undefined outside a provider,
+  // which is how several tests render this toolbar. The initial was a fixed
+  // letter A, so every user saw the same avatar whoever they were.
+  const profile = auth?.user?.profile;
+  const pictureUrl = resolveOAuthPictureUrl(profile);
+  const username = resolveOAuthUsername(profile);
+  // Empty when no claim resolves to a name. Falling back to a letter here
+  // would put back the fixed A this set out to remove, so the avatar shows a
+  // person icon instead.
+  const initial = username.charAt(0).toUpperCase();
   const root = document.getElementById('root');
   const signOut = useSignOut();
 
@@ -139,7 +153,20 @@ function MenuToolbar({
                 height: 'auto',
               }}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
+              <Avatar
+                src={pictureUrl}
+                alt={username}
+                // The picture is fetched from the provider's own host. GitLab
+                // falls back to Gravatar by default, so without this every
+                // page load would disclose the referring page to a third
+                // party. Loading it lazily keeps it off the first paint.
+                slotProps={{
+                  img: { referrerPolicy: 'no-referrer', loading: 'lazy' },
+                }}
+                sx={{ width: 32, height: 32 }}
+              >
+                {initial || <PersonRoundedIcon />}
+              </Avatar>
             </IconButton>
           </Tooltip>
           <Menu

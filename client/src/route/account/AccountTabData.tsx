@@ -7,11 +7,11 @@ import TabDescription from 'components/tab/TabDescription';
 import { TabData } from 'components/tab/subcomponents/TabRender';
 import SettingsForm from 'route/account/SettingsForm';
 import {
+  resolveOAuthPictureUrl,
   resolveOAuthProfileUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
 import { radius } from 'theme/tokens';
-import { isSafeHttpUrl } from 'util/safeUrl';
 
 function ListGroups(groups: string[]): ReactNode[] {
   const boldGroups = groups.map((group) =>
@@ -57,10 +57,12 @@ function GroupParagraph(groups: string[], name: ReactNode) {
 function ProfileTab() {
   const { user } = useAuth();
   const username = resolveOAuthUsername(user?.profile);
-  const claimedPicture = user?.profile.picture;
-  const pfp = isSafeHttpUrl(claimedPicture) ? claimedPicture : undefined;
-  const claimedUrl = resolveOAuthProfileUrl(user?.profile);
-  const profileUrl = isSafeHttpUrl(claimedUrl) ? claimedUrl : undefined;
+  // The same resolvers the toolbar uses, so the two surfaces read the same
+  // claims through the same allowlist. The account page used to read `picture`
+  // on its own and miss `avatar_url`, which the resolver reads as the name
+  // other providers give the same thing.
+  const pfp = resolveOAuthPictureUrl(user?.profile);
+  const profileUrl = resolveOAuthProfileUrl(user?.profile);
 
   const groups = (user?.profile.groups as string[] | string | undefined) ?? [];
   const isGroupsAString = typeof groups === 'string';
@@ -115,8 +117,7 @@ function ProfileTab() {
 }
 
 function SettingsTab() {
-  const claimedUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
-  const profileUrl = isSafeHttpUrl(claimedUrl) ? claimedUrl : undefined;
+  const profileUrl = resolveOAuthProfileUrl(useAuth().user?.profile);
   const profileSettingsText = profileUrl ? (
     <Link
       href={profileUrl}

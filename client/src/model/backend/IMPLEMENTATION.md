@@ -79,9 +79,9 @@ is not provided upon execution of a pipeline, it will also throw an error.
 ### Environment Variables
 
 You must have `REACT_APP_AUTH_AUTHORITY` defined in config. This specifies where
-the Gitlab instance is hosted. The remaining config must also be valid to fill
-out the session storage items of `access_token` and `username` upon signing in,
-used by the backend.
+the Gitlab instance is hosted. The remaining config must also be valid to sign
+in. Signing in puts `username` in session storage and hands the access token to
+the client's in-memory store, and the backend layer reads both from there.
 
 Example:
 

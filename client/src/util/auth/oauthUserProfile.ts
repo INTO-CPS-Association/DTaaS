@@ -8,6 +8,10 @@ const USERNAME_CLAIM_PRIORITY = [
 ] as const;
 
 const PROFILE_URL_CLAIM_PRIORITY = ['profile', 'html_url'] as const;
+// GitLab fills in `picture`. `avatar_url` is what several other providers
+// call the same thing, so both are read. The first claim that is present is
+// the one checked, so an unsafe `picture` is not replaced by `avatar_url`.
+const PICTURE_URL_CLAIM_PRIORITY = ['picture', 'avatar_url'] as const;
 const ALLOWED_PROFILE_URL_PROTOCOLS = new Set(['http:', 'https:']);
 const SAFE_USERNAME_PATTERN = /^[A-Za-z0-9._@+-]+$/;
 
@@ -27,8 +31,11 @@ function getEmailLocalPart(identifier: string | undefined): string | undefined {
   if (!identifier) {
     return undefined;
   }
-  const localPart = identifier.split('@')[0]?.trim();
-  return localPart && localPart.length > 0 ? localPart : undefined;
+  // `split` always yields at least one element, so the first is never
+  // undefined and needs no optional chain.
+  const localPart = identifier.split('@')[0].trim();
+  // A string is falsy only when empty, so the length test is the whole guard.
+  return localPart.length > 0 ? localPart : undefined;
 }
 
 function pathFromProfileUrl(profileUrl: string): string | undefined {
@@ -94,6 +101,28 @@ export function resolveOAuthUsername(profile: OAuthProfile): string {
     getClaim(profile, 'sub'),
   ].find((value) => value !== undefined && isSafeUsername(value));
   return username ?? '';
+}
+
+/**
+ * The avatar the identity provider supplies, or undefined.
+ *
+ * The value is a URL the provider controls, so it goes through the same
+ * protocol allowlist the profile link uses. Returning undefined is a normal
+ * outcome and not a failure: a provider that supplies no picture, an
+ * installation with no route to the provider's image host, and a claim that
+ * is not an http URL all land here, and the caller falls back to the initial
+ * or to an icon.
+ */
+export function resolveOAuthPictureUrl(
+  profile: OAuthProfile,
+): string | undefined {
+  const pictureUrl = firstDefinedValue(
+    PICTURE_URL_CLAIM_PRIORITY.map((claim) => getClaim(profile, claim)),
+  );
+  if (!pictureUrl) {
+    return undefined;
+  }
+  return isSafeExternalUrl(pictureUrl) ? pictureUrl : undefined;
 }
 
 export function resolveOAuthProfileUrl(

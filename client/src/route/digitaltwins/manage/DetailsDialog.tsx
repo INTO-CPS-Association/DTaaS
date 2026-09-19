@@ -1,16 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
-import { Remarkable } from 'remarkable';
 import 'katex/dist/katex.min.css';
-// @ts-expect-error: Ignoring TypeScript error due to missing type definitions for 'remarkable-katex'.
-import RemarkableKatexModule from 'remarkable-katex';
 import { useSelector } from 'react-redux';
 import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-
-const RemarkableKatex =
-  (RemarkableKatexModule as { default?: unknown }).default ??
-  RemarkableKatexModule;
+import MarkdownStyles from 'components/MarkdownStyles';
+import { renderMarkdown } from 'util/markdown';
 
 interface DetailsDialogProps {
   readonly showDialog: boolean;
@@ -42,17 +37,12 @@ function DetailsDialog({
 
   const asset = library ? libraryAsset : digitalTwin;
 
-  const md = new Remarkable({
-    html: true,
-    typographer: true,
-  }).use(RemarkableKatex as never);
-
   return (
     <Dialog open={showDialog} maxWidth="md">
       <DialogContent dividers>
         <div
           dangerouslySetInnerHTML={{
-            __html: md.render(asset!.fullDescription),
+            __html: renderMarkdown(asset!.fullDescription),
           }}
           style={{
             maxWidth: '100%',
@@ -74,27 +64,7 @@ function DetailsDialog({
           Close
         </Button>
       </DialogActions>
-      <style>{`
-        img {
-          max-width: 100%;
-          height: auto;
-          display: block;
-          margin: 0 auto;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 20px 0;
-        }
-        th, td {
-          border: 1px solid #ccc;
-          padding: 8px;
-          text-align: left;
-        }
-        th {
-          background-color: #f0f0f0;
-        }
-      `}</style>
+      <MarkdownStyles />
     </Dialog>
   );
 }

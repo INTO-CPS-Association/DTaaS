@@ -10,11 +10,12 @@ import LibraryAsset, { getLibrarySubfolders } from 'model/backend/libraryAsset';
 import { getDTSubfolders } from 'model/backend/util/digitalTwinUtils';
 import { createGitlabInstance } from 'model/backend/gitlab/gitlabFactory';
 import LibraryManager from 'model/backend/libraryManager';
+import { getAccessToken } from 'util/auth/accessToken';
 
 async function createInitializedInstance() {
   const instance = createGitlabInstance(
     sessionStorage.getItem('username') || '',
-    sessionStorage.getItem('access_token') || '',
+    getAccessToken(),
     getAuthority(),
   );
   await instance.init();

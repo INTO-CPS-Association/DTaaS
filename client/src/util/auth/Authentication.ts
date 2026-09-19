@@ -1,4 +1,5 @@
 import { User } from 'oidc-client-ts';
+import { clearAccessToken } from 'util/auth/accessToken';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';
@@ -35,6 +36,7 @@ async function performSignOutFlow(auth: AuthContextProps, appURL: string) {
   await auth.clearStaleState();
 
   sessionStorage.clear();
+  clearAccessToken();
   document.cookie = '_xsrf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
   await auth.signoutRedirect({
