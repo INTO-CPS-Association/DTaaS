@@ -60,7 +60,7 @@ dtaas-services --help
    structure:
 
    ```bash
-   dtaas-services generate-project
+   dtaas-services project generate
    ```
 
    This creates:
@@ -81,8 +81,9 @@ dtaas-services --help
    * `SERVICES_GID`: Group ID for service file ownership
    * **OAuth Configuration** (optional: customise GitLab OAuth app registrations):
         Edit `config/gitlab_oauth.json` to adjust app names, redirect URIs, scopes,
-        or confidentiality settings before running `dtaas-services install -s gitlab`.
-        The file is created automatically by `dtaas-services generate-project`.
+        or confidentiality settings before running
+        `dtaas-services service install -s gitlab`.
+        The file is created automatically by `dtaas-services project generate`.
         To use a different filename, set `OAUTH_APPS=<filename>` in `config/services.env`
         (the file is still looked up in `config/`).
 
@@ -91,12 +92,41 @@ dtaas-services --help
 **Options:**
 
 * `--path` Directory to generate project structure (default: current directory)
+* `--force` Refresh the packaged files of an existing project (see below)
 
 **Example:**
 
 ```bash
-dtaas-services generate-project --path /path/to/project
+dtaas-services project generate --path /path/to/project
 ```
+
+### Refreshing an existing project
+
+By default an item that already exists is skipped, so re-running the command
+is safe but picks up nothing new. After upgrading the package, `--force`
+refreshes the files that ship with it:
+
+```bash
+dtaas-services project generate --force
+```
+
+It overwrites the three `compose.*.yml` files and the packaged files under
+`config/`. It never touches `data/`, `log/` or `certs/`, and it never
+overwrites these files, which are reported as kept:
+
+* `services.env`, `credentials.csv`, `gitlab_oauth.json`
+* `gitlab_tokens.json`, `gitlab_user_tokens.json`, `current.passwords.env`
+* `mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`
+
+The first six hold your settings and live credentials; the last three are
+service configuration you may have hardened locally. Overwritten files and
+existing directories keep the permissions they already had, so a tightened
+`config/` stays tightened. To adopt the packaged version of a kept file, copy
+it aside, delete it and run the command again.
+
+Review the refreshed files before starting the services, and re-run
+`dtaas-services host setup` if certificate or service file permissions were
+affected.
 
 ## Usage
 
@@ -105,7 +135,7 @@ dtaas-services generate-project --path /path/to/project
 After generating the project and configuring the settings:
 
 ```bash
-dtaas-services setup
+dtaas-services host setup
 ```
 
 This command will:
@@ -119,7 +149,7 @@ This command will:
 Ensure the clean command is run right after:
 
 ```bash
-dtaas-services clean
+dtaas-services service clean
 ```
 
 ### Managing Services
@@ -130,22 +160,45 @@ restart, and status.
 Example:
 
 ```bash
-dtaas-services start
+dtaas-services service start
 ```
 
 A specific service can be specified:
 
 ```bash
-dtaas-services stop -s influxdb
+dtaas-services service stop -s influxdb
 ```
 
 Remove services and their volumes:
 
 ```bash
-dtaas-services remove -v
+dtaas-services service remove --volumes
 # Specify
-dtaas-services remove -v -s <service_name>
+dtaas-services service remove --volumes -s <service_name>
 ```
+
+`service status` prints a table by default. For scripting, `--json` prints a
+JSON array on stdout, one object per container, so services that share a
+container label are all listed:
+
+```bash
+dtaas-services service status --json
+```
+
+```json
+[
+  { "service": "gitlab", "container": "gitlab", "status": "running" },
+  { "service": "grafana", "container": "grafana", "status": "removed" }
+]
+```
+
+Failures are still reported as text on stderr, so a script can read stdout
+only.
+
+> **Note:** `-s` accepts a comma separated list. A selector that names no
+> service, such as `-s ""` from an unset shell variable, is an error rather
+> than a silent "all services", so a mistyped selector cannot remove or clean
+> more than you intended. Omit the flag entirely to act on all services.
 
 ### User Account Management
 
@@ -182,10 +235,12 @@ The steps given above install two services:
 
 ### ThingsBoard Installation
 
-> **Warning:** Running `dtaas-services install -s thingsboard` more than once
+> **Warning:** Running `dtaas-services service install -s thingsboard`
+> more than once
 > will re-run the ThingsBoard schema migration against an already-populated
 > PostgreSQL database, which can corrupt it. To reinstall from
-> scratch, run `dtaas-services clean -s "postgres,thingsboard"` first to wipe
+> scratch, run `dtaas-services service clean -s "postgres,thingsboard"`
+> first to wipe
 > all data before re-running the install command.
 > **Note:** It is recommended to specify the service explicitly with `-s <service>`
 > when installing.
@@ -193,11 +248,11 @@ The steps given above install two services:
 
 ```bash
 # It starts PostgreSQL if it is not running, and it checks its health.
-dtaas-services install -s thingsboard
+dtaas-services service install -s thingsboard
 ```
 
 ```bash
-dtaas-services start -s thingsboard
+dtaas-services service start -s thingsboard
 ```
 
 ```bash
@@ -227,7 +282,7 @@ This command:
 * The GitLab container joins the `dtaas-services` Docker network
    (`platform-services`), which is created automatically when the other
    platform services are running. Start them first with
-   `dtaas-services start` before installing GitLab.
+   `dtaas-services service start` before installing GitLab.
 * Set `REACT_APP_AUTH_AUTHORITY` in the client config file to
   `https://<hostname>:<GITLAB_PORT>/gitlab`.
 
@@ -238,7 +293,7 @@ This command:
 To install and configure the local GitLab instance:
 
 ```bash
-dtaas-services install -s gitlab
+dtaas-services service install -s gitlab
 ```
 
 GitLab takes 5 to 10 minutes to become healthy after the first start.
@@ -248,8 +303,8 @@ The install command checks GitLab readiness and returns immediately:
    (password reset, PAT creation, OAuth app registration) and
    saves the access token to `config/gitlab_tokens.json`.
 * **If GitLab is still starting:** the command prints a status hint
-   and exits. Check progress with `dtaas-services status -s gitlab`
-   and re-run `dtaas-services install -s gitlab` once the status
+   and exits. Check progress with `dtaas-services service status -s gitlab`
+   and re-run `dtaas-services service install -s gitlab` once the status
    shows `healthy`.
 
 > **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
@@ -281,8 +336,8 @@ and applies it via the GitLab API.
 
 ## GitLab Post-Install Flow
 
-The `dtaas-services install -s gitlab` command performs the following steps
-automatically:
+The `dtaas-services service install -s gitlab` command performs the
+following steps automatically:
 
 1. Starts the GitLab Docker container.
 2. Checks whether GitLab is healthy.
@@ -322,7 +377,7 @@ docker compose -f compose.gitlab.yml --env-file config/services.env down
 ### Permission Issues (Linux/macOS)
 
 ```bash
-sudo -E env PATH="$PATH" dtaas-services setup
+sudo -E env PATH="$PATH" dtaas-services host setup
 ```
 
 ### Docker connectivity

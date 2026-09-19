@@ -87,7 +87,7 @@ def _format_docker_error(container: str, error_str: str) -> str:
     if "No such container" in error_str:
         return (
             f"Container '{container}' is not running. "
-            f"Please start services first with: dtaas-services start"
+            f"Please start services first with: dtaas-services service start"
         )
     clean_error = _extract_stderr_line(error_str)
     return f"Docker error: {clean_error}"

@@ -59,7 +59,7 @@ def test_format_docker_error_no_such_container():
     error = "No such container: my-container"
     result = _format_docker_error("my-container", error)
     assert "not running" in result
-    assert "dtaas-services start" in result
+    assert "dtaas-services service start" in result
 
 
 def test_process_stderr_lines_error_prefix():

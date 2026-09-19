@@ -4,6 +4,11 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 from .lib.utils import SERVICE_DATA_SUBDIRS
+from .force_overwrite import (
+    OVERWRITABLE_ITEMS,
+    force_notes,
+    overwrite_directory_or_file,
+)
 
 
 def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> str:
@@ -30,11 +35,21 @@ def copy_directory_or_file(src_path: Path, dest_path: Path, item_name: str) -> s
     return f"  Created {item_name}{suffix}"
 
 
+def _copy_template_item(src_path: Path, dest_path: Path, force: bool) -> list[str]:
+    """Copy one template item, overwriting it only when forced and allowed."""
+    item_name = dest_path.name
+    can_overwrite = item_name in OVERWRITABLE_ITEMS and dest_path.exists()
+    if force and can_overwrite and src_path.exists():
+        return overwrite_directory_or_file(src_path, dest_path, item_name)
+    message = copy_directory_or_file(src_path, dest_path, item_name)
+    return [message] if message else []
+
+
 def copy_template_to_config(
     config_dir: Path, template_name: str, actual_name: str
 ) -> str:
     """
-    Copy a template file to its actual config file if it doesn't exist.
+    Copy a template file to its actual config file if it does not exist.
     Args:
         config_dir: Directory containing config files
         template_name: Name of the template file
@@ -50,24 +65,24 @@ def copy_template_to_config(
     return ""
 
 
-def _copy_template_items(target_dir: Path, package_root: Path, messages: list) -> None:
-    """Copy template directories and files to target."""
+def _copy_template_items(target_dir: Path, package_root: Path, force: bool) -> list:
+    """Copy template directories and files to target and return status messages."""
     templates_root = package_root / "templates"
     items_to_copy = [
-        ("config", "config"),
-        ("data", "data"),
-        ("log", "log"),
-        ("certs", "certs"),
-        ("compose.services.yml", "compose.services.yml"),
-        ("compose.thingsboard.yml", "compose.thingsboard.yml"),
-        ("compose.gitlab.yml", "compose.gitlab.yml"),
+        "config",
+        "data",
+        "log",
+        "certs",
+        "compose.services.yml",
+        "compose.thingsboard.yml",
+        "compose.gitlab.yml",
     ]
-    for src_item, dest_item in items_to_copy:
-        src_path = templates_root / src_item
-        dest_path = target_dir / dest_item
-        msg = copy_directory_or_file(src_path, dest_path, dest_item)
-        if msg:
-            messages.append(msg)
+    messages = []
+    for item in items_to_copy:
+        messages.extend(
+            _copy_template_item(templates_root / item, target_dir / item, force)
+        )
+    return messages
 
 
 def _copy_template_configs(target_dir: Path, messages: list) -> None:
@@ -92,13 +107,15 @@ def _create_data_subdirs(target_dir: Path) -> None:
 
 
 def generate_project_structure(
-    target_dir: Path, package_root: Path
+    target_dir: Path, package_root: Path, force: bool = False
 ) -> Tuple[bool, str]:
     """
     Generate project structure with template config, data directories, and compose file.
     Args:
         target_dir: Target directory for project generation
         package_root: Root directory of the package containing template files
+        force: Overwrite existing compose files and package files under config/,
+            except the names in PROTECTED_CONFIG_NAMES
     Returns:
         Tuple of (success, message or error)
     """
@@ -106,12 +123,13 @@ def generate_project_structure(
         target_dir.mkdir(parents=True, exist_ok=True)
         messages = [f"Generating project structure in {target_dir}..."]
         # Copy directories and files
-        _copy_template_items(target_dir, package_root, messages)
+        messages.extend(_copy_template_items(target_dir, package_root, force))
         # Copy template files to actual config files
         _copy_template_configs(target_dir, messages)
         # Create data subdirectories for services
         _create_data_subdirs(target_dir)
         messages.append(f"\nProject structure generated successfully in {target_dir}!")
+        messages.extend(force_notes(messages))
         return True, "\n".join(messages)
     except OSError as e:
         return False, f"Failed to generate project: {e}"

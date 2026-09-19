@@ -1,11 +1,18 @@
-"""Service operational commands."""
+"""Service commands, install, start, stop, restart, status, remove, clean."""
 
+import json
 from typing import Optional
 import click
 from rich.console import Console
 from ..pkg.lib import Service
-from ..pkg.formatter import format_container_status
+from ..pkg.formatter import build_status_json, format_container_status
 from ..pkg.password_store import remove_service_passwords
+from ..pkg.utils import check_root_unix
+from .install_helpers import (
+    install_services,
+    resolve_install_selection,
+    resolve_install_targets,
+)
 from .utility import (
     services_command_runner,
     parse_service_list,
@@ -15,6 +22,53 @@ from .utility import (
     build_clean_status_message,
     _handle_operation_result,
 )
+
+
+@click.command()
+@click.option(
+    "--services",
+    "-s",
+    "service_names",
+    help=(
+        "Comma-separated list of services to install (thingsboard, gitlab). "
+        "Installs both if not specified."
+    ),
+)
+@click.option(
+    "--service",
+    "legacy_service",
+    hidden=True,
+    help="Deprecated spelling of --services.",
+)
+def install(service_names, legacy_service):
+    """
+    Install service database schema or run post-install setup.
+
+    Prerequisites:
+    - dtaas-services host setup must be completed
+
+    For ThingsBoard: automatically starts PostgreSQL if needed, then
+    initializes the database and creates the default system administrator
+    account.
+
+    For GitLab: waits for readiness, retrieves the root password, creates
+    a Personal Access Token, and registers OAuth application tokens.
+
+    If no service is specified, both ThingsBoard and GitLab are installed.
+
+    Must be run only once after initial setup.
+    """
+    try:
+        check_root_unix()
+        selection = resolve_install_selection(service_names, legacy_service)
+        targets = resolve_install_targets(selection)
+        install_services(Console(), Service(), targets)
+    except FileNotFoundError as e:
+        raise click.ClickException(str(e)) from e
+    except click.ClickException:
+        raise
+    except Exception as e:
+        raise click.ClickException(f"Installation failed: {str(e)}") from e
 
 
 @click.command()
@@ -50,6 +104,14 @@ def restart(service_names):
     services_command_runner("restart", service_names)
 
 
+def _print_status(containers: list, as_json: bool) -> None:
+    """Print container status as a rich table or as JSON."""
+    if as_json:
+        click.echo(json.dumps(build_status_json(containers), indent=2))
+        return
+    format_container_status(containers, Console())
+
+
 @click.command()
 @click.option(
     "--services",
@@ -57,11 +119,22 @@ def restart(service_names):
     "service_names",
     help="Comma-separated list of services to check",
 )
-def status(service_names):
-    """Show the status of the platform services."""
+@click.option(
+    "--json",
+    "as_json",
+    is_flag=True,
+    default=False,
+    help="Print status as a JSON array, one object per container.",
+)
+def status(service_names, as_json):
+    """Show the status of the platform services.
+
+    With --json, each container is printed as an object with its service
+    name, container name and status. Failures are still reported as text on
+    stderr, so a machine consumer reads stdout only.
+    """
     try:
         setup_obj = Service()
-        console = Console()
 
         service_list = parse_service_list(service_names)
 
@@ -70,8 +143,7 @@ def status(service_names):
             error_msg = f"Failed to get status: {str(err)}"
             raise click.ClickException(error_msg)
 
-        # Use rich formatter to display status
-        format_container_status(containers, console)
+        _print_status(containers, as_json)
 
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
@@ -101,7 +173,12 @@ def _clean_passwords(service_list: Optional[list[str]]) -> None:
     "service_names",
     help="Comma-separated list of services to remove",
 )
-@click.option("--volumes", "-v", is_flag=True, help="Remove volumes as well")
+@click.option(
+    "--volumes",
+    "-v",
+    is_flag=True,
+    help="Also remove the service volumes. Prefer --volumes; -v is kept as an alias.",
+)
 def remove(service_names, volumes):
     """Remove the platform services and optionally their volumes."""
     try:
@@ -135,7 +212,7 @@ def remove(service_names, volumes):
     default=False,
     help=(
         "Also delete copied TLS cert files under certs. "
-        "This will require re-running dtaas-services setup."
+        "This will require re-running dtaas-services host setup."
     ),
 )
 def clean(service_names, certs):

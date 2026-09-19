@@ -31,18 +31,18 @@ def is_running_as_root():
 def setup_services():
     """Run setup command with appropriate privileges"""
     if is_running_as_root():
-        return run_command(["dtaas-services", "setup"])
+        return run_command(["dtaas-services", "host", "setup"])
     else:
         # In non-root environments, try with sudo, or skip if not available
         result = subprocess.run(
-            ["sudo", "dtaas-services", "setup"],
+            ["sudo", "dtaas-services", "host", "setup"],
             capture_output=True,
             text=True,
             check=False,
         )
         if result.returncode != 0:
             # If sudo fails, try without (some tests might not need actual permissions)
-            return run_command(["dtaas-services", "setup"], check=False)
+            return run_command(["dtaas-services", "host", "setup"], check=False)
         return result
 
 
@@ -232,7 +232,7 @@ def test_setup_start_status_all_services(ensure_services_stopped):
         )
 
     # Step 2: Start all services
-    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
+    result = run_command(["dtaas-services", "service", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Step 3: Check status of all services
@@ -255,11 +255,11 @@ def test_stop_influxdb_service(ensure_services_stopped):
         )
 
     # Step 2: Start all services
-    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
+    result = run_command(["dtaas-services", "service", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Step 3: Stop influxdb specifically
-    result = run_command(["dtaas-services", "stop", "-s", "influxdb"])
+    result = run_command(["dtaas-services", "service", "stop", "-s", "influxdb"])
     assert_command_success(result, "Stop influxdb")
 
     # Step 4: Check status
@@ -276,7 +276,7 @@ def test_stop_influxdb_service(ensure_services_stopped):
 def test_stop_multiple_services(ensure_services_stopped):
     """Test stopping multiple services at once"""
     # Ensure clean state
-    run_command(["dtaas-services", "stop"], check=False)
+    run_command(["dtaas-services", "service", "stop"], check=False)
 
     # Setup and start
     result = setup_services()
@@ -285,10 +285,10 @@ def test_stop_multiple_services(ensure_services_stopped):
             "[yellow]Warning: Setup failed "
             "(may be due to permissions), continuing with test...[/yellow]"
         )
-    run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
+    run_command(["dtaas-services", "service", "start", "-s", AVAILABLE_SERVICES_CSV])
 
     # Stop rabbitmq and mongodb
-    result = run_command(["dtaas-services", "stop", "-s", "rabbitmq,mongodb"])
+    result = run_command(["dtaas-services", "service", "stop", "-s", "rabbitmq,mongodb"])
     assert_command_success(result, "Stop rabbitmq and mongodb")
 
     # Check status
@@ -313,7 +313,7 @@ def test_start_single_service(ensure_services_stopped):
         )
 
     # Start with -s rabbitmq flag
-    result = run_command(["dtaas-services", "start", "-s", "rabbitmq"])
+    result = run_command(["dtaas-services", "service", "start", "-s", "rabbitmq"])
     assert_command_success(result, "Start rabbitmq service")
 
     # Only check and assert for rabbitmq
@@ -333,7 +333,7 @@ def test_start_stop_start_cycle(ensure_services_stopped):
         )
 
     # First start
-    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
+    result = run_command(["dtaas-services", "service", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services")
 
     # Verify running
@@ -343,10 +343,10 @@ def test_start_stop_start_cycle(ensure_services_stopped):
     }
     assert_service_states(status, expected_states)
     # Stop all
-    result = run_command(["dtaas-services", "stop"])
+    result = run_command(["dtaas-services", "service", "stop"])
     assert_command_success(result, "Stop all services")
     # Start again
-    result = run_command(["dtaas-services", "start", "-s", AVAILABLE_SERVICES_CSV])
+    result = run_command(["dtaas-services", "service", "start", "-s", AVAILABLE_SERVICES_CSV])
     assert_command_success(result, "Start all services (second time)")
     # Verify running again
     status = get_service_status()

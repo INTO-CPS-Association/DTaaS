@@ -7,6 +7,7 @@ from rich.console import Console
 from python_on_whales import Container
 
 from dtaas_services.pkg.formatter import (
+    build_status_json,
     format_container_status,
     format_service_list_status,
     RemovedServiceEntry,
@@ -77,3 +78,39 @@ def test_format_container_status_unhealthy():
     format_container_status(containers, console)
     output = string_io.getvalue()
     assert "not ready" in output
+
+
+def test_build_status_json_uses_compose_service_label():
+    """Service names come from the compose label, so thingsboard maps to thingsboard-ce"""
+    container = make_mock_container("thingsboard", "exited")
+    container.config.labels = {"com.docker.compose.service": "thingsboard-ce"}
+    containers = cast(
+        List[Union[Container, RemovedServiceEntry]],
+        [container, RemovedServiceEntry("postgres")],
+    )
+    assert build_status_json(containers) == [
+        {"service": "postgres", "container": "postgres", "status": "removed"},
+        {
+            "service": "thingsboard-ce",
+            "container": "thingsboard",
+            "status": "exited",
+        },
+    ]
+
+
+def test_build_status_json_keeps_replicas_of_one_service():
+    """Containers sharing a compose service label each get their own entry"""
+    replicas = []
+    for name in ("gitlab-1", "gitlab-2"):
+        container = make_mock_container(name, "running")
+        container.config.labels = {"com.docker.compose.service": "gitlab"}
+        replicas.append(container)
+    containers = cast(List[Union[Container, RemovedServiceEntry]], replicas)
+    entries = build_status_json(containers)
+    assert [entry["container"] for entry in entries] == ["gitlab-1", "gitlab-2"]
+    assert {entry["service"] for entry in entries} == {"gitlab"}
+
+
+def test_build_status_json_empty():
+    """No containers gives an empty object"""
+    assert not build_status_json([])
