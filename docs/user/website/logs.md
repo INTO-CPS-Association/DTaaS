@@ -23,8 +23,9 @@ being recorded.
 > **URL**: `https://intocps.org/insights/log` or
 > `http://localhost:4000/insights/log`
 
-The logs are viewed by navigating directly to `/insights/log` on the DTaaS
-installation. The page is titled **Workflow Logs**, and the :fontawesome-solid-circle-info:
+The logs are reached from **Insights** > **Logs** in the menu, or by
+navigating to `/insights/log` on the DTaaS installation.
+The page is titled **Workflow Logs**, and the :fontawesome-solid-circle-info:
 icon next to the title expands a short description of the page.
 
 ![Workflow Logs](images/logs-all.png)

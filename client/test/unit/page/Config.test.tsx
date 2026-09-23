@@ -1,6 +1,7 @@
 import Config from 'route/config/Config';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import * as configUtil from 'util/configUtil';
 
 jest.mock('@mui/material/CircularProgress', () => ({
   __esModule: true,
@@ -123,5 +124,70 @@ describe('Config', () => {
     });
     expect(linkToDeveloperConfig).toBeInTheDocument();
     expect(linkToDeveloperConfig).toHaveAttribute('href', '/');
+  });
+});
+
+describe('Config variants', () => {
+  const valid = {
+    REACT_APP_URL: { value: 'http://localhost', status: 200 }, // NOSONAR
+  };
+  const invalid = {
+    REACT_APP_URL: { value: 'http://localhost', error: 'unreachable' }, // NOSONAR
+  };
+
+  const renderUserConfig = (
+    results: Record<string, configUtil.ValidationType>,
+    variant?: 'page' | 'embedded',
+  ) => {
+    jest
+      .spyOn(configUtil, 'getValidationResults')
+      .mockResolvedValueOnce(results);
+    render(
+      <MemoryRouter basename="/au" initialEntries={['/au/insights/config']}>
+        <Config role="user" variant={variant} />
+      </MemoryRouter>,
+    );
+  };
+
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  test('Offers the way back to sign in on the public page', async () => {
+    renderUserConfig(valid);
+
+    expect(
+      await screen.findByRole('link', { name: 'Return to login' }),
+    ).toHaveAttribute('href', '/');
+  });
+
+  test('Offers no sign-in link to a person who is signed in', async () => {
+    renderUserConfig(valid, 'embedded');
+
+    expect(
+      await screen.findByText('Configuration appears to be valid.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Return to login' }),
+    ).not.toBeInTheDocument();
+  });
+
+  test('Links to the developer page relative to itself on the public page', async () => {
+    renderUserConfig(invalid);
+
+    expect(
+      await screen.findByRole('link', { name: 'Inspect configuration' }),
+    ).toHaveAttribute('href', './developer');
+  });
+
+  test('Links to the developer page through the router when embedded', async () => {
+    renderUserConfig(invalid, 'embedded');
+
+    // A relative link would resolve to /au/insights/developer, which does not
+    // exist. The router adds the base path to the named page instead.
+    expect(
+      await screen.findByRole('link', { name: 'Inspect configuration' }),
+    ).toHaveAttribute('href', '/au/config/developer');
   });
 });

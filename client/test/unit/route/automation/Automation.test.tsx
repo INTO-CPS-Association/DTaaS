@@ -53,4 +53,16 @@ describe('Automation', () => {
     // introduced, so neither link carries the word "Preview".
     expect(screen.queryByRole('link', { name: /Preview/i })).toBeNull();
   });
+
+  it('Links to the measurement page, and says where its settings are', () => {
+    renderPage();
+
+    const measurement = screen.getByRole('link', { name: /Measurement/ });
+    expect(measurement).toHaveAttribute('href', '/insights/measure');
+    expect(measurement).not.toHaveAttribute('target');
+    // The trials and runner tags live on the Account page, so a person who
+    // starts here would otherwise run with the defaults without knowing.
+    expect(measurement).toHaveTextContent(/performance measurements/);
+    expect(measurement).toHaveTextContent(/Account page/);
+  });
 });

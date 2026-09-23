@@ -91,7 +91,9 @@ The **Account** using the top-right purple 🅰️ icon provides options to
 
 For troubleshooting login issues, the website configuration can be verified
 by navigating to <https://intocps.org/config/user>. The following display
-indicates a correctly configured application.
+indicates a correctly configured application. A signed-in user reaches the
+same check from **Insights** > **Config**, which shows it inside the
+application.
 
 ![Configuration Check](images/config.png)
 
@@ -103,7 +105,7 @@ of the page reveals the menu.
 
 ![Menu](images/menu.png)
 
-Five menu items are available:
+Six menu items are available:
 
 **Library**: For management of reusable library assets. Files can be uploaded,
 downloaded, created, and modified on this page.
@@ -111,15 +113,18 @@ downloaded, created, and modified on this page.
 **Digital Twins**: For management of digital twins. A Jupyter Lab page is presented
 from which digital twins can be executed.
 
-**Automation**: The Library Page and the Digital Twins Page in one place. These
-features demonstrate the DTaaS integration with GitLab CI/CD and are
-experimental.
+**Automation**: The Library Page, the Digital Twins Page and the Measurement
+page in one place. These features demonstrate the DTaaS integration with
+GitLab CI/CD and are experimental.
 
 **Buildings**: Draws the IFC building models in the user's library, and colours
 them by the readings their sensors report.
 
 **Workbench**: Not all digital twins can be managed within Jupyter Lab.
 Additional tools are available on this page.
+
+**Insights**: What the platform can tell a user about itself. The
+[Logs](logs.md) of this website and the configuration check described above.
 
 ## Library Page
 
@@ -253,11 +258,12 @@ Screenshots of the pages opened by clicking on these icons are shown:
 
 The hyperlinks open in new browser tabs.
 
-The **Automation** page has two links to DevOps-based implementation of
+The **Automation** page has three links to DevOps-based implementation of
 composable digital twins.
 
 * Library Page
 * Digital Twins Page
+* [Measurement](../digital-twins/devops/measurement.md)
 
 ### Library Preview Page
 

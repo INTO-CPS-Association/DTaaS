@@ -8,6 +8,7 @@ import {
   AutomationIcon,
   WorkbenchIcon,
   BuildingModelsIcon,
+  InsightsIcon,
 } from 'components/appIcons';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -43,6 +44,12 @@ const menuItems: MenuItemEntry[] = [
     name: 'Workbench',
     icon: <WorkbenchIcon />,
     link: '/workbench',
+  },
+  {
+    index: 6,
+    name: 'Insights',
+    icon: <InsightsIcon />,
+    link: '/insights',
   },
 ];
 

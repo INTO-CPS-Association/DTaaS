@@ -4,43 +4,32 @@
  * The library and digital twins previews are pages of this application, not
  * workbench services. They used to sit among the workbench cards, where the
  * page said each card opens a service in a new tab, which was true of neither.
- * They live here instead, as two cards that follow the route in this tab.
+ * They live here instead, with the measurement page, as cards that follow the
+ * route in this tab.
  *
- * The two routes are named here as constants. They are internal paths, not
- * deployment endpoints, so there is nothing to configure and the card follows
- * them with the router, never a new tab: a new tab starts with an empty
- * sessionStorage, where the OIDC session is kept, so the route guard would send
- * the person to sign in again.
+ * The routes are named here as constants. They are internal paths, not
+ * deployment endpoints, so there is nothing to configure.
  */
 
 import Layout from 'page/Layout';
 import PageShell from 'components/PageShell';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import Typography from '@mui/material/Typography';
-import { Link as RouterLink } from 'react-router-dom';
-import { LibraryIcon, DigitalTwinsIcon } from 'components/appIcons';
+import NavigationCards, { NavigationCard } from 'components/NavigationCards';
+import {
+  LibraryIcon,
+  DigitalTwinsIcon,
+  MeasurementIcon,
+} from 'components/appIcons';
 
-// The two cards are the two steps of one flow and not two views of the same
-// thing, so the description says what each step is for instead of naming them
-// together.
 const DESCRIPTION =
   'Build a digital twin in two steps: gather the assets it needs, then create ' +
-  'and run it. Both steps drive GitLab CI/CD and are experimental.';
-
-interface AutomationCard {
-  name: string;
-  description: string;
-  to: string;
-  icon: React.ReactElement;
-}
+  'and run it. Then measure how its executions perform. All three drive ' +
+  'GitLab CI/CD and are experimental.';
 
 // Each card says what its page does, the way the workbench cards do, so the
-// destination is readable without opening it. Each description starts with its
+// destination is readable without opening it. The first two start with their
 // step, because the order matters: a selection made on the first page is what
 // the second starts from.
-const cards: AutomationCard[] = [
+const cards: NavigationCard[] = [
   {
     name: 'Library Page',
     description:
@@ -57,59 +46,25 @@ const cards: AutomationCard[] = [
     to: '/preview/digitaltwins',
     icon: <DigitalTwinsIcon />,
   },
+  {
+    // The trials, runner tags and digital twins under test are fields of the
+    // Account page. A person arriving from this card would otherwise run with
+    // the defaults without knowing there is anything to set.
+    name: 'Measurement',
+    description:
+      'Run performance measurements of digital twin executions. Trials, ' +
+      'runner tags and the digital twins under test are set on the Account ' +
+      'page.',
+    to: '/insights/measure',
+    icon: <MeasurementIcon />,
+  },
 ];
 
 function Automation() {
   return (
     <Layout>
       <PageShell title="Automation" description={DESCRIPTION}>
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 2,
-            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-          }}
-        >
-          {cards.map((card) => (
-            <Card key={card.to} sx={{ height: '100%' }}>
-              <CardActionArea
-                component={RouterLink}
-                to={card.to}
-                sx={{
-                  height: '100%',
-                  p: 2.5,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 44,
-                    height: 44,
-                    borderRadius: 2,
-                    backgroundColor: 'primary.light',
-                    color: 'primary.dark',
-                    mb: 0.5,
-                    '& > svg': { fontSize: '1.5rem' },
-                  }}
-                >
-                  {card.icon}
-                </Box>
-                <Typography variant="h6" component="h2">
-                  {card.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {card.description}
-                </Typography>
-              </CardActionArea>
-            </Card>
-          ))}
-        </Box>
+        <NavigationCards cards={cards} />
       </PageShell>
     </Layout>
   );

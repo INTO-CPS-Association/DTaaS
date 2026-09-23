@@ -11,9 +11,17 @@ import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 import PrecisionManufacturingRoundedIcon from '@mui/icons-material/PrecisionManufacturingRounded';
 import HandymanRoundedIcon from '@mui/icons-material/HandymanRounded';
 import ViewInArRoundedIcon from '@mui/icons-material/ViewInArRounded';
+import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
+import SpeedRoundedIcon from '@mui/icons-material/SpeedRounded';
+import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
+import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded';
 
 export const LibraryIcon = ExtensionRoundedIcon;
 export const DigitalTwinsIcon = PeopleRoundedIcon;
 export const AutomationIcon = PrecisionManufacturingRoundedIcon;
 export const WorkbenchIcon = HandymanRoundedIcon;
 export const BuildingModelsIcon = ViewInArRoundedIcon;
+export const InsightsIcon = InsightsRoundedIcon;
+export const MeasurementIcon = SpeedRoundedIcon;
+export const LogsIcon = ReceiptLongRoundedIcon;
+export const ConfigIcon = FactCheckRoundedIcon;

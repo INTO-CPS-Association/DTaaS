@@ -14,6 +14,8 @@ import Measurement from 'route/measurement/Measurement';
 import LogViewer from 'page/LogViewer';
 import NotFound from 'page/NotFound';
 import Automation from 'route/automation/Automation';
+import Insights from 'route/insights/Insights';
+import InsightsConfig from 'route/insights/InsightsConfig';
 
 /**
  * The only route loaded on demand.
@@ -122,6 +124,22 @@ export const routes = [
     element: (
       <PrivateRoute>
         <Measurement />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'insights',
+    element: (
+      <PrivateRoute>
+        <Insights />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: 'insights/config',
+    element: (
+      <PrivateRoute>
+        <InsightsConfig />
       </PrivateRoute>
     ),
   },
