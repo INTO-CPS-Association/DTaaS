@@ -55,7 +55,8 @@ replaced with _options_ in the names of test files.
 
 The package version is hardcoded as `PACKAGE_VERSION: string` in
 [CLI code](src/config/commander.ts). This package version needs to be
-same as `version` in `package.json`.
+same as `version` in `package.json`. The `test/unit/version.spec.ts` test
+fails if the two versions differ.
 
 ### Github Package Registry
 

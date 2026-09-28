@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/logger-ms",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DTaaS logger microservice",
   "main": "dist/src/main.js",
   "repository": "https://github.com/into-cps-association/DTaaS.git",
