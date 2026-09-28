@@ -7,9 +7,9 @@ WORKDIR /dtaas/libms
 
 # pull the libms package from npm registry
 ARG VERSION="latest"
-RUN npm i -g @into-cps-association/libms@${VERSION}
+RUN npm i -g @into-cps-association/libms@${VERSION} \
+  && chown node:node /dtaas/libms
 
-RUN chown node:node /dtaas/libms
 COPY --chown=node:node ./developer/config/libms.dev.yaml.example libms.yaml
 COPY --chown=node:node ./servers/lib/config/http.json .
 
