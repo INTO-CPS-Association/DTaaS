@@ -6,7 +6,6 @@ updates:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "client-npm: "
@@ -20,7 +19,6 @@ updates:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "libms-npm: "
@@ -35,12 +33,24 @@ updates:
           - "version-update:semver-major"
 
   - package-ecosystem: "npm"
+    directory: "/servers/logger"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "prasadtalasila"
+    commit-message:
+      prefix: "logger-npm: "
+    target-branch: "dependabot-merge"
+    pull-request-branch-name:
+      separator: "-"
+
+  - package-ecosystem: "npm"
     directory: "/servers/execution/runner"
     schedule:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "runner-npm: "
