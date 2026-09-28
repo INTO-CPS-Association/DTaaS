@@ -127,3 +127,28 @@ The `/logger` suffix is required. The client validates logger reachability by
 appending `/health`, so `http://localhost:4003/logger` checks
 `http://localhost:4003/logger/health`. A bare host such as
 `http://localhost:4003` would check `/health`, which is not a logger endpoint.
+
+## Use in Docker Environment
+
+The `compose.logger.dev.yml` file builds the logger image from the source
+code and uses `logger.yaml.sample` as the configuration. The captured events
+are saved in the `logs` directory of `servers/logger`.
+
+**NOTE**: the docker compose file is located in the `servers/logger`
+directory.
+
+```bash
+docker compose -f compose.logger.dev.yml up -d --build
+```
+
+This command brings up the logger container and makes the service available
+at <http://localhost:4003/logger>. If the configuration values are changed,
+please restart the container.
+
+```bash
+docker compose -f compose.logger.dev.yml down
+docker compose -f compose.logger.dev.yml up -d
+```
+
+See [DOCKER.md](./DOCKER.md) for running the published
+`intocps/logger-ms` image.

@@ -1,0 +1,9 @@
+services:
+  logger-ms:
+    image: intocps/logger-ms:latest
+    restart: unless-stopped
+    volumes:
+      - ./logger.yaml:/dtaas/logger/logger.yaml
+      - ./logs:/dtaas/logger/logs
+    ports:
+      - "4003:4003"
