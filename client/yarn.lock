@@ -440,13 +440,13 @@
     "@babel/helper-string-parser" "^8.0.0"
     "@babel/helper-validator-identifier" "^8.0.4"
 
-"@base-ui/utils@^0.3.0":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@base-ui/utils/-/utils-0.3.1.tgz#329b4fbd5e66a78a93df68223061224f474e5c0f"
-  integrity sha512-gFFiltORVmW/N6IILTGxizP3PBpVpysqML1ALY5Vk0mH+7faVkCknOU31goYHN5Aoek2dkjxva1XOD2Ce9WuIg==
+"@base-ui/utils@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@base-ui/utils/-/utils-0.3.2.tgz#21983db937f78a378d1f2e0f50157a2bc107123d"
+  integrity sha512-oWy1aq/I2GmYjpl4PhEAhzflF8VPGKgZeq0xAWTbfD5KBWyxcN0ZP2+WHSUm/5Z6lVMBDLReLcoXwSYoRc/zNQ==
   dependencies:
     "@babel/runtime" "^7.29.2"
-    "@floating-ui/utils" "^0.2.11"
+    "@floating-ui/utils" "^0.2.12"
     reselect "^5.2.0"
     use-sync-external-store "^1.6.0"
 
@@ -719,7 +719,7 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@floating-ui/utils@^0.2.11":
+"@floating-ui/utils@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.12.tgz#afefe785949f16ac4cdd1e695935a321572dd56a"
   integrity sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==
@@ -1167,42 +1167,47 @@
   dependencies:
     "@babel/runtime" "^7.29.2"
 
-"@mui/utils@^9.2.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-9.2.0.tgz#1da604f8fcfb6964e20e3a93f4ad3b719f73c843"
-  integrity sha512-OsUH5zhlSOM4xmLl53+agug1M1UyWb4zxFxWQCqwKTKUeQPvTENtg3JhrroBD2qpCLKsX5W/DYGERJ4mBUbc8g==
+"@mui/types@^9.4.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@mui/types/-/types-9.4.0.tgz#76334f61810aba0f80a9e3696c5fe22788afb286"
+  integrity sha512-13DH0Oniua4WmGqeYbQAZqmiN7r4nfd0zwIoGJ5QeJwyIHgEmf+LkRw/jV1HZb6AiUoHX8Oxf4xgalq3vYHcIw==
   dependencies:
-    "@babel/runtime" "^7.29.2"
-    "@mui/types" "^9.1.1"
+    "@babel/runtime" "^7.29.7"
+
+"@mui/utils@^9.2.0", "@mui/utils@^9.4.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-9.4.0.tgz#3e4946c1bf0d8f735e71d4d90d4fb9d1afa48cec"
+  integrity sha512-WkzY8uYtqUDyGKPShrRQRBomfMQHddlsyKu/gRRESYO24tDPD2z0xRE8CBoUsWqpBa+YrFs9KixiS7kQRjsPAQ==
+  dependencies:
+    "@babel/runtime" "^7.29.7"
+    "@mui/types" "^9.4.0"
     "@types/prop-types" "^15.7.15"
     clsx "^2.1.1"
     prop-types "^15.8.1"
-    react-is "^19.2.6"
+    react-is "^19.2.8"
 
-"@mui/x-internals@^9.9.0":
-  version "9.9.0"
-  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-9.9.0.tgz#adcd60c490573e1ad81e8d4a26acf6f4e48bc9be"
-  integrity sha512-RMddUd59Qie2o4dralFUcp4Hzu0HOyeYqjh2t3zkpURX1CGX2tUbYZxCwC5UjLJ/PBcSqmSDrGalx7Z8UQFX+g==
+"@mui/x-internals@^9.14.0":
+  version "9.14.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-9.14.0.tgz#c1866a908a9a00d7a640ae61bf385d07ac3044fe"
+  integrity sha512-m4XkKIihP+uWvz18BgSOHtwxCBWtE3Qi2X9hZUdEGW5mk50umziYaCLn9B/3cT9qBU7LirEC8agqpWxDSYjaNw==
   dependencies:
     "@babel/runtime" "^7.29.7"
-    "@base-ui/utils" "^0.3.0"
-    "@mui/utils" "^9.2.0"
+    "@base-ui/utils" "^0.3.2"
+    "@mui/utils" "^9.4.0"
     reselect "^5.2.0"
-    use-sync-external-store "^1.6.0"
+    use-sync-external-store "^1.7.0"
 
-"@mui/x-tree-view@9.9.0":
-  version "9.9.0"
-  resolved "https://registry.yarnpkg.com/@mui/x-tree-view/-/x-tree-view-9.9.0.tgz#b89bc8da5a3900595bf816bfa1e7a992e64dd0f7"
-  integrity sha512-GLp5T3aXoogyjSWq09zBdmxSbYm2Mx9X7nzHN2PxEcl+yZGZAE/ItLOjUNYz+p8g9o+38+IAJXw93FOMgsuTEw==
+"@mui/x-tree-view@9.14.0":
+  version "9.14.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-tree-view/-/x-tree-view-9.14.0.tgz#27173fe643aa77bff0585f488eed09648909039b"
+  integrity sha512-oF0X0iR6ZqOd4x1UfMFDGSBMw7FZwmxiy1sGYp2uRy2sBOmsV9JqqvMEAWlDDfEUUJECbWsW9eeJ52QZXwT8kw==
   dependencies:
     "@babel/runtime" "^7.29.7"
-    "@base-ui/utils" "^0.3.0"
-    "@mui/utils" "^9.2.0"
-    "@mui/x-internals" "^9.9.0"
-    "@types/react-transition-group" "^4.4.12"
+    "@base-ui/utils" "^0.3.2"
+    "@mui/utils" "^9.4.0"
+    "@mui/x-internals" "^9.14.0"
     clsx "^2.1.1"
     prop-types "^15.8.1"
-    react-transition-group "^4.4.5"
 
 "@napi-rs/wasm-runtime@^1.1.4", "@napi-rs/wasm-runtime@^1.1.6":
   version "1.1.6"
@@ -5509,6 +5514,11 @@ react-is@^19.2.6:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.2.7.tgz#57668ee86a78574a542b0a539455212b2c086df2"
   integrity sha512-kZFnouyVv7eP/Phmrlo9FK+zcAdriZJvzxXHF1Sl1P377WSGe2G/JxVolhTrB/jeV47lKImhNUsijjHAAbcl/A==
 
+react-is@^19.2.8:
+  version "19.3.0"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.3.0.tgz#716028d67e9993d23a2d353c6d08a3c1ef2bbeb4"
+  integrity sha512-UpMYezM4v5/18F28aC66AEsjXIgE02kyEMH6yLdgLXu/UTfa1Ntwck/nNLrbqJsEXW7gPb0coNO9FQse9WTovA==
+
 react-oidc-context@^3.3.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/react-oidc-context/-/react-oidc-context-3.3.1.tgz#34292c2ac365cbdbcd3e8da30a2ae49fb21a3c05"
@@ -6500,6 +6510,11 @@ use-sync-external-store@^1.4.0, use-sync-external-store@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
   integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
+
+use-sync-external-store@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.7.0.tgz#6dcb66ef569e02f186af6b3d575f414ce746e18f"
+  integrity sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==
 
 uuid@14.0.1:
   version "14.0.1"
