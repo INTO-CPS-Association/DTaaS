@@ -46,7 +46,11 @@ Environment variables always override YAML values.
 - `throttle-ttl` (default: `60000` milliseconds)
 - `throttle-limit` (default: `120` requests per throttle window)
 
-Use `logger.yaml.sample` as a template.
+Use `config/logger.yaml.sample` as a template:
+
+```bash
+cp config/logger.yaml.sample config/logger.yaml
+```
 
 ### Environment variables
 
@@ -131,15 +135,19 @@ appending `/health`, so `http://localhost:4003/logger` checks
 ## Use in Docker Environment
 
 The `compose.logger.dev.yml` file builds the logger image from the source
-code and uses `logger.yaml.sample` as the configuration. The captured events
+code and uses `config/logger.yaml` as the configuration. The captured events
 are saved in the `logs` directory of `servers/logger`.
 
 **NOTE**: the docker compose file is located in the `servers/logger`
 directory.
 
 ```bash
+cp config/logger.yaml.sample config/logger.yaml
 docker compose -f compose.logger.dev.yml up -d --build
 ```
+
+The `compose.logger.yml` file uses the same configuration file with the
+published `intocps/logger-ms` image.
 
 This command brings up the logger container and makes the service available
 at <http://localhost:4003/logger>. If the configuration values are changed,
@@ -152,3 +160,18 @@ docker compose -f compose.logger.dev.yml up -d
 
 See [DOCKER.md](./DOCKER.md) for running the published
 `intocps/logger-ms` image.
+
+## Test the API
+
+The `api` directory has request files for the
+[REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+extension of VS Code:
+
+- `dev.api.http` sends requests to a logger running on the developer
+  computer, either locally or in Docker.
+- `dtaas.api.http` sends requests to a logger deployed behind the DTaaS
+  Traefik gateway.
+
+The request bodies are loaded from the `api/*.json` files. The `valid-*.json`
+events are accepted with `204 No Content`, and the `invalid-*.json` events are
+rejected with `400 Bad Request`. The end-to-end tests use the same files.

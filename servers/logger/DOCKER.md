@@ -34,7 +34,7 @@ give the directory to uid 1000:
 
 ```bash
 mkdir logs
-sudo chown -R 1000:100 logs
+sudo chown -R 1000:1000 logs
 ```
 
 If the `logs` directory does not exist, Docker creates it as `root`, and
@@ -43,7 +43,15 @@ the logger cannot write into it.
 ## :gear: Configure
 
 The microservice reads its configuration from `logger.yaml`.
-The template configuration file is:
+Download the sample configuration and save it as `logger.yaml`,
+in the same location as the `compose.logger.yml` file:
+
+```bash
+curl -o logger.yaml \
+  https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/servers/logger/config/logger.yaml.sample
+```
+
+The sample configuration file is:
 
 ```yaml
 hostname: 127.0.0.1
@@ -62,8 +70,6 @@ throttle-limit: 120
 ```
 
 Replace the default values with the appropriate values for your setup.
-Please save this config in `logger.yaml`, in the same location as the
-`compose.logger.yml` file.
 
 Environment variables always override the values in `logger.yaml`.
 The image sets two of them:

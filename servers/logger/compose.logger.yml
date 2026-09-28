@@ -3,7 +3,7 @@ services:
     image: intocps/logger-ms:latest
     restart: unless-stopped
     volumes:
-      - ./logger.yaml:/dtaas/logger/logger.yaml
+      - ./config/logger.yaml:/dtaas/logger/logger.yaml
       - ./logs:/dtaas/logger/logs  # must be writable by uid 1000
     ports:
       - "4003:4003"

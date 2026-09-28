@@ -1,0 +1,96 @@
+// This file is to be used for testing logger during development.
+// The request bodies are loaded from the JSON files in this directory.
+// The valid-*.json events return 204 and the invalid-*.json events
+// return 400.
+
+@hostname = localhost
+@port = 4003
+@ContentType = application/json
+
+###
+
+GET http://{{hostname}}:{{port}}/logger/health HTTP/1.1
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./sample.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-1.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-2.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-3.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-4.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-5.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./valid-6.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./invalid-1.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./invalid-2.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./invalid-3.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./invalid-4.json
+
+###
+
+POST http://{{hostname}}:{{port}}/logger HTTP/1.1
+content-type: {{ContentType}}
+
+< ./invalid-5.json

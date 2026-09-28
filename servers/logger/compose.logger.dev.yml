@@ -4,7 +4,7 @@ services:
       context: ../../
       dockerfile: ./developer/logger.dockerfile
     volumes:
-      - ./logger.yaml.sample:/dtaas/logger/logger.yaml
+      - ./config/logger.yaml:/dtaas/logger/logger.yaml
       - ./logs:/dtaas/logger/logs
     ports:
-      - 4003:4003
+      - "4003:4003"
