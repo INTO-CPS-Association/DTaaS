@@ -85,7 +85,9 @@ following procedure:
    [SonarQube](https://docs.sonarsource.com/sonarqube-cloud/)
    for the forked repository. Note that Codecov does not require
    a secret token for public repositories.
-1. Utilize Node.js 24.12.0 and Python 3.12 development environments.
+1. Utilize Node.js 26 for the servers (`servers/lib`, `servers/logger` and
+   `servers/execution/runner`), Node.js 24 for the client and
+   `lib/dt-automation`, and Python 3.12 development environments.
 1. Follow the
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
    workflow methodology.

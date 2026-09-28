@@ -1,4 +1,4 @@
-#!/usr/bin/env -S NODE_OPTIONS="--es-module-specifier-resolution=node  --experimental-modules --experimental-specifier-resolution=node" NODE_NO_WARNINGS=1 node
+#!/usr/bin/env node
 
 import { NestFactory } from '@nestjs/core';
 import Keyv from 'keyv';

@@ -1,0 +1,39 @@
+// This file is to be used for testing logger deployed
+// behind the Traefik gateway of DTaaS.
+// It is assumed that the gateway uses traefik-forward-auth for login.
+// Copy the value of the _forward_auth cookie from a logged-in
+// browser session into ForwardAuthCookie.
+// The request bodies are loaded from the JSON files in this directory.
+
+@hostname = foo.com
+@ForwardAuthCookie = _forward_auth=replace-with-browser-cookie-value
+@ContentType = application/json
+
+###
+
+GET https://{{hostname}}/logger/health HTTP/1.1
+Cookie: {{ForwardAuthCookie}}
+
+###
+
+POST https://{{hostname}}/logger HTTP/1.1
+content-type: {{ContentType}}
+Cookie: {{ForwardAuthCookie}}
+
+< ./sample.json
+
+###
+
+POST https://{{hostname}}/logger HTTP/1.1
+content-type: {{ContentType}}
+Cookie: {{ForwardAuthCookie}}
+
+< ./valid-1.json
+
+###
+
+POST https://{{hostname}}/logger HTTP/1.1
+content-type: {{ContentType}}
+Cookie: {{ForwardAuthCookie}}
+
+< ./invalid-1.json

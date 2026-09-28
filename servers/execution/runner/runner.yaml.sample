@@ -1,6 +1,0 @@
-port: 5000
-location: 'script' #directory location of scripts
-commands: #list of permitted scripts
-  - create
-  - execute
-  - terminate

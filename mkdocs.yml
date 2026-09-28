@@ -110,6 +110,7 @@ nav:
               - Docker: admin/servers/lib/docker.md
           - Logger Microservice:
               - NPM: admin/servers/logger/npm.md
+              - Docker: admin/servers/logger/docker.md
       - Guides:
           - Localhost on Portainer: admin/guides/localhost-on-portainer/install.md
           - Check Config: admin/guides/check_config.md

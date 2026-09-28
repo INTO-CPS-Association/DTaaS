@@ -12,8 +12,9 @@ with active runner.
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
-!!! warning
-    This npm package works only on Linux platforms
+!!! info
+    The runner works on Linux and Windows. On Windows, it runs
+    the PowerShell version of each script.
 <!-- markdownlint-enable MD046 -->
 
 ## :arrow_down: Install
@@ -53,10 +54,10 @@ needs to have _read:packages_ scope.
 The utility requires config specified in YAML format.
 The template configuration file is:
 
-```ini
+```yaml
 port: 5000
-location: 'script' #directory location of scripts
-commands: #list of permitted scripts
+location: 'scripts'  # directory of scripts, relative to this config file
+commands:  # list of permitted scripts
   - create
   - execute
   - terminate
@@ -81,9 +82,17 @@ have execute permission on Linux platforms.
 
 The runner requires commands / scripts to be run.
 These need to be placed in the `location` specified in
-_runner.yaml_ file. The location must be relative to
-the directory in which the **runner** microservice is being
-run.
+_runner.yaml_ file. The location is relative to
+the directory of the _runner.yaml_ file.
+
+On Windows, each command needs a PowerShell script with the `.ps1`
+extension, for example _create.ps1_ for the _create_ command.
+The runner executes it with `powershell.exe -ExecutionPolicy Bypass -File`.
+A directory can hold both versions of a script, so that the same
+commands work on Linux and Windows.
+
+The runner can also be run in a docker container. Please see the
+[docker instructions](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/execution/runner/DOCKER.md).
 
 ## :rocket: Use
 

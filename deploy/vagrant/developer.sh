@@ -20,8 +20,11 @@ sudo -u vagrant bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v
 sudo -u vagrant bash <<'NODEEOF'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+# Node.js 26 for the servers; Node.js 24 (default) for the client
+nvm install 26
+npm install -g yarn serve pm2 madge
 nvm install 24
-nvm use 24
+nvm alias default 24
 npm install -g yarn serve pm2 madge
 
 # Install playwright tool for integration tests on browsers

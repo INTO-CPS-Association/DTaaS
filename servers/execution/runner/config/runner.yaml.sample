@@ -1,0 +1,6 @@
+port: 5000
+location: 'scripts'  # directory of scripts, relative to this config file
+commands:  # list of permitted scripts
+  - create
+  - execute
+  - terminate

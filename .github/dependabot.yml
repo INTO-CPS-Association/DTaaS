@@ -27,6 +27,12 @@ updates:
     target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
+    ignore:
+      # jest is pinned to ~30.4.2; see servers/lib/DEVELOPER.md
+      - dependency-name: "jest"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-major"
 
   - package-ecosystem: "npm"
     directory: "/servers/execution/runner"

@@ -1,4 +1,4 @@
-#!/usr/bin/env -S NODE_OPTIONS="--es-module-specifier-resolution=node --experimental-specifier-resolution=node" NODE_NO_WARNINGS=1 node
+#!/usr/bin/env node
 
 import { INestApplication, NestApplicationOptions } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';

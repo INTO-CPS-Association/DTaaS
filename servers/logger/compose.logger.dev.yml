@@ -1,0 +1,10 @@
+services:
+  logger-ms:
+    build:
+      context: ../../
+      dockerfile: ./developer/logger.dockerfile
+    volumes:
+      - ./config/logger.yaml:/dtaas/logger/logger.yaml
+      - ./logs:/dtaas/logger/logs
+    ports:
+      - "4003:4003"

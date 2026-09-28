@@ -32,21 +32,23 @@ export default class GitFilesService implements IFilesService {
       throw new Error('No git repos found in config');
     }
 
-    const clonePromises = userRepoConfigs.map((repoConf) => {
+    const clonePromises = userRepoConfigs.map(async (repoConf) => {
       const user = Object.keys(repoConf)[0];
       const repoUrl = repoConf[user]['repo-url'];
+      const dir = this.dataPath + `/${user}`;
 
-      return git
-        .clone({
-          fs,
-          http,
-          dir: this.dataPath + `/${user}`,
-          gitdir: path.join(this.dataPath, 'gitdir', user, '.git'),
-          url: repoUrl.includes('.git') ? repoUrl : repoUrl + '.git',
-          singleBranch: true,
-          depth: 1,
-        })
-        .then(() => this.logger.log('done cloning ' + repoUrl));
+      // isomorphic-git does not create the work tree when gitdir is separate
+      await fs.promises.mkdir(dir, { recursive: true });
+      await git.clone({
+        fs,
+        http,
+        dir,
+        gitdir: path.join(this.dataPath, 'gitdir', user, '.git'),
+        url: repoUrl.includes('.git') ? repoUrl : repoUrl + '.git',
+        singleBranch: true,
+        depth: 1,
+      });
+      this.logger.log('done cloning ' + repoUrl);
     });
     return Promise.all(clonePromises);
   }

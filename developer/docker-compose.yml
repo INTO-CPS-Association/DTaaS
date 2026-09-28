@@ -63,7 +63,7 @@ services:
       dockerfile: developer/libms.dockerfile
     restart: unless-stopped
     volumes:
-      - "./files:/dtaas/libms/files"
+      - "./files:/dtaas/libms/files"  # must be writable by uid 1000
       - "./config/libms.dev.yaml:/dtaas/libms/config/libms.yaml"
     labels:
       - "traefik.enable=true"

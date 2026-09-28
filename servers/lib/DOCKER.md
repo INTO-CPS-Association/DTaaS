@@ -26,7 +26,7 @@ services:
       - "4001:4001"
 ```
 
-### Create Files Directory (optional)
+### Create Files Directory
 
 The **libms microservice** serves files available from
 `files` directory.
@@ -48,6 +48,17 @@ files/
 
 Please create this `files` directory
 in the same file system location as that of the `compose.lib.yml` file.
+
+The libms container runs as the `node` user (uid 1000), and it writes into
+this directory for file uploads and git clones. On Linux hosts, give the
+directory to uid 1000:
+
+```bash
+sudo chown -R 1000:1000 files
+```
+
+If the `files` directory does not exist, Docker creates it as `root`, and
+libms cannot write into it.
 
 :label: The directory structure is optional if you are using
 libms as a standalone service.

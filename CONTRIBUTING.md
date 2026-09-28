@@ -27,7 +27,9 @@ Docker-based development environment.
 
 Recommended toolchain versions:
 
-- Node.js 24
+- Node.js 26 for the servers (`servers/lib`, `servers/logger` and
+  `servers/execution/runner`)
+- Node.js 24 for the client and `lib/dt-automation`
 - Python 3.12
 
 ## 🔄 Workflow
