@@ -4,6 +4,35 @@ The logger microservice ingests workflow log events produced by the DTaaS
 client and stores them as JSON Lines (`.jsonl`), which is easy to process with
 `jq`.
 
+## :arrow_down: Install
+
+### Default NPM Registry
+
+The default registry for npm packages is [npmjs](https://registry.npmjs.org).
+Install the package with the following command
+
+```bash
+npm install -g @into-cps-association/logger-ms
+```
+
+### Github NPM Registry
+
+The package is also available in Github
+[packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
+
+Set the registry and install the package with the following commands
+
+```bash
+npm config set @into-cps-association:registry https://npm.pkg.github.com
+npm install -g @into-cps-association/logger-ms
+```
+
+The _npm install_ command asks for username and password. The username is
+your Github username and the password is your Github
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+In order for the npm to download the package, your personal access token
+needs to have _read:packages_ scope.
+
 ## API
 
 - `GET /logger/health` returns service status.
@@ -46,10 +75,11 @@ Environment variables always override YAML values.
 - `throttle-ttl` (default: `60000` milliseconds)
 - `throttle-limit` (default: `120` requests per throttle window)
 
-Use `config/logger.yaml.sample` as a template:
+Download the sample configuration and use it as a template:
 
 ```bash
-cp config/logger.yaml.sample config/logger.yaml
+curl -o logger.yaml \
+  https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/servers/logger/config/logger.yaml.sample
 ```
 
 ### Environment variables
@@ -113,65 +143,28 @@ Log writes are best-effort analytics storage. Graceful shutdown closes the
 write stream, but recent events may be lost on hard container termination
 because writes are not fsynced per request.
 
-## Run locally
+## :rocket: Use
+
+Start the logger with the `logger.yaml` file in the working directory,
+or with the built-in defaults if there is no such file:
 
 ```bash
-yarn install
-yarn build
-yarn start
+logger-ms
 ```
 
-For non-Docker development, point the client at the logger's direct port:
+To use a configuration file at another location, run
 
-```javascript
-LOGGER_URL: 'http://localhost:4003/logger';
+```bash
+logger-ms -c FILE-PATH
+logger-ms --config FILE-PATH
 ```
 
-The `/logger` suffix is required. The client validates logger reachability by
-appending `/health`, so `http://localhost:4003/logger` checks
-`http://localhost:4003/logger/health`. A bare host such as
-`http://localhost:4003` would check `/health`, which is not a logger endpoint.
+The logger listens on <http://127.0.0.1:4003/logger> by default.
+You can press `Ctrl+C` to halt the application.
 
 ## Use in Docker Environment
 
-The `compose.logger.dev.yml` file builds the logger image from the source
-code and uses `config/logger.yaml` as the configuration. The captured events
-are saved in the `logs` directory of `servers/logger`.
-
-**NOTE**: the docker compose file is located in the `servers/logger`
-directory.
-
-```bash
-cp config/logger.yaml.sample config/logger.yaml
-docker compose -f compose.logger.dev.yml up -d --build
-```
-
-The `compose.logger.yml` file uses the same configuration file with the
-published `intocps/logger-ms` image.
-
-This command brings up the logger container and makes the service available
-at <http://localhost:4003/logger>. If the configuration values are changed,
-please restart the container.
-
-```bash
-docker compose -f compose.logger.dev.yml down
-docker compose -f compose.logger.dev.yml up -d
-```
-
-See [DOCKER.md](./DOCKER.md) for running the published
-`intocps/logger-ms` image.
-
-## Test the API
-
-The `api` directory has request files for the
-[REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
-extension of VS Code:
-
-- `dev.api.http` sends requests to a logger running on the developer
-  computer, either locally or in Docker.
-- `dtaas.api.http` sends requests to a logger deployed behind the DTaaS
-  Traefik gateway.
-
-The request bodies are loaded from the `api/*.json` files. The `valid-*.json`
-events are accepted with `204 No Content`, and the `invalid-*.json` events are
-rejected with `400 Bad Request`. The end-to-end tests use the same files.
+The logger is also available as the `intocps/logger-ms` docker image.
+Please see the
+[docker instructions](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/DOCKER.md)
+for running it.
