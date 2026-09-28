@@ -37,6 +37,12 @@ yarn clean      # Deletes "build", "coverage", "dist" and other temp files
 **NOTE:** The integration, end-to-end and http tests require a valid
 configuration. This configuration is already set in `libms.test.yaml` file.
 
+**NOTE:** `jest` is pinned to `~30.4.2`. Jest 30.5 adds the `module-sync`
+export condition to `require()` resolution, so `@nestjs/graphql` (CommonJS)
+loads the ES module build of graphql 17. The end-to-end tests then fail with
+_"Cannot require() ES Module ... in a cycle"_ on Node 24 and Node 26.
+Do not widen this range until the end-to-end tests pass with a newer jest.
+
 ## Service Endpoint
 
 The URL endpoint for this microservice is located at: `localhost:PORT/lib`

@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: 24
+  NODE_VERSION: 26
   LOGGER_PORT: 4003
   LOGGER_LOG_FILE_PATH: logs/workflow-logs.jsonl
   LOGGER_TLS: false
@@ -39,12 +39,12 @@ jobs:
 
     steps:
       - name: Checkout
-        # v7.0.0
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Setup node
-        # v6.1.0
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f
+        # v7.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -65,8 +65,8 @@ jobs:
           yarn test
 
       - name: Upload test coverage to Codecov
-        # v5.5.2
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+        # v7.1.1
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -126,8 +126,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
-        # v7.0.0
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Install jq
         run: sudo apt-get install -y jq
       - name: get version

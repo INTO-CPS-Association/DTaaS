@@ -1,4 +1,5 @@
-FROM node:24.12.0-slim AS build
+FROM node:26.10.0-slim AS build
+RUN npm install --global yarn@1.22.22
 
 #! docker should be run from the root directory of the project
 
@@ -15,7 +16,8 @@ RUN yarn install --immutable --immutable-cache --check-cache --network-timeout 1
 RUN yarn build
 
 
-FROM node:24.12.0-slim
+FROM node:26.10.0-slim
+RUN npm install --global yarn@1.22.22
 COPY --from=build /dtaas/libms/dist /dtaas/libms/dist
 COPY --from=build /dtaas/libms/node_modules /dtaas/libms/node_modules
 COPY --from=build /dtaas/libms/package.json /dtaas/libms/package.json

@@ -1,4 +1,5 @@
-FROM node:24.12.0-slim AS build
+FROM node:26.10.0-slim AS build
+RUN npm install --global yarn@1.22.22
 
 WORKDIR /dtaas/logger
 COPY ./servers/logger/ .
@@ -8,7 +9,8 @@ RUN YARN_ENABLE_SCRIPTS=false yarn install \
   --network-timeout 1000000
 RUN yarn build
 
-FROM node:24.12.0-slim
+FROM node:26.10.0-slim
+RUN npm install --global yarn@1.22.22
 WORKDIR /dtaas/logger
 COPY --from=build --chown=node:node /dtaas/logger/dist ./dist
 COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules

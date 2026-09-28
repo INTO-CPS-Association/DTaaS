@@ -1,4 +1,4 @@
-FROM node:24.12.0-slim
+FROM node:26.10.0-slim
 
 #! docker should be run from the root directory of the project
 

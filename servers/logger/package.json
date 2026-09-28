@@ -46,7 +46,7 @@
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^26.6.3",
-    "@types/supertest": "^6.0.3",
+    "@types/supertest": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
     "concurrently": "^9.2.4",
