@@ -198,9 +198,10 @@ FULL_PLATFORM=true
 ```
 
 Without `FULL_PLATFORM=true`, the tests that read the workspace are skipped,
-and the skip names what to start: the Workspace Pages tests and three of the
-Building Models tests. They would fail against the website alone, for a reason
-that is not a defect.
+and the skip names what to start: the Workspace Pages tests, three of the
+Building Models tests, the two Workbench link tests in Menu and the Automation
+test that reads the workbench. They would fail against the website alone, for
+a reason that is not a defect.
 
 ```bash
 yarn test:e2e:ext

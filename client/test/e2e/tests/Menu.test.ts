@@ -2,7 +2,10 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
+import {
+  openAuthenticatedApp,
+  requireFullPlatform,
+} from 'test/e2e/setup/appSettings';
 import links, { workbenchLinks } from './Links';
 
 test.describe('Menu Links From First Page (Layout)', () => {
@@ -24,11 +27,13 @@ test.describe('Menu Links From First Page (Layout)', () => {
       await previousPromise;
       await page.getByRole('link', { name: link.text }).click();
       await expect(page).toHaveURL(link.url);
-      await expect(page.locator('text=404 Not Found')).not.toBeVisible();
+      await expect(page.getByText('This Page Does Not Exist')).toHaveCount(0);
     }, Promise.resolve());
   });
 
   test('Workbench Links are visible', async ({ page }) => {
+    // The tool list is served by the workspace.
+    requireFullPlatform();
     await page.getByRole('link', { name: 'Workbench' }).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {
@@ -39,6 +44,7 @@ test.describe('Menu Links From First Page (Layout)', () => {
   });
 
   test('Workbench Links open in new windows', async ({ page }) => {
+    requireFullPlatform();
     await page.getByRole('link', { name: 'Workbench' }).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {

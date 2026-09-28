@@ -133,18 +133,21 @@ test.describe('Building Models, Drawing a Model', () => {
     // does not depend on what the library holds and two browsers never race
     // for the same file. What it writes is removed at the end, unless the run
     // is stopped from outside.
-    const stem = `e2e_${testInfo.project.name}_${Date.now()}`;
+    const stamp = Date.now();
+    const stem = `e2e_${testInfo.project.name}_${stamp}`;
     // The menu names a model by the project name inside the file, so the copy
     // uploaded carries the same unique name there. The fixture on disk is not
     // changed, and the page's reading of that name is exercised on the way.
-    const title = `E2E ${testInfo.project.name} ${Date.now()}`;
+    const title = `E2E ${testInfo.project.name} ${stamp}`;
     const ifc = fs
       .readFileSync(FIXTURE, 'utf-8')
       .replace("'Default Project'", `'${title}'`);
     expect(ifc).toContain(title);
-    const library = `${(baseURL ?? '').replace(/\/$/, '')}/${
-      process.env.REACT_APP_TEST_USERNAME
-    }/api/contents/common/models`;
+    const username = process.env.REACT_APP_TEST_USERNAME ?? '';
+    expect(username, 'REACT_APP_TEST_USERNAME is set in test/.env').not.toBe(
+      '',
+    );
+    const library = `${(baseURL ?? '').replace(/\/$/, '')}/${username}/api/contents/common/models`;
     const upload = await page.request.put(`${library}/${stem}.ifc`, {
       data: { type: 'file', format: 'text', content: ifc },
     });

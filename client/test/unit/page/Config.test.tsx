@@ -190,4 +190,39 @@ describe('Config variants', () => {
       await screen.findByRole('link', { name: 'Inspect configuration' }),
     ).toHaveAttribute('href', '/au/insights/developer');
   });
+
+  test('Keeps the developer list in its own scrolling card on the public page', async () => {
+    jest.spyOn(configUtil, 'getValidationResults').mockResolvedValueOnce(valid);
+    render(
+      <MemoryRouter>
+        <Config role="developer" />
+      </MemoryRouter>,
+    );
+
+    const card = (await screen.findByText('Config verification')).closest(
+      '.MuiPaper-root',
+    );
+    expect(card).toHaveStyle({ maxHeight: '75vh', overflow: 'auto' });
+  });
+
+  test('Lets the developer list take the page width when embedded', async () => {
+    jest.spyOn(configUtil, 'getValidationResults').mockResolvedValueOnce({
+      ...valid,
+      // A key checked but absent from this installation's env.js.
+      REACT_APP_NOT_SET: { value: '', status: 200 }, // NOSONAR
+    });
+    render(
+      <MemoryRouter>
+        <Config role="developer" variant="embedded" />
+      </MemoryRouter>,
+    );
+
+    // Inside the application the page scrolls, so the card has no height
+    // limit of its own and fills the width the page gives it.
+    const card = (await screen.findByText('Config verification')).closest(
+      '.MuiPaper-root',
+    );
+    expect(card).toHaveStyle({ width: '100%' });
+    expect(card).not.toHaveStyle({ maxHeight: '75vh' });
+  });
 });

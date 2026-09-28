@@ -68,16 +68,7 @@ of the page reveals the menu.
 
 ![Menu](images/menu.png)
 
-Three menu items are available:
-
-**Library**: For management of reusable library assets. Files can be uploaded,
-downloaded, created, and modified on this page.
-
-**Digital Twins**: For management of digital twins. A Jupyter Lab page is presented
-from which digital twins can be executed.
-
-**Workbench**: Not all digital twins can be managed within Jupyter Lab.
-Additional tools are available on this page.
+The menu items are described on the [website page](dtaas.md#menu-items).
 
 ## Library Page
 

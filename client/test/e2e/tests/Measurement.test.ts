@@ -48,9 +48,6 @@ test.describe('Measurement Page', () => {
   });
 
   test('Should navigate to measurement page successfully', async ({ page }) => {
-    // Verify page loaded correctly (not 404)
-    await expect(page.locator('text=404 Not Found')).not.toBeVisible();
-
     // Verify correct URL
     await expect(page).toHaveURL(/insights\/measure/);
 

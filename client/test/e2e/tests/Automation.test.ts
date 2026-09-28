@@ -2,7 +2,10 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
+import {
+  openAuthenticatedApp,
+  requireFullPlatform,
+} from 'test/e2e/setup/appSettings';
 
 /**
  * The Automation page, end to end.
@@ -41,6 +44,8 @@ test.describe('Automation', () => {
   });
 
   test('The workbench no longer lists the two pages', async ({ page }) => {
+    // The tool list is served by the workspace.
+    requireFullPlatform();
     await page.getByRole('link', { name: 'Workbench' }).click();
     await expect(page).toHaveURL('./workbench');
     // Wait for the workspace tools, so the absence below is checked on a

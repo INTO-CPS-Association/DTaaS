@@ -47,6 +47,9 @@ test.describe('Insights and the Measurement Card', () => {
     await page.getByRole('link', { name: /Measurement/ }).click();
 
     await expect(page).toHaveURL('./insights/measure');
-    await expect(page.locator('text=404 Not Found')).toHaveCount(0);
+    await expect(
+      page.getByRole('heading', { name: 'Digital Twin Measurement' }),
+    ).toBeVisible();
+    await expect(page.getByText('This Page Does Not Exist')).toHaveCount(0);
   });
 });

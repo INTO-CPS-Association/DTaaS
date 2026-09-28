@@ -22,6 +22,9 @@ export default defineConfig({
     : {
         command: 'yarn start',
         url: BASE_URI,
+        // Playwright's default, written out: a port already in use stops the
+        // run, so the suite never tests a website it did not build.
+        reuseExistingServer: false,
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test

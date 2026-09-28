@@ -33,17 +33,24 @@ const typographyStyle = {
 
 function DeveloperConfig({
   validationResults,
-}: Readonly<{ validationResults: ValidationResults }>) {
+  variant,
+}: Readonly<{ validationResults: ValidationResults; variant: ConfigVariant }>) {
+  // On the public page the list scrolls inside its own card. Embedded, the
+  // application page scrolls, as it does for every other page.
   return (
     <Paper
-      sx={{
-        ...paperStyle,
-        width: 'min(60vw, 100%)',
-        height: 'auto',
-        maxHeight: '75vh',
-        minWidth: '360px',
-        overflow: 'auto',
-      }}
+      sx={
+        variant === 'page'
+          ? {
+              ...paperStyle,
+              width: 'min(60vw, 100%)',
+              height: 'auto',
+              maxHeight: '75vh',
+              minWidth: '360px',
+              overflow: 'auto',
+            }
+          : { ...paperStyle, width: '100%', marginTop: 0 }
+      }
     >
       <Typography variant="h4" sx={typographyStyle}>
         {'Config verification'}
@@ -187,7 +194,7 @@ const Config = (props: { role: string; variant?: ConfigVariant }) => {
   return props.role === 'user' ? (
     <UserConfig validationResults={validationResults} variant={variant} />
   ) : (
-    <DeveloperConfig validationResults={validationResults} />
+    <DeveloperConfig validationResults={validationResults} variant={variant} />
   );
 };
 
