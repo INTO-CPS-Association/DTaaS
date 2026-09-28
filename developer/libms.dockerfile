@@ -17,7 +17,6 @@ RUN yarn build
 
 
 FROM node:26.10.0-slim
-RUN npm install --global --ignore-scripts yarn@1.22.22
 WORKDIR /dtaas/libms
 RUN chown node:node /dtaas/libms
 COPY --from=build --chown=node:node /dtaas/libms/dist ./dist
@@ -29,4 +28,4 @@ COPY --chown=node:node ./developer/config/libms.dev.yaml.example libms.yaml
 USER node
 
 # Define the command to run your app
-CMD ["yarn", "start", "--config", "libms.yaml", "-H", "config/http.json"]
+CMD ["node", "dist/src/main.js", "--config", "libms.yaml", "-H", "config/http.json"]
