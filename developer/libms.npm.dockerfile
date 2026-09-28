@@ -9,8 +9,11 @@ WORKDIR /dtaas/libms
 ARG VERSION="latest"
 RUN npm i -g @into-cps-association/libms@${VERSION}
 
-COPY ./developer/config/libms.dev.yaml.example libms.yaml
-COPY ./servers/lib/config/http.json .
+RUN chown node:node /dtaas/libms
+COPY --chown=node:node ./developer/config/libms.dev.yaml.example libms.yaml
+COPY --chown=node:node ./servers/lib/config/http.json .
+
+USER node
 
 # Define the command to run your app
 CMD ["libms", "-H", "http.json"]
