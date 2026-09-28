@@ -17,7 +17,8 @@ a working API and matching documentation in this README.
 However, there will be breaking changes in the API across each release
 until the package reaches version 1.0.0.
 
-:x: This package does not work on Windows OS.
+:computer: The runner works on Linux and Windows. On Windows, it runs
+the PowerShell version of each script (see [Create Commands](#pen-create-commands)).
 
 ## :arrow_down: Install
 
@@ -55,10 +56,10 @@ needs to have _read:packages_ scope.
 The utility requires config specified in YAML format.
 The template configuration file is:
 
-```ini
+```yaml
 port: 5000
-location: 'script' #directory location of scripts
-commands: #list of permitted scripts
+location: 'scripts'  # directory of scripts, relative to this config file
+commands:  # list of permitted scripts
   - create
   - execute
 ```
@@ -87,6 +88,16 @@ For example, the `location` directory might contain
 the two scripts: _create_ and _execute_. These two become
 valid command names that consumers of REST API can invoke.
 All other command execution requests result in invalid status.
+
+On Windows, each command needs a PowerShell script with the `.ps1`
+extension, for example _create.ps1_ for the _create_ command.
+The runner executes it with `powershell.exe -ExecutionPolicy Bypass -File`.
+A directory can hold both versions of a script, so that the same
+commands work on Linux and Windows.
+
+The `DOCKER.md` file in the
+[runner source](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/execution/runner)
+describes running the runner in a docker container.
 
 ## :rocket: Use
 

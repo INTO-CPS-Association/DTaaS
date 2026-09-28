@@ -1,0 +1,11 @@
+services:
+  runner:
+    build:
+      context: ../../../
+      dockerfile: ./developer/runner.dockerfile
+    command: ["node", "dist/src/main.js", "--config", "config/runner.test.yaml"]
+    volumes:
+      - ./config/runner.test.yaml:/dtaas/runner/config/runner.test.yaml
+      - ./test/data/scripts:/dtaas/runner/test/data/scripts
+    ports:
+      - "5000:5000"

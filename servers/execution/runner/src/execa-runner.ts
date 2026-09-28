@@ -4,20 +4,23 @@ import Runner from './interfaces/runner.interface.js';
 export default class ExecaRunner implements Runner {
   command: string;
 
+  args: string[];
+
   stdin: string = '';
 
   stdout: string = '';
 
   stderr: string = '';
 
-  constructor(command: string) {
+  constructor(command: string, args: string[] = []) {
     this.command = command;
+    this.args = args;
   }
 
   async run(): Promise<boolean> {
     let status: boolean = false;
     try {
-      const { stdout, stderr } = await execa(this.command);
+      const { stdout, stderr } = await execa(this.command, this.args);
       this.stderr = stderr;
       this.stdout = stdout;
       status = true;

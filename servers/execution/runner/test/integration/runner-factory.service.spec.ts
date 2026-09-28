@@ -23,4 +23,30 @@ describe('Check RunnerFactoryService', () => {
     const runner: Runner = RunnerFactory.create('cd .');
     expect(runner).toBeInstanceOf(ExecaRunner);
   });
+
+  it('should run the script directly on Linux', () => {
+    const runner = RunnerFactory.create(
+      'scripts/create',
+      'linux',
+    ) as ExecaRunner;
+
+    expect(runner.command).toBe('scripts/create');
+    expect(runner.args).toEqual([]);
+  });
+
+  it('should run the PowerShell version of the script on Windows', () => {
+    const runner = RunnerFactory.create(
+      'scripts/create',
+      'win32',
+    ) as ExecaRunner;
+
+    expect(runner.command).toBe('powershell.exe');
+    expect(runner.args).toEqual([
+      '-NoProfile',
+      '-ExecutionPolicy',
+      'Bypass',
+      '-File',
+      'scripts/create.ps1',
+    ]);
+  });
 });

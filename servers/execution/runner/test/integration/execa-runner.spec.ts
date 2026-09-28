@@ -5,7 +5,7 @@ import { nonExistingCommand } from 'test/utils';
 
 describe('check command Runner based on execa library', () => {
   it('should execute a valid command', async () => {
-    const cmdrunner: Runner = new ExecaRunner('date');
+    const cmdrunner: Runner = new ExecaRunner(process.execPath, ['--version']);
 
     expect(await cmdrunner.run()).toBe(true);
   });
@@ -18,7 +18,7 @@ describe('check command Runner based on execa library', () => {
   });
 
   it('should capture single line output log', async () => {
-    const cmdrunner: Runner = new ExecaRunner('date');
+    const cmdrunner: Runner = new ExecaRunner(process.execPath, ['--version']);
 
     const status: boolean = await cmdrunner.run();
     const logs: Map<string, string> = cmdrunner.checkLogs();

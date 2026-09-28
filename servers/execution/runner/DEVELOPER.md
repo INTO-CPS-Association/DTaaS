@@ -1,7 +1,33 @@
 # :runner: Developer Instructions
 
-This microservice needs a configuration file.
+This microservice needs a configuration file and a directory of scripts.
 Please see [README](./README.md) for this information.
+
+## :gear: Configure
+
+The `config` directory has two sample configuration files:
+
+- `runner.yaml.sample` is the template for running your own scripts.
+  The `location` is relative to the configuration file, so
+  `yarn start --config config/runner.yaml` looks for the scripts in
+  `config/scripts`.
+- `runner.test.yaml.sample` runs the test scripts in `test/data/scripts`.
+
+Copy a sample and start the runner with it:
+
+```bash
+cp config/runner.test.yaml.sample config/runner.test.yaml
+yarn build
+yarn start --config config/runner.test.yaml
+```
+
+Only the `*.sample` files in `config` are tracked by git.
+
+The `test/data/scripts` directory has a bash script and a PowerShell
+(`.ps1`) script for each test command, so that `yarn start` and
+`yarn test` work on both Linux and Windows. The tests copy the test
+configuration and these scripts into the runner directory before they
+run and delete them afterwards.
 
 ## :hammer_and_wrench: Developer Commands
 
@@ -68,10 +94,27 @@ npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.
 
 The URL endpoint for this microservice is located at: `localhost:<port>`
 
-The API calls of this microservice are documented in **runner.api.http**.
+The API calls of this microservice are documented in **api/dev.api.http**.
 This file can be used with
 [REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
-of VS Code IDE. Launch the program using `yarn start` before using
-the **runner.api.http**.
+of VS Code IDE. Launch the program using
+`yarn start --config config/runner.test.yaml` before using
+the **api/dev.api.http**.
+
+## Use in Docker Environment
+
+The `compose.runner.dev.yml` file builds the runner image from the source
+code and runs it with `config/runner.test.yaml` and the test scripts.
+
+**NOTE**: the docker compose file is located in the
+`servers/execution/runner` directory.
+
+```bash
+cp config/runner.test.yaml.sample config/runner.test.yaml
+docker compose -f compose.runner.dev.yml up -d --build
+docker compose -f compose.runner.dev.yml down
+```
+
+See [DOCKER.md](./DOCKER.md) for running the runner with your own scripts.
 
 Please see [README](./README.md) for more information.

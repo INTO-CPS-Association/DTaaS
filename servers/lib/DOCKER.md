@@ -54,7 +54,7 @@ this directory for file uploads and git clones. On Linux hosts, give the
 directory to uid 1000:
 
 ```bash
-sudo chown -R 1000:100 files
+sudo chown -R 1000:1000 files
 ```
 
 If the `files` directory does not exist, Docker creates it as `root`, and

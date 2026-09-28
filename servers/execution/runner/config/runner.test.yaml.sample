@@ -1,0 +1,5 @@
+port: 5000
+location: '../test/data/scripts'  # test scripts, relative to this config file
+commands:  # list of permitted scripts
+  - create
+  - execute

@@ -1,0 +1,11 @@
+services:
+  runner:
+    build:
+      context: ../../../
+      dockerfile: ./developer/runner.dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./config/runner.yaml:/dtaas/runner/runner.yaml
+      - ./scripts:/dtaas/runner/scripts  # must be readable by uid 1000
+    ports:
+      - "5000:5000"
