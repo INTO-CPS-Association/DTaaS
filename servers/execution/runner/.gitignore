@@ -1,3 +1,4 @@
 config/*
 !config/*.sample
 script/
+runner.test.yaml

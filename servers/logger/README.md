@@ -75,7 +75,35 @@ Environment variables always override YAML values.
 - `throttle-ttl` (default: `60000` milliseconds)
 - `throttle-limit` (default: `120` requests per throttle window)
 
-Download the sample configuration and use it as a template:
+A sample configuration is given below. Copy it into a file named
+`logger.yaml`, and update the values for your setup:
+
+```yaml
+hostname: 127.0.0.1
+port: 4003
+# Restrictive same origin.
+cors-allow-origin: http://localhost
+# One external domain.
+# cors-allow-origin: https://client.example.org
+# Three external domains.
+# cors-allow-origin:
+#   - https://client-a.example.org
+#   - https://client-b.example.org
+#   - https://client-c.example.org
+cors-allow-credentials: false
+auth-token: ''
+tls: false
+certs: ./certs
+log-file-path: ./logs/workflow-logs.jsonl
+max-payload-bytes: 65536
+log-max-bytes: 52428800
+log-retention-files: 5
+# Limits are per TCP peer; behind a reverse proxy this is a shared budget.
+throttle-ttl: 60000
+throttle-limit: 120
+```
+
+The same sample can also be downloaded:
 
 ```bash
 curl -o logger.yaml \

@@ -54,7 +54,8 @@ needs to have _read:packages_ scope.
 ## :gear: Configure
 
 The utility requires config specified in YAML format.
-The template configuration file is:
+A sample configuration is given below. Copy it into a file named
+_runner.yaml_, and update the values for your setup:
 
 ```yaml
 port: 5000
@@ -62,7 +63,12 @@ location: 'scripts'  # directory of scripts, relative to this config file
 commands:  # list of permitted scripts
   - create
   - execute
+  - terminate
 ```
+
+With this configuration, the scripts are placed in a `scripts` directory
+next to _runner.yaml_, and only the _create_, _execute_ and _terminate_
+scripts can be run.
 
 It is suggested that the configuration file be named as _runner.yaml_
 and placed in the directory in which the _runner_ microservice is run.
