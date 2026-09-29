@@ -68,13 +68,13 @@ Additional information on environment settings is available in the
 [client configuration](../../docs/admin/client/config.md) pages.
 
 `config/test.js` carries neutral defaults, with `https://gitlab.com` as the
-authority. A site with its own GitLab edits its local copy and does not commit
-it. The following example values are for such a site, testing on the
-developer computer (`localhost`): the GitLab at
-`https://dtl-server-2.st.lab.au.dk/gitlab`, and an OAuth application
-registered there with `http://localhost:4000/Library` among its callback URLs.
-They are needed only when the tests start the website themselves. Against a
+authority. A site with its own GitLab puts that GitLab and the client ID of
+its OAuth application in its local copy, and does not commit it. These values
+are needed only when the tests start the website themselves. Against a
 deployment, the website reads the deployment's own configuration.
+
+The following example values are suitable for testing on the developer
+computer (`localhost`).
 
 ```js
 window.env = {
@@ -85,8 +85,8 @@ window.env = {
   REACT_APP_URL_LIBLINK: '',
 
   REACT_APP_CLIENT_ID:
-    '6b239b65346cb61bca53d4def5bae7a50afa279f98dab7c06d17675a840b599a',
-  REACT_APP_AUTH_AUTHORITY: 'https://dtl-server-2.st.lab.au.dk/gitlab',
+    '934b98f03f1b6f743832b2840bf7cccaed93c3bfe579093dd0942a433691ccc0',
+  REACT_APP_AUTH_AUTHORITY: 'https://gitlab.intocps.org/',
   REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
   REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
@@ -132,8 +132,7 @@ SECONDARY_RUNNER=your_secondary_gitlab_runner_tag
 ```
 
 Replace _your_username_ and _your_password_ with the actual username and password
-for the selected on-premise GitLab account (`dtl-server-2.st.lab.au.dk/gitlab`)
-or test account.
+for the selected on-premise GitLab account (`gitlab.intocps.org`) or test account.
 If you do not have a secondary gitlab runner, you can use the same one for both.
 They will be the ones used in the e2e tests for executing twins and taking
 measurements. Both tags have to name a runner that exists and is online: the
