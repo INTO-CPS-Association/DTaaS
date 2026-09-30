@@ -35,7 +35,7 @@ name: Python Reusable Workflow
         default: false
       artifact-path:
         description: 'Path for artifact upload'
-        required: true
+        required: false
         type: string
         default: 'dist'
 
