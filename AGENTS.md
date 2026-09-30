@@ -75,7 +75,29 @@ Claim something passes only after seeing it pass.
    paths, names and numbers you moved.
 1. Open a pull request.
 1. Wait for CI. Read the failures rather than re-running blindly.
+1. Act on the analysis checks. They report defects, not suggestions:
+   fix what they find before asking for review.
 1. Address review, then merge.
+
+## Pull request checks
+
+Three services comment on pull requests in addition to the workflows.
+Treat their findings as work to do, not advice to weigh.
+
+| Service | Reports | Works from a fork |
+| :--- | :--- | :--- |
+| SonarQube | Bugs, vulnerabilities, code smells, duplication | Yes |
+| Codecov | Coverage change, per component (`.codecov.yml`) | Yes |
+| Qlty | Maintainability and duplication (`.qlty/qlty.toml`) | No |
+
+Qlty needs repository credentials that GitHub withholds from
+fork-originated pull requests, so its absence on a fork PR is expected
+and not a failure to investigate. SonarQube and Codecov report normally
+in that case.
+
+Codecov's project status targets 90% with a 20% threshold; its patch
+status is informational. A drop that stays inside the threshold is still
+a drop worth explaining.
 
 ## Code standards
 
@@ -83,14 +105,9 @@ Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
 `.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`. Run them
 rather than reasoning about style.
 
-`pre-commit run --hook-stage pre-commit` is safe and fast; it covers
-formatting, markdown and shell checks.
-
-Do not rely on the pre-push hooks. Two of them invoke commands that fail
-on a clean checkout: `yarn-jest-client` runs bare `jest`, which omits the
-setup file and fails ~150 client tests, and `yarn-test-lib` runs
-`test:nocov`, which needs a running libms. Use the command table above
-instead.
+`pre-commit install` sets up both stages. The commit stage runs
+formatting, markdown and shell checks; the push stage runs the test
+suites for whichever projects you touched.
 
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors

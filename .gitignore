@@ -217,6 +217,7 @@ credentials.csv
 # Generated secret files (defense-in-depth; also covered by the directory rule below)
 deploy/services/cli/certs
 deploy/services/cli/config
+deploy/services/cli/data
 deploy/services/cli/log
 deploy/services/cli/compose.services.yml
 deploy/services/cli/compose.thingsboard.yml
