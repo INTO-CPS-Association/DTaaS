@@ -1,0 +1,118 @@
+# Project Instructions
+
+Instructions specific to the DTaaS repository, for contributors and
+coding agents alike. `AGENTS.md` holds the general coding guidelines;
+this file holds what cannot be inferred from them.
+
+## Autonomy
+
+Work through the full cycle for routine changes without pausing at each
+step. Pause only for irreversible actions (force-push, history rewrite,
+deletion, publishing) or requirements with two defensible readings that
+lead to materially different work.
+
+## Behaviour
+
+**Think before coding.** State assumptions. Where several readings
+exist, present them rather than choosing silently.
+
+**Simplicity first.** Write the minimum that solves the stated problem.
+No speculative abstraction, unrequested configurability, or defensive
+handling for impossible states.
+
+**Surgical changes.** Every changed line traces to the task. Match local
+style. Remove imports your change orphans; report pre-existing dead code
+instead of deleting it in the same diff.
+
+**Goal-driven execution.** Turn the task into a check you can run.
+"Fix the bug" becomes "write a failing test, then make it pass."
+
+## Build and test commands
+
+Non-obvious. Use these rather than guessing a script name.
+
+| Project | Command |
+| :--- | :--- |
+| `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int` |
+| `servers/lib` | `yarn build && yarn test:all` |
+| `servers/logger` | `yarn test` |
+| `lib/dt-automation` | `yarn test:unit` |
+| `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
+| `lib/gitlab_common` | `poetry run pytest` |
+| `deploy/services/cli` | `poetry run python -m dtaas_services.pkg.build && CI=true poetry run pytest --ignore=tests/system_tests` |
+
+Why each is written that way:
+
+- The client scripts pass `--setupFilesAfterEnv`, which installs the
+  `react-redux` mock. Bare `jest` omits it and roughly 150 tests fail
+  for that reason alone.
+- `servers/lib`'s `test:nocov` adds `test/cloudcmd`, which needs a
+  configured `.env` and a running libms under pm2.
+- `lib/dt-automation` has no `test` script.
+- `cli` and `deploy/services/cli` vendor shared code before their tests
+  can be collected.
+- `dtaas-services` checks for root before validating arguments, so
+  non-root runs need `CI=true`. Its `system_tests` shell out to
+  `docker`.
+
+`developer/devenv/` provides a container with every one of these
+toolchains. Docker-driven work runs on the host; see its README.
+
+## Verifying a change
+
+Run the commands above for the projects you touched. Compare against the
+merge base before reporting a regression: run the same command there and
+compare counts. Report pre-existing failures; do not fix them in the
+same diff.
+
+Claim something passes only after seeing it pass.
+
+## Shipping
+
+1. Branch from the default branch. Never commit to it directly.
+1. Commit with a concise imperative subject and a body listing concrete
+   changes.
+1. Sweep documentation your change made stale. Search the repository for
+   paths, names and numbers you moved.
+1. Open a pull request.
+1. Wait for CI. Read the failures rather than re-running blindly.
+1. Act on the analysis checks. They report defects, not suggestions:
+   fix what they find before asking for review.
+1. Address review, then merge.
+
+## Pull request checks
+
+Three services comment on pull requests in addition to the workflows.
+Treat their findings as work to do, not advice to weigh.
+
+| Service | Reports | Works from a fork |
+| :--- | :--- | :--- |
+| SonarQube | Bugs, vulnerabilities, code smells, duplication | Yes |
+| Codecov | Coverage change, per component (`.codecov.yml`) | Yes |
+| Qlty | Maintainability and duplication (`.qlty/qlty.toml`) | Through the `Qlty` workflow |
+
+Qlty Cloud needs repository credentials that GitHub withholds from
+fork-originated pull requests, so its `qlty check` status on a fork PR
+reports a skipped analysis. That is expected and not a failure to
+investigate. The `Qlty` workflow (`.github/workflows/qlty.yml`) runs the
+Qlty CLI instead: it fails on new actionlint findings and writes
+dependency advisories and code smells to the job log and summary.
+SonarQube and Codecov report normally on fork PRs.
+
+Codecov's project status targets 90% with a 20% threshold; its patch
+status is informational. A drop that stays inside the threshold is still
+a drop worth explaining.
+
+## Code standards
+
+Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
+`.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`. Run them
+rather than reasoning about style.
+
+`pre-commit install` sets up both stages. The commit stage runs
+formatting, markdown and shell checks; the push stage runs the test
+suites for whichever projects you touched.
+
+Beyond those: prefer clarity to cleverness, keep functions focused, name
+symbols meaningfully, comment only non-obvious logic, and handle errors
+deliberately. Add a dependency only when the task requires it.

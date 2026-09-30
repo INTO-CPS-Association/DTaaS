@@ -1,114 +1,59 @@
-# Agent Contract
+# Coding Assistant Guidelines
 
-Guidance for coding agents working on DTaaS. Claude Code reads
-`CLAUDE.md`, which points here. Both describe the same contract.
+## ROLE
 
-## Autonomy
+The coding assistant acts as an expert software developer.
 
-Work through the full cycle for routine changes without pausing at each
-step. Pause only for irreversible actions (force-push, history rewrite,
-deletion, publishing) or requirements with two defensible readings that
-lead to materially different work.
+## GOALS
 
-## Behaviour
+- Produce clean, readable, and maintainable code
+- Keep functions below 25 lines and files below 250 lines
+- Follow recognised best practice and industry standards
+- Provide clear explanations and documentation
+- Support users in improving technical understanding
 
-**Think before coding.** State assumptions. Where several readings
-exist, present them rather than choosing silently.
+## PRINCIPLES
 
-**Simplicity first.** Write the minimum that solves the stated problem.
-No speculative abstraction, unrequested configurability, or defensive
-handling for impossible states.
+- **Clarity over cleverness**: code should remain easy to understand.
+- **Modularity**: complex problems should be decomposed into manageable units.
+- **Testing**: tests should accompany proposed code changes.
+- **Performance**: efficiency is important, but readability takes priority.
 
-**Surgical changes.** Every changed line traces to the task. Match local
-style. Remove imports your change orphans; report pre-existing dead code
-instead of deleting it in the same diff.
+## CODE STYLE
 
-**Goal-driven execution.** Turn the task into a check you can run.
-"Fix the bug" becomes "write a failing test, then make it pass."
+- Use consistent naming conventions.
+- Follow language-specific style guides.
+- Keep functions concise and focused.
+- Use meaningful symbol names.
+- Add comments only where logic is non-obvious.
 
-## Build and test commands
+## BEST PRACTICES
 
-Non-obvious. Use these rather than guessing a script name.
+- **DRY (Don't Repeat Yourself)**: avoid unnecessary duplication.
+- **SOLID principles**: apply object-oriented design principles where relevant.
+- **Error handling**: handle potential errors in a controlled manner.
+- **Security**: account for security implications in all changes.
+- **Version control**: use clear and descriptive commit messages.
 
-| Project | Command |
-| :--- | :--- |
-| `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int` |
-| `servers/lib` | `yarn build && yarn test:all` |
-| `servers/logger` | `yarn test` |
-| `lib/dt-automation` | `yarn test:unit` |
-| `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
-| `lib/gitlab_common` | `poetry run pytest` |
-| `deploy/services/cli` | `poetry run python -m dtaas_services.pkg.build && CI=true poetry run pytest --ignore=tests/system_tests` |
+## COMMUNICATION
 
-Why each is written that way:
+- Explain the intended approach before implementation.
+- Break complex solutions into clear steps.
+- Provide examples where they add value.
+- Request clarification when requirements are ambiguous.
 
-- The client scripts pass `--setupFilesAfterEnv`, which installs the
-  `react-redux` mock. Bare `jest` omits it and roughly 150 tests fail
-  for that reason alone.
-- `servers/lib`'s `test:nocov` adds `test/cloudcmd`, which needs a
-  configured `.env` and a running libms under pm2.
-- `lib/dt-automation` has no `test` script.
-- `cli` and `deploy/services/cli` vendor shared code before their tests
-  can be collected.
-- `dtaas-services` checks for root before validating arguments, so
-  non-root runs need `CI=true`. Its `system_tests` shell out to
-  `docker`.
+## RESTRICTIONS
 
-`developer/devenv/` provides a container with every one of these
-toolchains. Docker-driven work runs on the host; see its README.
+- Explicit approval is required before introducing breaking changes.
+- Unnecessary dependencies should not be added.
+- Existing codebase patterns and conventions should be respected.
+- Files should remain under 250 lines (except 3D model files).
+- Functions should remain under 25 lines.
+- Implementations should be tested when practical.
 
-## Verifying a change
+## PROJECT INSTRUCTIONS
 
-Run the commands above for the projects you touched. Compare against the
-merge base before reporting a regression: run the same command there and
-compare counts. Report pre-existing failures; do not fix them in the
-same diff.
-
-Claim something passes only after seeing it pass.
-
-## Shipping
-
-1. Branch from the default branch. Never commit to it directly.
-1. Commit with a concise imperative subject and a body listing concrete
-   changes.
-1. Sweep documentation your change made stale. Search the repository for
-   paths, names and numbers you moved.
-1. Open a pull request.
-1. Wait for CI. Read the failures rather than re-running blindly.
-1. Act on the analysis checks. They report defects, not suggestions:
-   fix what they find before asking for review.
-1. Address review, then merge.
-
-## Pull request checks
-
-Three services comment on pull requests in addition to the workflows.
-Treat their findings as work to do, not advice to weigh.
-
-| Service | Reports | Works from a fork |
-| :--- | :--- | :--- |
-| SonarQube | Bugs, vulnerabilities, code smells, duplication | Yes |
-| Codecov | Coverage change, per component (`.codecov.yml`) | Yes |
-| Qlty | Maintainability and duplication (`.qlty/qlty.toml`) | No |
-
-Qlty needs repository credentials that GitHub withholds from
-fork-originated pull requests, so its absence on a fork PR is expected
-and not a failure to investigate. SonarQube and Codecov report normally
-in that case.
-
-Codecov's project status targets 90% with a 20% threshold; its patch
-status is informational. A drop that stays inside the threshold is still
-a drop worth explaining.
-
-## Code standards
-
-Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
-`.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`. Run them
-rather than reasoning about style.
-
-`pre-commit install` sets up both stages. The commit stage runs
-formatting, markdown and shell checks; the push stage runs the test
-suites for whichever projects you touched.
-
-Beyond those: prefer clarity to cleverness, keep functions focused, name
-symbols meaningfully, comment only non-obvious logic, and handle errors
-deliberately. Add a dependency only when the task requires it.
+Repository-specific instructions are in [PROJECT.md](PROJECT.md): the
+build and test command for each project, how to verify a change, the
+shipping cycle, the pull request checks and the enforced code standards.
+Read it before changing the repository.
