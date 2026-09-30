@@ -5,6 +5,11 @@ import { InitRouteTests } from 'test/unit/unit.testUtil';
 import { useSelector, useDispatch } from 'react-redux';
 import { useWorkbenchLinkValues } from 'util/envUtil';
 
+jest.mock('react-oidc-context', () => ({
+  ...jest.requireActual('react-oidc-context'),
+  useAuth: jest.fn(),
+}));
+
 describe('Workbench', () => {
   const mockDispatch = jest.fn();
 

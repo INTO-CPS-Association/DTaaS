@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { type Page } from '@playwright/test';
 
 const AUTH_SESSION_FILE = 'playwright/.auth/session.json';
@@ -9,6 +10,7 @@ export async function saveSessionStorage(page: Page) {
   const storage = await page.evaluate<SessionStorageState>(() =>
     Object.fromEntries(Object.entries(sessionStorage)),
   );
+  fs.mkdirSync(path.dirname(AUTH_SESSION_FILE), { recursive: true });
   fs.writeFileSync(AUTH_SESSION_FILE, JSON.stringify(storage, null, 2));
 }
 
