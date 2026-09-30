@@ -5,6 +5,9 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+/** What the provider appends on the way back, and nothing else. */
+const CALLBACK_PARAMETERS = ['code', 'state', 'session_state', 'iss'];
+
 /**
  * Clear the authorization code from the address bar once sign-in is done.
  *
@@ -17,9 +20,6 @@ interface AuthProviderProps {
  * This is not the token: the token never travels in the URL, it comes back on
  * the back-channel POST to the token endpoint.
  */
-/** What the provider appends on the way back, and nothing else. */
-const CALLBACK_PARAMETERS = ['code', 'state', 'session_state', 'iss'];
-
 export function onSigninCallback(): void {
   const url = new URL(globalThis.location.href);
   CALLBACK_PARAMETERS.forEach((name) => url.searchParams.delete(name));

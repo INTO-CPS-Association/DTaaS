@@ -14,8 +14,6 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
-import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
 import { Box, CircularProgress, Link, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -24,9 +22,7 @@ import {
 } from '@into-cps-association/bim-kit/react';
 import Layout from 'page/Layout';
 import PageShell from 'components/PageShell';
-import { useURLforLIB } from 'util/envUtil';
-import { useGetAndSetUsername } from 'util/auth/Authentication';
-import { RootState } from 'store/store';
+import { useURLforLIB, useUsername } from 'util/envUtil';
 import { uploadGeometry } from 'route/bim/persistGeometry';
 import MODELS_DIRECTORY from 'route/bim/library';
 
@@ -36,10 +32,8 @@ const DESCRIPTION =
   'readings their sensors report.';
 
 function Bim() {
-  const auth = useAuth();
-  const getAndSetUsername = useGetAndSetUsername();
   const libraryUrl = useURLforLIB();
-  const username = useSelector((state: RootState) => state.auth.userName);
+  const username = useUsername();
 
   // Store a browser-converted model back in the library, so switching away and
   // back does not convert it again. The viewer hands over the GLB; this knows
@@ -77,22 +71,13 @@ function Bim() {
     [libraryUrl],
   );
 
-  // The library URL is built from the signed-in user name, which the store
-  // only holds after this runs. Library and Digital Twins do the same thing
-  // in the same place, so this route stays consistent with them instead of
-  // inventing a second way to learn who is signed in.
-  useEffect(() => {
-    getAndSetUsername(auth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.user]);
-
   // Wait for the name before handing the viewer an address built from it.
-  // `useURLforLIB` interpolates the name whether or not it is there, so on the
-  // first render the address reads .../undefined/..., which the catch-all route
-  // answers with this application's own HTML and HTTP 200. The viewer then
-  // reports that the library did not return JSON, which is true and is not the
-  // problem. Every hook above runs first, so this early return does not change
-  // the order they are called in.
+  // `useUsername` reads it from the sign-in profile on the first render, so
+  // this is only reached when no user is signed in yet. An address without
+  // the name is answered by the catch-all route with this application's own
+  // HTML and HTTP 200, and the viewer would report that the library did not
+  // return JSON, which is true and is not the problem. Every hook above runs
+  // first, so this early return does not change the order they are called in.
   if (!username) {
     return (
       <Layout>

@@ -5,7 +5,7 @@ import ToolCard from 'components/workbench/ToolCard';
 import LinkIcons from 'components/LinkIconsLib';
 import toolDescriptions from 'route/workbench/toolDescriptions';
 
-import { useWorkbenchLinkValues, useAppURL } from 'util/envUtil';
+import { useWorkbenchLinkValues, useAppURL, useUsername } from 'util/envUtil';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from 'store/store';
 import { fetchWorkbenchServices } from 'store/workbench.slice';
@@ -26,11 +26,7 @@ import { useEffect } from 'react';
 function WorkBenchContent() {
   const linkValues = useWorkbenchLinkValues();
   const dispatch = useDispatch<AppDispatch>();
-  const username = (
-    useSelector((state: RootState) => state.auth).userName ?? ''
-  )
-    .trim()
-    .toLowerCase();
+  const username = useUsername();
   const servicesStatus = useSelector(
     (state: RootState) => state.workbench.status,
   );

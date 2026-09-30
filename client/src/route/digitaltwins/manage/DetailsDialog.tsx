@@ -4,7 +4,7 @@ import 'katex/dist/katex.min.css';
 import { useSelector } from 'react-redux';
 import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import MarkdownStyles from 'components/MarkdownStyles';
+import MarkdownStyles, { MARKDOWN_CLASS } from 'components/MarkdownStyles';
 import { renderMarkdown } from 'util/markdown';
 
 interface DetailsDialogProps {
@@ -41,6 +41,7 @@ function DetailsDialog({
     <Dialog open={showDialog} maxWidth="md">
       <DialogContent dividers>
         <div
+          className={MARKDOWN_CLASS}
           dangerouslySetInnerHTML={{
             __html: renderMarkdown(asset!.fullDescription),
           }}

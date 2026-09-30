@@ -1,13 +1,16 @@
 import {
   useURLforDT,
   useURLforLIB,
+  useUsername,
   useWorkbenchLinkValues,
   cleanURL,
   useURLbasename,
 } from 'util/envUtil';
 import { useSelector } from 'react-redux';
+import { useAuth } from 'react-oidc-context';
 
 jest.unmock('util/envUtil');
+jest.mock('react-oidc-context', () => ({ useAuth: jest.fn() }));
 
 describe('envUtil', () => {
   const testDT = 'testDT';
@@ -146,5 +149,41 @@ describe('envUtil', () => {
     expect(useURLforDT()).toBe(`${testAppURL}/${expectedUsername}/${testDT}`);
     expect(useURLforLIB()).toBe(`${testAppURL}/${expectedUsername}/${testLIB}`);
     expect(useURLbasename()).toBe('');
+  });
+
+  describe('useUsername', () => {
+    afterEach(() => {
+      (useAuth as jest.Mock).mockReset();
+    });
+
+    test('Reads the name from the store when it is there', () => {
+      (useAuth as jest.Mock).mockReturnValue({
+        user: { profile: { preferred_username: 'someone-else' } },
+      });
+      expect(useUsername()).toBe(expectedUsername);
+    });
+
+    test('Reads the name from the sign-in profile when the store has none yet', () => {
+      // PrivateRoute stores the name in an effect, after the first render. An
+      // address built from the store alone would read //lab on that render.
+      (useSelector as unknown as jest.Mock).mockImplementation(
+        (selector: (state: unknown) => unknown) =>
+          selector({ auth: { userName: undefined } }),
+      );
+      (useAuth as jest.Mock).mockReturnValue({
+        user: { profile: { preferred_username: 'Jady' } },
+      });
+      expect(useUsername()).toBe('jady');
+      expect(useURLforDT()).toMatch(new RegExp(`/jady/${testDT}$`));
+    });
+
+    test('Is empty when neither the store nor a signed-in user has a name', () => {
+      (useSelector as unknown as jest.Mock).mockImplementation(
+        (selector: (state: unknown) => unknown) =>
+          selector({ auth: { userName: undefined } }),
+      );
+      (useAuth as jest.Mock).mockReturnValue(undefined);
+      expect(useUsername()).toBe('');
+    });
   });
 });

@@ -3,6 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from 'page/NotFound';
 
+jest.mock('react-oidc-context', () => ({
+  ...jest.requireActual('react-oidc-context'),
+  useAuth: jest.fn(),
+}));
+
 const UNKNOWN_PATH = '/jady.pamella/tree/functions';
 
 describe('NotFound', () => {

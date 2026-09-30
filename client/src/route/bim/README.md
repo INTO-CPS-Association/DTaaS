@@ -33,8 +33,8 @@ could regress on a version bump.
 ## How the Page Finds a Model
 
 The route asks for the user's library URL through `useURLforLIB`, which is the
-same call Library and Digital Twins make, and hands it to the viewer with the
-folder from `library.ts`. The viewer lists that folder, so a person uploads an
+same call the Library page makes, and hands it to the viewer with the folder
+from `library.ts`. The viewer lists that folder, so a person uploads an
 IFC there the way they upload anything else and it appears in the IFC Model
 menu. No path, host or user name is written in this code.
 
@@ -112,7 +112,7 @@ is what the client itself uses to build the address.
 | WASM and workers from the DTaaS origin, works offline               | Done. A production build contains no `.wasm` file and fetches none                                            |
 | Derived artifacts record source hash and converter version          | Done for the manifest, whose schema refuses one without them. A GLB carries neither yet, whoever converted it |
 | Documentation under `docs/`                                         | Done                                                                                                          |
-| Unit tests for manifest and resolver, Playwright for the route      | Done. The package has its own suite, 36 unit tests cover this route, and 4 Playwright tests                   |
+| Unit tests for manifest and resolver, Playwright for the route      | Done. The package has its own suite, 44 unit tests cover this route, and 5 Playwright tests                   |
 | No qlty issues                                                      | Checked on the pull request                                                                                   |
 
 Two of those need a sentence instead of a word.

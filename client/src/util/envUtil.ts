@@ -1,5 +1,7 @@
 import { useSelector } from 'react-redux';
+import { useAuth } from 'react-oidc-context';
 import { RootState } from 'store/store';
+import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 /**
  * @param url or endpoint to clean
@@ -14,15 +16,32 @@ export function cleanUsername(username: string | undefined): string {
 }
 
 /**
+ * The signed-in user's name, as every workspace address needs it.
+ *
+ * PrivateRoute records the name in the store in an effect, and an effect runs
+ * after the page has rendered once. Read from the store alone, the first render
+ * of a page opened directly builds an address with no name in it, such as
+ * //lab, and an embedded frame loads that address before the right one. The
+ * OIDC profile already holds the name on that first render, so it is read
+ * from there when the store has none yet.
+ */
+export function useUsername(): string {
+  const stored = useSelector((state: RootState) => state.auth).userName;
+  const auth = useAuth();
+  const fromProfile = auth?.user
+    ? resolveOAuthUsername(auth.user.profile)
+    : undefined;
+  return cleanUsername(stored || fromProfile);
+}
+
+/**
  * Injects the `username` into the `baseURL` and `endpoint` to create a link.
  * @param baseURL Example `https://intocps.org` Any leading or trailing slashes will be removed.
  * @param endpoint (optional). Example `bar` Any leading or trailing slashes will be removed.
  * @returns a complete URL: `baseUrl` / `username` / `endpoint`
  */
 const useUserLink = (baseURL: string, endpoint?: string): string => {
-  const username = cleanUsername(
-    useSelector((state: RootState) => state.auth).userName,
-  );
+  const username = useUsername();
   const cleanBaseURL = cleanURL(baseURL);
   const cleanEndpoint = cleanURL(endpoint ?? '');
   return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
@@ -73,9 +92,7 @@ function buildUserLink(
  * are pages of this application, reached from the Automation page instead.
  */
 export function useWorkbenchLinkValues(): KeyLinkPair[] {
-  const username = cleanUsername(
-    useSelector((state: RootState) => state.auth).userName,
-  );
+  const username = useUsername();
   const services = useSelector((state: RootState) => state.workbench.services);
   const appURL = useAppURL();
   const workbenchLinkValues: KeyLinkPair[] = [];

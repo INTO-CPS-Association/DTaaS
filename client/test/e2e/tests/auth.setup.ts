@@ -1,8 +1,10 @@
-import { expect } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import path from 'node:path';
 import setup from 'test/e2e/setup/fixtures';
-import { disableRemoteLogging } from 'test/e2e/setup/appSettings';
+import {
+  authorizeIfAsked,
+  disableRemoteLogging,
+} from 'test/e2e/setup/appSettings';
 import { saveSessionStorage } from 'test/e2e/setup/authStorage';
 
 // Use absolute path for reliable environment variable loading
@@ -22,12 +24,8 @@ setup('authenticate', async ({ page }) => {
   await page.fill('#user_login', testUsername.toString()); // Insert valid GitLab testing username.
   await page.fill('#user_password', testPassword.toString()); // Insert valid GitLab testing password.
   await page.getByRole('button', { name: 'Sign In' }).click();
-  await page
-    .getByRole('button', { name: /Authorize/ })
-    .press('Enter', { timeout: 30000 });
-  await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible(
-    { timeout: 30000 },
-  );
+
+  await authorizeIfAsked(page);
   await disableRemoteLogging(page);
   await saveSessionStorage(page);
   const storage = await page.context().storageState();

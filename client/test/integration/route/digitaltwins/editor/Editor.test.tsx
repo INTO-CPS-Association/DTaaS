@@ -1,5 +1,5 @@
 import Editor from 'route/digitaltwins/editor/Editor';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import assetsReducer, { setAssets } from 'model/store/assets.slice';
@@ -116,29 +116,29 @@ describe('Editor', () => {
 
   beforeEach(async () => {
     await setupTest();
+    // Rendered once inside act and not inside waitFor, which retries its
+    // callback and would render the editor again on every retry.
     await act(async () => {
-      await waitFor(() => {
-        render(
-          <Provider store={store}>
-            <Editor
-              DTName={'Asset 1'}
-              tab="reconfigure"
-              fileName={fileName}
-              setFileName={setFileName}
-              fileContent={fileContent}
-              setFileContent={setFileContent}
-              fileType={fileType}
-              setFileType={setFileType}
-              filePrivacy={'private'}
-              setFilePrivacy={setFilePrivacy}
-              isLibraryFile={false}
-              setIsLibraryFile={setIsLibraryFile}
-              libraryAssetPath={''}
-              setLibraryAssetPath={setLibraryAssetPath}
-            />
-          </Provider>,
-        );
-      });
+      render(
+        <Provider store={store}>
+          <Editor
+            DTName={'Asset 1'}
+            tab="reconfigure"
+            fileName={fileName}
+            setFileName={setFileName}
+            fileContent={fileContent}
+            setFileContent={setFileContent}
+            fileType={fileType}
+            setFileType={setFileType}
+            filePrivacy={'private'}
+            setFilePrivacy={setFilePrivacy}
+            isLibraryFile={false}
+            setIsLibraryFile={setIsLibraryFile}
+            libraryAssetPath={''}
+            setLibraryAssetPath={setLibraryAssetPath}
+          />
+        </Provider>,
+      );
     });
   });
 

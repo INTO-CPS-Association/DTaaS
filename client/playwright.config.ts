@@ -22,10 +22,20 @@ export default defineConfig({
     : {
         command: 'yarn start',
         url: BASE_URI,
+        // Playwright's default, written out: a port already in use stops the
+        // run, so the suite never tests a website it did not build.
+        reuseExistingServer: false,
       },
   retries: process.env.CI ? 0 : 1, // Disable retries on Github actions for now as setup always fails
   timeout: 90 * 1000, // 90 seconds per test
-  globalTimeout: 25 * 60 * 1000,
+  // The per-test limits of the sequential projects add up to about 39 minutes
+  // at worst: 600 s for each concurrent execution test, 300 s for the digital
+  // twin test, about 480 s for the measurement tests and 360 s for the
+  // lifecycle test, run once per browser. When the global limit stops a run,
+  // no test's clean-up runs, so it has to cover that. CI keeps 25 minutes,
+  // inside the 30-minute cap of its job, since sign-in cannot complete there
+  // and the tests that depend on it are skipped.
+  globalTimeout: (process.env.CI ? 25 : 45) * 60 * 1000,
   // Run pipeline tests in parallel to test concurrent GitLab requests.
   workers: 3,
   testDir: './test/e2e/tests',

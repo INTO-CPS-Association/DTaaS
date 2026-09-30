@@ -15,9 +15,9 @@ import { useAuth } from 'react-oidc-context';
 import { useSignOut } from 'util/auth/Authentication';
 import MenuToolbar from 'page/MenuToolbar';
 
-// The unit setup replaces the MUI Toolbar with an empty div for every test, so
-// nothing inside the bar renders. This file is about what is inside it, so it
-// takes the real one back.
+// test/__mocks__/unit/page_mocks.tsx replaces the MUI Toolbar with an empty div
+// for every unit test, so nothing inside the bar renders. This file is about
+// what is inside it, so it takes the real one back.
 jest.mock('@mui/material/Toolbar', () =>
   jest.requireActual('@mui/material/Toolbar'),
 );
@@ -57,14 +57,14 @@ const renderToolbar = () => {
   );
 };
 
-describe('MenuToolbar sign out', () => {
+describe('MenuToolbar Sign Out', () => {
   beforeEach(() => {
     signOut.mockReset().mockResolvedValue(undefined);
     (useSignOut as jest.Mock).mockReturnValue(signOut);
     (useAuth as jest.Mock).mockReturnValue(auth);
   });
 
-  it('signs the user out with the current session when Logout is pressed', async () => {
+  it('Signs the user out with the current session when Logout is pressed', async () => {
     renderToolbar();
 
     await userEvent.click(screen.getByRole('menuitem', { name: /Logout/ }));
@@ -73,7 +73,7 @@ describe('MenuToolbar sign out', () => {
     expect(signOut).toHaveBeenCalledWith(auth);
   });
 
-  it('does nothing when there is no session to end', async () => {
+  it('Does nothing when there is no session to end', async () => {
     // useAuth returns undefined outside a provider, which is how several tests
     // render this toolbar. Pressing Logout there must not reach the flow.
     (useAuth as jest.Mock).mockReturnValue(undefined);

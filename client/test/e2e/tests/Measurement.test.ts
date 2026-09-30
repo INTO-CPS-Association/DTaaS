@@ -8,7 +8,7 @@ const PRIMARY_RUNNER = process.env.PRIMARY_RUNNER ?? 'linux';
 const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
 
 async function signIn(page: import('@playwright/test').Page) {
-  await openAuthenticatedApp(page);
+  await openAuthenticatedApp(page, './insights/measure');
 }
 
 async function openSettingsTab(page: import('@playwright/test').Page) {
@@ -41,9 +41,6 @@ async function stopMeasurementIfRunning(page: import('@playwright/test').Page) {
 test.describe('Measurement Page', () => {
   test.beforeEach(async ({ page }) => {
     await signIn(page);
-
-    // Navigate to measurement page
-    await page.goto('./insights/measure');
   });
 
   test.afterEach(async ({ page }) => {
@@ -51,9 +48,6 @@ test.describe('Measurement Page', () => {
   });
 
   test('Should navigate to measurement page successfully', async ({ page }) => {
-    // Verify page loaded correctly (not 404)
-    await expect(page.locator('text=404 Not Found')).not.toBeVisible();
-
     // Verify correct URL
     await expect(page).toHaveURL(/insights\/measure/);
 
@@ -94,7 +88,8 @@ test.describe('Measurement Page', () => {
     await page.fill('#measurementSecondaryRunnerTag', SECONDARY_RUNNER);
     await page.fill('#measurementTrials', '1');
     await page.getByRole('button', { name: 'Save Settings' }).click();
-    await page.goto('./insights/measure');
+    await page.goBack();
+    await expect(page).toHaveURL(/insights\/measure/);
 
     // Disable all but the 4th task
     /* eslint-disable no-await-in-loop */

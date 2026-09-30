@@ -7,8 +7,10 @@ future optimization.
 
 ## Accessing the Measurement Page
 
-Navigate to `http://localhost:4000/insights/measure` or `https://intocps.org/insights/measure`
-to access the measurement page. This page is only accessible to authenticated users.
+The measurement page is reached from the **Measurement** card on the
+**Automation** page, or at `http://localhost:4000/insights/measure` or
+`https://intocps.org/insights/measure`. This page is only accessible to
+authenticated users.
 
 ![Measurement page](./images/measurement-page.png)
 

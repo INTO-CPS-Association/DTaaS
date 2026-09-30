@@ -14,7 +14,7 @@ const TERMINAL_STATUS = /Status: (Completed|Failed|Canceled|Timed out)/;
 
 async function stopRunningExecution(page: Page) {
   const dialog = page.getByRole('dialog', {
-    name: 'Hello world Execution History',
+    name: 'Hello World Execution History',
   });
   if (!(await dialog.isVisible({ timeout: 1000 }).catch(() => false))) return;
   const stopButton = dialog.getByRole('button', { name: 'stop' }).first();
@@ -31,12 +31,12 @@ test.setTimeout(300000);
 
 test.describe('Digital Twin Log Cleaning', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to the home page and authenticate
-    await openAuthenticatedApp(page);
+    // Open the Digital Twins page, save the runner tags on the Account page,
+    // and come back through the browser history
+    await openAuthenticatedApp(page, './preview/digitaltwins');
     await saveRunnerSettings(page);
-
-    // Navigate directly to the Digital Twins page
-    await page.goto('./preview/digitaltwins');
+    await page.goBack();
+    await expect(page).toHaveURL(/preview\/digitaltwins/);
 
     // Navigate to the Execute tab
     await page.getByRole('tab', { name: 'Execute' }).click();
@@ -51,10 +51,11 @@ test.describe('Digital Twin Log Cleaning', () => {
 
   // @slow - This test requires waiting for actual GitLab pipeline execution
   test('Execute Digital Twin and verify log cleaning', async ({ page }) => {
-    // Find the Hello world Digital Twin card
+    // Find the Hello World digital twin card. The page titles a twin in Title
+    // Case, so the name in the card is Hello World and not the directory name.
     const helloWorldCard = page
       .locator('.MuiPaper-root')
-      .filter({ has: page.getByText('Hello world', { exact: true }) })
+      .filter({ has: page.getByText('Hello World', { exact: true }) })
       .first();
 
     await expect(helloWorldCard).toBeVisible({ timeout: 30000 });
@@ -78,7 +79,7 @@ test.describe('Digital Twin Log Cleaning', () => {
 
     // Verify that the execution history dialog is displayed
     const historyDialog = page.getByRole('dialog', {
-      name: 'Hello world Execution History',
+      name: 'Hello World Execution History',
     });
     await expect(historyDialog).toBeVisible({ timeout: 10000 });
 

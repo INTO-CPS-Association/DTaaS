@@ -2,10 +2,13 @@
 
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
+import {
+  openAuthenticatedApp,
+  requireFullPlatform,
+} from 'test/e2e/setup/appSettings';
 import links, { workbenchLinks } from './Links';
 
-test.describe('Menu Links from first page (Layout)', () => {
+test.describe('Menu Links From First Page (Layout)', () => {
   test.beforeEach(async ({ page }) => {
     await openAuthenticatedApp(page);
     await expect(page).toHaveURL(/.*Library/);
@@ -24,11 +27,13 @@ test.describe('Menu Links from first page (Layout)', () => {
       await previousPromise;
       await page.getByRole('link', { name: link.text }).click();
       await expect(page).toHaveURL(link.url);
-      await expect(page.locator('text=404 Not Found')).not.toBeVisible();
+      await expect(page.getByText('This Page Does Not Exist')).toHaveCount(0);
     }, Promise.resolve());
   });
 
   test('Workbench Links are visible', async ({ page }) => {
+    // The tool list is served by the workspace.
+    requireFullPlatform();
     await page.getByRole('link', { name: 'Workbench' }).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {
@@ -39,6 +44,7 @@ test.describe('Menu Links from first page (Layout)', () => {
   });
 
   test('Workbench Links open in new windows', async ({ page }) => {
+    requireFullPlatform();
     await page.getByRole('link', { name: 'Workbench' }).click();
     await expect(page).toHaveURL('./workbench');
     await workbenchLinks.reduce(async (previousPromise, link) => {
@@ -47,8 +53,13 @@ test.describe('Menu Links from first page (Layout)', () => {
       await page.getByRole('link', { name: link.text }).click();
       const popup = await popupPromise;
       await popup.waitForLoadState('load', { timeout: 30000 });
-      const popupUrl = popup.url();
-      expect(popupUrl).toContain(link.url.replace('./', ''));
+      // A server may answer a tool address with its canonical form, which adds
+      // a slash before the query: tools/vnc?path= arrives as tools/vnc/?path=.
+      // It is the same address, so neither side carries that slash here.
+      const canonical = (url: string) => url.replace(/\/(?=\?|$)/, '');
+      expect(canonical(popup.url())).toContain(
+        canonical(link.url.replace('./', '')),
+      );
       await popup.close();
       return Promise.resolve();
     }, Promise.resolve());

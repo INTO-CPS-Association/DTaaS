@@ -2,9 +2,8 @@
  * The last resort when a render throws.
  *
  * React unmounts the whole tree when a render throws and nothing catches it,
- * which leaves a blank page. `PrivateRoute` throws when it is authenticated
- * and the provider hands it no user, and that now happens during render, so
- * the blank page arrives before the first paint instead of after it.
+ * which leaves a blank page. Any component under the provider tree can do
+ * that, and this boundary turns it into a page that says what to do.
  *
  * This is the net, not the fix. It sits inside `ThemeProvider` so the fallback
  * can use the application's own components, and wraps the provider tree, so it

@@ -1,10 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 import { useLogger } from 'util/logger/useLogger';
 import { clearAccessToken, setAccessToken } from 'util/auth/accessToken';
+import { useGetAndSetUsername } from 'util/auth/Authentication';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -16,7 +17,11 @@ function getRouteState(auth: ReturnType<typeof useAuth>): RouteState {
   const states: Array<[() => boolean, RouteState]> = [
     [() => auth.isLoading, 'loading'],
     [() => Boolean(auth.error), 'error'],
-    [() => !auth.isAuthenticated, 'unauthenticated'],
+    // A session with no user should not happen in react-oidc-context. If it
+    // ever does, the route has no token to hand its children, so it sends the
+    // person to sign in again instead of rendering a page whose every request
+    // would be refused.
+    [() => !auth.isAuthenticated || !auth.user, 'unauthenticated'],
   ];
   return states.find(([matches]) => matches())?.[1] ?? 'authenticated';
 }
@@ -25,14 +30,14 @@ function storeAccessToken(
   isAuthenticated: boolean,
   user: ReturnType<typeof useAuth>['user'],
 ): void {
-  // Clear rather than return, so a session that ends, or a move to a public
-  // route, does not leave the last token in the module for the life of the
-  // document.
-  if (!isAuthenticated) {
+  // Cleared and not simply left alone, so a session that ends, or a move to a
+  // public route, does not leave the last token in the module for the life of
+  // the document. A session with no user clears it too, and the route state
+  // above turns that into the sign-in redirect.
+  if (!isAuthenticated || !user) {
     clearAccessToken();
     return;
   }
-  if (!user) throw new Error('Access token was not available...');
   setAccessToken(user.access_token);
 }
 
@@ -70,6 +75,19 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   storeAccessToken(auth.isAuthenticated, auth.user);
 
   const routeState = getRouteState(auth);
+
+  // The user name goes into every workspace address, the embedded Digital
+  // Twins frame and the Workbench tool list among them. It is recorded here,
+  // once for every private page, so a page opened first by a bookmark or a
+  // reload does not build an address with no name in it.
+  const getAndSetUsername = useGetAndSetUsername();
+  useEffect(() => {
+    if (routeState === 'authenticated') {
+      getAndSetUsername(auth);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeState, auth.user]);
+
   return renderRouteState(routeState, auth.error, children);
 };
 

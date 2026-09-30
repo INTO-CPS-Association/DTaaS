@@ -42,7 +42,7 @@ The correct callback URL must be added to the OAuth application.
 Depending on the location of the client website, register one of the
 following callback URLs.
 
-| Location of client application | URL                     |
+| Location of Client Application | URL                     |
 | :----------------------------- | :---------------------- |
 | Localhost                      | `http://localhost:4000` |
 | External / Integration server  | `https://intocps.org`   |
@@ -66,6 +66,12 @@ to reflect the selected test setup.
 Additional information on environment settings is available in the
 [authorisation](../../docs/admin/client/auth.md) and
 [client configuration](../../docs/admin/client/config.md) pages.
+
+`config/test.js` carries neutral defaults, with `https://gitlab.com` as the
+authority. A site with its own GitLab puts that GitLab and the client ID of
+its OAuth application in its local copy, and does not commit it. These values
+are needed only when the tests start the website themselves. Against a
+deployment, the website reads the deployment's own configuration.
 
 The following example values are suitable for testing on the developer
 computer (`localhost`).
@@ -129,7 +135,17 @@ Replace _your_username_ and _your_password_ with the actual username and passwor
 for the selected on-premise GitLab account (`gitlab.intocps.org`) or test account.
 If you do not have a secondary gitlab runner, you can use the same one for both.
 They will be the ones used in the e2e tests for executing twins and taking
-measurements.
+measurements. Both tags have to name a runner that exists and is online: the
+example values above are only examples. A tag no runner carries leaves the
+pipeline of that task queued, and the measurement test waits for a status that
+never arrives, which reads as a slow test and is a missing runner.
+
+Two tests write to that account and remove what they wrote. The digital twin
+lifecycle test creates a twin named `e2e-<browser>-<time>` in the GitLab
+project, reconfigures it and deletes it. The Building Models test uploads an
+IFC file named `e2e_<browser>_<time>.ifc` to `common/models` in the workspace
+and deletes it with the geometry it stored. A run stopped part way can leave
+one of them behind, and it is safe to delete by hand.
 
 The following is an example `test/.env` for a setup where tests run on
 the developer machine and the DTaaS client application runs on a remote
@@ -163,7 +179,94 @@ The `yarn test:e2e` command launches the test runner and the DTaaS client applic
 then executes all end-to-end tests.
 The client application is terminated at the end of end-to-end tests.
 
-## Testing on the integration server
+## Testing Against a Local Deployment of the Whole Platform
+
+The two setups above serve the website alone. The Library and Building Models
+pages also read the signed-in user's workspace, which is served by the same
+origin as the website in a deployment, so those pages only work when the whole
+platform runs, and not when the website runs on its own at `localhost:4000`.
+
+In that setup the website is already served, by the deployment, so the tests
+must not start a second one. Point `test/.env` at the address the deployment
+answers on, say that the whole platform runs there, and run the
+external-server command:
+
+```bash
+REACT_APP_URL='http://localhost:8081'
+FULL_PLATFORM=true
+```
+
+Without `FULL_PLATFORM=true`, the tests that read the workspace are skipped,
+and the skip names what to start: the Workspace Pages tests, three of the
+Building Models tests, the two Workbench link tests in Menu and the Automation
+test that reads the workbench. They would fail against the website alone, for
+a reason that is not a defect.
+
+```bash
+yarn test:e2e:ext
+```
+
+`yarn test:e2e` would build the website and start its own preview at that same
+address, and it stops with `http://localhost:8081/ is already used` when the
+deployment is answering there. That stop is deliberate: the suite never tests
+a website it did not build. `yarn test:e2e:ext` is the command for a website
+served by something else.
+
+The GitLab OAuth application needs the deployment's address among its callback
+URLs, in the same way the two setups above need theirs.
+
+## What Runs and How to Choose
+
+`playwright.config.ts` defines five projects. `setup` signs in once and saves
+the session in `playwright/.auth/`, which is gitignored because it holds a
+token. The others reuse that session:
+
+| Project               | Browser  | Tests                                                               |
+| :-------------------- | :------- | :------------------------------------------------------------------ |
+| `chromium`, `firefox` | Both     | Every file except those below                                       |
+| `chromium-sequential` | Chromium | Files named `ConcurrentExecution`, `DigitalTwins*` or `Measurement` |
+| `firefox-sequential`  | Firefox  | The same files                                                      |
+
+The sequential projects hold the tests that run GitLab pipelines on the
+runners, and the one that changes the shared GitLab project,
+`DigitalTwinsLifecycle`.
+
+A run retries a failed test once on a developer computer and never on CI.
+Add `--retries=0` to see every failure as it happened. Some useful
+variations, all from the `client` directory:
+
+```bash
+ext=true npx playwright test --retries=0              # everything, no retry
+ext=true npx playwright test Bim --project=chromium   # one file, one browser
+ext=true npx playwright test --ui                     # step through in a window
+```
+
+Leave out `ext=true` when the tests should start the website themselves at
+`localhost:4000`.
+
+## Reading the Results
+
+Every run writes its results to `playwright-report/`, and the HTML report
+is the one to read:
+
+```bash
+yarn playwright show-report
+```
+
+It lists each test per browser, with its steps and timings. A failed test
+carries a screenshot, and when it failed after a retry it also carries a
+trace, a recording of the page at every step. The trace opens from the
+report, or directly with `yarn playwright show-trace <trace.zip>` from
+`test-results/`, which holds the traces and screenshots. `results.xml`
+(JUnit) and `results.json`, for tools that read the results, are in
+`playwright-report/` with the HTML report.
+
+The `chromium` project also measures which lines of the client its tests
+executed. That report is written to `coverage/e2e/index.html`.
+
+`playwright-report/`, `test-results/` and `coverage/` are all gitignored.
+
+## Testing on the Integration Server
 
 In this setup, the DTaaS application runs at `https://intocps.org` and
 the GitLab instance runs at `https://gitlab.intocps.org`.

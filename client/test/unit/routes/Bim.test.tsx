@@ -125,17 +125,31 @@ describe('Bim', () => {
   });
 
   it('draws nothing from the library until it knows who is signed in', () => {
-    // The address is built from the user name whether or not it is known, so
-    // for the first render it reads .../undefined/..., which falls through to
-    // this application and answers with its own HTML page. The viewer then
-    // reports that the library returned no JSON, which is true and useless.
+    // An address without the user name falls through to this application,
+    // which answers with its own HTML page. The viewer would then report that
+    // the library returned no JSON, which is true and useless. The name comes
+    // from the store or from the sign-in profile, and here neither has it.
     signedInAs(undefined);
+    (useAuth as jest.Mock).mockReturnValue({ ...mockAuthState, user: null });
     renderWithRouter(<Bim />, { route: '/private' });
 
     expect(screen.queryByTestId('building-models')).not.toBeInTheDocument();
     expect(
       screen.getByText(/Waiting for the signed-in user/),
     ).toBeInTheDocument();
+  });
+
+  it('draws at once when the sign-in profile has the name and the store not yet', () => {
+    // PrivateRoute stores the name in an effect, after this page's first
+    // render. The profile already holds it, so the page does not wait.
+    signedInAs(undefined);
+    (useAuth as jest.Mock).mockReturnValue({
+      ...mockAuthState,
+      user: { profile: { preferred_username: 'jady.pamella' } },
+    });
+    renderWithRouter(<Bim />, { route: '/private' });
+
+    expect(screen.getByTestId('building-models')).toBeInTheDocument();
   });
 
   it('passes the library URL this deployment configured', () => {

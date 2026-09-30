@@ -1,6 +1,6 @@
 import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import MarkdownStyles from 'components/MarkdownStyles';
+import MarkdownStyles, { MARKDOWN_CLASS } from 'components/MarkdownStyles';
 import { renderMarkdown } from 'util/markdown';
 
 interface PreviewProps {
@@ -23,6 +23,7 @@ function PreviewTab({ fileContent, fileType }: PreviewProps) {
         }}
       >
         <div
+          className={MARKDOWN_CLASS}
           dangerouslySetInnerHTML={{
             __html: renderedMarkdown,
           }}
