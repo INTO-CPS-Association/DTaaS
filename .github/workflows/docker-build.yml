@@ -49,7 +49,6 @@ jobs:
         working-directory: client/
         run: |
           yarn install --network-timeout 1000000
-          yarn playwright install --with-deps
 
       - name: Run the linting checks
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
