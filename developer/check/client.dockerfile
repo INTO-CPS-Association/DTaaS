@@ -1,5 +1,6 @@
 #! docker should be run from the root directory of the project
-FROM node:24.12.0-slim AS build
+FROM node:26.10.0-slim AS build
+RUN npm install --global --ignore-scripts yarn@1.22.22
 
 # Set the working directory inside the container
 WORKDIR /dtaas/client
@@ -18,7 +19,7 @@ COPY ./client/ .
 RUN yarn build
 
 
-FROM node:24.12.0-slim
+FROM node:26.10.0-slim
 # Copy the build output to serve
 COPY --from=build /dtaas/client/build /dtaas/client/build
 COPY --from=build /dtaas/client/package.json /dtaas/client/package.json

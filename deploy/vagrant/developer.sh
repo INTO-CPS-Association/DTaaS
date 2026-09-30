@@ -20,18 +20,17 @@ sudo -u vagrant bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v
 sudo -u vagrant bash <<'NODEEOF'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-# Node.js 26 for the servers; Node.js 24 (default) for the client
 nvm install 26
-npm install -g yarn serve pm2 madge
-nvm install 24
-nvm alias default 24
+nvm alias default 26
 npm install -g yarn serve pm2 madge
 
 # Install playwright tool for integration tests on browsers
 npx --yes playwright install-deps
 NODEEOF
 
-# Ensure nvm is available in .bashrc and .zshrc
+# Ensure nvm is available in .bashrc and .zshrc. The lines are written
+# literally, so they expand when the shell starts.
+# shellcheck disable=SC2016
 NVM_LINES='export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"'
