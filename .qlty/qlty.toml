@@ -85,6 +85,8 @@ default = true
 
 [[plugin]]
 name = "actionlint"
+# 1.7.10 and later understand YAML anchors, which the workflows use.
+version = "1.7.12"
 
 [[plugin]]
 name = "dotenv-linter"
