@@ -72,6 +72,9 @@ RUN python3 -m venv /opt/dtaas-venv \
 
 # Take over the requested uid/gid, evicting whatever the base image put
 # there (ubuntu:26.04 ships a user 'ubuntu' at 1000:1000).
+#
+# Named volumes inherit ownership from the image, so their mount points
+# must exist and belong to the dtaas user before the volume is created.
 RUN existing_user="$(getent passwd "${UID}" | cut -d: -f1)" \
     && { [ -z "${existing_user}" ] || userdel -r "${existing_user}"; } \
     && existing_group="$(getent group "${GID}" | cut -d: -f1)" \
@@ -79,11 +82,8 @@ RUN existing_user="$(getent passwd "${UID}" | cut -d: -f1)" \
     && groupadd -g "${GID}" dtaas \
     && useradd -u "${UID}" -g "${GID}" -m -s /bin/zsh dtaas \
     && echo "dtaas ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/dtaas \
-    && chmod 0440 /etc/sudoers.d/dtaas
-
-# Named volumes inherit ownership from the image, so these mount points
-# must exist and belong to the dtaas user before the volume is created.
-RUN mkdir -p /home/dtaas/.cache \
+    && chmod 0440 /etc/sudoers.d/dtaas \
+    && mkdir -p /home/dtaas/.cache \
     /workspace/DTaaS/client/node_modules \
     /workspace/DTaaS/servers/lib/node_modules \
     /workspace/DTaaS/servers/logger/node_modules \
