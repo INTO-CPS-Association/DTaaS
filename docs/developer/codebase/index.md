@@ -51,6 +51,11 @@ requires changes:
 
 ## Agent and automation files
 
+Coding agents read `AGENTS.md`, which holds the general coding
+guidelines, and `PROJECT.md`, which holds the build and test commands,
+verification steps, shipping cycle and pull request checks specific to
+this repository. `CLAUDE.md` imports both for Claude Code.
+
 The repository also stores Copilot-specific project guidance in
 `.github/copilot-instructions.md` and task-specific custom modes in
 `.github/agents/*.agent.md`. These files are part of the repository-level

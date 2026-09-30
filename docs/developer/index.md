@@ -198,6 +198,13 @@ While newly introduced issues appear directly on the PR page,
 specific issues can be addressed by visiting the issues or code
 section of the Qlty dashboard.
 
+Qlty Cloud skips pull requests opened from forks, because GitHub
+withholds its token from them. The `Qlty` workflow
+(`.github/workflows/qlty.yml`) runs the Qlty CLI on every pull request
+instead. It fails on new actionlint findings in changed workflows, and
+reports dependency advisories (osv-scanner) and code smells in the job
+log and summary without failing.
+
 Code contributions should not introduce new quality issues.
 If such issues arise, they should be resolved immediately using
 the appropriate suggestions from Qlty. In exceptional cases,
