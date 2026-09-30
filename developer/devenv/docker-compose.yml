@@ -8,8 +8,8 @@ services:
       context: ../../
       dockerfile: developer/devenv/Dockerfile
       args:
-        UID: ${UID:?run "printf 'UID=%s\nGID=%s\n' \"$(id -u)\" \"$(id -g)\" > .env"}
-        GID: ${GID:?run "printf 'UID=%s\nGID=%s\n' \"$(id -u)\" \"$(id -g)\" > .env"}
+        UID: ${UID:?run developer/devenv/init.sh first}
+        GID: ${GID:?run developer/devenv/init.sh first}
     image: dtaas/devenv:latest
     init: true
     command: sleep infinity

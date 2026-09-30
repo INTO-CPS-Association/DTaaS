@@ -1,7 +1,7 @@
 # Containerised Developer Environment
 
 Date: 2026-09-16
-Status: approved for implementation
+Status: implemented; see "Amendments" for changes made in review
 
 ## Problem
 
@@ -98,6 +98,7 @@ Moves use `git mv` so history follows. Call sites to update:
 | `client/DEVELOPER.md` | documented paths |
 | `docs/developer/contributions/docker.md` | documented paths and the workflow table |
 | `developer/check/README.md` | internal path references |
+| `developer/check/docker-compose.yml` | `build.context` becomes `../../` and `dockerfile:` gains `check/` |
 
 The `dockerfile:` *input values* passed by callers stay bare filenames,
 so only the three reusable workflows change their `file:` expression.
@@ -165,9 +166,9 @@ whatever user or group already occupies the requested ids, then creates
 ARG UID
 ARG GID
 RUN existing_user="$(getent passwd "${UID}" | cut -d: -f1)" \
- && [ -z "${existing_user}" ] || userdel -r "${existing_user}" \
+ && { [ -z "${existing_user}" ] || userdel -r "${existing_user}"; } \
  && existing_group="$(getent group "${GID}" | cut -d: -f1)" \
- && [ -z "${existing_group}" ] || groupdel "${existing_group}" \
+ && { [ -z "${existing_group}" ] || groupdel "${existing_group}"; } \
  && groupadd -g "${GID}" dtaas \
  && useradd -u "${UID}" -g "${GID}" -m -s /bin/zsh dtaas
 ```
@@ -304,3 +305,30 @@ surfaces only when the affected workflow next runs. The `git grep` step
 and `yamllint` are the guard; each edited workflow is also re-read
 against its callers, and the pull request's own CI exercises the
 renamed Dockerfile paths.
+
+## Amendments
+
+Changes made after review of the first implementation:
+
+- The spec lived under `docs/superpowers/specs/`, which mkdocs publishes.
+  It moved here, next to the code it describes.
+- Node is 26.10.0, copied from the official `node:26.10.0-slim` image
+  instead of the NodeSource install script, so no downloaded script is
+  executed. Node 26 does not ship corepack; yarn and the global tools
+  are installed with `npm install --global --ignore-scripts` at pinned
+  versions, and Playwright's `install-deps` runs from that install rather
+  than through `npx`.
+- `git-lfs` is installed and enabled system-wide. `.gitattributes` routes
+  images and videos through LFS, and the mkdocs hook aborts on LFS
+  pointers.
+- `init.sh` writes `.env` and creates the four `node_modules` mount
+  points on the host as the host user. Without the latter, a rootful
+  daemon creates them as root and a later host `yarn install` fails. The
+  devcontainer runs it as `initializeCommand`.
+- `forwardPorts` is dropped; compose already publishes every port, and
+  port 8000 belongs to the `docs` service, not `devenv`.
+- `developer/runner.dockerfile`, added upstream after this spec, moved
+  into `developer/check/` too.
+- CI moved to Python 3.14 as well, so the container and the lint and
+  Poetry jobs now use the same interpreter line. The risk below no
+  longer applies.

@@ -23,14 +23,15 @@ The repository includes a devcontainer definition at
 `.devcontainer/devcontainer.json`.
 
 Using the devcontainer is the recommended approach for obtaining a consistent
-Docker-based development environment.
+Docker-based development environment. VS Code's **Reopen in Container** runs
+`developer/devenv/init.sh` on the host first; outside VS Code, run that script
+once and follow
+[developer/devenv/README.md](developer/devenv/README.md).
 
 Recommended toolchain versions:
 
-- Node.js 26 for the servers (`servers/lib`, `servers/logger` and
-  `servers/execution/runner`)
-- Node.js 24 for the client and `lib/dt-automation`
-- Python 3.12
+- Node.js 26
+- Python 3.14
 
 ## 🔄 Workflow
 

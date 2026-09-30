@@ -12,29 +12,41 @@ This directory gives you the tools to *write* the code.
 
 | Tool | Version | Used by |
 | :--- | :--- | :--- |
-| Node | 24.21.0 (LTS) | `client`, `servers/lib`, `servers/logger`, `lib/dt-automation` |
+| Node | 26.10.0 | `client`, `servers/lib`, `servers/logger`, `lib/dt-automation` |
 | yarn | 1.22.22 | the same four projects |
 | Python | 3.14 | `cli`, `lib/gitlab_common`, `deploy/services/cli` |
 | Poetry | latest | the same three projects |
 | mkdocs | pinned by `script/docs/mkdocs-requirements.txt` | `docs/` |
-| mdl, markdownlint | latest | Markdown linting |
+| git-lfs | Ubuntu package | images and videos tracked in LFS |
+| mdl | latest | Markdown linting |
+| markdownlint-cli | 0.49.1 | Markdown linting |
 | shellcheck | 0.11.0 | shell scripts |
-| madge, graphviz | latest | dependency graphs |
+| madge | 8.0.0 | dependency graphs |
+| graphviz | Ubuntu package | dependency graphs |
 | pre-commit | latest | git hooks |
 
-Node 24 is the current LTS line and matches the CI workflows and the
-production Dockerfiles. Playwright's system libraries are installed;
+Node 26 matches the CI workflows and the production Dockerfiles in
+`developer/check/`. It no longer ships corepack, so yarn is installed
+globally through npm. Playwright's system libraries are installed;
 browser binaries are not, so run `yarn playwright install` once.
+
+The mkdocs requirements are a superset of what the docs CI job installs.
+CI publishes `mkdocs-github.yml`; the `docs` service here serves
+`mkdocs.yml`, which also declares the `with-pdf` plugin.
 
 ## Getting started
 
-Generate the identity file. Your host UID and GID are baked into the
-image so files written through the bind mount belong to you:
+Prepare the host checkout once:
 
 ```sh
 cd developer/devenv
-printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
+./init.sh
 ```
+
+`init.sh` writes `.env` with your host UID and GID, which are baked into
+the image so files written through the bind mount belong to you. It also
+creates the `node_modules` mount points on the host as your user. An
+existing `.env` is left unchanged.
 
 Build and start:
 
@@ -47,8 +59,8 @@ The repository is mounted at `/workspace/DTaaS`. Stop with
 `docker compose --env-file .env down`.
 
 VS Code users can instead choose **Reopen in Container**; the
-`.devcontainer` configuration drives this same compose file. The `.env`
-file must exist first either way.
+`.devcontainer` configuration drives this same compose file and runs
+`init.sh` on the host first.
 
 ## Working inside
 

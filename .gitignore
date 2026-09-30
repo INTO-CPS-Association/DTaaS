@@ -266,5 +266,3 @@ gitlab_user_tokens.json
 !cli/src/templates/dtaas.toml
 !cli/src/templates/users.csv
 
-# developer environment (generated per host user)
-developer/devenv/.env

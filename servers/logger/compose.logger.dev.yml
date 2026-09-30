@@ -2,7 +2,7 @@ services:
   logger-ms:
     build:
       context: ../../
-      dockerfile: ./developer/logger.dockerfile
+      dockerfile: ./developer/check/logger.dockerfile
     volumes:
       - ./config/logger.yaml:/dtaas/logger/logger.yaml
       - ./logs:/dtaas/logger/logs

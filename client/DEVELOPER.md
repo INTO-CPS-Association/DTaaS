@@ -182,7 +182,7 @@ This error is expected.
 
 ## Quality Check
 
-A docker compose-based [development environment](../developer/README.md)
+A docker compose-based [development environment](../developer/check/README.md)
 is available to test the DTaaS application on a local machine.
 
 Testing different port and basename options is currently difficult in the
@@ -191,5 +191,5 @@ Docker-based development environment.
 ## Publish Docker Images
 
 Each new release of the client web application is published as a Docker
-container image. See the [publishing](../developer/README.md) page for
+container image. See the [publishing](../developer/check/README.md) page for
 information about publishing Docker images.

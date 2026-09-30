@@ -2,9 +2,8 @@
   "name": "DTaaS Development Environment",
 
   // One definition of the environment, shared with plain Docker users.
-  // developer/devenv/.env must exist first:
-  //   cd developer/devenv
-  //   printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
+  // initializeCommand runs on the host and writes developer/devenv/.env.
+  "initializeCommand": "sh developer/devenv/init.sh",
   "dockerComposeFile": "../developer/devenv/docker-compose.yml",
   "service": "devenv",
   "workspaceFolder": "/workspace/DTaaS",
@@ -40,8 +39,6 @@
       }
     }
   },
-
-  "forwardPorts": [4000, 4001, 4003, 8000],
 
   "postCreateCommand": "mkdir -p .vscode && cp .devcontainer/workspace-settings.json .vscode/settings.json",
 

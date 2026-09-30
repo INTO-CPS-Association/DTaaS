@@ -10,15 +10,10 @@ installed and how to use it outside VS Code.
 
 ## Use
 
-Generate the identity file once, so the container user matches your host
-account:
-
-```sh
-cd developer/devenv
-printf 'UID=%s\nGID=%s\n' "$(id -u)" "$(id -g)" > .env
-```
-
-Then open the repository in VS Code and choose **Reopen in Container**.
+Open the repository in VS Code and choose **Reopen in Container**.
+`initializeCommand` runs `developer/devenv/init.sh` on the host first,
+which writes `developer/devenv/.env` so the container user matches your
+host account.
 
 `workspace-settings.json` is copied to `.vscode/settings.json` after the
 container is created.
