@@ -18,10 +18,12 @@ jest.mock('route/config/ConfigItems', () => ({
 describe('Config', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Only the keys these tests read. The cast says the rest of the
+    // environment is deliberately absent.
     globalThis.env = {
       API_URL: 'http://localhost', // NOSONAR
       AUTH_URL: 'http://auth', // NOSONAR
-    };
+    } as unknown as typeof globalThis.env;
   });
 
   it('renders loading component when data is being fetched', () => {
@@ -59,40 +61,43 @@ describe('Config', () => {
     });
   });
 
-  it('catches error when validation fetch fails', async () => {
-    const consoleErrorSpy = jest
+  it('says the check failed when the validation fetch fails', async () => {
+    const consoleError = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
-
     (configUtil.getValidationResults as jest.Mock).mockRejectedValueOnce(
       new Error('Network error'),
     );
 
     render(<Config role="user" />);
 
-    await waitFor(() => {
-      expect(configUtil.getValidationResults).toHaveBeenCalled();
-    });
-
-    consoleErrorSpy.mockRestore();
+    // An empty result must not read as a valid configuration.
+    expect(
+      await screen.findByText(/The configuration could not be checked/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Configuration appears to be valid.'),
+    ).not.toBeInTheDocument();
+    expect(consoleError).toHaveBeenCalledWith(
+      'The configuration check failed.',
+      expect.any(Error),
+    );
+    consoleError.mockRestore();
   });
 
-  it('throws error with cause when validation fetch fails', async () => {
-    const consoleErrorSpy = jest
+  it('says the check failed in the developer view too', async () => {
+    const consoleError = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
-
-    const networkError = new Error('Network error');
     (configUtil.getValidationResults as jest.Mock).mockRejectedValueOnce(
-      networkError,
+      new Error('Network error'),
     );
 
-    render(<Config role="user" />);
+    render(<Config role="developer" variant="embedded" />);
 
-    await waitFor(() => {
-      expect(configUtil.getValidationResults).toHaveBeenCalled();
-    });
-
-    consoleErrorSpy.mockRestore();
+    expect(
+      await screen.findByText(/The configuration could not be checked/),
+    ).toBeInTheDocument();
+    consoleError.mockRestore();
   });
 });

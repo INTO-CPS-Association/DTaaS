@@ -127,23 +127,24 @@ const hasConfigErrors = (validationResults: ValidationResults) =>
     (result) => result && 'error' in result && result.error !== undefined,
   );
 
+// The public page is a small card with a fixed width. Embedded, the card sits
+// in a page that already has its own width and margins.
+const cardStyle = (variant: ConfigVariant) =>
+  variant === 'page'
+    ? { ...paperStyle, width: 'min(60vw, 390px)' }
+    : { ...paperStyle, width: '100%', marginTop: 0 };
+
 function UserConfig({
   validationResults,
   variant,
 }: Readonly<{ validationResults: ValidationResults; variant: ConfigVariant }>) {
-  // The public page is a small card with a fixed shape. Embedded, the card
-  // sits in a page that already has its own width and margins.
+  // On the public page the card also keeps a fixed shape.
   return (
     <Paper
       sx={
         variant === 'page'
-          ? {
-              ...paperStyle,
-              width: 'min(60vw, 390px)',
-              aspectRatio: '2 / 1',
-              overflow: 'hidden',
-            }
-          : { ...paperStyle, width: '100%', marginTop: 0, overflow: 'hidden' }
+          ? { ...cardStyle(variant), aspectRatio: '2 / 1', overflow: 'hidden' }
+          : { ...cardStyle(variant), overflow: 'hidden' }
       }
     >
       <Typography variant="h4" sx={typographyStyle}>
@@ -162,33 +163,46 @@ const useValidationResults = () => {
     {},
   );
   const [isLoading, setIsLoading] = useState(true);
+  // A failed check is kept as state so the page can say it could not check,
+  // instead of reading an empty result as a valid configuration.
+  const [checkFailed, setCheckFailed] = useState(false);
 
   useEffect(() => {
-    const fetchValidationResults = async () => {
-      try {
-        const results = await getValidationResults();
-        setValidationResults(results);
-      } catch (error) {
-        throw new Error(`Failed to fetch validation results`, { cause: error });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchValidationResults().catch((error: unknown) => {
-      throw new Error(`Failed to fetch validation results: ${error}`);
-    });
+    getValidationResults()
+      .then(setValidationResults)
+      .catch((error: unknown) => {
+        // The page shows a generic message, so the cause goes to the console.
+        // eslint-disable-next-line no-console
+        console.error('The configuration check failed.', error);
+        setCheckFailed(true);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  return { validationResults, isLoading };
+  return { validationResults, isLoading, checkFailed };
 };
 
+function CheckFailed({ variant }: Readonly<{ variant: ConfigVariant }>) {
+  return (
+    <Paper sx={cardStyle(variant)}>
+      <Typography variant="h4" sx={typographyStyle}>
+        The configuration could not be checked. Please try again later, or
+        contact the administrator of your DTaaS installation.
+      </Typography>
+    </Paper>
+  );
+}
+
 const Config = (props: { role: string; variant?: ConfigVariant }) => {
-  const { validationResults, isLoading } = useValidationResults();
+  const { validationResults, isLoading, checkFailed } = useValidationResults();
   const variant = props.variant ?? 'page';
 
   if (isLoading) {
     return loadingComponent();
+  }
+
+  if (checkFailed) {
+    return <CheckFailed variant={variant} />;
   }
 
   return props.role === 'user' ? (
