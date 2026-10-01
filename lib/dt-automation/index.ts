@@ -133,6 +133,11 @@ export { setExecutionHistoryDB } from './src/util/digitalTwinExecutionHistory';
 export { setPipelineExecutionDB } from './src/util/digitalTwinPipelineExecution';
 export { setEnvironmentStore } from './src/util/env';
 export {
+  clearAccessToken,
+  getAccessToken,
+  setAccessToken,
+} from './src/util/accessToken';
+export {
   fetchDigitalTwins,
   fetchLibraryAssets,
   initDigitalTwin,
@@ -151,6 +156,7 @@ export {
   removeFromCart,
   clearCart,
 } from './src/store/cart.slice';
+export type { CartState } from './src/store/cart.slice';
 export {
   default as environmentSlice,
   updateAuthority,

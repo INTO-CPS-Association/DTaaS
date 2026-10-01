@@ -29,8 +29,45 @@ import {
   createDT,
 } from 'src/util/digitalTwinFileManagement';
 
+/**
+ * Minor words stay lowercase inside a title. They are capitalised when they
+ * come first, which the index check below handles.
+ */
+const MINOR_WORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'but',
+  'of',
+  'to',
+  'in',
+  'on',
+  'for',
+  'at',
+  'by',
+  'with',
+  'from',
+  'as',
+]);
+
+/**
+ * A directory name as a title: `mass-spring-damper` reads "Mass Spring Damper".
+ *
+ * Only the first letter of each word is touched, so an acronym a name already
+ * carries keeps its own case.
+ */
 export const formatName = (name: string) =>
-  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase()); // replaceAll not supported
+  name
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map((word, index) =>
+      index > 0 && MINOR_WORDS.has(word.toLowerCase())
+        ? word
+        : word.replace(/^./, (char) => char.toUpperCase()),
+    )
+    .join(' ');
 
 class DigitalTwin implements DigitalTwinInterface {
   public DTName: string;

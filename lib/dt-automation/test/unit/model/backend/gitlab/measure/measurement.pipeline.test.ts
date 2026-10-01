@@ -28,6 +28,7 @@ import {
   setupSessionStorage,
   setupSessionStorageAuth,
 } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
+import { clearAccessToken, setAccessToken } from 'src/util/accessToken';
 
 jest.mock('src/util/env', () => ({
   __esModule: true,
@@ -121,6 +122,7 @@ afterEach(() => {
 
 describe('runDigitalTwin', () => {
   it('should throw error if not authenticated', async () => {
+    clearAccessToken();
     (sessionStorage.getItem as jest.Mock).mockReturnValue(null);
 
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
@@ -129,6 +131,7 @@ describe('runDigitalTwin', () => {
   });
 
   it('should throw error if access_token is missing', async () => {
+    clearAccessToken();
     (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) => {
       if (key === 'username') return 'test-user';
       return null;
@@ -140,10 +143,8 @@ describe('runDigitalTwin', () => {
   });
 
   it('should throw error if username is missing', async () => {
-    (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-      if (key === 'access_token') return 'test-token';
-      return null;
-    });
+    setAccessToken('test-token');
+    (sessionStorage.getItem as jest.Mock).mockReturnValue(null);
 
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
       'Not authenticated. Missing access_token or username.',

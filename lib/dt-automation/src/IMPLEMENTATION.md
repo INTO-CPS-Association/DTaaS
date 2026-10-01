@@ -81,9 +81,10 @@ is not provided upon execution of a pipeline, it will also throw an error.
 
 The consuming application must register an environment store with
 `setEnvironmentStore`. Its `environment.AUTH_AUTHORITY` value specifies where
-the GitLab instance is hosted. The application must also populate the
-`access_token` and `username` session-storage entries upon signing in; the
-backend uses those entries for authenticated requests.
+the GitLab instance is hosted. Upon signing in, the application must also
+populate the `username` session-storage entry and pass the access token to
+`setAccessToken`; the backend uses both for authenticated requests. The token
+is held in memory, never in shared storage.
 
 The package does not read application globals. Consumers should initialize the
 authority through the registered environment store before using GitLab-backed

@@ -37,7 +37,7 @@ Register the services required by the features used by the application.
 | :---------------- | :--------------------------------------------------------------------- |
 | Environment       | `setEnvironmentStore`                                                  |
 | GitLab settings   | `setSettingsStore`                                                     |
-| Authentication    | `sessionStorage.username` and `sessionStorage.access_token`            |
+| Authentication    | `sessionStorage.username` and `setAccessToken`                         |
 | Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB` |
 | Measurements      | `setMeasurementStore`, `setMeasurementDB`                              |
 
@@ -78,9 +78,21 @@ library project, branch, runner tag, and logging settings.
 Set the GitLab credentials before making authenticated requests:
 
 ```ts
+import {
+  clearAccessToken,
+  setAccessToken,
+} from '@into-cps-association/dt-automation';
+
 sessionStorage.setItem('username', username);
-sessionStorage.setItem('access_token', accessToken);
+setAccessToken(accessToken);
+
+// On sign-out
+clearAccessToken();
 ```
+
+The package keeps the access token in memory rather than in
+`sessionStorage`, so script in same-origin iframes cannot read it. Call
+`setAccessToken` again whenever the token is renewed.
 
 ## Redux State
 

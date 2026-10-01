@@ -125,6 +125,6 @@ describe('DigitalTwin - execute and lifecycle', () => {
   });
 
   it('should format the name correctly', () => {
-    expect(formatName('digital-twin')).toBe('Digital twin');
+    expect(formatName('digital-twin')).toBe('Digital Twin');
   });
 });
