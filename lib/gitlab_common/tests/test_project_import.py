@@ -51,7 +51,8 @@ def test_import_state_reports_a_failed_import_without_detail():
 def test_import_state_treats_an_unscheduled_import_as_an_error():
     """Every project polled here was created with an import_url, so status
     'none' means the import never started, the usual cause being a disabled
-    import source. Reporting it as ready would blame the branch name."""
+    import source. Reporting it as ready would hand the user an empty
+    repository and name no cause at all."""
     assert import_state(_project("none")) == IMPORT_NOT_SCHEDULED
     assert "Repository by URL" in IMPORT_NOT_SCHEDULED
     assert IMPORT_RETRY_HINT in IMPORT_NOT_SCHEDULED

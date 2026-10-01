@@ -209,21 +209,19 @@ this package means `dtaas.toml`.
   created with an `import_url`, so it means the instance never scheduled the
   import, and the message names the two prerequisites (the "Repository by
   URL" import source enabled, and network access from the server to the
-  template) instead of blaming the branch name further down.
+  template) rather than reporting the empty project as ready.
 - Adopting a project that is already in the namespace is `_adopt_existing`'s
   job, and it does not equate "present" with "ready". A run that stopped
   waiting on an import leaves an empty project behind, so reporting it as
   ready would mark the user `gitlab_projects_created` over an empty
-  repository; an empty project is therefore waited on and seeded again,
-  unless its `import_status` is `none`, which means no import was ever
+  repository; an empty project is therefore waited on until its import
+  finishes, unless its `import_status` is `none`, which means no import was ever
   scheduled for it: waiting would report a disabled import source, so the
   empty project is reported as itself instead. A
-  project with any content is never touched, whatever its branches: from
-  branch names alone a half seeded project cannot be told from one the user
-  has pushed to, and pruning the second would delete their work. One whose
-  default branch is not the template branch is reported with a warning
-  naming the way to reseed it (delete the project, re-run). A branch that
-  survives deletion is a warning rather than a failure.
+  project with any content is never touched, whatever its branches: its
+  contents may be the user's own work. It is reported as a
+  `MESSAGE_WARNING` saying it already exists and was not created, which the
+  CLI prints with a `Warning:` prefix, the way an existing account is.
 - GitLab never reruns an import that failed or was never scheduled, so the
   empty project either one leaves fails on every run. Those two errors end
   with `IMPORT_RETRY_HINT` (delete the empty project and re-run), because

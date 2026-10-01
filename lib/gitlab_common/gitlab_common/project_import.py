@@ -2,7 +2,7 @@
 
 Split out of projects.py, which uses it: a project created with an
 import_url exists before its repository does, so the import status is polled
-until the repository is there and only then are the branches touched.
+until the repository is there and only then is the project reported ready.
 
 The two instance side prerequisites of import by URL are reported from here.
 The "Repository by URL" import source must be enabled (Admin Area, Settings,
