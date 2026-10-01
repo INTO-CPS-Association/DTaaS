@@ -1,4 +1,4 @@
-import { setAccessToken } from 'src/util/accessToken';
+import { setAccessToken, setUsername } from 'src/util/credentials';
 
 export type MockMeasurementState = {
   shouldStopPipelines: boolean;
@@ -131,14 +131,9 @@ export function setupSessionStorage() {
   });
 }
 
-export function setupSessionStorageAuth(
-  token = 'test-token',
-  username = 'test-user',
-) {
+export function setupCredentials(token = 'test-token', username = 'test-user') {
   setAccessToken(token);
-  (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) =>
-    key === 'username' ? username : null,
-  );
+  setUsername(username);
 }
 
 export async function clearDatabase(measurementDBService: {

@@ -7,6 +7,7 @@ import {
   getGroupName,
 } from 'src/gitlab/digitalTwinConfig/settingsUtility';
 import { mockLibraryManager } from 'test/__mocks__/global_mocks';
+import { setUsername } from 'src/util/credentials';
 
 jest.mock('src/libraryManager');
 
@@ -88,10 +89,7 @@ describe('LibraryAsset', () => {
     const fileContent = '![alt text](image.png)';
     libraryManager.getFileContent = jest.fn().mockResolvedValue(fileContent);
 
-    mockSessionStorage.getItem.mockImplementation((key: string) => {
-      if (key === 'username') return 'user';
-      return null;
-    });
+    setUsername('user');
 
     await libraryAsset.getFullDescription(authority);
     expect(libraryAsset.fullDescription).toBe(

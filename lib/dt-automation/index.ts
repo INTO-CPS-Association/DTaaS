@@ -134,9 +134,12 @@ export { setPipelineExecutionDB } from './src/util/digitalTwinPipelineExecution'
 export { setEnvironmentStore } from './src/util/env';
 export {
   clearAccessToken,
+  clearUsername,
   getAccessToken,
+  getUsername,
   setAccessToken,
-} from './src/util/accessToken';
+  setUsername,
+} from './src/util/credentials';
 export {
   fetchDigitalTwins,
   fetchLibraryAssets,

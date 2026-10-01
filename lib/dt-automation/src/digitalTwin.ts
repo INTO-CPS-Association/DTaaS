@@ -1,4 +1,5 @@
 import getAuthority from 'src/util/env';
+import { getUsername } from 'src/util/credentials';
 import {
   getGroupName,
   getDTDirectory,
@@ -134,7 +135,7 @@ class DigitalTwin implements DigitalTwinInterface {
       this.fullDescription = fileContent.replace(
         /(!\[[^\]]*\])\(([^)]+)\)/g, // replaceAll not supported
         (match: string, altText: string, imagePath: string) => {
-          const fullUrl = `${getAuthority()}/${getGroupName()}/${sessionStorage.getItem('username')}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
+          const fullUrl = `${getAuthority()}/${getGroupName()}/${getUsername()}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
           return `${altText}(${fullUrl})`;
         },
       );
