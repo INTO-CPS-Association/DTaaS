@@ -3,7 +3,13 @@ import { screen } from '@testing-library/react';
 import { useAuth } from 'react-oidc-context';
 import PrivateRoute from 'route/auth/PrivateRoute';
 import { renderWithRouter } from 'test/unit/unit.testUtil';
-import { getAccessToken } from '@into-cps-association/dt-automation';
+import { useEffect } from 'react';
+import {
+  clearAccessToken,
+  clearUsername,
+  getAccessToken,
+  getUsername,
+} from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 
@@ -67,6 +73,8 @@ describe('PrivateRoute', () => {
 
   beforeEach(() => {
     sessionStorage.clear();
+    clearAccessToken();
+    clearUsername();
     dispatch.mockClear();
     (useDispatch as unknown as jest.Mock).mockReturnValue(dispatch);
   });
@@ -148,6 +156,38 @@ describe('PrivateRoute', () => {
 
     expect(screen.queryByText('Test Component')).not.toBeInTheDocument();
     expect(getAccessToken()).toBe('');
+    expect(getUsername()).toBe('');
+  });
+
+  test('Gives the package the user name before a child fetches on mount', () => {
+    // After a reload the name is no longer in memory. A child's mount effect
+    // runs before the route's own effects, so the route must hand the name to
+    // the package during render, as it does the token.
+    let usernameSeenByChild: string | undefined;
+    const FetchingChild = () => {
+      useEffect(() => {
+        usernameSeenByChild = getUsername();
+      }, []);
+      return <div>Fetching Child</div>;
+    };
+    (useAuth as jest.Mock).mockReturnValue({
+      isLoading: false,
+      error: null,
+      isAuthenticated: true,
+      user: {
+        profile: { profile: '/example/username' },
+        access_token: 'example_token',
+      },
+    });
+
+    renderWithRouter(
+      <PrivateRoute>
+        <FetchingChild />
+      </PrivateRoute>,
+      { route: '/private' },
+    );
+
+    expect(usernameSeenByChild).toBe('username');
   });
 
   test('Records the user name for whichever private page opens first', () => {
