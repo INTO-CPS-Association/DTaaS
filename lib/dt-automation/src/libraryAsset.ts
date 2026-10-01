@@ -4,6 +4,7 @@ import {
   getGroupName,
 } from 'src/gitlab/digitalTwinConfig/settingsUtility';
 import { Asset } from 'src/Asset';
+import { getUsername } from 'src/util/credentials';
 import {
   BackendInterface,
   ProjectId,
@@ -72,7 +73,7 @@ class LibraryAsset implements LibraryAssetInterface {
         this.fullDescription = fileContent.replace(
           /(!\[[^\]]*\])\(([^)]+)\)/g, // replaceAll not supported
           (match: string, altText: string, imagePath: string) => {
-            const fullUrl = `${authority}/${getGroupName()}/${sessionStorage.getItem('username')}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
+            const fullUrl = `${authority}/${getGroupName()}/${getUsername()}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
             return `${altText}(${fullUrl})`;
           },
         );

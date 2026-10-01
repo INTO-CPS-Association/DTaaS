@@ -26,8 +26,9 @@ import {
 } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
 import {
   setupSessionStorage,
-  setupSessionStorageAuth,
+  setupCredentials,
 } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
+import { clearAccessToken, clearUsername } from 'src/util/credentials';
 
 jest.mock('src/util/env', () => ({
   __esModule: true,
@@ -95,7 +96,7 @@ beforeEach(() => {
   mockBackendInstance = createMockBackend(1);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mockCreateGitlabInstance.mockReturnValue(mockBackendInstance as any);
-  setupSessionStorageAuth();
+  setupCredentials();
 
   mockDigitalTwin.mockImplementation(
     () =>
@@ -121,7 +122,8 @@ afterEach(() => {
 
 describe('runDigitalTwin', () => {
   it('should throw error if not authenticated', async () => {
-    (sessionStorage.getItem as jest.Mock).mockReturnValue(null);
+    clearAccessToken();
+    clearUsername();
 
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
       'Not authenticated. Missing access_token or username.',
@@ -129,10 +131,7 @@ describe('runDigitalTwin', () => {
   });
 
   it('should throw error if access_token is missing', async () => {
-    (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-      if (key === 'username') return 'test-user';
-      return null;
-    });
+    clearAccessToken();
 
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
       'Not authenticated. Missing access_token or username.',
@@ -140,10 +139,7 @@ describe('runDigitalTwin', () => {
   });
 
   it('should throw error if username is missing', async () => {
-    (sessionStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-      if (key === 'access_token') return 'test-token';
-      return null;
-    });
+    clearUsername();
 
     await expect(runDigitalTwin('test-dt')).rejects.toThrow(
       'Not authenticated. Missing access_token or username.',

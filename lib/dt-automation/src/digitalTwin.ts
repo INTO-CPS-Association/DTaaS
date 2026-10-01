@@ -1,4 +1,5 @@
 import getAuthority from 'src/util/env';
+import { getUsername } from 'src/util/credentials';
 import {
   getGroupName,
   getDTDirectory,
@@ -29,8 +30,45 @@ import {
   createDT,
 } from 'src/util/digitalTwinFileManagement';
 
+/**
+ * Minor words stay lowercase inside a title. They are capitalised when they
+ * come first, which the index check below handles.
+ */
+const MINOR_WORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'but',
+  'of',
+  'to',
+  'in',
+  'on',
+  'for',
+  'at',
+  'by',
+  'with',
+  'from',
+  'as',
+]);
+
+/**
+ * A directory name as a title: `mass-spring-damper` reads "Mass Spring Damper".
+ *
+ * Only the first letter of each word is touched, so an acronym a name already
+ * carries keeps its own case.
+ */
 export const formatName = (name: string) =>
-  name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase()); // replaceAll not supported
+  name
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map((word, index) =>
+      index > 0 && MINOR_WORDS.has(word.toLowerCase())
+        ? word
+        : word.replace(/^./, (char) => char.toUpperCase()),
+    )
+    .join(' ');
 
 class DigitalTwin implements DigitalTwinInterface {
   public DTName: string;
@@ -97,7 +135,7 @@ class DigitalTwin implements DigitalTwinInterface {
       this.fullDescription = fileContent.replace(
         /(!\[[^\]]*\])\(([^)]+)\)/g, // replaceAll not supported
         (match: string, altText: string, imagePath: string) => {
-          const fullUrl = `${getAuthority()}/${getGroupName()}/${sessionStorage.getItem('username')}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
+          const fullUrl = `${getAuthority()}/${getGroupName()}/${getUsername()}/-/raw/${getBranchName()}/${imagesPath}/${imagePath}`;
           return `${altText}(${fullUrl})`;
         },
       );

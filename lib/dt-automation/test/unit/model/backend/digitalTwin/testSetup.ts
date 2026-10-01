@@ -4,6 +4,7 @@ import { mockBackendAPI } from 'test/__mocks__/global_mocks';
 import type { IExecutionHistory } from 'src/interfaces/execution';
 import { setExecutionHistoryDB } from 'src/util/digitalTwinExecutionHistory';
 import { setPipelineExecutionDB } from 'src/util/digitalTwinPipelineExecution';
+import { setUsername } from 'src/util/credentials';
 
 jest.mock('src/util/digitalTwinUtils', () => ({
   ...jest.requireActual('src/util/digitalTwinUtils'),
@@ -50,6 +51,7 @@ export const setupBeforeEach = (_dt: ReturnType<typeof createDigitalTwin>) => {
   mockGitlabInstance.startPipeline = jest.fn().mockResolvedValue({ id: 123 });
   mockGitlabInstance.getChildPipelineId = jest.fn();
 
+  setUsername('testUser');
   Object.defineProperty(globalThis, 'sessionStorage', {
     value: {
       getItem: jest.fn(() => 'testUser'),

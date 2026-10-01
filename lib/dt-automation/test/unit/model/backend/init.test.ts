@@ -35,6 +35,12 @@ jest.mock('src/state/digitalTwin.slice', () => ({
 jest.deepUnmock('src/util/init');
 
 import {
+  clearAccessToken,
+  clearUsername,
+  setAccessToken,
+  setUsername,
+} from 'src/util/credentials';
+import {
   fetchDigitalTwins,
   fetchLibraryAssets,
   initDigitalTwin,
@@ -144,17 +150,12 @@ describe('fetchAssets', () => {
     expect(DT).toEqual(new DigitalTwin('my digital twin', mockBackendInstance));
   });
 
-  it('initializes a DigitalTwin with initDigitalTwin with sessionStorage', async () => {
-    Object.defineProperty(globalThis, 'sessionStorage', {
-      value: {
-        getItem: jest.fn((itemName) => {
-          if (itemName === 'username') return 'my username';
-          if (itemName === 'access_token') return 'my token';
-          return null;
-        }),
-      },
-    });
+  it('initializes a DigitalTwin with the in-memory credentials', async () => {
+    setUsername('my username');
+    setAccessToken('my token');
     const DT = await initDigitalTwin('my digital twin');
+    clearAccessToken();
+    clearUsername();
     expect(createGitlabInstance).toHaveBeenCalledWith(
       'my username',
       'my token',
