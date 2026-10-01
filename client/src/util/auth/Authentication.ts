@@ -1,5 +1,5 @@
 import { User } from 'oidc-client-ts';
-import { clearAccessToken } from 'util/auth/accessToken';
+import { clearAccessToken } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 import { AuthContextProps } from 'react-oidc-context';

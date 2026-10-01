@@ -2,11 +2,14 @@
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
   "transform": {
-    "^.+\\.tsx?$": [
+    "^.+\\.[tj]sx?$": [
       "ts-jest",
       {
         "tsconfig": {
           "jsx": "react-jsx",
+          "module": "commonjs",
+          "moduleResolution": "node",
+          "allowJs": true,
           "noUnusedLocals": false,
           "types": ["jest", "node", "react"],
           "esModuleInterop": true
@@ -15,7 +18,7 @@
     ]
   },
   "transformIgnorePatterns": [
-    "/node_modules/(?!(d3-shape|recharts|uuid)/).+\\.js$"
+    "/node_modules/(?!(d3-shape|recharts|uuid|@into-cps-association/dt-automation)/).+\\.js$"
   ],
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],

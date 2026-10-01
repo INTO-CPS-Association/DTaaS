@@ -2,8 +2,8 @@ import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import {
   LibraryConfigFile,
   FileState,
-} from 'model/backend/interfaces/sharedInterfaces';
-import LibraryAsset from 'model/backend/libraryAsset';
+  LibraryAsset,
+} from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import {
   handleFileClick,

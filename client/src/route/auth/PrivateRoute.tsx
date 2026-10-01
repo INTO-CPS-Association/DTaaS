@@ -4,7 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 import { useLogger } from 'util/logger/useLogger';
-import { clearAccessToken, setAccessToken } from 'util/auth/accessToken';
+import { clearAccessToken, setAccessToken } from '@into-cps-association/dt-automation';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
 
 interface PrivateRouteProps {

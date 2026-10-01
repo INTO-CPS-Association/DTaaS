@@ -25,25 +25,23 @@ import {
   Stop as StopIcon,
   ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
-import { JobLog } from 'model/backend/gitlab/types/executionHistory';
 import {
+  JobLog,
   fetchExecutionHistory,
   removeExecution,
   setSelectedExecutionId,
-} from 'model/backend/state/executionHistory.slice';
-import {
   selectExecutionHistoryByDTName,
   selectExecutionHistoryLoading,
   selectSelectedExecution,
-} from 'model/backend/state/executionHistory.selectors';
+  createDigitalTwinFromData,
+  ExecutionStatus,
+  formatName,
+} from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import { handleStop } from 'route/digitaltwins/execution/executionButtonHandlers';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
 import { ThunkDispatch, Action } from '@reduxjs/toolkit';
 import { RootState } from 'store/store';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { showSnackbar } from 'store/snackbar.slice';
-import { formatName } from 'model/backend/digitalTwin';
 import { logDismiss } from 'util/logger/logger';
 
 interface ExecutionHistoryListProps {

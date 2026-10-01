@@ -1,13 +1,16 @@
-import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
-import { JobSummary } from 'model/backend/interfaces/backendInterfaces';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import {
+  fetchJobLogs,
+  ExecutionStatus,
+  stopPipelines,
+} from '@into-cps-association/dt-automation';
 import {
   startPipeline,
   updatePipelineStateOnCompletion,
   updatePipelineStateOnStop,
 } from 'route/digitaltwins/execution/executionStatusHandlers';
-import { stopPipelines } from 'model/backend/gitlab/execution/pipelineCore';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
+
+type JobSummary = { id: number; name?: string };
 
 describe('ExecutionsUIHandlers', () => {
   const digitalTwin = mockDigitalTwin;

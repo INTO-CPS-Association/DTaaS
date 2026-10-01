@@ -1,7 +1,9 @@
-import { addOrUpdateLibraryFile } from 'model/store/libraryConfigFiles.slice';
-import DigitalTwin from 'model/backend/digitalTwin';
+import {
+  addOrUpdateLibraryFile,
+  DigitalTwin,
+  LibraryAsset,
+} from '@into-cps-association/dt-automation';
 import { updateFileState } from 'util/fileUtils';
-import LibraryAsset from 'model/backend/libraryAsset';
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
 

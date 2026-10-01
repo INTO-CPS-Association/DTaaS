@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-web",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Web client for Digital Twin as a Service (DTaaS)",
   "main": "index.tsx",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -55,8 +55,8 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource/inter": "5.3.0",
     "@fontsource/roboto": "^5.3.0",
-    "@gitbeaker/rest": "^43.8.0",
     "@into-cps-association/bim-kit": "0.1.1",
+    "@into-cps-association/dt-automation": "^0.2.0",
     "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "9.4.0",
     "@mui/material": "9.4.0",
@@ -86,13 +86,14 @@
     "reselect": "^5.3.0",
     "styled-components": "^6.5.3",
     "three": "0.186.1",
-    "uuid": "14.0.2",
+    "uuid": "^14.0.2",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "@babel/core": "^8.0.6",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
+    "@gitbeaker/rest": "^43.8.0",
     "@playwright/test": "^1.63.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",

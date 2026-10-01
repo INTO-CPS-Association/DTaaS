@@ -1,7 +1,9 @@
 import 'fake-indexeddb/auto';
 import measurementDBService from 'database/measurementHistoryDB';
-import { createMockTask } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
-import { clearDatabase } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
+import {
+  clearDatabase,
+  createMockTask,
+} from 'test/support/measurementFixtures';
 import { resetDBConnection } from 'database/dbConnection';
 
 describe('MeasurementDBService (Real Implementation)', () => {

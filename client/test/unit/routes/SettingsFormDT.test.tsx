@@ -14,7 +14,8 @@ import setupSettingsFormTest from 'test/unit/routes/settingsForm.testSetup';
 
 jest.mock('routes', () => ({ __esModule: true, default: [] }));
 
-jest.mock('model/backend/util/init', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   fetchDigitalTwins: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -90,7 +91,9 @@ describe('SettingsForm - measurement and DT fields', () => {
   describe('DT name dropdowns while twins are loading', () => {
     beforeEach(() => {
       cleanup();
-      const { fetchDigitalTwins } = jest.requireMock('model/backend/util/init');
+      const { fetchDigitalTwins } = jest.requireMock(
+        '@into-cps-association/dt-automation',
+      );
       fetchDigitalTwins.mockReturnValueOnce(new Promise(() => {}));
       mockedUseSelector.mockImplementation((selector) =>
         selector({
@@ -122,7 +125,9 @@ describe('SettingsForm - measurement and DT fields', () => {
       const promise = new Promise<void>((res) => {
         resolve = res;
       });
-      const { fetchDigitalTwins } = jest.requireMock('model/backend/util/init');
+      const { fetchDigitalTwins } = jest.requireMock(
+        '@into-cps-association/dt-automation',
+      );
       fetchDigitalTwins.mockReturnValueOnce(promise);
 
       cleanup();

@@ -1,4 +1,4 @@
-import { FileState, FileType } from 'model/backend/interfaces/sharedInterfaces';
+import { FileState, FileType } from '@into-cps-association/dt-automation';
 import type { LogContext } from 'util/logger/logEvent';
 
 export const buildAssetsLogContext = (

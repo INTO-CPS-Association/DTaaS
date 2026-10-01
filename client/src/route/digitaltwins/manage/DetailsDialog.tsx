@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import 'katex/dist/katex.min.css';
 import { useSelector } from 'react-redux';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
+import { selectAssetByPathAndPrivacy } from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import MarkdownStyles, { MARKDOWN_CLASS } from 'components/MarkdownStyles';
 import { renderMarkdown } from 'util/markdown';

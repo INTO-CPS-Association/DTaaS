@@ -8,10 +8,12 @@ import {
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer from 'model/backend/state/digitalTwin.slice';
+import {
+  digitalTwinSlice as digitalTwinReducer,
+  fileSlice,
+  cartSlice,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
-import fileSlice from 'model/store/file.slice';
-import cartSlice from 'model/store/cart.slice';
 
 const store = configureStore({
   reducer: combineReducers({

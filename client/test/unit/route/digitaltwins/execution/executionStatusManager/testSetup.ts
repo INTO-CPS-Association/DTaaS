@@ -1,8 +1,10 @@
 import * as PipelineChecks from 'route/digitaltwins/execution/executionStatusManager';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { PipelineStatusParams } from 'route/digitaltwins/execution/executionStatusManager';
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import {
+  DTExecutionResult,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 
 export const createMockDTExecutionResult = (
   id: string,
