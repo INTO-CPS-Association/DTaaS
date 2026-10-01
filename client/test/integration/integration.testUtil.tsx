@@ -15,17 +15,32 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import routes from 'routes';
 import { mockAuthState, mockAuthStateType } from 'test/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer from 'model/backend/state/digitalTwin.slice';
+import {
+  digitalTwinSlice as digitalTwinReducer,
+  ExecutionStatus,
+  executionHistorySlice as executionHistoryReducer,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import executionHistoryReducer, {
-  addExecutionHistoryEntry,
-} from 'model/backend/state/executionHistory.slice';
 import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 export const normalizer = getDefaultNormalizer({
   trim: false,
   collapseWhitespace: false,
+});
+
+const addExecutionHistoryEntry = (entry: unknown) => ({
+  type: 'executionHistory/addExecutionHistoryEntry',
+  payload: entry,
+});
+
+export const setAssets = (items: unknown[]) => ({
+  type: 'assets/setAssets',
+  payload: items,
+});
+
+export const setExecutionHistoryEntries = (entries: unknown[]) => ({
+  type: 'executionHistory/setExecutionHistoryEntries',
+  payload: entries,
 });
 
 export const dispatchAddExecHistoryEntry = async (

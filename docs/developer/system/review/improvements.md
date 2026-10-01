@@ -16,7 +16,7 @@ the libms/runner idioms) that owns the verbs
 `start / stop / status / logs / history` for DT executions and, in
 its first version, implements them by calling GitLab exactly as the
 client does today — the orchestration code in
-`client/src/model/backend/gitlab/execution/` is a de facto
+`lib/dt-automation/src/gitlab/execution/` is a de facto
 specification and can be ported nearly mechanically.
 
 Migration path: (1) stand the service up behind Traefik next to

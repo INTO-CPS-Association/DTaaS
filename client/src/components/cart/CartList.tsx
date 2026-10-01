@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemText } from '@mui/material';
-import useCart from 'model/store/CartAccess';
-import LibraryAsset from 'model/backend/libraryAsset';
+import useCart from 'store/CartAccess';
+import { LibraryAsset } from '@into-cps-association/dt-automation';
 
 /**
  * What is in the selection, one asset per row.

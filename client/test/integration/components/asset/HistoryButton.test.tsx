@@ -3,8 +3,10 @@ import '@testing-library/jest-dom';
 import HistoryButton from 'components/asset/HistoryButton';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import executionHistoryReducer from 'model/backend/state/executionHistory.slice';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import {
+  executionHistorySlice as executionHistoryReducer,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { dispatchAddExecHistoryEntry } from 'test/integration/integration.testUtil';
 
 const createTestStore = () =>

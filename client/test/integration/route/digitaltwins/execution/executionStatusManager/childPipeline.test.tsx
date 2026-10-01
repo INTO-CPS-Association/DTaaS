@@ -1,16 +1,17 @@
 import * as PipelineChecks from 'route/digitaltwins/execution/executionStatusManager';
-import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
+import * as PipelineCore from '@into-cps-association/dt-automation';
 import {
   setDigitalTwin,
   DigitalTwinData,
-} from 'model/backend/state/digitalTwin.slice';
-import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
+  extractDataFromDigitalTwin,
+} from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { previewStore as store } from 'test/integration/integration.testUtil';
 
 jest.useFakeTimers();
 
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   delay: jest.fn(),
   hasTimedOut: jest.fn(),
   getPollingInterval: jest.fn(() => 5000),
@@ -53,7 +54,7 @@ describe('PipelineChecks - childPipeline', () => {
 
     const mockFetchJobLogs = jest.fn().mockResolvedValue([]);
 
-    jest.doMock('model/backend/gitlab/execution/logFetching', () => ({
+    jest.doMock('@into-cps-association/dt-automation', () => ({
       fetchJobLogs: mockFetchJobLogs,
     }));
 
@@ -82,7 +83,7 @@ describe('PipelineChecks - childPipeline', () => {
     expect(snackbarState).toEqual(expectedSnackbarState);
 
     getPipelineJobsSpy.mockRestore();
-    jest.dontMock('model/backend/gitlab/execution/logFetching');
+    jest.dontMock('@into-cps-association/dt-automation');
   });
 
   it('checks child pipeline status and returns timeout', async () => {

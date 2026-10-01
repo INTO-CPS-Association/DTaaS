@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import HistoryButton, {
   handleToggleHistory,
 } from 'components/asset/HistoryButton';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from '@into-cps-association/dt-automation';
 import * as redux from 'react-redux';
 
 jest.mock('react-redux', () => ({

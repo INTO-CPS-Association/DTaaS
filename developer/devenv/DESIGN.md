@@ -134,7 +134,7 @@ Layers, in order:
    stage, with the `npm` and `npx` links recreated.
 1. `npm install --global --ignore-scripts` of pinned `yarn@1.22.22`,
    `serve@14.2.6`, `pm2@7.0.4`, `madge@8.0.0`, `markdownlint-cli@0.49.1`
-   and `playwright@1.61.1`. The Playwright version tracks
+   and `playwright@1.63.0`. The Playwright version tracks
    `client/package.json`.
 1. One layer for the rest of the toolchain:
    - a virtualenv at `/opt/dtaas-venv`, populated from

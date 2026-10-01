@@ -17,15 +17,15 @@ Core capabilities include:
 
 ## Current Implementation Footprint
 
-Key code is in `client/src/model/backend/`.
+Key code is in `lib/dt-automation/`.
 
 Main modules:
 
-- `gitlab/backend.ts`: GitLab API wrapper.
-- `gitlab/instance.ts`: backend session and project context.
-- `digitalTwin.ts`: DT-level operations and execution tracking.
-- `interfaces/backendInterfaces.ts`: backend contracts and API shapes.
-- `util/`: execution history and file-management helpers.
+- `src/gitlab/backend.ts`: GitLab API wrapper.
+- `src/gitlab/instance.ts`: backend session and project context.
+- `src/digitalTwin.ts`: DT-level operations and execution tracking.
+- `src/interfaces/backendInterfaces.ts`: backend contracts and API shapes.
+- `src/util/`: execution history and file-management helpers.
 
 ## API Integration Highlights
 

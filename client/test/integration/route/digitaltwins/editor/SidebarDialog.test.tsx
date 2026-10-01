@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import SidebarDialog from 'route/digitaltwins/editor/SidebarDialog';
-import fileSlice from 'model/store/file.slice';
+import { fileSlice } from '@into-cps-association/dt-automation';
 import { act } from 'react';
 import { Provider } from 'react-redux';
 

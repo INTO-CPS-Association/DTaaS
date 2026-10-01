@@ -4,8 +4,14 @@ import { useAuth } from 'react-oidc-context';
 import ExecutionHistoryLoader from 'components/execution/ExecutionHistoryLoader';
 import WaitNavigateAndReload from 'route/auth/WaitAndNavigate';
 import { useLogger } from 'util/logger/useLogger';
-import { clearAccessToken, setAccessToken } from 'util/auth/accessToken';
+import {
+  clearAccessToken,
+  clearUsername,
+  setAccessToken,
+  setUsername,
+} from '@into-cps-association/dt-automation';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
+import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -26,19 +32,21 @@ function getRouteState(auth: ReturnType<typeof useAuth>): RouteState {
   return states.find(([matches]) => matches())?.[1] ?? 'authenticated';
 }
 
-function storeAccessToken(
+function storeCredentials(
   isAuthenticated: boolean,
   user: ReturnType<typeof useAuth>['user'],
 ): void {
   // Cleared and not simply left alone, so a session that ends, or a move to a
-  // public route, does not leave the last token in the module for the life of
-  // the document. A session with no user clears it too, and the route state
-  // above turns that into the sign-in redirect.
+  // public route, does not leave the last credentials in the package for the
+  // life of the document. A session with no user clears them too, and the
+  // route state above turns that into the sign-in redirect.
   if (!isAuthenticated || !user) {
     clearAccessToken();
+    clearUsername();
     return;
   }
   setAccessToken(user.access_token);
+  setUsername(resolveOAuthUsername(user.profile));
 }
 
 function renderRouteState(
@@ -70,9 +78,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   useLogger();
 
   // During render and not in an effect. An effect runs after the children,
-  // and a child that fetches on mount would find no token on the first render
-  // after a reload. Assigning a module variable has no other consequence.
-  storeAccessToken(auth.isAuthenticated, auth.user);
+  // and a child that fetches on mount would find no token or username on the
+  // first render after a reload. Assigning a module variable has no other
+  // consequence.
+  storeCredentials(auth.isAuthenticated, auth.user);
 
   const routeState = getRouteState(auth);
 

@@ -9,16 +9,23 @@ import '@testing-library/jest-dom';
 import LogDialog from 'components/LogDialog';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
   DigitalTwinData,
-} from 'model/backend/state/digitalTwin.slice';
-import executionHistoryReducer, {
-  setExecutionHistoryEntries,
-} from 'model/backend/state/executionHistory.slice';
-import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
+  executionHistorySlice as executionHistoryReducer,
+  extractDataFromDigitalTwin,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { setExecutionHistoryEntries } from 'test/integration/integration.testUtil';
+
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  fetchExecutionHistory: jest.fn(() => ({
+    type: 'test/fetchExecutionHistory',
+  })),
+}));
 
 jest.mock('database/executionHistoryDB', () => ({
   __esModule: true,
@@ -30,6 +37,10 @@ jest.mock('database/executionHistoryDB', () => ({
     delete: jest.fn().mockResolvedValue(undefined),
   },
 }));
+
+const executionHistoryDB = jest.requireMock(
+  'database/executionHistoryDB',
+).default;
 
 const store = configureStore({
   reducer: combineReducers({
@@ -77,18 +88,16 @@ describe('LogDialog', () => {
   });
 
   it('renders the LogDialog with execution history', async () => {
-    store.dispatch(
-      setExecutionHistoryEntries([
-        {
-          id: 'test-execution-1',
-          dtName: assetName,
-          pipelineId: 123,
-          timestamp: Date.now(),
-          status: ExecutionStatus.COMPLETED,
-          jobLogs: [{ jobName: 'job', log: 'testLog' }],
-        },
-      ]),
-    );
+    const entry = {
+      id: 'test-execution-1',
+      dtName: assetName,
+      pipelineId: 123,
+      timestamp: Date.now(),
+      status: ExecutionStatus.COMPLETED,
+      jobLogs: [{ jobName: 'job', log: 'testLog' }],
+    };
+    executionHistoryDB.getByDTName.mockResolvedValueOnce([entry]);
+    store.dispatch(setExecutionHistoryEntries([entry]));
 
     await renderLogDialog();
 

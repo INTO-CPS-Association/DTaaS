@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Button, Badge } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { selectExecutionHistoryByDTName } from 'model/backend/state/executionHistory.selectors';
+import { selectExecutionHistoryByDTName } from '@into-cps-association/dt-automation';
 
 interface HistoryButtonProps {
   readonly setShowLog: Dispatch<React.SetStateAction<boolean>>;

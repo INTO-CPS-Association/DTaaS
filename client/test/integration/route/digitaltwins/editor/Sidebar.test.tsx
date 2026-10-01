@@ -26,10 +26,17 @@ const setOpenDeleteFileDialogMock = jest.fn();
 const setOpenChangeFileNameDialogMock = jest.fn();
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
-import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
+  fileSlice,
+  addOrUpdateFile,
+  DigitalTwin,
+  LibraryAsset,
+  cartSlice,
+  addToCart,
+  libraryConfigFilesSlice,
+} from '@into-cps-association/dt-automation';
 import Sidebar from 'route/digitaltwins/editor/Sidebar';
 import {
   act,
@@ -44,40 +51,33 @@ import {
   createMockDigitalTwinData,
   mockBackendInstance,
 } from 'test/__mocks__/global_mocks';
-import DigitalTwin from 'model/backend/digitalTwin';
-import LibraryAsset from 'model/backend/libraryAsset';
 import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
-import cartSlice, { addToCart } from 'model/store/cart.slice';
 import '@testing-library/jest-dom';
-import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
 
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
-  createDigitalTwinFromData: jest.fn().mockResolvedValue(digitalTwinDataMock),
-  extractDataFromDigitalTwin: jest.fn().mockReturnValue({
-    DTName: ASSET_NAME,
-    description: 'Test Digital Twin Description',
-    jobLogs: [],
-    pipelineCompleted: false,
-    pipelineLoading: false,
-    pipelineId: undefined,
-    currentExecutionId: undefined,
-    lastExecutionStatus: undefined,
-    gitlabInstance: undefined,
-  }),
-}));
-
-// Mock the init module to prevent real GitLab initialization
-jest.mock('model/backend/util/init', () => ({
-  initDigitalTwin: jest.fn().mockResolvedValue(digitalTwinDataMock),
-}));
-
-jest.mock('model/backend/gitlab/instance', () => ({
-  GitlabInstance: jest.fn().mockImplementation(() => ({
-    init: jest.fn().mockResolvedValue(undefined),
-    getProjectId: jest.fn().mockResolvedValue(123),
-    show: jest.fn().mockResolvedValue({}),
-  })),
-}));
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
+  return {
+    ...actual,
+    createDigitalTwinFromData: jest.fn().mockResolvedValue(digitalTwinDataMock),
+    extractDataFromDigitalTwin: jest.fn().mockReturnValue({
+      DTName: ASSET_NAME,
+      description: 'Test Digital Twin Description',
+      jobLogs: [],
+      pipelineCompleted: false,
+      pipelineLoading: false,
+      pipelineId: undefined,
+      currentExecutionId: undefined,
+      lastExecutionStatus: undefined,
+      gitlabInstance: undefined,
+    }),
+    initDigitalTwin: jest.fn().mockResolvedValue(digitalTwinDataMock),
+    GitlabInstance: jest.fn().mockImplementation(() => ({
+      init: jest.fn().mockResolvedValue(undefined),
+      getProjectId: jest.fn().mockResolvedValue(123),
+      show: jest.fn().mockResolvedValue({}),
+    })),
+  };
+});
 
 describe('Sidebar', () => {
   const setFileNameMock = jest.fn();

@@ -7,7 +7,7 @@ import {
   handleFileSubmit,
 } from 'route/digitaltwins/editor/sidebarFunctions';
 import { updateFileState } from 'util/fileUtils';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import { FileState } from '@into-cps-association/dt-automation';
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),

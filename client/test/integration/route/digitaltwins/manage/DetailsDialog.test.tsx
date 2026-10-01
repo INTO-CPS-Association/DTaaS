@@ -1,7 +1,10 @@
 /* eslint-disable import/first */
-jest.mock('model/backend/util/digitalTwinAdapter', () => ADAPTER_MOCKS);
-jest.mock('model/backend/util/init', () => INIT_MOCKS);
-jest.mock('model/backend/gitlab/instance', () => GITLAB_MOCKS);
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  ...ADAPTER_MOCKS,
+  ...INIT_MOCKS,
+  ...GITLAB_MOCKS,
+}));
 
 import {
   ADAPTER_MOCKS,
@@ -13,34 +16,32 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import DetailsDialog from 'route/digitaltwins/manage/DetailsDialog';
-import assetsReducer, { setAssets } from 'model/store/assets.slice';
-import digitalTwinReducer, {
-  setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
-import snackbarSlice from 'store/snackbar.slice';
-import fileSlice from 'model/store/file.slice';
-import libraryConfigFilesSlice from 'model/store/libraryConfigFiles.slice';
-import LibraryAsset from 'model/backend/libraryAsset';
 import {
-  mockBackendInstance,
+  assetsSlice as assetsReducer,
+  digitalTwinSlice as digitalTwinReducer,
+  setDigitalTwin,
+  fileSlice,
+  libraryConfigFilesSlice,
+} from '@into-cps-association/dt-automation';
+import snackbarSlice from 'store/snackbar.slice';
+import {
+  mockLibraryAsset as baseMockLibraryAsset,
   createMockDigitalTwinData,
 } from 'test/__mocks__/global_mocks';
-import LibraryManager from 'model/backend/libraryManager';
-import { storeResetAll } from 'test/integration/integration.testUtil';
+import {
+  setAssets,
+  storeResetAll,
+} from 'test/integration/integration.testUtil';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
 }));
 
-const mockLibraryManager = new LibraryManager('Asset 1', mockBackendInstance);
-
-const mockLibraryAsset = new LibraryAsset(
-  mockLibraryManager,
-  'path/to/asset',
-  true,
-  'Digital Twins',
-);
-mockLibraryAsset.fullDescription = 'Library Asset Description';
+const mockLibraryAsset = {
+  ...baseMockLibraryAsset,
+  path: 'path/to/asset',
+  fullDescription: 'Library Asset Description',
+};
 
 const store = configureStore({
   reducer: combineReducers({
