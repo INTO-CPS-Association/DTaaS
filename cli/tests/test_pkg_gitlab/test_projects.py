@@ -2,7 +2,13 @@
 
 from unittest.mock import MagicMock, patch
 import pytest
-from src.gitlab_common import IMPORT_TIMEOUT_MINUTES, ProjectTemplates
+from src.gitlab_common import (
+    IMPORT_TIMEOUT_MINUTES,
+    MESSAGE_FAILURE,
+    MESSAGE_WARNING,
+    ProjectMessage,
+    ProjectTemplates,
+)
 from src.pkg.gitlab.projects import (
     ProjectTarget,
     provision_user_projects,
@@ -57,6 +63,22 @@ def test_provision_user_projects_looks_up_an_unknown_id(mock_pair, capsys):
     out = capsys.readouterr().out
     assert "resolved by username" in out
     assert "not created by this CLI" not in out
+
+
+@pytest.mark.parametrize(
+    "level,expect_prefix",
+    [(MESSAGE_WARNING, True), (MESSAGE_FAILURE, False)],
+)
+def test_provision_user_projects_labels_messages_by_level(
+    mock_pair, capsys, level, expect_prefix
+):
+    """An existing project is a warning the admin should see, a failed one is
+    not softened into one: the level decides, never the text."""
+    mock_pair.return_value = (True, (ProjectMessage(level, "project 'common' x"),))
+    provision_user_projects(MagicMock(), ProjectTarget(USERNAME, USER_ID), TEMPLATES)
+    out = capsys.readouterr().out
+    assert ("Warning: GitLab projects for 'alice'" in out) is expect_prefix
+    assert "project 'common' x" in out
 
 
 def test_provision_user_projects_without_an_id_fails(mock_pair, capsys):

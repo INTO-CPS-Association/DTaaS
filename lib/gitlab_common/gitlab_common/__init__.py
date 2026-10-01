@@ -17,7 +17,10 @@ from .project_import import IMPORT_TIMEOUT_MINUTES, await_import, import_state
 from .projects import ProjectResult, ProjectSpec, create_user_project
 from .user_projects import (
     COMMON_PROJECT_NAME,
+    MESSAGE_FAILURE,
+    MESSAGE_WARNING,
     USER_PROJECT_NAME,
+    ProjectMessage,
     ProjectTemplates,
     ensure_user_projects,
     project_specs,
@@ -50,6 +53,9 @@ __all__ = [
     "ensure_user_projects",
     "project_specs",
     "ProjectTemplates",
+    "ProjectMessage",
+    "MESSAGE_FAILURE",
+    "MESSAGE_WARNING",
     "COMMON_PROJECT_NAME",
     "USER_PROJECT_NAME",
 ]

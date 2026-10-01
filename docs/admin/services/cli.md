@@ -331,7 +331,7 @@ Reset the GitLab root admin password using the value configured in
 dtaas-services user reset-password -s gitlab
 ```
 
-The command reads the new password to `GITLAB_ROOT_NEW_PASSWORD`
+The command reads the new password from `GITLAB_ROOT_NEW_PASSWORD`
 and applies it via the GitLab API.
 
 ## GitLab Post-Install Flow
@@ -371,6 +371,25 @@ docker compose -f compose.services.yml --env-file config/services.env down
 docker compose -f compose.thingsboard.yml --env-file config/services.env down
 docker compose -f compose.gitlab.yml --env-file config/services.env down
 ```
+
+## Upgrading from 0.x
+
+Version 1.0.0 groups every command as `dtaas-services <noun> <verb>`.
+The old spellings still work for this release; they print a deprecation
+notice and will be removed in the next major version.
+
+| Before | After |
+| :--- | :--- |
+| `dtaas-services generate-project` | `dtaas-services project generate [--force]` |
+| `dtaas-services setup` | `dtaas-services host setup` |
+| `dtaas-services install -s <svc>` | `dtaas-services service install -s <svc>` |
+| `dtaas-services start/stop/restart/clean` | `dtaas-services service start/stop/restart/clean` |
+| `dtaas-services status` | `dtaas-services service status [--json]` |
+| `dtaas-services remove -v` | `dtaas-services service remove --volumes` |
+| `dtaas-services user add/reset-password` | unchanged |
+
+`service install -s` now accepts a comma separated list, like the other
+`service` commands.
 
 ## Troubleshooting
 

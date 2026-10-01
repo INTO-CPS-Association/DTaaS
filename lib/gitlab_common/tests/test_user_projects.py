@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from gitlab_common.projects import ProjectResult
 from gitlab_common.user_projects import (
+    MESSAGE_FAILURE,
+    MESSAGE_WARNING,
     ProjectTemplates,
     ensure_user_projects,
     project_specs,
@@ -47,15 +49,24 @@ def test_ensure_user_projects_creates_both(mock_create):
 
 
 def test_ensure_user_projects_reports_an_existing_project(mock_create):
-    """A project the user already owns is reported and left alone."""
+    """A project the user already owns is never created: it is reported as a
+    warning saying so, and left alone, without failing the run."""
     mock_create.side_effect = [
         ProjectResult(True, project_id=1, already_exists=True),
         CREATED,
     ]
     ok, messages = ensure_user_projects(MagicMock(), USER_ID, TEMPLATES)
     assert ok is True
-    assert "already exists" in messages[0]
-    assert "common" in messages[0]
+    assert messages[0].level == MESSAGE_WARNING
+    assert "was not created" in messages[0].text
+    assert "common" in messages[0].text
+
+
+def test_ensure_user_projects_marks_a_failure_as_a_failure(mock_create):
+    """A failed project is not a warning, so a consumer does not soften it."""
+    mock_create.side_effect = [ProjectResult(False, error="boom"), CREATED]
+    _ok, messages = ensure_user_projects(MagicMock(), USER_ID, TEMPLATES)
+    assert messages[0].level == MESSAGE_FAILURE
 
 
 def test_ensure_user_projects_attempts_both_after_a_failure(mock_create):

@@ -623,16 +623,23 @@ provision = true
 api_url = "https://gitlab.example.com"
 ```
 
-The provisioning token must be able to create users (an admin token), so it is
-read from the `DTAAS_GITLAB_PAT` environment variable and is deliberately not
-part of the generated template:
+The provisioning token must belong to a GitLab administrator and carry the
+`api` scope: it creates the accounts, issues each user's own token, and
+creates projects in their namespaces. Export it rather than writing it into
+the file:
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-A `[gitlab].pat` key is still honoured if you prefer to set one, and takes
-precedence over the environment variable.
+The generated `dtaas.toml` ships a commented `[gitlab].pat` key for
+installations that would rather keep the token in the file. A value set
+there takes precedence over the environment variable, so leave the
+placeholder commented out while `DTAAS_GITLAB_PAT` is in use.
+
+The token the CLI then issues for each user is far narrower: it is named
+`dtaas`, carries `read_repository` and `write_repository` only, and expires
+after 365 days.
 
 For a self-hosted GitLab behind an internal CA, set `[gitlab].ssl_verify` to
 the CA bundle's path instead of leaving TLS verification on the system trust
@@ -696,9 +703,10 @@ template's own default branch included, with nothing added or pruned
 afterwards. The import runs on the server and can take minutes, so each
 project is announced before the wait.
 
-A project that already holds any content is left exactly as it is and
-reported as already existing, whatever its branches look like, since they
-may hold the user's own work. An empty project left by a run that stopped
+A project that already exists is never recreated. One holding any content
+is left exactly as it is, whatever its branches look like, since they may
+hold the user's own work, and the run prints a `Warning:` line saying the
+project was not created. An empty project left by a run that stopped
 waiting on its import (the wait timed out or the run was interrupted) is
 finished on the
 next run instead of being reported as ready, so a failed run never marks a

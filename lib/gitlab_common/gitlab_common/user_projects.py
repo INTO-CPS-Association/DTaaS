@@ -39,14 +39,39 @@ def project_specs(templates: ProjectTemplates):
     ]
 
 
-def _describe(spec, result) -> str:
-    """The report line for one project's outcome, empty when there is nothing
-    to report: a cleanly created project is summarised by the caller."""
+MESSAGE_FAILURE = "failure"
+MESSAGE_WARNING = "warning"
+
+
+@dataclass(frozen=True)
+class ProjectMessage:
+    """One line to report about a project, and how serious it is, so a
+    consumer can label it without parsing the text."""
+
+    level: str
+    text: str
+
+
+def _describe(spec, result) -> ProjectMessage | None:
+    """The line to report for one project's outcome, or None when there is
+    nothing to say: a cleanly created project is summarised by the caller.
+
+    A project that was already in the namespace is a warning rather than a
+    failure: it is left exactly as it was, so the run carries on, but the
+    admin is told that this user's repository is not the one the template
+    would have produced.
+    """
     if not result.ok:
-        return f"project '{spec.name}' failed: {result.error}"
+        return ProjectMessage(
+            MESSAGE_FAILURE, f"project '{spec.name}' failed: {result.error}"
+        )
     if result.already_exists:
-        return f"project '{spec.name}' already exists and was left unchanged"
-    return ""
+        return ProjectMessage(
+            MESSAGE_WARNING,
+            f"project '{spec.name}' already exists, so it was not created; "
+            "its contents were left unchanged",
+        )
+    return None
 
 
 def ensure_user_projects(gl, user_id: int, templates: ProjectTemplates):
@@ -65,12 +90,13 @@ def ensure_user_projects(gl, user_id: int, templates: ProjectTemplates):
 
     Returns:
         Tuple of (ok, messages); *ok* is True when both projects exist
-        afterwards, and *messages* are lines to report for this user.
+        afterwards, and *messages* are :class:`ProjectMessage` items to
+        report for this user, each carrying its own level.
     """
     outcomes = [
         (spec, create_user_project(gl, user_id, spec))
         for spec in project_specs(templates)
     ]
     lines = (_describe(spec, result) for spec, result in outcomes)
-    messages = tuple(line for line in lines if line)
+    messages = tuple(line for line in lines if line is not None)
     return all(result.ok for _, result in outcomes), messages

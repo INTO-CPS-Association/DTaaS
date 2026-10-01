@@ -15,6 +15,7 @@ import click
 from ...gitlab_common import (
     COMMON_PROJECT_NAME,
     IMPORT_TIMEOUT_MINUTES,
+    MESSAGE_WARNING,
     USER_PROJECT_NAME,
     ProjectTemplates,
     ensure_user_projects,
@@ -90,6 +91,17 @@ def _resolve_user_id(gl, target):
     return user_id
 
 
+def _project_line(username: str, message) -> str:
+    """One console line for a project outcome, labelled by its level.
+
+    A project that already existed is prefixed the way an account that
+    already existed is in users_gitlab.py: it is worth an admin's attention
+    without being a failure of the run.
+    """
+    prefix = "Warning: " if message.level == MESSAGE_WARNING else ""
+    return f"{prefix}GitLab projects for '{username}': {message.text}"
+
+
 def provision_user_projects(gl, target, templates):
     """Create *target*'s two GitLab projects, reporting each outcome.
 
@@ -110,7 +122,7 @@ def provision_user_projects(gl, target, templates):
     )
     ok, messages = ensure_user_projects(gl, user_id, templates)
     for message in messages:
-        click.echo(f"GitLab projects for '{target.username}': {message}")
+        click.echo(_project_line(target.username, message))
     if ok:
         click.echo(
             f"GitLab projects ready for '{target.username}': "

@@ -109,10 +109,11 @@ react-app-oauth-url = "https://gitlab.example.com"
 
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas admin user add` also creates
-# each new user's GitLab account and a Personal Access Token (see
-# "Add Users" in cli.md). The provisioning token must be able to create users
-# (an admin token); supply it via the DTAAS_GITLAB_PAT environment variable
-# rather than committing it here. A [gitlab].pat key overrides the env var if
+# each new user's GitLab account, a Personal Access Token and their two
+# repositories (see "Add Users" in cli.md, which shows the token screen).
+# The provisioning token must belong to an administrator and carry the api
+# scope; supply it via the DTAAS_GITLAB_PAT environment variable rather than
+# committing it here. A [gitlab].pat key overrides the env var if
 # set. ssl_verify may be a CA-bundle path for a GitLab behind an internal CA;
 # false disables verification (a warning is printed) and true (default) uses
 # the system trust store.
