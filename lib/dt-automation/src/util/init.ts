@@ -9,13 +9,13 @@ import LibraryAsset, { getLibrarySubfolders } from 'src/libraryAsset';
 import { getDTSubfolders } from 'src/util/digitalTwinUtils';
 import { createGitlabInstance } from 'src/gitlab/gitlabFactory';
 import LibraryManager from 'src/libraryManager';
-import { getAccessToken } from 'src/util/accessToken';
+import { getAccessToken, getUsername } from 'src/util/credentials';
 
 type ErrorSetter = (message: string | null) => void;
 
 async function createInitializedInstance() {
   const instance = createGitlabInstance(
-    sessionStorage.getItem('username') || '',
+    getUsername(),
     getAccessToken(),
     getAuthority(),
   );

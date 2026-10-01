@@ -6,7 +6,7 @@ import { BackendInterface } from 'src/interfaces/backendInterfaces';
 import createGitlabInstance from 'src/gitlab/gitlabFactory';
 import { delay, hasTimedOut } from 'src/gitlab/execution/pipelineCore';
 import pollPipelineStatus from 'src/gitlab/execution/pipelinePolling';
-import { getAccessToken } from 'src/util/accessToken';
+import { getAccessToken, getUsername } from 'src/util/credentials';
 import {
   isCanceledStatus,
   isFailureStatus,
@@ -146,7 +146,7 @@ function ensurePipelineCanContinue(
 }
 
 async function initializeBackend(): Promise<BackendInterface> {
-  const username = sessionStorage.getItem('username');
+  const username = getUsername();
   const oauthToken = getAccessToken();
   if (!oauthToken || !username) {
     throw new Error('Not authenticated. Missing access_token or username.');
