@@ -2,7 +2,7 @@ services:
   runner:
     build:
       context: ../../../
-      dockerfile: ./developer/runner.dockerfile
+      dockerfile: ./developer/check/runner.dockerfile
     command: ["node", "dist/src/main.js", "--config", "config/runner.test.yaml"]
     volumes:
       - ./config/runner.test.yaml:/dtaas/runner/config/runner.test.yaml

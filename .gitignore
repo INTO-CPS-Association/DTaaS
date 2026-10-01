@@ -202,8 +202,8 @@ test.svg
 *.pem
 
 # developer config files (tracked via .example counterparts only)
-developer/config/*
-!developer/config/*.example
+developer/check/config/*
+!developer/check/config/*.example
 
 # execution runner
 servers/execution/runner/lifecycle*
@@ -217,6 +217,7 @@ credentials.csv
 # Generated secret files (defense-in-depth; also covered by the directory rule below)
 deploy/services/cli/certs
 deploy/services/cli/config
+deploy/services/cli/data
 deploy/services/cli/log
 deploy/services/cli/compose.services.yml
 deploy/services/cli/compose.thingsboard.yml
@@ -264,3 +265,4 @@ users.csv
 gitlab_user_tokens.json
 !cli/src/templates/dtaas.toml
 !cli/src/templates/users.csv
+

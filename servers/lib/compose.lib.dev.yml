@@ -2,9 +2,9 @@ services:
   libms:
     build:
       context: ../../
-      dockerfile: ./developer/libms.dockerfile
+      dockerfile: ./developer/check/libms.dockerfile
     volumes:
-      - ../../developer/files:/dtaas/libms/files
+      - ../../developer/check/files:/dtaas/libms/files
       - ./config/libms.dev.yaml:/dtaas/libms/libms.yaml
     ports:
       - 4001:4001

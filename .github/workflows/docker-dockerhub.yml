@@ -74,7 +74,7 @@ jobs:
         # v7.0.0
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 24
+          node-version: 26
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -86,8 +86,8 @@ jobs:
           yarn build
 
       - name: Log in to the Container registry
-        # v4.2.0
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        # v4.6.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           registry: ${{ env.registry }}
           username: ${{ env.username }}
@@ -106,11 +106,11 @@ jobs:
 
       - name: Build and push Docker image
         if: steps.check_version.outputs.exists == 'false'
-        # v7.2.0
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
+        # v7.4.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
-          file: ./developer/${{ inputs.dockerfile }}
+          file: ./developer/check/${{ inputs.dockerfile }}
           push: true
           tags: |
             ${{ env.IMAGE_BASE }}:${{ inputs.version }}

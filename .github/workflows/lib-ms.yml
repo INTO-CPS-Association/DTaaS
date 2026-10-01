@@ -7,8 +7,8 @@ name: Library microservice
   pull_request:
     paths:
       - 'servers/lib/**'
-      - 'developer/libms.dockerfile'
-      - 'developer/config/libms.dev.yaml.example'
+      - 'developer/check/libms.dockerfile'
+      - 'developer/check/config/libms.dev.yaml.example'
       - '.github/workflows/lib-ms.yml'
       - '.github/workflows/docker-build.yml'
   workflow_dispatch:
@@ -85,7 +85,7 @@ jobs:
 
       - name: Update configuration
         env:
-          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/files
+          LIBMS_LOCAL_PATH: ${{ github.workspace }}/developer/check/files
           LIBMS_PORT: ${{ env.HTTP_PORT }}
         run: |
           node test/update-config.js
@@ -126,7 +126,7 @@ jobs:
       - name: Run http test
         env:
           PORT: ${{ env.HTTP_PORT }}
-          LOCAL_PATH: ${{ github.workspace }}/developer/files
+          LOCAL_PATH: ${{ github.workspace }}/developer/check/files
           MODE: local
           LOG_LEVEL: debug
           APOLLO_PATH: /lib

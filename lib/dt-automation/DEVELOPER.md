@@ -9,7 +9,8 @@ React components and other React-specific code do not belong in this package.
 
 ## Prerequisites
 
-DT Automation uses Node.js 24 and Yarn 1.22.22.
+DT Automation is developed on Node.js 26 and supports Node.js 24 and
+later. It uses Yarn 1.22.22.
 
 Install the dependencies:
 

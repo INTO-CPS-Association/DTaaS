@@ -1,0 +1,87 @@
+name: Qlty
+
+# Runs the Qlty CLI on the runner. Qlty Cloud skips pull requests from
+# forks because GitHub withholds its token; the CLI needs no token, so
+# fork pull requests get the same analysis. Linters already covered by
+# other workflows (eslint, prettier, markdownlint, ruff) are not repeated.
+
+'on':
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  QLTY_VERSION: 0.649.0
+  QLTY_SHA256: 3c3a5533cfe0a155bd24ca1c2f683f2f742a7383aad115ced65c3dcde5198534
+  UPSTREAM: origin/${{ github.base_ref }}
+
+jobs:
+  qlty:
+    name: Qlty checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          # --upstream compares against the base branch, so its history
+          # must be present.
+          fetch-depth: 0
+          lfs: false
+
+      - name: Install Qlty CLI
+        # The pinned tarball is verified before it is unpacked; the
+        # installer script at qlty.sh is not used.
+        run: |
+          archive=qlty-x86_64-unknown-linux-gnu.tar.xz
+          curl --fail --silent --show-error --location --proto '=https' \
+            --output "$archive" \
+            "https://github.com/qltysh/qlty/releases/download/v${QLTY_VERSION}/${archive}"
+          echo "${QLTY_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xJf "$archive"
+          install -D -m 0755 qlty-x86_64-unknown-linux-gnu/qlty \
+            "$HOME/.local/bin/qlty"
+          rm -rf "$archive" qlty-x86_64-unknown-linux-gnu
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/qlty" --version
+
+      - name: Cache Qlty tools
+        # v6.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.qlty
+          key: qlty-${{ env.QLTY_VERSION }}-${{ hashFiles('.qlty/qlty.toml') }}
+          restore-keys: |
+            qlty-${{ env.QLTY_VERSION }}-
+
+      - name: Lint workflows (actionlint)
+        run: >-
+          qlty check --filter actionlint --no-progress --no-upgrade-check
+          --upstream "$UPSTREAM"
+
+      # Dependency advisories are reported, not enforced: the lockfiles
+      # carry known advisories that dependabot tracks, and any change to a
+      # lockfile would otherwise fail on all of them.
+      - name: Scan dependencies (osv-scanner)
+        run: >-
+          qlty check --filter osv-scanner --no-progress --no-upgrade-check
+          --no-fail --upstream "$UPSTREAM"
+
+      # Mirrors Qlty Cloud, whose smells mode in .qlty/qlty.toml is
+      # "comment": findings are shown, never blocking.
+      - name: Report code smells
+        run: |
+          {
+            echo '## Qlty code smells'
+            echo
+            echo '```text'
+            qlty smells --no-snippets --no-upgrade-check \
+              --upstream "$UPSTREAM"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"

@@ -5,6 +5,11 @@ The source code for the CLI is located in the _cli/src_ directory.
 
 ## 📦 Dependencies
 
+A ready-made container with Python, Poetry and the rest of the toolchain
+is available; see
+[developer/devenv/README.md](../developer/devenv/README.md). It saves
+installing these on your host.
+
 The CLI is written in Python and uses the following libraries:
 
 - [Click](https://click.palletsprojects.com/en/8.1.x/) : Used for

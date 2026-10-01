@@ -1,5 +1,5 @@
 #! docker should be run from the root directory of the project
-FROM node:24.12.0-slim AS build
+FROM node:26.10.0-slim AS build
 
 ARG REACT_APP_IS_DOCKER
 ENV REACT_APP_IS_DOCKER=$REACT_APP_IS_DOCKER
@@ -15,6 +15,7 @@ COPY ./client/yarn.lock ./
 COPY ./client/ .
 
 WORKDIR /dtaas/client
-RUN npm i -g serve
+RUN npm install --global --ignore-scripts serve@14.2.6
+USER node
 # Define the command to run your app
 CMD ["serve", "-s", "build", "-l", "4000"]

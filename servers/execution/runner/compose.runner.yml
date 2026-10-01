@@ -2,7 +2,7 @@ services:
   runner:
     build:
       context: ../../../
-      dockerfile: ./developer/runner.dockerfile
+      dockerfile: ./developer/check/runner.dockerfile
     restart: unless-stopped
     volumes:
       - ./config/runner.yaml:/dtaas/runner/runner.yaml

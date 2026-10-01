@@ -27,6 +27,11 @@ For end-to-end checks:
 yarn test:e2e
 ```
 
+The end-to-end suite logs in through GitLab, so it needs a reachable
+GitLab instance configured in `client/test/.env`. GitHub Actions does not
+run it; run it locally before opening a pull request that changes
+client behaviour. See `client/test/README.md`.
+
 ## Library Microservice (NestJS)
 
 Run from `servers/lib/`:

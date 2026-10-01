@@ -43,7 +43,7 @@
     "url": "git+https://github.com/INTO-CPS-Association/DTaaS.git"
   },
   "engines": {
-    "node": "24"
+    "node": ">=24"
   },
   "packageManager": "yarn@1.22.22",
   "license": "SEE LICENSE IN LICENSE.md",

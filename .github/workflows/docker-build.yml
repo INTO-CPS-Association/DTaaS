@@ -40,7 +40,7 @@ jobs:
         # v7.0.0
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 24
+          node-version: 26
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
 
@@ -49,7 +49,6 @@ jobs:
         working-directory: client/
         run: |
           yarn install --network-timeout 1000000
-          yarn playwright install --with-deps
 
       - name: Run the linting checks
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
@@ -65,10 +64,10 @@ jobs:
           yarn config:test
 
       - name: Build Docker image
-        # v7.2.0
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
+        # v7.4.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
-          file: ./developer/${{ inputs.dockerfile }}
+          file: ./developer/check/${{ inputs.dockerfile }}
           push: false
           tags: ${{ inputs.image-name }}:test

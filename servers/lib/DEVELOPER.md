@@ -79,7 +79,7 @@ To kill a process, use:
 
 The docker version of lib microservice is packaged with the DTaaS
 application release.
-Please see [publishing](../../developer/README.md) page
+Please see [publishing](../../developer/check/README.md) page
 for more information publishing docker images.
 
 ### Default NPM Registry

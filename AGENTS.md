@@ -50,3 +50,10 @@ The coding assistant acts as an expert software developer.
 - Files should remain under 250 lines (except 3D model files).
 - Functions should remain under 25 lines.
 - Implementations should be tested when practical.
+
+## PROJECT INSTRUCTIONS
+
+Repository-specific instructions are in [PROJECT.md](PROJECT.md): the
+build and test command for each project, how to verify a change, the
+shipping cycle, the pull request checks and the enforced code standards.
+Read it before changing the repository.

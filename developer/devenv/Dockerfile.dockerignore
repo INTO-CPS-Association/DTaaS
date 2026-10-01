@@ -1,0 +1,4 @@
+# The build reads exactly one file from the repository. Without this,
+# the whole tree including client/node_modules is sent to the daemon.
+*
+!script/docs/mkdocs-requirements.txt

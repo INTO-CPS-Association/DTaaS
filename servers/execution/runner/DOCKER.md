@@ -6,7 +6,7 @@ This document describes running the runner in a docker container.
 
 The runner image is not published to a container registry yet.
 The docker compose files in this directory build the image from the
-`developer/runner.dockerfile` of the DTaaS repository.
+`developer/check/runner.dockerfile` of the DTaaS repository.
 Run the commands below from the `servers/execution/runner` directory.
 
 ## Use in Docker Environment
