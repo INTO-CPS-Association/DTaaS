@@ -65,6 +65,18 @@ def test_create_user_already_exists():
     assert result.user_id is None
 
 
+def test_create_user_already_exists_keeps_gitlabs_reason():
+    """GitLab answers 409 for a taken username and for an email already on
+    another account; the caller needs to know which, so its words are kept."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabCreateError(
+        "Email has already been taken", response_code=409
+    )
+    result = create_user(gl, **_fields())
+    assert result.outcome is CreateOutcome.ALREADY_EXISTS
+    assert "Email has already been taken" in result.error
+
+
 def test_create_user_non_409_create_error():
     """A non-409 GitlabCreateError is a failure, not an 'already exists'."""
     gl = MagicMock()

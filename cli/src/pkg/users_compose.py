@@ -22,7 +22,7 @@ def _missing_template_error(name):
     )
 
 
-def _load_template(server, tls):
+def load_user_template(server, tls):
     """Load the appropriate template based on server type and TLS.
 
     Args:
@@ -73,7 +73,7 @@ def get_compose_config(username, config):
         Tuple of (user config dict, error if any)
     """
     try:
-        template, err = _load_template(config["server"], config.get("tls"))
+        template, err = load_user_template(config["server"], config.get("tls"))
         utils.check_error(err)
         mapping = build_base_mapping(username, config)
         result, err = utils.replace_all(template, mapping)

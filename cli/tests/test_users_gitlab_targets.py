@@ -1,6 +1,6 @@
 """Tests for the GitLab provisioning target selection (users_gitlab_targets.py)."""
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import pytest
 from src.pkg import users_gitlab_targets
 from src.pkg.users_gitlab_targets import (
@@ -43,9 +43,14 @@ def test_has_gitlab_work_ignores_a_finished_user_without_a_template():
     assert has_gitlab_work(candidate, wants_projects=True) is True
 
 
-def _ctx(details=None):
-    """A users context holding one registry user, 'alice'."""
-    return MagicMock(user_list=["alice"], users_section={"alice": details or {}})
+def _ctx(details=None, starting=None):
+    """A users context holding one registry user, 'alice', and whatever
+    dtaas.toml starting users the run can also see."""
+    return MagicMock(
+        user_list=["alice"],
+        users_section={"alice": details or {}},
+        starting=starting or {},
+    )
 
 
 def test_target_usernames_start_only_none_means_all_registry_users():
@@ -84,3 +89,44 @@ def test_gitlab_candidates_keep_a_missing_password_as_none():
     candidate = gitlab_candidates(_ctx(), ["alice"], {})[0]
     assert candidate.password is None
     assert candidate.pat_issued is False
+
+
+def test_a_named_starting_user_is_a_candidate_without_being_a_registry_user():
+    """Naming a dtaas.toml starting user asks for its GitLab half: it is a
+    candidate, its email comes from dtaas.toml, and it is never in the
+    registry (where it would be given a second container)."""
+    ctx = _ctx(starting={"foo": "foo@intocps.org"})
+
+    with patch("src.pkg.users_gitlab_targets.load_starting_gitlab", return_value={}):
+        candidates = gitlab_candidates(ctx, [], {"foo": "pw"})
+
+    assert [c.username for c in candidates] == ["foo"]
+    assert (candidates[0].email, candidates[0].password) == ("foo@intocps.org", "pw")
+    assert candidates[0].pat_issued is False
+
+
+def test_a_starting_user_carries_its_own_markers():
+    """Its markers live in the registry's starting user section, so a run
+    that created the account and failed the projects retries the projects
+    alone, exactly as for an additional user."""
+    ctx = _ctx(starting={"foo": "foo@intocps.org"})
+    markers = {"foo": {"gitlab_user_id": 7, "gitlab_pat_issued": True}}
+
+    with patch(
+        "src.pkg.users_gitlab_targets.load_starting_gitlab", return_value=markers
+    ):
+        candidate = gitlab_candidates(ctx, [], {"foo": None})[0]
+
+    assert (candidate.existing_user_id, candidate.pat_issued) == (7, True)
+    assert candidate.projects_created is False
+
+
+def test_an_unnamed_starting_user_is_not_provisioned():
+    """Only the starting users a run names are touched: 'user add alice' must
+    not provision every user dtaas.toml declares."""
+    ctx = _ctx(starting={"foo": "foo@intocps.org"})
+
+    with patch("src.pkg.users_gitlab_targets.load_starting_gitlab", return_value={}):
+        candidates = gitlab_candidates(ctx, ["alice"], {"alice": "pw"})
+
+    assert [c.username for c in candidates] == ["alice"]

@@ -38,6 +38,13 @@ class CreateUserResult:
     ``user_id`` is set only for :attr:`CreateOutcome.CREATED`; it is None for
     both ALREADY_EXISTS and FAILED, so callers must branch on *outcome*
     rather than on the id.
+
+    ``error`` carries GitLab's own words in both of the other cases: why the
+    request failed for FAILED, and which conflict it reported for
+    ALREADY_EXISTS. GitLab answers 409 both for a username that is taken and
+    for an email that is already on another account, and those are different
+    problems for an admin, so the reason is passed on rather than flattened
+    into one message.
     """
 
     outcome: CreateOutcome
@@ -74,10 +81,11 @@ def create_user(
     Inputs are validated with :func:`validate_user_row` before any API call.
 
     .. warning::
-        When GitLab reports the username is already taken (HTTP 409) the
-        outcome is :attr:`CreateOutcome.ALREADY_EXISTS`: the account belongs to
-        whoever registered it, **the supplied password is not applied**, and no
-        credentials are changed. Do not treat that outcome as "these
+        When GitLab reports a conflict (HTTP 409) the outcome is
+        :attr:`CreateOutcome.ALREADY_EXISTS`: either the username belongs to
+        whoever registered it or the email is already on another account.
+        **The supplied password is not applied** and no credentials are
+        changed; GitLab's own reason is in ``error``. Do not treat that outcome as "these
         credentials are now live"; ``user_id`` is None and callers should
         neither issue a token against, nor create projects in, an account
         they did not create: both act on a namespace whose owner is unknown
@@ -109,8 +117,8 @@ def create_user(
         return CreateUserResult(CreateOutcome.CREATED, user_id=user.id)
     except gitlab.exceptions.GitlabCreateError as exc:
         if exc.response_code == 409:
-            logger.info("GitLab user already exists: %s", username)
-            return CreateUserResult(CreateOutcome.ALREADY_EXISTS)
+            logger.info("GitLab reported a conflict for '%s': %s", username, exc)
+            return CreateUserResult(CreateOutcome.ALREADY_EXISTS, error=str(exc))
         return CreateUserResult(
             CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
         )

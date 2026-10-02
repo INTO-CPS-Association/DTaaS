@@ -22,7 +22,9 @@ from .constants import GITLAB_USER_TOKENS_FILE
 from .users_gitlab_records import persist_account_result, persist_projects_result
 from .users_gitlab_targets import (
     RUN_DEADLINE_MINUTES,
+    GitlabUserResult,
     RunDeadline,
+    changed_user_id,
     has_gitlab_work,
     not_attempted_notice,
 )
@@ -31,31 +33,6 @@ PAT_ISSUED_NOTICE = (
     "a Personal Access Token was already issued on an earlier run (see "
     f"{GITLAB_USER_TOKENS_FILE}). A re-run does not reissue one."
 )
-
-
-@dataclass
-class _GitlabUserResult:
-    """Outcome of provisioning one GitlabCandidate.
-
-    *has_account* is False when this run has no account of its own to create
-    projects in: the account step was skipped for want of a password and no
-    earlier run left one, or the account turned out to exist already and so
-    belongs to whoever registered it.
-    """
-
-    username: str
-    new_id: object
-    token: object
-    failed: bool
-    projects_done: bool = False
-    has_account: bool = True
-
-
-def _changed_user_id(result, existing_user_id):
-    """result.user_id when GitLab returned a new or changed id, else None."""
-    if result.user_id is not None and result.user_id != existing_user_id:
-        return result.user_id
-    return None
 
 
 @dataclass(frozen=True)
@@ -100,7 +77,7 @@ def _account_skipped(candidate, reason, has_account=True):
     click.echo(
         f"GitLab account provisioning skipped for '{candidate.username}': {reason}"
     )
-    return _GitlabUserResult(
+    return GitlabUserResult(
         candidate.username, None, None, False, has_account=has_account
     )
 
@@ -132,9 +109,9 @@ def _account_step(run, candidate):
             existing_user_id=candidate.existing_user_id,
         ),
     )
-    return _GitlabUserResult(
+    return GitlabUserResult(
         candidate.username,
-        _changed_user_id(result, candidate.existing_user_id),
+        changed_user_id(result, candidate.existing_user_id),
         _report_account(candidate.username, result),
         not result.ok,
         has_account=not result.already_exists,
@@ -187,11 +164,20 @@ def _provision_one_gitlab_user(run, candidate):
     a server side import that can take minutes, so a token held in memory
     until the end of the run is a token an interrupted run would lose while
     it stays live on GitLab.
+
+    A failure the API layer did not expect is this user's alone: an
+    unreadable token file or a response shaped unlike GitLab's used to abort
+    the loop, leaving every later user of the run unattempted with nothing
+    said about them.
     """
-    account = _account_step(run, candidate)
-    persist_account_result(account)
-    result = _projects_step(run, candidate, account)
-    persist_projects_result(result)
+    try:
+        account = _account_step(run, candidate)
+        persist_account_result(account)
+        result = _projects_step(run, candidate, account)
+        persist_projects_result(result)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        click.echo(f"GitLab provisioning failed for '{candidate.username}': {exc}")
+        return GitlabUserResult(candidate.username, None, None, True)
     return result
 
 

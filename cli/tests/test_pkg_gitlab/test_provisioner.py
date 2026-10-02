@@ -100,8 +100,23 @@ def test_ensure_user_resources_already_exists_is_idempotent_noop():
     assert result.ok is True
     assert result.token == ""
     assert result.already_exists is True
-    assert "not created by this run" in result.message
+    assert "created nothing" in result.message
     gl.users.get.assert_not_called()
+
+
+def test_a_conflict_carries_gitlabs_own_reason():
+    """GitLab answers 409 both for a taken username and for an email that is
+    already on another account. Those send an admin to different places, so
+    its own words are reported rather than one message for both."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabCreateError(
+        "Email has already been taken", response_code=409
+    )
+
+    result = ensure_user_resources(gl, _user())
+
+    assert result.already_exists is True
+    assert "Email has already been taken" in result.message
 
 
 def test_ensure_user_resources_create_failure_is_reported():
@@ -140,3 +155,46 @@ def test_ensure_user_resources_pat_failure_after_user_created():
 
     assert result.ok is False
     assert "PAT issuance failed" in result.message
+
+
+def test_a_refused_token_is_reported_with_what_to_check():
+    """Creating users and tokens are administrator only calls, and GitLab says
+    no more than 401 or 403 about them: the hint names the token, its scopes
+    and the admin rights, which is what the admin has to go and check."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabCreateError(
+        "401 Unauthorized", response_code=401
+    )
+
+    result = ensure_user_resources(gl, _user())
+
+    assert result.ok is False
+    assert "401" in result.message
+    assert "'api' scope" in result.message
+    assert "administrator" in result.message
+
+
+def test_a_failure_that_is_not_a_refusal_carries_no_token_hint():
+    """A validation error or an unreachable instance is not about the token,
+    so it is not dressed up as one."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabError("connection reset")
+
+    result = ensure_user_resources(gl, _user())
+
+    assert result.ok is False
+    assert "scope" not in result.message
+
+
+def test_a_refused_pat_is_reported_with_what_to_check():
+    """The PAT call is administrator only too, so its refusal says the same."""
+    gl = _gl_with_pat(TOKEN)
+    mock_user = Mock()
+    mock_user.id = 7
+    gl.users.create.return_value = mock_user
+    gl.users.get.side_effect = GitlabError("403 Forbidden")
+
+    result = ensure_user_resources(gl, _user())
+
+    assert result.ok is False
+    assert "administrator" in result.message

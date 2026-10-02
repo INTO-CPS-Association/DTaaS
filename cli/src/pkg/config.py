@@ -74,20 +74,33 @@ class Config:
         names = (str(u.get("username", "")).strip() for u in users)
         return [name for name in names if name], None
 
-    def get_user_emails(self):
-        """Gets {username: email} for every [[users]] record in config.
+    def _user_field_map(self, field):
+        """Gets {username: <field>} for every [[users]] record in config.
 
-        No caller yet; added alongside get_users()/get_starting_users() as
-        groundwork for upcoming GitLab-provisioning work (#1693).
+        Records with no username are left out; a record without *field* maps
+        to an empty string, which every caller reads as "not set".
         """
         users, err = self.get_users()
         if err is not None or users is None:
             return None, err
         return {
-            str(u.get("username", "")).strip(): str(u.get("email", "")).strip()
+            str(u.get("username", "")).strip(): str(u.get(field, "")).strip()
             for u in users
             if str(u.get("username", "")).strip()
         }, None
+
+    def get_user_emails(self):
+        """Gets {username: email} for every [[users]] record in config."""
+        return self._user_field_map("email")
+
+    def get_user_passwords(self):
+        """Gets {username: password} for every [[users]] record in config.
+
+        The initial GitLab password of a starting user, read when 'user add'
+        names one and no --password or users.csv password is supplied. The key
+        is optional, so a starting user without it maps to an empty string.
+        """
+        return self._user_field_map("password")
 
     def get_path(self):
         """Gets the 'path' from config.common"""

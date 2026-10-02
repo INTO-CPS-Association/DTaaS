@@ -18,22 +18,13 @@ TEMPLATES = ProjectTemplates(
 
 
 @pytest.fixture
-def mock_config():
-    """Mock config object providing deployment settings from dtaas.toml."""
-    mock = MagicMock()
-    mock.get_server_dns.return_value = ("foo.example.com", None)
-    mock.get_path.return_value = ("/test/path", None)
-    mock.get_resource_limits.return_value = (
-        {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
-        None,
-    )
-    mock.get_tls.return_value = (False, None)
-    mock.get_set_limits.return_value = (True, None)
-    mock.get_gitlab_provision.return_value = (False, None)
-    mock.get_gitlab_templates.return_value = (dict(TEMPLATE_KEYS), None)
-    mock.get_gitlab_import_timeout.return_value = (None, None)
-    mock.get_gitlab_import_deadline.return_value = (None, None)
-    return mock
+def mock_config(mock_config):
+    """The shared deployment config, plus the [gitlab] getters these tests
+    drive provisioning through."""
+    mock_config.get_gitlab_templates.return_value = (dict(TEMPLATE_KEYS), None)
+    mock_config.get_gitlab_import_timeout.return_value = (None, None)
+    mock_config.get_gitlab_import_deadline.return_value = (None, None)
+    return mock_config
 
 
 @pytest.fixture(autouse=True)
@@ -50,38 +41,10 @@ def mock_gitlab_projects():
 
 
 @pytest.fixture
-def mock_registry():
-    """Patch the registry store functions add_users uses."""
-    with patch("src.pkg.users.load_registry") as mock_load, patch(
-        "src.pkg.users.remove_from_registry"
-    ) as mock_remove:
-        mock_load.return_value = {"user1": {"email": "user1@x.io"}}
-        yield {"load": mock_load, "remove": mock_remove}
-
-
-@pytest.fixture
-def mock_utils():
+def mock_utils(yaml_io):
     """Mock the utils functions add_users calls directly."""
-    with patch("src.pkg.users.utils.import_yaml") as mi, patch(
-        "src.pkg.users.utils.export_yaml"
-    ) as me:
-        mi.return_value = ({"version": "3", "services": {}}, None)
-        me.return_value = None
-        yield {"import": mi, "export": me}
-
-
-@pytest.fixture
-def mock_user_operations():
-    """Mock the users_compose functions imported into users.py"""
-    with patch("src.pkg.users.create_user_files") as mc, patch(
-        "src.pkg.users.add_users_to_compose"
-    ) as ma, patch("src.pkg.users.finalize_compose") as mf, patch(
-        "src.pkg.users.stop_user_containers"
-    ) as mst, patch("src.pkg.users.write_state") as mw:
-        mc.return_value = ma.return_value = mf.return_value = None
-        mst.return_value = None
-        mw.return_value = {}
-        yield {"create": mc, "add": ma, "finalize": mf, "stop": mst, "state": mw}
+    with yaml_io("src.pkg.users") as mocks:
+        yield mocks
 
 
 @pytest.fixture

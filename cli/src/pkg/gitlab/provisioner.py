@@ -5,10 +5,28 @@ from dataclasses import dataclass
 from ...gitlab_common import CreateOutcome, create_user, create_user_pat
 
 _ALREADY_EXISTS_MESSAGE = (
-    "account already exists on GitLab; it was not created by this "
-    "run, its credentials are unknown, so no token was issued and no "
-    "projects were created in its namespace."
+    "GitLab reported a conflict, so this run created nothing: the username is "
+    "already registered, or its email is already on another account. Either "
+    "way the credentials are unknown to this run, so no token was issued and "
+    "no projects were created in that namespace. GitLab said: "
 )
+
+# Both halves of the account step are administrator only API calls, so a
+# refusal is almost always the token rather than the request. GitLab answers
+# an unusable token with 401 and a token whose owner may not act with 403,
+# and says no more than that, so the hint names what to check.
+PERMISSION_HINT = (
+    " Check [gitlab].pat (or DTAAS_GITLAB_PAT): creating users and tokens "
+    "needs a non-expired personal access token with the 'api' scope, owned "
+    "by an administrator account, and the 'admin_mode' scope as well on an "
+    "instance with Admin Mode enabled."
+)
+
+
+def _with_hint(message, error):
+    """*message*, plus the token hint when GitLab refused the credentials."""
+    refused = "401" in str(error) or "403" in str(error)
+    return f"{message}{PERMISSION_HINT}" if refused else message
 
 
 @dataclass(frozen=True)
@@ -48,7 +66,10 @@ def _issue_pat(gl, username, user_id, *, retry=False) -> ProvisionResult:
             else "GitLab account created but PAT issuance failed: "
         )
         return ProvisionResult(
-            username, False, f"{prefix}{token_or_error}", user_id=user_id
+            username,
+            False,
+            _with_hint(f"{prefix}{token_or_error}", token_or_error),
+            user_id=user_id,
         )
     message = (
         "GitLab token issued (retry)." if retry else "GitLab account and token created."
@@ -63,10 +84,15 @@ def _create_user_and_pat(gl, user: GitlabUser) -> ProvisionResult:
         gl, username=user.username, email=user.email, password=user.password
     )
     if result.outcome is CreateOutcome.FAILED:
-        return ProvisionResult(user.username, False, result.error)
+        return ProvisionResult(
+            user.username, False, _with_hint(result.error, result.error)
+        )
     if result.outcome is CreateOutcome.ALREADY_EXISTS:
         return ProvisionResult(
-            user.username, True, _ALREADY_EXISTS_MESSAGE, already_exists=True
+            user.username,
+            True,
+            f"{_ALREADY_EXISTS_MESSAGE}{result.error}",
+            already_exists=True,
         )
     assert result.user_id is not None  # guaranteed whenever outcome is CREATED
     return _issue_pat(gl, user.username, result.user_id)

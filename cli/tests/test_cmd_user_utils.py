@@ -4,15 +4,17 @@ import click
 import pytest
 from src.cmd_user_utils import (
     UserAddInput,
-    _passwords_to_add,
-    _read_csv_passwords,
     _starting_usernames,
     _users_to_add,
     reject_starting_users,
     resolve_usernames,
     stage_users_for_add,
 )
-from src.pkg.registry import load_registry
+from src.pkg.registry import (
+    load_registry,
+    load_starting_gitlab,
+    set_gitlab_pat_issued,
+)
 # pylint: disable=protected-access
 
 
@@ -37,12 +39,12 @@ def test_stage_single_user_password_returned_for_added_user(tmp_path, monkeypatc
     """A single-user add with --password returns it, keyed by username, for
     GitLab provisioning -- and never inside the registry-persisted details."""
     monkeypatch.chdir(tmp_path)
-    added, passwords = stage_users_for_add(
+    staged = stage_users_for_add(
         UserAddInput("alice", None, "a@intocps.org", (), True, "S3cur3-p4ss")
     )
 
-    assert added == ["alice"]
-    assert passwords == {"alice": "S3cur3-p4ss"}
+    assert staged.added == ["alice"]
+    assert staged.passwords == {"alice": "S3cur3-p4ss"}
     store = load_registry()
     assert "password" not in store["alice"]
 
@@ -54,12 +56,12 @@ def test_stage_returns_only_newly_added(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     stage_users_for_add(UserAddInput("alice", None, "a@intocps.org", (), True))
 
-    added, passwords = stage_users_for_add(
+    staged = stage_users_for_add(
         UserAddInput("alice", None, "a@intocps.org", (), True)
     )
 
-    assert not added
-    assert passwords == {"alice": None}
+    assert not staged.added
+    assert staged.passwords == {"alice": None}
 
 
 def test_stage_returns_password_for_already_registered_retry(tmp_path, monkeypatch):
@@ -70,12 +72,12 @@ def test_stage_returns_password_for_already_registered_retry(tmp_path, monkeypat
     monkeypatch.chdir(tmp_path)
     stage_users_for_add(UserAddInput("alice", None, "a@intocps.org", (), True))
 
-    added, passwords = stage_users_for_add(
+    staged = stage_users_for_add(
         UserAddInput("alice", None, "a@intocps.org", (), True, "S3cur3-p4ss")
     )
 
-    assert not added  # already registered: skipped, not re-added
-    assert passwords == {"alice": "S3cur3-p4ss"}
+    assert not staged.added  # already registered: skipped, not re-added
+    assert staged.passwords == {"alice": "S3cur3-p4ss"}
 
 
 def test_stage_rejects_invalid_username(tmp_path, monkeypatch):
@@ -108,35 +110,6 @@ def test_starting_usernames_returns_empty_on_config_error(tmp_path, monkeypatch)
 def test_users_to_add_returns_empty_without_username_or_file():
     """_users_to_add returns {} when given neither a CSV file nor a username."""
     assert not _users_to_add(UserAddInput(None, None, None, (), True))
-
-
-@pytest.mark.parametrize(
-    "header,row,expected",
-    [
-        (",password", ",S3cur3-p4ss", {"alice": "S3cur3-p4ss"}),
-        ("", "", {"alice": None}),
-    ],
-)
-def test_passwords_to_add_reads_from_csv(tmp_path, header, row, expected):
-    """_passwords_to_add reads the password column via _read_csv_passwords for
-    CSV imports (the username-argument path is covered separately). A row
-    with no password still names its user, so the GitLab step runs for them
-    and retries the projects of an account that already exists."""
-    csv_file = tmp_path / "users.csv"
-    csv_file.write_text(
-        f"username,email,groups,load_balance{header}\nalice,a@x.io,g,true{row}\n"
-    )
-
-    user_input = UserAddInput(None, str(csv_file), None, (), True)
-    passwords = _passwords_to_add(user_input, _users_to_add(user_input))
-
-    assert passwords == expected
-
-
-def test_read_csv_passwords_missing_file_raises_click_exception():
-    """A missing/unreadable CSV surfaces as a ClickException, not a raw OSError."""
-    with pytest.raises(click.ClickException, match="Error importing users file"):
-        _read_csv_passwords("does-not-exist.csv")
 
 
 def test_resolve_usernames_from_positional_args():
@@ -175,3 +148,72 @@ def test_reject_starting_users_rejects_overlap(tmp_path, monkeypatch):
 
     with pytest.raises(click.ClickException, match="Cannot pause starting user"):
         reject_starting_users(["alice", "bob"], "pause")
+
+
+def _toml_with_starting_user(tmp_path, password=""):
+    """A dtaas.toml whose single starting user optionally carries a password."""
+    line = f'\npassword="{password}"' if password else ""
+    (tmp_path / "dtaas.toml").write_text(
+        f'[[users]]\nusername="foo"\nemail="foo@intocps.org"{line}\n',
+        encoding="utf-8",
+    )
+
+
+def test_stage_reports_a_starting_user_as_one(tmp_path, monkeypatch, capsys):
+    """A dtaas.toml starting user is not a registry user, so it is reported
+    as what it is rather than as a duplicate, and is never registered."""
+    monkeypatch.chdir(tmp_path)
+    _toml_with_starting_user(tmp_path)
+
+    staged = stage_users_for_add(UserAddInput("foo", None, "foo@intocps.org", (), True))
+
+    assert staged.added == []
+    assert staged.starting == ["foo"]
+    assert load_registry() == {}
+    assert "starting user" in capsys.readouterr().out
+
+
+def test_stage_tracks_a_provisioned_starting_user_apart(tmp_path, monkeypatch):
+    """With provisioning on, a named starting user gets a marker record of its
+    own, so its GitLab halves can be retried without it ever becoming a
+    registry user (which would duplicate its container)."""
+    monkeypatch.chdir(tmp_path)
+    _toml_with_starting_user(tmp_path, password="S3cur3-p4ss")
+
+    staged = stage_users_for_add(
+        UserAddInput("foo", None, "foo@intocps.org", (), True), True
+    )
+
+    assert staged.passwords == {"foo": "S3cur3-p4ss"}
+    assert load_registry() == {}
+    assert load_starting_gitlab() == {"foo": {}}
+
+
+def test_stage_refuses_a_provisioning_run_with_no_password(tmp_path, monkeypatch):
+    """A new user with no password has no GitLab half to do, so the run is
+    refused before anything is staged: the users.csv the CLI generates has an
+    empty password column, and a bulk add from it used to report success
+    while provisioning no account and no repositories."""
+    monkeypatch.chdir(tmp_path)
+    csv_file = tmp_path / "users.csv"
+    csv_file.write_text(
+        "username,email,groups,load_balance,password\nalice,a@x.io,g,true,\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(click.ClickException, match="No GitLab password for 'alice'"):
+        stage_users_for_add(UserAddInput(None, str(csv_file), None, (), True), True)
+
+    assert load_registry() == {}
+
+
+def test_stage_allows_no_password_once_the_account_exists(tmp_path, monkeypatch):
+    """The documented project-only retry: a user whose token was issued is
+    named again with no password and the run goes ahead."""
+    monkeypatch.chdir(tmp_path)
+    stage_users_for_add(UserAddInput("alice", None, "a@x.io", (), True, "S3cur3-p4ss"))
+    set_gitlab_pat_issued(["alice"])
+
+    staged = stage_users_for_add(UserAddInput("alice", None, "a@x.io", (), True), True)
+
+    assert staged.passwords == {"alice": None}

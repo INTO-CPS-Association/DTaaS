@@ -141,10 +141,18 @@ def report_missing_users(missing):
 
 
 def report_delete_preview(existing, usernames):
-    """Print what 'user delete' would do, without changing anything (dry-run)."""
+    """Print what 'user delete' would do, without changing anything (dry-run).
+
+    The GitLab note mirrors the real run's: a delete never touches a GitLab
+    account, so a dry run must not imply that it would.
+    """
     if existing:
         click.echo(f"Would deprovision and stop: {', '.join(existing)}")
     click.echo(f"Would remove from registry: {', '.join(usernames)}")
+    click.echo(
+        "GitLab accounts, tokens and projects would be left untouched; the "
+        "saved tokens would be dropped from the credentials file."
+    )
 
 
 def remove_users_from_compose(compose, user_list):

@@ -60,11 +60,20 @@ class ProjectResult:
 
 
 def _existing_project(gl: gitlab.Gitlab, namespace: str, name: str):
-    """The project ``namespace/name`` when it already exists, else None."""
+    """The project ``namespace/name`` when it already exists, else None.
+
+    Only a 404 means the project is not there. Any other refusal (a 403 from
+    a token that may not read the namespace, a 500 from an instance in
+    trouble) is raised for the caller to report: reading it as "absent"
+    would send the run on to create a project that may well exist, and would
+    hide the permission problem behind whatever the creation then answers.
+    """
     try:
         return gl.projects.get(f"{namespace}/{name}")
-    except gitlab.exceptions.GitlabGetError:
-        return None
+    except gitlab.exceptions.GitlabGetError as exc:
+        if exc.response_code == 404:
+            return None
+        raise
 
 
 def _is_empty(project) -> bool:
@@ -103,6 +112,46 @@ def _adopt_existing(gl: gitlab.Gitlab, project, spec: ProjectSpec) -> ProjectRes
     return _seed_project(gl, project.id, spec)
 
 
+def _lookup_project(gl: gitlab.Gitlab, user_id: int, spec: ProjectSpec):
+    """The account and its copy of *spec*'s project, when it has one.
+
+    Returns:
+        Tuple of (user, existing_project, error). *existing_project* is None
+        when the account has no project of that name, and *error* is set when
+        GitLab refused either read, which is reported as a lookup failure
+        rather than as a creation that was never attempted.
+    """
+    try:
+        user = gl.users.get(user_id)
+        return user, _existing_project(gl, user.username, spec.name), ""
+    except API_ERRORS as exc:
+        return None, None, f"could not look up project '{spec.name}': {exc}"
+
+
+def _create_project(user, spec: ProjectSpec):
+    """Create *spec*'s project in *user*'s own namespace.
+
+    This is GitLab's admin only "create project for user" endpoint, which
+    runs the creation as *user*: it needs an administrator token, and it is
+    refused when the account itself may not create projects (a default
+    projects limit of 0 is the usual cause).
+
+    Returns:
+        Tuple of (project, error).
+    """
+    try:
+        project = user.projects.create(
+            {
+                "name": spec.name,
+                "import_url": spec.import_url,
+                "visibility": PROJECT_VISIBILITY,
+            }
+        )
+        return project, ""
+    except API_ERRORS as exc:
+        return None, f"could not create project '{spec.name}': {exc}"
+
+
 def _user_project(gl: gitlab.Gitlab, user_id: int, spec: ProjectSpec):
     """The project *spec* asks for in *user_id*'s namespace, creating it when
     it is not there yet.
@@ -112,21 +161,11 @@ def _user_project(gl: gitlab.Gitlab, user_id: int, spec: ProjectSpec):
         from a project that was already in the namespace, and *error* is set
         when GitLab refused the lookup or the creation.
     """
-    try:
-        user = gl.users.get(user_id)
-        existing = _existing_project(gl, user.username, spec.name)
-        if existing is not None:
-            return existing, False, ""
-        created = user.projects.create(
-            {
-                "name": spec.name,
-                "import_url": spec.import_url,
-                "visibility": PROJECT_VISIBILITY,
-            }
-        )
-    except API_ERRORS as exc:
-        return None, False, f"could not create project '{spec.name}': {exc}"
-    return created, True, ""
+    user, existing, error = _lookup_project(gl, user_id, spec)
+    if error or existing is not None:
+        return existing, False, error
+    created, error = _create_project(user, spec)
+    return created, created is not None, error
 
 
 def create_user_project(

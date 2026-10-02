@@ -149,3 +149,54 @@ def test_resolve_templates_reports_a_half_configured_block(capsys):
     assert templates is None
     assert "also set gitlab.x" in err
     assert "failed" in capsys.readouterr().out
+
+
+def test_a_forbidden_project_names_both_of_its_causes():
+    """GitLab answers the admin only 'create project for user' call with a
+    bare 403, which says nothing about whether the token or the target
+    account is the problem; the line names both and how to tell them apart."""
+    message = ProjectMessage(
+        MESSAGE_FAILURE, "project 'common' failed: 403: 403 Forbidden"
+    )
+
+    with patch(
+        "src.pkg.gitlab.projects.ensure_user_projects", return_value=(False, (message,))
+    ):
+        target = ProjectTarget(USERNAME, USER_ID)
+        ok = provision_user_projects(MagicMock(), target, TEMPLATES)
+
+    assert ok is False
+
+
+def test_the_forbidden_hint_is_printed_once_per_user(capsys):
+    """Both projects are refused by the same misconfiguration, so the hint
+    reaches the console once rather than on each line."""
+    messages = tuple(
+        ProjectMessage(MESSAGE_FAILURE, f"project '{name}' failed: 403: 403 Forbidden")
+        for name in ("common", "user")
+    )
+
+    with patch(
+        "src.pkg.gitlab.projects.ensure_user_projects", return_value=(False, messages)
+    ):
+        target = ProjectTarget(USERNAME, USER_ID)
+        provision_user_projects(MagicMock(), target, TEMPLATES)
+
+    out = capsys.readouterr().out
+    assert out.count("projects_limit") == 1
+    assert out.count("403 Forbidden") == 2
+    assert "administrator" in out
+
+
+def test_an_ordinary_failure_carries_no_forbidden_hint(capsys):
+    """A timed out import is not a permission problem, so it is not described
+    as one."""
+    message = ProjectMessage(MESSAGE_FAILURE, "project 'common' failed: timed out")
+
+    with patch(
+        "src.pkg.gitlab.projects.ensure_user_projects", return_value=(False, (message,))
+    ):
+        target = ProjectTarget(USERNAME, USER_ID)
+        provision_user_projects(MagicMock(), target, TEMPLATES)
+
+    assert "projects_limit" not in capsys.readouterr().out

@@ -1,63 +1,18 @@
-"""Tests for the 'user add'/'user delete' orchestration in users.py."""
+"""Tests for the 'user add' orchestration in users.py."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 from src.pkg import users
 # pylint: disable=redefined-outer-name,unused-argument,protected-access
 
 
 @pytest.fixture
-def mock_config():
-    """Mock config object providing deployment settings from dtaas.toml."""
-    mock = MagicMock()
-    mock.get_server_dns.return_value = ("foo.example.com", None)
-    mock.get_path.return_value = ("/test/path", None)
-    mock.get_resource_limits.return_value = (
-        {"cpus": 4, "mem_limit": "4G", "pids_limit": 4960, "shm_size": "512m"},
-        None,
-    )
-    mock.get_tls.return_value = (False, None)
-    mock.get_set_limits.return_value = (True, None)
-    mock.get_gitlab_provision.return_value = (False, None)
-    return mock
+def mock_utils(yaml_io):
+    """Mock the utils functions add_users calls directly."""
+    with yaml_io("src.pkg.users") as mocks:
+        yield mocks
 
 
-@pytest.fixture
-def mock_registry():
-    """Patch the registry store functions add_users/delete_users use."""
-    with patch("src.pkg.users.load_registry") as mock_load, patch(
-        "src.pkg.users.remove_from_registry"
-    ) as mock_remove:
-        mock_load.return_value = {"user1": {"email": "user1@x.io"}}
-        yield {"load": mock_load, "remove": mock_remove}
-
-
-@pytest.fixture
-def mock_utils():
-    """Mock the utils functions add_users/delete_users call directly."""
-    with patch("src.pkg.users.utils.import_yaml") as mi, patch(
-        "src.pkg.users.utils.export_yaml"
-    ) as me:
-        mi.return_value = ({"version": "3", "services": {}}, None)
-        me.return_value = None
-        yield {"import": mi, "export": me}
-
-
-@pytest.fixture
-def mock_user_operations():
-    """Mock the users_compose functions imported into users.py"""
-    with patch("src.pkg.users.create_user_files") as mc, patch(
-        "src.pkg.users.add_users_to_compose"
-    ) as ma, patch("src.pkg.users.finalize_compose") as mf, patch(
-        "src.pkg.users.stop_user_containers"
-    ) as mst, patch("src.pkg.users.write_state") as mw:
-        mc.return_value = ma.return_value = mf.return_value = None
-        mst.return_value = None
-        mw.return_value = {}
-        yield {"create": mc, "add": ma, "finalize": mf, "stop": mst, "state": mw}
-
-
-# addUsers tests
 @pytest.mark.parametrize(
     "compose,field", [({"services": {}}, "version"), ({"version": "3"}, "services")]
 )
@@ -104,13 +59,6 @@ def test_add_users_rejects_invalid_username(mock_config, mock_registry, mock_uti
     mock_registry["load"].return_value = {"bad;rm -rf": {"email": "x@y.io"}}
 
     err = users.add_users(mock_config)
-
-    assert err is not None and "Invalid username" in str(err)
-
-
-def test_delete_users_rejects_invalid_username():
-    """delete_users rejects a non-shell-safe username before touching docker."""
-    err = users.delete_users(["bad name"])
 
     assert err is not None and "Invalid username" in str(err)
 
@@ -182,79 +130,33 @@ def test_add_users_empty_registry_is_noop(
     mock_user_operations["finalize"].assert_not_called()
 
 
-@pytest.mark.parametrize("export_error", [False, True])
-def test_delete_users(mock_registry, mock_utils, mock_user_operations, export_error):
-    """delete_users removes users from compose and, on success, the registry."""
-    compose = {"version": "3", "services": {"user1": {}, "user2": {}}}
-    mock_utils["import"].return_value = (compose, None)
-    mock_utils["export"].return_value = Exception("Failed") if export_error else None
+def test_check_add_supported_reports_an_unsupported_deployment(mock_config):
+    """The deployment is checked before anything is staged: 'user add' on a
+    localhost installation used to register users it could never provision."""
+    mock_config.get_server_dns.return_value = ("localhost", None)
 
-    err = users.delete_users(["user1"])
+    err = users.check_add_supported(mock_config)
 
-    assert (err is not None) if export_error else err is None
-    if not export_error:
-        mock_registry["remove"].assert_called_once_with(["user1"])
+    assert err is not None and "localhost" in str(err)
 
 
-def test_delete_users_handles_none_compose(mock_registry, mock_utils):
-    """delete_users returns an error when the compose file loads as None."""
-    mock_utils["import"].return_value = (None, None)
-
-    err = users.delete_users(["user1"])
-
-    assert err is not None and "Failed to load compose" in str(err)
+def test_check_add_supported_passes_a_server_deployment(mock_config):
+    """A server deployment with its per-user template in place is supported."""
+    with patch("src.pkg.users.load_user_template", return_value=({"x": 1}, None)):
+        assert users.check_add_supported(mock_config) is None
 
 
-def test_delete_users_removes_conf_for_every_requested_name(
-    mock_registry, mock_utils, mock_user_operations
+def test_a_starting_user_alone_writes_no_compose_or_state(
+    mock_config, mock_registry, mock_utils, mock_user_operations
 ):
-    """conf.server rules are removed for every requested user, not just existing ones."""
-    mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
+    """Naming a starting user when the registry is empty does no container
+    work: its workspace comes from docker-compose.yml, and an empty
+    compose.users.yml would be written for nothing."""
+    mock_registry["load"].return_value = {}
+    mock_config.get_user_emails.return_value = ({"foo": "foo@x.io"}, None)
 
-    with patch("src.pkg.users.remove_conf_server_entry") as mock_remove:
-        err = users.delete_users(["user1", "ghost"])
+    err = users.add_users(mock_config, start_only=[], passwords={"foo": "pw"})
 
     assert err is None
-    removed = {call.args[0] for call in mock_remove.call_args_list}
-    assert removed == {"user1", "ghost"}
-
-
-def test_delete_users_handles_non_dict_services(
-    mock_registry, mock_utils, mock_user_operations
-):
-    """delete_users tolerates malformed YAML where 'services' is not a dict."""
-    mock_utils["import"].return_value = ({"services": None}, None)
-
-    err = users.delete_users(["user1"])
-
-    assert err is None
-    mock_registry["remove"].assert_called_once_with(["user1"])
-
-
-def test_delete_users_handles_compose_without_services(
-    mock_registry, mock_utils, mock_user_operations
-):
-    """delete_users tolerates a compose file that has no 'services' key."""
-    mock_utils["import"].return_value = ({"version": "3"}, None)
-
-    err = users.delete_users(["user1"])
-
-    assert err is None
-    mock_registry["remove"].assert_called_once_with(["user1"])
-
-
-def test_delete_users_dry_run_makes_no_changes(
-    mock_registry, mock_utils, mock_user_operations, capsys
-):
-    """A dry-run previews the plan and calls no mutating operation."""
-    mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
-
-    err = users.delete_users(["user1", "ghost"], dry_run=True)
-
-    assert err is None
-    mock_user_operations["stop"].assert_not_called()
-    mock_registry["remove"].assert_not_called()
+    mock_user_operations["finalize"].assert_not_called()
     mock_utils["export"].assert_not_called()
-    out = capsys.readouterr().out
-    assert "Would deprovision and stop: user1" in out
-    assert "Would remove from registry: user1, ghost" in out

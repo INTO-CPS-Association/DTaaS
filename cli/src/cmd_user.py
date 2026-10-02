@@ -13,6 +13,7 @@ suspended/resumed as part of the whole installation via
 import click
 from python_on_whales.exceptions import DockerException
 from .pkg import users as userPkg
+from .pkg import users_delete as usersDeletePkg
 from .pkg import lifecycle as lifecyclePkg
 from .pkg import registry as registryPkg
 from .cmd_utils import run_user_command
@@ -37,30 +38,17 @@ def user_group():
     """
 
 
-def _pat_issued(username):
-    """True when the registry marks *username*'s token as already issued.
+def _add_summary(staged):
+    """The closing line for a successful 'user add', or None for the default.
 
-    Their account step is then skipped, so a password would go unused; a
-    re-run for such a user only retries their projects.
+    A run that added nobody must not report that it added users: every name
+    it was given was either already registered or a dtaas.toml starting user,
+    both reported as that above, and whatever GitLab work it did has already
+    reported itself.
     """
-    details = registryPkg.load_registry().get(username) or {}
-    return bool(details.get("gitlab_pat_issued"))
-
-
-def _should_prompt_password(user_input, provision):
-    """True when a single-user 'user add' needs an interactive GitLab password.
-
-    Only a single-USERNAME add with GitLab provisioning enabled, no
-    --password given and no token issued yet; a --file import supplies
-    passwords via the CSV instead.
-    """
-    return bool(
-        provision
-        and user_input.username
-        and not user_input.csv_file
-        and not user_input.password
-        and not _pat_issued(user_input.username)
-    )
+    if staged.added:
+        return None
+    return "No new users added."
 
 
 @user_group.command()
@@ -101,30 +89,35 @@ def add(**kwargs):
     'dtaas config reconcile --fix'.
 
     When [gitlab].provision is enabled in dtaas.toml, each newly-added user's
-    GitLab account and Personal Access Token are also created; see --password.
+    GitLab account, Personal Access Token and template projects are also
+    created; see --password. Naming a dtaas.toml starting user provisions its
+    GitLab half alone, from [[users]].password when no password is given.
     """
     user_input = UserAddInput(**kwargs)
 
     def _stage_then_add(config_obj):
         """Stage the registry only once dtaas.toml has loaded successfully.
 
+        What the deployment supports is checked before anything is staged, so
+        a run that cannot provision leaves no users registered behind it.
         Only the newly-added users are started, so adding one user does not
         recreate every other registry user's container. A single-user add
-        with GitLab provisioning enabled and no --password prompts for one
-        interactively (hidden input) rather than requiring it on the command
-        line, where it would be visible in shell history and the process list.
+        with GitLab provisioning enabled and no password anywhere prompts for
+        one interactively (hidden input) rather than requiring it on the
+        command line, where it would be visible in shell history and the
+        process list.
         """
+        err = userPkg.check_add_supported(config_obj)
+        if err is not None:
+            return err
         provision, err = config_obj.get_gitlab_provision()
         if err is not None:
-            raise click.ClickException(f"Error while adding users: {err}")
-        if _should_prompt_password(user_input, provision):
-            user_input.password = click.prompt(
-                f"GitLab password for '{user_input.username}'",
-                hide_input=True,
-                confirmation_prompt=True,
-            )
-        added, passwords = stage_users_for_add(user_input)
-        return userPkg.add_users(config_obj, start_only=added, passwords=passwords)
+            return err
+        staged = stage_users_for_add(user_input, provision)
+        err = userPkg.add_users(
+            config_obj, start_only=staged.added, passwords=staged.passwords
+        )
+        return err or _add_summary(staged)
 
     run_user_command(
         _stage_then_add, "Users added successfully", "Error while adding users"
@@ -154,7 +147,7 @@ def delete(usernames, csv_file, dry_run):
     Use --dry-run to preview removals without making any changes.
     """
     resolved = resolve_usernames(usernames, csv_file)
-    err = userPkg.delete_users(resolved, dry_run=dry_run)
+    err = usersDeletePkg.delete_users(resolved, dry_run=dry_run)
     if err is not None:
         raise click.ClickException(f"Error while deleting users: {err}")
     if dry_run:

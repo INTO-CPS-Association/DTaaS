@@ -10,6 +10,8 @@ mirroring the users.py / users_compose.py split.
 import time
 from dataclasses import dataclass, field
 
+from .registry import load_starting_gitlab
+
 # How long a run may spend before it stops starting new users, unless
 # [gitlab].import_deadline says otherwise. Each project waits on a server
 # side import, so without a budget a bulk add on an instance whose imports
@@ -53,6 +55,34 @@ class GitlabCandidate:
     projects_created: bool = False
 
 
+@dataclass
+class GitlabUserResult:
+    """What a run ends up having done for one GitlabCandidate.
+
+    Lives here with the candidate it comes from: this module holds the run's
+    per user bookkeeping, while users_gitlab.py does the provisioning.
+
+    *has_account* is False when this run has no account of its own to create
+    projects in: the account step was skipped for want of a password and no
+    earlier run left one, or the account turned out to exist already and so
+    belongs to whoever registered it.
+    """
+
+    username: str
+    new_id: object
+    token: object
+    failed: bool
+    projects_done: bool = False
+    has_account: bool = True
+
+
+def changed_user_id(result, existing_user_id):
+    """result.user_id when GitLab returned a new or changed id, else None."""
+    if result.user_id is not None and result.user_id != existing_user_id:
+        return result.user_id
+    return None
+
+
 def has_gitlab_work(candidate, wants_projects):
     """True when this candidate has GitLab work left to attempt.
 
@@ -89,24 +119,49 @@ def target_usernames(ctx, start_only, passwords):
     return started + retries
 
 
+def _candidate(username, details, password):
+    """One candidate, from whatever store holds this username's markers."""
+    return GitlabCandidate(
+        username,
+        details.get("email", ""),
+        details.get("gitlab_user_id"),
+        password,
+        bool(details.get("gitlab_pat_issued")),
+        bool(details.get("gitlab_projects_created")),
+    )
+
+
+def _starting_candidates(ctx, passwords):
+    """The dtaas.toml starting users named this run.
+
+    Their workspace containers come from docker-compose.yml, so they are
+    never registry users and nothing here starts or rewrites them: naming
+    one in 'user add' asks for its GitLab half alone. Their email comes from
+    dtaas.toml and their markers from the registry's starting user section,
+    which is keyed the same way as the user store.
+    """
+    markers = load_starting_gitlab()
+    return [
+        _candidate(
+            name,
+            {**markers.get(name, {}), "email": ctx.starting[name]},
+            passwords.get(name),
+        )
+        for name in passwords
+        if name in ctx.starting and name not in ctx.user_list
+    ]
+
+
 def gitlab_candidates(ctx, start_only, passwords):
     """A GitlabCandidate for every user targeted for GitLab provisioning.
 
-    Scoping mirrors target_usernames; a target with no password keeps a None
-    password here, and users_gitlab skips only the account half for them, so
-    a user whose account exists still has their projects attempted.
+    Scoping mirrors target_usernames, plus the starting users named this
+    run; a target with no password keeps a None password here, and
+    users_gitlab skips only the account half for them, so a user whose
+    account exists still has their projects attempted.
     """
-    candidates = []
-    for username in target_usernames(ctx, start_only, passwords):
-        details = ctx.users_section.get(username) or {}
-        candidates.append(
-            GitlabCandidate(
-                username,
-                details.get("email", ""),
-                details.get("gitlab_user_id"),
-                passwords.get(username),
-                bool(details.get("gitlab_pat_issued")),
-                bool(details.get("gitlab_projects_created")),
-            )
-        )
-    return candidates
+    registered = [
+        _candidate(name, ctx.users_section.get(name) or {}, passwords.get(name))
+        for name in target_usernames(ctx, start_only, passwords)
+    ]
+    return registered + _starting_candidates(ctx, passwords)

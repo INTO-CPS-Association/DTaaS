@@ -60,12 +60,66 @@ def persist_account_result(result):
     memory over that wait is one an interrupted run loses while it stays live
     on GitLab, and the next run would then mint a second one. Recording
     gitlab_pat_issued alongside the saved token is what prevents that.
+
+    The account is reported here rather than when it is created, so the line
+    appears only once its token is safely on disk. Without it a run that
+    created an account and then failed on its projects read as a total
+    failure, and the admin had no way to tell that a live token had just
+    been issued.
     """
     if result.new_id is not None:
         set_gitlab_user_ids({result.username: result.new_id})
     if result.token:
         _save_gitlab_tokens({result.username: result.token})
         set_gitlab_pat_issued([result.username])
+        click.echo(
+            f"GitLab account and token created for '{result.username}'; the "
+            f"token is in {GITLAB_USER_TOKENS_FILE}."
+        )
+
+
+def _forget_gitlab_tokens(usernames):
+    """Drop *usernames* from the saved token file; returns the names dropped."""
+    path = Path(GITLAB_USER_TOKENS_FILE)
+    if not path.is_file():
+        return []
+    tokens = json.loads(path.read_text(encoding="utf-8"))
+    dropped = [name for name in usernames if tokens.pop(name, None) is not None]
+    if dropped:
+        utils.write_secret_file(path, json.dumps(tokens, indent=2))
+    return dropped
+
+
+def _gitlab_tracked(users_section, usernames):
+    """The *usernames* the registry records any GitLab resource for."""
+    return [
+        name
+        for name in usernames
+        if any(str(key).startswith("gitlab_") for key in users_section.get(name) or {})
+    ]
+
+
+def release_gitlab_records(users_section, usernames):
+    """Stop tracking the deleted users' GitLab resources, and say what stays.
+
+    'user delete' removes a workspace, never a GitLab account: the account,
+    the Personal Access Token issued to it and the projects in its namespace
+    all stay where they are, and only a GitLab admin can remove them. The
+    saved token is dropped here, so the credentials file never claims a token
+    for a user the CLI no longer tracks, and what is left behind is reported,
+    since re-adding the same username finds the account already there and
+    will neither reissue a token nor create projects in it.
+    """
+    tracked = _gitlab_tracked(users_section, usernames)
+    _forget_gitlab_tokens(tracked)
+    if tracked:
+        click.echo(
+            "Note: GitLab still has the account, token and projects of "
+            + ", ".join(f"'{name}'" for name in tracked)
+            + f"; the saved token was dropped from {GITLAB_USER_TOKENS_FILE} "
+            "and can now only be revoked in GitLab. Delete the account there "
+            "before re-adding the same username."
+        )
 
 
 def persist_projects_result(result):

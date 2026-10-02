@@ -97,6 +97,8 @@ Verify the install:
 
 ```bash
 dtaas --help
+dtaas --version   # which build is installed, the first thing to pin down
+                  # when a command behaves unexpectedly
 ```
 
 ---
@@ -142,7 +144,7 @@ directory) and reports all problems at once:
 | `[[users]].email` | Required, valid RFC 5321/5322 address (no DNS lookup) |
 | `[[users]].groups` | When present, must be a list of strings |
 | `[[users]].load_balance` | When present, must be `true` or `false` |
-| `[[users]].password` | When present, must be a string |
+| `[[users]].password` | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
@@ -571,7 +573,7 @@ the CLI-owned `dtaas.users.registry.json`
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
 
 Add a single user:
 
@@ -615,7 +617,16 @@ username already declared in `dtaas.toml`'s `[[users]]` or the registry is
 
 When `[gitlab].provision = true` in `dtaas.toml` (off by default), `user add`
 also creates each new user's GitLab account, a Personal Access Token, and the
-two repositories their workspace expects:
+two repositories their workspace expects. Naming a dtaas.toml starting user
+asks for their GitLab half alone: their workspace container comes from
+`docker-compose.yml` and is left untouched, nothing is written into
+`dtaas.users.registry.json`, and their GitLab markers are tracked in that
+file's separate `starting_users` section so a half finished run can be
+retried the same way:
+
+```bash
+dtaas user add username1 --email username1@intocps.org   # a starting user
+```
 
 ```toml
 [gitlab]
@@ -625,8 +636,16 @@ api_url = "https://gitlab.example.com"
 
 The provisioning token must belong to a GitLab administrator and carry the
 `api` scope: it creates the accounts, issues each user's own token, and
-creates projects in their namespaces. Export it rather than writing it into
-the file:
+creates projects in their namespaces. On an instance with Admin Mode
+enabled it needs the `admin_mode` scope as well. Each project is created
+through GitLab's administrator only "create project for user" endpoint,
+which GitLab runs **as the account the project is for**, so that account
+must also be allowed to create projects: an instance whose
+`default_projects_limit` is 0 gives every new account `projects_limit: 0`
+and refuses the call with a bare `403 Forbidden`. `GET /api/v4/users/<id>`
+reports `projects_limit` and `can_create_project` for a user, and
+`GET /api/v4/application/settings` reports the instance default. Export the
+token rather than writing it into the file:
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
@@ -731,9 +750,11 @@ one, so no password is prompted for a user whose token was already issued. A fai
 either project makes the command exit non-zero, like any other GitLab
 failure.
 
-Each provisioned user needs an initial GitLab password, supplied via
-`--password` (prompted interactively with hidden input if omitted, for a
-single-user add) or via a `password` column in `users.csv`:
+Each provisioned user needs an initial GitLab password. In order: the
+`--password` option or the `password` column of `users.csv`, then
+`[[users]].password` in dtaas.toml for a starting user, then a hidden prompt
+(single-user add only). The `users.csv` that `dtaas config generate` writes
+carries the column with empty cells, ready to fill in:
 
 ```csv
 username,email,groups,load_balance,password
@@ -766,11 +787,13 @@ issues no second token, reporting the user as skipped. This keeps a repeated
 a token really is lost or revoked, issue a replacement from GitLab directly.
 
 The password is used only to create the GitLab account and is never written
-to `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. A user missing
-a password when provisioning is enabled has their account step skipped with
-a warning; if they already have an account, their projects are still
-attempted, which is what makes a project-only retry work without
-credentials. An already-existing GitLab account is left with its current
+to `dtaas.users.registry.json`, `.dtaas.state.json`, or logs. A user with no
+password and no account from an earlier run has neither GitLab half to do,
+so the whole run is refused before anything is registered or started, naming
+every such user: the fix is to fill in the `password` column (or pass
+`--password`) and run the same command again. A user who does already have
+an account needs no password at all, which is what makes a project-only
+retry work without credentials. An already-existing GitLab account is left with its current
 password, issued no new token and given no projects, and is reported with an
 explicit warning (its credentials were not created by this run and are
 unknown to it) rather than as an unremarkable success. Its namespace belongs
@@ -799,7 +822,12 @@ PAT, user passwords, and the issued user tokens respectively.
 
 A `USERNAME` or `--file` is required (not both) — a bare `dtaas user add`
 with neither is rejected rather than silently reprovisioning the whole
-registry. To (re)provision **every** registry user at once (e.g. after
+registry. A run that added nobody (every name was already registered, or was
+a starting user) closes with `No new users added.` rather than claiming it
+added users, and still exits 0, so re-running the same CSV stays idempotent.
+What the deployment supports is checked before anything is registered, so a
+run that cannot provision (a localhost installation, or a missing per-user
+template) leaves no users registered behind it. To (re)provision **every** registry user at once (e.g. after
 `compose.users.yml` was lost), use `dtaas config reconcile --fix`
 instead.
 
@@ -812,7 +840,7 @@ instead.
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
+| `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
 
 For each username the CLI checks whether `files/<username>/` already exists.
 If not, a new directory with the correct structure is created from
@@ -896,6 +924,16 @@ Each user is deprovisioned (its container stopped, its compose service and
 forward-auth rule removed) and dropped from `dtaas.users.registry.json`. Users
 that are not currently provisioned are reported and skipped, but are still
 removed from the registry.
+
+**GitLab is never touched by a delete.** The account, the Personal Access
+Token issued to it and the projects in its namespace all stay where they
+are, since only a GitLab admin can remove them. For a user the CLI had
+provisioned, `user delete` says so by name and drops their entry from
+`gitlab_user_tokens.json`, so the credentials file never claims a token for
+a user the CLI no longer tracks. The token itself stays live on GitLab and
+can then only be revoked there. **Delete the GitLab account before re-adding
+the same username**: `user add` finds the account already there, cannot know
+its credentials, and so issues no token and creates no projects for it.
 
 Preview a removal without making any changes with `--dry-run`:
 
@@ -1027,7 +1065,7 @@ config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
 | File | Owner | Contents | Git |
 |---|---|---|---|
 | `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Tracked hand-edited |
-| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) | Tracked CLI-written, never hand-edited |
+| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for dtaas.toml starting users that `user add` has provisioned on GitLab | Tracked CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored runtime cache |
 
 - **`dtaas.toml`** is written once by a human and never rewritten by the CLI,

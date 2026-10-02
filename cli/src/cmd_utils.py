@@ -26,15 +26,21 @@ NO_INSTALLATION_MESSAGE = "There is no existing DTaaS / Workspace installation"
 
 
 def run_user_command(action, success_msg, error_prefix):
-    """Run a user-management action against a fresh Config, mapping errors."""
+    """Run a user-management action against a fresh Config, mapping errors.
+
+    *action* returns None to close with *success_msg*, an Exception to fail
+    the command with *error_prefix*, or a string to close with that line
+    instead: a run that did less than its success message claims reports what
+    it did do, without having to raise.
+    """
     try:
         config_obj = configPkg.Config()
     except RuntimeError as exc:
         raise click.ClickException(str(exc)) from exc
-    err = action(config_obj)
-    if err is not None:
-        raise click.ClickException(f"{error_prefix}: {err}")
-    click.echo(success_msg)
+    outcome = action(config_obj)
+    if isinstance(outcome, Exception):
+        raise click.ClickException(f"{error_prefix}: {outcome}")
+    click.echo(outcome or success_msg)
 
 
 def confirm_remove_user_files(remove_user_files, yes):

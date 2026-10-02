@@ -265,3 +265,45 @@ def test_add_users_without_passwords_client_error_fails_only_pending_work(
         err = users.add_users(mock_config, start_only=["alice"], passwords={})
     assert (err is not None) is fails
     assert "GitLab provisioning skipped" in capsys.readouterr().out
+
+
+def test_one_users_unexpected_failure_does_not_end_the_run(
+    mock_config, mock_registry, mock_utils, mock_user_operations, capsys
+):
+    """A failure the API layer did not expect (here an unreadable token file)
+    is that user's alone. It used to abort the loop, so a bulk add reported
+    one error and silently never attempted the users after it."""
+    mock_config.get_gitlab_provision.return_value = (True, None)
+    mock_registry["load"].return_value = {
+        "alice": {"email": "a@x.io"},
+        "bob": {"email": "b@x.io"},
+    }
+    accounts = [
+        ProvisionResult("alice", True, "created", "glpat-alice", user_id=1),
+        ProvisionResult("bob", True, "created", "glpat-bob", user_id=2),
+    ]
+
+    with patch(
+        "src.pkg.users_gitlab.gitlabPkg.resolve_client", return_value=(MagicMock(), None)
+    ), patch(
+        "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources", side_effect=accounts
+    ) as mock_ensure, patch(
+        "src.pkg.users_gitlab_records.utils.write_secret_file",
+        side_effect=[OSError("token file is not writable"), None],
+    ), patch(
+        "src.pkg.users_gitlab_records.set_gitlab_user_ids"
+    ), patch(
+        "src.pkg.users_gitlab_records.set_gitlab_pat_issued"
+    ):
+        err = users.add_users(
+            mock_config,
+            start_only=["alice", "bob"],
+            passwords={"alice": "pw", "bob": "pw"},
+        )
+
+    assert [call.args[1].username for call in mock_ensure.call_args_list] == [
+        "alice",
+        "bob",
+    ]
+    assert err is not None and "alice" in str(err) and "bob" not in str(err)
+    assert "token file is not writable" in capsys.readouterr().out

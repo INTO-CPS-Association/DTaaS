@@ -204,3 +204,31 @@ def test_create_user_project_reports_a_failed_import():
     assert result.ok is False
     assert "could not reach the template URL" in result.error
     assert result.project_id == PROJECT_ID
+
+
+def test_a_lookup_refusal_is_not_read_as_an_absent_project():
+    """Only a 404 means the project is not there. A 403 from a token that may
+    not read the namespace used to read as "absent", which sent the run on to
+    create a project that may well exist and reported the permission problem
+    as whatever the creation then answered."""
+    gl, user, _ = _client()
+    gl.projects.get.side_effect = GitlabGetError("403 Forbidden", response_code=403)
+
+    result = create_user_project(gl, USER_ID, SPEC)
+
+    assert result.ok is False
+    assert "could not look up project 'user'" in result.error
+    user.projects.create.assert_not_called()
+
+
+def test_a_lookup_failure_names_the_lookup_not_the_creation():
+    """An unreachable instance during the namespace read is reported as the
+    read it was, so an admin is not sent looking at project creation rights."""
+    gl, user, _ = _client()
+    gl.users.get.side_effect = requests.ConnectionError("connection reset")
+
+    result = create_user_project(gl, USER_ID, SPEC)
+
+    assert result.ok is False
+    assert "could not look up project 'user'" in result.error
+    user.projects.create.assert_not_called()

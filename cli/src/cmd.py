@@ -57,6 +57,7 @@ class WorkflowGroup(click.Group):
 
 
 @click.group(cls=WorkflowGroup)
+@click.version_option(package_name="dtaas", message="%(prog)s %(version)s")
 def dtaas():
     """Provision, configure, and manage Digital Twin as a Service environments.
 

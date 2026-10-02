@@ -91,6 +91,19 @@ def _resolve_user_id(gl, target):
     return user_id
 
 
+# Projects are created through GitLab's administrator only "create project
+# for user" endpoint, which runs the creation as the user it is for. A 403
+# therefore has two possible owners, and GitLab's own answer names neither.
+FORBIDDEN_HINT = (
+    "Note: GitLab refused the admin only 'create project for user' call, "
+    "which it runs as the account itself: check that the PAT owner is an "
+    "administrator, and that the account may create projects "
+    "(GET /api/v4/users/<id> reports projects_limit and can_create_project; "
+    "an instance whose default projects limit is 0 refuses every new "
+    "account)."
+)
+
+
 def _project_line(username: str, message) -> str:
     """One console line for a project outcome, labelled by its level.
 
@@ -100,6 +113,20 @@ def _project_line(username: str, message) -> str:
     """
     prefix = "Warning: " if message.level == MESSAGE_WARNING else ""
     return f"{prefix}GitLab projects for '{username}': {message.text}"
+
+
+def _report_messages(username: str, messages) -> None:
+    """Report every project outcome, and the 403 hint at most once.
+
+    Both of a user's projects are refused by the same misconfiguration, so
+    the hint belongs to the user rather than to each line: the bare
+    "403 Forbidden" GitLab answers with says nothing about which of its two
+    causes applies, but it only needs saying once.
+    """
+    for message in messages:
+        click.echo(_project_line(username, message))
+    if any("403" in message.text for message in messages):
+        click.echo(FORBIDDEN_HINT)
 
 
 def provision_user_projects(gl, target, templates):
@@ -121,8 +148,7 @@ def provision_user_projects(gl, target, templates):
         "template can take a few minutes."
     )
     ok, messages = ensure_user_projects(gl, user_id, templates)
-    for message in messages:
-        click.echo(_project_line(target.username, message))
+    _report_messages(target.username, messages)
     if ok:
         click.echo(
             f"GitLab projects ready for '{target.username}': "
