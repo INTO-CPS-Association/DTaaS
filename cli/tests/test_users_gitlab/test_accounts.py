@@ -305,5 +305,7 @@ def test_one_users_unexpected_failure_does_not_end_the_run(
         "alice",
         "bob",
     ]
-    assert err is not None and "alice" in str(err) and "bob" not in str(err)
+    assert err is not None
+    assert "alice" in str(err)
+    assert "bob" not in str(err)
     assert "token file is not writable" in capsys.readouterr().out

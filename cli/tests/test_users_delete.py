@@ -45,7 +45,8 @@ def test_delete_users_rejects_invalid_username():
     """delete_users rejects a non-shell-safe username before touching docker."""
     err = users_delete.delete_users(["bad name"])
 
-    assert err is not None and "Invalid username" in str(err)
+    assert err is not None
+    assert "Invalid username" in str(err)
 
 
 @pytest.mark.parametrize("export_error", [False, True])
@@ -68,7 +69,8 @@ def test_delete_users_handles_none_compose(mock_registry, mock_utils):
 
     err = users_delete.delete_users(["user1"])
 
-    assert err is not None and "Failed to load compose" in str(err)
+    assert err is not None
+    assert "Failed to load compose" in str(err)
 
 
 def test_delete_users_removes_conf_for_every_requested_name(

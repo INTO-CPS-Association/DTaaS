@@ -21,7 +21,8 @@ def test_add_users_missing_fields(
 ):
     """Test add_users adds missing fields to compose"""
     mock_utils["import"].return_value = (compose, None)
-    assert users.add_users(mock_config) is None and field in compose
+    assert users.add_users(mock_config) is None
+    assert field in compose
 
 
 def test_add_users_returns_registry_error(mock_config, mock_registry, mock_utils):
@@ -30,7 +31,8 @@ def test_add_users_returns_registry_error(mock_config, mock_registry, mock_utils
 
     err = users.add_users(mock_config)
 
-    assert err is not None and "bad registry" in str(err)
+    assert err is not None
+    assert "bad registry" in str(err)
 
 
 def test_get_registry_users_returns_list_and_details(mock_registry):
@@ -51,7 +53,8 @@ def test_add_users_rejects_newline_in_email(
 
     err = users.add_users(mock_config)
 
-    assert err is not None and "newlines" in str(err)
+    assert err is not None
+    assert "newlines" in str(err)
 
 
 def test_add_users_rejects_invalid_username(mock_config, mock_registry, mock_utils):
@@ -60,7 +63,8 @@ def test_add_users_rejects_invalid_username(mock_config, mock_registry, mock_uti
 
     err = users.add_users(mock_config)
 
-    assert err is not None and "Invalid username" in str(err)
+    assert err is not None
+    assert "Invalid username" in str(err)
 
 
 def test_skip_start_users_flags_non_running_only():
@@ -137,7 +141,8 @@ def test_check_add_supported_reports_an_unsupported_deployment(mock_config):
 
     err = users.check_add_supported(mock_config)
 
-    assert err is not None and "localhost" in str(err)
+    assert err is not None
+    assert "localhost" in str(err)
 
 
 def test_check_add_supported_passes_a_server_deployment(mock_config):

@@ -201,8 +201,10 @@ def test_stage_refuses_a_provisioning_run_with_no_password(tmp_path, monkeypatch
         encoding="utf-8",
     )
 
+    user_input = UserAddInput(None, str(csv_file), None, (), True)
+
     with pytest.raises(click.ClickException, match="No GitLab password for 'alice'"):
-        stage_users_for_add(UserAddInput(None, str(csv_file), None, (), True), True)
+        stage_users_for_add(user_input, True)
 
     assert load_registry() == {}
 
