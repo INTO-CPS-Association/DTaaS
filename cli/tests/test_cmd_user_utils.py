@@ -5,6 +5,7 @@ import pytest
 from src.cmd_user_utils import (
     UserAddInput,
     _starting_usernames,
+    _users_from_args,
     _users_to_add,
     reject_starting_users,
     resolve_usernames,
@@ -109,7 +110,36 @@ def test_starting_usernames_returns_empty_on_config_error(tmp_path, monkeypatch)
 
 def test_users_to_add_returns_empty_without_username_or_file():
     """_users_to_add returns {} when given neither a CSV file nor a username."""
-    assert not _users_to_add(UserAddInput(None, None, None, (), True))
+    assert not _users_to_add(UserAddInput(None, None, None, (), True), {})
+
+
+def test_users_from_args_requires_email_for_a_new_user():
+    """A user who is not declared in dtaas.toml has no email to fall back on."""
+    user_input = UserAddInput("alice", None, None, (), True)
+
+    with pytest.raises(click.ClickException, match="Provide --email"):
+        _users_from_args(user_input, {})
+
+
+def test_users_from_args_takes_a_starting_users_email_from_dtaas_toml():
+    """A starting user's email is declared in dtaas.toml, and that is the
+    address GitLab provisioning uses, so --email is not required for them:
+    'user add foo' used to be refused without an --email it then ignored."""
+    user_input = UserAddInput("foo", None, None, (), True)
+
+    named = _users_from_args(user_input, {"foo": "foo@intocps.org"})
+
+    assert named["foo"]["email"] == "foo@intocps.org"
+
+
+def test_users_from_args_prefers_dtaas_toml_over_email_for_a_starting_user():
+    """dtaas.toml stays the one source for a starting user's email, so a
+    stale --email cannot provision a GitLab account at another address."""
+    user_input = UserAddInput("foo", None, "stale@elsewhere.io", (), True)
+
+    named = _users_from_args(user_input, {"foo": "foo@intocps.org"})
+
+    assert named["foo"]["email"] == "foo@intocps.org"
 
 
 def test_resolve_usernames_from_positional_args():
@@ -165,7 +195,7 @@ def test_stage_reports_a_starting_user_as_one(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     _toml_with_starting_user(tmp_path)
 
-    staged = stage_users_for_add(UserAddInput("foo", None, "foo@intocps.org", (), True))
+    staged = stage_users_for_add(UserAddInput("foo", None, None, (), True))
 
     assert staged.added == []
     assert staged.starting == ["foo"]
@@ -180,9 +210,7 @@ def test_stage_tracks_a_provisioned_starting_user_apart(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _toml_with_starting_user(tmp_path, password="S3cur3-p4ss")
 
-    staged = stage_users_for_add(
-        UserAddInput("foo", None, "foo@intocps.org", (), True), True
-    )
+    staged = stage_users_for_add(UserAddInput("foo", None, None, (), True), True)
 
     assert staged.passwords == {"foo": "S3cur3-p4ss"}
     assert load_registry() == {}

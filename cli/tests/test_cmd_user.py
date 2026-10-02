@@ -133,6 +133,7 @@ def test_add_names_a_registered_user_for_the_project_retry(
     config_obj = mock_user_pkg["config"].return_value
     config_obj.get_gitlab_provision.return_value = (True, None)
     config_obj.get_starting_users.return_value = ([], None)
+    config_obj.get_user_emails.return_value = ({}, None)
     config_obj.get_user_passwords.return_value = ({}, None)
     result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
     assert result.exit_code == 0

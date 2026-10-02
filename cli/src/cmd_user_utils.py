@@ -38,6 +38,15 @@ def _starting_usernames():
     return from_config("get_starting_users", [])
 
 
+def _starting_emails():
+    """{username: email} for dtaas.toml's [[users]], or {} when unavailable.
+
+    Keyed by the same usernames as _starting_usernames, so it answers both
+    "is this a starting user" and "what is their email" from one read.
+    """
+    return from_config("get_user_emails", {})
+
+
 def _read_users_csv(csv_file):
     """Parse a users CSV, mapping parse errors to ClickException."""
     try:
@@ -74,17 +83,22 @@ class StagedUsers:
     passwords: dict = field(default_factory=dict)
 
 
-def _users_from_args(user_input):
+def _users_from_args(user_input, starting_emails):
     """Build a one-user {name: details} mapping from CLI arguments.
 
     Defaults groups to ['additional'] when --group is omitted, matching the CSV
     import path (registry_csv._parse_csv_row) so the two produce identical users.
+
+    A dtaas.toml starting user's email is already declared there, and that is
+    the address GitLab provisioning uses, so --email is neither required nor
+    read for them: naming one asks for their GitLab half alone.
     """
-    if not user_input.email:
+    email = starting_emails.get(user_input.username) or user_input.email
+    if not email:
         raise click.ClickException("Provide --email when adding a single user.")
     return {
         user_input.username: {
-            "email": user_input.email,
+            "email": email,
             "groups": list(user_input.groups) or ["additional"],
             "load_balance": user_input.load_balance,
             "desired_status": "running",
@@ -92,12 +106,12 @@ def _users_from_args(user_input):
     }
 
 
-def _users_to_add(user_input):
+def _users_to_add(user_input, starting_emails):
     """Collect the users to add from --file or a single USERNAME argument."""
     if user_input.csv_file:
         return _read_users_csv(user_input.csv_file)
     if user_input.username:
-        return _users_from_args(user_input)
+        return _users_from_args(user_input, starting_emails)
     return {}
 
 
@@ -165,9 +179,9 @@ def stage_users_for_add(user_input, provision=False):
         A StagedUsers.
     """
     _reject_bad_input(user_input)
-    named = _users_to_add(user_input)
-    starting_names = _starting_usernames()
-    starting = [name for name in named if name in starting_names]
+    starting_emails = _starting_emails()
+    named = _users_to_add(user_input, starting_emails)
+    starting = [name for name in named if name in starting_emails]
     sources = _password_sources(user_input, provision)
     passwords = resolve_passwords(sources, named, provision)
     if provision:

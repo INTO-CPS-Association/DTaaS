@@ -54,7 +54,14 @@ def _add_summary(staged):
 @user_group.command()
 @click.argument("username", required=False)
 @file_option("Bulk-add users from a CSV file into the registry.")
-@click.option("--email", help="Email for USERNAME (enables forward-auth routing).")
+@click.option(
+    "--email",
+    help=(
+        "Email for USERNAME (enables forward-auth routing). Required, "
+        "except for a dtaas.toml starting user, whose email is read from "
+        "its [[users]] record."
+    ),
+)
 @click.option(
     "--group",
     "groups",
@@ -91,7 +98,8 @@ def add(**kwargs):
     When [gitlab].provision is enabled in dtaas.toml, each newly-added user's
     GitLab account, Personal Access Token and template projects are also
     created; see --password. Naming a dtaas.toml starting user provisions its
-    GitLab half alone, from [[users]].password when no password is given.
+    GitLab half alone, taking its email, and the password when none is given,
+    from its [[users]] record.
     """
     user_input = UserAddInput(**kwargs)
 

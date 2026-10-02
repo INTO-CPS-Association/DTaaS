@@ -568,9 +568,9 @@ the CLI-owned `dtaas.users.registry.json`
 
 | Option | Default | Description |
 |---|---|---|
-| `USERNAME` | — | Add one user (requires `--email`) |
+| `USERNAME` | — | Add one user (requires `--email`, except for a dtaas.toml starting user) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 | `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
@@ -625,7 +625,7 @@ file's separate `starting_users` section so a half finished run can be
 retried the same way:
 
 ```bash
-dtaas user add username1 --email username1@intocps.org   # a starting user
+dtaas user add username1   # a starting user; its email comes from dtaas.toml
 ```
 
 ```toml
@@ -835,9 +835,9 @@ instead.
 
 | Option | Default | Description |
 |---|---|---|
-| `USERNAME` | — | Add one user (requires `--email`) |
+| `USERNAME` | — | Add one user (requires `--email`, except for a dtaas.toml starting user) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 | `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
