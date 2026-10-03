@@ -580,52 +580,45 @@ User management spans three files, each with a single owner — see
 
 ### ➕ Add Users
 
-The initial, "starting" users an instance is installed with are declared in
-*dtaas.toml* as `[[users]]` records (see [Abridged Configuration](#abridged-configuration));
-they are hand-edited once, at install time, and never rewritten by the CLI.
-
-Users added later at runtime are **not** added to *dtaas.toml*. Instead, run
-`dtaas admin user add`, either for a single user:
+Starting users are declared once in *dtaas.toml* as `[[users]]` records (see
+[Abridged Configuration](#abridged-configuration)); the CLI never rewrites
+them. Everyone added later is recorded in the CLI-owned
+`dtaas.users.registry.json` instead, never in *dtaas.toml*.
 
 ```bash
-dtaas admin user add --email alice@intocps.org --group dtaas --load-balance alice
-```
-
-`--group` is repeatable, not comma-separated — pass it once per group to add
-a user to multiple groups:
-
-```bash
+# one user: --email is required, --group repeats for several groups
 dtaas admin user add --email alice@intocps.org --group dtaas --group testers alice
-```
 
-or in bulk from a CSV file (the sample `users.csv` is written alongside
-`dtaas.toml` by `dtaas admin config generate`):
-
-```bash
+# in bulk: users.csv is written by `dtaas admin config generate`
 dtaas admin user add --file users.csv
 ```
 
 ```csv
-username,email,groups,load_balance
-alice,alice@intocps.org,additional,true
-bob,bob@intocps.org,additional;beta-testers,false
+username,email,groups,load_balance,password
+alice,alice@intocps.org,additional,true,S3cur3-p4ss
+bob,bob@intocps.org,additional;beta-testers,false,An0ther-p4ss
 ```
 
-`groups` is a `;`-separated list and `load_balance` is `true`/`false`. A
-`USERNAME` or `--file` is required (not both) — a bare `dtaas admin user add`
-with neither is rejected rather than silently reprovisioning the whole
-registry.
+`groups` is `;`-separated, `load_balance` is `true`/`false`, and `password`
+matters only with GitLab provisioning (below). Pass a `USERNAME` or `--file`,
+never both; a bare `admin user add` is rejected rather than silently
+reprovisioning everyone. To reprovision **every** registry user at once, for
+example after losing `compose.users.yml`, use `admin config reconcile --fix`.
 
-Either form merges the user(s) into the CLI-owned
-`dtaas.users.registry.json` (never hand-edited) with `desired_status` set to
-`running`, then **only the newly-added users are started** — already-running
-users are left untouched, so adding one user never recreates the rest. A
-username already declared in `dtaas.toml`'s `[[users]]` or already in the
-registry is skipped with a warning, never added twice or overwritten.
+Each run:
 
-To (re)provision **every** registry user at once (e.g. after
-`compose.users.yml` was lost), use `dtaas admin config reconcile --fix`
-instead.
+- merges the users into the registry with `desired_status = running`, then
+  starts **only the new ones**, so adding one user never recreates the rest.
+  A name already in `[[users]]` or in the registry is skipped with a warning;
+- creates `files/<username>/` from `files/template/` when it is missing. An
+  existing directory must be owned by the user running `dtaas`, or the
+  command fails;
+- adds each user's traefik-forward-auth rule to `config/conf.server`, which
+  takes effect once the container is restarted:
+
+```bash
+docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
+```
 
 **Options:**
 
@@ -634,65 +627,96 @@ instead.
 | `USERNAME` | — | Add one user (requires `--email`) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
 | `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
-| `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups |
+| `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat for several |
 | `--load-balance` / `--no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Prefer the `users.csv` `password` column or the interactive prompt a command-line value is visible in shell history and the process list |
-
-The command checks for the existence of the `files/<username>` directory.
-If it does not exist, a new directory with the correct file structure is
-created. The directory, if it exists, must be owned by the user executing
-the **dtaas** command on the host operating system. If the files do not
-have the expected ownership rights, the command fails.
-
-When an *email* is given for a user, the CLI automatically adds the matching
-traefik-forward-auth routing rule to `config/conf.server`; no manual editing
-of `conf.server` is needed. Restart the container for the change to take
-effect:
-
-```bash
-docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
-```
+| `--password TEXT` | — | Initial GitLab password; see the credentials warning below |
 
 #### 🦊 GitLab provisioning (optional)
 
-When `[gitlab].provision = true` in `dtaas.toml` (off by default), `admin user
-add` also creates each new user's GitLab account and a Personal Access Token:
+Off by default. With `[gitlab].provision = true`, `admin user add` also gives
+each new user a GitLab account, a Personal Access Token and two repositories:
 
 ```toml
 [gitlab]
 provision = true
 api_url = "https://gitlab.example.com"
+common_template = "https://gitlab.com/dtaas/common.git"
+user_template = "https://gitlab.com/dtaas/user1.git"
 ```
 
-The provisioning token must be able to create users (an admin token). It is
-read from the `DTAAS_GITLAB_PAT` environment variable and is deliberately not
-part of the generated template; a `[gitlab].pat` key is honoured too and takes
-precedence.
+**1. Pick an administrator account.** In **Admin area > Users**, click
+**Edit** and confirm that **User type** is **Administrator**.
+
+![Administrator user type](root-edit.png)
+
+**2. Create its token with the `api` scope**, from that account's
+**User Settings > Access Tokens**, then export it:
+
+![Create a personal access token](create-PAT.png)
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-Each provisioned user needs an initial GitLab password, supplied via
-`--password` (prompted interactively with hidden input if omitted, for a
-single-user add) or a `password` column in `users.csv`:
+That screenshot comes from the
+[GitLab tutorial](../user/gitlab/tutorial.md), where a regular user makes a
+token for cloning; `api` is the scope that matters here. Choose an expiry you
+will actually rotate, because provisioning stops the day it lapses.
+*dtaas.toml* also ships a commented `[gitlab].pat` key: a value there wins
+over the environment variable, so leave it commented while
+`DTAAS_GITLAB_PAT` is in use.
 
-```csv
-username,email,groups,load_balance,password
-alice,alice@intocps.org,additional,true,S3cur3-p4ss
-```
+**3. Enable Repository by URL**, under
+**Admin area > Settings > General > Import and export settings**. The GitLab
+server, not the machine running the CLI, fetches the templates, so it must
+also be able to reach both template URLs.
 
-The password is used only to create the account and is never written to
-`dtaas.users.registry.json`, `.dtaas.state.json`, or logs. Issued tokens are
-saved to `gitlab_user_tokens.json` (mode `0600`) treat it as a credential
-store. Re-running `admin user add` for an already-provisioned user retries
-only the parts that failed before; once a token has been issued for a user it
-is not reissued on a later run. An already-existing GitLab account is left
-untouched and reported with a warning. A GitLab failure does not affect
-container provisioning (containers are already up by then) but does make the
-command exit non-zero. For a self-hosted GitLab behind an internal CA, set
-`[gitlab].ssl_verify` to the CA bundle's path; `false` disables verification
-entirely and prints a warning.
+![Repository by URL import source](import-export.png)
+
+An import GitLab never starts is reported against these two prerequisites by
+name, so check this panel first when projects stay empty.
+
+What each provisioned user ends up with:
+
+| Resource | What is created |
+| :--- | :--- |
+| Account | From their password: `--password`, the hidden prompt on a single add, or the CSV `password` column |
+| Token | Named `dtaas`, scopes `read_repository` and `write_repository`, valid 365 days, appended to `gitlab_user_tokens.json` (mode `0600`) |
+| Repositories | Private `<username>/common` and `<username>/user`, imported from the two template URLs |
+
+!!! warning "Credentials"
+    `--password` is visible in shell history and to anyone on the host who
+    can run `ps`. Prefer the hidden prompt, or the CSV column with
+    `chmod 600 users.csv`, which the CLI does not set for a file you supply
+    yourself. A password is used only to create the account and never reaches
+    the registry, the state file or logs. Treat `gitlab_user_tokens.json` as
+    a credential store.
+
+Set both template keys or neither. With neither, accounts and tokens are
+still created and project creation is skipped with a notice; with only one,
+`admin config validate` reports an error and the affected users fail, keeping
+their accounts and tokens. Each project is a copy of its template exactly as
+it stands, every branch included and nothing pruned afterwards. Imports run
+on the GitLab server and can take minutes: `[gitlab].import_timeout`
+(10 minutes) caps a single import, and `[gitlab].import_deadline`
+(60 minutes) caps a whole run, which then names the users it did not reach so
+a re-run picks them up.
+
+Re-runs fill gaps only:
+
+| Situation | What happens |
+| :--- | :--- |
+| Token already issued | Skipped; a second token is never minted |
+| Projects failed, token fine | Projects retried on their own, no password needed |
+| GitLab account already existed | Left untouched: no token, no repositories, reported with a warning, since its owner is unknown to this run |
+| Project already exists | Never recreated: left exactly as it is, and reported with a `Warning:` line naming it |
+| Empty project from an interrupted run | Its import is finished on the next run |
+| Import failed or was never scheduled | GitLab never reruns it: delete the empty project and run the command again |
+| Any GitLab failure | Containers are unaffected, they are already up, but the command exits non-zero |
+
+For a self-hosted GitLab behind an internal CA, point `[gitlab].ssl_verify`
+at the CA bundle's path; `false` disables verification entirely and prints a
+warning.
 
 #### ⚖️ Resource limits (optional)
 

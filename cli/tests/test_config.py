@@ -313,6 +313,86 @@ def test_get_gitlab_ssl_verify_reads_ca_bundle_path_unchanged(mock_utils):
     assert err is None
 
 
+@pytest.mark.parametrize("key", ["import_timeout", "import_deadline"])
+def test_get_gitlab_minutes_defaults_to_unset(mock_utils, key):
+    """Without the key the caller keeps its own default."""
+    mock_utils.return_value = ({"gitlab": {"provision": True}}, None)
+    assert _gitlab_minutes_getter(key)() == (None, None)
+
+
+@pytest.mark.parametrize("key", ["import_timeout", "import_deadline"])
+def test_get_gitlab_minutes_reads_the_configured_value(mock_utils, key):
+    """A configured budget is read as whole minutes."""
+    mock_utils.return_value = ({"gitlab": {key: 3}}, None)
+    assert _gitlab_minutes_getter(key)() == (3, None)
+
+
+@pytest.mark.parametrize("key", ["import_timeout", "import_deadline"])
+def test_get_gitlab_minutes_reports_a_bad_value(mock_utils, key):
+    """A budget that cannot be waited out is a config error, not a default."""
+    mock_utils.return_value = ({"gitlab": {key: 0}}, None)
+    minutes, err = _gitlab_minutes_getter(key)()
+    assert minutes is None
+    assert key in str(err)
+
+
+def _gitlab_minutes_getter(key):
+    """The Config getter for one of the [gitlab] settings read in minutes."""
+    return getattr(config.Config(), f"get_gitlab_{key}")
+
+
+def test_get_gitlab_templates_unset_is_not_an_error(mock_utils):
+    """No template keys means project creation is not configured, which the
+    caller skips; there is no built-in repository to fall back on."""
+    mock_utils.return_value = ({"gitlab": {"provision": True}}, None)
+    cfg = config.Config()
+    templates, err = cfg.get_gitlab_templates()
+    assert templates is None
+    assert err is None
+
+
+def test_get_gitlab_templates_reads_configured_values(mock_utils):
+    """Configured template values are used verbatim, trimmed."""
+    mock_utils.return_value = (
+        {
+            "gitlab": {
+                "common_template": " https://gitlab.example.com/dtaas/common.git ",
+                "user_template": " https://gitlab.example.com/dtaas/user.git ",
+            }
+        },
+        None,
+    )
+    cfg = config.Config()
+    templates, err = cfg.get_gitlab_templates()
+    assert err is None
+    assert templates == {
+        "common_template": "https://gitlab.example.com/dtaas/common.git",
+        "user_template": "https://gitlab.example.com/dtaas/user.git",
+    }
+
+
+def test_get_gitlab_templates_rejects_a_half_configured_template(mock_utils):
+    """Some keys but not all is a mistake, not an opt out, so it is an error
+    naming the ones still missing."""
+    mock_utils.return_value = (
+        {"gitlab": {"common_template": "https://x.io/y", "user_template": "  "}},
+        None,
+    )
+    cfg = config.Config()
+    templates, err = cfg.get_gitlab_templates()
+    assert templates is None
+    assert "gitlab.user_template" in str(err)
+
+
+def test_get_gitlab_templates_propagates_section_error(mock_utils):
+    """get_gitlab_templates returns the error from get_gitlab_section."""
+    mock_utils.return_value = ({"gitlab": "not-a-dict"}, None)
+    cfg = config.Config()
+    templates, err = cfg.get_gitlab_templates()
+    assert templates is None
+    assert err is not None
+
+
 def test_get_gitlab_section_when_data_is_none():
     """get_gitlab_section propagates the 'Config not initialised' error."""
     cfg = Config.__new__(Config)

@@ -1,6 +1,7 @@
 """This file supports the DTaaS config class"""
 
 from . import utils
+from .config_gitlab import gitlab_minutes, gitlab_template_values
 
 
 class Config:
@@ -73,20 +74,33 @@ class Config:
         names = (str(u.get("username", "")).strip() for u in users)
         return [name for name in names if name], None
 
-    def get_user_emails(self):
-        """Gets {username: email} for every [[users]] record in config.
+    def _user_field_map(self, field):
+        """Gets {username: <field>} for every [[users]] record in config.
 
-        No caller yet; added alongside get_users()/get_starting_users() as
-        groundwork for upcoming GitLab-provisioning work (#1693).
+        Records with no username are left out; a record without *field* maps
+        to an empty string, which every caller reads as "not set".
         """
         users, err = self.get_users()
         if err is not None or users is None:
             return None, err
         return {
-            str(u.get("username", "")).strip(): str(u.get("email", "")).strip()
+            str(u.get("username", "")).strip(): str(u.get(field, "")).strip()
             for u in users
             if str(u.get("username", "")).strip()
         }, None
+
+    def get_user_emails(self):
+        """Gets {username: email} for every [[users]] record in config."""
+        return self._user_field_map("email")
+
+    def get_user_passwords(self):
+        """Gets {username: password} for every [[users]] record in config.
+
+        The initial GitLab password of a starting user, read when 'user add'
+        names one and no --password or users.csv password is supplied. The key
+        is optional, so a starting user without it maps to an empty string.
+        """
+        return self._user_field_map("password")
 
     def get_path(self):
         """Gets the 'path' from config.common"""
@@ -169,6 +183,46 @@ class Config:
         if err is not None or section is None:
             return "", err
         return str(section.get("pat", "")).strip(), None
+
+    def get_gitlab_templates(self):
+        """Gets the GitLab template repositories new users' projects are
+        imported from: [gitlab].common_template and [gitlab].user_template.
+
+        There is no built-in template: a dtaas.toml that sets neither key
+        gets (None, None), and the caller skips project creation rather than
+        inventing a repository to clone.
+
+        Returns:
+            Tuple of (values keyed by their dtaas.toml names, err).
+        """
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return None, err
+        values, problem = gitlab_template_values(section)
+        return values, Exception(f"Config file error: {problem}") if problem else None
+
+    def _gitlab_minutes(self, key):
+        """Gets one [gitlab] setting given in minutes, or None when the key
+        is absent so the caller keeps its own default.
+
+        Returns:
+            Tuple of (minutes or None, err).
+        """
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return None, err
+        value, problem = gitlab_minutes(section, key)
+        return value, Exception(f"Config file error: {problem}") if problem else None
+
+    def get_gitlab_import_timeout(self):
+        """Gets [gitlab].import_timeout: the minutes one repository import
+        may take before the wait on it is given up on."""
+        return self._gitlab_minutes("import_timeout")
+
+    def get_gitlab_import_deadline(self):
+        """Gets [gitlab].import_deadline: the minutes a whole 'user add' run
+        may spend waiting on imports before it stops starting new users."""
+        return self._gitlab_minutes("import_deadline")
 
     def get_gitlab_ssl_verify(self):
         """Gets [gitlab].ssl_verify (default True): True/False, or the path

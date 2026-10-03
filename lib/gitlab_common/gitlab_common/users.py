@@ -9,6 +9,8 @@ from typing import Sequence, Tuple
 import gitlab
 import gitlab.exceptions
 
+from .errors import API_ERRORS
+
 from .validators import validate_user_row
 
 logger = logging.getLogger(__name__)
@@ -36,6 +38,13 @@ class CreateUserResult:
     ``user_id`` is set only for :attr:`CreateOutcome.CREATED`; it is None for
     both ALREADY_EXISTS and FAILED, so callers must branch on *outcome*
     rather than on the id.
+
+    ``error`` carries GitLab's own words in both of the other cases: why the
+    request failed for FAILED, and which conflict it reported for
+    ALREADY_EXISTS. GitLab answers 409 both for a username that is taken and
+    for an email that is already on another account, and those are different
+    problems for an admin, so the reason is passed on rather than flattened
+    into one message.
     """
 
     outcome: CreateOutcome
@@ -72,12 +81,15 @@ def create_user(
     Inputs are validated with :func:`validate_user_row` before any API call.
 
     .. warning::
-        When GitLab reports the username is already taken (HTTP 409) the
-        outcome is :attr:`CreateOutcome.ALREADY_EXISTS`: the account belongs to
-        whoever registered it, **the supplied password is not applied**, and no
-        credentials are changed. Do not treat that outcome as "these
-        credentials are now live"; ``user_id`` is None and callers should not
-        issue a token against an account they did not create.
+        When GitLab reports a conflict (HTTP 409) the outcome is
+        :attr:`CreateOutcome.ALREADY_EXISTS`: either the username belongs to
+        whoever registered it or the email is already on another account.
+        **The supplied password is not applied** and no credentials are
+        changed; GitLab's own reason is in ``error``. Do not treat that outcome as "these
+        credentials are now live"; ``user_id`` is None and callers should
+        neither issue a token against, nor create projects in, an account
+        they did not create: both act on a namespace whose owner is unknown
+        to this run.
 
     Args:
         gl: Authenticated gitlab.Gitlab client.
@@ -105,12 +117,12 @@ def create_user(
         return CreateUserResult(CreateOutcome.CREATED, user_id=user.id)
     except gitlab.exceptions.GitlabCreateError as exc:
         if exc.response_code == 409:
-            logger.info("GitLab user already exists: %s", username)
-            return CreateUserResult(CreateOutcome.ALREADY_EXISTS)
+            logger.info("GitLab reported a conflict for '%s': %s", username, exc)
+            return CreateUserResult(CreateOutcome.ALREADY_EXISTS, error=str(exc))
         return CreateUserResult(
             CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
         )
-    except gitlab.exceptions.GitlabError as exc:
+    except API_ERRORS as exc:
         return CreateUserResult(
             CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
         )
@@ -153,5 +165,25 @@ def create_user_pat(
         if not token:
             return False, f"Empty token in PAT response for '{username}'"
         return True, token
-    except gitlab.exceptions.GitlabError as exc:
+    except API_ERRORS as exc:
         return False, f"Failed to create PAT for '{username}': {exc}"
+
+
+def find_user_id(gl: gitlab.Gitlab, username: str) -> int | None:
+    """Look up an existing account's numeric id by username.
+
+    create_user reports an account it did not create as ALREADY_EXISTS with
+    no user_id, yet creating that account's projects needs one. Looking the
+    id up here keeps that a single, explicit call rather than an assumption
+    about the 409 path.
+
+    Returns:
+        The account id, or None when no such account is visible to the
+        caller or the lookup itself failed (which is logged).
+    """
+    try:
+        users = gl.users.list(username=username)
+    except API_ERRORS as exc:
+        logger.warning("Failed to look up GitLab user '%s': %s", username, exc)
+        return None
+    return users[0].id if users else None

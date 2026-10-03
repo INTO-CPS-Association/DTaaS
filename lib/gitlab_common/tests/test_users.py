@@ -3,12 +3,15 @@
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock
 
+import pytest
+import requests
 from gitlab.exceptions import GitlabCreateError, GitlabError
 from gitlab_common import (
     CreateOutcome,
     PatOptions,
     create_user,
     create_user_pat,
+    find_user_id,
 )
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
@@ -60,6 +63,18 @@ def test_create_user_already_exists():
     assert result.outcome is CreateOutcome.ALREADY_EXISTS
     assert result.ok is True
     assert result.user_id is None
+
+
+def test_create_user_already_exists_keeps_gitlabs_reason():
+    """GitLab answers 409 for a taken username and for an email already on
+    another account; the caller needs to know which, so its words are kept."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabCreateError(
+        "Email has already been taken", response_code=409
+    )
+    result = create_user(gl, **_fields())
+    assert result.outcome is CreateOutcome.ALREADY_EXISTS
+    assert "Email has already been taken" in result.error
 
 
 def test_create_user_non_409_create_error():
@@ -145,3 +160,52 @@ def test_create_user_pat_empty_token():
     ok, error = create_user_pat(gl, 42, TEST_USERNAME)
     assert ok is False
     assert "Empty token" in error
+
+
+DROPPED = requests.ConnectionError("connection reset")
+
+
+def test_create_user_reports_a_dropped_connection():
+    """A connection that never reached GitLab is a requests error, which
+    python-gitlab does not wrap. It is this user's failure, reported in the
+    result, so a caller creating many users is not aborted by it."""
+    gl = MagicMock()
+    gl.users.create.side_effect = DROPPED
+    result = create_user(
+        gl, username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD
+    )
+    assert result.outcome is CreateOutcome.FAILED
+    assert "connection reset" in result.error
+
+
+def test_create_user_pat_reports_a_dropped_connection():
+    """The same holds for the token half, against the same instance."""
+    gl = MagicMock()
+    gl.users.get.side_effect = DROPPED
+    ok, error = create_user_pat(gl, 42, TEST_USERNAME)
+    assert ok is False
+    assert "connection reset" in error
+
+
+@pytest.mark.parametrize("failure", [DROPPED, GitlabError("500 Server Error")])
+def test_find_user_id_swallows_any_api_failure(failure):
+    """A failed lookup is None, whatever failed, so a caller reports it as an
+    unresolved user rather than crashing the run."""
+    gl = MagicMock()
+    gl.users.list.side_effect = failure
+    assert find_user_id(gl, TEST_USERNAME) is None
+
+
+def test_find_user_id_returns_the_matching_account():
+    """An existing account is resolved to its numeric id."""
+    gl = MagicMock()
+    gl.users.list.return_value = [Mock(id=11)]
+    assert find_user_id(gl, TEST_USERNAME) == 11
+    assert gl.users.list.call_args.kwargs == {"username": TEST_USERNAME}
+
+
+def test_find_user_id_without_a_match_is_none():
+    """No account of that name resolves to None rather than an error."""
+    gl = MagicMock()
+    gl.users.list.return_value = []
+    assert find_user_id(gl, TEST_USERNAME) is None

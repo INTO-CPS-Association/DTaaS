@@ -1,52 +1,41 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="2.1.0"
+version="2.2.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
 [common]
-# absolute path to the DTaaS application directory
 server-dns="localhost"
-# Specify the directory of DTaaS installation
-# Linux example
-# "REPLACE_WITH_ABSOLUTE_PATH_TO_DTAAS"
+# Absolute path to the DTaaS installation. Separate it with / or \\, never a
+# single \, which fails with "Invalid unicode value".
 path="/home/XXX/DTaaS"
 # Windows example
 #path="C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
 
 [common.security]
-# Enable HTTPS/TLS for secure server deployment
+# HTTPS/TLS for secure server deployments.
 tls=true
-# Source directory holding the TLS certificates (fullchain.pem, privkey.pem)
-# for secure deployments. 'dtaas deployment generate' copies the latest pair into the
-# installation's certs/ directory. Leave unset to copy certificates by hand.
-# Certs path on Linux / MacOS
+# Where the TLS pair (fullchain.pem, privkey.pem) is kept. 'dtaas deployment
+# generate' copies the latest pair into certs/; unset means copy them by hand.
 certs-src='/etc/letsencrypt/archive/intocps.org'
-# Certs path on Windows
+# Windows example
 #certs-src='C:/Certbot/archive/intocps.org'
 
 [common.resources]
-# Enforce the per-user container resource limits below. Set to false to create
-# users without any CPU/memory/process caps; the limit fields are then ignored.
+# Enforce the per-user limits below; false creates users with no CPU, memory
+# or process caps and ignores the fields.
 set_limits=true
-# These are the default resource limits for user containers.
 cpus=4 # Virtual CPU
 mem_limit="4G"
 pids_limit=4960 # Number of processes
 shm_size="512m" # Shared memory size
 
 
-# Starting users installed with this DTaaS instance. Each [[users]] block is
-# one self-contained user record; presence here is the desired state, set
-# once at install time, there are no add/delete lists.
-#
-# Additional users added later via `dtaas user add` (or
-# `--file users.csv`) are NOT tracked here. They live in the CLI-owned
-# dtaas.users.registry.json instead, and `dtaas user add`/`delete`
-# never write to this file.
+# Starting users, one record per block: the desired state, set once at
+# install time. Users added later with 'dtaas user add' are NOT tracked here;
+# they live in the CLI owned dtaas.users.registry.json, and 'user add' and
+# 'user delete' never write to this file.
 [[users]]
 username="username1"
 email="username1@intocps.org"
@@ -60,43 +49,50 @@ groups=["default","dtaas"]
 load_balance=false
 
 [[users]]
-# A user can also carry additional, non-reserved group tags alongside the
-# "default" and "dtaas" groups -- groups is always a list, even for one entry.
+# groups is always a list, and may carry tags beyond "default" and "dtaas".
 username="username3"
 email="username3@intocps.org"
 groups=["default","dtaas","beta-testers","load-balanced-tier1"]
 load_balance=true
 
 # --- GitLab user provisioning for users added with 'dtaas user add' --------
-# When enabled, 'user add' creates each new user's GitLab account and a
-# Personal Access Token, using an admin provisioning PAT. Disabled
-# by default; existing deployments are unaffected unless this is set.
-# The provisioning PAT must be able to create users (an admin token), so it is
-# deliberately NOT a key here: export it as DTAAS_GITLAB_PAT instead and keep
-# the token off disk entirely. A [gitlab].pat key is still honoured if you add
-# one, this file is generated mode 0600 and gitignored, but the
-# environment variable is preferred.
+# When enabled, 'user add' also creates each new user's GitLab account, a
+# Personal Access Token and their two repositories. Off by default, so
+# existing deployments are unaffected.
 [gitlab]
 provision=false
 api_url="https://gitlab.com"
 ssl_verify=true
+# The admin PAT that creates all of that on api_url; it must be able to
+# create users. Prefer the DTAAS_GITLAB_PAT environment variable, which keeps
+# the token off disk: a value set here wins over it, so leave the placeholder
+# commented out. This file is generated mode 0600 and gitignored.
+#pat="glpat-xxxxxxxxxxxxxxxxxxxx"
+# One template repository per project, imported as it stands, every branch
+# included. GitLab does the import, so it needs the "Repository by URL"
+# import source enabled and network access to both URLs. There is no built-in
+# fallback: drop both keys to provision accounts and tokens without any
+# repositories, or point them at your own repositories.
+common_template="https://gitlab.com/dtaas/common.git"
+user_template="https://gitlab.com/dtaas/user1.git"
+# Minutes to wait for one import before failing that project. Optional, 10.
+import_timeout=10
+# Minutes a whole 'user add' run may spend waiting on imports before it stops
+# starting new users and reports the rest as not attempted. Optional, 60.
+import_deadline=60
 
 # Installation-specific configuration
 # For non-localhost deployments, the starting usernames (USERNAME1,
 # USERNAME2, ...) are taken from the [[users]] records above.
 
-# OAuth application for the DTaaS client website (React frontend).
-# This is a separate OAuth application from the server one used by
-# traefik-forward-auth in the [insecure-server] and [secure-server] sections.
-# Create it in your GitLab instance at:
-# Settings -> Applications (for personal) or
-# Admin Area -> Applications (for instance-wide)
-# with Redirect URI "https://<server-dns>/Library", Confidential unticked and
-# scopes: openid, profile, read_user, read_repository, api.
+# OAuth application for the client website (React frontend), separate from
+# the server one below. Create it in GitLab under Settings > Applications
+# (personal) or Admin Area > Applications (instance wide), with Redirect URI
+# "https://<server-dns>/Library", Confidential unticked, scopes openid,
+# profile, read_user, read_repository, api.
 [frontend]
-# Application ID of the client website OAuth application
 react-app-client-id="your_client_id_here"
-# URL of your GitLab instance (without trailing slash)
+# GitLab instance URL, no trailing slash
 react-app-oauth-url="https://gitlab.com"
 
 [localhost]
@@ -104,13 +100,10 @@ default-user="user1"
 client-id="your_client_id_here"
 auth-authority="https://gitlab.com/"
 
-# OAuth application for the server (traefik-forward-auth).
-# This is a separate OAuth application from the client website one in [frontend].
-# Create it in your GitLab instance at:
-# Settings -> Applications (for personal) or
-# Admin Area -> Applications (for instance-wide)
-# with Redirect URI "https://<server-dns>/_oauth", Confidential ticked and
-# scopes: openid, profile, read_user.
+# OAuth application for the server (traefik-forward-auth), separate from the
+# [frontend] one. Create it the same way, with Redirect URI
+# "https://<server-dns>/_oauth", Confidential ticked, scopes openid, profile,
+# read_user.
 [insecure-server]
 oauth-url="https://gitlab.com"
 oauth-client-id="your_client_id_here"

@@ -92,6 +92,10 @@ checks are syntactic, but `path` and `certs-src` are verified against the local
 filesystem (the directory must exist), so `validate` is expected to run on the
 deployment host.
 
+The `[gitlab]` section's own checks live in `src/pkg/config_validate_gitlab.py`
+(`check_gitlab`), called from `config_validate.py`'s check list; they were
+split out to keep that module within its line count.
+
 `platform update --config` is backed by _src/pkg/config_update.py_, which
 re-applies `dtaas.toml` to an installed deployment in place. It reuses the
 existing substitution engine rather than duplicating it:
@@ -151,19 +155,97 @@ section.
 `src/pkg/gitlab/` is built on `gitlab_common` (vendored from
 `lib/gitlab_common` by `src/pkg/build.py`, like the deploy templates below
 see [lib/gitlab_common/README.md](../lib/gitlab_common/README.md) for why it
-is copied rather than depended on) for the client and user/PAT primitives, so
-no GitLab client or idempotency code is reimplemented in the CLI:
+is copied rather than depended on) for the client, the user/PAT primitives
+and the projects every user gets, so no GitLab API code is reimplemented in
+the CLI. What stays here is the deployment glue: reading `dtaas.toml`,
+resolving which account to act on, and printing the outcome. Creating a
+user's repositories from a template is not specific to this package, so it
+sits in the shared module where `dtaas-services` can use it as well; the
+template itself comes from each deployment's own configuration, which for
+this package means `dtaas.toml`.
 
-- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` and
-  `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
-  variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
-  instance.
+- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` from
+  `dtaas.toml` and resolves the PAT from the `DTAAS_GITLAB_PAT` environment
+  variable, falling back to `[gitlab].pat`, then builds a
+  `gitlab_common.get_gitlab_client` instance.
 - `provisioner.py`'s `ensure_user_resources(gl, user)` (a `GitlabUser` of
   username/email/password, plus an optional registry-stored user id)
   creates the user's GitLab account and Personal Access Token via
   `gitlab_common.create_user`/`create_user_pat`. It is idempotent: an
   already-existing account is left with its current credentials and gets no
   new PAT.
+- `projects.py`'s `provision_user_projects(gl, target, templates)` creates
+  the user's two repositories, `common` and `user`, from the `[gitlab]`
+  template settings (`ProjectTemplates`: one template repository per
+  project, `common_template` and `user_template`). Those keys have no
+  built-in default:
+  `config.gitlab_template_values` returns None when neither is set, and
+  `projects.resolve_templates` (the template counterpart of
+  `client.resolve_client`) then skips only the project step, with one notice
+  per run, leaving account and token provisioning untouched. A partly
+  configured template is a typo rather than an opt out, so it is an error at
+  both ends: `config_validate_gitlab.py` calls the same function to report it
+  before `user add` runs, and at run time it fails the users it affects
+  instead of provisioning them without repositories.
+- The GitLab work itself is `gitlab_common`'s, so `dtaas-services` can
+  provision the same repositories from its own configuration without
+  restating any of it. `user_projects.ensure_user_projects(gl, user_id,
+  templates)` names the pair (`common`, `user`) and returns `(ok,
+  messages)`; printing those lines is this package's job, not the shared
+  module's. Each one is `projects.create_user_project`, the project
+  counterpart of `users.create_user` and shaped like it (explicit arguments,
+  no console output or config), which creates the project in the user's own
+  namespace with GitLab's import by URL and leaves it at that: one template
+  repository per project means the copy is already what the user should
+  start from, every branch and the template's own default branch included,
+  so nothing is switched or pruned afterwards. The import is
+  asynchronous, so `project_import.await_import` polls `import_status`
+  (`[gitlab].import_timeout` minutes at most, 10 by default, carried there
+  on `ProjectTemplates`) before the project is reported ready. A read that
+  fails (a GitLab error or a dropped connection) is retried, and only
+  `IMPORT_POLL_MAX_ERRORS` failures in a row end the wait, as that user's
+  error: nothing is raised, so one unreachable moment never aborts the
+  users after it in the same run. The same tuple, `errors.API_ERRORS` (a
+  GitLab error or a `requests` one, which python-gitlab does not wrap),
+  guards every other call the package makes, the account half included, so
+  a dropped connection is always one user's failure and never the run's.
+  Status `none` is an
+  error there rather than "nothing to wait for": every project polled was
+  created with an `import_url`, so it means the instance never scheduled the
+  import, and the message names the two prerequisites (the "Repository by
+  URL" import source enabled, and network access from the server to the
+  template) rather than reporting the empty project as ready.
+- Adopting a project that is already in the namespace is `_adopt_existing`'s
+  job, and it does not equate "present" with "ready". A run that stopped
+  waiting on an import leaves an empty project behind, so reporting it as
+  ready would mark the user `gitlab_projects_created` over an empty
+  repository; an empty project is therefore waited on until its import
+  finishes, unless its `import_status` is `none`, which means no import was ever
+  scheduled for it: waiting would report a disabled import source, so the
+  empty project is reported as itself instead. A
+  project with any content is never touched, whatever its branches: its
+  contents may be the user's own work. It is reported as a
+  `MESSAGE_WARNING` saying it already exists and was not created, which the
+  CLI prints with a `Warning:` prefix, the way an existing account is.
+- GitLab never reruns an import that failed or was never scheduled, so the
+  empty project either one leaves fails on every run. Those two errors end
+  with `IMPORT_RETRY_HINT` (delete the empty project and re-run), because
+  deleting it automatically is not safe everywhere: with delayed deletion
+  the path can stay taken for days.
+- An account that already exists on GitLab (the 409 path) gets no projects,
+  for the same reason it gets no token: `create_user` reports
+  ALREADY_EXISTS with no id, the account belongs to whoever registered it,
+  and both a token and a repository act on a namespace this run cannot
+  vouch for. `_account_step` therefore returns `has_account=False` for that
+  outcome and `_skip_projects` stops there.
+- `ProjectTarget.user_id` is the account id when it is known (created this
+  run, or stored in the registry); with neither,
+  `gitlab_common.users.find_user_id`, called from `pkg/gitlab/projects.py`'s
+  `_resolve_user_id`, resolves it by username. Only accounts this CLI
+  created reach that step now, so the lookup covers the one case its caller
+  cannot supply an id for: an account created before its id reached the
+  registry. The note it prints says only that, and claims nothing about
+  whose account it is.
 
 This is wired into `dtaas user add` (`pkg/users_gitlab.py`'s `provision_gitlab_users`)
 behind the `[gitlab].provision` flag (default `false`, so existing
@@ -179,8 +261,64 @@ same CSV after a partial failure) skips a user who already has a token rather
 than minting a second one. A GitLab failure for one user (or for the whole
 step, e.g. an unreachable instance) is reported and does not affect container
 provisioning, which has already completed by that point, nor other users.
-Scoped today to what `gitlab_common` provides user creation and PAT
-issuance; group/project provisioning is not implemented.
+The account half and the project half are tracked separately in the
+registry (`gitlab_pat_issued` vs `gitlab_projects_created`) because they fail
+independently: a run that issues a token but cannot create the projects must
+retry only the projects on the next `user add`, and the PAT skip must not
+swallow the project step. Each half is persisted as soon as it finishes
+rather than at the end of the run, because the project step waits on a
+server side import: a token still in memory at that point is one an
+interrupted run loses while it stays live on GitLab, and the next run would
+mint a second one. For the same reason the password guard sits in
+`_account_step` and not in front of the whole user, and `add_users` skips
+the GitLab step only for `passwords=None` (what `config reconcile --fix`
+passes). `stage_users_for_add` keys the password map by every user named
+in the run, with None where no password was given, because
+`target_usernames` reaches an already-registered user only through that
+map: a user named with no entry at all would get no GitLab step, and the
+retry would report success having done nothing. A project only retry is
+therefore `dtaas user add alice --email ...` (or a re-run of the same CSV)
+with no password. `_account_step` checks `gitlab_pat_issued` before the
+password, so such a retry reports the issued token rather than a missing
+password. A client that cannot be built then
+fails only the users who had GitLab work waiting (`_has_gitlab_work`),
+which includes an account with projects still to create: with
+`provision = true` that is a failure even where tokens are issued out of
+band, since the projects cannot be made without a client. The template is
+therefore resolved before the client, and `wants_projects` is passed in: a
+deployment that configures no template never records
+`gitlab_projects_created`, so without that flag every user who ever had a
+token would count as unfinished work forever and an unusable client would
+fail a command with nothing left to do. Two visible
+consequences follow. A `--file` import whose CSV has no password column is
+refused by `require_passwords` before anything is written, naming the users
+with neither a password nor an account from an earlier run; a user who
+already has one is not refused, and their account step reports the issued
+token rather than a missing password. And `cmd_user` does not prompt for a
+password for a user already marked `gitlab_pat_issued` (`_pat_issued`),
+since `_account_step` would discard it.
+A run also has a budget: `[gitlab].import_deadline` minutes (60 by
+default), kept by `users_gitlab_targets.RunDeadline` from the moment GitLab
+provisioning starts. `_issue_gitlab_resources` checks it before each user
+rather than interrupting one, since a project half way through an import
+would be left behind; the users it stops short of are named as not
+attempted and the command still exits 0, because nothing was tried for them
+and a plain re-run picks them up. Without it a bulk add on an instance whose
+imports hang (they stay `scheduled`, so nothing reports them as broken)
+would wait `import_timeout` twice per user, hours for a large CSV.
+`users_gitlab.py` holds that flow (`_account_step`, `_projects_step`),
+`users_gitlab_targets.py` decides who is in it, and
+`users_gitlab_records.py` is the disk half: the 0600 token file and the
+registry markers. Group provisioning is still not implemented.
+
+Everything these steps print goes through `pkg/messages.py`'s `echo_hint`,
+over `gitlab_common.with_hint`. A failure, warning or skip opens with one
+line short enough to scan in a run that touches many users, and keeps what
+a reader has to act on (the PAT scopes behind a 401, the `projects_limit`
+cause of a 403, GitLab's own words on a 409) in an indented line underneath.
+A message that already carries a hint keeps its shape when it becomes the
+detail of another, so the per user line can wrap a provisioner result
+without the two running together.
 
 ### User registry and runtime state
 

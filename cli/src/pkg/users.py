@@ -1,33 +1,25 @@
-"""The 'user add'/'user delete' CLI command handlers.
+"""The 'user add' CLI command handler.
 
 Loads registry/deploy config, then drives the compose/container plumbing in
-users_compose.py to provision or deprovision the requested users.
+users_compose.py to provision the requested users. 'user delete' is
+users_delete.py's.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from . import utils
 from .constants import COMPOSE_USERS_YML
-from .registry import load_registry, remove_from_registry
-from .state import write_state
+from .registry import load_registry
 from .users_compose import (
     add_users_to_compose,
     create_user_files,
     finalize_compose,
+    load_user_template,
     setup_compose_structure,
-    stop_user_containers,
 )
-from .users_gitlab import (
-    gitlab_candidates,
-    gitlab_failure_exc,
-    provision_gitlab_users,
-)
+from .users_gitlab import gitlab_failure_exc, provision_gitlab_users
+from .users_gitlab_targets import gitlab_candidates
 from .users_utils import (
     add_conf_server_entry,
-    remove_conf_server_entry,
-    categorize_users,
-    report_missing_users,
-    remove_users_from_compose,
-    report_delete_preview,
     validate_usernames,
 )
 
@@ -53,14 +45,38 @@ def _get_deploy_config(config_obj):
     return server, path, resources, tls, set_limits
 
 
+def check_add_supported(config_obj):
+    """The error 'user add' would fail with, before anything is staged.
+
+    'user add' needs a deployment whose per-user compose template is present
+    and whose server is not localhost. Both were discovered only once the
+    users had been merged into the registry, which left them registered but
+    never provisioned, and the next run then skipped them as already there.
+    Returns None when the deployment can take new users.
+    """
+    server, err = config_obj.get_server_dns()
+    if err is None:
+        tls, err = config_obj.get_tls()
+    if err is None:
+        _template, err = load_user_template(server, tls)
+    return err
+
+
 @dataclass
 class _AddContext:
-    """Everything needed to provision the registry's users."""
+    """Everything needed to provision the registry's users.
+
+    *starting* maps each dtaas.toml starting user to its email. Their
+    containers come from docker-compose.yml, so they are never in
+    *user_list*; they are here only so a run that names one can provision
+    its GitLab half.
+    """
 
     compose: dict
     user_list: list
     users_section: dict
     config: dict
+    starting: dict = field(default_factory=dict)
 
 
 def _load_add_context(config_obj):
@@ -73,7 +89,9 @@ def _load_add_context(config_obj):
     utils.check_error(err)
     compose = compose or {}
     user_list, users_section = _get_registry_users()
-    if not user_list:
+    starting, err = config_obj.get_user_emails()
+    utils.check_error(err)
+    if not user_list and not starting:
         return None
     validate_usernames(user_list)
     server, path, resources, tls, set_limits = _get_deploy_config(config_obj)
@@ -84,7 +102,7 @@ def _load_add_context(config_obj):
         "tls": tls,
         "set_limits": set_limits,
     }
-    return _AddContext(compose, user_list, users_section, config)
+    return _AddContext(compose, user_list, users_section, config, starting or {})
 
 
 def _authorise_user(username, users_section):
@@ -153,11 +171,15 @@ def _add_users(config_obj, start_only, passwords):
     """
     ctx = _load_add_context(config_obj)
     if ctx is None:
-        return None  # empty registry: nothing to provision
-    setup_compose_structure(ctx.compose)
-    _provision_users(ctx, start_only)
-    if not passwords:
-        return None
+        return None  # no registry users and no starting users: nothing to do
+    if ctx.user_list:
+        # Skipped when the registry is empty: a run that names a starting
+        # user alone has no container work, and must not write an empty
+        # compose.users.yml or state file for it.
+        setup_compose_structure(ctx.compose)
+        _provision_users(ctx, start_only)
+    if passwords is None:
+        return None  # no GitLab work was asked for (config reconcile --fix)
     candidates = gitlab_candidates(ctx, start_only, passwords)
     return gitlab_failure_exc(provision_gitlab_users(config_obj, candidates))
 
@@ -167,58 +189,16 @@ def add_users(config_obj, start_only=None, passwords=None):
 
     *start_only* restricts which users' containers are started (None = all;
     a list = just those); the registry is always fully written to compose.
-    *passwords* ({username: password}) drives GitLab provisioning when
-    enabled, targeting every named user regardless of start_only; omit it to
-    skip GitLab entirely (e.g. 'config reconcile --fix'). A GitLab failure is
-    returned as an error (non-zero exit) without undoing container work.
+    *passwords* ({username: password or None}) drives GitLab provisioning
+    when enabled, targeting every key (every user named this run) regardless
+    of start_only; omit it (None, not an empty map) to skip GitLab entirely,
+    as 'config reconcile --fix' does. A user mapped to None still gets the
+    GitLab step, because only the account half needs a password: it is how
+    the projects of an account that already exists are retried. A GitLab
+    failure is returned as an error (non-zero exit) without undoing
+    container work.
     """
     try:
         return _add_users(config_obj, start_only, passwords)
     except Exception as e:
         return e
-
-
-def _delete_context(usernames):
-    """Validate usernames and load compose, returning (compose, existing users).
-
-    Raises on validation/import failure or a missing compose file.
-    """
-    validate_usernames(usernames)
-    compose, err = utils.import_yaml(COMPOSE_USERS_YML)
-    utils.check_error(err)
-    if compose is None:
-        raise ValueError("Failed to load compose configuration")
-    services = compose.get("services")
-    existing_services = services if isinstance(services, dict) else {}
-    existing, missing = categorize_users(list(usernames), existing_services)
-    report_missing_users(missing)
-    return compose, existing
-
-
-def _remove_users(compose, existing, usernames):
-    """Stop containers, rewrite compose, clear auth rules, and update state."""
-    if existing:
-        err = stop_user_containers(existing)
-        utils.check_error(err)
-    remove_users_from_compose(compose, existing)
-    err = utils.export_yaml(compose, COMPOSE_USERS_YML)
-    utils.check_error(err)
-    for username in usernames:
-        remove_conf_server_entry(username)
-    remove_from_registry(usernames)
-    write_state(compose.get("services", {}))
-
-
-def delete_users(usernames, dry_run=False):
-    """delete cli command handler: deprovision *usernames* and drop them from
-    the CLI-owned user registry. With dry_run, report what would happen and make
-    no changes."""
-    try:
-        compose, existing = _delete_context(usernames)
-        if dry_run:
-            report_delete_preview(existing, usernames)
-        else:
-            _remove_users(compose, existing, usernames)
-    except Exception as e:
-        return e
-    return None

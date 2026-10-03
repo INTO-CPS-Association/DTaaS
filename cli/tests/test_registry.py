@@ -5,14 +5,14 @@ from unittest.mock import patch
 import pytest
 from src.pkg.registry import (
     load_registry,
+    load_starting_gitlab,
     register_new_users,
+    register_starting_users,
     remove_from_registry,
-    read_csv_passwords,
-    read_csv_users,
     set_desired_status,
     set_gitlab_pat_issued,
+    set_gitlab_projects_created,
     set_gitlab_user_ids,
-    _parse_csv_row,
     _partition_new,
 )
 # pylint: disable=protected-access
@@ -49,56 +49,6 @@ def test_remove_from_registry_drops_named_users(tmp_path):
     assert set(load_registry(path)) == {"bob"}
 
 
-def test_parse_csv_row_rejects_invalid_load_balance():
-    """A load_balance value that is neither true nor false is rejected."""
-    with pytest.raises(ValueError, match="load_balance"):
-        _parse_csv_row(
-            {"username": "x", "email": "x@y.io", "groups": "", "load_balance": "yes"}
-        )
-
-
-def test_read_csv_users_parses_all_rows(tmp_path):
-    """read_csv_users turns every CSV row into a {username: details} entry."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(USERS_CSV, encoding="utf-8")
-
-    users = read_csv_users(str(csv_path))
-
-    assert set(users) == {"alice", "bob"}
-    assert users["alice"]["load_balance"] is True
-    assert users["bob"]["groups"] == ["additional", "beta-testers"]
-
-
-def test_read_csv_users_rejects_duplicate_username(tmp_path):
-    """A username repeated in the CSV is rejected rather than silently overwritten."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(
-        "username,email,groups,load_balance\n"
-        "alice,alice@intocps.org,additional,true\n"
-        "alice,other@intocps.org,additional,false\n",
-        encoding="utf-8",
-    )
-    csv_file = str(csv_path)
-
-    with pytest.raises(ValueError, match="Duplicate username 'alice'"):
-        read_csv_users(csv_file)
-
-
-def test_read_csv_passwords_parses_password_column(tmp_path):
-    """read_csv_passwords extracts {username: password} for GitLab provisioning."""
-    csv_path = tmp_path / "users.csv"
-    csv_path.write_text(
-        "username,email,groups,load_balance,password\n"
-        "alice,alice@intocps.org,additional,true,S3cur3-p4ss\n"
-        "bob,bob@intocps.org,additional,false,An0ther-p4ss\n",
-        encoding="utf-8",
-    )
-
-    passwords = read_csv_passwords(str(csv_path))
-
-    assert passwords == {"alice": "S3cur3-p4ss", "bob": "An0ther-p4ss"}
-
-
 def test_set_desired_status_updates_only_known_users(tmp_path):
     """set_desired_status updates registry members, silently skips unknown names."""
     path = str(tmp_path / "dtaas.users.registry.json")
@@ -131,7 +81,6 @@ def test_set_gitlab_user_ids_updates_only_known_users(tmp_path):
     assert load_registry(path)["alice"]["gitlab_user_id"] == 42
 
 
-
 def test_set_gitlab_pat_issued_marks_only_known_users(tmp_path):
     """set_gitlab_pat_issued flags registry members True, skips unknown names."""
     path = str(tmp_path / "dtaas.users.registry.json")
@@ -141,3 +90,86 @@ def test_set_gitlab_pat_issued_marks_only_known_users(tmp_path):
 
     assert updated == ["alice"]
     assert load_registry(path)["alice"]["gitlab_pat_issued"] is True
+
+
+def test_set_gitlab_projects_created_is_tracked_apart_from_the_pat(tmp_path):
+    """The project marker is its own field, so a user whose PAT was issued but
+    whose projects failed is still retried for the projects alone."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+    set_gitlab_pat_issued(["alice"], path)
+
+    updated = set_gitlab_projects_created(["alice", "ghost"], path)
+
+    assert updated == ["alice"]
+    details = load_registry(path)["alice"]
+    assert details["gitlab_projects_created"] is True
+    assert details["gitlab_pat_issued"] is True
+
+
+def test_register_starting_users_keeps_them_out_of_the_user_store(tmp_path):
+    """A starting user is tracked in its own section: every name in the user
+    store becomes a compose.users.yml service, and a starting user already
+    has a container from docker-compose.yml."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+
+    added = register_starting_users(["foo", "bar"], path)
+
+    assert added == ["foo", "bar"]
+    assert set(load_registry(path)) == {"alice"}
+    assert set(load_starting_gitlab(path)) == {"foo", "bar"}
+
+
+def test_register_starting_users_is_idempotent(tmp_path):
+    """A second run keeps the markers the first one recorded."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_starting_users(["foo"], path)
+    set_gitlab_user_ids({"foo": 7}, path)
+
+    assert register_starting_users(["foo"], path) == []
+    assert load_starting_gitlab(path)["foo"]["gitlab_user_id"] == 7
+
+
+def test_writing_one_section_keeps_the_other(tmp_path):
+    """Writing either section preserves the whole document, so a user add
+    that touches both does not drop half of it."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_starting_users(["foo"], path)
+
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+    remove_from_registry(["alice"], path)
+
+    assert set(load_starting_gitlab(path)) == {"foo"}
+
+
+def test_gitlab_markers_route_to_the_section_holding_the_user(tmp_path):
+    """The marker setters find a user in either section, so a starting user's
+    half-done run is retried the same way an additional user's is."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+    register_starting_users(["foo"], path)
+
+    updated = set_gitlab_user_ids({"alice": 42, "foo": 7, "ghost": 99}, path)
+    set_gitlab_pat_issued(["alice", "foo"], path)
+    set_gitlab_projects_created(["foo"], path)
+
+    assert sorted(updated) == ["alice", "foo"]
+    assert load_registry(path)["alice"]["gitlab_user_id"] == 42
+    markers = load_starting_gitlab(path)["foo"]
+    assert markers == {
+        "gitlab_user_id": 7,
+        "gitlab_pat_issued": True,
+        "gitlab_projects_created": True,
+    }
+
+
+def test_a_foreign_top_level_key_survives_a_write(tmp_path):
+    """Only the section being written is replaced: an unknown key left by a
+    newer CLI is not dropped by an older one."""
+    path = tmp_path / "dtaas.users.registry.json"
+    path.write_text(json.dumps({"users": {}, "future": {"x": 1}}), encoding="utf-8")
+
+    register_new_users({"alice": {}}, [], str(path))
+
+    assert json.loads(path.read_text(encoding="utf-8"))["future"] == {"x": 1}
