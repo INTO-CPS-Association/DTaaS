@@ -132,14 +132,16 @@ def test_users_from_args_takes_a_starting_users_email_from_dtaas_toml():
     assert named["foo"]["email"] == "foo@intocps.org"
 
 
-def test_users_from_args_prefers_dtaas_toml_over_email_for_a_starting_user():
-    """dtaas.toml stays the one source for a starting user's email, so a
-    stale --email cannot provision a GitLab account at another address."""
+def test_users_from_args_keeps_a_starting_users_given_email_to_report_it():
+    """An --email naming another address is carried this far so it can be
+    reported (cmd_user_emails); dtaas.toml still governs the GitLab account,
+    which users_gitlab_targets reads from there, and a starting user is never
+    registered, so the given address goes nowhere else."""
     user_input = UserAddInput("foo", None, "stale@elsewhere.io", (), True)
 
     named = _users_from_args(user_input, {"foo": "foo@intocps.org"})
 
-    assert named["foo"]["email"] == "foo@intocps.org"
+    assert named["foo"]["email"] == "stale@elsewhere.io"
 
 
 def test_resolve_usernames_from_positional_args():

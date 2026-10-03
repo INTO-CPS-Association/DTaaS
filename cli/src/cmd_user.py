@@ -60,7 +60,8 @@ def _add_summary(staged):
     help=(
         "Email for USERNAME (enables forward-auth routing). Required, "
         "except for a dtaas.toml starting user, whose email is read from "
-        "its [[users]] record."
+        "its [[users]] record; another address given for one is reported "
+        "and not applied."
     ),
 )
 @click.option(

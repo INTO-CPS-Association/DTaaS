@@ -13,6 +13,7 @@ from .pkg import registry as registryPkg
 from .pkg import registry_csv as registryCsvPkg
 from .pkg.messages import with_hint
 from .pkg.users_utils import validate_usernames
+from .cmd_user_emails import warn_unused_emails
 from .cmd_user_passwords import PasswordSources, require_passwords, resolve_passwords
 
 
@@ -90,11 +91,14 @@ def _users_from_args(user_input, starting_emails):
     Defaults groups to ['additional'] when --group is omitted, matching the CSV
     import path (registry_csv._parse_csv_row) so the two produce identical users.
 
-    A dtaas.toml starting user's email is already declared there, and that is
-    the address GitLab provisioning uses, so --email is neither required nor
-    read for them: naming one asks for their GitLab half alone.
+    A dtaas.toml starting user's email is already declared there, so --email
+    is not required for them: naming one asks for their GitLab half alone.
+    An --email given for one is kept here, so cmd_user_emails can report
+    that it is not the declared address, and goes no further than that
+    report: a starting user is never registered (registry.register_new_users
+    reserves them) and their provisioning reads dtaas.toml directly.
     """
-    email = starting_emails.get(user_input.username) or user_input.email
+    email = user_input.email or starting_emails.get(user_input.username)
     if not email:
         raise click.ClickException("Provide --email when adding a single user.")
     return {
@@ -184,6 +188,7 @@ def stage_users_for_add(user_input, provision=False):
     _reject_bad_input(user_input)
     starting_emails = _starting_emails()
     named = _users_to_add(user_input, starting_emails)
+    warn_unused_emails(named, starting_emails)
     starting = [name for name in named if name in starting_emails]
     sources = _password_sources(user_input, provision)
     passwords = resolve_passwords(sources, named, provision)

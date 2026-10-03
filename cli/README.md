@@ -570,7 +570,7 @@ the CLI-owned `dtaas.users.registry.json`
 |---|---|---|
 | `USERNAME` | — | Add one user (requires `--email`, except for a dtaas.toml starting user) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user, and another address given for one is reported and not applied |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 | `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
@@ -627,6 +627,11 @@ retried the same way:
 ```bash
 dtaas user add username1   # a starting user; its email comes from dtaas.toml
 ```
+
+dtaas.toml owns that email: it is baked into the user's workspace and is the
+address the GitLab account is created at, so an `--email` (or a `users.csv`
+column) naming another address for a starting user is reported on a
+`Warning:` line and not applied. Edit `[[users]]` to change it.
 
 ```toml
 [gitlab]
@@ -838,7 +843,7 @@ instead.
 |---|---|---|
 | `USERNAME` | — | Add one user (requires `--email`, except for a dtaas.toml starting user) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user, and another address given for one is reported and not applied |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups, e.g. `--group dtaas --group testers` |
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 | `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
