@@ -13,6 +13,7 @@ suspended/resumed as part of the whole installation via
 import click
 from python_on_whales.exceptions import DockerException
 from .pkg import users as userPkg
+from .pkg.messages import with_hint
 from .pkg import users_delete as usersDeletePkg
 from .pkg import lifecycle as lifecyclePkg
 from .pkg import registry as registryPkg
@@ -157,7 +158,7 @@ def delete(usernames, csv_file, dry_run):
     resolved = resolve_usernames(usernames, csv_file)
     err = usersDeletePkg.delete_users(resolved, dry_run=dry_run)
     if err is not None:
-        raise click.ClickException(f"Error while deleting users: {err}")
+        raise click.ClickException(with_hint("Error while deleting users", err))
     if dry_run:
         click.echo("Dry run complete; nothing was deleted.")
     else:

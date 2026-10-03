@@ -2,13 +2,20 @@
 
 from dataclasses import dataclass
 
-from ...gitlab_common import CreateOutcome, create_user, create_user_pat
+from ...gitlab_common import (
+    CreateOutcome,
+    create_user,
+    create_user_pat,
+    with_hint,
+)
 
-_ALREADY_EXISTS_MESSAGE = (
-    "GitLab reported a conflict, so this run created nothing: the username is "
-    "already registered, or its email is already on another account. Either "
-    "way the credentials are unknown to this run, so no token was issued and "
-    "no projects were created in that namespace. GitLab said: "
+_ALREADY_EXISTS_SUMMARY = "GitLab reported a conflict; nothing was created."
+
+_ALREADY_EXISTS_DETAIL = (
+    "The username is already registered, or its email is already on another "
+    "account. Either way the credentials are unknown to this run, so no "
+    "token was issued and no projects were created in that namespace. "
+    "GitLab said: "
 )
 
 # Both halves of the account step are administrator only API calls, so a
@@ -16,17 +23,17 @@ _ALREADY_EXISTS_MESSAGE = (
 # an unusable token with 401 and a token whose owner may not act with 403,
 # and says no more than that, so the hint names what to check.
 PERMISSION_HINT = (
-    " Check [gitlab].pat (or DTAAS_GITLAB_PAT): creating users and tokens "
+    "Check DTAAS_GITLAB_PAT (or [gitlab].pat): creating users and tokens "
     "needs a non-expired personal access token with the 'api' scope, owned "
     "by an administrator account, and the 'admin_mode' scope as well on an "
     "instance with Admin Mode enabled."
 )
 
 
-def _with_hint(message, error):
+def _with_permission_hint(message, error):
     """*message*, plus the token hint when GitLab refused the credentials."""
     refused = "401" in str(error) or "403" in str(error)
-    return f"{message}{PERMISSION_HINT}" if refused else message
+    return with_hint(message, PERMISSION_HINT if refused else "")
 
 
 @dataclass(frozen=True)
@@ -60,15 +67,17 @@ def _issue_pat(gl, username, user_id, *, retry=False) -> ProvisionResult:
     the wording, for the existing-account reissue path."""
     ok, token_or_error = create_user_pat(gl, user_id, username)
     if not ok:
-        prefix = (
-            "PAT retry failed for existing account: "
+        summary = (
+            "PAT retry failed for the existing account."
             if retry
-            else "GitLab account created but PAT issuance failed: "
+            else "GitLab account created, but no PAT was issued."
         )
         return ProvisionResult(
             username,
             False,
-            _with_hint(f"{prefix}{token_or_error}", token_or_error),
+            _with_permission_hint(
+                with_hint(summary, token_or_error), token_or_error
+            ),
             user_id=user_id,
         )
     message = (
@@ -85,13 +94,19 @@ def _create_user_and_pat(gl, user: GitlabUser) -> ProvisionResult:
     )
     if result.outcome is CreateOutcome.FAILED:
         return ProvisionResult(
-            user.username, False, _with_hint(result.error, result.error)
+            user.username,
+            False,
+            _with_permission_hint(
+                with_hint("GitLab account creation failed.", result.error), result.error
+            ),
         )
     if result.outcome is CreateOutcome.ALREADY_EXISTS:
         return ProvisionResult(
             user.username,
             True,
-            f"{_ALREADY_EXISTS_MESSAGE}{result.error}",
+            with_hint(
+                _ALREADY_EXISTS_SUMMARY, f"{_ALREADY_EXISTS_DETAIL}{result.error}"
+            ),
             already_exists=True,
         )
     assert result.user_id is not None  # guaranteed whenever outcome is CREATED

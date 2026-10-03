@@ -82,7 +82,7 @@ def test_add_users_gitlab_skips_user_with_no_password(
 
     assert err is None
     mock_ensure.assert_called_once()
-    assert "no password supplied" in capsys.readouterr().out
+    assert "No GitLab password supplied" in capsys.readouterr().out
 
 
 def test_add_users_gitlab_client_failure_fails_the_command(

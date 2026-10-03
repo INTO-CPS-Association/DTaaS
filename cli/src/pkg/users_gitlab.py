@@ -19,6 +19,7 @@ import click
 from . import gitlab as gitlabPkg
 from . import utils
 from .constants import GITLAB_USER_TOKENS_FILE
+from .messages import echo_hint, with_hint
 from .users_gitlab_records import persist_account_result, persist_projects_result
 from .users_gitlab_targets import (
     RUN_DEADLINE_MINUTES,
@@ -30,7 +31,7 @@ from .users_gitlab_targets import (
 )
 
 PAT_ISSUED_NOTICE = (
-    "a Personal Access Token was already issued on an earlier run (see "
+    "A Personal Access Token was already issued on an earlier run (see "
     f"{GITLAB_USER_TOKENS_FILE}). A re-run does not reissue one."
 )
 
@@ -63,10 +64,10 @@ def _report_account(username, result):
     token: this run did not create it, so its credentials are unknown.
     """
     if not result.ok:
-        click.echo(f"GitLab provisioning failed for '{username}': {result.message}")
+        echo_hint(f"GitLab provisioning failed for '{username}'.", result.message)
         return None
     if result.already_exists:
-        click.echo(f"Warning: GitLab provisioning for '{username}': {result.message}")
+        echo_hint(f"Warning: GitLab account exists for '{username}'.", result.message)
         return None
     return result.token
 
@@ -74,9 +75,7 @@ def _report_account(username, result):
 def _account_skipped(candidate, reason, has_account=True):
     """Report that this candidate's account step was not run, as a skip
     rather than a failure, and carry on to their projects."""
-    click.echo(
-        f"GitLab account provisioning skipped for '{candidate.username}': {reason}"
-    )
+    echo_hint(f"GitLab account step skipped for '{candidate.username}'.", reason)
     return GitlabUserResult(
         candidate.username, None, None, False, has_account=has_account
     )
@@ -97,7 +96,7 @@ def _account_step(run, candidate):
     if not candidate.password:
         return _account_skipped(
             candidate,
-            "no password supplied.",
+            "No GitLab password supplied for this user.",
             has_account=bool(candidate.existing_user_id),
         )
     result = gitlabPkg.ensure_user_resources(
@@ -176,7 +175,7 @@ def _provision_one_gitlab_user(run, candidate):
         result = _projects_step(run, candidate, account)
         persist_projects_result(result)
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        click.echo(f"GitLab provisioning failed for '{candidate.username}': {exc}")
+        echo_hint(f"GitLab provisioning failed for '{candidate.username}'.", exc)
         return GitlabUserResult(candidate.username, None, None, True)
     return result
 
@@ -224,7 +223,7 @@ def provision_gitlab_users(config_obj, candidates):
     run = _GitlabRun(None, templates, template_error, deadline)
     gl, err = gitlabPkg.resolve_client(config_obj)
     if err is not None:
-        click.echo(f"GitLab provisioning skipped: {err}")
+        echo_hint("GitLab provisioning skipped for every user.", err)
         wants = run.wants_projects
         return [c.username for c in candidates if has_gitlab_work(c, wants)]
     return _issue_gitlab_resources(replace(run, gl=gl), candidates)
@@ -235,7 +234,8 @@ def gitlab_failure_exc(failed):
     if not failed:
         return None
     return Exception(
-        "GitLab provisioning failed for: "
-        + ", ".join(failed)
-        + " (their containers were still provisioned)"
+        with_hint(
+            "GitLab provisioning failed for: " + ", ".join(failed),
+            "Their containers were still provisioned.",
+        )
     )

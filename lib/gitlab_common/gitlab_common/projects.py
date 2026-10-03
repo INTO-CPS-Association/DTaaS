@@ -22,6 +22,7 @@ import gitlab
 import gitlab.exceptions
 
 from .errors import API_ERRORS
+from .messages import with_hint
 from .project_import import IMPORT_TIMEOUT_MINUTES, await_import
 
 logger = logging.getLogger(__name__)
@@ -30,9 +31,9 @@ logger = logging.getLogger(__name__)
 # template's own visibility is not inherited by an import.
 PROJECT_VISIBILITY = "private"
 
-NO_IMPORT_TO_AWAIT = (
-    "project exists but is empty and has no import to wait for; delete it in "
-    "GitLab and re-run to create it from the template"
+NO_IMPORT_TO_AWAIT = with_hint(
+    "The project exists but is empty, with no import to await.",
+    "Delete it in GitLab and re-run to create it from the template.",
 )
 
 

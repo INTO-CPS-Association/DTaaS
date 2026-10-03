@@ -34,7 +34,7 @@ def test_delete_user_error(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["user", "delete", "alice"])
 
     assert result.exit_code != 0
-    assert "Error while deleting users: daemon down" in result.output
+    assert "Error while deleting users\n  daemon down" in result.output
 
 
 def test_delete_user_dry_run(runner, mock_user_pkg):
@@ -116,7 +116,7 @@ def test_add_users_gitlab_provision_check_error(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
 
     assert result.exit_code != 0
-    assert "Error while adding users: bad gitlab section" in result.output
+    assert "Error while adding users\n  bad gitlab section" in result.output
 
 
 def test_add_names_a_registered_user_for_the_project_retry(

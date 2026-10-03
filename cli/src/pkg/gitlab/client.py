@@ -4,14 +4,30 @@ import os
 
 import click
 
-from ...gitlab_common import get_gitlab_client
+from ...gitlab_common import get_gitlab_client, with_hint
 
 PAT_ENV_VAR = "DTAAS_GITLAB_PAT"
 
+NO_PAT_ERROR = with_hint(
+    "No GitLab PAT configured for provisioning.",
+    f"Export {PAT_ENV_VAR}, or set [gitlab].pat in dtaas.toml.",
+)
+
+SSL_WARNING = with_hint(
+    "Warning: [gitlab].ssl_verify is disabled.",
+    "GitLab API traffic, the admin PAT and provisioned users' passwords "
+    "included, is not certificate-verified.",
+)
+
 
 def resolve_pat(config_obj):
-    """Resolve the provisioning PAT: [gitlab].pat, else the DTAAS_GITLAB_PAT
-    environment variable.
+    """Resolve the provisioning PAT: the DTAAS_GITLAB_PAT environment
+    variable, else [gitlab].pat from dtaas.toml.
+
+    The environment takes precedence so a rotated token, or a run aimed at
+    another instance, needs no edit to a dtaas.toml the whole installation
+    shares. [gitlab].pat is still read first, to surface a malformed
+    [gitlab] section rather than mask it behind a working env var.
 
     Returns:
         Tuple of (pat, err)
@@ -19,12 +35,9 @@ def resolve_pat(config_obj):
     pat, err = config_obj.get_gitlab_pat()
     if err is not None:
         return None, err
-    pat = pat or os.environ.get(PAT_ENV_VAR, "").strip()
+    pat = os.environ.get(PAT_ENV_VAR, "").strip() or pat
     if not pat:
-        return None, Exception(
-            "GitLab provisioning is enabled but no PAT is configured. "
-            f"Set [gitlab].pat in dtaas.toml or the {PAT_ENV_VAR} environment variable."
-        )
+        return None, Exception(NO_PAT_ERROR)
     return pat, None
 
 
@@ -46,10 +59,5 @@ def resolve_client(config_obj):
         values.append(value)
     api_url, pat, ssl_verify = values
     if ssl_verify is False:
-        click.echo(
-            "Warning: [gitlab].ssl_verify is disabled -- GitLab API traffic "
-            "(including the admin PAT and provisioned users' passwords) is "
-            "not certificate-verified.",
-            err=True,
-        )
+        click.echo(SSL_WARNING, err=True)
     return get_gitlab_client(api_url, pat, ssl_verify=ssl_verify), None

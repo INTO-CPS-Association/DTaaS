@@ -13,6 +13,7 @@ template out of a deployment's own configuration is each consumer's.
 """
 
 from .client import get_gitlab_client
+from .messages import with_hint
 from .project_import import IMPORT_TIMEOUT_MINUTES, await_import, import_state
 from .projects import ProjectResult, ProjectSpec, create_user_project
 from .user_projects import (
@@ -37,6 +38,7 @@ from .validators import validate_user_row
 
 __all__ = [
     "get_gitlab_client",
+    "with_hint",
     "create_user",
     "create_user_pat",
     "find_user_id",

@@ -652,9 +652,10 @@ export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
 The generated `dtaas.toml` ships a commented `[gitlab].pat` key for
-installations that would rather keep the token in the file. A value set
-there takes precedence over the environment variable, so leave the
-placeholder commented out while `DTAAS_GITLAB_PAT` is in use.
+installations that would rather keep the token in the file. The environment
+variable takes precedence: `DTAAS_GITLAB_PAT` is used whenever it is
+exported and non-empty, and `[gitlab].pat` is the fallback for a run without
+it, so a rotated token needs no edit to the shared file.
 
 The token the CLI then issues for each user is far narrower: it is named
 `dtaas`, carries `read_repository` and `write_repository` only, and expires

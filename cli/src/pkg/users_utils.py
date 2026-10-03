@@ -4,6 +4,7 @@ import re
 import click
 from pathlib import Path
 from .constants import CONF_SERVER_RULE_NUM_RE, LOCALHOST_SERVER, USERNAME_RE
+from .messages import echo_hint
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
 
@@ -149,9 +150,9 @@ def report_delete_preview(existing, usernames):
     if existing:
         click.echo(f"Would deprovision and stop: {', '.join(existing)}")
     click.echo(f"Would remove from registry: {', '.join(usernames)}")
-    click.echo(
-        "GitLab accounts, tokens and projects would be left untouched; the "
-        "saved tokens would be dropped from the credentials file."
+    echo_hint(
+        "GitLab accounts, tokens and projects stay untouched.",
+        "The saved tokens would be dropped from the credentials file.",
     )
 
 

@@ -159,10 +159,10 @@ sits in the shared module where `dtaas-services` can use it as well; the
 template itself comes from each deployment's own configuration, which for
 this package means `dtaas.toml`.
 
-- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` and
-  `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
-  variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
-  instance.
+- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` from
+  `dtaas.toml` and resolves the PAT from the `DTAAS_GITLAB_PAT` environment
+  variable, falling back to `[gitlab].pat`, then builds a
+  `gitlab_common.get_gitlab_client` instance.
 - `provisioner.py`'s `ensure_user_resources(gl, user)` (a `GitlabUser` of
   username/email/password, plus an optional registry-stored user id)
   creates the user's GitLab account and Personal Access Token via
@@ -285,12 +285,13 @@ deployment that configures no template never records
 `gitlab_projects_created`, so without that flag every user who ever had a
 token would count as unfinished work forever and an unusable client would
 fail a command with nothing left to do. Two visible
-consequences follow. A `--file` import whose CSV has no password column now
-reaches the GitLab step and prints one skip line per row (still exit 0):
-"no password supplied" for a user with no account, the issued token notice
-for one who has it. And `cmd_user` does not prompt for a password for a user
-already marked `gitlab_pat_issued` (`_pat_issued`), since `_account_step`
-would discard it.
+consequences follow. A `--file` import whose CSV has no password column is
+refused by `require_passwords` before anything is written, naming the users
+with neither a password nor an account from an earlier run; a user who
+already has one is not refused, and their account step reports the issued
+token rather than a missing password. And `cmd_user` does not prompt for a
+password for a user already marked `gitlab_pat_issued` (`_pat_issued`),
+since `_account_step` would discard it.
 A run also has a budget: `[gitlab].import_deadline` minutes (60 by
 default), kept by `users_gitlab_targets.RunDeadline` from the moment GitLab
 provisioning starts. `_issue_gitlab_resources` checks it before each user
@@ -304,6 +305,15 @@ would wait `import_timeout` twice per user, hours for a large CSV.
 `users_gitlab_targets.py` decides who is in it, and
 `users_gitlab_records.py` is the disk half: the 0600 token file and the
 registry markers. Group provisioning is still not implemented.
+
+Everything these steps print goes through `pkg/messages.py`'s `echo_hint`,
+over `gitlab_common.with_hint`. A failure, warning or skip opens with one
+line short enough to scan in a run that touches many users, and keeps what
+a reader has to act on (the PAT scopes behind a 401, the `projects_limit`
+cause of a 403, GitLab's own words on a 409) in an indented line underneath.
+A message that already carries a hint keeps its shape when it becomes the
+detail of another, so the per user line can wrap a provisioner result
+without the two running together.
 
 ### User registry and runtime state
 

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 import click
 
+from ..messages import echo_hint, with_hint
 from ...gitlab_common import (
     COMMON_PROJECT_NAME,
     IMPORT_TIMEOUT_MINUTES,
@@ -22,10 +23,12 @@ from ...gitlab_common import (
     find_user_id,
 )
 
-NO_TEMPLATE_NOTICE = (
-    "GitLab project creation skipped: no project templates in dtaas.toml. "
-    "Set [gitlab] common_template and user_template (the generated "
-    "dtaas.toml ships the DTaaS values)."
+NO_TEMPLATE_SUMMARY = "GitLab project creation skipped for every user."
+
+NO_TEMPLATE_HINT = (
+    "There are no project templates in dtaas.toml: set [gitlab] "
+    "common_template and user_template (the generated dtaas.toml ships the "
+    "DTaaS values)."
 )
 
 
@@ -49,10 +52,10 @@ def resolve_templates(config_obj):
     timeout, timeout_err = config_obj.get_gitlab_import_timeout()
     err = err or timeout_err
     if err is not None:
-        click.echo(f"GitLab project creation failed: {err}")
+        echo_hint("GitLab project creation failed.", err)
         return None, str(err)
     if values is None:
-        click.echo(NO_TEMPLATE_NOTICE)
+        echo_hint(NO_TEMPLATE_SUMMARY, NO_TEMPLATE_HINT)
         return None, ""
     templates = ProjectTemplates(
         values["common_template"],
@@ -84,9 +87,9 @@ def _resolve_user_id(gl, target):
         return target.user_id
     user_id = find_user_id(gl, target.username)
     if user_id is not None:
-        click.echo(
-            f"Note: the GitLab id for '{target.username}' was not in the "
-            "registry and was resolved by username."
+        echo_hint(
+            f"Note: '{target.username}' had no GitLab id on record.",
+            "It was resolved by username instead.",
         )
     return user_id
 
@@ -94,13 +97,14 @@ def _resolve_user_id(gl, target):
 # Projects are created through GitLab's administrator only "create project
 # for user" endpoint, which runs the creation as the user it is for. A 403
 # therefore has two possible owners, and GitLab's own answer names neither.
+FORBIDDEN_SUMMARY = "Note: GitLab refused to create the projects."
+
 FORBIDDEN_HINT = (
-    "Note: GitLab refused the admin only 'create project for user' call, "
-    "which it runs as the account itself: check that the PAT owner is an "
-    "administrator, and that the account may create projects "
-    "(GET /api/v4/users/<id> reports projects_limit and can_create_project; "
-    "an instance whose default projects limit is 0 refuses every new "
-    "account)."
+    "The admin only 'create project for user' call runs as the account "
+    "itself: check that the PAT owner is an administrator, and that the "
+    "account may create projects (GET /api/v4/users/<id> reports "
+    "projects_limit and can_create_project; an instance whose default "
+    "projects limit is 0 refuses every new account)."
 )
 
 
@@ -112,7 +116,7 @@ def _project_line(username: str, message) -> str:
     without being a failure of the run.
     """
     prefix = "Warning: " if message.level == MESSAGE_WARNING else ""
-    return f"{prefix}GitLab projects for '{username}': {message.text}"
+    return with_hint(f"{prefix}GitLab projects for '{username}'.", message.text)
 
 
 def _report_messages(username: str, messages) -> None:
@@ -126,7 +130,7 @@ def _report_messages(username: str, messages) -> None:
     for message in messages:
         click.echo(_project_line(username, message))
     if any("403" in message.text for message in messages):
-        click.echo(FORBIDDEN_HINT)
+        echo_hint(FORBIDDEN_SUMMARY, FORBIDDEN_HINT)
 
 
 def provision_user_projects(gl, target, templates):
@@ -138,14 +142,14 @@ def provision_user_projects(gl, target, templates):
     """
     user_id = _resolve_user_id(gl, target)
     if user_id is None:
-        click.echo(
-            f"GitLab project creation failed for '{target.username}': "
-            "their GitLab user id could not be resolved."
+        echo_hint(
+            f"GitLab project creation failed for '{target.username}'.",
+            "Their GitLab user id could not be resolved.",
         )
         return False
-    click.echo(
-        f"Creating the GitLab projects for '{target.username}'; importing the "
-        "template can take a few minutes."
+    echo_hint(
+        f"Creating the GitLab projects for '{target.username}'.",
+        "Importing the template can take a few minutes.",
     )
     ok, messages = ensure_user_projects(gl, user_id, templates)
     _report_messages(target.username, messages)

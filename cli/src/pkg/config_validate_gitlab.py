@@ -27,10 +27,7 @@ def _gitlab_pat_errors(gitlab):
     """Check gitlab.pat is not set but empty."""
     pat = gitlab.get("pat")
     if pat is not None and not str(pat).strip():
-        return [
-            "gitlab.pat is set but empty; remove the key to use "
-            "DTAAS_GITLAB_PAT instead, or provide a real token"
-        ]
+        return ["gitlab.pat is set but empty: remove it or set a real token"]
     return []
 
 

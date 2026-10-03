@@ -19,6 +19,7 @@ from typing import Any
 import gitlab
 
 from .errors import API_ERRORS
+from .messages import with_hint
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +36,15 @@ IMPORT_POLL_MAX_ERRORS = 3
 
 # GitLab never reruns an import that failed or never started, so the empty
 # project it leaves behind has to go before a new import can be made.
-IMPORT_RETRY_HINT = "delete the empty project in GitLab and re-run to import it again"
+IMPORT_RETRY_HINT = (
+    "Delete the empty project in GitLab and re-run to import it again."
+)
 
-IMPORT_NOT_SCHEDULED = (
-    "GitLab did not schedule the repository import; check that the "
-    "'Repository by URL' import source is enabled on the instance and that "
-    f"the server can reach the template URL, then {IMPORT_RETRY_HINT}"
+IMPORT_NOT_SCHEDULED = with_hint(
+    "GitLab did not schedule the repository import.",
+    "Check that the 'Repository by URL' import source is enabled on the "
+    "instance and that the server can reach the template URL. "
+    f"{IMPORT_RETRY_HINT}",
 )
 
 
@@ -57,7 +61,7 @@ def import_state(project) -> str | None:
         return ""
     if status == "failed":
         detail = getattr(project, "import_error", "") or "no detail reported"
-        return f"repository import failed: {detail}; {IMPORT_RETRY_HINT}"
+        return with_hint(f"The repository import failed: {detail}", IMPORT_RETRY_HINT)
     return IMPORT_NOT_SCHEDULED if status == "none" else None
 
 

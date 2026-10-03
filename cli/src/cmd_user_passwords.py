@@ -13,6 +13,7 @@ dtaas.users.registry.json (see registry_csv.read_csv_passwords).
 
 from dataclasses import dataclass, field
 import click
+from .gitlab_common import with_hint
 from .pkg import registry as registryPkg
 from .pkg import registry_csv as registryCsvPkg
 
@@ -138,5 +139,5 @@ def require_passwords(named, passwords):
     if missing:
         listed = ", ".join(f"'{name}'" for name in missing)
         raise click.ClickException(
-            f"No GitLab password for {listed}. {NO_PASSWORD_HINT}"
+            with_hint(f"No GitLab password for {listed}.", NO_PASSWORD_HINT)
         )

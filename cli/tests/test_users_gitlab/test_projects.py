@@ -153,7 +153,7 @@ def test_add_users_retries_projects_without_a_password(
     assert mock_gitlab_projects.call_args.args[1].user_id == 42
     out = capsys.readouterr().out
     assert "already issued" in out
-    assert "no password supplied" not in out
+    assert "No GitLab password supplied" not in out
 
 
 def test_add_users_persists_the_token_before_waiting_on_the_import(

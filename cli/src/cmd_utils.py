@@ -11,6 +11,7 @@ from pathlib import Path
 import click
 from python_on_whales.exceptions import DockerException
 from .pkg import config as configPkg
+from .pkg.messages import with_hint
 from .pkg import registry as registryPkg
 from .pkg import state as statePkg
 from .pkg import deploy as deployPkg
@@ -39,7 +40,7 @@ def run_user_command(action, success_msg, error_prefix):
         raise click.ClickException(str(exc)) from exc
     outcome = action(config_obj)
     if isinstance(outcome, Exception):
-        raise click.ClickException(f"{error_prefix}: {outcome}")
+        raise click.ClickException(with_hint(error_prefix, outcome))
     click.echo(outcome or success_msg)
 
 

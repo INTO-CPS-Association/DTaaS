@@ -116,7 +116,7 @@ def test_delete_users_dry_run_makes_no_changes(
     out = capsys.readouterr().out
     assert "Would deprovision and stop: user1" in out
     assert "Would remove from registry: user1, ghost" in out
-    assert "GitLab accounts, tokens and projects would be left untouched" in out
+    assert "GitLab accounts, tokens and projects stay untouched" in out
 
 
 def test_delete_reports_the_gitlab_resources_it_leaves(
@@ -135,7 +135,7 @@ def test_delete_reports_the_gitlab_resources_it_leaves(
     assert users_delete.delete_users(["user1"]) is None
 
     out = capsys.readouterr().out
-    assert "GitLab still has the account, token and projects of 'user1'" in out
+    assert "nothing was removed in GitLab for 'user1'" in out
     assert "Delete the account there before re-adding" in out
 
 

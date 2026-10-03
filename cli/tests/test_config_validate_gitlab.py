@@ -40,10 +40,9 @@ def test_gitlab_empty_pat_rejected(base):
     """A [gitlab].pat key that is present but blank is a config mistake."""
     bad = copy.deepcopy(base)
     bad["gitlab"] = {"pat": "   "}
-    assert (
-        "gitlab.pat is set but empty; remove the key to use "
-        "DTAAS_GITLAB_PAT instead, or provide a real token"
-    ) in collect_errors(bad)
+    assert "gitlab.pat is set but empty: remove it or set a real token" in collect_errors(
+        bad
+    )
 
 
 def test_gitlab_ssl_verify_accepts_bool_or_string(base):

@@ -11,6 +11,7 @@ import click
 from .pkg import config as configPkg
 from .pkg import registry as registryPkg
 from .pkg import registry_csv as registryCsvPkg
+from .pkg.messages import with_hint
 from .pkg.users_utils import validate_usernames
 from .cmd_user_passwords import PasswordSources, require_passwords, resolve_passwords
 
@@ -118,9 +119,9 @@ def _users_to_add(user_input, starting_emails):
 def _skip_notice(name, starting):
     """The line reporting one name 'user add' did not merge into the registry."""
     if name in starting:
-        return (
-            f"'{name}' is a dtaas.toml starting user; its workspace is "
-            "managed there, not by 'user add'"
+        return with_hint(
+            f"'{name}' is a dtaas.toml starting user.",
+            "Its workspace is managed there, not by 'user add'.",
         )
     return f"'{name}' already exists, skipping"
 
@@ -160,8 +161,10 @@ def _reject_bad_input(user_input):
         raise click.ClickException("Pass either a USERNAME or --file, not both.")
     if not user_input.username and not user_input.csv_file:
         raise click.ClickException(
-            "Provide a USERNAME (e.g. 'dtaas user add alice --email "
-            "a@x.io') or --file <users.csv> to add users."
+            with_hint(
+                "Provide a USERNAME or --file <users.csv> to add users.",
+                "For example: dtaas user add alice --email a@x.io",
+            )
         )
 
 
@@ -221,6 +224,9 @@ def reject_starting_users(usernames, verb):
     hits = sorted(set(usernames) & set(_starting_usernames()))
     if hits:
         raise click.ClickException(
-            f"Cannot {verb} starting user(s) {', '.join(hits)}: manage the whole "
-            "installation with 'dtaas platform pause'/'stop'/'resume' instead."
+            with_hint(
+                f"Cannot {verb} starting user(s) {', '.join(hits)}.",
+                "Manage the whole installation with 'dtaas platform "
+                "pause'/'stop'/'resume' instead.",
+            )
         )

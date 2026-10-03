@@ -13,6 +13,7 @@ from pathlib import Path
 import click
 from . import utils
 from .constants import GITLAB_USER_TOKENS_FILE
+from .messages import echo_hint
 from .registry import (
     set_gitlab_pat_issued,
     set_gitlab_projects_created,
@@ -27,10 +28,10 @@ def _keep_superseded(existing, username, token):
     if prior and prior != token:
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         existing[f"{username} (superseded {stamp})"] = prior
-        click.echo(
-            f"Warning: replaced the saved GitLab token for '{username}'; the "
-            "previous token is still valid on GitLab and must be revoked "
-            "manually."
+        echo_hint(
+            f"Warning: replaced the saved GitLab token for '{username}'.",
+            "The previous token is still valid on GitLab and must be revoked "
+            "manually.",
         )
 
 
@@ -72,9 +73,9 @@ def persist_account_result(result):
     if result.token:
         _save_gitlab_tokens({result.username: result.token})
         set_gitlab_pat_issued([result.username])
-        click.echo(
-            f"GitLab account and token created for '{result.username}'; the "
-            f"token is in {GITLAB_USER_TOKENS_FILE}."
+        echo_hint(
+            f"GitLab account and token created for '{result.username}'.",
+            f"The token is in {GITLAB_USER_TOKENS_FILE}.",
         )
 
 
@@ -113,12 +114,13 @@ def release_gitlab_records(users_section, usernames):
     tracked = _gitlab_tracked(users_section, usernames)
     _forget_gitlab_tokens(tracked)
     if tracked:
-        click.echo(
-            "Note: GitLab still has the account, token and projects of "
-            + ", ".join(f"'{name}'" for name in tracked)
-            + f"; the saved token was dropped from {GITLAB_USER_TOKENS_FILE} "
-            "and can now only be revoked in GitLab. Delete the account there "
-            "before re-adding the same username."
+        listed = ", ".join(f"'{name}'" for name in tracked)
+        echo_hint(
+            f"Note: nothing was removed in GitLab for {listed}.",
+            "The accounts, their tokens and their projects all stay there, "
+            f"and the saved token was dropped from {GITLAB_USER_TOKENS_FILE}, "
+            "so it can now only be revoked in GitLab. Delete the account "
+            "there before re-adding the same username.",
         )
 
 

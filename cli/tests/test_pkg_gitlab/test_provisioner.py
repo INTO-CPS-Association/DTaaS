@@ -100,7 +100,7 @@ def test_ensure_user_resources_already_exists_is_idempotent_noop():
     assert result.ok is True
     assert result.token == ""
     assert result.already_exists is True
-    assert "created nothing" in result.message
+    assert "nothing was created" in result.message
     gl.users.get.assert_not_called()
 
 
@@ -154,7 +154,7 @@ def test_ensure_user_resources_pat_failure_after_user_created():
     result = ensure_user_resources(gl, _user())
 
     assert result.ok is False
-    assert "PAT issuance failed" in result.message
+    assert "no PAT was issued" in result.message
 
 
 def test_a_refused_token_is_reported_with_what_to_check():
