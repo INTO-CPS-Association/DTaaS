@@ -105,16 +105,17 @@ script/release-packages.sh verify dev dist
 ```
 
 To replace the packages of an existing release, check out its tag,
-build the packages with the script from the default branch and upload
-them:
+build the packages with the script from the default branch into a fresh
+directory and upload them:
 
 ```bash
 git switch --detach v1.0
 git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
 git show origin/feature/distributed-demo:script/release-packages.sh > /tmp/release-packages.sh
-bash /tmp/release-packages.sh build 1.0 dist
-bash /tmp/release-packages.sh verify 1.0 dist
-gh release upload v1.0 dist/*.zip --clobber
+rm -rf dist-1.0
+bash /tmp/release-packages.sh build 1.0 dist-1.0
+bash /tmp/release-packages.sh verify 1.0 dist-1.0
+gh release upload v1.0 dist-1.0/*-1.0.zip --clobber --repo INTO-CPS-Association/DTaaS
 ```
 
 ## Release Guidance

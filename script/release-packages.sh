@@ -39,6 +39,12 @@ reject_lfs_pointers() {
 $pointers"
 }
 
+# Packages must match a commit, so staged or unstaged edits are refused.
+require_committed() {
+  git diff --quiet HEAD -- "$1" ||
+    fail "$1 has uncommitted changes; commit or discard them first"
+}
+
 # Copy the tracked files of src into <stage>/<name>/; tar keeps file modes.
 stage_package() {
   local name="$1" src="$2" stage="$3"
@@ -52,6 +58,7 @@ build_package() {
   local name="$1" src="$2" version="$3" out="$4"
   local zip="$out/$name-$version.zip"
   local stage="$WORK_DIR/build-$name"
+  require_committed "$src"
   stage_package "$name" "$src" "$stage"
   reject_lfs_pointers "$stage/$name"
   rm -f "$zip"
@@ -83,6 +90,7 @@ verify_package() {
   local zip="$out/$name-$version.zip"
   local extract="$WORK_DIR/verify-$name"
   [ -f "$zip" ] || fail "missing $zip"
+  require_committed "$src"
   mkdir -p "$extract"
   unzip -q "$zip" -d "$extract"
   verify_file_list "$zip" "$name" "$src" "$extract"
