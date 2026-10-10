@@ -32,17 +32,18 @@ fail() {
 }
 
 reject_lfs_pointers() {
-  local pointers
-  pointers=$(grep -rlxF "$LFS_POINTER" "$1" || true)
-  [ -z "$pointers" ] ||
+  local dir="$1" pointers
+  pointers=$(grep -rlxF "$LFS_POINTER" "$dir" || true)
+  [[ -z $pointers ]] ||
     fail "Git LFS pointers instead of content (run 'git lfs pull'):
 $pointers"
 }
 
 # Packages must match a commit, so staged or unstaged edits are refused.
 require_committed() {
-  git diff --quiet HEAD -- "$1" ||
-    fail "$1 has uncommitted changes; commit or discard them first"
+  local src="$1"
+  git diff --quiet HEAD -- "$src" ||
+    fail "$src has uncommitted changes; commit or discard them first"
 }
 
 # Copy the tracked files of src into <stage>/<name>/; tar keeps file modes.
@@ -69,7 +70,7 @@ build_package() {
 # The zip must hold <name>/ and, inside it, exactly the tracked files.
 verify_file_list() {
   local zip="$1" name="$2" src="$3" extract="$4"
-  [ "$(ls -A "$extract")" = "$name" ] ||
+  [[ "$(ls -A "$extract")" == "$name" ]] ||
     fail "$zip: expected a single top-level directory '$name/'"
   diff <(git -C "$src" ls-files | sort) \
     <(cd "$extract/$name" && find . -type f | sed 's#^\./##' | sort) >&2 ||
@@ -89,7 +90,7 @@ verify_package() {
   local name="$1" src="$2" version="$3" out="$4"
   local zip="$out/$name-$version.zip"
   local extract="$WORK_DIR/verify-$name"
-  [ -f "$zip" ] || fail "missing $zip"
+  [[ -f $zip ]] || fail "missing $zip"
   require_committed "$src"
   mkdir -p "$extract"
   unzip -q "$zip" -d "$extract"
@@ -107,9 +108,9 @@ for_each_package() {
 }
 
 main() {
-  [ $# -eq 3 ] || fail "usage: $0 build|verify <version> <out-dir>"
+  [[ $# -eq 3 ]] || fail "usage: $0 build|verify <version> <out-dir>"
   local command="$1" version="$2" out="$3"
-  [[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] ||
+  [[ $version =~ ^[A-Za-z0-9._-]+$ ]] ||
     fail "version '$version' may only contain letters, digits, '.', '_', '-'"
   mkdir -p "$out"
   out=$(cd "$out" && pwd)

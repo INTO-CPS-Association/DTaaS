@@ -26,7 +26,7 @@ wait_for_health() {
   local attempt
   for attempt in 1 2 3 4 5 6 7 8 9 10; do
     if curl --fail --silent "http://127.0.0.1:$port/logger/health" \
-      > /dev/null; then
+      >/dev/null; then
       return 0
     fi
     echo "waiting for logger health (attempt $attempt)"
@@ -50,8 +50,8 @@ trap 'docker logs "$container_id"; docker stop "$container_id" > /dev/null' EXIT
 
 wait_for_health
 status=$(post_event)
-[ "$status" = "204" ] || fail "POST /logger returned HTTP $status, want 204"
+[[ $status == "204" ]] || fail "POST /logger returned HTTP $status, want 204"
 owner=$(docker exec "$container_id" \
   stat -c %U /dtaas/logger/logs/workflow-logs.jsonl)
-[ "$owner" = "node" ] || fail "log file owned by '$owner', want 'node'"
+[[ $owner == "node" ]] || fail "log file owned by '$owner', want 'node'"
 echo "logger image accepted an event and wrote it as node"
