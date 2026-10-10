@@ -85,6 +85,38 @@ The `Release Packages` workflow (`release-packages.yml`) runs when
 installation scenario under `deploy/dtaas/docker/` and
 `deploy/workspace/` as a GitHub Actions artifact.
 
+## Installation Packages
+
+The installation packages attached to each GitHub release are built by
+the `Release Packages` workflow (`.github/workflows/release-packages.yml`)
+with `script/release-packages.sh`. Each package is
+`<package>-<version>.zip`, holding every tracked file of its source
+directory under `deploy/dtaas/docker/` or `deploy/workspace/`.
+
+Publishing a GitHub release attaches the packages automatically. Do not
+edit or re-zip them by hand; change the source directory instead.
+
+To build and check the packages locally:
+
+```bash
+git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
+script/release-packages.sh build dev dist
+script/release-packages.sh verify dev dist
+```
+
+To replace the packages of an existing release, check out its tag,
+build the packages with the script from the default branch and upload
+them:
+
+```bash
+git switch --detach v1.0
+git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
+git show origin/feature/distributed-demo:script/release-packages.sh > /tmp/release-packages.sh
+bash /tmp/release-packages.sh build 1.0 dist
+bash /tmp/release-packages.sh verify 1.0 dist
+gh release upload v1.0 dist/*.zip --clobber
+```
+
 ## Release Guidance
 
 - Bump versions deliberately, and only for the packages that changed.
