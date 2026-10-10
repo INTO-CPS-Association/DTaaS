@@ -4,14 +4,29 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { applyCaptures } = require('./apply');
-const { IMAGES } = require('./images');
+const { IMAGES, UNREFERENCED } = require('./images');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const TARGETS = Object.values(IMAGES).flat();
 
-test('every target sits in an existing docs directory', () => {
+// A docs image is shown by any page in the section above it; an image
+// elsewhere, such as a server's README, by a page beside it.
+function markdownNear(target) {
+  const dir = path.join(REPO_ROOT, path.dirname(target));
+  const inDocs = target.startsWith('docs/');
+  const pagesDir = inDocs ? path.join(dir, '..') : dir;
+  return fs
+    .readdirSync(pagesDir, { recursive: inDocs })
+    .filter((file) => file.endsWith('.md'))
+    .map((file) => fs.readFileSync(path.join(pagesDir, file), 'utf8'))
+    .join('\n');
+}
+
+const isShown = (target) =>
+  markdownNear(target).includes(path.basename(target));
+
+test('every target sits in an existing directory', () => {
   for (const target of TARGETS) {
-    assert.ok(target.startsWith('docs/'), target);
     const dir = path.join(REPO_ROOT, path.dirname(target));
     assert.ok(fs.existsSync(dir), target);
   }
@@ -23,13 +38,14 @@ test('no documentation image has two sources', () => {
 
 test('every target is referenced from the markdown near it', () => {
   for (const target of TARGETS) {
-    const pagesDir = path.join(REPO_ROOT, path.dirname(target), '..');
-    const markdown = fs
-      .readdirSync(pagesDir, { recursive: true })
-      .filter((file) => file.endsWith('.md'))
-      .map((file) => fs.readFileSync(path.join(pagesDir, file), 'utf8'))
-      .join('\n');
-    assert.ok(markdown.includes(path.basename(target)), target);
+    if (!UNREFERENCED.includes(target)) assert.ok(isShown(target), target);
+  }
+});
+
+test('the unreferenced list names only unreferenced targets', () => {
+  for (const target of UNREFERENCED) {
+    assert.ok(TARGETS.includes(target), target);
+    assert.ok(!isShown(target), target);
   }
 });
 

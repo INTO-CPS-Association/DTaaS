@@ -39,22 +39,11 @@ A digital twin that faithfully tracks the physical twin lifecycle must
 support all the phases. Digital twin engineers may also add their own
 phases, so the DTaaS platform is designed to accommodate different DTs.
 
-One possible linear sequence of the tasks in a digital twin
-lifecycle is shown here.
+The phases do not have to run in a fixed order. A digital twin can
+repeat or skip phases as needed.
 
-![Digital Twin Lifecycle](lifecycle.png)
-
-This is only one possible pathway. The order of the steps
-can be changed as needed.
-
-The lifecycle phases can be mapped to
-the <font color="orange"> **Build-Use-Share**</font> approach
-of the DTaaS platform.
-
-![DT Lifecycle and Build-Use-Share](build-use-share.png)
-
-A matching code structure is not mandatory, but it makes DT creation
-and management within the DTaaS platform easier.
+A code structure with one program per phase is not mandatory, but it
+makes DT creation and management within the DTaaS platform easier.
 The recommended structure is:
 
 ```text

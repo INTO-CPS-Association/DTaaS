@@ -1,33 +1,70 @@
-// Captures of the Library and Digital Twins pages reached from Automation,
-// including one run of the Hello World digital twin and its log.
+// Captures of the Library and Digital Twins pages reached from Automation.
+// Nothing is saved: the Create and Reconfigure editors are left by
+// navigating away, never through their Save buttons.
 const { go } = require('./session');
-const { clearOutlines, outlineElement } = require('./shots');
+const { around } = require('./shots');
 
-const RUN_TIMEOUT_MS = 10 * 60 * 1000;
-const RUN_FINISHED = /Status: (Completed|Failed|Canceled)/;
+async function openLibraryTab(page, tab) {
+  await page.getByRole('tab', { name: tab }).click();
+  await page.waitForTimeout(2500);
+}
 
 async function libraryPreview(ctx) {
   const { page } = ctx;
   await go(page, 'preview/library');
-  await page.getByRole('tab', { name: 'Tools' }).click();
-  await page.waitForTimeout(2500);
+  await openLibraryTab(page, 'Tools');
   await page.screenshot({ path: ctx.out('lib_preview_tools.png') });
-  await page.getByRole('tab', { name: 'Functions' }).click();
-  await page.waitForTimeout(2500);
+  await openLibraryTab(page, 'Functions');
   await page.getByRole('button', { name: 'Add' }).first().click();
   await page.waitForTimeout(1000);
   await page.screenshot({ path: ctx.out('lib_preview_selection.png') });
+  await page.getByRole('button', { name: 'Clear', exact: true }).click();
+  await page.getByRole('button', { name: 'Yes' }).click();
+  await openLibraryTab(page, 'Digital Twins');
+  await page.screenshot({ path: ctx.out('library-DTs.png') });
+  await page
+    .locator('.MuiCard-root')
+    .filter({ hasText: 'Mass Spring Damper' })
+    .getByRole('button', { name: 'Add' })
+    .click();
+  await page.waitForTimeout(1000);
+  await page.screenshot({ path: ctx.out('library-selection.png') });
+  await createFromSelection(ctx);
 }
 
-// Details only reads; the Reconfigure dialog is left by navigating away,
-// never through its Save button, so no digital twin changes.
+// The Create tab with the CI configuration of the selected twin open.
+async function createFromSelection(ctx) {
+  const { page } = ctx;
+  await page.getByRole('button', { name: 'Create a Digital Twin' }).click();
+  await page.waitForTimeout(5000);
+  await page.getByText(/configuration$/).click();
+  await page.waitForTimeout(1000);
+  await page.getByText('.gitlab-ci.yml', { exact: true }).last().click();
+  await page.waitForTimeout(3000);
+  await page.screenshot({ path: ctx.out('dt-create-config.png') });
+  await go(page, 'automation', 1000);
+}
+
 async function digitalTwinsPreview(ctx) {
   const { page } = ctx;
   await go(page, 'preview/digitaltwins');
   await page.screenshot({ path: ctx.out('dt_preview_create.png') });
+  const heading = page.getByText('Digital Twins Page', { exact: true });
+  await around(
+    ctx,
+    [heading, page.getByRole('tablist').first()],
+    'dt_preview_tabs.png',
+  );
   await page.getByRole('tab', { name: 'Manage' }).click();
-  await page.waitForTimeout(5000);
+  // The cards replace a loading spinner once the repository is read.
+  await page.getByRole('button', { name: 'Details' }).first().waitFor();
+  await page.waitForTimeout(2000);
   await page.screenshot({ path: ctx.out('dt_preview_manage.png') });
+  await manageDialogs(ctx);
+}
+
+async function manageDialogs(ctx) {
+  const { page } = ctx;
   await page.getByRole('button', { name: 'Details' }).nth(1).click();
   await page.waitForTimeout(3000);
   await page.screenshot({ path: ctx.out('dt_manage_details.png') });
@@ -44,32 +81,4 @@ async function digitalTwinsPreview(ctx) {
   await go(page, 'automation', 1000);
 }
 
-// Start Hello World, show it running, then show its log once it finishes.
-async function executeHelloWorld(ctx) {
-  const { page } = ctx;
-  await go(page, 'preview/digitaltwins');
-  await page.getByRole('tab', { name: 'Execute' }).click();
-  await page.waitForTimeout(5000);
-  const card = page.locator('.MuiCard-root').filter({ hasText: 'Hello World' });
-  await card.getByRole('button', { name: 'Start' }).click();
-  await page.waitForTimeout(4000);
-  await page.screenshot({ path: ctx.out('concurrent-execution.png') });
-  await card.getByRole('button', { name: 'History' }).click();
-  await page.waitForTimeout(2000);
-  const dialog = page.getByRole('dialog');
-  await outlineElement(page, dialog.getByLabel('stop').first(), '#e02020');
-  await page.screenshot({ path: ctx.out('stop-execution.png') });
-  await clearOutlines(page);
-  await waitForRun(dialog);
-  await dialog.locator('[aria-expanded]').first().click();
-  await page.waitForTimeout(4000);
-  await page.screenshot({ path: ctx.out('dt_execute_log.png') });
-  await dialog.getByRole('button', { name: 'Close' }).click();
-}
-
-async function waitForRun(dialog) {
-  const entry = dialog.getByText(RUN_FINISHED).first();
-  await entry.waitFor({ timeout: RUN_TIMEOUT_MS });
-}
-
-module.exports = { digitalTwinsPreview, executeHelloWorld, libraryPreview };
+module.exports = { digitalTwinsPreview, libraryPreview };

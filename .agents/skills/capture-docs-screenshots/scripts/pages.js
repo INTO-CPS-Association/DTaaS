@@ -91,7 +91,11 @@ async function workbenchTools(ctx) {
   for (const [label, name] of TOOLS) {
     const link = ctx.page.getByRole('link').filter({ hasText: label }).first();
     const tab = await ctx.page.context().newPage();
-    await tab.goto(await link.getAttribute('href'));
+    // Code-server keeps loading after it renders, so wait for the document.
+    await tab.goto(await link.getAttribute('href'), {
+      waitUntil: 'domcontentloaded',
+      timeout: TIMEOUT,
+    });
     await tab.waitForTimeout(10000);
     await dismissJupyterNews(tab);
     const connect = tab.getByRole('button', { name: 'Connect', exact: true });

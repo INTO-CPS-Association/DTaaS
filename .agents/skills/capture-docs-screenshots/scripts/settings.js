@@ -1,5 +1,5 @@
 // Captures of the Settings tab on the Account page. Field values are typed
-// for the screenshots and restored; only the local activity log is saved.
+// for the screenshots and restored; only the two logging options are saved.
 const { VIEWPORT, go } = require('./session');
 const shots = require('./shots');
 
@@ -23,11 +23,14 @@ async function openSettings(page) {
   await page.waitForTimeout(2500);
 }
 
-// The Logs page records nothing until the local activity log is enabled.
-async function enableLocalLog(ctx) {
+// The Logs page and the logger microservice record nothing until logging
+// is enabled. Both options live in this browser profile only.
+async function enableLogging(ctx) {
   await openSettings(ctx.page);
-  const box = ctx.page.getByLabel('Keep a local activity log');
-  if (!(await box.isChecked())) await box.check();
+  for (const label of ['Keep a local activity log', /^Send logs to /]) {
+    const box = ctx.page.getByLabel(label);
+    if (!(await box.isChecked())) await box.check();
+  }
   await ctx.page.getByRole('button', { name: 'Save Settings' }).click();
   await ctx.page.waitForTimeout(1500);
 }
@@ -42,10 +45,7 @@ async function settings(ctx) {
   // The settings card scrolls inside a normal viewport; enlarge it once.
   await page.setViewportSize({ width: VIEWPORT.width, height: 1600 });
   await page.waitForTimeout(1500);
-  await paper.screenshot({ path: ctx.out('settings-overview.png') });
-  const heading = page.getByText('Measurement Settings', { exact: true });
-  const last = field(page, 'Secondary Digital Twin');
-  await span(ctx, paper, heading, last, 'measurement-settings.png');
+  await sections(ctx, paper);
   await page.setViewportSize(VIEWPORT);
   await page.waitForTimeout(1500);
   const buttons = page
@@ -57,6 +57,17 @@ async function settings(ctx) {
   }
 }
 
+async function sections(ctx, paper) {
+  const { page } = ctx;
+  await paper.screenshot({ path: ctx.out('settings-overview.png') });
+  const heading = page.getByText('Measurement Settings', { exact: true });
+  const last = field(page, 'Secondary Digital Twin');
+  await span(ctx, paper, heading, last, 'measurement-settings.png');
+  const logging = page.getByText('Logging Settings', { exact: true });
+  const remote = page.getByText(/^Shares your workflow events/);
+  await span(ctx, paper, logging, remote, 'logging-settings.png');
+}
+
 async function setValue(page, input, value) {
   await input.fill(value);
   await input.blur();
@@ -64,6 +75,7 @@ async function setValue(page, input, value) {
 }
 
 // A valid value, a value that does not exist and an empty field, stacked.
+// The empty field holds a space so that its label stays above the box.
 async function fieldStates(ctx, label, name) {
   const { page } = ctx;
   const input = page.getByLabel(label, { exact: true });
@@ -73,7 +85,7 @@ async function fieldStates(ctx, label, name) {
   const states = [
     [original, VALID],
     ['foo', INVALID],
-    ['', INVALID],
+    [' ', INVALID],
   ];
   const parts = [];
   for (const [i, [value, colour]] of states.entries()) {
@@ -88,4 +100,4 @@ async function fieldStates(ctx, label, name) {
   await stack(ctx, parts.map(ctx.out), name);
 }
 
-module.exports = { enableLocalLog, settings };
+module.exports = { enableLogging, settings };

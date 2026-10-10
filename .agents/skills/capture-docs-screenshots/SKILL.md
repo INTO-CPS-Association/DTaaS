@@ -23,10 +23,13 @@ images it replaces. Work through every step.
    a file.
 
 1. **Confirm the side effects** with the user before the first run. The
-   run starts one execution of the **Hello World** digital twin on the
-   installation's GitLab runners. Everything else stays in a throwaway
-   browser profile: typed settings are restored, dialogs are closed
-   without saving, and the local activity log lives only in that profile.
+   run executes the **Hello World** digital twin twice and starts one
+   execution of **Mass Spring Damper** on the installation's GitLab
+   runners. It turns on **Send logs to**, so the installation's logger
+   microservice records the run's clicks. Everything else stays in a
+   throwaway browser profile: typed settings are restored, the Create and
+   Reconfigure editors are left without saving, and the local activity
+   log lives only in that profile.
 
 1. **Capture** from the repository root, passing the credentials only
    through the environment:
@@ -37,7 +40,7 @@ images it replaces. Work through every step.
    ```
 
    It prints `step: <name>` per page group and takes several minutes,
-   mostly waiting for Hello World to finish. Done when it exits 0. A
+   mostly waiting for the Hello World runs to finish. Done when it exits 0. A
    step that fails names the locator it waited for; the page has changed,
    so update that step's selector in the matching module and rerun.
 
@@ -52,25 +55,30 @@ images it replaces. Work through every step.
    node .agents/skills/capture-docs-screenshots/scripts/apply.js <out-dir>
    ```
 
-   It lists captures that were not taken. `gitlab-auth-2.png` is taken
-   only while GitLab still asks the user to authorise the installation,
-   so its absence after the first sign-in is expected.
+   It lists captures that were not taken. `gitlab-auth-2.png` and
+   `gitlab-sso-2.png` are taken only while GitLab still asks the user to
+   authorise the installation and the website, so their absence after the
+   first sign-in is expected. Revoking both applications under the user's
+   GitLab **User settings > Applications** brings the pages back.
 
 1. **Keep the docs and map in step.** A new page or image needs an entry
    in `scripts/images.js` and a reference in the markdown beside the
-   image; `node --test` in `scripts/` fails otherwise. Then build the
+   image; `node --test` in `scripts/` fails otherwise. An image that no
+   page shows yet goes in the `UNREFERENCED` list instead. Then build the
    docs (`mkdocs build -f mkdocs-github.yml` on Windows) and run
    markdownlint on the pages you touched.
 
 1. **Report** which images changed (`git status docs/`), which were not
-   captured and why, and that one Hello World execution ran.
+   captured and why, and which digital twin executions ran.
 
 ## Modules
 
 | File | Captures |
 | :--- | :--- |
 | `pages.js` | Sign-in flow, menus, main menu pages, workspace tools, Insights |
-| `settings.js` | Account settings, including the stacked field-state images |
-| `automation.js` | Library and Digital Twins pages, the Hello World run and its log |
+| `settings.js` | Account settings, the logging options and the stacked field-state images |
+| `automation.js` | Library and Digital Twins pages, the Create tab and the Manage dialogs |
+| `execution.js` | Execute tab, the Hello World runs and log, and Mass Spring Damper running |
+| `served.js` | Public configuration check and the library microservice's file browser |
 | `shots.js` | Crop, outline and stacking helpers shared by the modules |
 | `session.js` | Browser launch, GitLab sign-in and in-app navigation |

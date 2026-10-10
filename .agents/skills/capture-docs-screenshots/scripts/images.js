@@ -3,6 +3,8 @@
 const WEBSITE = 'docs/user/website/images';
 const DEVOPS = 'docs/user/digital-twins/devops/images';
 const LIBRARY = 'docs/user/library/devops';
+const TWINS = 'docs/user/digital-twins';
+const LIB_MS = 'docs/user/servers/lib';
 
 const IMAGES = {
   'gitlab-auth-1.png': [`${WEBSITE}/gitlab-auth-1.png`],
@@ -42,6 +44,9 @@ const IMAGES = {
     `${WEBSITE}/lib_preview_tools.png`,
     `${LIBRARY}/empty-list.png`,
   ],
+  'library-DTs.png': [`${LIBRARY}/library-DTs.png`],
+  'library-selection.png': [`${LIBRARY}/library-selection.png`],
+  'dt-create-config.png': [`${DEVOPS}/dt-create-config.png`],
   'lib_preview_selection.png': [
     `${WEBSITE}/lib_preview_selection.png`,
     `${LIBRARY}/dt_selection.png`,
@@ -50,22 +55,51 @@ const IMAGES = {
     `${WEBSITE}/dt_preview_create.png`,
     `${DEVOPS}/dt-create-empty.png`,
   ],
+  'dt_preview_tabs.png': [`${WEBSITE}/dt_preview_tabs.png`],
   'dt_preview_manage.png': [
     `${WEBSITE}/dt_preview_manage.png`,
     `${DEVOPS}/dt_manage.png`,
+    `${TWINS}/dt_manage.png`,
   ],
-  'dt_manage_details.png': [`${DEVOPS}/dt_manage_details.png`],
+  'dt_manage_details.png': [
+    `${DEVOPS}/dt_manage_details.png`,
+    `${TWINS}/dt_manage_details.png`,
+  ],
   'dt_preview_manage_reconfigure.png': [
     `${WEBSITE}/dt_preview_manage_reconfigure.png`,
     `${DEVOPS}/dt_manage_reconfigure.png`,
+    `${TWINS}/dt_manage_reconfigure.png`,
   ],
+  'dt_preview_execute.png': [`${WEBSITE}/dt_preview_execute.png`],
+  'dt_execute.png': [`${DEVOPS}/dt_execute.png`],
+  'dt_execute_running.png': [`${TWINS}/dt_execute_running.png`],
   'concurrent-execution.png': [`${DEVOPS}/concurrent-execution.png`],
   'stop-execution.png': [`${DEVOPS}/stop-execution.png`],
-  'dt_execute_log.png': [`${DEVOPS}/dt_execute_log.png`],
+  'dt_execute_log.png': [
+    `${DEVOPS}/dt_execute_log.png`,
+    `${TWINS}/dt_execute_log.png`,
+  ],
+  'client-config-valid.png': ['docs/admin/guides/client-config-valid.png'],
+  'client-config-invalid.png': ['docs/admin/guides/client-config-invalid.png'],
+  'top-level.png': [`${LIB_MS}/top-level.png`, 'servers/lib/top-level.png'],
+  'inside.png': [`${LIB_MS}/inside.png`, 'servers/lib/inside.png'],
+  'logging-settings.png': ['docs/user/servers/logger/logging-settings.png'],
   'config.png': [`${WEBSITE}/config.png`],
   'measurement-page.png': [`${DEVOPS}/measurement-page.png`],
   'logs-all.png': [`${WEBSITE}/logs-all.png`],
   'logs-filter.png': [`${WEBSITE}/logs-filter.png`],
 };
 
-module.exports = { IMAGES };
+// Images that no page shows yet. They are still retaken so that they match
+// the current website when a page starts to use them.
+const UNREFERENCED = [
+  `${LIBRARY}/library-DTs.png`,
+  `${LIBRARY}/library-selection.png`,
+  `${DEVOPS}/dt-create-config.png`,
+  `${DEVOPS}/dt_execute.png`,
+  `${WEBSITE}/dt_preview_tabs.png`,
+  `${WEBSITE}/dt_preview_execute.png`,
+  `${TWINS}/dt_execute_running.png`,
+];
+
+module.exports = { IMAGES, UNREFERENCED };
