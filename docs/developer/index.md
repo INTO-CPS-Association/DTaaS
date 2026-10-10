@@ -1,48 +1,43 @@
 # Contributors Guide
 
-This guide provides an overview of the contribution workflow for the
-Digital Twin as a Service (DTaaS) project. Contributors are encouraged
-to review the [Code of Conduct](contributions/conduct.md) to ensure
-a respectful and collaborative community environment.
-
-The following sections outline the contribution process, from opening
-an issue to creating a pull request (PR), conducting reviews, and merging
-the PR.
+This guide describes how to contribute to the Digital Twin as a Service
+(DTaaS) project, from opening an issue to creating a pull request (PR),
+review and merge. Please read the
+[Code of Conduct](contributions/conduct.md) before contributing.
 
 ## Project Goals
 
-The DTaaS platform aims to facilitate the creation, management, and execution
-of Digital Twins (DTs) through a service-oriented architecture that promotes
-reusability of DT assets [1]. This documentation assists development team
-members in understanding the DTaaS project software design and
-development processes.
+The DTaaS platform supports the creation, management and execution of
+Digital Twins (DTs) through a service-oriented architecture that promotes
+reuse of DT assets [1]. This documentation explains the software design
+and development processes of the project to members of the development
+team.
 
-Additional resources include:
+Additional resources:
 
 - [Developer Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605_Developer.pdf)
 - [Developer Overview Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605_Developer-recorded_web.mp4)
 - [DTaaS DevOps Workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
 - [Research Paper](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/DTaaS-journal-paper.pdf)
 
-A repository map for the current monorepo is available in
-[Codebase Overview](codebase/index.md).
+[Codebase Overview](codebase/index.md) maps the directories of the
+monorepo.
 
 ## :computer: Development Environment
 
-A devcontainer configuration is provided in `.devcontainer/devcontainer.json`
-for the project. This configuration offers a dockerized development environment
-and represents the recommended approach for establishing a consistent
-development setup. DevContainer provides the most straightforward method
-for initializing the development environment. **Reopen in Container**
-runs `developer/devenv/init.sh` on the host first. Outside VS Code, run
-that script once and follow `developer/devenv/README.md`.
+The recommended development setup is the devcontainer defined in
+`.devcontainer/devcontainer.json`. It runs the containerised environment
+from `developer/devenv/`, which holds every toolchain needed to build and
+test the projects. **Reopen in Container** runs `developer/devenv/init.sh`
+on the host first. Outside VS Code, run that script once and follow
+`developer/devenv/README.md`.
 
 <!--
 TODO insert when githooks works
 
 ### git hooks
 
-The git-hooks ensure that commits are formatted
+The git hooks ensure that commits are formatted
 correctly and that tests pass before they are
 pushed to remote repositories.
 
@@ -53,20 +48,20 @@ pre-commit install
 ```
 
 The git hooks run during pre-commit (`git commit`) and
-pre-push (`git push`) stages. No special flags and options are
+pre-push (`git push`) stages. No special flags or options are
 needed to run these git hooks.
 
-The git-hooks can also be run manually before committing or pushing
-by using the run commands below. The autoupdate command sets the
-revisions of the git repositories used in .pre-commit-config.yaml up to date.
+The git hooks can also be run manually before committing or pushing
+by using the run commands below. The autoupdate command updates the
+revisions of the git repositories used in .pre-commit-config.yaml.
 
 ```bash
 pre-commit run --hook-stage pre-commit # runs format and syntax checks
 pre-commit run --hook-stage pre-push   # runs test
-pre-commit autoupdate                  # update hooks to latests versions
+pre-commit autoupdate                  # update hooks to latest versions
 ```
 
-Be aware that the some tests may take a long time to run.
+Be aware that some tests may take a long time to run.
 To skip the tests or formatting,
 use the `--no-verify` flag
 on `git commit` or `git push`. Use this
@@ -76,33 +71,33 @@ option with care.
 
 ## :building_construction: Development Workflow
 
-A structured development workflow is employed to manage collaboration
-among multiple developers. Each contributor should adhere to the
-following procedure:
+Contributors follow this procedure:
 
-1. Create a fork of the main repository into a personal GitHub account.
+1. Fork the main repository into a personal GitHub account.
 1. Configure
    [Qlty](https://docs.qlty.sh/cloud/quickstart),
-   [Codecov](https://docs.codecov.com/docs/quick-start), and
+   [Codecov](https://docs.codecov.com/docs/quick-start) and
    [SonarQube](https://docs.sonarsource.com/sonarqube-cloud/)
-   for the forked repository. Note that Codecov does not require
-   a secret token for public repositories.
-1. Utilize Node.js 26 and Python 3.14 development environments.
+   for the fork. Codecov does not need a secret token for public
+   repositories.
+1. Use Node.js 26 and Python 3.14.
 1. Follow the
    [Fork, Branch, PR](https://gun.io/news/2017/01/how-to-github-fork-branch-and-pull-request/)
-   workflow methodology.
-1. Develop within the fork and create a PR from the working
-   branch to the `feature/distributed-demo` branch.
-   The PR triggers all GitHub Actions, Qlty, SonarQube, and Codecov checks.
-1. Address all issues identified during the automated checks.
-1. Upon successful verification, submit a PR to
-   the `feature/distributed-demo` branch of the upstream
+   workflow.
+1. Develop in the fork and open a PR from the working branch to the
+   `feature/distributed-demo` branch of the fork. The PR triggers the
+   GitHub Actions, Qlty, SonarQube and Codecov checks.
+1. Fix every issue the automated checks report.
+1. Once the checks pass, open a PR to the `feature/distributed-demo`
+   branch of the upstream
    [DTaaS repository](https://github.com/INTO-CPS-Association/DTaaS).
-1. The PR undergoes review and is merged by either
-   project administrators or maintainers.
+1. Project administrators or maintainers review and merge the PR.
 
-Each PR should represent a meaningful contribution that satisfies
-either a well-defined user story or improves code quality.
+Each PR should either satisfy a well-defined user story or improve code
+quality.
+
+[Local Testing](contributions/local-testing.md) lists the build and test
+commands to run before opening a PR.
 
 ## ✨ Coding Agents and Editors
 
@@ -115,52 +110,14 @@ usage scenarios include:
 
 👍 Draft pull requests for prototyping ideas
 
-This project is structured as a monorepo and includes
-[copilot instructions](contributions/copilot-instructions.md) that inform
-GitHub Copilot about the project structure and software
-development conventions.
+Every coding agent reads the same instructions: `AGENTS.md` for the
+general coding guidelines and `PROJECT.md` for the repository-specific
+ones. Task-specific instructions are Agent Skills in `.agents/skills/`.
+[Coding Agents](contributions/coding-agents.md) describes these files and
+the available skills.
 
-Modern Code IDEs such as VS Code and Cursor provide native integration
-with coding agents, requiring no additional configuration for
-LLM-driven development workflows. Contributors should disclose
-code generated by coding agents, particularly when such code
-embeds significant programming logic.
-
-### `.github/agents` markdown files
-
-Use `.github/agents/*.agent.md` for named, task-specific modes. Keep
-repository-wide defaults in the
-[copilot instructions](contributions/copilot-instructions.md).
-
-Each agent markdown file should include:
-
-- YAML frontmatter with a discoverable `name` and `description`
-- optional `tools` only when the mode needs a narrower or extended toolset
-- body instructions focused on one workflow or domain
-
-Put the trigger phrases in `description`, because that text is what the agent
-uses to decide whether a custom mode is relevant.
-
-Examples from this repository include:
-
-- `.github/agents/plan.agent.md` for planning and architecture before code changes
-- `.github/agents/playwright-tester.agent.md` for browser exploration and
-  Playwright test work
-- `.github/agents/expert-react-frontend-engineer.agent.md` for focused
-  React client tasks
-
-Example structure:
-
-```md
----
-name: "Playwright Tester"
-description: "Testing mode for Playwright tests"
-tools: ["search/codebase", "execute/runInTerminal"]
----
-
-# Core Responsibilities
-Describe the testing workflow and boundaries for this mode.
-```
+Contributors should disclose code generated by coding agents,
+particularly when such code embeds significant programming logic.
 
 The following practices are strictly prohibited:
 
@@ -173,30 +130,28 @@ and should not delegate critical thinking to coding agents.
 
 ## :eye: Code Quality
 
-Project code quality is assessed through the following mechanisms:
+Code quality is checked by:
 
-- **Static Analysis**: Linting issues are identified by [Qlty](https://docs.qlty.sh).
-  Installation of [Qlty CLI](https://docs.qlty.sh/cli/quickstart) is recommended.
-  Execute the command `qlty check --no-fail --sample 5 --no-formatters`
-  to identify code quality issues.
-  Note that Qlty only analyzes files that differ from
-  the default branch (`feature/distributed-demo`).
-- **Security Scans**: Code quality and security issues are identified by
-  [SonarQube](https://sonarcloud.io/project/overview?id=INTO-CPS-Association_DTaaS).
-- **Test Coverage**: Coverage reports are collected by
-  [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS).
-- **Continuous Integration**: All
+- **Static Analysis**: [Qlty](https://docs.qlty.sh) reports linting
+  issues. Install the [Qlty CLI](https://docs.qlty.sh/cli/quickstart) and
+  run `qlty check --no-fail --sample 5 --no-formatters` to list them
+  locally. Qlty analyses only the files that differ from the default
+  branch (`feature/distributed-demo`).
+- **Security Scans**:
+  [SonarQube](https://sonarcloud.io/project/overview?id=INTO-CPS-Association_DTaaS)
+  reports code quality and security issues.
+- **Test Coverage**: [Codecov](https://codecov.io/gh/INTO-CPS-Association/DTaaS)
+  collects coverage reports.
+- **Continuous Integration**: every
   [GitHub Actions](https://github.com/INTO-CPS-Association/DTaaS/actions)
-  must complete successfully.
+  workflow must pass.
 
 ### Qlty
 
-Qlty performs static analysis, linting, and style checks to ensure
-optimal code quality for project contributions.
+Qlty performs static analysis, linting and style checks.
 
-While newly introduced issues appear directly on the PR page,
-specific issues can be addressed by visiting the issues or code
-section of the Qlty dashboard.
+New issues appear on the PR page. The issues and code sections of the
+Qlty dashboard list the rest.
 
 Qlty Cloud skips pull requests opened from forks, because GitHub
 withholds its token from them. The `Qlty` workflow
@@ -205,24 +160,23 @@ instead. It fails on new actionlint findings in changed workflows, and
 reports dependency advisories (osv-scanner) and code smells in the job
 log and summary without failing.
 
-Code contributions should not introduce new quality issues.
-If such issues arise, they should be resolved immediately using
-the appropriate suggestions from Qlty. In exceptional cases,
-an ignore flag may be added, though this approach should be
-employed sparingly.
+Contributions should not introduce new quality issues. Fix any that
+appear, using the suggestions from Qlty. Add an ignore flag only in
+exceptional cases.
 
 ### Codecov
 
-Codecov maintains test coverage metrics for the entire project.
-For detailed information about testing practices and workflows,
-refer to the [testing documentation](technical-concepts/testing.md).
+Codecov tracks test coverage for the whole project. The
+[testing documentation](technical-concepts/testing.md) describes the
+testing practices and workflows.
 
 ### GitHub Actions
 
-The project defines multiple
-[GitHub Actions](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/.github/workflows).
-All pull requests and direct commits must achieve successful
-status on all GitHub Actions.
+The project defines several
+[GitHub Actions](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/.github/workflows)
+workflows. Every pull request and direct commit must pass all of them.
+[Secrets for GitHub Actions](contributions/github-actions.md) lists the
+secrets and variables a fork needs for the publishing jobs.
 
 ## References
 

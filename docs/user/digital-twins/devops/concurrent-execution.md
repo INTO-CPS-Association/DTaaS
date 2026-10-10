@@ -1,56 +1,54 @@
 # Running Multiple Digital Twins at the Same Time
 
-The DTaaS platform allows for executing multiple Digital Twins in tandem with
-one another. This can save hours of time when dealing with intensive Digital Twins
-or when deploying them across different resources.
+The DTaaS platform can execute several digital twins at once. This saves
+time with long-running digital twins or when they run on different
+resources.
 
-## ⏯️ Running Digital Twins
+## Running Digital Twins
 
-To deploy a Digital Twin, navigate to the *Execution tab*
-on the *Digital Twin Preview page*. This can be found by clicking on the Workbench
-icon ![icon](images/developer-icon.png) in the sidebar on the left hand side and
-locating *Digital Twins Preview* among the other links. Click to open the *Digital
-Twin Preview page* in a new tab.
+To run a digital twin, open the **Execute** tab of the
+**Digital Twins Page**. Click **Automation** in the menu on the left,
+then click the **Digital Twins Page** card. The page opens in the
+same browser tab.
 
-In the newly opened tab, a series of cards is displayed with a name, short
-description of the Digital Twins and **START** and **HISTORY** buttons.
-The **START** button sends a *job* to the backend, telling it to run the simulation
-associated with that Digital Twin, which is defined by its [Life Cycle files](../lifecycle.md).
-These can be inspected and changed in the *Edit* tab.
+The **Execute** tab shows a card for each digital twin, with its name,
+a short description and the **Start** and **History** buttons.
+**Start** sends a *job* to the backend, which runs the simulation
+defined by the digital twin's [lifecycle files](../lifecycle.md).
+You can inspect and change these files with the **Reconfigure** button
+on the **Manage** tab.
 
 ### Running Multiple Twins
 
-Pressing the **START** button multiple times queues multiple simulations.
-It is also possible to queue different kinds of Digital Twins.
+Pressing **Start** several times queues several simulations.
+You can also queue different digital twins.
 
 ![Digital Twin cards](./images/concurrent-execution.png)
 
-The deployment service (e.g. GitLab)  automatically load balances across available
-runners, so it can be configured once and left to run autonomously.
+The deployment service (for example, GitLab) balances the load across the
+available runners, so it can be configured once and then left to run.
 
-## 🗃️ The Execution Log
+## The Execution Log
 
-Pushing the **HISTORY** button provides an overview of all current and past
-simulation trials, distinguished by time of execution and status (Running,
-Failed, Succeeded or Timed Out). To review the results of a simulation, click
-on an entry (or the arrow on the right of the entry) to expand it. Each step in
-the Life Cycle will then be presented.
+**History** opens a list of all current and past runs, showing the time
+of execution and the status (Running, Completed, Failed, Canceled or
+Timed out). To review the results of a run, click an entry (or the arrow
+on the right of the entry) to expand it. The log of each job in the
+pipeline is then shown.
 
-To delete an entry, click the trash icon. A verification dialogue will
-confirm the entry to be deleted. All entries
-of a Digital Twin can also be deleted with the **CLEAR ALL** button.
+To delete an entry, click the trash icon and confirm the deletion in the
+dialog. The **Clear All** button deletes all entries of a digital twin.
 
-Click the stop symbol in the log to stop an execution:
+Click the stop icon of a running entry to stop that execution:
 
 ![Stop Execution](images/stop-execution.png)
 
-## 🔧 Changing Runners
+## Changing Runners
 
 The runners that pick up jobs can be changed in the settings.
-Further information on [these and other settings](../../website/settings.md)
-is available.
+See [these and other settings](../../website/settings.md).
 
-## 💭 Summary
+## Summary
 
-This document has described how to navigate the DevOps Execution page: executing
-multiple Digital Twins simultaneously and inspecting and deleting their logs.
+This page described the **Execute** tab: running several digital twins
+at once, and inspecting and deleting their logs.

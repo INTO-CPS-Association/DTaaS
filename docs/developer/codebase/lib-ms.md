@@ -1,24 +1,22 @@
 # Library Microservice
 
-The Library Microservice exposes workspace files via two principal mechanisms:
-(1) a GraphQL API and (2) an HTTP file server accessible from web browsers.
-This service interfaces with the local file system
-and GitLab to provide uniform GitLab-compliant API access to files.
-The microservice serves as a critical component of the DTaaS platform,
-enabling both human users and digital twins to access reusable assets
-stored in the platform's library structure.
+The Library Microservice gives access to workspace files in two ways: a
+GraphQL API, and an HTTP file server that users can open in a web
+browser. It reads files from the local file system or from GitLab, and
+its API follows the GitLab GraphQL API. Both users and digital twins use
+it to reach the reusable assets in the platform library.
 
 !!! warning
-    This microservice is still under heavy development. It is still not
-    a satisfactory replacement for the file server currently in use.
+    This microservice is still under heavy development. It is not yet a
+    satisfactory replacement for the file server currently in use.
 
 ## Architecture and Design
 
-The microservice is built using NestJS framework with Apollo GraphQL.
-The architecture employs the Strategy pattern via a factory service,
-enabling support for multiple file storage backends (local filesystem, GitLab).
-The GraphQL API provided by the library microservice shall be compliant
-with the GitLab GraphQL service.
+The microservice is built with the NestJS framework and Apollo GraphQL.
+It uses the Strategy pattern: a factory picks one of several file
+storage backends (local file system or GitLab). The GraphQL API of the
+library microservice is meant to be compatible with the GitLab GraphQL
+service.
 
 ## Package Structure
 
@@ -55,7 +53,7 @@ servers/lib/
 └── dist/                          # Compiled output
 ```
 
-## Key Components
+## Main Components
 
 ### GraphQL Resolver
 
@@ -88,8 +86,12 @@ interface IFilesService {
 
 ### Factory Pattern
 
-The `FilesServiceFactory` creates the appropriate backend service based
-on configuration, enabling runtime selection of the storage backend.
+`FilesServiceFactory.create()` picks the backend whose `getMode()`
+matches the `mode` setting in the configuration file (`local` or
+`git`). `files.module.ts` calls it once, when NestJS builds the
+`FILE_SERVICE` provider, and the resolver receives the chosen service
+through dependency injection. An unknown mode stops the service with an
+`Invalid MODE` error.
 
 ## UML Diagrams
 
@@ -104,20 +106,20 @@ classDiagram
     }
 
     class FilesServiceFactory {
-    -configService: ConfigService
-    -localFilesService: LocalFilesService
-    +create(): IFilesService
+    +create(configService: IConfig, fileServices: IFilesService[]): IFilesService$
     }
 
     class LocalFilesService {
-    -configService: ConfigService
-    -getFileStats(fullPath: string, file: string): Promise<Project>
+    -configService: Config
+    -dataPath: string
+    -getFileStats(fullPath: string, file: string): Promise<Project>$
     +listDirectory(path: string): Promise<Project>
     +readFile(path: string): Promise<Project>
     }
 
-    class ConfigService {
-    +get(propertyPath: string): any
+    class Config {
+    +getMode(): string
+    +getLocalPath(): string
     }
 
     class IFilesService{
@@ -128,11 +130,14 @@ classDiagram
     IFilesService <|-- FilesResolver: uses
     IFilesService <|.. LocalFilesService: implements
     IFilesService <|-- FilesServiceFactory: creates
-    ConfigService <|-- FilesServiceFactory: uses
-    ConfigService <|-- LocalFilesService: uses
+    Config <|-- FilesServiceFactory: uses
+    Config <|-- LocalFilesService: uses
 ```
 
 ### Sequence Diagram
+
+The factory has already chosen `LocalFilesService` at startup, so a
+request goes straight from the resolver to the backend.
 
 ```mermaid
 sequenceDiagram
@@ -141,8 +146,6 @@ sequenceDiagram
 
     box LightGreen Library Microservice
     participant FR as FilesResolver
-    participant FSF as FilesServiceFactory
-    participant CS as ConfigService
     participant IFS as IFilesService
     participant LFS as LocalFilesService
     end
@@ -153,32 +156,13 @@ sequenceDiagram
     Traefik ->> FR : GraphQL query
     activate FR
 
-    FR ->> FSF : create()
-    activate FSF
-
-    FSF ->> CS : getConfiguration("MODE")
-    activate CS
-
-    CS -->> FSF : return configuration value
-    deactivate CS
-
-    alt MODE = Local
-    FSF ->> FR : return filesService (LFS)
-    deactivate FSF
-
     FR ->> IFS : listDirectory(path) or readFile(path)
     activate IFS
 
     IFS ->> LFS : listDirectory(path) or readFile(path)
     activate LFS
 
-    LFS ->> CS : getConfiguration("LOCAL_PATH")
-    activate CS
-
-    CS -->> LFS : return local path
-    deactivate CS
-
-    LFS ->> FS : Access filesystem
+    LFS ->> FS : Access filesystem under the configured local path
     alt Filesystem error
         FS -->> LFS : Filesystem error
         LFS ->> LFS : Throw new InternalServerErrorException
@@ -188,21 +172,28 @@ sequenceDiagram
         LFS ->> IFS : return Promise<Project>
     end
     deactivate LFS
-    activate IFS
-    end
 
     alt Error thrown
     IFS ->> FR : return Error
-    deactivate IFS
     FR ->> Traefik : return Error
     Traefik ->> Client : HTTP error response
     else Successful operation
     IFS ->> FR : return Promise<Project>
-    deactivate IFS
     FR ->> Traefik : return Promise<Project>
     Traefik ->> Client : HTTP response
     end
+    deactivate IFS
 
     deactivate FR
-
 ```
+
+## Build and Test
+
+Run from `servers/lib/`:
+
+```bash
+yarn build && yarn test:all
+```
+
+`yarn test:nocov` also runs `test/cloudcmd`, which needs a configured
+`.env` and a running libms under pm2.

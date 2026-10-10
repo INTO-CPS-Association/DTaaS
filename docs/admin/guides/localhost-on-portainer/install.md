@@ -1,42 +1,41 @@
-# :computer: Install DTaaS on Localhost (GUI)
+# Install DTaaS on Localhost (GUI)
 
-The installation instructions provided in this document are
-ideal for running DTaaS on localhost via a Graphical User
-Interface (GUI).
-This installation is ideal for single users intending to use
-DTaaS on their own computers.
+This guide runs DTaaS on localhost through a graphical user interface
+(GUI). It suits a single user who wants to run DTaaS on their own
+computer.
 
 Two installation scenarios are available:
 
-| Scenario                                                   | Auth Provider | External Account Required |
-| :--------------------------------------------------------- | :------------ | :------------------------ |
-| [DTaaS Localhost](#1-globe_with_meridians-dtaas-localhost) | GitLab OAuth  | Yes (gitlab.com)          |
-| [Workspace Localhost](#2-shield-workspace-localhost)       | Dex (local)   | No                        |
+| Scenario                                      | Auth Provider | External Account Required |
+| :-------------------------------------------- | :------------ | :------------------------ |
+| [DTaaS Localhost](#1-dtaas-localhost)         | GitLab OAuth  | Yes (gitlab.com)          |
+| [Workspace Localhost](#2-workspace-localhost) | Dex (local)   | No                        |
 
-## :clipboard: Requirements
+## Requirements
 
-- Docker Desktop or Docker Engine with Compose plugin
+- Docker Desktop or Docker Engine with the Compose plugin
 - [Portainer Community Edition](https://portainer.io) (setup below)
 
-## :file_folder: Download Packages
+## Download Packages
 
-Download the required packages:
+Download the package for your scenario:
 
-1. **dtaas-localhost-xx.zip** for DTaaS localhost installation, or
-1. **workspace-dex-localhost-xx.zip** for Workspace localhost installation
+1. **dtaas-localhost-xx.zip** for the DTaaS localhost installation, or
+1. **workspace-dex-localhost-xx.zip** for the Workspace localhost
+   installation
 
 !!! tip
     The guide uses Linux-style paths such as `/Users/username/DTaaS`.
     On Windows use an equivalent path, for example `C:\DTaaS`.
 
-## :whale: Start Portainer
+## Start Portainer
 
 [Portainer Community Edition](https://portainer.io) provides a graphical
 interface for managing Docker containers at `https://localhost:9443`.
 
 Follow
 [the official Portainer CE documentation](https://docs.portainer.io/start/install-ce/server/docker)
-or run the commands below:
+or run these commands:
 
 ```bash
 docker volume create portainer_data
@@ -54,14 +53,11 @@ to create an administrator account.
 !!! tip
     To restart Portainer later, run `docker start portainer`.
 
----
+## 1. DTaaS Localhost
 
-## 1. :globe_with_meridians: DTaaS Localhost
-
-Unzip **dtaas-localhost-xx.zip** package. It contains required
-installation files.
-This installation scenario uses **GitLab OAuth** for authentication.
-A GitLab account on <https://gitlab.com> is required.
+Unzip the **dtaas-localhost-xx.zip** package, which contains the
+installation files. This scenario uses **GitLab OAuth** for
+authentication and needs a GitLab account on <https://gitlab.com>.
 
 ![DTaaS Localhost](localhost.png)
 
@@ -82,15 +78,14 @@ Edit `config/.env`:
 
 | Variable               | Example | Description                           |
 | :--------------------- | :------ | :------------------------------------ |
-| `USERNAME`             | `user1` | Workspace path prefix and folder name |
+| `DEFAULT_USER`         | `user1` | Workspace path prefix and folder name |
 | `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name           |
 
 #### 1.4 Client Configuration
 
-This is an optional step. If a dedicated OAuth 2.0 application
-is required for the localhost installation, follow these
-[steps](../../client/auth.md). Upon successful creation of the OAuth
-application, edit `config/client.js` and set the OAuth application
+This step is optional. If the localhost installation needs its own
+OAuth 2.0 application, follow these [steps](../../client/auth.md) to
+create one. Then edit `config/client.js` and set the OAuth application
 credentials from the GitLab account:
 
 | Variable                   | Example               | Description                 |
@@ -98,18 +93,12 @@ credentials from the GitLab account:
 | `REACT_APP_CLIENT_ID`      | _(OAuth app id)_      | GitLab OAuth application ID |
 | `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com/` | OAuth authority URL         |
 
-<!-- markdownlint-disable MD046 -->
-!!! tip
-    See the [client auth docs](../../client/auth.md)
-    for details on creating a GitLab OAuth application.
-<!-- markdownlint-enable MD046 -->
-
 #### 1.5 Create User Workspace
 
-Create a workspace directory for the user set in `USERNAME`:
+Create a workspace directory for the user set in `DEFAULT_USER`:
 
 ```bash
-cp -R files/template files/<USERNAME>
+cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 
@@ -127,8 +116,8 @@ sudo chown -R 1000:100 files/*
     If the `.env` file is not visible, select **All Files** in the
     file explorer dialog.
 
-Click **Deploy the stack**. A new stack with this name gets created.
-It has the following view.
+Click **Deploy the stack**. Portainer creates a stack with this name,
+which looks like this:
 
 ![Portainer DTaaS Stack](portainer-dtaas-stack.png)
 
@@ -139,18 +128,17 @@ the configured GitLab credentials.
 
 ### 1.8 Limitations
 
-The [library microservice](../../servers/lib/docker.md) and
-backend forward-auth are not included in this scenario.
+This scenario does not include the
+[library microservice](../../servers/lib/docker.md) or backend
+forward-auth.
 
----
+## 2. Workspace Localhost
 
-## 2. :shield: Workspace Localhost
-
-Unzip **workspace-dex-localhost-xx.zip** package.
-It contains required installation files.
+Unzip the **workspace-dex-localhost-xx.zip** package, which contains the
+installation files.
 
 This scenario uses **Dex** as a local identity provider.
-No external account is required; default credentials are provided.
+It needs no external account and comes with default credentials.
 
 ![Workspace Localhost](localhost.png)
 
@@ -159,13 +147,13 @@ No external account is required; default credentials are provided.
 Copy the example files:
 
 ```bash
-cp .env.example .env
+cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
 #### 2.2 Environment Variables
 
-Edit `.env`:
+Edit `config/.env`:
 
 | Variable               | Example | Description                        |
 | :--------------------- | :------ | :--------------------------------- |
@@ -174,8 +162,7 @@ Edit `.env`:
 
 <!-- markdownlint-disable MD046 -->
 !!! tip
-    Local login users may be customised in
-    `deploy/workspace/dex/localhost/config/dex-config.yaml`.
+    The local login users are defined in `config/dex-config.yaml`.
 <!-- markdownlint-enable MD046 -->
 
 ### 2.3 Create the Portainer Stack
@@ -184,26 +171,26 @@ Edit `.env`:
 1. Name the stack, for example `workspace-localhost`.
 1. Select the **Upload** build method.
 1. Upload the compose file (`docker-compose.yml`).
-1. Load the environment file (`.env`).
+1. Load the environment file (`config/.env`).
 
 Click **Deploy the stack**.
 
 ### 2.4 Use
 
 Open <http://localhost> in a web browser.
-Sign in using the default Dex credentials:
+Sign in with the default Dex credentials:
 
 - **Email:** `user@intocps.org`
 - **Password:** `user`
 
 ### 2.5 Limitations
 
-- The [library microservice](../../servers/lib/docker.md) is not
-  included in this scenario.
+- This scenario does not include the
+  [library microservice](../../servers/lib/docker.md).
 - [DevOps features](../../../user/digital-twins/devops/capabilities.md)
   are not available.
-- See [custom user instructions](../../workspace/localhost/custom-user.md)
-  for changing the default credentials.
+- See the [custom user instructions](../../workspace/localhost/custom-user.md)
+  to change the default credentials.
 
 ## References
 

@@ -1,98 +1,72 @@
 # System Design of DTaaS Authorization Microservice
 
-DTaaS requires backend authorization to protect its
-backend services and user workspaces. This document
-details the system design of the
-DTaaS Auth Microservice which
-is responsible for the same.
+DTaaS needs backend authorization to protect its backend services and user
+workspaces. This page describes the system design of the DTaaS Auth
+Microservice, which provides it.
 
 ## Requirements
 
-For this purpose, the Auth MS is required to handle only
-requests of the general form ”Is User X allowed to access /BackendMS/example?”.
+The Auth MS only has to answer requests of the general form "Is User X
+allowed to access /BackendMS/example?".
 
-If the user’s identity is correctly verified though the GitLab OAuth 2.0
-provider AND this user is allowed to access the
-requested microservice/action, then the Auth MS
-should respond with a 200 (OK) code and let the
-request pass through the gateway to
-the required microservice/server.
+If the GitLab OAuth 2.0 provider verifies the user's identity AND the user
+is allowed to access the requested microservice or action, the Auth MS
+responds with a 200 (OK) code and lets the request pass through the gateway
+to the microservice or server.
 
-If the
-user’s identity verification through
-GitLab OAuth 2.0 fails OR this user is not
-permitted to access the request resource,
-then the Auth MS should respond
-with a 40X (NOT OK) code, and restrict
-the request from going forward.
+If identity verification through GitLab OAuth 2.0 fails OR the user is not
+permitted to access the requested resource, the Auth MS responds with a 40X
+(NOT OK) code and stops the request.
 
 ## Forward Auth Middleware in Traefik
 
-Traefik allows middlewares to be set for the routes
-configured into it. These middlewares intercept the
-route path requests, and perform analysis/modifications
-before sending the requests ahead to the services.
-Traefik has a ForwardAuth
-middleware that delegates authentication to an external
-service. If the external authentication server responds
-to the middleware with a 2XX response
-codes, the middleware acts as a proxy, letting the
-request pass through to
-the desired service. However, if the external server
-responds with any other
-response code, the request is dropped, and the
-response code returned by the
-external auth server is returned to the user
+Traefik lets you attach middlewares to the routes configured in it. A
+middleware intercepts requests on a route and can analyse or modify them
+before passing them on to the services. Traefik's ForwardAuth middleware
+delegates authentication to an external service. If the external
+authentication server responds with a 2XX code, the middleware acts as a
+proxy and lets the request through to the service. If the external server
+responds with any other code, the middleware drops the request and returns
+that response code to the user.
 
 ![Forward Auth middleware](traefik-forward-auth-middleware.png)
 (source:
-[Treafik documentation](https://doc.traefik.io/traefik/middlewares/http/forwardauth/))
+[Traefik documentation](https://doc.traefik.io/traefik/middlewares/http/forwardauth/))
 
-Thus, an Auth Microservice can be integrated
-into the existing gateway
-and DTaaS system structure easily by adding it
-as the external authentication
-server for ForwardAuth middlewares. These
-middlewares can be added on
-whichever routes/requests require authentication.
-For this specific purpose,
-this will be added to all routes since the platform imposes
-at least identity verification
-of users for any request through the gateway
+An Auth Microservice can therefore be added to the existing gateway and
+DTaaS system by making it the external authentication server for
+ForwardAuth middlewares. These middlewares can be attached to any route
+that needs authentication. DTaaS attaches it to all routes, because the
+platform requires at least identity verification for every request through
+the gateway.
 
 ## Auth MS Design
 
-The integrated Auth MS should thus work as
-described in the sequence
-diagram.
+The sequence diagram shows how the integrated Auth MS works.
 
 ![authorization sequence diagram](design-sequence.png)
 
-- Any request made by the user is made on the
-  React website, i.e. the
-  frontend of the DTaaS platform.
+- The user makes every request through the React website, the frontend of
+  the DTaaS platform.
 
-- This request then goes through the Traefik gateway.
-  Here it should be
-  interrupted by the respective ForwardAuth middleware.
+- The request goes through the Traefik gateway, where the route's
+  ForwardAuth middleware intercepts it.
 
-- The middleware asks the Auth MS if this request for the given user
+- The middleware asks the Auth MS whether this request from this user
   should be allowed.
 
-- The Auth MS, i.e. the Auth server verifies the identity of the user
-  using OAuth 2.0 with GitLab, and checks if this user should be allowed
-  to make this request.
+- The Auth MS (the auth server) verifies the user's identity using OAuth
+  2.0 with GitLab, and checks whether the user may make this request.
 
-- If the user is verified and allowed to make the request, the Auth server
-  responds with a 200 OK to Traefik Gateway (more specifically to the
-  middleware in Traefik)
+- If the user is verified and allowed to make the request, the auth server
+  responds with 200 OK to the Traefik gateway (more precisely, to the
+  middleware in Traefik).
 
-- Traefik then forwards this request to the respective service. A response
-  by the service, if any, will be passed through the chain back to the user.
+- Traefik then forwards the request to the service. Any response from the
+  service passes back along the chain to the user.
 
-- However, If the user is not verified or not allowed to make this request,
-  the Auth server responds with a 40x to Traefik gateway.
+- If the user is not verified or not allowed to make the request, the auth
+  server responds with a 40X code to the Traefik gateway.
 
-- Traefik will then drop the request and respond to the Client informing
-  that the request was forbidden. It will also pass the Auth servers
-  response code
+- Traefik then drops the request and tells the client that the request was
+  forbidden, passing on the auth server's response code.

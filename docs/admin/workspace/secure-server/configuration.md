@@ -1,28 +1,27 @@
-# ⚙️ DTaaS Configuration
+# DTaaS Configuration
 
-This document outlines the configuration needed for the docker compose file.
-The configuration can be divided into pre and post-install parts.
-The pre-install configuration tasks must be completed before bringing up
-the docker compose services, while the post-install configuration tasks must be
-completed after bringing up the docker compose services.
+This document describes the configuration needed for the docker compose file.
+It has pre-install and post-install parts. Complete the pre-install tasks
+before bringing up the docker compose services, and the post-install tasks
+after.
 
 **Pre-install Configuration Tasks:**
 
-- [Environment](#-environment)
-- [Domain](#-domain)
-- [TLS Certificates](#-tls-certificates)
-- [Usernames](#-usernames)
-- [Forward Auth](#-traefik-forward-auth-configuration)
+- [Environment](#environment)
+- [Domain](#domain)
+- [TLS Certificates](#tls-certificates)
+- [Usernames](#usernames)
+- [Forward Auth](#traefik-forward-auth-configuration)
 
 **Post-install Configuration Tasks:**
 
-- [Keycloak Integration](#-keycloak-integration)
-- [Web Client](#️-dtaas-web-client-config)
+- [Keycloak Integration](#keycloak-integration)
+- [Web Client](#dtaas-web-client-config)
 
-## 🌍 Environment
+## Environment
 
-The compose commands used in the setup guides sets the environment
-with an environment file. An example of this file can be found at
+The compose commands in the setup guides read their environment from
+an environment file. An example of this file is at
 `config/.env.example`.
 
 Create a copy of this example file without the example suffix:
@@ -31,14 +30,14 @@ Create a copy of this example file without the example suffix:
 cp config/.env.example config/.env
 ```
 
-## 🌐 Domain
+## Domain
 
 Decide whether the deployment is local or remote.
 
 Wherever `<DOMAIN_NAME>` or `intocps.org` appears
 in this guide, replace it with the domain name of the remote machine.
-Ensure that the remote machine has a domain name and that it is
-accessible from the internet.
+The remote machine must have a domain name and be reachable from the
+internet.
 
 Open `config/.env` and replace the current value of
 the `SERVER_DNS` variable with the domain name:
@@ -49,14 +48,14 @@ the `SERVER_DNS` variable with the domain name:
 SERVER_DNS=<DOMAIN_NAME>
 ```
 
-## 🔒 TLS Certificates
+## TLS Certificates
 
-Ensure that valid TLS certificates are present on the machine and
-that they are properly located. The `fullchain.pem` and `privkey.pem`
-secrets should be located in the `certs/` directory.
+Ensure that valid TLS certificates are present on the machine.
+The `fullchain.pem` and `privkey.pem` files must be in the `certs/`
+directory. Traefik reads them through `config/tls.yml`.
 
-There are multiple ways to set up TLS certificates. If hosting on
-a webserver, Certbot from Let's Encrypt may be used:
+There are several ways to obtain TLS certificates. On a web server
+you can use Certbot from Let's Encrypt:
 
 ```bash
 # Install certbot
@@ -74,10 +73,10 @@ chmod 644 ./certs/fullchain.pem
 chmod 600 ./certs/privkey.pem
 ```
 
-## 👥 Usernames
+## Usernames
 
-The usernames of the main users for the workspaces can be changed in
-the [environment variable file](#-environment) `config/.env`.
+The usernames of the main workspace users are set in
+the [environment variable file](#environment) `config/.env`.
 Change the default values (`user1` and `user2`) to the desired usernames:
 
 ```bash
@@ -88,12 +87,12 @@ USERNAME1=user1
 USERNAME2=user2
 ```
 
-**NOTE:** These usernames must match the names of the keycloak users
-used in the forward auth.
+**NOTE:** These usernames must match the names of the Keycloak users
+used in the forward auth configuration.
 
-## 🚪 Traefik Forward Auth Configuration
+## Traefik Forward Auth Configuration
 
-The `config/forward-auth-conf.example` file contains
+The `config/forward-auth-conf.example` file contains an
 example configuration for the forward-auth service.
 
 Create a copy of this example file without the example suffix:
@@ -102,9 +101,8 @@ Create a copy of this example file without the example suffix:
 cp config/forward-auth-conf.example config/forward-auth-conf
 ```
 
-Then update the traefik forward auth configuration file with the usernames
-and emails of the Keycloak users that correspond to `user1` and `user2`
-respectively.
+Then update the Traefik forward auth configuration file with the usernames
+and emails of the Keycloak users that correspond to `user1` and `user2`.
 
 ```txt
 rule.user1_access.action=auth
@@ -116,25 +114,24 @@ rule.user2_access.rule=PathPrefix(`/<USERNAME_USER2>`)
 rule.user2_access.whitelist = <EMAIL_USER2>
 ```
 
-**NOTE:** Ensure that the usernames set in the
-[Usernames configuration step](#-usernames) are the same as those set
-in the Traefik Forward Auth configuration file.
+**NOTE:** The usernames set in the
+[Usernames configuration step](#usernames) must be the same as those
+in the Traefik forward auth configuration file.
 
-## 🎯 Keycloak Integration
+## Keycloak Integration
 
-The default configuration for `docker-compose.yml` now uses **Keycloak**
-for authentication via OIDC (OpenID Connect). Keycloak provides a robust,
-enterprise-grade identity and access management solution.
-The `traefik-forward-auth` and the DTaaS `client` docker services use
-**Keycloak** for authentication and authorisation. An OAuth2 application
-must be configured for each, using the integrated **Keycloak** service.
+The default `docker-compose.yml` uses **Keycloak** for authentication
+through OIDC (OpenID Connect).
+The `traefik-forward-auth` and DTaaS `client` docker services use
+**Keycloak** for authentication and authorisation. Each one needs an OAuth2
+application in the integrated **Keycloak** service.
 
 **For detailed Keycloak setup instructions,
 see [keycloak-setup.md](keycloak-setup.md)**
 
 ### Configure Environment Variables
 
-1. **For Keycloak (default)**, edit `config/.env` and fill in the Keycloak credentials:
+1. Edit `config/.env` and fill in the Keycloak credentials:
 
    ```bash
    # Keycloak Admin Credentials
@@ -158,11 +155,10 @@ see [keycloak-setup.md](keycloak-setup.md)**
    OAUTH_SECRET=your-oauth-secret
    ```
 
-## 🖥️ DTaaS Web Client Config
+## DTaaS Web Client Config
 
-The DTaaS Web Client can be configured with a small javascript file,
-an example of which can be found at
-`config/client.js.example`.
+The DTaaS web client is configured with a small JavaScript file.
+An example is at `config/client.js.example`.
 
 Create a copy of this example file without the example suffix:
 
@@ -170,16 +166,15 @@ Create a copy of this example file without the example suffix:
 cp config/client.js.example config/client.js
 ```
 
-Then, edit the new DTaaS Web Client config file, updating the following values:
+Then edit the new web client config file and update the following values.
 
-### 🔑🖥️ Client OAuth2 Setup
+### Client OAuth2 Setup
 
-The DTaaS web client is a React SPA that authenticates via Keycloak using
+The DTaaS web client is a React SPA that authenticates with Keycloak using
 the **Authorization Code flow with PKCE**. Follow the
 [Create OAuth2 Client for DTaaS Client Service](keycloak-setup.md#create-oauth2-client-for-dtaas-client-service)
-instructions in [keycloak-setup.md](keycloak-setup.md#create-oauth2-client-for-dtaas-client-service)
-to create the public PKCE client in
-Keycloak, then update `config/client.js`:
+instructions to create the public PKCE client in Keycloak, then update
+`config/client.js`:
 
 ```js
 REACT_APP_CLIENT_ID: 'dtaas-client',          // Client ID set in Keycloak
@@ -189,20 +184,25 @@ REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
 REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
 ```
 
-`openid` and `profile` are standard OIDC scopes provided by Keycloak by default.
-`openid` is required for OIDC authentication and issues the ID token.
-`profile` triggers the `profile` claim mapper configured on the Keycloak client,
-which returns a URL of the form `https://<DOMAIN_NAME>/<username>` set as a
-user attribute in Keycloak. The DTaaS web client extracts the username from
-the last path segment of this URL.
-The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
-it now carries the Keycloak OIDC scopes.
+`openid` and `profile` are standard OIDC scopes that Keycloak provides by
+default. `openid` is required for OIDC authentication and issues the ID
+token. `profile` adds the profile claims, including `preferred_username`
+and the `profile` claim mapped from the `profile` user attribute that
+[Create Users](keycloak-setup.md#create-users) sets.
+
+The web client takes the username from the first of these claims that is
+present: `preferred_username`, `username`, `nickname`, `login`, the part of
+`email` before `@`, the part of `upn` before `@`, the last path segment of
+the `profile` URL, and `sub`. The `profile` URL is also shown as the
+user's profile link.
+The variable is named `REACT_APP_GITLAB_SCOPES` for historical reasons;
+it carries the Keycloak OIDC scopes.
 
 Replace `<DOMAIN_NAME>` with the value set in the
-[Domain](#-domain) section and `dtaas` with the Keycloak realm name
-if a different one was chosen.
+[Domain](#domain) section, and replace `dtaas` with the Keycloak realm name
+if you chose a different one.
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)

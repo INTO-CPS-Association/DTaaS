@@ -1,28 +1,26 @@
 # Known Issues in the Software
 
-If a bug is discovered,
-[an issue should be opened](https://github.com/INTO-CPS-Association/DTaaS/issues/new)
+If you find a bug, please
+[open an issue](https://github.com/INTO-CPS-Association/DTaaS/issues/new).
 
 ## Third-Party Software
 
-The explanation given below corresponds to bugs that may be encountered
-from third party software included in the DTaaS platform.
-Known issues are listed below.
+Some known issues come from third-party software included in the DTaaS
+platform. They are listed below.
 
 ## GitLab
 
-The GitLab OAuth 2.0 authorisation service does not
-have a way to sign out of a third-party application.
-Even if a user signs out of the DTaaS platform, GitLab still shows the user
+The GitLab OAuth 2.0 authorisation service has no way to sign out of a
+third-party application.
+After a user logs out of the DTaaS platform, GitLab still shows the user
 as signed in.
-The next time the sign in button is clicked on the DTaaS platform page,
-the login page is not displayed.
-Instead the user is directly taken to the **Library** page.
-Therefore, the browser window should be closed after use.
-Another way to overcome this limitation is to open the
-linked GitLab instance (ex: `https://intocps.org/gitlab`) and
-sign out from there.
-Thus the user needs to sign out of two places, namely the DTaaS platform and GitLab,
-in order to completely exit the DTaaS platform.
+The next time the user clicks the **Sign In** button on the DTaaS platform
+page, the GitLab login page is not displayed.
+Instead, the user goes directly to the **Library** page.
+Close the browser window after use to avoid this.
+Alternatively, open the linked GitLab instance
+(ex: `https://intocps.org/gitlab`) and sign out there.
+To exit the DTaaS platform completely, the user has to sign out of both
+the DTaaS platform and GitLab.
 
-The same observation holds true for the Workspace installation as well.
+The same applies to the Workspace installation.

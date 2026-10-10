@@ -1,27 +1,28 @@
 # GitLab Server
 
-DTaaS currently supports local GitLab installation using either:
+DTaaS supports two ways of installing a local GitLab instance.
 
 ## Option A: Integrated DTaaS Package
 
 ![Integrated GitLab Install](gitlab-integrated-install.png)
 
-See [secure server with GitLab](../dtaas/secure-server-gitlab/install.md).
-Continue with [integration guide](integration.md).
+See [secure server with GitLab](../dtaas/secure-server-gitlab/install.md),
+then continue with the [integration guide](integration.md).
 
 ## Option B: Services CLI GitLab Workflow
 
 ![Services CLI GitLab Install](gitlab-independent-install.png)
 
-Use [services CLI](../services/cli.md) if GitLab is managed
-as part of the platform services project.
-Continue with [integration guide](integration.md).
+Use the [services CLI](../services/cli.md) if GitLab runs as one of the
+platform services, then continue with the
+[integration guide](integration.md).
 
 ## Notes
 
-- DTaaS client auth authority must match the actual GitLab endpoint.
-- For integrated package deployments, use the package-local `config/` files.
-- For services-cli deployments, use the generated services project files.
+- The DTaaS client auth authority must match the actual GitLab endpoint.
+- For integrated package deployments, use the package's own `config/` files.
+- For services CLI deployments, use the files of the generated services
+  project.
 
 ## Related
 

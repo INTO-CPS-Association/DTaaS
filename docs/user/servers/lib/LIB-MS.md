@@ -1,21 +1,19 @@
 # Library Microservice
 
-The lib microservice is responsible for handling and serving
-the contents of library assets of the DTaaS platform.
-It provides API endpoints for clients to query, and fetch these assets.
+The lib microservice serves the library assets of the DTaaS platform.
+Clients use its API endpoints to list and fetch these assets.
 
-This document provides instructions for using the library microservice.
+This page explains how to use the library microservice.
 
-The [assets](assets.md) page describes suggested storage
+The [assets](assets.md) page describes the suggested storage
 conventions for library assets.
 
-Once assets are stored in the library, they become
-available in the user workspace.
+Assets stored in the library are available in the user workspace.
 
 ## Application Programming Interface (API)
 
-The lib microservice application provides services at
-two end points:
+The lib microservice provides services at
+two endpoints:
 
 **GraphQL API Endpoint:** `http://intocps.org/lib`
 
@@ -25,10 +23,10 @@ two end points:
 
 Endpoint: `localhost:PORT/lib/files`
 
-This option needs to be enabled with `-H http.json` flag.
-The regular file upload and download options become available.
+Enable this endpoint with the `-H http.json` flag.
+It provides the usual file upload and download options.
 
-Here are sample screenshots.
+Sample screenshots:
 
 ![top-level](top-level.png)
 
@@ -40,24 +38,24 @@ Endpoint: `localhost:PORT/lib`
 
 The `http://intocps.org/lib` URL opens a GraphQL playground.
 
-The query schema can be examined and sample queries can be tested there.
-GraphQL queries must be sent as HTTP POST requests to receive responses.
+The playground shows the query schema and lets you test sample queries.
+Outside the playground, send GraphQL queries as HTTP POST requests.
 
 The library microservice provides two API calls:
 
-* Provide a list of contents for a directory
-* Fetch a file from the available files
+* List the contents of a directory
+* Fetch a file
 
-The API calls are accepted over GraphQL and HTTP API endpoints.
-The format of accepted queries is:
+Both calls can be sent from the GraphQL playground or as plain HTTP
+POST requests. The accepted queries are shown below.
 
 ### Provide list of contents for a directory
 
-To retrieve a list of files in a directory, use the following GraphQL query.
+To list the files in a directory, use the following GraphQL query.
 
-Replace `path` with the desired directory path.
+Replace the `path` value with the directory path.
 
-send requests to: <https://intocps.org/lib>
+Send requests to: <https://intocps.org/lib>
 
 #### GraphQL query for list of contents
 
@@ -174,16 +172,16 @@ X-Powered-By: Express
 
 ### Fetch a file from the available files
 
-This query receives directory path and send the file contents to user in response.
+This query takes a file path and returns the contents of the file.
 
-To check this query, create a file `files/user2/data/welcome.txt`
-with content of `hello world`.
+To try this query, create a file `files/user2/data/welcome.txt`
+containing `hello world`.
 
 #### GraphQL query for fetch a file
 
 ``` graphql
 query {
-  readFile(path: "user2/data/sample.txt") {
+  readFile(path: "user2/data/welcome.txt") {
     repository {
       blobs {
         nodes {
@@ -207,7 +205,7 @@ query {
         "blobs": {
           "nodes": [
             {
-              "name": "sample.txt",
+              "name": "welcome.txt",
               "rawBlob": "hello world",
               "rawTextBlob": "hello world"
             }
@@ -244,6 +242,7 @@ X-Powered-By: Express
 {"data":{"readFile":{"repository":{"blobs":{"nodes":[{"name":"welcome.txt","rawBlob":"hello world","rawTextBlob":"hello world"}]}}}}}
 ```
 
-The _path_ refers to the file path to look at:
-For example, _user1_ looks at files of
-**user1**; _user1/functions_ looks at contents of _functions/_ directory.
+The _path_ is the file path to look at.
+For example, _user1_ looks at the files of
+**user1**, and _user1/functions_ looks at the contents of the
+_functions/_ directory.

@@ -1,35 +1,47 @@
 # Command Line Interface
 
-The Command Line Interface (CLI) provides administrators with
-programmatic control over the DTaaS platform. It covers the complete
-deployment lifecycle: generating and validating configuration,
-generating deployment projects for all supported scenarios, installing
-and uninstalling deployments, updating certificates and configuration
-in place, and provisioning and deprovisioning user accounts.
+The Command Line Interface (CLI) lets administrators manage a DTaaS
+installation from the shell. It covers the whole deployment lifecycle:
+generating and validating the configuration, generating deployment files
+for each supported scenario, installing and uninstalling a deployment,
+updating certificates and configuration in place, and adding, removing,
+pausing and resuming users.
 
-The user-facing guide is on the
-[admin CLI page](../../admin/cli.md); the full command reference is in
-the `cli/README.md` of the repository. This page documents the
+The user guide is the [admin CLI page](../../admin/cli.md), and the full
+command reference is in `cli/README.md`. This page describes the
 internal structure for contributors.
 
 ## Command Surface
 
+Every command follows the grammar `dtaas <noun> <verb>`. The four nouns
+are listed in workflow order.
+
 ```text
 dtaas
-├── generate-project              # scaffold dtaas.toml + templates
-├── generate-deployment --type X  # generate a deployment package
-└── admin
-    ├── config
-    │   ├── generate              # write dtaas.toml + users.csv
-    │   ├── validate              # check dtaas.toml, report all errors
-    │   └── reconcile             # align state with configuration
-    ├── install                   # docker compose up of a deployment
-    ├── uninstall                 # tear down (optionally user files)
-    ├── update                    # --certs and/or --config, in place
-    └── user
-        ├── add                   # provision user workspaces
-        └── delete                # deprovision user workspaces
+├── config
+│   ├── generate                  # write dtaas.toml + users.csv
+│   ├── validate                  # check dtaas.toml, report all errors
+│   └── reconcile                 # report or fix registry drift
+├── deployment
+│   └── generate --type X         # generate a deployment package
+├── platform
+│   ├── install                   # docker compose up of a deployment
+│   ├── uninstall                 # tear down (optionally user files)
+│   ├── update                    # --certs and/or --config, in place
+│   ├── status                    # state of the installation
+│   ├── stop / start              # core services only
+│   └── pause / resume            # core services only
+└── user
+    ├── add                       # provision user workspaces
+    ├── delete                    # deprovision user workspaces
+    ├── status                    # state of additional users
+    └── pause / stop / resume     # suspend or resume single users
 ```
+
+The old spellings (`dtaas admin ...`, `dtaas generate-deployment` and
+`dtaas generate-project`) still work for one release. `cmd_aliases.py`
+registers them as hidden commands that print a deprecation warning and
+forward to the new command.
 
 ## Package Structure
 
@@ -39,13 +51,21 @@ The CLI package is organised as follows:
 cli/
 ├── src/                          # Application source code
 │   ├── __init__.py               # Package initialization
-│   ├── cmd.py                    # Click groups and command wiring
-│   ├── cmd_user.py               # 'user add' / 'user delete' commands
+│   ├── cmd.py                    # Root 'dtaas' group, wires the nouns
+│   ├── cmd_config.py             # 'config' commands
+│   ├── cmd_deployment.py         # 'deployment' commands
+│   ├── cmd_platform.py           # 'platform install/uninstall/update'
+│   ├── cmd_lifecycle.py          # 'platform status/stop/start/...'
+│   ├── cmd_user.py               # 'user add/delete/status'
+│   ├── cmd_user_lifecycle.py     # 'user pause/stop/resume'
+│   ├── cmd_aliases.py            # Deprecated old spellings
+│   ├── cmd_options.py            # Shared Click options
 │   ├── cmd_utils.py              # Shared command helpers
+│   ├── cmd_user_utils.py         # User input resolution
 │   ├── cmd_deploy_utils.py       # Deployment command helpers
 │   ├── pkg/                      # Implementation modules
-│   │   ├── build.py              # Deployment package assembly
-│   │   ├── certs.py              # Certificate handling
+│   │   ├── build.py              # Vendors shared code into src/
+│   │   ├── certs.py              # Certificate placement
 │   │   ├── cert_update.py        # In-place certificate rotation
 │   │   ├── cert_validate.py      # Certificate pair validation
 │   │   ├── config.py             # dtaas.toml parsing and access
@@ -54,15 +74,21 @@ cli/
 │   │   ├── constants.py          # Constant definitions
 │   │   ├── deploy.py             # Install/uninstall orchestration
 │   │   ├── deploy_config.py      # Scenario configuration mapping
-│   │   ├── project.py            # Project/template generation
-│   │   ├── registry.py           # Deployment registry
-│   │   ├── state.py              # Installation state tracking
-│   │   ├── users.py              # User lifecycle operations
+│   │   ├── _deploy_data.py       # Per-scenario substitution specs
+│   │   ├── gitlab/               # Optional GitLab user provisioning
+│   │   ├── lifecycle.py          # Platform status/stop/start/pause
+│   │   ├── project.py            # Template copying for 'generate'
+│   │   ├── registry.py           # User registry (JSON)
+│   │   ├── state.py              # Runtime state cache
+│   │   ├── user_files.py         # User file cleanup on uninstall
+│   │   ├── users.py              # User add/delete handlers
 │   │   ├── users_compose.py      # Per-user compose generation
-│   │   ├── users_utils.py        # User file provisioning
+│   │   ├── users_gitlab.py       # GitLab account and token setup
+│   │   ├── users_lifecycle.py    # Per-user pause/stop/resume
+│   │   ├── users_utils.py        # User management helpers
 │   │   ├── utils.py              # File I/O and utilities
 │   │   └── validators.py         # Shared validation helpers
-│   └── templates/                # dtaas.toml, users.csv, compose
+│   └── templates/                # dtaas.toml, users.csv and compose
 │       └── ...                   # templates for user workspaces
 ├── tests/                        # Test suites and fixtures
 ├── pyproject.toml                # Poetry project configuration
@@ -71,46 +97,63 @@ cli/
 
 ## Architecture and Design
 
-The CLI is implemented as a Python package using the Click framework
-for command parsing. Command definitions (`cmd*.py`) are kept separate
-from implementation modules (`pkg/`); commands parse options, load and
-validate configuration, and delegate to `pkg` functions. Docker
-operations go through python-on-whales.
+The CLI is a Python package that uses the Click framework for command
+parsing. Each noun is a Click group in its own `cmd_<noun>.py` module,
+and `cmd.py` attaches the groups to the root `dtaas` group. Command
+modules parse options, load and validate the configuration, and call
+functions in `pkg/`. Docker operations go through python-on-whales.
 
-`dtaas.toml` is the single source of truth: every command reads it via
-`pkg/config.py`, and `admin update --config` re-applies it to an
-installed deployment rather than letting deployments drift from it.
+`dtaas.toml` is the single source of truth. Every command reads it
+through the `Config` class in `pkg/config.py`, and
+`platform update --config` re-applies it to an installed deployment so
+that the deployment does not drift from it.
 
-### Key Modules
+The CLI also keeps two files of its own. `dtaas.users.registry.json`
+(`pkg/registry.py`) records the additional users added with `user add`,
+and `.dtaas.state.json` (`pkg/state.py`) caches what is known about the
+provisioned user containers.
+
+GitLab account provisioning in `pkg/gitlab/` is built on the
+`gitlab_common` library. `src/pkg/build.py` vendors it from
+`lib/gitlab_common/` into the source tree, so run it before running the
+tests:
+
+```bash
+poetry run python src/pkg/build.py && poetry run pytest
+```
+
+### Main Modules
 
 | Module               | Purpose                                        |
 | :------------------- | :--------------------------------------------- |
-| `cmd.py`             | Click groups; wires all commands together      |
-| `cmd_user.py`        | User add/delete command definitions            |
+| `cmd.py`             | Root group; attaches the four noun groups      |
+| `cmd_user.py`        | User add/delete/status command definitions     |
 | `pkg/config*.py`     | TOML parsing, validation, in-place updates     |
-| `pkg/project.py`     | Template scaffolding (`generate-project`)      |
-| `pkg/build.py`       | Deployment generation (`generate-deployment`)  |
+| `pkg/project.py`     | Template copying (`config generate`, `deployment generate`) |
 | `pkg/deploy.py`      | Install/uninstall orchestration                |
+| `pkg/lifecycle.py`   | Platform status, stop, start, pause, resume    |
 | `pkg/cert_*.py`      | Certificate validation and rotation            |
 | `pkg/users*.py`      | User workspace lifecycle                       |
-| `pkg/state.py`       | Installation state tracking                    |
+| `pkg/registry.py`    | Registry of additional users                   |
+| `pkg/state.py`       | Runtime state of user containers               |
 | `pkg/utils.py`       | YAML/TOML I/O, template substitution           |
 
 ## Sequence Diagram
 
-The following diagram illustrates the user addition workflow:
+The following diagram shows how `dtaas user add` provisions a user:
 
 ```mermaid
 sequenceDiagram
     actor Admin
     participant CLI as Click CLI
     participant Config as pkg/config.py
+    participant Registry as pkg/registry.py
     participant Users as pkg/users.py
     participant Utils as pkg/utils.py
     participant Docker as Docker Compose
     participant FS as File System
 
-    Admin ->> CLI: dtaas admin user add
+    Admin ->> CLI: dtaas user add alice --email ...
     activate CLI
 
     CLI ->> Config: Config()
@@ -119,30 +162,29 @@ sequenceDiagram
     Utils -->> Config: config data
     deactivate Config
 
-    CLI ->> Users: add_users(config_obj)
+    CLI ->> Registry: stage the new user
+    CLI ->> Users: add_users(config_obj, start_only, passwords)
     activate Users
 
-    Users ->> Config: get_add_users_list()
-    Config -->> Users: user list
+    Users ->> Registry: load_registry()
+    Registry -->> Users: user list
 
     Users ->> Config: get_server_dns() / get_path()
     Config -->> Users: server DNS, installation path
 
-    Users ->> Config: get_resource_limits()
-    Config -->> Users: resource limits
+    Users ->> Config: get_resource_limits() / get_tls()
+    Config -->> Users: resource limits, TLS setting
 
-    loop For each user
-        Users ->> FS: Copy files/template directory
-        Users ->> Users: generate compose service entry
-    end
+    Users ->> FS: Copy workspace files for each user
+    Users ->> Users: generate compose service entries
 
     Users ->> Utils: export_yaml(compose)
     Utils ->> FS: Write user compose file
 
-    Users ->> Docker: docker compose up -d
-    Docker -->> Users: Container started
+    Users ->> Docker: docker compose up -d (new users only)
+    Docker -->> Users: Containers started
 
-    Users -->> CLI: Success
+    Users -->> CLI: None (success)
     deactivate Users
 
     CLI -->> Admin: "Users added successfully"
@@ -151,28 +193,25 @@ sequenceDiagram
 
 ## Error Handling Pattern
 
-The CLI employs a consistent error handling strategy throughout the
-codebase:
+The CLI handles errors in two ways:
 
-1. **Functions return errors as values**: Most functions return a
-   tuple of `(result, error)` rather than raising exceptions
-2. **Explicit error propagation**: Callers check for errors and
-   propagate them up the call stack
-3. **Click exceptions at boundaries**: At the CLI entry points, errors
-   are converted to `click.ClickException` for user-friendly output
+1. Most modules under `src/pkg/` raise exceptions.
+2. `config.py` and `utils.py` return `(result, Exception | None)`
+   pairs, and callers check the error before using the result.
 
-This pattern provides explicit control flow and facilitates testing by
-making error paths explicit and testable.
+The command modules turn both kinds of error into
+`click.ClickException`, so the user sees a short message instead of a
+traceback. Test commands with Click's `CliRunner` rather than
+`subprocess`.
 
 ## Resource Limits Configuration
 
-The CLI supports configurable resource limits for user containers,
-enabling administrators to control resource consumption per user and
-reduce the possibility of a single user making excessive use of
-limited computing resources. Limits are set in
-`[common.resources]` of `dtaas.toml`. The `set_limits` flag toggles
-enforcement; when it is `false`, user containers are created without
-caps and the remaining fields are ignored:
+Administrators can limit the resources each user container may use, so
+that one user cannot take over a shared server. The limits are set in
+the `[common.resources]` section of `dtaas.toml`. The `set_limits` flag
+turns enforcement on and off. When it is `false`, user containers are
+created without limits and the other fields are ignored. The defaults
+come from the `dtaas.toml` template:
 
 | Parameter     | Description                      | Default       |
 | :------------ | :------------------------------- | :------------ |

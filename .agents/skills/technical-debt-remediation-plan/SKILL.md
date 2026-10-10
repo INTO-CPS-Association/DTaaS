@@ -1,7 +1,11 @@
 ---
-description: 'Generate technical debt remediation plans for code, tests, and documentation.'
-tools: ['search/changes', 'search/codebase', 'edit/editFiles', 'vscode/extensions', 'web/fetch', 'web/githubRepo', 'vscode/getProjectSetupInfo', 'vscode/installExtension', 'vscode/newWorkspace', 'vscode/runCommand', 'vscode/openSimpleBrowser', 'read/problems', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/createAndRunTask', 'execute/getTaskOutput', 'execute/runTask', 'execute/runTests', 'search', 'search/searchResults', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/testFailure', 'search/usages', 'vscode/vscodeAPI']
+name: technical-debt-remediation-plan
+description: Analyse code, tests and documentation for technical debt and write a remediation plan rated by ease, impact and risk, without changing code. Use when asked for a technical debt plan, a tech debt assessment, or a prioritised list of cleanup or refactoring work.
+license: MIT
+metadata:
+  source: "https://github.com/github/awesome-copilot"
 ---
+
 # Technical Debt Remediation Plan
 
 Generate comprehensive technical debt remediation plans. Analysis only -
@@ -15,13 +19,14 @@ Create Markdown document with required sections:
 ### Core Metrics (1-5 scale)
 
 - **Ease of Remediation**: Implementation difficulty (1=trivial, 5=complex)
-- **Impact**: Effect on codebase quality (1=minimal, 5=critical). Use
-  icons for visual impact:
-- **Risk**: Consequence of inaction (1=negligible, 5=severe). Use icons
-  for visual impact:
-  - 🟢 Low Risk
-  - 🟡 Medium Risk
-  - 🔴 High Risk
+- **Impact**: Effect on codebase quality (1=minimal, 5=critical)
+- **Risk**: Consequence of inaction (1=negligible, 5=severe)
+
+Use icons for visual impact on the Impact and Risk ratings:
+
+- 🟢 Low
+- 🟡 Medium
+- 🔴 High
 
 ### Required Sections
 
@@ -48,7 +53,8 @@ Create Markdown document with required sections:
 
 ## GitHub Integration
 
-- Use `search_issues` before creating new issues
-- Apply `/.github/ISSUE_TEMPLATE/chore_request.yml` template for
-  remediation tasks
+- Search existing issues (for example `gh issue list --search <terms>`)
+  before creating new issues
+- Use the closest template in `.github/ISSUE_TEMPLATE/` for remediation
+  tasks; it holds `bug_report.md` and `feature_request.md`
 - Reference existing issues when relevant

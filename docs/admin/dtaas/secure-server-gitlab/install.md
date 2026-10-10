@@ -1,27 +1,23 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-This README provides a quick-start installation guide
-for
-a **secure, multi-user DTaaS deployment** that uses
+This guide installs a **secure, multi-user DTaaS deployment** that uses
 an **integrated GitLab instance** for OAuth 2.0 authorisation.
 
 Download **dtaas-secure-server-integrated-gitlab-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 
-For detailed
-configuration reference, see [config.md](config.md).
+For the configuration reference, see [config.md](config.md).
 
-> [!IMPORTANT]
-> The hostname `intocps.org` is used for illustration throughout
-> this guide. Replace it with the actual server hostname of the
-> installation.
+!!! important
+    This guide uses the hostname `intocps.org` as an example. Replace it
+    with the hostname of your server.
 
-## :globe_with_meridians: Overview
+## Overview
 
-This package installs the DTaaS as a multi-user web application with an
-integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
+This package installs DTaaS as a multi-user web application with an
+integrated GitLab CE instance. GitLab is both the OAuth 2.0
 authorisation provider and the DevOps backend for digital twin projects.
 
 <img src="server.png" alt="DTaaS on Server" width="600px" />
@@ -32,12 +28,13 @@ The `docker-compose.yml` starts the following services:
 | :----------------------- | :---------------------------------------- |
 | **traefik**              | Reverse proxy with TLS termination        |
 | **client**               | DTaaS React frontend                      |
+| **logger-ms**            | Logger microservice                       |
 | **user1 / user2**        | JupyterLab user workspaces                |
 | **libms**                | Library management microservice           |
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware        |
 | **gitlab**               | Integrated GitLab CE (OAuth 2.0 provider) |
 
-## :clipboard: Prerequisites
+## Prerequisites
 
 | Requirement         | Details                                                                                                                    |
 | :------------------ | :------------------------------------------------------------------------------------------------------------------------- |
@@ -45,7 +42,7 @@ The `docker-compose.yml` starts the following services:
 | **Domain name**     | A domain name (e.g. `intocps.org`) or IP address                                                                           |
 | **TLS certificate** | `fullchain.pem` and `privkey.pem` for the domain. Obtain via [certbot](https://certbot.eff.org/) or a certificate provider |
 
-## :rocket: Quick Start
+## Quick Start
 
 ### 1. Create Configuration Files
 
@@ -55,11 +52,11 @@ cp config/conf.server.example config/conf.server
 cp config/client.js.example     config/client.js
 ```
 
-Edit `config/.env` — set `SERVER_DNS`, `USERNAME1`, `USERNAME2`.
-Leave the `OAUTH_*` variables as placeholders for now; they will be
-filled after the GitLab instance is running (see step 5).
+Edit `config/.env` and set `SERVER_DNS`, `USERNAME1` and `USERNAME2`.
+Leave the `OAUTH_*` variables as placeholders for now; you fill them in
+once the GitLab instance is running (see step 5).
 
-See [config.md](config.md) for a complete reference of every variable.
+See [config.md](config.md) for a reference of every variable.
 
 ### 2. Create User Workspace Directories
 
@@ -85,22 +82,22 @@ absent or invalid.
 docker compose --env-file config/.env up -d
 ```
 
-Wait a few minutes for GitLab to become healthy:
+GitLab takes a few minutes to become healthy. Watch its status with:
 
 ```bash
 watch docker ps
 ```
 
-### 5. Configure GitLab :fox_face:
+### 5. Configure GitLab
 
 Once the GitLab container shows as `healthy`:
 
 1. Log in to `https://intocps.org/gitlab` as `root`.
-   The initial password is inside `config/gitlab/initial_root_password`.
+   The initial password is in `config/gitlab/initial_root_password`.
 
-   > [!WARNING]
-   > This file is **deleted 24 hours** after the first start.
-   > Save the password immediately.
+    !!! warning
+        GitLab **deletes this file 24 hours** after the first start.
+        Save the password immediately.
 
 1. Create user accounts (see
    [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)).
@@ -109,19 +106,18 @@ Once the GitLab container shows as `healthy`:
 1. Register two OAuth 2.0 applications in GitLab
    (Admin Area → Applications):
 
-   - **DTaaS Client Authorization** — for the React SPA frontend.
-     See [client auth docs](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html).
-   - **DTaaS Server Authorization** — for Traefik forward-auth backend.
-     See [server auth docs](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html).
+   - **DTaaS Client Authorization** for the React SPA frontend.
+     See the [client auth docs](../../client/auth.md).
+   - **DTaaS Server Authorization** for the Traefik forward-auth backend.
+     See the [server auth docs](../../servers/auth.md).
 
-1. Update configuration files (`config/.env` and `config/client.js`) with
-   the generated OAuth 2.0 tokens:
+1. Put the generated OAuth 2.0 credentials into the configuration files:
    - Set `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
      `config/client.js`.
-   - Set `OAUTH_URL`, `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` in
+   - Set `OAUTH_URL`, `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET` in
      `config/.env`.
 
-1. Update user permissions in `config/conf.server`.
+1. Update the user permissions in `config/conf.server`.
 
 1. Reload the services:
 
@@ -129,7 +125,7 @@ Once the GitLab container shows as `healthy`:
    docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
    ```
 
-### 6. Verify :white_check_mark:
+### 6. Verify
 
 | URL                          | Expected result                                   |
 | :--------------------------- | :------------------------------------------------ |
@@ -138,34 +134,34 @@ Once the GitLab container shows as `healthy`:
 | `https://intocps.org/user1`  | User 1 workspace (after sign-in)                  |
 | `https://intocps.org/user2`  | User 2 workspace (after sign-in)                  |
 
-## :stop_sign: Stop
+## Stop
 
 ```bash
 docker compose --env-file config/.env down
 ```
 
-## :file_folder: Directory Layout
+## Directory Layout
 
 ```text
 .
 ├── certs/                 # TLS certificates (fullchain.pem, privkey.pem)
 ├── config/
 │   ├── .env               # Docker compose environment variables
-│   ├── conf.server        # Traefik forward-auth authorization rules
-│   ├── client.js             # DTaaS React client configuration
+│   ├── conf.server        # Traefik forward-auth authorisation rules
+│   ├── client.js          # DTaaS React client configuration
 │   ├── gitlab/            # GitLab config (mounted as /etc/gitlab)
 │   └── tls.yml            # Traefik TLS provider configuration
 ├── data/                  # GitLab persistent data (/var/opt/gitlab)
 ├── files/
 │   ├── common/            # Shared files across all workspaces
-| \- template/           # sample user workspace files |
+│   └── template/          # sample user workspace files
 ├── logs/                  # GitLab logs (/var/log/gitlab)
 ├── docker-compose.yml     # Service definitions
 ├── CONFIG.md              # Detailed configuration reference
 └── README.md              # This file — quick-start guide
 ```
 
-## :framed_picture: References
+## References
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),

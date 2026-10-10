@@ -1,49 +1,45 @@
 # Remove User
 
-This page provides steps for removing a user from a DTaaS installation.
-The username **alice** is used here to illustrate the steps involved in
-removing a user account.
+This page removes a user from a DTaaS installation, using the username
+**alice** as the example.
 
-The following steps should be performed:
+**1. Remove the user with the [DTaaS CLI](../cli.md):**
 
-**1. Remove an existing user with the [DTaaS CLI](../cli.md).**
+Run the CLI from the installation directory, which holds `dtaas.toml`
+and `config/conf.server`:
 
-**2. Remove backend authorisation for the user:**
+```bash
+dtaas user delete alice
+```
 
-- Navigate to the installation directory. For example, if the user needs
-  to be removed from a secure-server installation,
+The CLI stops and removes the workspace container and deletes the
+user's forward-auth rule from `config/conf.server`. A rule that was
+added by hand has the following form; remove it yourself if the CLI
+left it in place:
 
-  ```bash
-  cd <DTaaS>/deploy/dtaas/docker/secure-server
-  ```
+```txt
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/alice`)
+rule.onlyu3.whitelist = alice@intocps.org
+```
 
-- Remove these three lines from `config/conf.server`
+**2. Restart the container responsible for backend authorisation:**
 
-  ```txt
-  rule.onlyu3.action=auth
-  rule.onlyu3.rule=PathPrefix(`/alice`)
-  rule.onlyu3.whitelist = alice@intocps.org
-  ```
+```bash
+docker compose --env-file config/.env up \
+  -d --force-recreate traefik-forward-auth
+```
 
-- Run the command for these changes to take effect:
+The removed user no longer has backend authorisation.
 
-  ```bash
-  docker compose --env-file config/.env up \
-    -d --force-recreate traefik-forward-auth
-  ```
-
-The extra users now have no backend authorisation.
-
-**3. Remove users from GitLab instance (optional):**
+**3. Remove the user from the GitLab instance (optional):**
 
 The
 [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
-provide additional guidance.
-
-**4. The user account is now deleted.**
+describe how to delete an account.
 
 ## Caveat
 
-The two base users that the DTaaS platform
-was installed with cannot be deleted. Only the extra users that
-have been added to the software can be deleted.
+The CLI can delete only users that were added with `dtaas user add`.
+The starting users listed in `dtaas.toml` at installation time cannot
+be deleted this way.

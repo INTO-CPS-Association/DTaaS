@@ -1,13 +1,21 @@
 # Publish NPM packages
 
-The DTaaS platform is developed as a monorepo with multiple npm packages.
+The DTaaS monorepo contains several npm packages.
 
 ## Default npm registry
 
 The default registry for npm packages is [npmjs](https://registry.npmjs.org).
-The freely-accessible public packages are published to the **npmjs** registry.
-The publication step is manual for the
-[runner](../../user/servers/execution/runner/readme.md).
+Public packages are published to **npmjs**.
+
+GitHub Actions publish the
+[library microservice](../../admin/servers/lib/npm.md) (`lib-ms.yml`),
+the [runner](../../user/servers/execution/runner/readme.md)
+(`runner.yml`), the [logger microservice](../../admin/servers/logger/npm.md)
+(`logger-ms.yml`) and the `@into-cps-association/dt-automation` library
+(`dt-automation.yml`). Each workflow calls the reusable
+`.github/workflows/publish-npm.yml` workflow.
+
+A package can also be published by hand:
 
 ```bash
 npm login --registry="https://registry.npmjs.org"
@@ -17,32 +25,26 @@ yarn publish --registry="https://registry.npmjs.org" \
   --no-git-tag-version --access public
 ```
 
-At least one version of runner package is published to this registry
+At least one version of the runner package is published to this registry
 for each release of the DTaaS platform.
 
-The publication steps for
-[library microservice](../../admin/servers/lib/npm.md) and
-[runner](../../user/servers/execution/runner/readme.md)
-are automated via github actions.
+## GitHub npm registry
 
-## GitHub  npm registry
-
-The GitHub actions of the project publish
-[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
-The only limitation is that a
+The GitHub Actions of the project also publish the
+[packages](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
+to the GitHub npm registry. Installing from this registry requires a
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-from GitHub is required.
+from GitHub.
 
 ## Private Registry
 
 ### Setup private npm registry
 
-Since publishing to [npmjs](https://www.npmjs.com/) is
-irrevocable and public, developers are encouraged to set up a private
-npm registry for local development.
-A private npm registry will help with local publish and unpublish steps.
+Publishing to [npmjs](https://www.npmjs.com/) is public and cannot be
+undone, so set up a private npm registry for local development. A
+private registry lets you publish and unpublish packages freely.
 
-It is recommended to use [verdaccio](https://verdaccio.org) for this task.
+[Verdaccio](https://verdaccio.org) is the recommended registry.
 The following commands create a working private npm registry
 for development.
 
@@ -55,12 +57,12 @@ yarn login --registry "http://localhost:4873" #login with the credentials for ya
 npm login #login with the credentials for npm utility
 ```
 
-The registry can be accessed at `http://localhost:4873` in the browser;
-login with the user credentials to see the packages published.
+Open `http://localhost:4873` in a browser and log in with the user
+credentials to see the published packages.
 
 #### Publish to private npm registry
 
-To publish a package to the local registry, do:
+To publish a package to the local registry, run:
 
 ```bash
 yarn install
@@ -69,13 +71,11 @@ yarn publish --no-git-tag-version #increments version in package.json, publishes
 yarn publish #increments version in package.json, publishes to registry and adds a git tag
 ```
 
-The package version in package.json is updated accordingly.
-The registry can be accessed at `http://localhost:4873` in the browser;
-login with the user credentials to see the packages published. Please see
+The package version in `package.json` is updated accordingly. See the
 [verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
 for more information.
 
-If there is a need to unpublish a package, ex: `@dtaas/runner@0.0.2`, do:
+To unpublish a package, for example `@dtaas/runner@0.0.2`, run:
 
 ```bash
 npm unpublish --registry http://localhost:4873/ \
@@ -93,10 +93,10 @@ sudo npm remove --global @dtaas/runner
 
 ### :rocket: Use the packages
 
-The packages available in private npm registry can be used like
-the regular npm packages installed from [npmjs](https://www.npmjs.com/).
+Packages in the private npm registry are used like regular packages
+installed from [npmjs](https://www.npmjs.com/).
 
-For example, to use `@dtaas/runner@0.0.2` package, do:
+For example, to use the `@dtaas/runner@0.0.2` package, run:
 
 ```bash
 sudo npm install --registry http://localhost:4873 \

@@ -1,8 +1,7 @@
 # Check Client Configuration
 
-One of the common errors is the incorrect configuration of
-the react website. There is now a helpful checklist to verify
-the client configuration.
+A common error is an incorrect configuration of the React website.
+The client has a checklist page that verifies its configuration.
 
 **Visit**: `https://<SERVER_DNS>/config/developer`
 
@@ -10,7 +9,6 @@ A correct configuration shows the following result.
 
 ![Correct client configuration](client-config-valid.png)
 
-In case of incorrect client website URL, the following result
-will be shown.
+An incorrect client website URL shows the following result.
 
 ![Incorrect client configuration](client-config-invalid.png)

@@ -16,8 +16,9 @@ For non-Docker local development, use the logger's direct port:
 LOGGER_URL: "http://localhost:4003/logger";
 ```
 
-Remote logging is disabled by default. Users can enable it from account
-settings when a logger URL is configured.
+Remote logging is disabled by default. When a logger URL is configured,
+users can enable it with the **Send logs to ...** checkbox under
+**Logging Settings** on the **Settings** tab of the **Account** page.
 
-See the canonical API contract in
+The API is specified in
 [`servers/logger/API.md`](https://github.com/INTO-CPS-Association/DTaaS/blob/main/servers/logger/API.md).

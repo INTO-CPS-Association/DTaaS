@@ -1,12 +1,9 @@
 # Setting up GitLab Runners with Docker on Windows for DTaaS
 
-This guide documents how to properly set up and configure GitLab runners with
-Docker on Windows for the DTaaS platform.
-An illustration of the intended installation setup is shown below.
+This guide sets up and configures GitLab runners with Docker on Windows
+for the DTaaS platform. The diagram shows the intended installation.
 
 ![GitLab Runner Integration](gitlab-integrated-runner.png)
-
-There are two installation scenarios:
 
 ## Step-by-Step Setup Process
 
@@ -28,21 +25,18 @@ cd C:\path\to\download\folder
 
 ### 2. Getting a token
 
-To obtain the GitLab token, first navigate to the project page
-(e.g. <https://dtaas-digitaltwin.com/gitlab/dtaas/USERNAME>), then do the following:
+To obtain the GitLab token, open the project page
+(e.g. <https://dtaas-digitaltwin.com/gitlab/dtaas/USERNAME>) and:
 
-1. settings -> CI/CD -> Runners
-2. Now press **New Project Runner**
-3. Add tag `linux`
-4. Leave the rest as is, and press **Create Runner**
-5. The token is now displayed. Save it.
-
-The runner token is now available.
+1. Go to **Settings > CI/CD > Runners**.
+2. Press **New Project Runner**.
+3. Add the tag `linux`.
+4. Leave the other settings unchanged and press **Create Runner**.
+5. GitLab displays the token. Save it.
 
 ### 3. Register the Runner for DTaaS
 
-For the DTaaS project, register the runner using
-the specific GitLab instance URL and token:
+Register the runner with the URL of the GitLab instance and the token:
 
 ```powershell
 # Register the runner for DTaaS
@@ -55,19 +49,19 @@ the specific GitLab instance URL and token:
 # - Tags: linux
 ```
 
-This configuration is designed for the DTaaS digital twins which require
-a Linux environment to run properly. The pipelines use shell scripts with
-commands like `chmod +x`, which need a Linux-compatible environment.
+DTaaS digital twins need a Linux environment: their pipelines run shell
+scripts with commands such as `chmod +x`.
 
 ### 4. Configure the config.toml
 
-The most important part is properly configuring the `config.toml` file, which
-is typically located at `C:\Users\YourUsername\.gitlab-runner\config.toml` or
-in the directory where the gitlab-runner executable was installed and run.
+Most of the setup happens in the `config.toml` file. It is usually at
+`C:\Users\YourUsername\.gitlab-runner\config.toml`, or in the directory
+where the gitlab-runner executable was installed and run.
 
 #### DTaaS Configuration for Windows Hosts
 
-Here is the recommended configuration for running DTaaS Digital Twins on Windows:
+The recommended configuration for running DTaaS digital twins on Windows
+is:
 
 ```toml
 concurrent = 1
@@ -108,9 +102,9 @@ shutdown_timeout = 0
   tags = ["linux"]
 ```
 
-### 6. Restart the Runner
+### 5. Restart the Runner
 
-After making these configuration changes, restart the runner:
+Restart the runner to apply the configuration:
 
 ```powershell
 .\gitlab-runner.exe stop
@@ -119,13 +113,13 @@ After making these configuration changes, restart the runner:
 
 ## Verifying the Setup
 
-Run a verification check to ensure the runner is properly configured:
+Check that the runner is configured correctly:
 
 ```powershell
 .\gitlab-runner.exe verify
 ```
 
-A successful verification will show something like:
+A successful check prints something like:
 
 ```powershell
 Verifying runner... is valid        runner=YourRunnerToken
@@ -133,36 +127,30 @@ Verifying runner... is valid        runner=YourRunnerToken
 
 ## Understanding the DTaaS Project Setup
 
-The DTaaS project uses a specific structure for running digital twins:
+DTaaS runs digital twins as follows:
 
-1. Digital twins are contained in the `digital_twins` directory
-2. Each digital twin has lifecycle scripts (create, execute, terminate, clean)
-3. The GitLab CI/CD pipeline triggers these scripts based on user actions
-4. The scripts need a Linux environment to execute properly
+1. Digital twins live in the `digital_twins` directory.
+2. Each digital twin has lifecycle scripts (create, execute, terminate,
+   clean).
+3. The GitLab CI/CD pipeline triggers these scripts based on user actions.
+4. The scripts need a Linux environment.
 
 ## Common Errors
 
-When running GitLab CI/CD pipelines on Windows with Docker,
-the following errors may be encountered:
+GitLab CI/CD pipelines on Windows with Docker can fail with these errors:
 
 ```env
 ERROR: Failed to remove network for build
 ERROR: Job failed: invalid volume specification: "c:\\cache"
 ```
 
-These errors are typically caused by:
+The usual causes are:
 
-1. Incorrect Docker executor configuration
-2. Windows-style path specification not being compatible with Docker
-3. Mismatch between the runner's executor type and the pipeline requirements
+1. An incorrect Docker executor configuration
+2. Windows-style paths, which Docker does not accept
+3. A mismatch between the runner's executor type and the pipeline
+   requirements
 
-## Conclusion
-
-By following this guide, it should be possible to properly set up GitLab runners
-with Docker on Windows for the DTaaS project and avoid the common
-configuration errors. The most crucial aspects are using the Docker (Linux)
-executor and properly formatting the volume paths.
-
-Remember that for the DTaaS digital twins, using the standard Docker executor
-is required, even when running on a Windows host, since the scripts are
-designed to run in a Linux environment.
+Use the Docker (Linux) executor even on a Windows host, because the
+digital twin scripts are written for Linux, and write volume paths in
+Linux form (`/cache`).

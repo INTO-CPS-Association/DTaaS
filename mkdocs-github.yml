@@ -165,12 +165,12 @@ nav:
           - Publish Packages: developer/codebase/publish-packages.md
       - Contributions:
           - Code of Conduct: developer/contributions/conduct.md
-          - Copilot Instructions:
-              developer/contributions/copilot-instructions.md
+          - Coding Agents: developer/contributions/coding-agents.md
           - Local Testing: developer/contributions/local-testing.md
           - Docker Check: developer/contributions/docker.md
           - GitHub Actions: developer/contributions/github-actions.md
           - Publish NPM Packages: developer/contributions/npm-packages.md
+          - Upgrade NPM Packages: developer/contributions/npm-upgrade.md
           - Vagrant: developer/vagrant.md
   - Bugs: bugs.md
   - Thanks: thanks.md

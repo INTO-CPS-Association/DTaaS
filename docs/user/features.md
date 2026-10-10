@@ -2,53 +2,57 @@
 
 ## Advantages
 
-The DTaaS software platform provides the following advantages:
+The DTaaS software platform offers:
 
 - Support for heterogeneous Digital Twin implementations
   - CFD, Simulink, co-simulation, FEM, ROM, ML, and other paradigms
 - Integration with existing Digital Twin frameworks
-- Provision of Digital Twin as a Service capabilities
-- Facilitation of collaboration and asset reuse
-- Private workspaces for verification
-  of reusable assets and trial executions of DTs
-- Cost effectiveness through shared infrastructure
+- Digital Twins offered as a service
+- Collaboration and reuse of assets
+- Private workspaces for verifying reusable assets
+  and trying out DT executions
+- Lower cost through shared infrastructure
 
 ## Software Features
 
 Each installation of the DTaaS platform includes
-the features illustrated in the following diagram.
+the features shown in the following diagram.
 
 ![Features](DTaaS-user-view.png)
 
-All users are provided with dedicated workspaces.
-These workspaces are containerized implementations of Linux Desktops.
-The user desktops are isolated, ensuring that installations and
-customisations performed in one workspace do not affect
+Every user gets a dedicated workspace.
+These workspaces are containerized Linux desktops.
+The user desktops are isolated, so software installed and
+customisations made in one workspace do not affect
 other user workspaces.
-Graphical digital twins can be executed within these private workspaces.
+Graphical digital twins can be executed in these private workspaces.
 
-Each user workspace is provisioned with pre-installed development tools.
-These tools are accessible directly through a web browser.
+Each user workspace comes with pre-installed development tools,
+which are accessed through a web browser.
 The following tools are currently available:
 
 | Tool                   | Advantage                                                                                                                                           |
 | :--------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Jupyter Lab            | Enables flexible creation and use of digital twins and their components through a web browser. All native JupyterLab use cases are supported.       |
-| Jupyter Notebook       | Facilitates web-based management of files and library assets.                                                                                       |
-| VS Code in the browser | A widely-adopted IDE for software development. Digital twin-related assets can be developed within this environment.                                |
-| ungit                  | An interactive git client enabling repository management through a web browser.                                                                     |
+| Jupyter Lab            | Create and use digital twins and their components in a web browser. All native JupyterLab use cases are supported.                                 |
+| Jupyter Notebook       | Manage files and library assets in a web browser.                                                                                                   |
+| VS Code in the browser | A widely used IDE for software development. Digital twin assets can be developed in this environment.                                               |
+| ungit                  | An interactive git client for managing repositories in a web browser.                                                                               |
 
-In addition, an xfce-based remote desktop is accessible via a VNC client.
-The VNC client is available directly in the web browser.
-Desktop software supported by xfce can also be executed within the workspace.
+In addition, an xfce-based remote desktop is accessible through a VNC
+client that runs in the web browser.
+Desktop software supported by xfce can also be executed in the workspace.
 
-The workspaces maintain Internet connectivity, enabling
-Digital Twins running in the workspace to interact
+The workspaces have Internet access, so
+Digital Twins running in a workspace can interact
 with both internal and external services.
 
-A DT automation layer is provided for managing DT automation tasks.
-This layer facilitates creation, modification, and execution of DTs on
+A DT automation layer manages DT automation tasks.
+It creates, modifies and executes DTs on
 both on-premise infrastructure and commercial cloud (DevOps) service providers.
+
+The web client also has a [Building Models](website/bim.md) page that
+draws IFC building models from the user's library and colours them by
+the readings of their sensors.
 
 The DTaaS software platform includes several pre-installed services.
 The currently available services are:
@@ -56,17 +60,17 @@ The currently available services are:
 | Service     | Advantage                                                                                                                                                                                                   |
 | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | InfluxDB    | Internet of Things (IoT) device management and data visualisation platform. This service stores data for digital twins and provides alerting capabilities.                                                  |
-| RabbitMQ    | Communication broker facilitating message exchange between physical and digital twins.                                                                                                                      |
-| Grafana     | visualisation dashboard service for digital twin data presentation.                                                                                                                                         |
+| RabbitMQ    | Communication broker for message exchange between physical and digital twins.                                                                                                                               |
+| Grafana     | Visualisation dashboard service for presenting digital twin data.                                                                                                                                           |
 | MQTT        | Lightweight data transfer broker for IoT devices and physical twins providing data to digital twins.                                                                                                        |
 | MongoDB     | NoSQL document database for storing metadata from physical twins.                                                                                                                                           |
 | PostgreSQL  | SQL database server for storing historical and time-series data.                                                                                                                                            |
-| ThingsBoard | an Internet of Things (IoT) device management and data visualisation platform                                                                                                                               |
+| ThingsBoard | Internet of Things (IoT) device management and data visualisation platform.                                                                                                                                 |
 
-Users can publish and reuse digital twin assets
-available on the platform. Additionally, digital twins can be executed
-and made available as services to external clients. These clients
-need not be registered users of the DTaaS installation.
+Users can publish and reuse the digital twin assets
+available on the platform. Digital twins can also be executed
+and offered as services to external clients. These clients
+do not need to be registered users of the DTaaS installation.
 
 ## References
 

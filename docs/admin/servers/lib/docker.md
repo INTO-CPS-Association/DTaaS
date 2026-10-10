@@ -1,37 +1,38 @@
 # Host Library Microservice
 
 The **lib microservice** is a simplified file manager that serves files
-over GraphQL and HTTP API.
+over GraphQL and HTTP APIs. It lists directory contents and transfers
+files to and from users.
 
-It has two features:
-
-* Provide a listing of directory contents.
-* Transfer a file to the user.
-
-This document provides instructions for running a docker container
-to provide a standalone library microservice.
+This page explains how to run the library microservice as a standalone
+docker container.
 
 ## Setup the File System
 
 ### Outside the DTaaS Platform
 
-The package can be used independently of the DTaaS. In this use case,
-no specific file structure is required. A valid file directory named
-`files` is sufficient and should be placed in the directory from
-which `compose.lib.yml` will be run.
+The package can be used independently of the DTaaS. In this case no
+particular file structure is needed. A directory named `files`, placed
+in the directory from which `compose.lib.yml` will be run, is enough.
 
 ### Inside the DTaaS Platform
 
-The users of DTaaS expect the following file system structure for
-their reusable assets.
+DTaaS users expect the following file system structure for their
+reusable assets.
 
 ![File System Layout](file-system-layout.png)
 
 A skeleton file structure is available in the
-[DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
-This can be copied to create a file system for users. The directory
-containing the file structure should be named `files`
-and placed in the directory from which `compose.lib.yml` will be run.
+[DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/deploy/dtaas/docker/localhost/files).
+Copy it to create a file system for users. Name the directory `files`
+and place it in the directory from which `compose.lib.yml` will be run.
+
+The container runs as uid 1000 and writes into this directory, so on
+Linux hosts give the directory to that user:
+
+```bash
+sudo chown -R 1000:1000 files
+```
 
 ## :rocket: Use
 

@@ -1,108 +1,106 @@
 # :european_castle: System Overview
 
-The Digital Twin as a Service (DTaaS) platform is designed to support
-the complete digital twin (DT) lifecycle, enabling users to create,
-configure, execute, and share digital twins through reusable assets[1].
-The platform architecture reflects established principles for realising
-digital twins in practice[2], while also supporting advanced
-use cases such as runtime verification of autonomous systems[3].
+The Digital Twin as a Service (DTaaS) platform supports the whole
+digital twin (DT) lifecycle. Users create, configure, execute and share
+digital twins built from reusable assets[1]. The architecture follows
+established principles for realising digital twins in practice[2] and
+also supports use cases such as runtime verification of autonomous
+systems[3].
 
 ## User Requirements
 
-The platform provides the following core capabilities:
+The platform provides the following capabilities:
 
-1. **Author** – create different assets of the DT on the
-   platform itself. This step requires use of some software
-   frameworks and tools whose sole purpose is to author
-   DT assets.
-1. **Consolidate** – consolidate the list of available DT assets
-   and authoring tools so that user can navigate the library
-   of reusable assets. This functionality requires support
-   for discovery of available assets.
-1. **Configure** – support selection and configuration of
-   DTs. This functionality also requires support for validation
-   of a given configuration.
-1. **Execute** – provision computing infrastructure on demand to
-   support execution of a DT.
-1. **Explore** – interact with a DT and explore the results
-   stored both inside and outside the platform. Exploration
-   may lead to analytical insights.
-1. **Save** – save the state of a DT that is already in the
-   execution phase. This functionality is required for on-demand
-   saving and re-spawning of DTs.
-1. **Services** – integrate DTs with on-platform or external
-   services with which users can interact with.
-1. **Share** – share a DT with other users of their organisation.
+1. **Author**: create the assets of a DT on the platform itself. This
+   requires software frameworks and tools built for authoring DT
+   assets.
+1. **Consolidate**: consolidate the available DT assets and authoring
+   tools so that users can navigate the library of reusable assets.
+   This requires support for discovering available assets.
+1. **Configure**: select and configure DTs. This also requires
+   validation of a given configuration.
+1. **Execute**: provision computing infrastructure on demand to
+   execute a DT.
+1. **Explore**: interact with a DT and explore the results stored
+   inside and outside the platform. Exploration may lead to analytical
+   insights.
+1. **Save**: save the state of a DT that is already executing. This is
+   needed to save and re-spawn DTs on demand.
+1. **Services**: integrate DTs with on-platform or external services
+   that users can interact with.
+1. **Share**: share a DT with other users of their organisation.
 
 ## System Architecture
 
-The figure shows the system architecture of the the DTaaS software platform.
+The figure shows the system architecture of the DTaaS software platform.
 
 ![System architecture](architecture.png)
 
 ### System Components
 
 Users interact with the software platform through a web application.
-The service router serves as the single point of entry for direct access
-to platform services and is responsible for controlling user access to
-the microservice components. The service mesh enables discovery of
-microservices, load balancing, and authorization functionalities.
+The service router is the single point of entry for direct access to
+platform services and controls user access to the microservice
+components. The service mesh provides microservice discovery, load
+balancing and authorization.
 
-In addition, there are microservices for catering to managing
-DT reusable assets, platform services, DT lifecycle manager,
-DT execution manager, accouting and security.
-The microservices are complementary and composable; they fulfil
-core requirements of the system.
+Further microservices manage DT reusable assets, platform services, the
+DT lifecycle, DT execution, accounting and security. The microservices
+are complementary and composable, and together they meet the core
+requirements of the system.
 
-The microservices responsible for satisfying the user requirements are:
+The microservices responsible for the user requirements are:
 
-1. **The security microservice** implements
-   role-based access control (RBAC) in the platform.
-1. **The accounting microservice** is responsible for keeping track of the
-   live status of platform, DT asset and infrastructure usage. Any licensing,
-   usage restrictions need to be enforced by the accounting
-   microservice. Accounting is a pre-requisite to commercialisation of
-   the platform.
-   Due to significant use of external
-   infrastructure and resources via the platform, the accounting
-   microservice needs to interface with accounting systems of
-   the external services.
-1. **User Workspaces** are virtual environments in which users can perform
-   lifecycle operations on DTs. These virtual environments are either docker
-   containers or virtual machines which provide desktop interface to users.
-1. **Reusable Assets** are assets / parts from which DTs are created.
-   Further explation is available on
-   the [assets page](../../user/servers/lib/assets.md)
-1. **Services** are dedicated services available to all the DTs and
-   users of the DTaaS platform. Services build upon DTs and
-   provide user interfaces to users.
+1. **The security microservice** implements role-based access control
+   (RBAC) in the platform.
+1. **The accounting microservice** keeps track of the live status of
+   the platform, DT assets and infrastructure usage. It must enforce
+   any licensing and usage restrictions. Accounting is a prerequisite
+   for commercialising the platform. Because the platform makes heavy
+   use of external infrastructure and resources, the accounting
+   microservice needs to interface with the accounting systems of
+   those external services.
+1. **User Workspaces** are virtual environments in which users perform
+   lifecycle operations on DTs. These environments are either Docker
+   containers or virtual machines that give users a desktop interface.
+1. **Reusable Assets** are the parts from which DTs are created. The
+   [assets page](../../user/servers/lib/assets.md) explains them
+   further.
+1. **Services** are available to all DTs and users of the DTaaS
+   platform. Services build on DTs and provide user interfaces to
+   users.
 1. **DT Execution Manager** provides virtual and isolated execution
-   environments for DTs. The execution manager is also responsible
-   for dynamic resource provisioning of cloud resources.
-1. **DT Lifecycle Manager** manages the lifecycle operations on all DTs.
-   It also directs _DT Execution Manager_ to perform execute, save and
-   terminate operations on DTs.
+   environments for DTs. It also provisions cloud resources
+   dynamically.
+1. **DT Lifecycle Manager** manages the lifecycle operations on all
+   DTs. It directs the _DT Execution Manager_ to execute, save and
+   terminate DTs.
 
-Here is a more detailed architecture of the DTaaS platform drawn using
-C4 architectural notation.
-![C4 architectural diagram](research-overview/system-architecture-c4.png).
+Several of these components are not implemented yet; the table below
+gives their status. The [architecture review](review/architecture-review.md)
+describes the system as implemented.
 
-A mapping of the architectural components to related pages in
-the documentation is available in the table.
+The C4 diagram below shows the DTaaS architecture in more detail.
+
+![C4 architectural diagram](research-overview/system-architecture-c4.png)
+
+The table maps the architectural components to related pages in the
+documentation.
 
 <!-- markdownlint-disable MD060 -->
-| System Component          | Doc Page(s)                                                                                                                              |
-| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Service Router            | [Traefik Gateway](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/config/gateway#the-gateway-server) |
-| Web Application           | [React Webapplication](../codebase/client.md)                                                                                            |
-| Reusable Assets           | [Library Microservice](../codebase/lib-ms.md)                                                                                            |
-| Digital Twins and DevOps  | [Integrated GitLab](../../admin/gitlab/index.md)                                                                                         |
-| Platform Services         | [Third-party Services](./../../admin/services/cli.md) (MQTT, InfluxDB, RabbitMQ, Grafana, MongoDB, PostgreSQL, and ThingsBoard)          |
-| DT Lifecycle Manager      | Not available yet                                                                                                                        |
-| Security                  | GitLab [client OAuth 2.0](../../admin/client/auth.md) and [server OAuth 2.0](../../admin/servers/auth.md)                                |
-| Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/readme.md)                                                                               |
-| Accounting                | Not available yet                                                                                                                        |
-| Execution Manager         | Not available yet                                                                                                                        |
+| System Component          | Doc Page(s)                                                                                                                     |
+| :------------------------ | :------------------------------------------------------------------------------------------------------------------------------ |
+| Service Router            | [Traefik Gateway](../../admin/servers/auth.md)                                                                                  |
+| Web Application           | [React Web Application](../codebase/client.md)                                                                                  |
+| Reusable Assets           | [Library Microservice](../codebase/lib-ms.md)                                                                                   |
+| Workflow Logs             | [Logger Microservice](../../user/servers/logger/LOGGER-MS.md)                                                                   |
+| Digital Twins and DevOps  | [Integrated GitLab](../../admin/gitlab/index.md)                                                                                |
+| Platform Services         | [Third-party Services](./../../admin/services/cli.md) (MQTT, InfluxDB, RabbitMQ, Grafana, MongoDB, PostgreSQL, and ThingsBoard) |
+| DT Lifecycle Manager      | Not available yet                                                                                                               |
+| Security                  | GitLab [client OAuth 2.0](../../admin/client/auth.md) and [server OAuth 2.0](../../admin/servers/auth.md)                       |
+| Digital Twins as Services | [DT Runner](../../user/servers/execution/runner/readme.md)                                                                      |
+| Accounting                | Not available yet                                                                                                               |
+| Execution Manager         | Not available yet                                                                                                               |
 <!-- markdownlint-enable MD060 -->
 
 ## References

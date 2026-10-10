@@ -2,38 +2,38 @@
 
 ## User Guide
 
-This guide is intended for users of the DTaaS platform.
-Access to a live installation of the DTaaS platform is required.
+This guide is for users of the DTaaS platform.
+You need access to a live installation of the DTaaS platform.
 The simplest option is the
 [workspace localhost](../admin/workspace/localhost/install.md)
 installation scenario.
 
-The following user-specific
+These user-specific
 [Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
-and
+and this
 [conceptual presentation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
-provide the conceptual framework behind composable digital twins in the
+explain the concepts behind composable digital twins in the
 DTaaS platform.
 
 ## Motivation
 
-A central question in Digital Twin (DT) software platforms is how to enable
-collaborative activities:
+A central question for Digital Twin (DT) software platforms is how to
+support collaborative activities:
 
 * Building digital twins (DTs)
-* Utilizing DTs independently
+* Using DTs independently
 * Sharing DTs with other users
 * Providing existing DTs as a service to other users
 
-Additionally, DT software platforms must address:
+DT software platforms must also offer:
 
 * Support for DT lifecycle management
 * Scalability through flexible convention over configuration
 
 ## Existing Approaches
 
-Several solutions have been proposed in recent literature to address
-these challenges. Notable approaches include:
+Recent literature proposes several solutions to these challenges,
+including:
 
 * Focus on data from Physical Twins (PTs) for
   analysis, diagnosis, and planning
@@ -45,7 +45,7 @@ these challenges. Notable approaches include:
 
 ## The DTaaS Approach
 
-The DTaaS platform adopts the following principles[1]:
+The DTaaS platform follows these principles[1]:
 
 * Support for transition from existing workflows to DT frameworks
 * Creation of DTs from reusable assets

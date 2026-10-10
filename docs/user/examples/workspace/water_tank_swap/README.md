@@ -2,13 +2,13 @@
 
 ## Overview
 
-This example demonstrates multi-stage execution and dynamic reconfiguration
-of a digital twin (DT). Two features of DTs are demonstrated:
+This example shows multi-stage execution and dynamic reconfiguration
+of a digital twin (DT). It demonstrates two features of DTs:
 
-* Fault injection into live DT
-* Dynamic auto-reconfiguration of live DT
+* Fault injection into a live DT
+* Dynamic auto-reconfiguration of a live DT
 
-The co-simulation methodology is used to construct this DT.
+The DT is built with the co-simulation methodology.
 
 ## Example Structure
 
@@ -16,23 +16,22 @@ The co-simulation methodology is used to construct this DT.
 
 ## Configuration of assets
 
-This example uses four models and one tool. The specific assets used are:
+This example uses four models and one tool:
 
 | Asset Type | Names of Assets                         | Visibility | Reuse in Other Examples |
 | :--------- | :-------------------------------------- | :--------- | :---------------------- |
-| Models     | Watertankcontroller-c.fmu               | Private    | Yes                     |
-|            | Singlewatertank-20sim.fmu               | Private    | Yes                     |
-|            | Leak_detector.fmu                       | Private    | No                      |
-|            | Leak_controller.fmu                     | Private    | No                      |
+| Models     | watertankcontroller-c.fmu               | Private    | Yes                     |
+|            | singlewatertank-20sim.fmu               | Private    | Yes                     |
+|            | leak_detector.fmu                       | Private    | No                      |
+|            | leak_controller.fmu                     | Private    | No                      |
 | Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 
-This DT has many configuration files. The DT is executed in two stages.
-There exist separate DT configuration files for each stage.
-The following table shows the configuration files and their purpose.
+The DT is executed in two stages, and each stage has its own configuration
+files. The following table lists the configuration files and their purpose.
 
 | Configuration file name        | Execution Stage | Purpose                                                        |
 | :----------------------------- | :-------------- | :------------------------------------------------------------- |
-| mm1. json                      | stage-1         | DT configuration                                               |
+| mm1.json                       | stage-1         | DT configuration                                               |
 | wt_fault.xml, FaultInject.mabl | stage-1         | faults injected into DT during stage-1                         |
 | mm2.json                       | stage-2         | DT configuration                                               |
 | simulation-config.json         | Both stages     | Configuration for specifying DT execution time and output logs |
@@ -43,29 +42,29 @@ The following table shows the configuration files and their purpose.
 | --------------- | ------------------------------------------------------------------- |
 | Create          | Installs Java Development Kit for Maestro tool                      |
 | Execute         | Produces and stores output in data/water_tank_swap/output directory |
-| Analyze         | Process the co-simulation output and produce plots                  |
-| Clean           | Clears run logs, outputs and plots                                  |
+| Analyze         | Processes the co-simulation output and produces plots               |
+| Clean           | Clears run logs and intermediate co-simulation files                |
 
 ## Run the example
 
-To run the example, change the present directory.
+To run the example, change to the example directory.
 
 ```bash
 cd /workspace/examples/digital_twins/water_tank_swap
 ```
 
-If required, change the permission of files that need to be executed, for example:
+If required, make the lifecycle scripts executable, for example:
 
 ```bash
 chmod +x lifecycle/create
 ```
 
-Now, run the following scripts:
+Then run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 17 and pip dependencies.
-The matplotlib pip package is also installated.
+Installs Open Java Development Kit 17 and the pandas and matplotlib pip
+packages.
 
 ```bash
 lifecycle/create
@@ -73,24 +72,22 @@ lifecycle/create
 
 ### Execute
 
-This DT has two-stage execution. In the first-stage, a co-simulation is
-executed. The Watertankcontroller-c.fmu and Singlewatertank-20sim.fmu
-models are used to execute the DT.
+This DT runs in two stages. The first stage runs a co-simulation of the
+watertankcontroller-c.fmu and singlewatertank-20sim.fmu models.
 During this stage, faults are injected into one of the models
-(Watertankcontroller-c.fmu) and the system performance is checked.
+(watertankcontroller-c.fmu) and the system performance is checked.
 
-In the second-stage, another co-simulation is run in which three FMUs
-are used. The FMUs used are: watertankcontroller, singlewatertank-20sim,
-and leak_detector. There is an in-built monitor in the Maestro tool.
-This monitor is enabled during the stage and a swap condition is set
-at the beginning of the second-stage.
-When the swap condition is satisfied, the Maestro swaps out
-Watertankcontroller-c.fmu model and swaps in Leakcontroller.fmu model.
-This swapping of FMU models demonstrates the dynamic reconfiguration
-of a DT.
+The second stage runs another co-simulation with three FMUs:
+watertankcontroller-c, singlewatertank-20sim and leak_detector.
+The Maestro tool has a built-in monitor, which is enabled during this stage,
+and a swap condition is set at the start of the stage.
+When the swap condition is satisfied, Maestro swaps out the
+watertankcontroller-c.fmu model and swaps in the leak_controller.fmu model.
+This model swap demonstrates the dynamic reconfiguration of a DT.
 
-The end of execution phase generates the co-simulation output.csv file
-at `/workspace/examples/data/water_tank_swap/output`.
+At the end of the execution phase, the `outputs.csv` file of each stage is
+copied to the `stage1` and `stage2` subdirectories of
+`/workspace/examples/data/water_tank_swap/output`.
 
 ```bash
 lifecycle/execute
@@ -98,8 +95,8 @@ lifecycle/execute
 
 ### Analyze phase
 
-Process the output of co-simulation to produce a plot at:
-`/workspace/examples/data/water_tank_FI/output/plots/`.
+Processes the co-simulation output and saves a plot in
+`/workspace/examples/data/water_tank_swap/output/plots/`.
 
 ```bash
 lifecycle/analyze
@@ -107,15 +104,15 @@ lifecycle/analyze
 
 #### Examine the results
 
-The results can be found in the
-_workspace/examples/data/water_tank_swap/output directory_.
+The results are in the
+_/workspace/examples/data/water_tank_swap/output directory_.
 
-Run logs can also be viewed in the
-_workspace/examples/digital_twins/water_tank_swap_.
+The run logs are in
+_/workspace/examples/digital_twins/water_tank_swap_.
 
 ### Terminate phase
 
-Clean up the temporary files and delete output plot
+Removes the temporary files.
 
 ```bash
 lifecycle/terminate
@@ -123,19 +120,19 @@ lifecycle/terminate
 
 ## References
 
-The complete source of this example is available on
-[model swap](https://github.com/hejersbo/dtaas-wt-swap) github repository.
+The complete source of this example is in the
+[model swap](https://github.com/hejersbo/dtaas-wt-swap) GitHub repository.
 
-The runtime model (FMU) swap mechanism demonstrated by the experiment
-is detailed in the paper:
+The run-time model (FMU) swap mechanism used in this example is described
+in the paper:
 
 ```txt
 Ejersbo, Henrik, et al. "fmiSwap: Run-time Swapping of Models for
 Co-simulation and Digital Twins." arXiv preprint arXiv:2304.07328 (2023).
 ```
 
-The runtime reconfiguration of co-simulation by modifying the Functional
-Mockup Units (FMUs) used is further detailed in the paper:
+Runtime reconfiguration of a co-simulation by changing the Functional
+Mockup Units (FMUs) it uses is described further in the paper:
 
 ```txt
 Ejersbo, Henrik, et al. "Dynamic Runtime Integration of

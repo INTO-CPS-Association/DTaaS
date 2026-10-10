@@ -2,98 +2,96 @@
 
 ## Overview
 
-This example demonstrates how an FMU can be used as a runtime monitoring
-service (in this example NuRV[1]) and connected with the
-[Incubator digital twin](../incubator/README.md) to verify
+This example shows how an FMU can serve as a runtime monitoring
+service (here generated with NuRV[1]) and be connected to the
+[Incubator digital twin](../incubator/README.md) to verify the
 runtime behaviour of the Incubator.
 
 ## Simulated scenario
 
 This example simulates a scenario where the lid of the Incubator is
-removed and later put back on. The Incubator is equipped with
-anomaly detection capabilities, which can detect anomalous behaviour
-(i.e. the removal of the lid). When an anomaly is detected,
-the Incubator triggers an energy saving mode where the heater is turned off.
+removed and later put back on. The Incubator has anomaly detection,
+which can detect anomalous behaviour such as the removal of the lid.
+When it detects an anomaly, the Incubator switches to an energy saving
+mode in which the heater is turned off.
 
-From a monitoring perspective, the aim is to verify that within 3 messages of
-an anomaly detection, the energy saving mode is turned on.
-To verify this behaviour, the following property is constructed:
+The monitor checks that the energy saving mode is turned on within
+3 messages of an anomaly detection. The property for this is:
 
 $G(anomaly \rightarrow (F_{[0,3]}\space energy\_saving))$.
 
-The monitor will output the _unknown_ state as long as the property is
-satisfied and will transition to the _false_ state once
-a violation is detected.
+The monitor outputs the _unknown_ state as long as the property is
+satisfied and moves to the _false_ state once it detects a violation.
 
 The simulated scenario progresses as follows:
 
 - _Initialization_: The services are initialized and the Kalman filter
-  in the Incubator is given 2 minutes to stabilize. Sometimes,
-  the anomaly detection algorithm will detect an anomaly at startup
-  even though the lid is still on. It will disappear after approx 15 seconds.
+  in the Incubator is given 2 minutes to stabilize. The anomaly
+  detection algorithm sometimes detects an anomaly at startup even
+  though the lid is still on. This disappears after about 15 seconds.
 - _After 2 minutes_: The lid is lifted and an anomaly is detected.
   The energy saver is turned on shortly after.
-- _After another 30 seconds_: The energy saver is manually disabled
+- _After another 30 seconds_: The energy saver is manually disabled,
   producing a _false_ verdict.
 - _After another 30 seconds_: The lid is put back on and
   the anomaly detection is given time to detect that the lid is back on.
-  The monitor is then reset producing an Unknown verdict again.
+  The monitor is then reset, producing an _unknown_ verdict again.
   The simulation then ends.
 
 ## Example structure
 
-A diagram depicting the logical software structure of
-the example can be seen below.
+The diagram below shows the logical software structure of the example.
 
 ![DT structure](./figures/dt-structure-nurv-fmu.png)
 
-The _execute_ script is responsible for starting the NuRV service and
-running the Python script that controls the scenario (_execute.py_).
+The _execute_ script starts the NuRV service and then runs the Python
+script that controls the scenario (_execute.py_).
 
 The _execute.py_ script starts the Incubator services and runs
 the example scenario. Once the Incubator DT is started, a RabbitMQ client
 is created that subscribes to changes in the _anomaly_ and
 _energy_saving_ states of the DT, as well as the verdicts produced
 by the NuRV service.
-Each time an update is received, the full state and verdict is
+Each time an update arrives, the full state or the verdict is
 printed to the console.
 
 ## Digital Twin Configuration
 
-Before running the example, the _simulation.conf_ file should be configured with
+Before running the example, configure the _simulation.conf_ file with
 the appropriate RabbitMQ credentials.
 
 The example uses the following assets:
 
 | Asset Type    | Names of Assets                | Visibility | Reuse in other Examples |
 | :------------ | :----------------------------- | :--------- | :---------------------- |
-| Tools         | common/tool/NuRV/NuRV          | Common     | Yes                     |
+| Tools         | common/tools/NuRV/NuRV         | Common     | Yes                     |
 | Other         | common/fmi2_headers            | Common     | Yes                     |
 | DT            | common/digital_twins/incubator | Common     | Yes                     |
 | Specification | safe-operation.smv             | Private    | No                      |
 | Script        | execute.py                     | Private    | No                      |
 
 The _safe-operation.smv_ file contains the default monitored specification
-as described in the [Simulated scenario section](#simulated-scenario).
-These can be configured as desired.
+described in the [Simulated scenario section](#simulated-scenario).
+It can be changed as needed.
 
 ## Lifecycle phases
 
-The lifecycle phases for this example include:
+The lifecycle phases for this example are:
 
 | Lifecycle phase | Completed tasks                                                                                                                                                                                                |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| create          | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies                                                                                                         |
+| create          | Creates a virtual python environment with the necessary dependencies and generates the monitor FMU from the NuRV specification                                                                                 |
 | execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
 
-If required, change the execute permissions of lifecycle scripts that
-need to be executed. This can be done using the following command.
+If required, make the lifecycle scripts executable with the following
+command.
 
 ```bash
 chmod +x lifecycle/{script}
 ```
 
-where {script} is the name of the script, e.g. _create_, _execute_ etc.
+where {script} is the name of the script, for example _create_ or
+_execute_.
 
 ## Running the example
 
@@ -103,32 +101,31 @@ To run the example, first run the following command in a terminal:
 cd /workspace/examples/digital_twins/incubator-NuRV-fmu-monitor-service/
 ```
 
-Then, first execute the _create_ script followed by the _execute_ script
+Then run the _create_ script followed by the _execute_ script
 using the following command:
 
 ```bash
 lifecycle/{script}
 ```
 
-The _execute_ script will then start outputting system states and
-the monitor verdict approx every 3 seconds. The output is printed
-as follows.
+The _execute_ script then prints the system states and the monitor
+verdict about every 3 seconds. System states are printed in this format:
 
 "__State: {anomaly state} & {energy_saving state}__"
 
-where "_anomaly_" indicates that an anomaly is detected and "!anomaly"
-indicates that an anomaly is not currently detected. The same format is
-used for the energy_saving state.
-NuRV verdicts are printed as follows
+where "_anomaly_" means that an anomaly is detected and "!anomaly"
+means that no anomaly is currently detected. The energy_saving state
+uses the same format.
+NuRV verdicts are printed in this format:
 
 "__Verdict from NuRV: {verdict}__".
 
-The monitor verdict can be false or unknown, where the latter indicates
-that the monitor does not yet have sufficient information to determine
-the satisfaction of the property. The monitor will never produce
-a true verdict as the entire trace must be verified to ensure satisfaction
-due to the G operator. Thus the unknown state can be viewed as
-a tentative true verdict.
+The monitor verdict can be false or unknown. Unknown means that the
+monitor does not yet have enough information to decide whether the
+property is satisfied. Because of the G operator, the monitor never
+produces a true verdict: satisfaction can only be confirmed over the
+entire trace. The unknown state can therefore be read as a tentative
+true verdict.
 
 An example output trace is provided below:
 

@@ -116,3 +116,32 @@ suites for whichever projects you touched.
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors
 deliberately. Add a dependency only when the task requires it.
+
+## Conventions by project
+
+Conventions the linters do not enforce, which the existing code follows:
+
+- **`cli/`**: Click commands live in `src/cmd*.py` and read `dtaas.toml`
+  through the `Config` class in `src/pkg/config.py`. Modules under
+  `src/pkg/` raise exceptions, except `config.py` and `utils.py`, which
+  return `(result, Exception | None)` pairs. The command modules turn
+  both into `click.ClickException`. Test commands with Click's
+  `CliRunner`, not `subprocess`.
+- **`client/`**: functional React components with hooks; shared state in
+  Redux Toolkit slices; unit and integration tests with Jest and React
+  Testing Library, end-to-end tests with Playwright.
+- **`servers/`**: NestJS services. `lib` is the library microservice,
+  `execution/runner` the runner, and `logger` the logger microservice.
+- **`docs/`**: MkDocs with the Material theme. `mkdocs.yml` and
+  `mkdocs-github.yml` carry the same navigation; change both together.
+  `mkdocs.yml` builds only on Linux; on Windows, build with
+  `mkdocs-github.yml`.
+
+## Agent skills
+
+Task-specific instructions for coding agents are Agent Skills
+(<https://agentskills.io>) in `.agents/skills/<name>/SKILL.md`. Claude
+Code reads only `.claude/skills/`, so each skill has a stub there with
+identical frontmatter that points to the canonical file; the
+`Lint Miscellaneous Scripts` workflow checks that the two match. Add a
+skill in both places.

@@ -1,6 +1,6 @@
 # :gear: Configure Library Microservice
 
-The microservice requires configuration specified in YAML format.
+The microservice reads its configuration from a YAML file.
 The template configuration file is:
 
 ```yaml
@@ -21,20 +21,18 @@ git-repos:
 
 ```
 
-The `local-path` variable is the relative filepath to the
-location of the local directory which will be served to users
-by the Library microservice.
+The `local-path` variable is the path to the local directory that the
+library microservice serves to users.
 
-The default values should be replaced with appropriate values for the deployment.
-This configuration should be saved as a YAML file, for example as `libms.yaml`.
+Replace the default values with values suited to the deployment and
+save the configuration as a YAML file, for example `libms.yaml`.
 
 ## Operation Modes
 
-The mode indicates the backend storage for the files.
-There are two possible modes - `local` and `git`.
-The files available in the `local-path` are served to users in `local` mode.
-In the `git` mode, the remote git repos are cloned and they are
-served to users as local files.
+The mode sets the backend storage for the files. There are two modes,
+`local` and `git`. In `local` mode, users get the files in
+`local-path`. In `git` mode, the remote git repositories are cloned
+and served to users as local files.
 
 ### git mode
 
@@ -52,20 +50,18 @@ git-repos:
 ```
 
 Here, `user1`, `user2` and `common` are the local directories into which
-the remote git repositories get cloned. The name of the repository need not
-match with the local directory name. For example, the above configuration
-enables library microservice to clone
-`https://gitlab.com/dtaas/user1.git` repository into
-`user1` directory. Any git server accessible over
-HTTP(S) protocol is supported.
+the remote git repositories are cloned. The repository name need not
+match the local directory name. For example, the above configuration
+makes the library microservice clone the
+`https://gitlab.com/dtaas/user1.git` repository into the
+`user1` directory. Any git server reachable over HTTP(S) is supported.
 The `.git` suffix is optional.
 
-The default values should be replaced with appropriate values for the deployment.
+Replace the default values with values suited to the deployment.
 
-The **libms** looks for
-`libms.yaml` file in the working directory from which it is run.
-To run **libms** without explicitly specifying the configuration
-file, use `-c <path-to-file>`.
+By default, **libms** looks for a `libms.yaml` file in the working
+directory from which it is run. To use a configuration file at another
+location, pass `-c <path-to-file>`.
 
-Further documentation on the use of library microservice is available
-on [this page](npm.md).
+The [npm package page](npm.md) has more on using the library
+microservice.

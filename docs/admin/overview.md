@@ -2,37 +2,36 @@
 
 There are two ways to install the DTaaS platform:
 
-1. **DTaaS CLI (recommended).** A single `dtaas` command generates,
-   validates, installs, and operates a deployment for every supported
+1. **DTaaS CLI (recommended).** The `dtaas` command generates,
+   validates, installs and operates a deployment for every supported
    scenario. The [CLI installation guide](cli.md) covers the full workflow.
-1. **Manual scenario packages (advanced).** Hand-edited docker compose
-   packages for each scenario. Choose this path only when the CLI
-   scenarios need customisation beyond what `dtaas.toml` offers, or
-   when studying the deployment internals. Start at the
+1. **Manual scenario packages (advanced).** A docker compose package for
+   each scenario, edited by hand. Choose this path only when a scenario
+   needs customisation beyond what `dtaas.toml` offers, or when you want
+   to study the deployment internals. Start at the
    [manual installation scenarios](#manual-installation-scenarios-advanced).
 
 ## Platform Services (Optional)
 
-To install additional data/infrastructure services (MQTT, InfluxDB,
-Grafana, and others), use the [Platform Services CLI](services/cli.md).
+To install additional data and infrastructure services (MQTT, InfluxDB,
+Grafana and others), use the [Platform Services CLI](services/cli.md).
 
 ## Manual Installation Scenarios (Advanced)
 
 !!! note
     These packages are the manual counterpart of what
-    `dtaas generate-deployment` produces. The CLI performs the steps
-    below automatically; prefer it unless you need to modify the
+    `dtaas deployment generate` produces. The CLI performs the steps
+    below automatically. Prefer it unless you need to modify the
     deployment beyond its configuration options.
 
 Start by selecting a scenario package.
 
 ### DTaaS
 
-DTaaS scenarios focus on complete platform deployments that bundle the
-web client, gateway, user workspaces, and core services. Choose a
-scenario based on target environment, security needs, and GitLab
-topology. Each scenario provides dedicated Install and Config pages,
-plus scenario-specific operational documents.
+DTaaS scenarios are complete platform deployments that bundle the web
+client, gateway, user workspaces and core services. Choose a scenario
+by target environment, security needs and GitLab setup. Each scenario
+has its own Install and Config pages.
 
 | Scenario                                                           | Purpose                                                        |
 | :----------------------------------------------------------------- | :------------------------------------------------------------- |
@@ -43,12 +42,11 @@ plus scenario-specific operational documents.
 
 ### Workspace
 
-Workspace scenarios focus on user workbench access, identity-provider
-setup, and route-level protection. Choose localhost for rapid
-onboarding with Dex, or secure server for production-style
-Keycloak/OIDC deployment. Scenario pages are organised by Install,
-Configuration, and identity-provider setup to make operations and
-troubleshooting predictable.
+Workspace scenarios cover user workspace access, identity provider
+setup and route-level protection. Choose localhost for a quick start
+with Dex, or secure server for a production-style deployment with
+Keycloak and OIDC. Each scenario has Install, Configuration and
+identity provider pages.
 
 | Scenario                                            | Purpose                                       |
 | :-------------------------------------------------- | :-------------------------------------------- |
@@ -80,31 +78,24 @@ After selecting a scenario package, follow these steps:
 For DTaaS or workspace server deployments:
 
 - Create user workspaces under `files/`
-- Provide TLS certs under `certs/`
-- Create `config/.env` from example and update the same
-- Create `config/client.js` from example and update the same
-- Create `config/dex-config.yaml` from example (no changes needed)
+- Provide TLS certificates under `certs/` (secure server packages)
+- Create `config/.env` from its example and update it
+- Create `config/client.js` from its example and update it
+- For the workspace Dex localhost package, create
+  `config/dex-config.yaml` from its example (no changes needed)
 
 ### 3. Start Services
 
-Run docker compose commands:
-
-For DTaaS packages,
+Run the following command from the package directory:
 
 ```bash
 docker compose --env-file config/.env up -d
 ```
 
-For workspace packages,
-
-```bash
-docker compose up -d
-```
-
 ### 4. Validate and Iterate
 
-- Confirm login flow in browser
-- Validate workspace routes (`/user1`, `/user2`)
+- Confirm the login flow in a browser
+- Check the workspace routes (`/user1`, `/user2`)
 - Check service logs and health
 
 ## Independent Packages
@@ -113,9 +104,9 @@ Reusable package details are listed on [packages](packages.md).
 
 ## Walkthrough Videos
 
-These walkthroughs are useful when selecting or validating an
-installation scenario. When a `4x` recording exists, the preview and
-MP4 link below use it.
+These walkthroughs help when selecting or validating an installation
+scenario. Where a `4x` recording exists, the preview and MP4 link below
+use it.
 
 ### DTaaS localhost
 

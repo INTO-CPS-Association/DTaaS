@@ -2,54 +2,52 @@
 
 ## Overview
 
-The flex-cell Digital Twin is a case study with two industrial robotic arms,
-a UR5e and a Kuka LBR iiwa 7, working in a cooperative setting
-on a manufacturing cell.
+The flex-cell digital twin is a case study with two industrial robotic
+arms, a UR5e and a Kuka LBR iiwa 7, working together in a manufacturing
+cell.
 
 ![Flex-cell Physical Setup](physical-twin.jpg)
 
-The case study focuses on the robot positioning in
-the discrete cartesian space of the flex-cell working space.
-Therefore, it is possible to send (X,Y,Z) commands to both robots,
-which refer to the target hole and height to which they should move.
+The case study focuses on positioning the robots in the discrete
+Cartesian space of the flex-cell. Both robots accept (X,Y,Z) commands
+that give the target hole and height to move to.
 
-The flex-cell case study is managed using the `TwinManager`
-(formerly `DT Manager`), which is packed as a jar library in the tools,
-and run from a java main file.
+The `TwinManager` (formerly `DT Manager`) manages the flex-cell case
+study. It is packaged as a jar library in the tools and run from a Java
+main file.
 
-The `TwinManager` uses Maestro as a slave for co-simulation,
-so it generates the output of the co-simulation and can interact with
-the real robots at the same time (with the proper configuration and setup).
-The mainfile can be changed according to the application scope, i.e.,
-the `/workspace/examples/tools/flex-cell/FlexCellDTaaS.java` can be
-manipulated to get a different result.
+The `TwinManager` uses Maestro as a slave for co-simulation, so it
+generates the co-simulation output and, with the proper configuration and
+setup, can interact with the real robots at the same time.
+The main file can be changed to suit the application, that is,
+`/workspace/examples/tools/flex-cell/FlexCellDTaaS.java` can be
+modified to get a different result.
 
 The `/workspace/examples/models/flex-cell/` folder contains
 the `.fmu` files for the kinematic models of the robotic arms,
 the `.urdf` files for visualisation (including the grippers), and
-the `.aasx` files for the schema representation with
+the `.aasx` files for the schema representation as an
 Asset Administration Shell.
 
-The case study also uses RabbitMQFMU to inject values into the co-simulation,
-therefore, there is the rabbitmqfmu in the models folder as well.
-Right now, RabbitMQFMU is only used for injecting values into
-the co-simulation, but not the other way around.
-The `TwinManager` is in charge of reading the values from
-the co-simulation output and the current state of the physical twins.
+The case study also uses the RabbitMQ FMU to inject values into the
+co-simulation, so the models folder contains that FMU as well. For now,
+the RabbitMQ FMU only injects values into the co-simulation and does not
+send values out of it.
+The `TwinManager` reads the values from the co-simulation output and the
+current state of the physical twins.
 
 ## Example Structure
 
-The example structure represents the components of the flex-cell
-DT implementation using the `TwinManager` architecture.
+The example structure shows the components of the flex-cell DT
+implementation using the `TwinManager` architecture.
 
-The TwinManager orchestrates the flex-cell DT via the *Flex-cell DT System*,
-which is composed of 2 smaller Digital Twins, namely, the *DT UR5e* and
-the *DT Kuka lbr iiwa 7*.
-The TwinManager also provides the interface for the Physical Twins,
-namely, *PT UR5e* and *PT Kuka lbr iiwa 7*. Each Physical Twin
-and Digital Twin System has a particular endpoint (with a different
-specialization), which is initialized from configuration files and
-data model (twin schema).
+The TwinManager orchestrates the flex-cell DT through the *Flex-cell DT
+System*, which is composed of two smaller digital twins, the *DT UR5e*
+and the *DT Kuka lbr iiwa 7*.
+The TwinManager also provides the interface to the physical twins,
+*PT UR5e* and *PT Kuka lbr iiwa 7*. Each physical twin and digital twin
+system has its own endpoint (with a different specialization), which is
+initialized from configuration files and a data model (twin schema).
 
 The current endpoints used in this implementation are:
 
@@ -61,13 +59,13 @@ The current endpoints used in this implementation are:
 | PT UR5e                  | MQTTEndpoint and RabbitMQEndpoint |
 | PT Kuka lbr iiwa 7       | MQTTEndpoint and RabbitMQEndpoint |
 
-The Flex-cell DT System uses another configuration to be integrated
+The Flex-cell DT System has a separate configuration for its integration
 with the Maestro co-simulation engine.
 
-In the lower part, the Flex-cell System represents the composed
-physical twin, including the two robotic arms and controller and
-the Flex-cell Simulation is the mock-up representation for the real system,
-which is implemented by FMU blocks and their connections.
+In the lower part of the diagram, the Flex-cell System is the composed
+physical twin, including the two robotic arms and the controller. The
+Flex-cell Simulation is the mock-up of the real system, implemented by
+FMU blocks and their connections.
 
 ![Flex-cell system architecture with the TwinManager](dt-structure.png)
 
@@ -75,7 +73,7 @@ which is implemented by FMU blocks and their connections.
 
 ## Digital Twin Configuration
 
-This example uses seven models, five tools, six data files, two functions,
+This example uses seven models, five tools, six data files, two functions
 and one script. The specific assets used are:
 
 | Asset Type | Names of Assets                         | Visibility | Reuse in Other Examples |
@@ -86,7 +84,7 @@ and one script. The specific assets used are:
 |            | ur5e_model.fmu                          | Private    | No                      |
 |            | ur5e_gripper_2fg7.urdf                  | Private    | No                      |
 |            | ur5e.aasx                               | Private    | No                      |
-|            | rmq-vhost.fmu                           | Private    | Yes                     |
+|            | rmqfmu-vhost.fmu                        | Private    | Yes                     |
 | Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 |            | TwinManagerFramework-0.0.2.jar          | Private    | Yes                     |
 |            | urinterface (installed with pip)        | Private    | No                      |
@@ -104,20 +102,20 @@ and one script. The specific assets used are:
 
 ## Lifecycle Phases
 
-The lifecycles that are covered include:
+The example covers these lifecycle phases:
 
-1. Installation of dependencies in the create phase.
-1. Preparing the credentials for connections in the prepare phase.
-1. Execution of the experiment in the execution phase.
+1. Installing dependencies in the create phase.
+1. Preparing the connection credentials in the prepare phase.
+1. Running the experiment in the execute phase.
 1. Saving experiments in the save phase.
-1. Plotting the results of the co-simulation and the real data coming
-   from the robots in the analyse phase.
-1. Terminating the background processes and cleaning up the outputs in
-   the termination phase.
+1. Plotting the co-simulation results and the real data from the robots
+   in the analyze phase.
+1. Stopping the background processes in the terminate phase and cleaning
+   up the outputs in the clean phase.
 
 | Lifecycle Phase | Completed Tasks                                                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Create          | Installs Java Development Kit for Maestro tool, Compiles source code of TwinManager to create a usable jar package (used as tool) |
+| Create          | Installs Java Runtime Environment and Maven, compiles the source code of TwinManager to create a usable jar package (used as tool) |
 | Prepare         | Takes the RabbitMQ and MQTT credentials in connections.conf file and configures different assets of DT.                           |
 | Execute         | The TwinManager executes the flex-cell DT and produces output in `data/flex-cell/output` directory                                |
 | Save            | Save the experimental results                                                                                                     |
@@ -127,36 +125,36 @@ The lifecycles that are covered include:
 
 ## Run the example
 
-To run the example, change the present directory.
+To run the example, change to the example directory.
 
 ```bash
 cd /workspace/examples/digital_twins/flex-cell
 ```
 
-If required, change the execute permission of lifecycle scripts
-that need to be executed, for example:
+If required, give the lifecycle scripts execute permission,
+for example:
 
 ```bash
 chmod +x lifecycle/create
 ```
 
-This example requires Java 11. The **create** script installs Java 11;
-however if other Java versions have already been installed, the default *java*
-may be pointing to another version. The default version can be checked and
-modified using the following commands.
+This example requires Java 11 or newer. The **create** script installs
+the default Java runtime of the workspace operating system. If other Java
+versions are already installed, the default *java* may point to another
+version. Check and change the default version with these commands.
 
 ```bash
 java -version
 update-alternatives --config java
 ```
 
-Now, run the following scripts:
+Now run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 11 and a python virtual environment with pip dependencies.
-Also builds the ```TwinManager``` tool (TwinManagerFramework-0.0.2.jar)
-from source code.
+Installs the default Java Runtime Environment, Maven, and a Python
+virtual environment with pip dependencies. It also builds the
+```TwinManager``` tool (TwinManagerFramework-0.0.2.jar) from source code.
 
 ```bash
 lifecycle/create
@@ -164,32 +162,31 @@ lifecycle/create
 
 ### Prepare
 
-This step configures different assets of the DT with connection credentials.
-The `functions/flex-cell/prepare.py` script is used for this purpose.
-The only step needed to set up the connection is to update the file
-`/workspace/examples/data/flex-cell/input/connections.conf` with
-the connection parameters for MQTT and RabbitMQ and then execute
-the `prepare` script.
+This step configures the DT assets with connection credentials, using
+the `functions/flex-cell/prepare.py` script. To set up the connection,
+update `/workspace/examples/data/flex-cell/input/connections.conf` with
+the connection parameters for MQTT and RabbitMQ, then run the `prepare`
+script.
 
 ```bash
 lifecycle/prepare
 ```
 
-The following files are updated with the configuration information:
+The script writes the configuration into these files, which need
+credentials to connect to the RabbitMQ and MQTT brokers:
 
 1. `/workspace/examples/digital_twins/flex-cell/kuka_actual.conf`
 1. `/workspace/examples/digital_twins/flex-cell/ur5e_actual.conf`
 1. `/workspace/examples/data/flex-cell/input/publisher-flexcell-physical.py`
-1. `modelDescription.xml` for the RabbitMQFMU require special credentials
-   to connect to the RabbitMQ and the MQTT brokers.
+1. `modelDescription.xml` of the RabbitMQ FMU
 
 ### Execute
 
-Execute the flex-cell digital twin using TwinManager. TwinManager in-turn runs
-the co-simulation using Maestro. Generates the co-simulation output.csv file
-at `/workspace/examples/data/flex-cell/output`.
-The execution needs to be stopped with `control + c` since
-the `TwinManager` runs the application in a non-stopping loop.
+Executes the flex-cell digital twin using the TwinManager, which in turn
+runs the co-simulation using Maestro. The co-simulation output file
+`outputs.csv` is written to `/workspace/examples/data/flex-cell/output`.
+Stop the execution with `control + c`, because the `TwinManager` runs the
+application in an endless loop.
 
 ```bash
 lifecycle/execute
@@ -197,23 +194,22 @@ lifecycle/execute
 
 ### Save
 
-Each execution of the DT is treated as a single run. The results of
-one execution are saved as time-stamped co-simulation output file in
-The TwinManager executes the flex-cell digital twin and produces output
-in `data/flex-cell/output/saved_experiments` directory.
+Each execution of the DT is treated as a single run. The save script
+stores the results of one execution as a time-stamped co-simulation
+output file in the `data/flex-cell/output/saved_experiments` directory.
 
 ```bash
 lifecycle/save
 ```
 
-The `execute` and `save` scripts can be executed in that order any number of
-times. A new file `data/flex-cell/output/saved_experiments` directory
-with each iteration.
+The `execute` and `save` scripts can be run in that order any number of
+times. Each iteration adds a new file to the
+`data/flex-cell/output/saved_experiments` directory.
 
 ### Analyze
 
-There are dedicated plotting functions in `functions/flex-cell/plots.py`.
-This script plots the co-simulation results against the recorded values
+The plotting functions are in `functions/flex-cell/plots.py`.
+The script plots the co-simulation results against the recorded values
 from the two robots.
 
 ```bash
@@ -222,8 +218,8 @@ lifecycle/analyze
 
 ### Terminate
 
-Stops the Maestro running in the background. Also stops any other
-jvm process started during **execute** phase.
+Stops Maestro running in the background, along with any other Java
+process started during the **execute** phase.
 
 ```bash
 lifecycle/terminate
@@ -231,7 +227,7 @@ lifecycle/terminate
 
 ### Clean
 
-Removes the output generated during execute phase.
+Removes the output generated during the execute phase.
 
 ```bash
 lifecycle/clean
@@ -239,26 +235,24 @@ lifecycle/clean
 
 ## Examining the Results
 
-Executing this Digital Twin generates a co-simulation output.
-The results can also be monitored by updating
-the `/workspace/examples/tools/flex-cell/FlexCellDTaaS.java` with
-a specific set of `getAttributeValue` commands, as shown in the code.
-That main file enables the online execution and comparison of Digital Twin
-and Physical Twin at the same time and at the same abstraction level.
+Executing this digital twin generates a co-simulation output. The results
+can also be monitored by adding a set of `getAttributeValue` calls to
+`/workspace/examples/tools/flex-cell/FlexCellDTaaS.java`, as shown in the
+code. The main file runs the digital twin and the physical twin online
+and compares them at the same time and at the same abstraction level.
 
-The output is generated to the
+The output is written to the
 `/workspace/examples/data/flex-cell/output` folder.
-In case a specific experiments is to be saved, the **save**
-lifecycle script stores the co-simulation results into
-the `/workspace/examples/data/flex-cell/output/saved_experiments` folder.
+To keep a specific experiment, the **save** lifecycle script stores the
+co-simulation results in the
+`/workspace/examples/data/flex-cell/output/saved_experiments` folder.
 
-In the default example, the co-simulation is run for 11 seconds in
-steps of 0.2 seconds.
-This can be modified for a longer period and different step size.
-The output stored in `outputs.csv` contains the joint position of
+In the default example, the co-simulation runs for 10.5 seconds in
+steps of 0.2 seconds. Both the duration and the step size can be changed.
+The output stored in `outputs.csv` contains the joint positions of
 both robotic arms and the current discrete (X,Y,Z) position of
-the TCP of the robot.
-Additional variables can be added, such as the discrete (X,Y,Z) position
+the robot TCP.
+More variables can be added, such as the discrete (X,Y,Z) position
 of the other joints.
 
 When connected to the real robots, the tools `urinterface` and
@@ -267,8 +261,8 @@ When connected to the real robots, the tools `urinterface` and
 ## References
 
 The [RabbitMQ FMU](https://github.com/INTO-CPS-Association/fmu-rabbitmq)
-github repository contains complete documentation and source code of
-the **rmq-vhost.fmu**.
+GitHub repository contains the documentation and source code of
+the RabbitMQ FMU.
 
 More information about the TwinManager (formerly DT Manager) and
 the case study is available in:

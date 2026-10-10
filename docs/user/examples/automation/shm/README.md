@@ -2,8 +2,8 @@
 
 ## Overview
 
-This example demonstrates the use of digital twin methodology for structural
-health monitoring (SHM). A digital twin workflow shown below has been developed
+This example applies digital twin methodology to structural
+health monitoring (SHM). The digital twin workflow shown below was developed
 for the SHM use cases.
 
 ![DT workflow](dt-workflow.png)
@@ -13,89 +13,86 @@ online](https://github.com/INTO-CPS-Association/example-shm).
 
 ## Example Structure
 
-This digital twin consists of
+This digital twin consists of:
 
-- **SHM package**: package implementing the digital twin workflow. This package
-  also contains the recorded data from physical twin and replay functions that
-  stream data into the digital twin workflow.
+- **SHM package**: implements the digital twin workflow. The package
+  also contains data recorded from the physical twin and replay functions that
+  stream this data into the digital twin workflow.
 - **replay.json**: MQTT configuration file for replaying the recorded data
 
-The package can demonstrate these experimental scenarios.
+The package provides these experimental scenarios:
 
-- **replay** replays the recorded readings from cantilever beam setup.
-- **acceleration_readings** demonstrates the use of `Accelerometer` class to
-  extract
-  accelerometer measurements from MQTT data stream.
-- **aligning_readings** demonstrates the use of `Aligner` class to collect and
-  align accelerometer measurements from multiple MQTT data streams.
+- **replay** replays the recorded readings from the cantilever beam setup.
+- **acceleration_readings** shows how the `Accelerometer` class
+  extracts accelerometer measurements from an MQTT data stream.
+- **aligning_readings** shows how the `Aligner` class collects and
+  aligns accelerometer measurements from multiple MQTT data streams.
 
-- **sysid** demonstrates the use of `sysid` with four cases:
+- **sysid** demonstrates `sysid` with four cases:
     1. **sysid-and-plot**: plots natural frequencies.
-    2. **sysid-and-print**: prints sysid output to console.
+    2. **sysid-and-print**: prints sysid output to the console.
     3. **sysid-and-publish**: publishes one set of sysid output via MQTT
-       to the config given under [sysid] config.
-    4. **live-sysid-and-publish**: Continuously publishes sysid output via
-       MQTT to the config given under [sysid] config.
+       to the broker given in the `sysid` section of the config.
+    4. **live-sysid-publish**: publishes sysid output continuously via
+       MQTT to the broker given in the `sysid` section of the config.
 
-- **Clustering** demonstrates the use of `clustering` with three cases:
-    1. **clustering-with-local-sysid**: gets the sysid output by runing sysid
-       locally, then runs the mode clustering.
-    2. **clustering-with-remote-sysid**: gets sysid output by subscribing,
-       then runs the mode clustering. This is a one time operation.
-    3. **live-clustering-with-remote-sysid**: gets sysid output by subscribing,
-       then runs the mode clustering. This operation runs in loop.
-    4. **live-clustering-with-remote-sysid-and-publish**: gets sysid output
-       by subscribing, then runs the mode clustering. The cluster results
-       are published. This operation runs in loop.
+- **Clustering** demonstrates `clustering` with four cases:
+    1. **clustering-with-local-sysid**: gets the sysid output by running sysid
+       locally, then runs mode clustering.
+    2. **clustering-with-remote-sysid**: gets the sysid output by subscribing,
+       then runs mode clustering once.
+    3. **live-clustering-with-remote-sysid**: gets the sysid output by
+       subscribing, then runs mode clustering in a loop.
+    4. **live-clustering-with-remote-sysid-and-publish**: gets the sysid output
+       by subscribing, then runs mode clustering in a loop and publishes
+       the cluster results.
 
-- **mode-tracking** demonstrates the use of `mode_tracking` with three cases:
-    1. **mode-tracking-with-local-sysid**: gets the sysid output by runing sysid
-       locally, then runs mode clustering and mode tracking.
-    2. **mode-tracking-with-remote-sysid**: gets sysid output by subscribing,
-       then runs mode clustering and mode tracking. This is a one time operation.
-    3. **live-mode-tracking-with-remote-sysid**: gets sysid output by subscribing,
-       then runs mode clustering and mode tracking. This operation runs in loop.
+- **mode-tracking** demonstrates `mode_tracking` with three cases:
+    1. **mode-tracking-with-local-sysid**: gets the sysid output by running
+       sysid locally, then runs mode clustering and mode tracking.
+    2. **mode-tracking-with-remote-sysid**: gets the sysid output by
+       subscribing, then runs mode clustering and mode tracking once.
+    3. **live-mode-tracking-with-remote-sysid**: gets the sysid output by
+       subscribing, then runs mode clustering and mode tracking in a loop.
 
-- **model-update** demonstrates the use of `model_update` with two cases:
-    1. **model-update-local-sysid**: gets the sysid output, then uses it to
-      run update model and get updated system parameters.
+- **model-update** demonstrates `model_update` with three cases:
+    1. **model-update-with-local-sysid**: gets the sysid output, then uses it
+       to update the model and get updated system parameters.
     2. **live-model-update-with-remote-sysid**: gets the sysid output by
-       subscribing to MQTT topic, then runs mode clustering to run update
-       model and get updated system parameters.
+       subscribing to an MQTT topic, then runs mode clustering and uses the
+       result to update the model and get updated system parameters.
     3. **live-model-update-with-remote-clustering**: gets the mode clustering
-       output by subscribing to MQTT topic, then uses the mode clustering
-       output to run update model and get updated system parameters.
+       output by subscribing to an MQTT topic, then uses it to update
+       the model and get updated system parameters.
 
-Of the above mentioned experimental scenarios, the following can be placed in
-the automated execution mode.
+The following scenarios can run in the automated execution mode:
 
-- **acceleration_readings** demonstrates the use of `Accelerometer` class to
-  extract
-  accelerometer measurements from MQTT data stream.
+- **acceleration_readings** shows how the `Accelerometer` class
+  extracts accelerometer measurements from an MQTT data stream.
 
-- **aligning_readings** demonstrates the use of `Aligner` class to collect and
-  align accelerometer measurements from multiple MQTT data streams.
+- **aligning_readings** shows how the `Aligner` class collects and
+  aligns accelerometer measurements from multiple MQTT data streams.
 
-- **sysid** demonstrates the use of `sysid` with four cases. It prints sysid
-  output to console.
+- **sysid** prints the sysid output to the console.
 
-- **Clustering** demonstrates the use of `sysid` and `clustering`.
+- **Clustering** demonstrates `sysid` and `clustering`.
 
-- **mode-tracking** demonstrates the use of `sysid` and `mode_tracking`.
+- **mode-tracking** demonstrates `sysid` and `mode_tracking`.
 
-- **model-update** demonstrates the use of the digital twin workflow upto
+- **model-update** runs the digital twin workflow up to
   `model_update`.
 
 ## Configuration
 
-This example uses MQTT broker for replaying the recorded data from physical
-twin. The format of the configuration file is in `replay.json`. MQTT credentials
-need to be updated in the file. In case a local MQTT broker is not available,
-[test server](https://test.mosquitto.org/) can also be used.
+This example uses an MQTT broker to replay the data recorded from
+the physical twin. The configuration file is `replay.json`. Update the MQTT
+credentials in this file. If no local MQTT broker is available, you can use
+the Mosquitto [test server](https://test.mosquitto.org/).
 
 ## Use
 
-The available experimental scenarios can be found by running the program
+Run the program without arguments to list the available experimental
+scenarios:
 
 ```bash
 $example-shm
@@ -134,9 +131,10 @@ Usage: example-shm --config replay.json accelerometers
 
 ### Automated Execution
 
-The current configuration of this example demonstrates system identification and
-model update. A truncated sample output can be seen here. The execution
-timestamps have been removed from this log to show the main content.
+The pipeline of this example runs two lifecycle scripts:
+`lifecycle/sysid_print` for system identification and
+`lifecycle/model_update_local_sysid` for model update. A truncated sample
+output follows, with the execution timestamps removed.
 
 ```log
 Using docker image sha256:16f554efe9f9e182e2ec6b86ad37360138407a456a69982ed1b8261716ce5163 for python:3.12 with digest
@@ -193,4 +191,4 @@ Model frequencies: [  4.13819299  26.68572155  80.22633861 164.67016633 180.3796
    July). Structural Health Monitoring of Engineering Structures Using
    Digital Twins: A Digital Twin Platform Approach. In International
    Conference on Experimental Vibration Analysis for Civil Engineering
-   Structures (pp. 986-996). Cham: Springer Nature Switzerland.)
+   Structures (pp. 986-996). Cham: Springer Nature Switzerland.

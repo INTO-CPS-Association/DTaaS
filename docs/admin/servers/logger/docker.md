@@ -3,8 +3,8 @@
 The **logger microservice** ingests workflow log events produced by the
 DTaaS client and stores them as JSON Lines (`.jsonl`) files.
 
-This document provides instructions for running a docker container
-to provide a standalone logger microservice.
+This page explains how to run the logger microservice as a standalone
+docker container.
 
 ## Setup
 

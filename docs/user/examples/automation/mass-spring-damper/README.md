@@ -2,8 +2,8 @@
 
 ## Overview
 
-The mass spring damper digital twin (DT) comprises two mass spring dampers
-and demonstrates how a co-simulation based DT can be used within DTaaS.
+The mass spring damper digital twin (DT) has two mass spring dampers
+and shows how a co-simulation based DT can be used within DTaaS.
 
 ## Example Diagram
 
@@ -11,7 +11,7 @@ and demonstrates how a co-simulation based DT can be used within DTaaS.
 
 ## Example Structure
 
-There are two simulators included in the study, each representing a
+The study includes two simulators, each representing a
 mass spring damper system. The first simulator calculates the mass
 displacement and speed of $m_1$ for a given force $F_k$ acting on mass $m_1$.
 The second simulator calculates force $F_k$ given a displacement and speed of
@@ -22,7 +22,7 @@ the two masses is computed.
 
 ## Digital Twin Configuration
 
-This example uses two models and one tool. The specific assets used are:
+This example uses two models and one tool:
 
 | Asset Type | Names of Assets                         | Visibility | Reuse in Other Examples |
 | :--------- | :-------------------------------------- | :--------- | :---------------------- |
@@ -30,45 +30,42 @@ This example uses two models and one tool. The specific assets used are:
 |            | MassSpringDamper2.fmu                   | Private    | Yes                     |
 | Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
 
-The `co-sim.json` and `time.json`
-are two DT configuration files used for executing the digital twin.
-These two files can be modified to customise the DT as required.
+The `cosim.json` and `time.json` files configure the execution of
+the digital twin. Edit them to customise the DT.
 
 ## Lifecycle Phases
 
 | Lifecycle Phase | Completed Tasks                                                        |
 | --------------- | ---------------------------------------------------------------------- |
-| Create          | Installs Java Development Kit for Maestro tool                         |
+| Create          | Installs the Java runtime for the Maestro tool                         |
 | Execute         | Produces and stores output in data/mass-spring-damper/output directory |
 | Clean           | Clears run logs and outputs                                            |
 
 ## DevOps Automation
 
-This example demonstrates the use of DevOps features of the DTaaS platform.
-The GitLab DevOps pipelines are used for providing this feature in the DTaaS.
+This example uses the DevOps features of the DTaaS platform, which
+the DTaaS provides through GitLab DevOps pipelines.
 
-The `.gitlab-ci.yml` file controls the sequence of executing the lifecycle
-scripts of the example. The configuration format of `.gitlab-ci.yml`
-permits specifying stages for execution of a program.
-In this first example, all the lifecycle scripts are put in single stage,
-namely _build_and_run_.
+The `.gitlab-ci.yml` file sets the order in which the lifecycle scripts
+of the example run. Its configuration format lets you split a program
+into stages. This first example runs the create and execute scripts
+in a single stage named _build_and_run_.
 
-This example produces co-simulation outputs which are then saved in
-the artefacts repository of the GitLab. These can be accessed at
+GitLab saves the co-simulation outputs as job artefacts. You can find
+them at
 `https://<gitlab-host>/<group>/<username>/-/artifacts`.
 Replace `<gitlab-host>`, `<group>`, and `<username>` with the values for
 your GitLab instance and project.
 
 ## Run the example
 
-To run the example, navigate to the following directory.
+To run the example, go to the following directory.
 
 ```bash
 cd /workspace/examples/digital_twins/mass-spring-damper
 ```
 
-If required, change the execute permission of the lifecycle scripts
-to be executed, for example:
+If required, make the lifecycle scripts executable, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -78,7 +75,7 @@ Now, run the following scripts:
 
 ### Create
 
-Installs Open Java Development Kit 17 in the workspace.
+Installs the OpenJDK 17 Java runtime in the workspace.
 
 ```bash
 lifecycle/create
@@ -86,9 +83,9 @@ lifecycle/create
 
 ### Execute
 
-Run the Digital Twin. Since this is a co-simulation based
-digital twin, the Maestro co-simulation tool executes co-simulation
-using the two FMU models.
+Runs the digital twin. Because this is a co-simulation based
+digital twin, the Maestro co-simulation tool runs a co-simulation
+of the two FMU models.
 
 ```bash
 lifecycle/execute
@@ -96,15 +93,15 @@ lifecycle/execute
 
 #### Examine the results
 
-The results can be found in the
+The results are in the
 _/workspace/examples/data/mass-spring-damper/output_ directory.
 
-You can also view run logs in the
-_/workspace/examples/digital_twins/mass-spring-damper_.
+The run logs are in the
+_/workspace/examples/digital_twins/mass-spring-damper_ directory.
 
 ### Terminate phase
 
-Terminate to clean up the debug files and co-simulation output files.
+Removes the debug files and co-simulation output files.
 
 ```bash
 lifecycle/terminate
@@ -112,14 +109,14 @@ lifecycle/terminate
 
 ## References
 
-More information about co-simulation techniques and mass spring damper
-case study are available in:
+More information about co-simulation techniques and the mass spring damper
+case study is available in:
 
 ```txt
 Gomes, Cláudio, et al. "Co-simulation: State of the art."
 arXiv preprint arXiv:1702.00686 (2017).
 ```
 
-The source code for the models used in this DT are available in
+The source code for the models used in this DT is available in the
 [mass spring damper](https://github.com/INTO-CPS-Association/example-mass_spring_damper)
-github repository.
+GitHub repository.

@@ -266,3 +266,6 @@ gitlab_user_tokens.json
 !cli/src/templates/dtaas.toml
 !cli/src/templates/users.csv
 
+# Git worktrees, including those Claude Code creates
+.worktrees/
+.claude/worktrees/

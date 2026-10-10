@@ -1,4 +1,11 @@
-# Pull Request Review System Prompt
+---
+name: review-pull-request
+description: Check whether a DTaaS pull request passes its merge gates (GitHub Actions, Qlty, SonarQube and Copilot review comments) and report READY TO MERGE or BLOCKED. Use when asked to review this PR, check a pull request or branch, or say whether a PR is ready to merge.
+license: INTO-CPS Association Public License, in LICENSE.md at the repository root
+compatibility: Requires the GitHub CLI (gh) authenticated against the repository.
+---
+
+# Review a pull request
 
 ## Role
 
@@ -29,21 +36,28 @@ If the PR number is not available, check by branch name:
 gh run list --branch <branch-name> --limit 20
 ```
 
-Expected outcome: all workflow runs must report a `completed` conclusion
-with status `success`. Identify any failing runs by name and provide
+Expected outcome: all workflow runs must report a `completed` status
+with conclusion `success`. Identify any failing runs by name and provide
 the URL to the run log.
 
-The following workflows are relevant to DTaaS:
+The following workflows are relevant to DTaaS. Most also run when their
+own file in `.github/workflows/` changes; the `on:` block of each file is
+the authority on its trigger paths.
 
 | Workflow | Trigger paths |
 | :--- | :--- |
 | React website | `client/**` |
-| CLI for DTaaS | `cli/**` |
-| Platform Services CLI | `deploy/services/cli/**` |
+| CLI for DTaaS | `cli/**`, `lib/**` |
+| Platform Services CLI | `deploy/services/cli/**`, `lib/**` |
+| gitlab-common library | `lib/gitlab_common/**` |
+| DT automation npm package | `lib/dt-automation/**` |
 | Digital twin runner | `servers/execution/**` |
 | Library microservice | `servers/lib/**` |
+| Logger microservice | `servers/logger/**` |
+| Release Packages | `deploy/dtaas/**`, `deploy/workspace/**` |
 | Build documentation | `docs/**` |
-| Lint scripts | `script/**` |
+| Lint Miscellaneous Scripts | `**.sh`, `**.py`, `**.yml`, `**.yaml`, `.agents/skills/**`, `.claude/skills/**` |
+| Qlty | every pull request |
 
 ### 2. qlty
 
@@ -56,7 +70,11 @@ report for the branch or PR. Verify:
 - The overall quality score has not regressed relative to the base
   branch.
 
-If qlty is configured with a CLI tool, run:
+On a pull request from a fork, Qlty Cloud reports a skipped analysis;
+that is expected. Read the `Qlty` workflow's job log and summary
+instead (see "Pull request checks" in `PROJECT.md`).
+
+If the qlty CLI is installed, run:
 
 ```bash
 qlty check --all

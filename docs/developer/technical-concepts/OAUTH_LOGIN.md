@@ -2,34 +2,33 @@
 
 ## The Problem
 
-The client had a single, GitLab-specific method for extracting the
-logged-in username in `Authentication.ts`:
+The client used to extract the logged-in username in `Authentication.ts`
+with a single, GitLab-specific method:
 
 ```typescript
 const profileUrl = auth.user.profile.profile ?? '';
 const username = profileUrl.split('/').filter(Boolean).pop() ?? '';
 ```
 
-This assumed the OIDC provider always exposes a `profile` claim
-containing a URL whose last path segment is the username — the pattern
-GitLab uses (`https://gitlab.example.com/username`). It fails silently
-for any other provider:
+This assumed that the OIDC provider always exposes a `profile` claim
+holding a URL whose last path segment is the username, which is what
+GitLab does (`https://gitlab.example.com/username`). It failed silently
+for other providers:
 
-- **Keycloak**: exposes `preferred_username`, not a profile URL
-- **Dex** (native): exposes `preferred_username`, not a profile URL —
-  which is why a companion Python proxy was built to inject a synthetic
-  `profile` URL as a workaround
-- **Any OIDC provider without a `profile` URL**: username becomes `""`
-  with no error
+- Keycloak exposes `preferred_username`, not a profile URL.
+- Native Dex also exposes `preferred_username` and no profile URL. A
+  companion Python proxy was built to inject a synthetic `profile` URL
+  as a workaround.
+- For any OIDC provider without a `profile` URL, the username became
+  `""` with no error.
 
-The same hardcoded assumption existed in `AccountTabData.tsx` for
-display and linking purposes.
+`AccountTabData.tsx` made the same assumption when displaying and linking
+the profile.
 
 ## The Solution: a provider-agnostic resolver module
 
-The fix introduces `client/src/util/auth/oauthUserProfile.ts` — a
-single module that centralises all claim resolution logic. It exports
-two functions:
+`client/src/util/auth/oauthUserProfile.ts` holds all claim resolution
+logic in one module. It exports three functions.
 
 ### `resolveOAuthUsername(profile)`
 
@@ -46,33 +45,39 @@ Walks a fixed priority chain and returns the first usable value:
 8. sub                  ← worst-case fallback, always present
 ```
 
-The chain is ordered by reliability and specificity, with GitLab's
-URL-based extraction demoted to step 7 (still present for backward
-compatibility) and `sub` as the last-resort claim.
+The chain is ordered by reliability and specificity. GitLab's URL-based
+extraction sits at step 7 for backward compatibility, and `sub` is the
+last resort.
 
-Each candidate is additionally checked by `isSafeUsername()` before it is
-accepted. A candidate is only used if it matches `^[A-Za-z0-9._@+-]+$` and
-does not contain the `..` sequence; otherwise the chain falls through to
-the next claim. Because this check applies to every candidate (including
-`sub`), the function returns an empty string when no claim yields a
-usable, path-safe value — even if other claims are present. This guards
-the downstream URL-path usage described in
+`isSafeUsername()` checks each candidate before it is accepted. A
+candidate is used only if it matches `^[A-Za-z0-9._@+-]+$` and does not
+contain `..`; otherwise the chain falls through to the next claim.
+Because the check applies to every candidate, `sub` included, the
+function returns an empty string when no claim yields a path-safe value,
+even if other claims are present. This protects the URL paths described
+in
 [Downstream coupling](#downstream-coupling-username-as-gitlab-namespace).
 
 ### `resolveOAuthProfileUrl(profile)`
 
-Looks for `profile` then `html_url` (GitHub). It runs the candidate
-through `isSafeExternalUrl()` before returning — a security check that
-rejects anything that is not `http:` or `https:`, preventing XSS via
-`javascript:` or `data:` URLs injected into the `href` of the profile
-link. Returns `undefined` rather than an unsafe URL.
+Looks for `profile`, then `html_url` (GitHub). Before returning, it
+passes the candidate through `isSafeExternalUrl()`, which rejects any
+protocol other than `http:` or `https:`. This prevents XSS through
+`javascript:` or `data:` URLs placed in the `href` of the profile link.
+The function returns `undefined` instead of an unsafe URL.
 
-## How callers changed
+### `resolveOAuthPictureUrl(profile)`
 
-**`Authentication.ts` — `useGetAndSetUsername`**
+Looks for `picture` (GitLab), then `avatar_url`, and applies the same
+`isSafeExternalUrl()` check. It returns `undefined` when the provider
+supplies no usable picture, and the caller falls back to an initial or
+an icon.
 
-The three lines of GitLab-specific URL parsing are replaced by a single
-call:
+## Callers
+
+### `Authentication.ts`: `useGetAndSetUsername`
+
+A single call replaces the GitLab-specific URL parsing:
 
 ```typescript
 // before
@@ -85,47 +90,51 @@ const username = resolveOAuthUsername(auth.user.profile);
 sessionStorage.setItem('username', username);
 ```
 
-This is where the username gets written to Redux state and
-`sessionStorage` — the centralised point that feeds the rest of the
-application.
+This is where the username is written to Redux state and
+`sessionStorage`, from where the rest of the application reads it.
 
-**`AccountTabData.tsx` — `ProfileTab` and `SettingsTab`**
+### `AccountTabData.tsx`: `ProfileTab` and `SettingsTab`
 
-Both components now call the same resolver functions. When the provider
-does not expose a profile URL (Keycloak default, Dex),
-the UI shows "Your OAuth provider did not expose a profile URL." instead
-of rendering a broken link:
+Both components call the resolver functions. When the provider does not
+expose a profile URL (Keycloak by default, Dex), the UI shows "Your OAuth
+provider did not expose a profile URL." instead of a broken link:
 
 ```typescript
 {profileUrl ? profileSettingsText : profileNotAvailableText}
 ```
 
+`MenuToolbar.tsx` and `util/envUtil.ts` also call
+`resolveOAuthUsername`, and `MenuToolbar.tsx` calls
+`resolveOAuthPictureUrl` for the avatar.
+
 ## Internal module structure
 
-`oauthUserProfile.ts` is built from small, single-purpose private
-functions:
+`oauthUserProfile.ts` is built from small private functions:
 
-- **`getClaim`** — safely reads a string claim from the profile, trims
-  it, returns `undefined` for missing/non-string/empty values
-- **`getEmailLocalPart`** — splits on `@` and returns the local part
-- **`getUsernameFromProfileUrl`** — parses the value with `new URL()` and
-  returns the last `pathname` segment, falling back to a relative-path
-  parse when it is not an absolute URL
-- **`isSafeExternalUrl`** — uses `new URL()` for parsing (no regex),
-  allows only `http:` and `https:`
-- **`isSafeUsername`** — restricts a resolved username to a URL-path-safe
-  charset and rejects `..`, so an unsafe claim is skipped
-- **`firstDefinedValue`** — walks an array and returns the first
-  non-undefined entry; used by `resolveOAuthProfileUrl`
+- `getClaim` reads a string claim from the profile, trims it and
+  returns `undefined` for missing, non-string or empty values.
+- `getEmailLocalPart` splits on `@` and returns the local part.
+- `pathFromProfileUrl` parses the value with `new URL()` and returns its
+  `pathname`. For a value that is not an absolute URL, it falls back to
+  the raw path when the value contains `/`.
+- `getUsernameFromProfileUrl` returns the last segment of that path.
+- `isSafeExternalUrl` parses with `new URL()` (no regex) and allows
+  only `http:` and `https:`.
+- `isSafeUsername` restricts a resolved username to a URL-path-safe
+  character set and rejects `..`, so an unsafe claim is skipped.
+- `firstDefinedValue` returns the first entry of an array that is not
+  `undefined`. `resolveOAuthProfileUrl` and `resolveOAuthPictureUrl`
+  use it.
 
-All six are unexported. The module's public surface is exactly the two
-`resolve*` functions (`resolveOAuthUsername`, `resolveOAuthProfileUrl`).
+None of the seven is exported. The module's public surface is the three
+`resolve*` functions (`resolveOAuthUsername`, `resolveOAuthProfileUrl`
+and `resolveOAuthPictureUrl`).
 
 ## Downstream coupling: username as GitLab namespace
 
-Although the resolver is provider-agnostic, the resolved username is not
-just a display string. It is persisted to `sessionStorage` and Redux and
-then consumed by the GitLab backend layer as a **namespace**, interpolated
+The resolver is provider-agnostic, but the resolved username is more
+than a display string. It is stored in `sessionStorage` and Redux, and
+the GitLab backend layer then uses it as a namespace, inserted
 unencoded into URL paths such as:
 
 ```text
@@ -133,31 +142,32 @@ ${authority}/${group}/${username}/-/raw/${branch}/...
 ```
 
 (`lib/dt-automation/src/digitalTwin.ts`,
-`lib/dt-automation/src/libraryAsset.ts`, and the workbench/service links in
-`util/envUtil.ts` and `route/workbench`).
+`lib/dt-automation/src/libraryAsset.ts`, and the workbench and service
+links in `util/envUtil.ts` and `route/workbench`).
 
-Two consequences follow:
+This has two consequences:
 
-1. **Security** — because the value lands unencoded in a URL path, it is
-   validated by `isSafeUsername` at the single resolution chokepoint so a
-   crafted claim cannot inject path separators or `..` traversal. The input
-   is a signed OIDC token and GitLab enforces authorization server-side, so
-   this is defense-in-depth rather than a fix for an exploitable hole.
-2. **Operational** — for a non-GitLab provider (Keycloak, Dex, GitHub), the
-   resolved username must match an existing GitLab account, or sign-in
-   succeeds while every GitLab-backed request fails. The client is provider-
-   agnostic; the backend identity model is still GitLab. Keep provider
-   usernames aligned with GitLab usernames.
+1. Security: because the value ends up unencoded in a URL path,
+   `isSafeUsername` validates it at the single point of resolution, so a
+   crafted claim cannot inject path separators or `..` traversal. The
+   input is a signed OIDC token and GitLab enforces authorization on the
+   server, so this is defence in depth, not a fix for an exploitable
+   hole.
+2. Operations: for a provider other than GitLab (Keycloak, Dex, GitHub),
+   the resolved username must match an existing GitLab account.
+   Otherwise sign-in succeeds while every GitLab-backed request fails.
+   The client is provider-agnostic, but the backend identity model is
+   still GitLab, so keep provider usernames aligned with GitLab
+   usernames.
 
 ## Effect on provider-specific infrastructure
 
-The Dex companion Python service
-(`deploy/workspace/dex/localhost/companion/`) existed solely to paper
-over the old code's GitLab assumption. It intercepted `/dex/userinfo`
-responses and injected a synthetic `profile` URL of the form
-`{issuer}/{preferred_username}` so that the GitLab-specific path parser
-could extract the username.
+A companion Python service for Dex used to exist only to work around the
+old GitLab assumption. It intercepted `/dex/userinfo` responses and
+injected a synthetic `profile` URL of the form
+`{issuer}/{preferred_username}` so that the GitLab-specific parser could
+extract the username.
 
-With `preferred_username` now checked first, Keycloak and Dex both
-resolve usernames directly from standard claims. The companion service
-is no longer required for username resolution.
+Because `preferred_username` is now checked first, Keycloak and Dex both
+resolve usernames from standard claims. The companion service is no
+longer needed and is not part of `deploy/workspace/dex/localhost/`.

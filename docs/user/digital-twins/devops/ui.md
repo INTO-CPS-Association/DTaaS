@@ -1,94 +1,93 @@
 # Digital Twins and DevOps
 
-[DevOps](https://en.wikipedia.org/wiki/DevOps) has been
-a well established software development practice.
-An experimental feature integrating DevOps
-is being introduced in the DTaaS.
+[DevOps](https://en.wikipedia.org/wiki/DevOps) is a well-established
+software development practice. The DTaaS has an experimental feature
+that brings DevOps to digital twins.
 
-The latest workflow recordings are available here:
+Recordings of the latest workflows:
 
 - [DTaaS DevOps workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
 - [Automation layer demo](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20260417_Automation-Layer-Demo.mp4)
 
-This feature requires specific installation setup.
+This feature requires a specific installation setup:
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
-1. A valid GitLab repository for the logged in user. See
-   an [example repository](https://gitlab.com/dtaas/user1). This repository
-   can be cloned and customised as needed.
-1. [A linked GitLab Runner](../../../admin/gitlab/runner-linux.md)
-   to the user gitlab repository.
+1. A valid GitLab repository for the logged-in user. See
+   an [example repository](https://gitlab.com/dtaas/user1). You can
+   clone this repository and customise it as needed.
+1. [A GitLab Runner](../../../admin/gitlab/runner-linux.md) linked
+   to the user's GitLab repository.
+
+To open the feature, click **Automation** in the menu and then the
+**Digital Twins Page** card.
 
 ## DT Lifecycle
 
-The DT preview implements the **Create**, **Manage** and **Execute**
-stages of a [DT lifecycle](../lifecycle.md). The suggested sequence
-of use for different lifecycle stages are:
+The **Digital Twins Page** implements the **Create**, **Manage** and
+**Execute** stages of a [DT lifecycle](../lifecycle.md). The suggested
+order of the lifecycle stages is:
 
 ![Suggested sequence of lifecycle stages](images/devops-lifecycle.png).
 
-There are dedicated
-tabs for **Create**, **Manage** and **Execute** stages.
-The selection of DT assets for Create stage happens via
-[Library preview page](../../library/devops/ui.md).
-The Manage tab fulfills reconfigure feature. The Execute and
-Terminate are managed on the Execute tab.
+Each of the **Create**, **Manage** and **Execute** stages has its own tab.
+The DT assets for the Create stage are selected on the
+[Library Page](../../library/devops/ui.md).
+The Manage tab reconfigures digital twins. Execution and termination
+happen on the Execute tab.
 
 ## Create Tab
 
-The users select reusable DT assets and arrive on the Create tab.
-The following figure shows DT creation page after selecting
-_mass-spring-damper_ as a reusable asset for the new DT.
+Users select reusable DT assets on the Library Page and then arrive on
+the Create tab. The following figure shows the Create tab after
+_mass-spring-damper_ was selected as a reusable asset for the new DT.
 
 ![New DT creation](images/dt-create-empty.png)
 
-The left-side menu shows the possibility of creating
+The menu on the left lets you create the
 [necessary structure](../../digital-twins/devops/file-structure.md)
-and elements for a new DT. Each reusable asset selected for this new DT
-appears on the left menu. Its configuration can be updated as well.
+and elements of a new DT. Each reusable asset selected for the new DT
+appears in this menu, and its configuration can be updated.
 
-These files on the left menu correspond to three categories.
+The files in the left menu fall into three categories.
 
-- **Description**: contains _README.md_ providing comprehensive
-  description of DT and _description.md_ providing a brief
-  description. The brief description is shown in the DT tabs and
-  clicking on the _Details_ button shows the complete README.md
-  The _Details_ button is available only on the Manage page.
-- **Configuration**: Contains a _.gitlab-ci.yaml_ for running
-  the required lifecycle scripts and operations of the DT.
-  Additional json and yaml files can be added to create configuration
-  for a new DT.
-- **Lifecycle**: These are the DT lifecycle scripts.
+- **Description**: contains _README.md_, a full description of the DT,
+  and _description.md_, a brief description. The brief description is
+  shown on the DT cards. The _Details_ button on the Manage tab shows
+  the complete README.md.
+- **Configuration**: contains a _.gitlab-ci.yml_ for running
+  the lifecycle scripts and other operations of the DT.
+  You can add more JSON and YAML files to configure the new DT.
+- **Lifecycle**: the DT lifecycle scripts.
 
-The _Add New File_ button can be used to add new files in all the three
-categories. Finally, click on _SAVE_ button to save the new DT.
-Newly created DTs become immediately available on the **Manage** and
-**Execute** tabs.
+The _Add New File_ button adds new files in any of the three
+categories. Click the _Save_ button to save the new DT.
+Newly created DTs appear on the **Manage** and **Execute** tabs
+straight away.
 
 ## Manage Tab
 
 ![Manage Digital Twin Preview Page](images/dt_manage.png)
 
-The manage tab allows for different operations on a digital twin:
+The Manage tab offers these operations on a digital twin:
 
-- Checking the details (**Details** button)
+- Check the details (**Details** button)
 - Delete (**Delete** button)
-- Modify / Reconfigure (**Reconfigure** button)
+- Modify or reconfigure (**Reconfigure** button)
 
-A digital twin placed in the DTaaS has a certain recommended
+A digital twin placed in the DTaaS has a recommended
 structure. See the
 [assets page](../../servers/lib/assets.md) for an explanation
 and
 [this example](https://github.com/INTO-CPS-Association/DTaaS-examples/tree/main/digital_twins/mass-spring-damper).
 
-The information page shown using the Details button, shows
-the README.md information stored inside the digital twin directory.
+The Details button shows the README.md stored in the digital twin
+directory.
 
 ![Digital Twin Details](images/dt_manage_details.png)
 
-A reconfigure button opens an editor and shows all the files corresponding
-to a digital twin. All of these files can be updated. These files
-correspond to three categories.
+The Reconfigure button opens an editor with all the files of
+a digital twin, and all of them can be updated. The files fall into
+the same three categories.
 
 - **Description**
 - **Configuration**
@@ -100,8 +99,8 @@ correspond to three categories.
 
 ![Digital Twin Execute](images/concurrent-execution.png)
 
-The execute tabs shows the possibility of executing multiple digital twins.
-Once an execution of digital twin is complete, the execution
-log is also available.
+The Execute tab can run several digital twins at once.
+When an execution of a digital twin finishes, its execution
+log is available.
 
 ![Digital Twin Execution Log](images/dt_execute_log.png)

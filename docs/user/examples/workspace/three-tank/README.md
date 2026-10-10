@@ -2,35 +2,32 @@
 
 ## Overview
 
-The three-tank system is a simple case study that represents a system
-composed of three individual components coupled in
-a cascade as follows: The first tank is connected to the input of
-the second tank, and the output of the second tank is connected to
-the input of the third tank.
+The three-tank system is a simple case study of three components coupled
+in a cascade: the first tank is connected to the input of the second
+tank, and the output of the second tank is connected to the input of the
+third tank.
 
 ![Three-tank graphical representation](./three-tank.png)
 
-This example contains only the simulated components for
-demonstration purposes; therefore, there is no configuration for
-the connection with the physical system.
+This example contains only simulated components, so there is no
+configuration for a connection to the physical system.
 
-The three-tank system case study is managed using the ```DTManager```,
-which is packed as a jar library in the tools, and run from a java main file.
-The ```DTManager``` uses Maestro as a slave for co-simulation,
+The ```TwinManager``` manages the three-tank system. It is packaged as a
+jar library in the tools and run from a Java main file.
+The ```TwinManager``` uses Maestro as a slave for co-simulation,
 so it generates the output of the co-simulation.
 
-The main file can be changed according to the application scope, i.e.,
-the ```/workspace/examples/tools/three-tank/TankMain.java```
-can be manipulated to get a different result.
+The main file can be changed to suit the application, that is,
+```/workspace/examples/tools/three-tank/TankMainDTaaS.java```
+can be modified to get a different result.
 
 The ```/workspace/examples/models/three-tank/``` folder contains
-the ```Linear.fmu``` file, which is a non-realistic model for a tank
-with input and output and the ```TankSystem.aasx``` file for
-the schema representation with Asset Administration Shell.
-The three instances use the same ```.fmu``` file and the same schema
-due to being of the same object class.
-The ```DTManager``` is in charge of reading the values from
-the co-simulation output.
+```Linear.fmu```, a non-realistic model of a tank with an input and an
+output, and ```TankSystem.aasx```, the schema representation as an
+Asset Administration Shell.
+The three tank instances use the same ```.fmu``` file and the same schema
+because they belong to the same object class.
+The ```TwinManager``` reads the values from the co-simulation output.
 
 ## Example Structure
 
@@ -38,54 +35,54 @@ the co-simulation output.
 
 ## Digital Twin Configuration
 
-This example uses two models, two tools, one data, and one script.
+This example uses two models, three tools and one data file.
 The specific assets used are:
 
-| Asset Type | Names of Assets                                             | Visibility | Reuse in Other Examples |
-| :--------- | :---------------------------------------------------------- | :--------- | :---------------------- |
-| Model      | Linear.fmu                                                  | Private    | No                      |
-|            | TankSystem.aasx                                             | Private    | No                      |
-| Tool       | DTManager-0.0.1-Maestro.jar (wraps Maestro)                 | Common     | Yes                     |
-|            | maestro-2.3.0-jar-with-dependencies.jar (used by DTManager) | Common     | Yes                     |
-|            | TankMain.java (main script)                                 | Private    | No                      |
-| Data       | outputs.csv                                                 | Private    | No                      |
+| Asset Type | Names of Assets                                               | Visibility | Reuse in Other Examples |
+| :--------- | :------------------------------------------------------------ | :--------- | :---------------------- |
+| Model      | Linear.fmu                                                    | Private    | No                      |
+|            | TankSystem.aasx                                               | Private    | No                      |
+| Tool       | TwinManagerFramework-0.0.2.jar (wraps Maestro)                | Common     | Yes                     |
+|            | maestro-2.3.0-jar-with-dependencies.jar (used by TwinManager) | Common     | Yes                     |
+|            | TankMainDTaaS.java (main script)                              | Private    | No                      |
+| Data       | outputs.csv                                                   | Private    | No                      |
 
-This DT has multiple configuration files. The _coe.json_ and
-_multimodel.json_ are used by Maestro tool. The _tank1.conf_, _tank2.conf_
-and _tank3.conf_ are the config files for three different instances of
-one model (Linear.fmu).
+The DT has several configuration files. The Maestro tool uses _coe.json_
+and _multimodel.json_. The files _tank1.conf_, _tank2.conf_ and
+_tank3.conf_ configure three instances of one model (Linear.fmu).
 
 ## Lifecycle Phases
 
-The lifecycles that are covered include:
+The example covers these lifecycle phases:
 
-| Lifecycle Phase | Completed Tasks                                                                                                   |
-| --------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Create          | Installs Java Development Kit for Maestro tool                                                                    |
-| Execute         | The DT Manager executes the three-tank digital twin and produces output in ```data/three-tank/output``` directory |
-| Terminate       | Terminating the background processes and cleaning up the output                                                   |
+| Lifecycle Phase | Completed Tasks                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Create          | Installs Java Runtime Environment and Maven, and builds the TwinManager                                            |
+| Execute         | The TwinManager executes the three-tank digital twin and produces output in ```data/three-tank/output``` directory |
+| Terminate       | Stops the background processes                                                                                     |
+| Clean           | Removes the output                                                                                                 |
 
 ## Run the example
 
-To run the example, change the present directory.
+To run the example, change to the example directory.
 
 ```bash
-cd /workspace/examples/digital twins/three-tank
+cd /workspace/examples/digital_twins/three-tank
 ```
 
-If required, change the execute permission of lifecycle scripts
-that need to be executed, for example:
+If required, give the lifecycle scripts execute permission,
+for example:
 
 ```bash
 chmod +x lifecycle/create
 ```
 
-Now, run the following scripts:
+Now run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 11 and pip dependencies.
-Also creates ```DTManager``` tool (DTManager-0.0.1-Maestro.jar) from source code.
+Installs the default Java Runtime Environment and Maven, then builds the
+```TwinManager``` tool (TwinManagerFramework-0.0.2.jar) from source code.
 
 ```bash
 lifecycle/create
@@ -93,9 +90,9 @@ lifecycle/create
 
 ### Execute
 
-Execute the three-tank digital twin using DTManager. DTManager in-turn runs
-the co-simulation using Maestro. Generates the co-simulation output.csv file
-at `/workspace/examples/data/three-tank/output`.
+Executes the three-tank digital twin using the TwinManager, which in turn
+runs the co-simulation using Maestro. The co-simulation output file
+`outputs.csv` is written to `/workspace/examples/data/three-tank/output`.
 
 ```bash
 lifecycle/execute
@@ -103,8 +100,8 @@ lifecycle/execute
 
 ### Terminate
 
-Stops the Maestro running in the background. Also stops any other
-jvm process started during **execute** phase.
+Stops Maestro running in the background, along with any other Java
+process started during the **execute** phase.
 
 ```bash
 lifecycle/terminate
@@ -112,37 +109,34 @@ lifecycle/terminate
 
 ### Clean
 
-Removes the output generated during execute phase.
+Removes the output generated during the execute phase.
 
 ```bash
-lifecycle/terminate
+lifecycle/clean
 ```
 
 ## Examining the results
 
-Executing this Digital Twin will generate a co-simulation output,
-but the results can also be monitored from updating
-the```/workspace/examples/tools/three-tank/TankMain.java``` with
-a specific set of ```getAttributeValue``` commands, such as shown in
-the code.
+Executing this digital twin generates a co-simulation output. The
+results can also be monitored by adding a set of ```getAttributeValue```
+calls to ```/workspace/examples/tools/three-tank/TankMainDTaaS.java```,
+as shown in the code.
 
-That main file enables the online execution of the Digital Twin and
-its internal components.
+The main file runs the digital twin and its internal components online.
 
-The output of the co-simulation is generated to
-the ```/workspace/examples/data/three-tank/output``` folder.
+The co-simulation output is written to the
+```/workspace/examples/data/three-tank/output``` folder.
 
-In the default example, the co-simulation is run for 10 seconds in
-steps of 0.5 seconds.
-This can be modified for a longer period and different step size.
-The output stored in ```outputs.csv``` contains the level, in/out flow,
+In the default example, the co-simulation runs for 10 seconds in
+steps of 0.5 seconds. Both the duration and the step size can be changed.
+The output stored in ```outputs.csv``` contains the level, in/out flow
 and leak values.
 
-No data from the physical twin are generated/used.
+The example neither generates nor uses data from the physical twin.
 
 ## References
 
-More information about the DT Manager is available at:
+More information about the TwinManager is available at:
 
 ```txt
 D. Lehner, S. Gil, P. H. Mikkelsen, P. G. Larsen and M. Wimmer,

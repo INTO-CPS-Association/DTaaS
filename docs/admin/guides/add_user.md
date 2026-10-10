@@ -1,43 +1,45 @@
 # Add User
 
-This page provides steps for adding a user to a DTaaS installation.
-The username **alice** is used here to illustrate the steps involved in
-adding a user account.
+This page adds a user to a DTaaS installation, using the username
+**alice** as the example.
 
-The following steps should be performed:
+**1. Add the user to the GitLab instance:**
 
-**1. Add user to GitLab instance:**
+Create an account for the new user on the GitLab instance and note its
+username and email. If GitLab provisioning (`[gitlab].provision` in
+`dtaas.toml`) is enabled, the DTaaS CLI creates the account in the next
+step instead.
 
-A new account for the new user should be added on the GitLab instance.
-The username and email of the new account should be noted.
+**2. Create the user workspace:**
 
-**2. Create User Workspace:**
+Run the [DTaaS CLI](../cli.md) from the installation directory, which
+holds `dtaas.toml` and `config/conf.server`:
 
-The [DTaaS CLI](../cli.md) should be used to bring up the workspaces for new users.
-This brings up the containers without backend authorisation.
+```bash
+dtaas user add alice --email alice@intocps.org
+```
 
-**3. Add backend authorisation for the user:**
+The CLI creates the workspace files, starts the workspace container and,
+because `--email` is given, appends the forward-auth rule for the user to
+`config/conf.server`.
 
-- Navigate to the installation directory. For example, if the user needs
-  to be added to a secure-server installation,
+**3. Add backend authorisation by hand (only without `--email`):**
 
-  ```bash
-  cd <DTaaS>/deploy/dtaas/docker/secure-server
-  ```
+Without `--email`, the CLI writes no forward-auth rule. In that case, add
+three lines to `config/conf.server`:
 
-- Add three lines to `config/conf.server`
+```txt
+rule.onlyu3.action=auth
+rule.onlyu3.rule=PathPrefix(`/alice`)
+rule.onlyu3.whitelist = alice@intocps.org
+```
 
-  ```txt
-  rule.onlyu3.action=auth
-  rule.onlyu3.rule=PathPrefix(`/alice`)
-  rule.onlyu3.whitelist = alice@intocps.org
-  ```
-
-**4. Restart the docker container responsible for backend authorisation:**
+**4. Restart the container responsible for backend authorisation:**
 
 ```bash
 docker compose --env-file config/.env up \
   -d --force-recreate traefik-forward-auth
 ```
 
-**5. The new users are now added to the DTaaS instance with authorisation enabled.**
+The new user is now part of the DTaaS instance, with authorisation
+enabled.

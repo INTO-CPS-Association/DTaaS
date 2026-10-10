@@ -2,10 +2,10 @@
 
 ## Overview
 
-This example demonstrates the use of DevOps features for the Heart Digital Twin
-in a **Platform-as-a-Service (PaaS)** deployment mode. This version is
-specifically designed for cloud deployment and supports multiple deployment
-strategies including Render.com and GitLab CI/CD with GitHub mirroring.
+This example runs the Heart Digital Twin in a
+**Platform-as-a-Service (PaaS)** deployment mode. This version is meant
+for cloud deployment and supports more than one deployment strategy,
+including Render.com and GitLab CI/CD with GitHub mirroring.
 
 ## DevOps Automation
 
@@ -16,16 +16,16 @@ strategies including Render.com and GitLab CI/CD with GitHub mirroring.
    - Connect the GitHub repository
 
 2. **Automatic Deployment**:
-   - Render.com automatically deploys on detecting changes in the GitHub
+   - Render.com deploys automatically when it detects changes in the GitHub
      repository
 
 The `.gitlab-ci.yml` file provides a mirror-to-GitHub pipeline that:
 
-- Automatically syncs changes from GitLab to a GitHub repository
-- Enables GitHub-based deployments (like Render.com) to stay updated
-- Requires GitLab CI/CD variables: `GITHUB_USERNAME` and `GITHUB_TOKEN`
+- Syncs changes from GitLab to a GitHub repository
+- Keeps GitHub-based deployments, such as Render.com, up to date
+- Requires the GitLab CI/CD variables `GITHUB_USERNAME` and `GITHUB_TOKEN`
 
 ## References
 
 See the [Heart Digital Twin](../heart-dt/README.md) documentation for
-details about the underlying cardiovascular monitoring functionality.
+details of the underlying cardiovascular monitoring functionality.
