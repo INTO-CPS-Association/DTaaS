@@ -29,16 +29,11 @@ The logger microservice appends the captured events to
 `logs/workflow-logs.jsonl`. Create a directory named `logs`
 in the same file system location as that of the `compose.logger.yml` file.
 
-The logger container runs as the `node` user (uid 1000). On Linux hosts,
-give the directory to uid 1000:
-
-```bash
-mkdir logs
-sudo chown -R 1000:1000 logs
-```
-
-If the `logs` directory does not exist, Docker creates it as `root`, and
-the logger cannot write into it.
+The logger runs as the `node` user (uid 1000). If that user cannot write
+to the `logs` directory, for example because Docker created it as `root`,
+the container makes `node` its owner at start-up and then drops root
+privileges. No manual `chown` is needed. This applies from version 0.1.2
+of the image.
 
 ## :gear: Configure
 
