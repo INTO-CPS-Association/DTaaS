@@ -1,9 +1,10 @@
 // Screenshot helpers: padded crops, outlines and stacked composites.
 const fs = require('node:fs');
 
-// Screenshot the box that encloses every locator, padded on each side.
-async function around(ctx, locators, name, pad = 16) {
-  const list = Array.isArray(locators) ? locators : [locators];
+// Screenshot the box that encloses every locator in `of`, padded on each
+// side.
+async function around(ctx, { of, pad = 16 }, name) {
+  const list = Array.isArray(of) ? of : [of];
   await list[0].scrollIntoViewIfNeeded();
   await ctx.page.waitForTimeout(300);
   const boxes = await Promise.all(list.map((l) => l.boundingBox()));
@@ -24,7 +25,7 @@ async function around(ctx, locators, name, pad = 16) {
 
 // Screenshot from the top of one element to the bottom of another, as
 // wide as their container.
-async function span(ctx, container, top, bottom, name, pad = 16) {
+async function span(ctx, { container, top, bottom, pad = 16 }, name) {
   await top.scrollIntoViewIfNeeded();
   await ctx.page.waitForTimeout(300);
   const c = await container.boundingBox();
@@ -74,7 +75,8 @@ const clearOutlines = (page) =>
     document.querySelectorAll('.doc-mark').forEach((m) => m.remove()),
   );
 
-async function outlineElement(page, locator, colour, pad = 4) {
+async function outlineElement(page, locator, colour) {
+  const pad = 4;
   const b = await locator.boundingBox();
   const rect = {
     x: b.x - pad,

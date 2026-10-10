@@ -32,7 +32,9 @@ function selectSteps(names) {
   if (names.length === 0) return STEPS;
   const unknown = names.filter((n) => !STEPS.some((s) => s.name === n));
   if (unknown.length) throw new Error(`Unknown steps: ${unknown.join(', ')}`);
-  const chosen = STEPS.filter((s) => s !== pages.signIn && names.includes(s.name));
+  const chosen = STEPS.filter(
+    (s) => s !== pages.signIn && names.includes(s.name),
+  );
   return [pages.signIn, ...chosen];
 }
 

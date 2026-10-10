@@ -51,7 +51,7 @@ async function settings(ctx) {
   const buttons = page
     .getByRole('button', { name: 'Save Settings' })
     .locator('xpath=..');
-  await around(ctx, buttons, 'saving-settings.png');
+  await around(ctx, { of: buttons }, 'saving-settings.png');
   for (const [name, label] of FIELD_STATES) {
     await fieldStates(ctx, label, name);
   }
@@ -62,10 +62,18 @@ async function sections(ctx, paper) {
   await paper.screenshot({ path: ctx.out('settings-overview.png') });
   const heading = page.getByText('Measurement Settings', { exact: true });
   const last = field(page, 'Secondary Digital Twin');
-  await span(ctx, paper, heading, last, 'measurement-settings.png');
+  await span(
+    ctx,
+    { container: paper, top: heading, bottom: last },
+    'measurement-settings.png',
+  );
   const logging = page.getByText('Logging Settings', { exact: true });
   const remote = page.getByText(/^Shares your workflow events/);
-  await span(ctx, paper, logging, remote, 'logging-settings.png');
+  await span(
+    ctx,
+    { container: paper, top: logging, bottom: remote },
+    'logging-settings.png',
+  );
 }
 
 async function setValue(page, input, value) {
@@ -93,7 +101,7 @@ async function fieldStates(ctx, label, name) {
     await clearOutlines(page);
     await outlineText(page, input, colour);
     parts.push(`${name}.${i}.png`);
-    await around(ctx, field(page, label), parts[i], 12);
+    await around(ctx, { of: field(page, label), pad: 12 }, parts[i]);
   }
   await clearOutlines(page);
   await setValue(page, input, original);

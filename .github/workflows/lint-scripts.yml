@@ -129,10 +129,10 @@ jobs:
             eslint@10.11.0 @eslint/js@10.0.1 prettier@3.9.9
 
       - name: Run eslint
-        run: npx eslint .
+        run: node_modules/.bin/eslint .
 
       - name: Run prettier
-        run: npx prettier --check .
+        run: node_modules/.bin/prettier --check .
 
       - name: Run unit tests
         run: node --test ./*.test.js

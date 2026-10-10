@@ -6,20 +6,21 @@ const { IMAGES } = require('./images');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
 
+// Copy one capture over every documentation image it replaces.
+function copyCapture(source, targets, repoRoot) {
+  targets.forEach((target) => {
+    fs.copyFileSync(source, path.join(repoRoot, target));
+  });
+}
+
 // Returns the captures that were missing, so a partial run is visible.
 function applyCaptures(captureDir, repoRoot = REPO_ROOT, images = IMAGES) {
-  const missing = [];
-  for (const [name, targets] of Object.entries(images)) {
-    const source = path.join(captureDir, name);
-    if (!fs.existsSync(source)) {
-      missing.push(name);
-      continue;
-    }
-    for (const target of targets) {
-      fs.copyFileSync(source, path.join(repoRoot, target));
-    }
-  }
-  return missing;
+  const captured = (name) => fs.existsSync(path.join(captureDir, name));
+  const names = Object.keys(images);
+  names.filter(captured).forEach((name) => {
+    copyCapture(path.join(captureDir, name), images[name], repoRoot);
+  });
+  return names.filter((name) => !captured(name));
 }
 
 if (require.main === module) {

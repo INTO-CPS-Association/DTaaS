@@ -26,7 +26,11 @@ async function executeTab(ctx) {
   await page.screenshot({ path: ctx.out('dt_preview_execute.png') });
   const tabs = page.getByRole('tablist').first();
   const cards = page.locator('.MuiCard-root');
-  await around(ctx, [tabs, cards.first(), cards.last()], 'dt_execute.png');
+  await around(
+    ctx,
+    { of: [tabs, cards.first(), cards.last()] },
+    'dt_execute.png',
+  );
 }
 
 async function startRun(page, name) {

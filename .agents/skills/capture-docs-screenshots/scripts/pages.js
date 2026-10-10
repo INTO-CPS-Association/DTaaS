@@ -35,7 +35,7 @@ async function signIn(ctx) {
   const card = page
     .locator('.MuiCard-root, .MuiPaper-root')
     .filter({ has: signInButton });
-  await around(ctx, card.first(), 'gitlab-sso-1.png', 24);
+  await around(ctx, { of: card.first(), pad: 24 }, 'gitlab-sso-1.png');
   await signInButton.click();
   await finishWebsiteSignIn(ctx);
 }
@@ -82,7 +82,7 @@ async function mainPages(ctx) {
   const tools = TOOLS.map(([label]) =>
     ctx.page.getByRole('link').filter({ hasText: label }).first(),
   );
-  await around(ctx, tools, 'workbench_tools.png', 24);
+  await around(ctx, { of: tools, pad: 24 }, 'workbench_tools.png');
 }
 
 // Each workspace tool opens in its own tab, sharing the sign-in cookies.

@@ -30,7 +30,7 @@ async function shootConfig(ctx, prepare, name) {
   const card = tab
     .locator('.MuiPaper-root')
     .filter({ hasText: 'Config verification' });
-  await around({ ...ctx, page: tab }, card.first(), name);
+  await around({ ...ctx, page: tab }, { of: card.first() }, name);
   await tab.close();
 }
 
@@ -47,7 +47,11 @@ async function libraryFiles(ctx) {
     const tab = await openTab(ctx, route);
     const panel = tab.locator('.panel').first();
     const lastRow = tab.locator('.files li').last();
-    await span({ ...ctx, page: tab }, panel, panel, lastRow, name);
+    await span(
+      { ...ctx, page: tab },
+      { container: panel, top: panel, bottom: lastRow },
+      name,
+    );
     await tab.close();
   }
 }

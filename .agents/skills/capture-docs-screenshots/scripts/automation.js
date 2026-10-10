@@ -52,7 +52,7 @@ async function digitalTwinsPreview(ctx) {
   const heading = page.getByText('Digital Twins Page', { exact: true });
   await around(
     ctx,
-    [heading, page.getByRole('tablist').first()],
+    { of: [heading, page.getByRole('tablist').first()] },
     'dt_preview_tabs.png',
   );
   await page.getByRole('tab', { name: 'Manage' }).click();

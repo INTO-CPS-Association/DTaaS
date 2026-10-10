@@ -47,8 +47,7 @@ function rangeCeiling({ prefix, version }) {
   const [major, minor, patch] = version.split('.').map(Number);
   if (prefix === '~') return `${major}.${minor + 1}.0`;
   if (major > 0) return `${major + 1}.0.0`;
-  if (minor > 0) return `0.${minor + 1}.0`;
-  return `0.0.${patch + 1}`;
+  return minor > 0 ? `0.${minor + 1}.0` : `0.0.${patch + 1}`;
 }
 
 /**
@@ -104,17 +103,15 @@ function listDependencies(pkg) {
   );
 }
 
-/** Decide the new spec for one dependency, or why it is left alone. */
-async function planOne(dep, cutoff, fetcher) {
-  if (isExempt(dep.name)) return { ...dep, skipped: 'exempt from cooldown' };
+/** Why a dependency is left alone without asking the registry, or null. */
+function skipReason(dep) {
+  if (isExempt(dep.name)) return 'exempt from cooldown';
+  return parseSpec(dep.spec) ? null : 'not a plain x.y.z version';
+}
+
+/** The new spec from a packument, or why the dependency is left alone. */
+function chooseVersion(dep, packument, cutoff) {
   const parsed = parseSpec(dep.spec);
-  if (!parsed) return { ...dep, skipped: 'not a plain x.y.z version' };
-  let packument;
-  try {
-    packument = await fetcher(dep.name);
-  } catch (error) {
-    return { ...dep, skipped: error.message };
-  }
   const chosen = pickVersion(packument, cutoff, rangeCeiling(parsed));
   if (!chosen) return { ...dep, skipped: 'no version old enough' };
   const newest = pickVersion(packument, cutoff);
@@ -124,6 +121,19 @@ async function planOne(dep, cutoff, fetcher) {
     downgrade: compareVersions(chosen, parsed.version) < 0,
     outside: newest === chosen ? null : newest,
   };
+}
+
+/** Decide the new spec for one dependency, or why it is left alone. */
+async function planOne(dep, cutoff, fetcher) {
+  const skipped = skipReason(dep);
+  if (skipped) return { ...dep, skipped };
+  let packument;
+  try {
+    packument = await fetcher(dep.name);
+  } catch (error) {
+    return { ...dep, skipped: error.message };
+  }
+  return chooseVersion(dep, packument, cutoff);
 }
 
 async function planUpgrades(pkg, cutoff, fetcher = fetchPackument) {
@@ -141,21 +151,27 @@ function applyPlan(pkg, plan) {
   return pkg;
 }
 
+function changeLine(entry) {
+  const label = entry.downgrade ? 'DOWNGRADE' : 'upgrade  ';
+  return `${label} ${entry.name}: ${entry.spec} -> ${entry.to}`;
+}
+
+/** The report lines for one planned dependency. */
+function reportLines(entry) {
+  if (entry.skipped) {
+    return [`skip     ${entry.name}@${entry.spec}: ${entry.skipped}`];
+  }
+  const lines = [];
+  if (entry.to !== entry.spec) lines.push(changeLine(entry));
+  if (entry.outside) {
+    const note = `${entry.outside} is outside ${entry.spec}, not applied`;
+    lines.push(`newer    ${entry.name}: ${note}`);
+  }
+  return lines;
+}
+
 function report(plan) {
-  plan.forEach((entry) => {
-    if (entry.skipped) {
-      console.log(`skip     ${entry.name}@${entry.spec}: ${entry.skipped}`);
-      return;
-    }
-    if (entry.to !== entry.spec) {
-      const label = entry.downgrade ? 'DOWNGRADE' : 'upgrade  ';
-      console.log(`${label} ${entry.name}: ${entry.spec} -> ${entry.to}`);
-    }
-    if (entry.outside) {
-      const note = `${entry.outside} is outside ${entry.spec}, not applied`;
-      console.log(`newer    ${entry.name}: ${note}`);
-    }
-  });
+  plan.flatMap(reportLines).forEach((line) => console.log(line));
 }
 
 async function main(argv) {
@@ -186,4 +202,5 @@ module.exports = {
   pickVersion,
   planUpgrades,
   applyPlan,
+  reportLines,
 };

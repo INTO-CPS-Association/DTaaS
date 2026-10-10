@@ -18,16 +18,18 @@ function quote(text) {
   return needsQuotes ? JSON.stringify(text) : text;
 }
 
+/** The tree path whose node_modules holds `treePath`; '' for the root. */
+function parentTree(treePath) {
+  const cut = treePath.lastIndexOf('/node_modules/');
+  return cut === -1 ? '' : treePath.slice(0, cut);
+}
+
 /** Find the tree path Node would load `name` from, starting at `fromPath`. */
 function resolvePath(packages, fromPath, name) {
-  let base = fromPath;
-  for (;;) {
-    const candidate = `${base ? `${base}/` : ''}node_modules/${name}`;
-    if (packages[candidate]) return candidate;
-    if (!base) return null;
-    const cut = base.lastIndexOf('/node_modules/');
-    base = cut === -1 ? '' : base.slice(0, cut);
-  }
+  const candidate = `${fromPath ? `${fromPath}/` : ''}node_modules/${name}`;
+  if (packages[candidate]) return candidate;
+  if (!fromPath) return null;
+  return resolvePath(packages, parentTree(fromPath), name);
 }
 
 function requestedDependencies(entry, fields) {
@@ -40,20 +42,27 @@ function requestedDependencies(entry, fields) {
   );
 }
 
+/** The tree path npm chose for `dep`; null only when `dep` is optional. */
+function locate(packages, fromPath, dep) {
+  const found = resolvePath(packages, fromPath, dep.name);
+  if (!found && !dep.optional) {
+    throw new Error(`${fromPath || 'root'} needs missing ${dep.name}`);
+  }
+  return found;
+}
+
 /** Map every "name@range" that npm resolved to the tree path it chose. */
 function collectPatterns(packages) {
   const patterns = new Map();
-  Object.entries(packages).forEach(([fromPath, entry]) => {
-    if (entry.link || entry.inBundle) return;
-    const fields = fromPath === '' ? ROOT_FIELDS : DEPENDENCY_FIELDS;
-    requestedDependencies(entry, fields).forEach((dep) => {
-      const found = resolvePath(packages, fromPath, dep.name);
-      if (found) patterns.set(`${dep.name}@${dep.range}`, found);
-      else if (!dep.optional) {
-        throw new Error(`${fromPath || 'root'} needs missing ${dep.name}`);
-      }
+  Object.entries(packages)
+    .filter(([, entry]) => !entry.link && !entry.inBundle)
+    .forEach(([fromPath, entry]) => {
+      const fields = fromPath === '' ? ROOT_FIELDS : DEPENDENCY_FIELDS;
+      requestedDependencies(entry, fields).forEach((dep) => {
+        const found = locate(packages, fromPath, dep);
+        if (found) patterns.set(`${dep.name}@${dep.range}`, found);
+      });
     });
-  });
   return patterns;
 }
 

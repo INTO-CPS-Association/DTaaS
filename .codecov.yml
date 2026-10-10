@@ -16,6 +16,14 @@ codecov:
   notify:
     wait_for_ci: false
 
+# Each workflow uploads under its own flag and runs only when its paths
+# change, so a pull request that touches one project would otherwise look
+# like a coverage drop in every other. Carrying the flags forward compares
+# the base and head on the same set of reports.
+flag_management:
+  default_rules:
+    carryforward: true
+
 component_management:
   individual_components:
     # this is an identifier that should not be changed

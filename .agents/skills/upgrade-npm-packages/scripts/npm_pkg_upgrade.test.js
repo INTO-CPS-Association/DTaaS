@@ -8,6 +8,7 @@ const {
   pickVersion,
   planUpgrades,
   applyPlan,
+  reportLines,
 } = require('./npm_pkg_upgrade');
 
 const CUTOFF = new Date('2026-10-01T00:00:00Z');
@@ -104,4 +105,19 @@ test('planUpgrades stays within the range and reports newer versions', async () 
   assert.equal(byName.lib.outside, '2.0.0');
   assert.equal(byName.pinned.to, '~1.0.0');
   assert.equal(byName.pinned.outside, '2.0.0');
+});
+
+test('reportLines reports skips, changes and newer versions', () => {
+  const base = { name: 'lib', spec: '^1.0.0' };
+  assert.deepEqual(reportLines({ ...base, skipped: 'why' }), [
+    'skip     lib@^1.0.0: why',
+  ]);
+  assert.deepEqual(reportLines({ ...base, to: '^1.2.0', outside: '2.0.0' }), [
+    'upgrade   lib: ^1.0.0 -> ^1.2.0',
+    'newer    lib: 2.0.0 is outside ^1.0.0, not applied',
+  ]);
+  assert.deepEqual(reportLines({ ...base, to: '^0.9.0', downgrade: true }), [
+    'DOWNGRADE lib: ^1.0.0 -> ^0.9.0',
+  ]);
+  assert.deepEqual(reportLines({ ...base, to: '^1.0.0' }), []);
 });
