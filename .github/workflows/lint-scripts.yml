@@ -96,14 +96,18 @@ jobs:
             --fail-under=9 --recursive=y || echo "No Python files to lint"
 
   javascript-lint:
-    name: Lint and Test Node Scripts
+    name: Lint and Test Node Scripts (${{ matrix.skill }})
     runs-on: ubuntu-latest
     timeout-minutes: *job_timeout
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: [upgrade-npm-packages, capture-docs-screenshots]
     defaults:
       run:
-        working-directory: .agents/skills/upgrade-npm-packages/scripts
+        working-directory: .agents/skills/${{ matrix.skill }}/scripts
     steps:
       - name: Checkout code
         # v7.0.1
@@ -134,8 +138,10 @@ jobs:
         run: node --test ./*.test.js
 
       # Claude Code reads .claude/skills, so every skill keeps a stub there
-      # whose frontmatter must match the canonical .agents/skills copy.
+      # whose frontmatter must match the canonical .agents/skills copy. The
+      # check covers every skill, so one matrix leg runs it.
       - name: Check Claude Code skill stubs
+        if: matrix.skill == 'upgrade-npm-packages'
         working-directory: .
         run: |
           frontmatter() { awk '/^---$/ { n++; next } n == 1' "$1"; }

@@ -79,6 +79,8 @@ the first letter of your username, opens a menu with **Account** and
 **Logout**. The **Account** page has a **Profile** tab and a
 **Settings** tab where you can [change settings](settings.md).
 
+![Account page, Profile tab](images/account-profile.png)
+
 The footer at the bottom of every page links to the documentation, the
 source code, the issue tracker, the INTO-CPS Association and the
 license.
@@ -253,11 +255,11 @@ none, the page says so instead of showing cards.
 
 ![Workbench](images/workbench.png)
 
-These screenshots show the pages the tools open:
+Each card opens its tool in a new browser tab. The
+[Workspace](workspace.md#vs-code-workspace) page shows what each tool
+looks like.
 
 ![Workbench Tools](images/workbench_tools.png)
-
-Each tool opens in a new browser tab.
 
 ## Automation
 
@@ -274,6 +276,8 @@ the same browser tab.
 The trials, runner tags and digital twins that the Measurement page uses
 are set on the [Settings](settings.md#measurement-settings) tab of the
 Account page.
+
+![Automation](images/automation.png)
 
 ### Library Preview Page
 
@@ -329,6 +333,16 @@ Digital twins are executed with GitLab CI/CD workflows. Several
 digital twins can run at the same time.
 
 ![Digital Twins Preview Page - Execute](../digital-twins/devops/images/concurrent-execution.png)
+
+## Insights
+
+> **URL**: `https://intocps.org/insights`
+
+The **Insights** page has two cards. **Logs** opens the
+[activity log](logs.md) this browser keeps once logging is enabled, and
+**Config** runs the [configuration check](#check-website-access).
+
+![Insights](images/insights.png)
 
 ## Finally logout
 

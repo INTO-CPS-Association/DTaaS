@@ -5,6 +5,8 @@ colours it with the readings its sensors report, so you can see, for example,
 which of forty rooms is the warm one. A time-series dashboard cannot show that.
 Open it from **Buildings** in the menu.
 
+![Building Models page](images/buildings.png)
+
 This page describes the asset layout, the binding manifest and the conversion
 workflow. It is the user documentation for DTaaS issue 1762. The developer
 documentation, covering what the route contains and what it leaves out, is in

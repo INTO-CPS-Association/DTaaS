@@ -192,11 +192,10 @@ workspace. A standard workspace has four tools:
 
 ![Workbench](images/workspace-workbench.png)
 
-These screenshots show the pages the four tools open:
+Each card opens its tool in a new browser tab. The sections below show
+the page each tool opens.
 
 ![Workbench Tools](images/workbench_tools.png)
-
-Each tool opens in a new browser tab.
 
 ## VS Code Workspace
 
@@ -214,6 +213,20 @@ The XFCE desktop is a full graphical Linux environment in the browser.
 Use it to run GUI-based tools that cannot be used from a terminal alone.
 
 ![XFCE Desktop](images/xfce-desktop.png)
+
+## JupyterLab
+
+JupyterLab combines notebooks, terminals and a file browser in one
+window. The **Digital Twins** page embeds the same interface.
+
+![JupyterLab](images/jupyterlab.png)
+
+## Jupyter Notebook
+
+The classic notebook interface opens on the file list of the workspace.
+The **Library** page embeds the same interface.
+
+![Jupyter Notebook](images/jupyter_notebook.png)
 
 ## Workspace File System
 
