@@ -62,6 +62,46 @@ VS Code users can instead choose **Reopen in Container**; the
 `.devcontainer` configuration drives this same compose file and runs
 `init.sh` on the host first.
 
+## Windows hosts
+
+Install Docker Desktop with the WSL 2 backend. Then pick where the
+checkout lives.
+
+**Inside a WSL distribution (recommended).** Clone into the Linux
+filesystem, for example `~/git/DTaaS` in Ubuntu, and follow
+[Getting started](#getting-started) from a WSL terminal. Bind mounts
+from the Linux filesystem are much faster than from `C:\`, and file
+ownership works as it does on Linux. In VS Code, open the folder through
+the WSL extension first, then choose **Reopen in Container**.
+
+**On the Windows filesystem.** Prepare the checkout from PowerShell or
+`cmd`:
+
+```powershell
+cd developer\devenv
+.\init.cmd
+docker compose --env-file .env up -d
+docker compose --env-file .env exec devenv zsh
+```
+
+`init.cmd` does the same work as `init.sh`, but writes a fixed
+`UID=1000` and `GID=1000`: Docker Desktop does not carry Windows
+ownership into the container, so any non-root user works. Running
+`./init.sh` from Git Bash also works. **Reopen in Container** falls back
+to `init.cmd` on its own when `sh` is not on the `PATH`, after printing
+`'sh' is not recognized`, which is expected.
+
+Files from a Windows checkout appear inside the container as owned by
+`root`, so git refuses to run there with *detected dubious ownership*.
+Mark the repository safe once per container:
+
+```sh
+git config --global --add safe.directory /workspace/DTaaS
+```
+
+The setting lives in the container's home directory, which is not a
+volume, so repeat it after the container is recreated.
+
 ## Working inside
 
 ```sh
@@ -149,3 +189,25 @@ test_install_invalid_service`, fails for any non-root user because
 cd deploy/services/cli
 CI=true poetry run pytest --ignore=tests/system_tests
 ```
+
+## Stopping
+
+Run these from `developer/devenv` on the host. To stop the containers
+and keep them for a quick restart:
+
+```sh
+docker compose --env-file .env stop
+docker compose --env-file .env start
+```
+
+To remove the containers but keep the `node_modules` and cache volumes:
+
+```sh
+docker compose --env-file .env down
+```
+
+Add `--volumes` to remove those volumes as well, as described in
+[Caches and node_modules](#caches-and-node_modules).
+
+The devcontainer uses `"shutdownAction": "stopCompose"`, so closing the
+VS Code window stops both services on its own.

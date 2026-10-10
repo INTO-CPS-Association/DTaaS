@@ -3,7 +3,9 @@
 
   // One definition of the environment, shared with plain Docker users.
   // initializeCommand runs on the host and writes developer/devenv/.env.
-  "initializeCommand": "sh developer/devenv/init.sh",
+  // Windows runs it under cmd.exe, which has no 'sh', so init.cmd
+  // takes over there.
+  "initializeCommand": "sh developer/devenv/init.sh || developer\\devenv\\init.cmd",
   "dockerComposeFile": "../developer/devenv/docker-compose.yml",
   "service": "devenv",
   "workspaceFolder": "/workspace/DTaaS",

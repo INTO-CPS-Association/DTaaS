@@ -254,7 +254,8 @@ already keeps `developer/devenv/.env` untracked.
 ```
 
 It runs `developer/devenv/init.sh` on the host as its
-`initializeCommand`, and keeps the union of the two existing extension
+`initializeCommand`, falling back to `init.cmd` on Windows hosts
+without `sh`, and keeps the union of the two existing extension
 lists and the `workspace-settings.json` copy step. It declares no
 `forwardPorts`: compose already publishes every port, and 8000 belongs
 to the `docs` service rather than `devenv`. This leaves
