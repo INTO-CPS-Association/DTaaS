@@ -2,7 +2,7 @@ import { screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import HistoryButton from 'components/asset/HistoryButton';
 import * as redux from 'react-redux';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from '@into-cps-association/dt-automation';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

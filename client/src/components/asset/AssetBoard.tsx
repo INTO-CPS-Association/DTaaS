@@ -4,12 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   deleteAsset,
   selectAssetsByTypeAndPrivacy,
-} from 'model/store/assets.slice';
-import { fetchDigitalTwins } from 'model/backend/util/init';
-import { setShouldFetchDigitalTwins } from 'model/backend/state/digitalTwin.slice';
+  fetchDigitalTwins,
+  setShouldFetchDigitalTwins,
+  Asset,
+} from '@into-cps-association/dt-automation';
 import { RootState } from 'store/store';
 import Filter from 'components/asset/Filter';
-import { Asset } from 'model/backend/Asset';
 import { AssetCardExecute } from 'components/asset/AssetCard';
 import AssetCardManage from 'components/asset/AssetCardManage';
 

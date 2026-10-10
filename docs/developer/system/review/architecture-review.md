@@ -15,7 +15,7 @@ implementation status, recovered from code:
 | :---------- | :----- | :------------- |
 | Author | Implemented | User workspaces (containers), integrated GitLab |
 | Consolidate | Implemented | Library microservice, client library pages |
-| Configure | Partial | Client editors (`client/src/route/digitaltwins/editor`, Monaco) |
+| Configure | Partial | Client editors and Monaco |
 | Execute | Partial | GitLab CI pipelines triggered from the browser; DT Runner |
 | Explore | Partial | Client DevOps pages, IndexedDB execution history |
 | Save | Not implemented | — |
@@ -62,7 +62,7 @@ intended-architecture diagram:
 1. **GitLab is the de facto platform backend.** It provides identity
    (OAuth), asset and DT storage (repositories), the execution engine
    (CI pipelines and runners), and authorisation boundaries (group and
-   project membership). Evidence: `client/src/model/backend/gitlab/`
+   project membership). Evidence: `lib/dt-automation/src/gitlab/`
    implements pipeline start/cancel/log-fetch against the GitLab REST
    API; `deploy/dtaas/docker/*/docker-compose.yml` wires
    `traefik-forward-auth` to GitLab OAuth endpoints.
@@ -70,9 +70,10 @@ intended-architecture diagram:
 1. **The browser is the DT lifecycle manager.** Orchestration —
    resolving projects, fetching trigger tokens, starting pipelines,
    polling status, collecting logs — runs client-side
-   (`client/src/model/backend/gitlab/execution/pipelinePolling.ts`,
-   `instance.ts`). Execution history is persisted in the browser's
-   IndexedDB (`client/src/database/executionHistoryDB.ts`), so the
+   (`lib/dt-automation/src/gitlab/execution/pipelinePolling.ts`,
+   `lib/dt-automation/src/gitlab/instance.ts`).
+   Execution history is persisted in the browser's IndexedDB
+   (`client/src/database/executionHistoryDB.ts`), so the
    platform itself holds no record of DT executions.
 
 1. **Security is perimeter-only.** Traefik routes by path prefix and
@@ -112,7 +113,7 @@ job is to make the price explicit.
 amount of functionality (auth, storage, CI, permissions, web IDE) for
 near-zero implementation cost — a rational choice for a small research
 team. The price is hard vendor coupling (the "backend abstraction" in
-`client/src/model/backend/` has exactly one implementation and its
+`lib/dt-automation/` has exactly one implementation and its
 interfaces leak GitLab concepts such as pipelines and trigger tokens),
 an execution model constrained to CI-pipeline semantics, and a
 security model bounded by what GitLab OAuth scopes can express.

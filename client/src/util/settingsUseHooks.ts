@@ -4,11 +4,9 @@ import { RootState } from 'store/store';
 /**
  * React hook accessors for settings stored in the Redux store.
  *
- * - Default values are defined in
- *   model/backend/gitlab/constants.ts
+ * - Default values are defined in the dt-automation package.
  *
- * - Non-hook variants are in
- *   model/backend/gitlab/digitalTwinConfig/settingsUtility.ts
+ * - Non-hook variants are in the dt-automation package.
  *
  * - Settings can be overridden by the user in the Settings tab
  */

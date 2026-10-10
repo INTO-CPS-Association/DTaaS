@@ -1,18 +1,21 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import fileSlice, { addOrUpdateFile } from 'model/store/file.slice';
-import assetsReducer, { setAssets } from 'model/store/assets.slice';
-import digitalTwinReducer, {
+import {
+  fileSlice,
+  addOrUpdateFile,
+  assetsSlice as assetsReducer,
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
+  DigitalTwin,
+  LibraryAsset,
+  FileState,
+  extractDataFromDigitalTwin,
+} from '@into-cps-association/dt-automation';
 import snackbarReducer from 'store/snackbar.slice';
 import {
   mockLibraryAsset,
   mockBackendInstance,
 } from 'test/__mocks__/global_mocks';
-import DigitalTwin from 'model/backend/digitalTwin';
-import LibraryAsset from 'model/backend/libraryAsset';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
-import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
+import { setAssets } from 'test/integration/integration.testUtil';
 
 const setupStore = () => {
   const preSetItems: LibraryAsset[] = [mockLibraryAsset];

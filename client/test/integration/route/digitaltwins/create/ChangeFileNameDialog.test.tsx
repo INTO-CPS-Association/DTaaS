@@ -8,7 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import fileSlice from 'model/store/file.slice';
+import { fileSlice } from '@into-cps-association/dt-automation';
 
 const store = configureStore({
   reducer: combineReducers({

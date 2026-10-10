@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import useCart from 'model/store/CartAccess';
-import { removeAllFiles } from 'model/store/libraryConfigFiles.slice';
+import useCart from 'store/CartAccess';
+import { removeAllFiles } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import CartList from 'components/cart/CartList';
 import { logDismiss } from 'util/logger/logger';

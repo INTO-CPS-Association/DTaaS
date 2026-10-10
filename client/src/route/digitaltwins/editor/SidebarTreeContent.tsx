@@ -5,10 +5,10 @@ import {
   FileState,
   FileType,
   LibraryConfigFile,
-} from 'model/backend/interfaces/sharedInterfaces';
+  DigitalTwin,
+  LibraryAsset,
+} from '@into-cps-association/dt-automation';
 import { getFilteredFileNames } from 'util/fileUtils';
-import DigitalTwin from 'model/backend/digitalTwin';
-import LibraryAsset from 'model/backend/libraryAsset';
 import {
   renderFileTreeItems,
   renderFileSection,

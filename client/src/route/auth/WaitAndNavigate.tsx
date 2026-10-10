@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { clearAccessToken } from 'util/auth/accessToken';
+import {
+  clearAccessToken,
+  clearUsername,
+} from '@into-cps-association/dt-automation';
 import { useNavigate } from 'react-router-dom';
 
 import { wait } from 'util/auth/Authentication';
@@ -29,6 +32,7 @@ const WaitNavigateAndReload = () => {
       navigate('/', { replace: true });
       sessionStorage.clear();
       clearAccessToken();
+      clearUsername();
       reloadPage();
     }
   }, [shouldNavigate, navigate]);

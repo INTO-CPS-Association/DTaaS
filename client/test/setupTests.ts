@@ -1,5 +1,5 @@
 import { TextEncoder, TextDecoder } from 'node:util';
-import { setSettingsStore } from 'model/backend/gitlab/digitalTwinConfig/settingsUtility';
+import { setSettingsStore } from '@into-cps-association/dt-automation';
 import { DEFAULT_SETTINGS, DEFAULT_MEASUREMENT } from 'store/settings.slice';
 
 jest.mock('@mui/material/useLazyRipple', () => ({

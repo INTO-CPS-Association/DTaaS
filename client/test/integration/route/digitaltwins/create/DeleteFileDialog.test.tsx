@@ -2,7 +2,7 @@ import DeleteFileDialog from 'route/digitaltwins/create/DeleteFileDialog';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import fileSlice from 'model/store/file.slice';
+import { fileSlice } from '@into-cps-association/dt-automation';
 import { act } from 'react';
 
 const store = configureStore({

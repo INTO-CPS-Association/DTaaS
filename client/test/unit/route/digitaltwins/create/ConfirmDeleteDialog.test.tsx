@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   removeAllCreationFiles,
   addOrUpdateFile,
-} from 'model/store/file.slice';
-import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
+  defaultFiles,
+} from '@into-cps-association/dt-automation';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

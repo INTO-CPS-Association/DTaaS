@@ -3,8 +3,11 @@ import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { mockDigitalTwin, mockLibraryAsset } from 'test/__mocks__/global_mocks';
-import LibraryAsset from 'model/backend/libraryAsset';
-import { FileState, FileType } from 'model/backend/interfaces/sharedInterfaces';
+import {
+  LibraryAsset,
+  FileState,
+  FileType,
+} from '@into-cps-association/dt-automation';
 
 describe('SidebarRendering', () => {
   const setFileName = jest.fn();

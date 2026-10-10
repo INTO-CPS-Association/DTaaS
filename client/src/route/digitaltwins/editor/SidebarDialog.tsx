@@ -8,7 +8,7 @@ import {
   Button,
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import { FileState } from '@into-cps-association/dt-automation';
 import {
   handleCloseFileNameDialog,
   handleFileSubmit,

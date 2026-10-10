@@ -1,5 +1,7 @@
-import { DTExecutionResult } from 'model/backend/gitlab/types/executionHistory';
-import { IExecutionHistory } from 'model/backend/interfaces/execution';
+import {
+  DTExecutionResult,
+  IExecutionHistory,
+} from '@into-cps-association/dt-automation';
 import BaseIndexedDBService, {
   type CursorQuery,
 } from 'database/BaseIndexedDBService';

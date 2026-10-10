@@ -1,20 +1,19 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
-import indexedDBService from 'database/executionHistoryDB';
-import { showSnackbar } from 'store/snackbar.slice';
-import { updateExecutionStatus } from 'model/backend/state/executionHistory.slice';
 import {
+  DigitalTwin,
+  formatName,
+  updateExecutionStatus,
   setPipelineCompleted,
   setPipelineLoading,
-} from 'model/backend/state/digitalTwin.slice';
-import {
   delay,
   hasTimedOut,
-} from 'model/backend/gitlab/execution/pipelineCore';
-import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
-import { PIPELINE_POLL_INTERVAL } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+  fetchJobLogs,
+  PIPELINE_POLL_INTERVAL,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
+import indexedDBService from 'database/executionHistoryDB';
+import { showSnackbar } from 'store/snackbar.slice';
 import {
   updatePipelineStateOnCompletion,
   fetchLogsAndUpdateExecution,

@@ -1,13 +1,14 @@
 import { useDispatch } from 'react-redux';
-import { removeAllModifiedLibraryFiles } from 'model/store/libraryConfigFiles.slice';
 import {
+  removeAllModifiedLibraryFiles,
   LibraryConfigFile,
   FileState,
-} from 'model/backend/interfaces/sharedInterfaces';
-import { removeAllModifiedFiles } from 'model/store/file.slice';
-import { updateDescription } from 'model/backend/state/digitalTwin.slice';
+  removeAllModifiedFiles,
+  updateDescription,
+  DigitalTwin,
+  formatName,
+} from '@into-cps-association/dt-automation';
 import { showSnackbar } from 'store/snackbar.slice';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
 
 export interface SaveContext {
   readonly modifiedFiles: FileState[];

@@ -1,7 +1,7 @@
 import {
   FileType,
   LibraryConfigFile,
-} from 'model/backend/interfaces/sharedInterfaces';
+} from '@into-cps-association/dt-automation';
 import * as fileUtils from 'util/fileUtils';
 import * as fileActions from 'util/fileActions';
 

@@ -1,13 +1,8 @@
 import * as PipelineChecks from 'route/digitaltwins/execution/executionStatusManager';
 import indexedDBService from 'database/executionHistoryDB';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+import { ExecutionStatus } from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { createMockDTExecutionResult } from './testSetup';
-
-jest.mock('model/backend/digitalTwin', () => ({
-  DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
-  formatName: jest.fn(),
-}));
 
 jest.mock('route/digitaltwins/execution/executionStatusHandlers', () => ({
   ...jest.requireActual('route/digitaltwins/execution/executionStatusHandlers'),
@@ -15,7 +10,10 @@ jest.mock('route/digitaltwins/execution/executionStatusHandlers', () => ({
   updatePipelineStateOnCompletion: jest.fn(),
 }));
 
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
+  DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
+  formatName: jest.fn(),
   delay: jest.fn(),
   hasTimedOut: jest.fn(),
   getPollingInterval: jest.fn(() => 5000),

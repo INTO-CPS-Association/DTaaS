@@ -3,36 +3,36 @@ import { fireEvent, render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AssetCardExecute } from 'components/asset/AssetCard';
 import { Provider, useSelector } from 'react-redux';
-import assetsReducer, {
+import {
+  assetsSlice as assetsReducer,
   selectAssetByPathAndPrivacy,
-  setAssets,
-} from 'model/store/assets.slice';
-import digitalTwinReducer, {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
-import executionHistoryReducer from 'model/backend/state/executionHistory.slice';
+  executionHistorySlice as executionHistoryReducer,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import snackbarSlice from 'store/snackbar.slice';
 import {
   mockLibraryAsset,
   createMockDigitalTwinData,
 } from 'test/__mocks__/global_mocks';
 import { RootState } from 'store/store';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
-import { storeResetAll } from 'test/integration/integration.testUtil';
+import {
+  setAssets,
+  storeResetAll,
+} from 'test/integration/integration.testUtil';
 
 jest.mock('database/executionHistoryDB');
 
-jest.mock('model/backend/util/digitalTwinAdapter', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
   const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.ADAPTER_MOCKS;
-});
-jest.mock('model/backend/util/init', () => {
-  const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.INIT_MOCKS;
-});
-jest.mock('model/backend/gitlab/instance', () => {
-  const adapterMocks = jest.requireActual('test/__mocks__/adapterMocks');
-  return adapterMocks.GITLAB_MOCKS;
+  return {
+    ...actual,
+    ...adapterMocks.ADAPTER_MOCKS,
+    ...adapterMocks.INIT_MOCKS,
+    ...adapterMocks.GITLAB_MOCKS,
+  };
 });
 jest.mock('route/digitaltwins/execution/executionButtonHandlers', () => ({
   handleStart: jest

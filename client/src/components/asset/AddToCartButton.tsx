@@ -1,8 +1,10 @@
 import { Button } from '@mui/material';
-import LibraryAsset from 'model/backend/libraryAsset';
-import useCart from 'model/store/CartAccess';
+import {
+  LibraryAsset,
+  selectAssetByPathAndPrivacy,
+} from '@into-cps-association/dt-automation';
+import useCart from 'store/CartAccess';
 import { useSelector } from 'react-redux';
-import { selectAssetByPathAndPrivacy } from 'model/store/assets.slice';
 
 interface AddToCartButtonProps {
   readonly assetPath: string;

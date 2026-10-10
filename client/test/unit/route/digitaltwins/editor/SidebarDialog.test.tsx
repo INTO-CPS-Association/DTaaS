@@ -1,7 +1,7 @@
 import SidebarDialog from 'route/digitaltwins/editor/SidebarDialog';
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as SidebarFunctions from 'route/digitaltwins/editor/sidebarFunctions';
-import { FileState } from 'model/backend/interfaces/sharedInterfaces';
+import { FileState } from '@into-cps-association/dt-automation';
 
 describe('SidebarDialog', () => {
   const isOpen = true;

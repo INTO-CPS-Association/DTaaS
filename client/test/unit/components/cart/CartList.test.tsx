@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import CartList from 'components/cart/CartList';
-import * as cartAccess from 'model/store/CartAccess';
+import * as cartAccess from 'store/CartAccess';
 import { mockLibraryAsset } from 'test/__mocks__/global_mocks';
 
 describe('CartList', () => {

@@ -6,8 +6,8 @@ import {
   COMMON_LIBRARY_PROJECT_NAME,
   RUNNER_TAG,
   BRANCH_NAME,
-} from 'model/backend/gitlab/digitalTwinConfig/constants';
-import DEFAULT_MEASUREMENT from 'model/backend/gitlab/measure/constants';
+  DEFAULT_MEASUREMENT,
+} from '@into-cps-association/dt-automation';
 
 export function getRemoteLoggerOrigin(): string {
   const loggerUrl = globalThis.env?.LOGGER_URL?.trim() ?? '';
@@ -26,7 +26,7 @@ export const getDefaultLoggingEnabled = (): boolean => false;
 export const getDefaultRemoteLoggingEnabled = (): boolean => false;
 export const SETTINGS_STORAGE_KEY = 'settings';
 
-// Filled out from model/backend/gitlab/digitalTwinConfig/constants.ts
+// Filled out from @into-cps-association/dt-automation constants.
 export const DEFAULT_SETTINGS = {
   GROUP_NAME,
   DT_DIRECTORY,

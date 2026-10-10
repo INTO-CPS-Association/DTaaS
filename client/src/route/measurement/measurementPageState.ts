@@ -4,8 +4,8 @@ import {
   getDefaultConfig,
   getTasks,
   measurementState,
-} from 'model/backend/gitlab/measure/measurement.execution';
-import { mergeExecutionStatus } from 'model/backend/gitlab/measure/measurement.utils';
+  mergeExecutionStatus,
+} from '@into-cps-association/dt-automation';
 
 function computeExecutionsForTask(taskIndex: number | null): ExecutionResult[] {
   if (taskIndex === null) return [];

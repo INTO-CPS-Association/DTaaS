@@ -4,48 +4,54 @@ import { configureStore } from '@reduxjs/toolkit';
 import StartButton from 'components/asset/StartButton';
 import HistoryButton from 'components/asset/HistoryButton';
 import LogDialog from 'components/LogDialog';
-import digitalTwinReducer, {
+import {
+  digitalTwinSlice as digitalTwinReducer,
   setDigitalTwin,
-} from 'model/backend/state/digitalTwin.slice';
-import executionHistoryReducer, {
-  addExecutionHistoryEntry,
-  clearEntries,
-} from 'model/backend/state/executionHistory.slice';
+  executionHistorySlice as executionHistoryReducer,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 import { v4 as uuidv4 } from 'uuid';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
 import { createMockDigitalTwinData } from 'test/__mocks__/global_mocks';
 import '@testing-library/jest-dom';
+
+const addExecutionHistoryEntry = (entry: unknown) => ({
+  type: 'executionHistory/addExecutionHistoryEntry',
+  payload: entry,
+});
+
+const clearEntries = () => ({ type: 'executionHistory/clearEntries' });
 
 jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));
 
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
-  createDigitalTwinFromData: jest.fn().mockResolvedValue({
-    DTName: 'test-dt',
-    execute: jest.fn().mockResolvedValue(123),
-    stop: jest.fn().mockResolvedValue(undefined),
-  }),
-  extractDataFromDigitalTwin: jest.fn().mockReturnValue({
-    DTName: 'test-dt',
-    description: 'Test Digital Twin Description',
-    jobLogs: [],
-    pipelineCompleted: false,
-    pipelineLoading: false,
-    pipelineId: undefined,
-    currentExecutionId: undefined,
-    lastExecutionStatus: undefined,
-    gitlabInstance: undefined,
-  }),
-}));
-
-jest.mock('model/backend/util/init', () => ({
-  initDigitalTwin: jest.fn().mockResolvedValue({
-    DTName: 'test-dt',
-    execute: jest.fn().mockResolvedValue(123),
-    stop: jest.fn().mockResolvedValue(undefined),
-  }),
-}));
+jest.mock('@into-cps-association/dt-automation', () => {
+  const actual = jest.requireActual('@into-cps-association/dt-automation');
+  return {
+    ...actual,
+    createDigitalTwinFromData: jest.fn().mockResolvedValue({
+      DTName: 'test-dt',
+      execute: jest.fn().mockResolvedValue(123),
+      stop: jest.fn().mockResolvedValue(undefined),
+    }),
+    extractDataFromDigitalTwin: jest.fn().mockReturnValue({
+      DTName: 'test-dt',
+      description: 'Test Digital Twin Description',
+      jobLogs: [],
+      pipelineCompleted: false,
+      pipelineLoading: false,
+      pipelineId: undefined,
+      currentExecutionId: undefined,
+      lastExecutionStatus: undefined,
+      gitlabInstance: undefined,
+    }),
+    initDigitalTwin: jest.fn().mockResolvedValue({
+      DTName: 'test-dt',
+      execute: jest.fn().mockResolvedValue(123),
+      stop: jest.fn().mockResolvedValue(undefined),
+    }),
+  };
+});
 
 jest.mock('route/digitaltwins/execution/executionButtonHandlers', () => ({
   handleStart: jest.fn(),

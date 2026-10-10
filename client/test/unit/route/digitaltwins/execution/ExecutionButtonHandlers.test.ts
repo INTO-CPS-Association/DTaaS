@@ -1,10 +1,10 @@
 import * as PipelineHandlers from 'route/digitaltwins/execution/executionButtonHandlers';
 import * as PipelineUtils from 'route/digitaltwins/execution/executionStatusHandlers';
 import * as PipelineChecks from 'route/digitaltwins/execution/executionStatusManager';
-import * as PipelineCore from 'model/backend/gitlab/execution/pipelineCore';
+import * as PipelineCore from '@into-cps-association/dt-automation';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import { PipelineHandlerDispatch } from 'route/digitaltwins/execution/executionButtonHandlers';
-import { fetchExecutionHistory } from 'model/backend/state/executionHistory.slice';
+import { fetchExecutionHistory } from '@into-cps-association/dt-automation';
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'test-uuid-1234'),
@@ -14,13 +14,10 @@ jest.mock('route/digitaltwins/execution/executionStatusManager', () => ({
   startPipelineStatusCheck: jest.fn(),
 }));
 
-jest.mock('model/backend/gitlab/execution/pipelineCore', () => ({
-  stopPipelines: jest.fn(),
-}));
-
-jest.mock('model/backend/state/executionHistory.slice', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   __esModule: true,
-  default: jest.fn((state = {}) => state),
+  stopPipelines: jest.fn(),
   fetchExecutionHistory: jest.fn(),
   setStorageService: jest.fn(),
   updateExecutionStatus: jest.fn(),

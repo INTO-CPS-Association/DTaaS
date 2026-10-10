@@ -14,6 +14,20 @@ jest.mock('react-oidc-context', () => ({
   useAuth: jest.fn(),
 }));
 
+// Inside an awaited act, so the asset fetch each library tab starts on mount
+// settles before the test asserts and ends.
+const renderPreview = async () => {
+  await act(async () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <LibraryPreview />
+        </MemoryRouter>
+      </Provider>,
+    );
+  });
+};
+
 describe('Library Preview', () => {
   it('displays content of tabs', async () => {
     (useAuth as jest.Mock).mockReturnValue({
@@ -24,15 +38,7 @@ describe('Library Preview', () => {
       },
     });
 
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <MemoryRouter>
-            <LibraryPreview />
-          </MemoryRouter>
-        </Provider>,
-      );
-    });
+    await renderPreview();
 
     expect(screen.getByText('Selection')).toBeInTheDocument();
   });
@@ -40,13 +46,7 @@ describe('Library Preview', () => {
   it('carries the page heading, as the library page it mirrors does', async () => {
     // The page frame is what renders the only h1. This preview had none, which
     // no test caught because nothing asserted the heading.
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <LibraryPreview />
-        </MemoryRouter>
-      </Provider>,
-    );
+    await renderPreview();
 
     expect(
       screen.getAllByRole('heading', { level: 1, name: 'Library Page' }).length,

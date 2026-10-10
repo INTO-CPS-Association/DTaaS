@@ -20,7 +20,7 @@ jest.mock('util/logger/logger', () => ({
   logDismiss: jest.fn(),
 }));
 
-jest.mock('model/backend/state/executionHistory.slice', () => {
+jest.mock('@into-cps-association/dt-automation', () => {
   const defaultState = {
     entries: [],
     selectedExecutionId: null,
@@ -35,6 +35,9 @@ jest.mock('model/backend/state/executionHistory.slice', () => {
 
   return {
     __esModule: true,
+    formatName: (name: string) =>
+      name.replace(/-/g, ' ').replace(/^./, (char) => char.toUpperCase()),
+    selectExecutionHistoryByDTName: jest.fn(() => () => []),
     default: executionHistoryReducer,
     fetchExecutionHistory: jest.fn((name: string) => ({
       type: 'fetchExecutionHistory',
@@ -130,7 +133,7 @@ describe('LogDialog', () => {
   });
 
   const executionHistorySlice = jest.requireMock(
-    'model/backend/state/executionHistory.slice',
+    '@into-cps-association/dt-automation',
   );
 
   it('renders the LogDialog with logs available', () => {

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import AssetCardManage from 'components/asset/AssetCardManage';
-import { formatName } from 'model/backend/digitalTwin';
+import { formatName } from '@into-cps-association/dt-automation';
 import {
   asset,
   setupMockStore,

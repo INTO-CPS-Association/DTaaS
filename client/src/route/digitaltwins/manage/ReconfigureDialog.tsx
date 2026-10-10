@@ -10,14 +10,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   removeAllModifiedLibraryFiles,
   selectModifiedLibraryFiles,
-} from 'model/store/libraryConfigFiles.slice';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
-import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import {
+  createDigitalTwinFromData,
   removeAllModifiedFiles,
   selectModifiedFiles,
-} from 'model/store/file.slice';
-import { formatName } from 'model/backend/digitalTwin';
+  formatName,
+} from '@into-cps-association/dt-automation';
+import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
 import Editor from 'route/digitaltwins/editor/Editor';
 import { logDismiss } from 'util/logger/logger';
 import { saveChanges } from 'route/digitaltwins/manage/reconfigureDialogHandlers';

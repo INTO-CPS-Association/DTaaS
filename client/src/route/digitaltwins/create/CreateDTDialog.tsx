@@ -8,26 +8,24 @@ import {
   CircularProgress,
   Box,
 } from '@mui/material';
-import { removeAllCreationFiles } from 'model/store/file.slice';
 import {
+  removeAllCreationFiles,
   LibraryConfigFile,
   FileState,
-} from 'model/backend/interfaces/sharedInterfaces';
+  DigitalTwin,
+  defaultFiles,
+  initDigitalTwin,
+  LibraryAsset,
+  extractDataFromDigitalTwin,
+  setDigitalTwin,
+  setShouldFetchDigitalTwins,
+} from '@into-cps-association/dt-automation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import DigitalTwin from 'model/backend/digitalTwin';
 import { showSnackbar } from 'store/snackbar.slice';
 import { addDefaultFiles } from 'util/fileActions';
 import { validateFiles } from 'util/fileUtils';
-import { defaultFiles } from 'model/backend/gitlab/digitalTwinConfig/constants';
-import { initDigitalTwin } from 'model/backend/util/init';
-import LibraryAsset from 'model/backend/libraryAsset';
-import useCart from 'model/store/CartAccess';
-import { extractDataFromDigitalTwin } from 'model/backend/util/digitalTwinAdapter';
-import {
-  setDigitalTwin,
-  setShouldFetchDigitalTwins,
-} from 'model/backend/state/digitalTwin.slice';
+import useCart from 'store/CartAccess';
 import {
   buildAssetsLogContext,
   buildActionLogContext,

@@ -13,7 +13,11 @@ installed and how to use it outside VS Code.
 Open the repository in VS Code and choose **Reopen in Container**.
 `initializeCommand` runs `developer/devenv/init.sh` on the host first,
 which writes `developer/devenv/.env` so the container user matches your
-host account.
+host account. On Windows, VS Code runs the command under `cmd.exe`,
+which has no `sh`; the command then falls back to
+`developer/devenv/init.cmd`, which writes a fixed `UID=1000` and
+`GID=1000` because Docker Desktop does not map host ids onto bind
+mounts.
 
 `workspace-settings.json` is copied to `.vscode/settings.json` after the
 container is created.

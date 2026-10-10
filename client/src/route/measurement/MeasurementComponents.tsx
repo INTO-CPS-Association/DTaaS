@@ -6,8 +6,8 @@ import {
   Execution,
   Status,
   getDefaultConfig,
-} from 'model/backend/gitlab/measure/measurement.execution';
-import { secondsDifference } from 'model/backend/gitlab/measure/measurement.utils';
+  secondsDifference,
+} from '@into-cps-association/dt-automation';
 
 export const statusColorMap: Record<Status, string> = {
   NOT_STARTED: '#9e9e9e',

@@ -134,7 +134,7 @@ Layers, in order:
    stage, with the `npm` and `npx` links recreated.
 1. `npm install --global --ignore-scripts` of pinned `yarn@1.22.22`,
    `serve@14.2.6`, `pm2@7.0.4`, `madge@8.0.0`, `markdownlint-cli@0.49.1`
-   and `playwright@1.61.1`. The Playwright version tracks
+   and `playwright@1.63.0`. The Playwright version tracks
    `client/package.json`.
 1. One layer for the rest of the toolchain:
    - a virtualenv at `/opt/dtaas-venv`, populated from
@@ -254,7 +254,8 @@ already keeps `developer/devenv/.env` untracked.
 ```
 
 It runs `developer/devenv/init.sh` on the host as its
-`initializeCommand`, and keeps the union of the two existing extension
+`initializeCommand`, falling back to `init.cmd` on Windows hosts
+without `sh`, and keeps the union of the two existing extension
 lists and the `workspace-settings.json` copy step. It declares no
 `forwardPorts`: compose already publishes every port, and 8000 belongs
 to the `docs` service rather than `devenv`. This leaves

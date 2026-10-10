@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useSelector } from 'react-redux';
 import CreatePage from 'route/digitaltwins/create/CreatePage';
-import { FileType } from 'model/backend/interfaces/sharedInterfaces';
+import { FileType } from '@into-cps-association/dt-automation';
 
 jest.mock('route/digitaltwins/editor/Editor', () => ({
   __esModule: true,

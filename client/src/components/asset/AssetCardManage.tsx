@@ -2,7 +2,7 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { CardActions } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectDigitalTwinByName } from 'store/selectors/digitalTwin.selectors';
-import { Asset } from 'model/backend/Asset';
+import { Asset } from '@into-cps-association/dt-automation';
 import { AssetCard } from 'components/asset/AssetCard';
 import DetailsButton from 'components/asset/DetailsButton';
 import ReconfigureButton from 'components/asset/ReconfigureButton';

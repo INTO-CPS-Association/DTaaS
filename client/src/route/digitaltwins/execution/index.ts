@@ -32,7 +32,7 @@ export {
   selectSelectedExecution,
   selectExecutionHistoryLoading,
   selectExecutionHistoryError,
-} from 'model/backend/state/executionHistory.selectors';
+} from '@into-cps-association/dt-automation';
 
 export {
   selectDigitalTwinByName,

@@ -1,7 +1,8 @@
-import { measurementState } from 'model/backend/gitlab/measure/measurement.execution';
+import { measurementState } from '@into-cps-association/dt-automation';
 import { initInterruptedDialogOpen } from 'route/measurement/measurementPageState';
 
-jest.mock('model/backend/gitlab/measure/measurement.execution', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   measurementState: {
     isRunning: false,
     currentTaskIndexUI: null,
@@ -11,9 +12,6 @@ jest.mock('model/backend/gitlab/measure/measurement.execution', () => ({
   },
   getTasks: jest.fn(() => []),
   getDefaultConfig: jest.fn(() => ({})),
-}));
-
-jest.mock('model/backend/gitlab/measure/measurement.utils', () => ({
   mergeExecutionStatus: jest.fn(() => []),
 }));
 

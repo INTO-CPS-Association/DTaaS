@@ -1,22 +1,21 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useDispatch } from 'react-redux';
-import DigitalTwin, { formatName } from 'model/backend/digitalTwin';
 import {
+  DigitalTwin,
+  formatName,
   setJobLogs,
   setPipelineCompleted,
   setPipelineLoading,
-} from 'model/backend/state/digitalTwin.slice';
-import { JobLog } from 'model/backend/gitlab/types/executionHistory';
-import {
+  JobLog,
   updateExecutionLogs,
   updateExecutionStatus,
   setSelectedExecutionId,
-} from 'model/backend/state/executionHistory.slice';
-import { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
-import { ExecutionStatus } from 'model/backend/interfaces/execution';
+  fetchJobLogs,
+  ExecutionStatus,
+} from '@into-cps-association/dt-automation';
 
 // Re-export for test compatibility
-export { fetchJobLogs } from 'model/backend/gitlab/execution/logFetching';
+export { fetchJobLogs } from '@into-cps-association/dt-automation';
 
 /**
  * Starts a digital twin pipeline execution with UI feedback

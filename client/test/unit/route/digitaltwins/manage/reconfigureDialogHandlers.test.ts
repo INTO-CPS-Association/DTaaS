@@ -7,7 +7,7 @@ import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
 import {
   FileState,
   LibraryConfigFile,
-} from 'model/backend/interfaces/sharedInterfaces';
+} from '@into-cps-association/dt-automation';
 
 describe('reconfigureDialogHandlers', () => {
   const dispatch = jest.fn();

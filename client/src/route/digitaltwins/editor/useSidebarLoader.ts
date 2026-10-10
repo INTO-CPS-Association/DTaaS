@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { initializeLibraryFile } from 'model/store/libraryConfigFiles.slice';
+import {
+  initializeLibraryFile,
+  DigitalTwin,
+  createDigitalTwinFromData,
+  LibraryAsset,
+  DigitalTwinData,
+} from '@into-cps-association/dt-automation';
 import { selectDigitalTwinByName } from 'route/digitaltwins/execution';
-import DigitalTwin from 'model/backend/digitalTwin';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
 import { fetchData } from 'route/digitaltwins/editor/sidebarFetchers';
-import LibraryAsset from 'model/backend/libraryAsset';
-import { DigitalTwinData } from 'model/backend/state/digitalTwin.slice';
 
 interface UseSidebarLoaderProps {
   readonly name?: string;

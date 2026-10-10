@@ -9,19 +9,17 @@ import {
 import { Provider, useSelector } from 'react-redux';
 import store from 'store/store';
 import { mockDigitalTwin } from 'test/__mocks__/global_mocks';
-import { createDigitalTwinFromData } from 'model/backend/util/digitalTwinAdapter';
+import { createDigitalTwinFromData } from '@into-cps-association/dt-automation';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
 }));
 
-jest.mock('model/backend/digitalTwin', () => ({
+jest.mock('@into-cps-association/dt-automation', () => ({
+  ...jest.requireActual('@into-cps-association/dt-automation'),
   DigitalTwin: jest.fn().mockImplementation(() => mockDigitalTwin),
   formatName: jest.fn(),
-}));
-
-jest.mock('model/backend/util/digitalTwinAdapter', () => ({
   createDigitalTwinFromData: jest.fn().mockResolvedValue({
     DTName: 'TestDigitalTwin',
     delete: jest.fn().mockResolvedValue('Digital twin deleted successfully'),
