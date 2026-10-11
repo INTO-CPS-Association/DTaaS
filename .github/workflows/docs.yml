@@ -2,13 +2,14 @@ name: Build documentation
 
 'on':
   push:
-    paths:
+    paths: &docs_paths
       - 'docs/**'
+      - 'mkdocs.yml'
+      - 'mkdocs-github.yml'
+      - 'script/docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
+    paths: *docs_paths
   workflow_dispatch:
 
 concurrency:
@@ -65,13 +66,16 @@ jobs:
           python-version: '3.x'
 
       - name: Install MkDocs dependencies
-        run: pip install -r script/docs/mkdocs-requirements-github.txt
+        run: pip install -r script/docs/mkdocs-requirements-github.txt pytest
+
+      - name: Test documentation scripts
+        run: python -m pytest script/docs
 
       - name: build docs
         # The LFS pre-build hook (script/docs/mkdocs_hooks.py) runs in
         # strict mode: the build aborts if any LFS pointer would be
         # copied into the site as a broken image or video.
-        run: mkdocs build --config-file mkdocs-github.yml
+        run: python script/docs/docs.py build
 
       - name: show contents of compiled docs
         run: |

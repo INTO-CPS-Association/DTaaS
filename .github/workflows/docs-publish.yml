@@ -1,0 +1,235 @@
+name: Publish documentation
+
+# Publishes https://into-cps-association.github.io/DTaaS/ through GitHub
+# Pages. The webpage-docs branch stores the released versions; the
+# development version is built from feature/distributed-demo on every
+# run and deployed without being committed, so it never meets Git LFS.
+#
+# - push to feature/distributed-demo: rebuild development and deploy
+# - push of a release tag (v1.0, v0.9.0): also commit versionX.Y and its
+#   PDF to webpage-docs; docs/redirect-page.html must already list it
+# - workflow_dispatch with a tag: publish an existing release tag
+# - pull_request: build and assemble the site, but do not publish
+
+'on':
+  push:
+    branches:
+      - feature/distributed-demo
+    tags:
+      - 'v*'
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'script/docs/**'
+      - '.github/workflows/docs-publish.yml'
+  pull_request:
+    paths:
+      - 'script/docs/**'
+      - '.github/workflows/docs-publish.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish, for example v1.0 (optional)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || (github.ref_type == 'tag' && github.ref_name || '') }}
+  # A tag run deploys the current development docs next to the release.
+  DEVELOPMENT_REF: ${{ github.ref_type == 'tag' && 'feature/distributed-demo' || github.sha }}
+
+jobs:
+  release:
+    name: Publish release version
+    if: github.ref_type == 'tag' || inputs.tag
+    runs-on: ubuntu-latest
+    timeout-minutes: &job_timeout 45
+    concurrency:
+      group: docs-release-${{ inputs.tag || github.ref_name }}
+    permissions:
+      contents: write  # Required to push the release to webpage-docs
+    steps:
+      - name: Checkout publishing scripts
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: false
+
+      - name: Checkout release
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          path: release
+          lfs: false
+
+      - &setup_python
+        name: Set up Python
+        # v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.x'
+
+      - &install_pdf_libraries
+        name: Install PDF libraries
+        run: sudo apt-get install --yes libpango-1.0-0 libpangoft2-1.0-0
+
+      - name: Build release docs
+        # The tag may predate script/docs/docs.py, so the current CLI
+        # builds the release's own docs/ and mkdocs.yml.
+        run: |
+          pip install -r release/script/docs/mkdocs-requirements.txt
+          cp script/docs/docs.py script/docs/pages.py release/script/docs/
+          version=$(python script/docs/docs.py version "$RELEASE_TAG")
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          python release/script/docs/docs.py build --pdf \
+            --version "$version" --site-dir "$PWD/site/$version"
+
+      - name: Checkout webpage-docs
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: webpage-docs
+          path: pages
+          lfs: false
+
+      - name: Commit release to webpage-docs
+        # The landing page comes from this run's commit, so it must list
+        # the release; assemble refuses the release otherwise.
+        run: |
+          python script/docs/docs.py assemble --version "$VERSION" \
+            --site-dir "site/$VERSION" --pages-dir pages
+          cd pages
+          git config user.name 'github-actions[bot]'
+          git config user.email \
+            '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git commit --quiet --message "Publish $VERSION docs for $RELEASE_TAG"
+          for attempt in 1 2 3; do
+            git push origin HEAD:webpage-docs && exit 0
+            echo "push attempt $attempt failed; rebasing onto webpage-docs"
+            git pull --rebase origin webpage-docs
+          done
+          exit 1
+
+  development:
+    name: Build development version
+    needs: release
+    # Runs when release is skipped (no tag), not when it fails.
+    if: ${{ !cancelled() && needs.release.result != 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.DEVELOPMENT_REF }}
+          lfs: false
+
+      - name: Create Git LFS asset manifest
+        # The manifest hash keys the cache: it only changes when an
+        # LFS-tracked file is added, removed, or updated.
+        run: |
+          git lfs ls-files --long | awk '{print $1}' | sort > .lfs-assets-id
+
+      - name: Cache Git LFS objects
+        # v6.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+          restore-keys: |
+            lfs-
+
+      - *setup_python
+
+      - *install_pdf_libraries
+
+      - name: Build development docs
+        run: |
+          pip install -r script/docs/mkdocs-requirements.txt
+          python script/docs/docs.py build --pdf --version development
+
+      - name: Upload development docs
+        # v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: docs-development
+          path: site/development
+          retention-days: 1
+
+  assemble:
+    name: Assemble site
+    needs: development
+    if: ${{ !cancelled() && needs.development.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
+    # Assembling and deploying run one at a time, in order, so a deploy
+    # always holds every release committed before it.
+    concurrency:
+      group: docs-assemble-${{ github.event_name == 'pull_request' && github.ref || 'live' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.DEVELOPMENT_REF }}
+          lfs: false
+
+      - *setup_python
+
+      - name: Download development docs
+        # v8.0.1
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: docs-development
+          path: site/development
+
+      - name: Checkout webpage-docs
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: webpage-docs
+          path: pages
+          lfs: false
+
+      - name: Assemble site
+        run: |
+          pip install -r script/docs/mkdocs-requirements-github.txt
+          python script/docs/docs.py assemble --version development \
+            --site-dir site/development --pages-dir pages
+
+      - name: Upload site
+        # Hidden files such as pages/.git are left out of the artifact.
+        # v5.0.0
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: pages
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: assemble
+    if: ${{ !cancelled() && needs.assemble.result == 'success' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
+    concurrency:
+      group: docs-deploy
+    permissions:
+      pages: write  # Required to deploy to GitHub Pages
+      id-token: write  # Required to verify the deployment's origin
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        # v5.0.1
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
