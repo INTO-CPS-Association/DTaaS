@@ -89,7 +89,7 @@ services:
       - users
 
   libms:
-    image: intocps/libms:0.5.12
+    image: intocps/libms:0.5.13
     restart: unless-stopped
     volumes:
       - ./files/common:/dtaas/libms/files
