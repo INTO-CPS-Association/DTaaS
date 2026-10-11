@@ -382,10 +382,15 @@
     "@babel/helper-plugin-utils" "^8.0.1"
     "@babel/helper-validator-identifier" "^8.0.0"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.28.4", "@babel/runtime@^7.29.2", "@babel/runtime@^7.29.7", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.28.4", "@babel/runtime@^7.29.7", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
   version "7.29.7"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.7.tgz"
   integrity sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==
+
+"@babel/runtime@^7.29.7 || ^8.0.0":
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-8.0.7.tgz#4f4d0371d27c93c269b57dba49b8427027ddd25e"
+  integrity sha512-k0hagDDq/6w4v+0Sp4wFvIz/yswH5O7Va6aRTnD7N62Tnborp4X+YB+H3XUcWVSR4aE47WPEXiIIZchBs0GmYg==
 
 "@babel/template@^7.29.7":
   version "7.29.7"
@@ -460,12 +465,12 @@
     "@babel/helper-string-parser" "^8.0.6"
     "@babel/helper-validator-identifier" "^8.0.6"
 
-"@base-ui/utils@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.npmjs.org/@base-ui/utils/-/utils-0.3.2.tgz"
-  integrity sha512-oWy1aq/I2GmYjpl4PhEAhzflF8VPGKgZeq0xAWTbfD5KBWyxcN0ZP2+WHSUm/5Z6lVMBDLReLcoXwSYoRc/zNQ==
+"@base-ui/utils@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@base-ui/utils/-/utils-0.4.0.tgz#8bd4f665013c1dc0969dfb3432311c0f855f09dc"
+  integrity sha512-bO9fz25kKtPf+aZVyfQrC0PDmJdmVni31W2hCS5/Owb+inwdIL3XU26pCPRPlt4LSxZrBgLwubXQXQlKaFEZzw==
   dependencies:
-    "@babel/runtime" "^7.29.2"
+    "@babel/runtime" "^7.29.7"
     "@floating-ui/utils" "^0.2.12"
     reselect "^5.2.0"
     use-sync-external-store "^1.6.0"
@@ -1240,26 +1245,25 @@
     prop-types "^15.8.1"
     react-is "^19.2.8"
 
-"@mui/x-internals@^9.14.0":
-  version "9.14.0"
-  resolved "https://registry.npmjs.org/@mui/x-internals/-/x-internals-9.14.0.tgz"
-  integrity sha512-m4XkKIihP+uWvz18BgSOHtwxCBWtE3Qi2X9hZUdEGW5mk50umziYaCLn9B/3cT9qBU7LirEC8agqpWxDSYjaNw==
+"@mui/x-internals@^9.15.0":
+  version "9.15.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-9.15.0.tgz#44fd86c0ac3bd5f8ee7d1d50ccf24987fa9c067b"
+  integrity sha512-1ELNplhYtGt+54f6o3CHcP7Oz7tyLSgYt20D7WItCyD8ssui3fah7gzZdPGGPggSE/it0UbNwQNOHlqJfLAVgQ==
   dependencies:
-    "@babel/runtime" "^7.29.7"
-    "@base-ui/utils" "^0.3.2"
+    "@babel/runtime" "^7.29.7 || ^8.0.0"
+    "@base-ui/utils" "^0.4.0"
     "@mui/utils" "^9.4.0"
-    reselect "^5.2.0"
-    use-sync-external-store "^1.7.0"
+    reselect "^5.3.0"
 
-"@mui/x-tree-view@9.14.0":
-  version "9.14.0"
-  resolved "https://registry.npmjs.org/@mui/x-tree-view/-/x-tree-view-9.14.0.tgz"
-  integrity sha512-oF0X0iR6ZqOd4x1UfMFDGSBMw7FZwmxiy1sGYp2uRy2sBOmsV9JqqvMEAWlDDfEUUJECbWsW9eeJ52QZXwT8kw==
+"@mui/x-tree-view@9.15.0":
+  version "9.15.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-tree-view/-/x-tree-view-9.15.0.tgz#b415906e3b427368a9567266305558c03b2af18c"
+  integrity sha512-1Qsu/1oViKGFU/sF2w32c8OydY3GDozx85bNEsr0f8A53q9kzomrbOwPiW0EHKXjBZ/OeQuiBhxPn6D5m8YsDQ==
   dependencies:
-    "@babel/runtime" "^7.29.7"
-    "@base-ui/utils" "^0.3.2"
+    "@babel/runtime" "^7.29.7 || ^8.0.0"
+    "@base-ui/utils" "^0.4.0"
     "@mui/utils" "^9.4.0"
-    "@mui/x-internals" "^9.14.0"
+    "@mui/x-internals" "^9.15.0"
     clsx "^2.1.1"
     prop-types "^15.8.1"
 
@@ -6687,7 +6691,7 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-sync-external-store@^1.4.0, use-sync-external-store@^1.6.0, use-sync-external-store@^1.7.0:
+use-sync-external-store@^1.4.0, use-sync-external-store@^1.6.0:
   version "1.7.0"
   resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.7.0.tgz"
   integrity sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==
