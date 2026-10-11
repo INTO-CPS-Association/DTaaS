@@ -1,4 +1,4 @@
-rule.libms.action=allow
+rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/lib`)
 
 rule.onlyu1.action=allow
