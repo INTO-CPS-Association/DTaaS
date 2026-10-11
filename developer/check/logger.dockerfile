@@ -16,8 +16,6 @@ COPY --from=build --chown=node:node /dtaas/logger/dist ./dist
 COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules
 COPY --from=build --chown=node:node /dtaas/logger/package.json ./package.json
 RUN mkdir -p logs && chown node:node logs
-# The entrypoint drops root with setpriv; check that node can write logs.
-RUN ["setpriv", "--reuid=node", "--regid=node", "--init-groups", "test", "-w", "logs"]
 COPY --chmod=755 ./servers/logger/docker-entrypoint.sh /usr/local/bin/logger-entrypoint
 
 ENV LOGGER_HOSTNAME=0.0.0.0
