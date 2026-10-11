@@ -36,7 +36,7 @@ services:
       - frontend
 
   logger-ms:
-    image: intocps/logger-ms:0.1.0
+    image: intocps/logger-ms:0.1.2
     restart: unless-stopped
     volumes:
       - "./logs/logger:/dtaas/logger/logs"
