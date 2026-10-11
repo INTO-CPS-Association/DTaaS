@@ -2,13 +2,14 @@ name: Build documentation
 
 'on':
   push:
-    paths:
+    paths: &docs_paths
       - 'docs/**'
+      - 'mkdocs.yml'
+      - 'mkdocs-github.yml'
+      - 'script/docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
+    paths: *docs_paths
   workflow_dispatch:
 
 concurrency:
@@ -62,16 +63,22 @@ jobs:
         # v7.0.0
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.x'
+          # The lock files are resolved for this version.
+          python-version: '3.14'
 
       - name: Install MkDocs dependencies
-        run: pip install -r script/docs/mkdocs-requirements-github.txt
+        run: |
+          pip install --only-binary :all: --require-hashes \
+            -r script/docs/mkdocs-requirements-github.lock
+
+      - name: Test documentation scripts
+        run: python -m pytest script/docs
 
       - name: build docs
         # The LFS pre-build hook (script/docs/mkdocs_hooks.py) runs in
         # strict mode: the build aborts if any LFS pointer would be
         # copied into the site as a broken image or video.
-        run: mkdocs build --config-file mkdocs-github.yml
+        run: python script/docs/docs.py build
 
       - name: show contents of compiled docs
         run: |

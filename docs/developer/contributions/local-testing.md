@@ -127,14 +127,14 @@ need `CI=true`. The tests in `tests/system_tests` call `docker`.
 Run from the repository root:
 
 ```bash
-mkdocs build -f mkdocs-github.yml
+python -m pytest script/docs
+python script/docs/docs.py build
 ```
 
-On Linux, to validate the full docs build including the optional PDF
-export:
+On Linux, to validate the full docs build including the PDF export:
 
 ```bash
-MKDOCS_ENABLE_PDF_EXPORT=1 mkdocs build -f mkdocs.yml
+python script/docs/docs.py build --pdf
 ```
 
 ## Practical Tip
