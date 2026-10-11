@@ -15,6 +15,9 @@ DEVELOPMENT = "development"
 BUILT_PDF = Path("pdf") / "DTaaS-docs.pdf"
 BRAND_LOGO = Path("assets") / "brand" / "dtaas-logo-full.svg"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)(?:\.\d+)*$")
+# GitHub Pages refuses sites over 1 GB; stop with room to spare.
+MAX_SITE_BYTES = 900 * 1024**2
+MB = 1024**2
 
 
 class PublishError(Exception):
@@ -58,6 +61,31 @@ def reject_lfs_pointers(site_dir: Path) -> None:
         )
 
 
+def published_size(pages_dir: Path) -> int:
+    """Return the bytes GitHub Pages would publish from the directory.
+
+    The Pages artifact leaves out hidden files and directories, such as .git.
+    """
+    return sum(
+        path.stat().st_size
+        for path in pages_dir.rglob("*")
+        if path.is_file()
+        and not any(part.startswith(".") for part in path.relative_to(pages_dir).parts)
+    )
+
+
+def reject_oversized_site(pages_dir: Path) -> int:
+    """Refuse a site near the GitHub Pages size limit; return its size."""
+    size = published_size(pages_dir)
+    if size > MAX_SITE_BYTES:
+        raise PublishError(
+            f"the site is {size // MB} MB, over the {MAX_SITE_BYTES // MB} MB"
+            " guard below the 1 GB GitHub Pages limit; archive old versions"
+            " or shrink their media"
+        )
+    return size
+
+
 def require_release_row(landing_page: Path, version: str) -> None:
     """Refuse a release whose version has no row on the landing page."""
     if f'href="{version}/index.html"' not in landing_page.read_text("utf-8"):
@@ -86,8 +114,8 @@ def install_landing_page(docs_dir: Path, pages_dir: Path) -> None:
     shutil.copyfile(docs_dir / BRAND_LOGO, logo)
 
 
-def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> None:
-    """Install a built version into the site and check the result."""
+def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> int:
+    """Install a built version into the site, check it and return its size."""
     if not site_dir.is_dir():
         raise PublishError(f"no built site at {site_dir}; run the build first")
     reject_lfs_attributes(pages_dir)
@@ -96,3 +124,4 @@ def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> N
     install_version(site_dir, pages_dir, version)
     install_landing_page(docs_dir, pages_dir)
     reject_lfs_pointers(pages_dir)
+    return reject_oversized_site(pages_dir)

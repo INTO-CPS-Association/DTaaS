@@ -101,3 +101,19 @@ def test_assemble_requires_built_site(tmp_path, docs_dir):
     """Assembling before building reports the missing site."""
     with pytest.raises(pages.PublishError, match="no built site"):
         pages.assemble(tmp_path / "none", tmp_path / "pages", "development", docs_dir)
+
+
+def test_assemble_returns_published_size(tmp_path, site_dir, docs_dir):
+    """The size counts published files and leaves out hidden ones like .git."""
+    pages_dir = tmp_path / "pages"
+    write(pages_dir / ".git" / "objects" / "pack", b"0" * 4096)
+    size = pages.assemble(site_dir, pages_dir, "development", docs_dir)
+    assert size == pages.published_size(pages_dir)
+    assert 0 < size < 4096
+
+
+def test_assemble_rejects_oversized_site(tmp_path, site_dir, docs_dir, monkeypatch):
+    """A site over the size guard is refused."""
+    monkeypatch.setattr(pages, "MAX_SITE_BYTES", 10)
+    with pytest.raises(pages.PublishError, match="GitHub Pages limit"):
+        pages.assemble(site_dir, tmp_path / "pages", "development", docs_dir)

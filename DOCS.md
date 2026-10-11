@@ -102,6 +102,10 @@ The development version is deployed without being committed, and
 the pointer file instead of the image it names, and the workflow refuses
 to publish either.
 
+GitHub Pages refuses sites larger than 1 GB. The workflow stops when the
+assembled site exceeds 900 MB; archive old versions or shrink their media
+before that point.
+
 The workflow needs two repository settings:
 
 - **Settings > Pages > Build and deployment > Source**: GitHub Actions.

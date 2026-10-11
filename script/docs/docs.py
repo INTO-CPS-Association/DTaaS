@@ -72,13 +72,13 @@ def version(args: argparse.Namespace) -> None:
 
 def assemble(args: argparse.Namespace) -> None:
     """Install a built version into a checkout of the published site."""
-    pages.assemble(
+    size = pages.assemble(
         Path(args.site_dir).resolve(),
         Path(args.pages_dir).resolve(),
         args.version,
         DOCS_DIR,
     )
-    print(f"installed {args.version} into {args.pages_dir}")
+    print(f"installed {args.version} into {args.pages_dir}; site is {size // pages.MB} MB")
 
 
 def parser() -> argparse.ArgumentParser:
