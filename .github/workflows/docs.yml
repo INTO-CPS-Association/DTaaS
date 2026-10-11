@@ -63,10 +63,13 @@ jobs:
         # v7.0.0
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.x'
+          # The lock files are resolved for this version.
+          python-version: '3.14'
 
       - name: Install MkDocs dependencies
-        run: pip install -r script/docs/mkdocs-requirements-github.txt pytest
+        run: |
+          pip install --only-binary :all: --require-hashes \
+            -r script/docs/mkdocs-requirements-github.lock
 
       - name: Test documentation scripts
         run: python -m pytest script/docs

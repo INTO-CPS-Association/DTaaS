@@ -71,17 +71,19 @@ jobs:
         # v7.0.0
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.x'
+          # The lock files are resolved for this version.
+          python-version: '3.14'
 
       - &install_pdf_libraries
         name: Install PDF libraries
         run: sudo apt-get install --yes libpango-1.0-0 libpangoft2-1.0-0
 
       - name: Build release docs
-        # The tag may predate script/docs/docs.py, so the current CLI
-        # builds the release's own docs/ and mkdocs.yml.
+        # The tag may predate script/docs/docs.py, so the current CLI and
+        # lock file build the release's own docs/ and mkdocs.yml.
         run: |
-          pip install -r release/script/docs/mkdocs-requirements.txt
+          pip install --only-binary :all: --require-hashes \
+            -r script/docs/mkdocs-requirements.lock
           cp script/docs/docs.py script/docs/pages.py release/script/docs/
           version=$(python script/docs/docs.py version "$RELEASE_TAG")
           echo "VERSION=$version" >> "$GITHUB_ENV"
@@ -153,7 +155,8 @@ jobs:
 
       - name: Build development docs
         run: |
-          pip install -r script/docs/mkdocs-requirements.txt
+          pip install --only-binary :all: --require-hashes \
+            -r script/docs/mkdocs-requirements.lock
           python script/docs/docs.py build --pdf --version development
 
       - name: Upload development docs
@@ -203,7 +206,8 @@ jobs:
 
       - name: Assemble site
         run: |
-          pip install -r script/docs/mkdocs-requirements-github.txt
+          pip install --only-binary :all: --require-hashes \
+            -r script/docs/mkdocs-requirements-github.lock
           python script/docs/docs.py assemble --version development \
             --site-dir site/development --pages-dir pages
 

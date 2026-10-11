@@ -25,6 +25,14 @@ pip install -r script/docs/mkdocs-requirements.txt
 pip install -r script/docs/mkdocs-requirements-github.txt
 ```
 
+GitHub Actions installs the same packages from hash-locked files,
+`script/docs/mkdocs-requirements.lock` and
+`script/docs/mkdocs-requirements-github.lock`, which also pins `pytest`
+from `script/docs/test-requirements.txt`. After changing a requirements
+file, regenerate its lock on Linux with the `uv pip compile` command in
+the lock's header, moving `--exclude-newer` to ten days before the
+current date.
+
 The documentation images and videos are stored in Git LFS. The
 `script/docs/docs.py` commands below fetch them before building; if they
 are missing, MkDocs aborts the build rather than copy pointer files into
