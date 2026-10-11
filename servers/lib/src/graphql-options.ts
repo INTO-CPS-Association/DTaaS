@@ -1,5 +1,5 @@
 import { ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
+import { join } from 'node:path';
 import { IConfig } from './config/config.interface.js';
 
 // GraphiQL replaces GraphQL Playground, which omits cookies from its queries
