@@ -7,14 +7,14 @@
 set -eu
 
 if [ "$(id -u)" -eq 0 ]; then
-  log_dir=$(dirname "$LOGGER_LOG_FILE_PATH")
-  mkdir -p "$log_dir" "$LOGGER_CERTS_DIR"
-  chown -R node:node "$log_dir"
-  # The certs directory may hold certificates the host provided, so only
-  # the directory itself changes owner.
-  chown node:node "$LOGGER_CERTS_DIR"
-  export HOME=/home/node
-  exec setpriv --reuid=node --regid=node --init-groups "$@"
+	log_dir=$(dirname "$LOGGER_LOG_FILE_PATH")
+	mkdir -p "$log_dir" "$LOGGER_CERTS_DIR"
+	chown -R node:node "$log_dir"
+	# The certs directory may hold certificates the host provided, so only
+	# the directory itself changes owner.
+	chown node:node "$LOGGER_CERTS_DIR"
+	export HOME=/home/node
+	exec setpriv --reuid=node --regid=node --init-groups "$@"
 fi
 
 exec "$@"
