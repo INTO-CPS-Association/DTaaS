@@ -36,17 +36,19 @@ Sample screenshots:
 
 Endpoint: `localhost:PORT/lib`
 
-The `http://intocps.org/lib` URL opens a GraphQL playground.
+The `http://intocps.org/lib` URL opens GraphiQL, a GraphQL web page.
 
-The playground shows the query schema and lets you test sample queries.
-Outside the playground, send GraphQL queries as HTTP POST requests.
+GraphiQL shows the query schema and lets you test sample queries.
+It sends the queries with your DTaaS sign-in, so they work on an
+installation that requires one.
+Outside GraphiQL, send GraphQL queries as HTTP POST requests.
 
 The library microservice provides two API calls:
 
 * List the contents of a directory
 * Fetch a file
 
-Both calls can be sent from the GraphQL playground or as plain HTTP
+Both calls can be sent from GraphiQL or as plain HTTP
 POST requests. The accepted queries are shown below.
 
 ### Provide list of contents for a directory
