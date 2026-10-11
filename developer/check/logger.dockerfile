@@ -20,7 +20,7 @@ COPY --from=build --chown=node:node /dtaas/logger/dist ./dist
 COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules
 COPY --from=build --chown=node:node /dtaas/logger/package.json ./package.json
 RUN mkdir -p logs certs && chown node:node logs certs
-COPY --chmod=755 ./servers/logger/docker-entrypoint.sh /usr/local/bin/logger-entrypoint
+COPY --chmod=755 ./developer/check/logger-entrypoint.sh /usr/local/bin/logger-entrypoint
 
 ENV LOGGER_HOSTNAME=0.0.0.0
 ENV LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl
