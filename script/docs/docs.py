@@ -78,7 +78,9 @@ def assemble(args: argparse.Namespace) -> None:
         args.version,
         DOCS_DIR,
     )
-    print(f"installed {args.version} into {args.pages_dir}; site is {size // pages.MB} MB")
+    print(
+        f"installed {args.version} into {args.pages_dir}; site is {size // pages.MB} MB"
+    )
 
 
 def parser() -> argparse.ArgumentParser:
