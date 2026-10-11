@@ -67,12 +67,14 @@ throttle-limit: 120
 Replace the default values with the appropriate values for your setup.
 
 Environment variables always override the values in `logger.yaml`.
-The image sets two of them:
+The image sets three of them:
 
 - `LOGGER_HOSTNAME=0.0.0.0`, so the service listens on all container
   interfaces.
 - `LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl`, so the
   events are written into the mounted `logs` directory.
+- `LOGGER_CERTS_DIR=/dtaas/logger/certs`, so a generated certificate
+  lands in the `certs` directory, mounted or not.
 
 The other runtime variables are:
 
@@ -82,7 +84,6 @@ The other runtime variables are:
 - `LOGGER_CORS_ALLOW_CREDENTIALS`
 - `LOGGER_AUTH_TOKEN`
 - `LOGGER_TLS`
-- `LOGGER_CERTS_DIR`
 - `LOGGER_MAX_PAYLOAD_BYTES`
 - `LOGGER_LOG_MAX_BYTES`
 - `LOGGER_LOG_RETENTION_FILES`
@@ -93,9 +94,11 @@ The throttle uses the TCP peer address. When the service is behind a reverse
 proxy, this is a shared budget for all proxied requests; size
 `LOGGER_THROTTLE_LIMIT` for the expected aggregate workload.
 
-When `LOGGER_TLS=true`, also mount a cert directory to
-`/dtaas/logger/certs` (or another directory pointed to by
-`LOGGER_CERTS_DIR`). Missing cert/key files are generated automatically.
+When `LOGGER_TLS=true`, the logger serves HTTPS with the `fullchain.pem`
+and `privkey.pem` files in `/dtaas/logger/certs` and generates a
+self-signed pair with `openssl` when they are missing. Mount a directory
+there to keep the certificate across restarts or to provide your own;
+like the `logs` directory, the container gives it to `node` at start-up.
 
 The
 [logger README](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/README.md)
