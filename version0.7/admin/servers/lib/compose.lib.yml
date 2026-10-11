@@ -1,0 +1,8 @@
+services:
+  libms:
+    image: intocps/libms:0.5.4
+    restart: unless-stopped
+    volumes:
+      - ./files:/dtaas/libms/files
+    ports:
+      - "4001:4001"
