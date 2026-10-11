@@ -62,9 +62,9 @@ post_event() {
 
 # Fails unless the given path in the container belongs to node.
 require_node_owner() {
-  local owner
-  owner=$(docker exec "$container_id" stat -c %U "$1")
-  [[ $owner == "node" ]] || fail "$1 owned by '$owner', want 'node'"
+  local path="$1" owner
+  owner=$(docker exec "$container_id" stat -c %U "$path")
+  [[ $owner == "node" ]] || fail "$path owned by '$owner', want 'node'"
 }
 
 check_log_mount() {

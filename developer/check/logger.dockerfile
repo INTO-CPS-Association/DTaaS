@@ -11,7 +11,10 @@ RUN yarn build
 
 FROM node:26.10.0-slim
 # The service generates its self-signed TLS certificate with openssl.
-RUN apt-get update   && apt-get install -y --no-install-recommends openssl   && rm -rf /var/lib/apt/lists/*   && npm install --global --ignore-scripts yarn@1.22.22
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global --ignore-scripts yarn@1.22.22
 WORKDIR /dtaas/logger
 COPY --from=build --chown=node:node /dtaas/logger/dist ./dist
 COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules
