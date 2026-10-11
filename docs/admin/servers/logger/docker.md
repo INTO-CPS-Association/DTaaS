@@ -8,25 +8,20 @@ docker container.
 
 ## Setup
 
-Place the following two items in the directory from which
-`compose.logger.yml` will be run.
+Place a `logger.yaml` configuration file in the directory from which
+`compose.logger.yml` will be run. Download the
+[sample configuration](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/config/logger.yaml.sample)
+and use it as a template:
 
-* A `logger.yaml` configuration file. Download the
-  [sample configuration](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/config/logger.yaml.sample)
-  and use it as a template:
+```bash
+curl -o logger.yaml \
+  https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/servers/logger/config/logger.yaml.sample
+```
 
-  ```bash
-  curl -o logger.yaml \
-    https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/servers/logger/config/logger.yaml.sample
-  ```
-
-* A `logs` directory for the captured events. The container runs as
-  uid 1000, so on Linux hosts give the directory to that user:
-
-  ```bash
-  mkdir logs
-  sudo chown -R 1000:1000 logs
-  ```
+The captured events go to a `logs` directory in the same location.
+Docker creates it on the first start, and the container gives it to the
+`node` user (uid 1000) before starting the service, so it needs no
+preparation.
 
 ## :rocket: Use
 

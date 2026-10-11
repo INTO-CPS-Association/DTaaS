@@ -11,13 +11,20 @@ RUN yarn build
 
 FROM node:26.10.0-slim
 RUN npm install --global --ignore-scripts yarn@1.22.22
+# The service generates its self-signed certificate with openssl.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/*
 WORKDIR /dtaas/logger
 COPY --from=build --chown=node:node /dtaas/logger/dist ./dist
 COPY --from=build --chown=node:node /dtaas/logger/node_modules ./node_modules
 COPY --from=build --chown=node:node /dtaas/logger/package.json ./package.json
-RUN mkdir -p logs && chown node:node logs
+COPY --chmod=755 developer/check/logger-entrypoint.sh /usr/local/bin/logger-entrypoint
+RUN mkdir -p logs certs && chown node:node logs certs
 
 ENV LOGGER_HOSTNAME=0.0.0.0
 ENV LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl
-USER node
+ENV LOGGER_CERTS_DIR=/dtaas/logger/certs
+# The entrypoint gives mounted directories to node, then runs as node.
+ENTRYPOINT ["logger-entrypoint"]
 CMD ["yarn", "start"]
