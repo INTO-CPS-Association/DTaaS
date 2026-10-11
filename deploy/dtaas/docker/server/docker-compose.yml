@@ -20,7 +20,7 @@ services:
       - users
 
   client:
-    image: intocps/dtaas-web:1.4.0
+    image: intocps/dtaas-web:1.7.2
     restart: unless-stopped
     volumes:
       - "./config/client.js:/dtaas/client/build/env.js"
@@ -89,7 +89,7 @@ services:
       - users
 
   libms:
-    image: intocps/libms:0.5.11
+    image: intocps/libms:0.5.12
     restart: unless-stopped
     volumes:
       - ./files/common:/dtaas/libms/files
