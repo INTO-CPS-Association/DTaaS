@@ -6,13 +6,14 @@ updates:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "client-npm: "
     target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
+    cooldown:
+      default-days: 3
 
   - package-ecosystem: "npm"
     directory: "/servers/lib"
@@ -20,13 +21,14 @@ updates:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "libms-npm: "
     target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
+    cooldown:
+      default-days: 3
     ignore:
       # jest is pinned to ~30.4.2; see servers/lib/DEVELOPER.md
       - dependency-name: "jest"
@@ -35,15 +37,31 @@ updates:
           - "version-update:semver-major"
 
   - package-ecosystem: "npm"
+    directory: "/servers/logger"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "prasadtalasila"
+    commit-message:
+      prefix: "logger-npm: "
+    target-branch: "dependabot-merge"
+    pull-request-branch-name:
+      separator: "-"
+    cooldown:
+      default-days: 3
+
+  - package-ecosystem: "npm"
     directory: "/servers/execution/runner"
     schedule:
       interval: "weekly"
       day: "sunday"
     assignees:
-      - "octocat"
       - "prasadtalasila"
     commit-message:
       prefix: "runner-npm: "
     target-branch: "dependabot-merge"
     pull-request-branch-name:
       separator: "-"
+    cooldown:
+      default-days: 3

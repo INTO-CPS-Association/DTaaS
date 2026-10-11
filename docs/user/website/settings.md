@@ -1,69 +1,70 @@
 # Settings
 
-Settings are important both during initial DTaaS setup and during use when
-working with different configurations. The most important
-settings have been consolidated on one page for both of these scenarios.
+You need the settings when you first set up the DTaaS and again whenever
+you work with a different configuration. The main settings are
+collected on one page for both cases.
 
 ## ⚙️ Changing Settings
 
-The parameters used for sending and receiving information
-to the storage and execution services (e.g., GitLab) may need adjustment
-to match the infrastructure.
-Navigating to **Account** using the top-right purple 🅰️ icon, then
-selecting the **Settings** tab, displays the following adjustable
-parameters:
+The parameters for sending information to and receiving it from the
+storage and execution services (e.g., GitLab) may need to be adjusted
+to match your infrastructure.
+Click the avatar in the top-right corner, choose **Account**, and open
+the **Settings** tab to see the adjustable parameters:
 
 ![Settings Overview](images/settings-overview.png)
 
-There are two categories of settings: **Application Settings** and
-**Measurement Settings**. Application settings are used for DevOps features,
-while measurement settings are used for benchmarking the DevOps features.
+The settings are in three sections: **Application Settings**,
+**Measurement Settings** and **Logging Settings**. Application settings
+are used by the DevOps features. Measurement settings are used to
+benchmark the DevOps features. Logging settings control the activity log
+described on the [Logs](logs.md) page.
 
-The following is a description of what each parameter does.
+Each parameter is described below.
 
 ### Application Settings
 
 #### Group Name
 
-The Group Name denotes the highest level of organizational abstraction
-on the storage service, namely Groups. A
-GitLab group is required to use the DTaaS. Within the group, projects
-reside that must match the usernames of system users. More information about
-the [file organisation](../digital-twins/devops/file-structure.md) is available.
-This parameter must be set to the case-insensitive name of the group.
+The Group Name is the group on the storage service, the highest level
+of organisation there. The DTaaS requires a GitLab group. The group
+holds projects whose names must match the usernames of system users.
+See the [file organisation](../digital-twins/devops/file-structure.md)
+for details.
+Set this parameter to the name of the group; it is case-insensitive.
 
 **Default**: DTaaS
 
-#### Common Library Project name
+#### Common Library Project Name
 
-One project within the group serves as the Digital Twins *Library*.
-Through the DTaaS, the files inside the Library are accessible to all users and
-can be copied to individual user projects as needed. This parameter specifies
-the project name of the Library and must match that name.
+One project in the group is the Digital Twins *Library*.
+All users can access the files in the Library through the DTaaS and copy
+them to their own projects as needed. This parameter must match the
+project name of the Library.
 
 **Default**: common
 
 #### DT Directory
 
-Within the common library and user projects, files related to Digital
-Twins are stored within a designated folder.
-This is the name chosen for that folder.
+In the common library and in user projects, files related to Digital
+Twins are stored in a designated folder.
+This parameter is the name of that folder.
 
-**Default**: Digital_Twins
+**Default**: digital_twins
 
 #### Branch Name
 
-This parameter determines which branch to search for data (Twins,
-Functions, etc.) within user and library projects. This parameter also determines
-which branch's Digital Twins are executed.
+This parameter sets the branch that is searched for data (Twins,
+Functions, etc.) in user and library projects. Digital Twins are also
+executed from this branch.
 
 **Default**: master
 
 #### Runner Tag
 
-The (GitLab) runners responsible for executing Digital Twin code must be
-associated with a tag. Only one tag can be specified, and it **cannot** be
-left blank, or the job of running the twin will not be processed.
+The (GitLab) runners that execute Digital Twin code must have a tag.
+Only one tag can be given, and it **cannot** be left blank; otherwise
+the job that runs the twin is not processed.
 This is a limitation of the DTaaS.
 
 **Default**: linux
@@ -72,7 +73,9 @@ This is a limitation of the DTaaS.
 
 #### Trial Number
 
-The number of times a test is run during benchmark runs.
+The number of times each task is repeated during a benchmark run. The
+execution times are averaged over the trials. The value must be at
+least 1.
 
 **Default**: 3
 
@@ -80,53 +83,66 @@ The number of times a test is run during benchmark runs.
 
 Some benchmark runs require two GitLab runners.
 The *Runner Tag* in **Application Settings** points to the first runner,
-while *Measurement Secondary Runner Tag* points to the second runner.
+and the *Measurement Secondary Runner Tag* points to the second runner.
 
 **Default**: windows
 
 #### Primary Digital Twin
 
-The drop-down menu lists all the available digital twins from which
-the first digital twin is to be selected.
+Select the first digital twin from the drop-down list of available
+digital twins. It is used in the single digital twin and same digital
+twin measurement tasks.
 
-**Default**: `first digital twin in alphabetical order`
+**Default**: `hello-world`, or the first digital twin in the list if
+`hello-world` is not available
 
 #### Secondary Digital Twin
 
-The drop-down menu lists all the available digital twins from which
-the second digital twin is to be selected.
+Select the second digital twin from the drop-down list of available
+digital twins. It is used as the second digital twin in the multiple
+digital twin measurement tasks. The refresh button next to the list
+reloads the available digital twins using the **Branch Name** and
+**DT Directory** entered above.
 
-**Default**: `second digital twin in alphabetical order`
+**Default**: `mass-spring-damper`, or the first digital twin in the list
+if `mass-spring-damper` is not available
 
 ## 📋 Logging Settings
 
-### 🔓 Enable Logging
+### 🔓 Keep a Local Activity Log
 
-Logging controls whether DTaaS records workflow events in your browser
-(stored locally in IndexedDB). If the deployment is configured with
-a remote logger,  a remote logger, events may also be streamed to that server. See
- [Logs](logs.md) for viewing and downloading logs at `/insights/log`.
+The **Keep a local activity log** checkbox controls whether the DTaaS
+records workflow events in your browser (stored locally in IndexedDB).
+It is off by default.
+
+If the installation is configured with a remote logger, a second
+checkbox, **Send logs to** followed by the name of the logging server,
+also sends the events to that server. It is off by default as well.
+See [Logs](logs.md) for viewing and downloading logs at
+`/insights/log`.
 
 ## 💾 Saving and Resetting Changes
 
-Once satisfied with the changes, press **SAVE SETTINGS** for them to
-persist after leaving the Settings page.
-If a mistake was made, the settings can be reset
-to their default values by pressing the **RESET TO DEFAULTS** button. The reset
-values are saved automatically, so additional saving is not required. The
-Saving and Resetting buttons on the page are shown below:
+When you are satisfied with the changes, press **Save Settings** so that
+they persist after you leave the Settings page.
+To undo a mistake, press **Reset to Defaults** to restore the default
+values. The reset values are saved automatically, so you do not need to
+save them again. The two buttons are shown below:
 
 ![Saving and Resetting Settings buttons](images/saving-settings.png)
 
-The default values can be found and modified in the code if needed.
+The default values are defined in the code and can be changed there if
+needed.
 
-It is now possible to return to the DevOps pages (i.e., Digital Twin Preview).
-**Refreshing ensures fresh data from the remote repository is fetched**, and
-the Digital Twins should be visible, ready to be executed, edited, and shared.
+You can now return to the DevOps pages (i.e., the Digital Twins Preview
+page). When you change the Group Name, Common Library Project Name,
+DT Directory or Branch Name, saving fetches the digital twins again from
+the remote repository. The Digital Twins should then be visible and
+ready to be executed, edited and shared.
 
 ## 💭 Summary
 
-This document has described how to edit the settings for initializing the DTaaS
-for a project and for continuous use (i.e., modifying Runner Tag and Branch).
-The need to save changes and how to return to default
-values if a mistake is made have been discussed.
+This page described how to edit the settings, both to initialise the
+DTaaS for a project and during continuous use (for example, to change
+the Runner Tag or Branch Name). It also covered saving changes and
+restoring the default values after a mistake.

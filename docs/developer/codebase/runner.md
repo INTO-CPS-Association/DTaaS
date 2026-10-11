@@ -1,9 +1,8 @@
 # Runner Microservice
 
-The Runner microservice provides script execution capabilities for
-digital twins within the DTaaS platform. This service accepts HTTP
-requests to execute pre-configured commands and returns execution
-status and logs to the caller.
+The Runner microservice executes scripts for digital twins in the DTaaS
+platform. It accepts HTTP requests to run pre-configured commands and
+returns the execution status and logs to the caller.
 
 ## Package Structure
 
@@ -29,16 +28,16 @@ servers/execution/runner/
 │       ├── command.interface.ts   # Command types
 │       └── runner.interface.ts    # Runner interface
 ├── api/                           # API documentation
+├── config/                        # Sample configuration files
 ├── test/                          # Test suites
 └── dist/                          # Compiled output
 ```
 
 ## Architecture and Design
 
-The microservice is built using NestJS framework and employs the
-`execa` library for command execution. The architecture implements
-a command queue pattern for managing execution requests and a
-factory pattern for creating runner instances.
+The microservice is built with the NestJS framework and runs commands
+with the `execa` library. A queue holds the execution requests, and a
+factory creates the runner instances.
 
 ### Core Components
 
@@ -93,7 +92,7 @@ classDiagram
     RunnerFactory --> ExecaRunner : creates
 ```
 
-## Key Components
+## Main Components
 
 ### REST API Controller
 
@@ -107,18 +106,20 @@ The `AppController` exposes three endpoints:
 
 ### Execution Manager
 
-The `ExecaManager` service orchestrates command execution:
+The `ExecaManager` service runs each command in these steps:
 
-1. Validates command against permitted commands list
-2. Creates runner instance via factory
-3. Queues command for execution
-4. Returns execution logs and status
+1. Adds the command to the queue, marked `invalid`.
+2. Checks the command against the list of permitted commands.
+3. For a permitted command, creates a runner through the factory and
+   runs the script from the configured location.
+4. Marks the command `valid` if the script succeeds, and returns the
+   status and logs.
 
 ### Command Queue
 
-The `Queue` service maintains execution history and tracks
-the currently active command. Commands are stored with their
-execution status (valid/invalid).
+The `Queue` service keeps the execution history and tracks the active
+command. Each command is stored with its execution status (`valid` or
+`invalid`).
 
 ### Runner Interface
 
@@ -133,16 +134,17 @@ interface Runner {
 
 ### Configuration
 
-The service reads configuration from a YAML file specifying:
+The service reads its configuration from a YAML file
+(see `config/runner.yaml.sample`) with these settings:
 
 | Setting     | Purpose                                      |
 | :---------- | :------------------------------------------- |
 | `port`      | HTTP server port                             |
 | `location`  | Base directory for executable scripts        |
-| `commands`  | Whitelist of permitted command names         |
+| `commands`  | Allowlist of permitted command names         |
 
 ## Security Considerations
 
-The runner implements a whitelist-based security model where only
-commands explicitly listed in the configuration file may be executed.
-This prevents arbitrary command execution attacks.
+The runner only executes commands that are listed in the configuration
+file. A request for any other command is recorded as `invalid` and not
+run, which prevents arbitrary command execution.

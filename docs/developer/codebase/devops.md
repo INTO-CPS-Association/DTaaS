@@ -1,63 +1,61 @@
 # DevOps Framework :gear:
 
-This page consolidates the DevOps framework documentation for the current
-DTaaS codebase.
+The DevOps framework lets the DTaaS client manage the lifecycle of a
+Digital Twin through the GitLab API and GitLab CI/CD pipelines. With it
+the client:
 
-## Purpose
+- discovers DT definitions and reusable assets in repositories,
+- creates and updates DT files in Git repositories,
+- triggers pipelines that execute DTs,
+- collects pipeline and job status and logs to show in the UI.
 
-The DevOps framework allows the DTaaS client to manage Digital Twin lifecycle
-actions through GitLab APIs and CI/CD pipelines.
+## Where the Code Lives
 
-Core capabilities include:
+The code is in `lib/dt-automation/src/`. The main modules are:
 
-- Discovering DT definitions and reusable assets from repositories.
-- Creating/updating DT files in Git repositories.
-- Triggering pipelines for DT execution.
-- Collecting pipeline/job status and logs for UI feedback.
+- `gitlab/backend.ts`: GitLab API wrapper.
+- `gitlab/instance.ts`: backend session and project context.
+- `digitalTwin.ts`: DT-level operations and execution tracking.
+- `interfaces/backendInterfaces.ts`: backend contracts and API shapes.
+- `util/`: execution history and file-management helpers.
 
-## Current Implementation Footprint
+[Client DevOps Integration](client-devops.md) describes these modules in
+more detail.
 
-Key code is in `lib/dt-automation/`.
-
-Main modules:
-
-- `src/gitlab/backend.ts`: GitLab API wrapper.
-- `src/gitlab/instance.ts`: backend session and project context.
-- `src/digitalTwin.ts`: DT-level operations and execution tracking.
-- `src/interfaces/backendInterfaces.ts`: backend contracts and API shapes.
-- `src/util/`: execution history and file-management helpers.
-
-## API Integration Highlights
+## GitLab API Support
 
 The GitLab backend implementation supports:
 
-- Pipeline trigger and cancellation.
-- Repository file create/edit/delete operations.
-- Group and project discovery.
-- Pipeline job listing and log retrieval.
-- Pipeline status polling.
-- Multi-file commit batching via `commitMultipleActions`.
+- pipeline trigger and cancellation,
+- repository file create, edit and delete operations,
+- group and project discovery,
+- pipeline job listing and log retrieval,
+- pipeline status polling,
+- batching several file changes into one commit with
+  `commitMultipleActions`.
 
-The multi-action commit path reduces fragmentation and keeps DT creation or
-updates atomic from the user perspective.
+With the batched commit, the user sees DT creation or an update as one
+atomic change.
 
 ## Execution Flow
 
-1. `GitlabInstance` resolves project IDs and trigger token.
+1. `GitlabInstance` resolves the project IDs and the trigger token.
 2. The UI operation calls DT logic in `DigitalTwin`.
-3. `DigitalTwin` uses backend APIs to prepare files and trigger pipeline execution.
-4. Execution history is updated and surfaced to the UI.
-5. Job logs and statuses are fetched and rendered for diagnostics.
+3. `DigitalTwin` uses the backend APIs to prepare files and trigger the
+   pipeline.
+4. The execution history is updated and shown in the UI.
+5. Job logs and statuses are fetched and rendered for diagnosis.
 
 ## Pipeline Contract
 
-The framework assumes GitLab CI pipelines are prepared to consume DT selection
-and runner context as variables. This enables controlled execution across
-available runners and environments.
+The client triggers pipelines with two variables: `DTName`, the selected
+digital twin, and `RunnerTag`, the tag of the GitLab runner that should
+execute it. The GitLab CI pipelines must read these variables so that
+each DT runs on the intended runner.
 
 ## Practical Guidance
 
-- Prefer backend interface methods over ad-hoc API calls in UI code.
-- Use the batched commit method when updating multiple files.
-- Keep execution history updates centralised in utilities for consistent status
-  reporting.
+- Prefer backend interface methods over ad hoc API calls in UI code.
+- Use the batched commit method when updating several files.
+- Keep execution history updates in the utility modules so that status
+  reporting stays consistent.

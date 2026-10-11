@@ -1,17 +1,15 @@
 # DTaaS Examples
 
-Several example digital twins have been created for the DTaaS platform.
-These examples can be explored, and the steps provided in
-this **Examples** section can be followed
-to experience features of the DTaaS platform and understand
-best practices for managing digital twins within the platform.
+The DTaaS platform comes with several example digital twins. Work through
+the steps in this **Examples** section to try the features of the platform
+and to learn good practice for managing digital twins on it.
 The following
 [slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20240917-Examples.pdf)
 and
 [video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20240917-Examples-Recorded-web.mp4)
-provide an overview of these examples.
+give an overview of these examples.
 
-Please see the following demos illustrating the use the DTaaS in two projects:
+The following demos show the DTaaS in use in two projects:
 
 <table>
   <thead>
@@ -41,7 +39,7 @@ Please see the following demos illustrating the use the DTaaS in two projects:
           demo video</a></td>
     </tr>
     <tr>
-      <td>Videos demonstrating digital twin for structural health monitoring
+      <td>Videos of a digital twin for structural health monitoring
         applications:
         <a href=
         "https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250525_DAQ-1.mp4">
@@ -49,7 +47,7 @@ Please see the following demos illustrating the use the DTaaS in two projects:
         <a href="https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250525_DAQ-2.mp4">
           Data Acquisition System: Part-2</a>,
         <a href="https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250525_OMA.mp4">
-          Operational Model Analysis</a>,
+          Operational Modal Analysis</a>,
         and
         <a href="https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250525_Model-Update.mp4">
           Model Updating</a></td>
@@ -65,13 +63,13 @@ Please see the following demos illustrating the use the DTaaS in two projects:
 ## Workspace Examples
 
 These examples run interactively inside the DTaaS user workspace.
-See the [workspace examples overview](./workspace/index.md) for the full list
-and instructions on downloading and running them.
+The [workspace examples overview](./workspace/index.md) lists them and
+explains how to download and run them.
 
 ## Automation Examples
 
-These examples demonstrate the use of GitLab DevOps pipelines to automate
-the execution of digital twin lifecycle scripts within the DTaaS platform.
+These examples use GitLab DevOps pipelines to run the lifecycle scripts
+of digital twins on the DTaaS platform.
 See the [automation examples overview](./automation/index.md) for details.
 
 :material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

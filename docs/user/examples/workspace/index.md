@@ -1,12 +1,11 @@
 # Workspace Examples
 
-These examples demonstrate digital twins that run interactively inside
-the DTaaS user workspace. Each example can be downloaded and executed
-using the lifecycle scripts provided.
+These digital twins run interactively inside the DTaaS user workspace.
+You can download each example and run it with its lifecycle scripts.
 
 ## Copy Examples
 
-Copy all example code into the user workspace using the provided script:
+Copy all the example code into the user workspace with this script:
 
 ```bash
 wget https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/getExamples.sh
@@ -17,15 +16,14 @@ This copies all examples into the `/workspace/examples` directory.
 
 ## Example List
 
-The examples vary in complexity. It is recommended to use them in the
-following order:
+The examples vary in complexity. Try them in the following order:
 
 1. [Mass Spring Damper](./mass-spring-damper/README.md)
 1. [Water Tank Fault Injection](./water_tank_FI/README.md)
 1. [Water Tank Model Swap](./water_tank_swap/README.md)
 1. [Desktop Robotti and RabbitMQ](./drobotti-rmqfmu/README.md)
 1. [Water Treatment Plant and OPC-UA](./opc-ua-waterplant/README.md)
-1. [Three Water Tanks with DT Manager Framework](./three-tank/README.md)
+1. [Three Water Tanks with TwinManager Framework](./three-tank/README.md)
 1. [Flex Cell with Two Industrial Robots](./flex-cell/README.md)
 1. [Incubator](./incubator/README.md)
 1. [Firefighters in Emergency Environments](./o5g/README.md)

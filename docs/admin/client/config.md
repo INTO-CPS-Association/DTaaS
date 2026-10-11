@@ -1,6 +1,7 @@
 # Configure Client Website
 
-This page describes the various configuration options for the React website.
+This page describes the configuration options for the React website.
+The options are set in `env.js`, which defines `window.env`.
 
   ```js
   if (typeof window !== 'undefined') {
@@ -15,6 +16,7 @@ This page describes the various configuration options for the React website.
       REACT_APP_REDIRECT_URI: 'URL of the homepage for the logged in users of the website',
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
+      LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
     };
   };
 
@@ -32,6 +34,7 @@ This page describes the various configuration options for the React website.
       REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
       REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
       REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+      LOGGER_URL: 'https://intocps.org/logger',
     };
   };
 
@@ -54,3 +57,13 @@ This page describes the various configuration options for the React website.
     };
   };
   ```
+
+`REACT_APP_GITLAB_SCOPES` must be exactly
+`openid profile read_user read_repository api`; the client rejects any
+other value when it checks the configuration.
+
+`LOGGER_URL` is optional. Workflow logging and remote logging are off
+by default, and users turn them on in their account settings. When
+`LOGGER_URL` is empty or missing, enabled logging keeps events in the
+browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
+the configuration check requests `<LOGGER_URL>/health`.

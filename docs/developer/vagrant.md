@@ -1,16 +1,13 @@
 # Vagrant Deployment
 
-This page summarises the Vagrant-based deployment available in this repository.
-The source material for the setup is maintained in:
-
-- `deploy/vagrant/README.md`
+This page summarises the Vagrant setup in this repository. The full
+instructions are in `deploy/vagrant/README.md`.
 
 ## Purpose
 
-The Vagrant setup provides:
-
-- Cross-platform DTaaS installation using a virtual machine
-- A reproducible development and evaluation environment
+The Vagrant setup installs DTaaS in a virtual machine, so it runs on any
+operating system that supports Vagrant. The same machine can serve as a
+reproducible development and evaluation environment.
 
 ## Host Requirements
 
@@ -27,12 +24,15 @@ Required tooling:
 
 ## Provisioning Modes
 
-Two provisioning scripts are provided in `deploy/vagrant`:
+`deploy/vagrant` has two provisioning scripts:
 
-- `user.sh` for user-oriented installation (default)
-- `developer.sh` for extended developer tooling
+- `user.sh` for the user installation (default)
+- `developer.sh` for additional developer tooling
 
-Developer provisioning can be enabled in `deploy/vagrant/Vagrantfile`.
+To enable developer provisioning, uncomment the `developer.sh` line in
+`deploy/vagrant/Vagrantfile`. Vagrant may time out while provisioning
+both scripts; in that case, run `developer.sh` from inside the virtual
+machine.
 
 ## Basic Workflow
 
@@ -44,14 +44,17 @@ vagrant ssh
 sudo bash /vagrant/route.sh
 ```
 
+`route.sh` sets a cron job inside the virtual machine that removes the
+conflicting default route.
+
 ## Configuration
 
-The file `deploy/vagrant/config.json` controls machine configuration,
-including hostname, VM name, memory, CPUs, and disk size.
+The file `deploy/vagrant/config.json` sets the hostname, MAC address,
+disk size, VM name, memory and number of CPUs of the virtual machine.
 
 ## Related
 
-- DTaaS installation scenarios: `../admin/overview.md`
-- DTaaS package deployments: `../admin/dtaas/`
-- Workspace deployments: `../admin/workspace/`
-- Platform services: `../admin/services/cli.md`
+- [DTaaS installation scenarios](../admin/overview.md)
+- DTaaS package deployments: `docs/admin/dtaas/`
+- [Workspace deployments](../admin/workspace/index.md)
+- [Platform services](../admin/services/cli.md)

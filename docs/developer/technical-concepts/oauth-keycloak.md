@@ -1,6 +1,6 @@
 # OAuth 2.0 and Keycloak Summary :lock:
 
-DTaaS uses OAuth 2.0/OIDC patterns at two levels:
+DTaaS uses OAuth 2.0/OIDC at two levels:
 
 - Browser-side login for the web client.
 - Gateway-side protection for backend routes and workspaces.
@@ -9,46 +9,51 @@ DTaaS uses OAuth 2.0/OIDC patterns at two levels:
 
 ### 1. GitLab-Centred OAuth
 
-This pattern is common in DTaaS package scenarios that use GitLab as identity provider.
+The DTaaS packages that use GitLab as the identity provider follow this
+pattern.
 
-- The web client authenticates users through OAuth/OIDC settings in runtime config.
-- Gateway authorization is handled by `traefik-forward-auth`.
-- GitLab applications provide client ID and client secret values used by DTaaS components.
+- The web client authenticates users through the OAuth/OIDC settings in its
+  runtime config.
+- `traefik-forward-auth` handles gateway authorization.
+- GitLab applications provide the client ID and client secret values that
+  DTaaS components use.
 
 ### 2. Keycloak-Centred OIDC
 
-This pattern is used in workspace secure-server deployments.
+Workspace secure-server deployments use this pattern.
 
-- Keycloak provides realm, users, and OIDC clients.
-- `traefik-forward-auth` validates sessions/tokens and enforces route access.
-- Workspace routes stay protected even when users access different sub-paths.
+- Keycloak provides the realm, users and OIDC clients.
+- `traefik-forward-auth` validates sessions and tokens and enforces route
+  access.
+- Workspace routes stay protected when users access different sub-paths.
 
 ## Control Plane vs Data Plane
 
-- Control plane: provider setup, secret management, callback URI configuration.
-- Data plane: request flow through Traefik and forward-auth before DTaaS.
+- Control plane: provider setup, secret management and callback URI
+  configuration.
+- Data plane: the request flow through Traefik and forward-auth before it
+  reaches DTaaS.
 
 ## Core Runtime Values
 
-Typical secure-server OIDC variables include:
+The secure-server OIDC variables include:
 
 - `KEYCLOAK_ISSUER_URL`
 - `KEYCLOAK_CLIENT_ID`
 - `KEYCLOAK_CLIENT_SECRET`
 - `OAUTH_SECRET`
 
-GitLab-oriented scenarios use equivalent OAuth authority and client settings in
-scenario-specific configuration files.
+GitLab-based scenarios set the equivalent OAuth authority and client values
+in their own configuration files.
 
-## Why This Matters for Developers
+## Debugging Login Failures
 
-When debugging login failures, first identify which identity provider pattern
-is active. Most issues come from mismatch in one of these:
+When debugging a login failure, first identify which identity provider
+pattern is active. Most failures come from a mismatch in one of these:
 
 - Redirect/callback URL.
 - Client ID and secret.
 - Hostname and TLS assumptions.
-- User whitelist/route policy in forward-auth config.
+- User whitelist or route policy in the forward-auth config.
 
-Start troubleshooting at configuration boundaries, then inspect gateway and
-provider logs.
+Check the configuration first, then the gateway and provider logs.

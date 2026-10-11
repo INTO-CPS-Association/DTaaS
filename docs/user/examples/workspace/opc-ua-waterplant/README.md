@@ -2,110 +2,102 @@
 
 ## Introduction
 
-Waste water treatment (WWT) plants must comply with substance and species
-concentration limits established by regulation in order to ensure the good
-quality of the water. This is usually done taking periodic samples that
-are analysed in the laboratory. This means that plant operators do not have
-continuous information for making decisions and, therefore, operation
-setpoints are set to higher values than needed to guarantee water quality.
-Some of the processes involved in WWT plants consume a lot of power, thus
-adjusting setpoints could significantly reduce energy consumption.
+Waste water treatment (WWT) plants must keep substance and species
+concentrations within regulatory limits to ensure water quality. This is
+usually checked by taking periodic samples and analysing them in the
+laboratory, so plant operators lack continuous information for their
+decisions and set operating setpoints higher than needed to guarantee
+water quality. Some WWT processes consume a lot of power, so adjusting
+the setpoints could reduce energy consumption significantly.
 
 ## Physical Twin Overview
 
-This example demonstrates the communication between a physical
-ultraviolet (UV) disinfection process (the tertiary treatment of a WWT plant)
-and its digital twin, which is based on Computational Fluid Dynamics (CFD)
-and compartment models. The aim of this digital twin is to develop
-"virtual sensors" that provide continuous information that facilitates
-the decision making process for the plant operator.
+This example shows the communication between a physical ultraviolet (UV)
+disinfection process (the tertiary treatment of a WWT plant) and its
+digital twin, which is based on Computational Fluid Dynamics (CFD) and
+compartment models. The digital twin provides "virtual sensors" that give
+the plant operator continuous information for decision making.
 
 ![Waste water treatment plant](images/water-treatment-plant.png)
 
-The physical twin of the waste water plant is composed of an ultraviolet
-channel controlled by a PLC that controls the power of the UV lamps needed
-to kill all the pathogens of the flow. The channel has 3 groups of UV lamps,
-therefore the real channel (and is mathematical model) is subdivided into
-7 zones: 4 correspond to zones without UV lamps (2 for the entrance and exit
-of the channel + 2 zones between UV lamps) and the 3 reamaining for
-the UV lamps.
+The physical twin is an ultraviolet channel. A PLC controls the power of
+the UV lamps needed to kill all the pathogens in the flow. The channel has
+3 groups of UV lamps, so the real channel (and its mathematical model) is
+divided into 7 zones: 4 without UV lamps (the entrance and exit of the
+channel, plus 2 zones between lamp groups) and 3 for the UV lamps.
 
-The dose to be applied (related with the power) changes according to
-the residence time (computed from the measure of the volume flow) and
-the UV intensity (measured by the intensity sensor).
+The dose to apply (related to the power) changes with the residence time,
+computed from the measured volume flow, and with the UV intensity
+measured by the intensity sensor.
 
-The information of the volumetric flow and power (in the three parts of
-the channel) is transmitted to the PLC of the plant.
-Furthermore, the PLC is working as OPC UA Server to send and receive
-data to and from an OPC UA Client.
-Additionally, some sizing parameters and initial values are read from
-a spreadsheet filled in by the plant operator. In this case, the spreadsheet
-is an Open Office file (.ods) due to the software installed in the SCADA PC.
-Some of the variables like initial concentration of disinfectant and
-pathogens are included, among others. Some values defined by the plant
-operator correspond to input signals that are not currently being measured,
+The volumetric flow and the power in the three parts of the channel are
+transmitted to the PLC of the plant. The PLC also works as an OPC UA
+server that sends data to and receives data from an OPC UA client.
+Some sizing parameters and initial values, such as the initial
+concentrations of disinfectant and pathogens, are read from a spreadsheet
+that the plant operator fills in. The spreadsheet is an Open Office file
+(.ods) because of the software installed on the SCADA PC. Some of the
+values the operator defines are input signals that are not measured yet
 but are expected to be measured in the future.
 
 ## Digital Twin Overview
 
 ![Digital Twin Reduced Order Model](images/ROM.png)
 
-The digital twin is a reduced model (developed in C) that solves physical
-conservation laws (mass, energy and momentum), but simplifies details
-(geometry, mainly) to ensure real-time calculations and accurate results.
-The results are compared to the ones obtained by the CFD. C solver developed
-is used by the OpenModelica model. OpenModelica converts it into
-the FMI standard, to be integrated in the OPC UA Client (_client-opcua.py_).
+The digital twin is a reduced model, written in C, that solves the
+physical conservation laws (mass, energy and momentum) but simplifies
+details, mainly the geometry, to calculate in real time while keeping the
+results accurate. Its results are compared with those of the CFD model.
+An OpenModelica model uses the C solver, and OpenModelica exports it as
+an FMU so that the OPC UA client (_client-opcua.py_) can integrate it.
 
 ![Structure of Python Script](images/dt-structure-uv_channel.png)
 
 ## Digital Twin Configuration
 
-| Asset Type | Name of Asset                                          | Visibility | Reuse in Other Examples |
-| :--------- | :----------------------------------------------------- | :--------- | :---------------------- |
-| Model      | Test_DTCONEDAR.mo                                      | private    | No                      |
-| Data       | configuration_freopcua.ods                             | private    | No                      |
-|            | model_description.csv (generated by client-asyncua.py) | private    | No                      |
-|            | **Mock OPC UA Server**: opcua-mock-server.py           | private    | No                      |
-| Tool       | **OPC UA Client**: client-opcua.py                     | private    | No                      |
-|            | **FMU builder**: create-fmu.mos                        | private    | No                      |
+| Asset Type | Name of Asset                                         | Visibility | Reuse in Other Examples |
+| :--------- | :---------------------------------------------------- | :--------- | :---------------------- |
+| Model      | Test_DTCONEDAR.mo                                     | private    | No                      |
+| Data       | configuration_freeopcua.ods                           | private    | No                      |
+|            | model_description.csv (generated by client-opcua.py)  | private    | No                      |
+|            | **Mock OPC UA Server**: opcua-mock-server.py          | private    | No                      |
+| Tool       | **OPC UA Client**: client-opcua.py                    | private    | No                      |
+|            | **FMU builder**: create-fmu.mos                       | private    | No                      |
 
-In this example, a dummy model representation of the plant
-is used, instead of the real model. The simplified model (with not
-the real equations) is developed in **Open Modelica
-(Test_DTCONEDAR.mo)**. The FMU is generated from the Open Modelica interface
-to obtain the needed binaries to run the FMU. It is possible to run an FMU
-previously generated, however, to ensure that the right binaries
-are being used, it is recommended to install Open Modelica Compiler and run `script.mos`
-to build the FMU from the Modelica file `Test_DTCONEDAR.mo`.
+This example uses a dummy model of the plant instead of the real model.
+The simplified model, which does not contain the real equations, is
+written in OpenModelica (`Test_DTCONEDAR.mo`). The FMU is generated with
+OpenModelica to obtain the binaries needed to run it. A previously
+generated FMU can be used, but to make sure the right binaries are used,
+install the OpenModelica compiler and run `create-fmu.mos` to build the
+FMU from the Modelica file `Test_DTCONEDAR.mo`.
 
-The FMU model description file (`modelDescription.xml` file inside
-`Test_DTCONEDAR.fmu`) has the information of the value references
-configuration_freeopcua.ods has the information of the OPC-UA node IDs
-And both have in common the variable name
+The FMU model description file (`modelDescription.xml` inside
+`Test_DTCONEDAR.fmu`) holds the value references, and
+`configuration_freeopcua.ods` holds the OPC-UA node IDs. The variable
+name links the two.
 
-The client python script (`client-opcua.py`) does the following actions:
+The client Python script (`client-opcua.py`) performs these actions:
 
-- Reads the variable names and the variable value references from
-  the model description file of the Test_DTCONEDAR.FMU.
-- Reads _configuration_freeopcua.ods_ to obtain opcua node IDs and assigns
-  those node IDs to the variables read from the FMU
-- Read _configuration_freeopcua.ods_  to fix initial values, parameters and
-  some inputs
-  (those inputs that are not being measured, a reasonable value is assumed).
-- Read values from PLC using a client OPC.
-- Execute the algorithm with the FMPy library using the .fmu created from
-  the compartment model (based on CFD)
+- Reads the variable names and value references from the model
+  description file of `Test_DTCONEDAR.fmu`.
+- Reads _configuration_freeopcua.ods_ to obtain the OPC UA node IDs and
+  assigns them to the variables read from the FMU.
+- Reads _configuration_freeopcua.ods_ to set initial values, parameters
+  and some inputs (a reasonable value is assumed for inputs that are not
+  measured).
+- Reads values from the PLC using an OPC UA client.
+- Runs the algorithm with the FMPy library, using the FMU created from
+  the compartment model (based on CFD):
 
-  - Obtain results.
-  - Send by OPC UA protocol the result values to the PLC, to visualise them
-    in the SCADA and with the aim to improve the decision-making process of
-    the plant operator.
+  - Obtains the results.
+  - Sends the results to the PLC over OPC UA, so that they appear in the
+    SCADA and help the plant operator make decisions.
 
 ### Input Data Variables
 
-The _configuration_freeopcua.ods_ date file is used for customising
-the initial input data values used by the server.
+The _configuration_freeopcua.ods_ data file sets the initial input data
+values used by the server.
 
 ![Configuration parameters](images/conf-parameters.png)
 
@@ -113,26 +105,25 @@ the initial input data values used by the server.
 
 ### DT Config
 
-The _config.json_ specifies the configuration parameters for
+The _config.json_ file specifies the configuration parameters of
 the OPC UA client.
 
 ![Config JSON](images/config_json.png)
 
-Optional parameters can be modified:
+These optional parameters can be modified:
 
 - stop_time
 - step_size
-- record = True, to save the results of the simulation
-- record_interval. Sometimes the simulation step_size is small and
-  a the size of the results file can be too big. For instance,
-  if the simulation step_size is 0.01 seconds, the record_interval
-  can be increased so as to reduce the result file size.
-- record_variables: the list of variables to record can be specified.
-- enable_send = True, to send results to the OPC UA Server.
+- record = True, to save the simulation results
+- record_interval. When the simulation step_size is small, the results
+  file can become too big. For instance, if the step_size is 0.01
+  seconds, increase the record_interval to reduce the file size.
+- record_variables: the list of variables to record.
+- enable_send = True, to send the results to the OPC UA server.
 
 ## Lifecycle Phases
 
-The lifecycles that are covered include:
+The example covers these lifecycle phases:
 
 | Lifecycle Phase | Completed Tasks                                                       |
 | --------------- | --------------------------------------------------------------------- |
@@ -143,23 +134,23 @@ The lifecycles that are covered include:
 
 ## Run the example
 
-To run the example, change the present directory.
+To run the example, change to the example directory.
 
 ```bash
-cd /workspace/examples/digital twins/opc-ua-waterplant
+cd /workspace/examples/digital_twins/opc-ua-waterplant
 ```
 
-If required, change the execute permission of lifecycle scripts.
+If required, give the lifecycle scripts execute permission.
 
 ```bash
 chmod +x lifecycle/*
 ```
 
-Now, run the following scripts:
+Now run the following scripts.
 
 ### Install
 
-Installs Open Modelica, Python 3.10 and the required pip dependencies
+Installs OpenModelica, Python 3.10 and the required pip dependencies.
 
 ```bash
 lifecycle/install
@@ -167,8 +158,8 @@ lifecycle/install
 
 ### Create
 
-Create `Test_DTCONEDAR.fmu` co-simulation model from `Test_DTCONEDAR.mo
-open modelica file.
+Creates the `Test_DTCONEDAR.fmu` co-simulation model from the
+`Test_DTCONEDAR.mo` OpenModelica file.
 
 ```bash
 lifecycle/create
@@ -176,8 +167,8 @@ lifecycle/create
 
 ### Execute
 
-Start the mock OPC UA server in the background.
-Run the OPC UA client.
+Starts the mock OPC UA server in the background, then runs the OPC UA
+client.
 
 ```bash
 lifecycle/execute
@@ -185,8 +176,8 @@ lifecycle/execute
 
 ### Clean
 
-Remove the temporary files created by Open Modelica and output files
-generated by OPC UA client.
+Removes the temporary files created by OpenModelica and the output files
+generated by the OPC UA client.
 
 ```bash
 lifecycle/clean

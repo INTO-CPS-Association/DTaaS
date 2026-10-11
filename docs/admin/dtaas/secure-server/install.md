@@ -1,20 +1,19 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-This README provides a quick-start installation guide for
-a **secure, multi-user DTaaS deployment** that uses
+This guide installs a **secure, multi-user DTaaS deployment** that uses
 an **external GitLab instance** for OAuth 2.0 authorisation.
 
 Download **dtaas-secure-server-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 
-For a full configuration reference, see [config.md](config.md).
+For the full configuration reference, see [config.md](config.md).
 
 ## Overview
 
-This package deploys DTaaS with Traefik, OAuth forward-auth, and
-multiple user workspaces.
+This package deploys DTaaS with Traefik, OAuth forward-auth and
+two user workspaces.
 
 <img src="server.png" alt="DTaaS on Server" width="600px" />
 
@@ -24,6 +23,7 @@ The `docker-compose.yml` starts the following services:
 | :----------------------- | :--------------------------------- |
 | **traefik**              | Reverse proxy with TLS termination |
 | **client**               | DTaaS React frontend               |
+| **logger-ms**            | Logger microservice                |
 | **user1 / user2**        | JupyterLab user workspaces         |
 | **libms**                | Library management microservice    |
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
@@ -64,7 +64,7 @@ Edit `config/client.js`:
 - `REACT_APP_REDIRECT_URI`
 - `REACT_APP_LOGOUT_REDIRECT_URI`
 
-See [config.md](config.md) for full details.
+See [config.md](config.md) for details.
 
 ### 2. Create User Workspace Directories
 
@@ -81,10 +81,10 @@ cp /path/to/fullchain.pem certs/fullchain.pem
 cp /path/to/privkey.pem certs/privkey.pem
 ```
 
-If certificates are missing or invalid, Traefik runs with self-signed
-certificates.
+If the certificates are missing or invalid, Traefik falls back to
+self-signed certificates.
 
-### 4. Configure OAuth 2.0 Applications in GitLab :fox_face:
+### 4. Configure OAuth 2.0 Applications in GitLab
 
 1. Create user accounts (see
    [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)).
@@ -93,20 +93,16 @@ certificates.
 1. Register two OAuth 2.0 applications in GitLab
    (Admin Area → Applications):
 
-   - **DTaaS Client Authorization** — for the React SPA frontend.
-     See [client auth docs](https://into-cps-association.github.io/DTaaS/development/admin/client/auth.html).
-   - **DTaaS Server Authorization** — for Traefik forward-auth backend.
-     See [server auth docs](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html).
+   - **DTaaS Client Authorization** for the React SPA frontend.
+     See the [client auth docs](../../client/auth.md).
+   - **DTaaS Server Authorization** for the Traefik forward-auth backend.
+     See the [server auth docs](../../servers/auth.md).
 
-1. Update configuration files (`config/.env` and `config/client.js`) with
-   the generated OAuth 2.0 tokens:
+1. Put the generated OAuth 2.0 credentials into the configuration files:
    - Set `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in
      `config/client.js`.
-   - Set `OAUTH_URL`, `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` in
+   - Set `OAUTH_URL`, `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET` in
      `config/.env`.
-
-Update `config/client.js` and `config/.env` with generated credentials,
-then reload affected services:
 
 ### 5. Start Services
 
@@ -133,19 +129,19 @@ docker compose --env-file config/.env down
 
 ```text
 .
-| - certs/                 # TLS certificates (fullchain.pem, privkey.pem) |
-| - config/                                                                |
-|                                                                          |
-|                                                                          |
-|                                                                          |
-|                                                                          |
-|                                                                          |
-|                                                                          |
-| \- tls.yml            # Traefik TLS provider configuration               |
-| - files/                                                                 |
-|                                                                          |
-| \- template/           # sample user workspace files                     |
-| - docker-compose.yml     # Service definitions                           |
-| - CONFIG.md              # Detailed configuration reference              |
+|- certs/                 # TLS certificates (fullchain.pem, privkey.pem)
+|- config/
+|  |- .env                # Docker Compose environment variables
+|  |- conf.server         # Traefik forward-auth authorisation rules
+|  |- client.js           # DTaaS React client configuration
+|  |- .env.example
+|  |- conf.server.example
+|  |- client.js.example
+|  \- tls.yml            # Traefik TLS provider configuration
+|- files/
+|  |- common/             # Shared files across all workspaces
+|  \- template/           # sample user workspace files
+|- docker-compose.yml     # Service definitions
+|- CONFIG.md              # Detailed configuration reference
 \- README.md              # This file
 ```

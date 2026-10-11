@@ -1,7 +1,7 @@
 # DTaaS Services Codebase
 
-This page documents the implementation codebase for the `dtaas-services` CLI
-used to provision and operate DTaaS platform services.
+This page describes the code of the `dtaas-services` CLI, which sets up
+and runs the DTaaS platform services.
 
 ## Location and Purpose
 
@@ -9,29 +9,33 @@ Source package:
 
 - `deploy/services/cli`
 
-Primary responsibilities:
+The CLI:
 
-- generate a runnable services project structure,
-- set up certificates and service permissions,
-- start/stop/restart/remove/clean service containers,
-- install post-start workflows for ThingsBoard and GitLab,
-- create users and reset service passwords from CSV/env configuration.
+- generates a services project structure that is ready to run,
+- sets up certificates and service permissions,
+- installs, starts, stops, restarts, removes and cleans service
+  containers,
+- runs the post-start setup for ThingsBoard and GitLab,
+- creates users and resets service passwords from the CSV and
+  environment configuration.
 
 ## Runtime Command Surface
 
-CLI entrypoint is defined in `dtaas_services/cmd.py` and exposes:
+Every command follows the grammar `dtaas-services <noun> <verb>`. The
+entry point is `dtaas_services/cmd.py`, which registers the nouns in
+install order:
 
-- `generate-project`
-- `setup`
-- `install`
-- `start`
-- `stop`
-- `restart`
-- `status`
-- `remove`
-- `clean`
+- `project generate`
+- `host setup`
+- `service install`, `service start`, `service stop`,
+  `service restart`, `service status`, `service remove`,
+  `service clean`
 - `user add`
 - `user reset-password`
+
+The old top-level spellings (`generate-project`, `setup`, `start` and so
+on) are registered by `commands/aliases.py`. They print a deprecation
+warning and forward to the `<noun> <verb>` command.
 
 Poetry script mapping (`pyproject.toml`):
 
@@ -55,10 +59,14 @@ deploy/services/cli/
 │   │   ├── aliases.py
 │   │   └── utility.py
 │   ├── pkg/
+│   │   ├── build.py
 │   │   ├── config.py
 │   │   ├── cert.py
 │   │   ├── template.py
 │   │   ├── force_overwrite.py
+│   │   ├── docker_utils.py
+│   │   ├── formatter.py
+│   │   ├── sanitize.py
 │   │   ├── utils.py
 │   │   ├── password_store.py
 │   │   ├── lib/
@@ -66,7 +74,8 @@ deploy/services/cli/
 │   │   │   ├── docker_executor.py
 │   │   │   ├── status.py
 │   │   │   ├── cleanup.py
-│   │   │   └── initialization.py
+│   │   │   ├── initialization.py
+│   │   │   └── utils.py
 │   │   └── services/
 │   │       ├── mongodb.py
 │   │       ├── rabbitmq.py
@@ -88,50 +97,53 @@ deploy/services/cli/
 
 ### Command Layer
 
-Files in `dtaas_services/commands/` define Click commands and high-level flows:
+The files in `dtaas_services/commands/` define the Click commands and
+the high-level flows:
 
 - `project_ops.py`: project scaffold generation (`project generate`).
 - `host_ops.py`: TLS certificate and permission setup (`host setup`).
-- `service_ops.py`: service verbs (`install`, `start`, `stop`, `restart`,
-  `status`, `remove`, `clean`).
-- `install_helpers.py`: selector validation and the ThingsBoard and GitLab
-  install flows used by `service install`.
-- `user_ops.py`: user provisioning and password reset orchestration.
-- `aliases.py`: deprecated top level spellings that warn and forward to their
-  `<noun> <verb>` replacement.
+- `service_ops.py`: the service verbs (`install`, `start`, `stop`,
+  `restart`, `status`, `remove`, `clean`).
+- `install_helpers.py`: selector validation and the ThingsBoard and
+  GitLab install flows used by `service install`.
+- `user_ops.py`: user provisioning and password reset.
+- `aliases.py`: deprecated top-level spellings that warn and forward to
+  their `<noun> <verb>` replacement.
 
 ### Core Library Layer
 
-Files in `dtaas_services/pkg/` provide reusable logic:
+The files in `dtaas_services/pkg/` hold reusable logic:
 
-- `config.py`: environment/config loading.
-- `template.py`: generated project scaffolding and template copying.
-- `force_overwrite.py`: what `project generate --force` may replace, what it
-  must never replace, and permission preserving copies.
+- `config.py`: environment and configuration loading.
+- `template.py`: project scaffolding and template copying.
+- `force_overwrite.py`: what `project generate --force` may replace,
+  what it must never replace, and copies that preserve permissions.
 - `cert.py`: certificate placement and normalization.
-- `password_store.py`: current admin-password tracking for supported services.
-- `lib/*`: compose command execution and service-state management.
+- `password_store.py`: tracks the current admin password of each
+  supported service.
+- `lib/*`: compose command execution and service state management.
 
 ### Service Modules Layer
 
 `dtaas_services/pkg/services/` implements service-specific behaviour:
 
-- `gitlab/`: health checks, root password setup, PAT creation, OAuth app setup,
-  and GitLab user provisioning.
-- `thingsboard/`: setup, sysadmin/tenant workflows, credential-driven user setup.
+- `gitlab/`: health checks, root password setup, PAT creation, OAuth
+  application setup and GitLab user provisioning.
+- `thingsboard/`: setup, sysadmin and tenant workflows, and user setup
+  from the credentials file.
 - `influxdb/`, `rabbitmq.py`, `mongodb.py`, `postgres/`: permissions,
-  readiness checks, and account/bootstrap routines.
+  readiness checks and account bootstrap routines.
 
 ### Shared GitLab Layer
 
-`gitlab_common` holds provider-agnostic GitLab operations
-(`get_gitlab_client`, `validate_user_row`, `create_user`, `create_user_pat`).
-Every function takes explicit arguments and performs no environment,
-filesystem, console, or process-global state changes.
+`gitlab_common` holds GitLab operations that do not depend on the
+deployment (`get_gitlab_client`, `validate_user_row`, `create_user`,
+`create_user_pat`). Every function takes explicit arguments and changes
+no environment, filesystem, console or process-global state.
 
 Its single source of truth is `lib/gitlab_common/`, a standalone Poetry
-package with its own tests. Each consumer **copies** it into its own tree
-rather than depending on it:
+package with its own tests. Each consumer **copies** it into its own
+tree instead of depending on it:
 
 ```text
 lib/gitlab_common/gitlab_common/     <-- edit and test here
@@ -141,34 +153,36 @@ dtaas_services/gitlab_common/        <-- gitignored, never committed
 ```
 
 Run `poetry run python -m dtaas_services.pkg.build` before testing or
-packaging; CI does this via `run-build-script: true`. It is a plain script,
-not a Poetry build hook, because a hook makes poetry-core emit a
-platform-specific wheel instead of `py3-none-any`. Copying (rather than a
-path dependency) keeps `dtaas-services` and the DTaaS CLI independent of each
-other and keeps local paths out of published wheel metadata, which PyPI
-rejects.
+packaging. CI does this through `run-build-script: true`. It is a plain
+script, not a Poetry build hook, because a hook makes poetry-core emit a
+platform-specific wheel instead of `py3-none-any`. Copying the code
+instead of using a path dependency keeps `dtaas-services` and the DTaaS
+CLI independent of each other. It also keeps local paths out of the
+published wheel metadata, which PyPI rejects.
 
-Deployment-specific glue stays in `pkg/services/gitlab/`: URL derivation from
-`GITLAB_PORT`/`HOSTNAME`, token-file persistence, docker health checks, and
-Rich console output. Two consequences are deliberate:
+Deployment-specific glue stays in `pkg/services/gitlab/`: URL derivation
+from `GITLAB_PORT` and `HOSTNAME`, token-file persistence, docker health
+checks and Rich console output. Two consequences are deliberate:
 
-- Suppressing urllib3's `InsecureRequestWarning` when `SSL_VERIFY=false`
-  happens in `pkg/services/gitlab/_api.py`, not in `gitlab_common`, so
-  importing the shared module never silences warnings for unrelated consumers.
+- `pkg/services/gitlab/_api.py` suppresses urllib3's
+  `InsecureRequestWarning` when `SSL_VERIFY=false`. `gitlab_common` does
+  not, so importing the shared module never silences warnings for
+  unrelated consumers.
 - `gitlab_common` defaults Personal Access Tokens to least-privilege
-  repository-only scopes. `pkg/services/gitlab/users.py` opts into the broader
-  `api` scope explicitly via `PatOptions`.
+  repository-only scopes. `pkg/services/gitlab/users.py` asks for the
+  broader `api` scope explicitly through `PatOptions`.
 
 ## Configuration Inputs
 
-Generated projects are driven by:
+A generated project is driven by:
 
-- `config/services.env`: ports, hostnames, SSL behaviour, service credentials.
+- `config/services.env`: ports, hostnames, SSL behaviour and service
+  credentials.
 - `config/credentials.csv`: user list (`username,password,email`).
-- TLS certificates copied into generated `certs/` layout.
+- TLS certificates copied into the generated `certs/` layout.
 
-Critical GitLab-related environment variables include `HOSTNAME`,
-`GITLAB_PORT`, `SSL_VERIFY`, and `GITLAB_ROOT_NEW_PASSWORD`.
+The main GitLab-related environment variables are `HOSTNAME`,
+`GITLAB_PORT`, `SSL_VERIFY` and `GITLAB_ROOT_NEW_PASSWORD`.
 
 ## Typical Workflow
 
@@ -189,23 +203,29 @@ Critical GitLab-related environment variables include `HOSTNAME`,
 
 ## Testing and Quality
 
-The package uses pytest with strict markers and test discovery rooted in
-`deploy/services/cli/tests`.
+The package uses pytest with strict markers, and test discovery starts
+in `deploy/services/cli/tests`.
 
-Common developer checks:
+Run the checks from `deploy/services/cli`:
 
 ```bash
-cd deploy/services/cli
 poetry install
-poetry run pytest
+poetry run python -m dtaas_services.pkg.build
+CI=true poetry run pytest --ignore=tests/system_tests
 ```
+
+The build step vendors `gitlab_common`; without it the tests cannot be
+collected. The CLI checks for root before it validates arguments, so a
+non-root run needs `CI=true`. The tests in `tests/system_tests` call
+`docker` and are excluded here.
 
 ## Contributor Notes
 
-- Keep command modules thin and push business logic into `pkg/`.
-- Add service-specific behaviour in `pkg/services/<service>/` or peer modules,
-  not in generic command handlers.
-- Preserve CLI ergonomics: commands should return actionable messages and avoid
-  partial side effects without clear status output.
-- When adding new service operations, include tests under `tests/test_services`
-  and command-level coverage under `tests/test_commands`.
+- Keep command modules thin and put business logic in `pkg/`.
+- Add service-specific behaviour in `pkg/services/<service>/` or peer
+  modules, not in generic command handlers.
+- Commands should print messages the user can act on, and should not
+  leave partial side effects without reporting them.
+- When adding service operations, include tests under
+  `tests/test_services` and command-level tests under
+  `tests/test_commands`.

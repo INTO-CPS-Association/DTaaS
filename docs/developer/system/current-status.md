@@ -1,8 +1,8 @@
 # Current Status :clipboard:
 
-DTaaS is an active monorepo with production-oriented deployment scenarios and
-ongoing evolution of execution automation, reusable assets, and contributor
-tooling.
+DTaaS is a monorepo under active development. It has deployment
+scenarios meant for production use, and work continues on execution
+automation, reusable assets and contributor tooling.
 
 ![Current development status](current-status-developer.png)
 
@@ -11,26 +11,31 @@ A more detailed C4 architectural representation is
 
 ## Platform Snapshot
 
-- React 19 client with typed backend abstraction over GitLab APIs.
-- NestJS-based library and runner microservices.
-- Python CLIs for DTaaS administration and platform services management.
+- React 19 client, built with Vite, with a typed backend abstraction over
+  GitLab APIs.
+- NestJS library, runner and logger microservices.
+- `@into-cps-association/dt-automation`, an npm library with the data,
+  state and GitLab operations for creating, managing and executing DTs.
+- `gitlab-common`, a Python library shared by the two CLIs.
+- Python CLIs for DTaaS administration (`dtaas`) and platform services
+  management (`dtaas-services`).
 - Scenario-based admin documentation for DTaaS and workspace deployments.
 
 ## Security and Access Model :lock:
 
-Two complementary authorization patterns are in active use:
+Two authorization patterns are in use:
 
 - GitLab-centred OAuth flows for DTaaS package scenarios.
 - Keycloak-centred OIDC flows for secure workspace scenarios.
 
-Route protection and gateway mediation are managed through Traefik and
-forward-auth patterns.
+Traefik and its forward-auth middleware protect routes and mediate
+access at the gateway.
 
 ## Workspaces and Assets :technologist:
 
-Workspace deployments provide user-isolated environments and shared asset access
-patterns. Asset management currently spans file-system workflows and evolving
-library microservice functionality.
+Workspace deployments give each user an isolated environment and share
+assets between users. Asset management currently uses file-system
+workflows and the library microservice, which is still evolving.
 
 ## Current Engineering Focus
 
@@ -40,5 +45,5 @@ library microservice functionality.
 - Keep package publishing and release flows consistent across npm, Docker, and
   Poetry-based tools.
 
-Contributions that improve reproducibility, documentation quality, and
-cross-component integration are especially valuable.
+Contributions that improve reproducibility, documentation quality and
+integration between components are welcome.

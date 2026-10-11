@@ -1,34 +1,29 @@
 # Host Library Microservice
 
 The **lib microservice** is a simplified file manager that serves files
-over GraphQL and HTTP API.
+over GraphQL and HTTP APIs. It lists directory contents, and it
+uploads and downloads files.
 
-It has two features:
-
-* Provide a listing of directory contents.
-* Upload and download files
-
-This document provides instructions for installing the npm package of the
-library microservice and running the same as a standalone service.
+This page explains how to install the npm package of the library
+microservice and run it as a standalone service.
 
 ## Setup the File System
 
 ### Outside the DTaaS Platform
 
-The package can be used independently of the DTaaS. In this use case,
-no specific file structure is required. Any valid file directory
-is sufficient.
+The package can be used independently of the DTaaS. In this case no
+particular file structure is needed; any directory will do.
 
 ### Inside the DTaaS Platform
 
-The users of the DTaaS expect the following file system structure for
-their reusable assets.
+DTaaS users expect the following file system structure for their
+reusable assets.
 
 ![File System Layout](file-system-layout.png)
 
 A skeleton file structure is available in the
-[DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/files).
-This can be copied to create a file system for users.
+[DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/deploy/dtaas/docker/localhost/files).
+Copy it to create a file system for users.
 
 ## :arrow_down: Install
 
@@ -38,8 +33,7 @@ and on
 [npmjs](https://www.npmjs.com/package/@into-cps-association/libms).
 **Prefer the package on npmjs over GitHub**.
 
-Set the registry and install the package with the one of
-the two following commands
+Install the package with one of the two following commands.
 
 ### npmjs
 
@@ -52,13 +46,13 @@ sudo npm install -g @into-cps-association/libms  # requires no login
 ``` bash
 # requires login
 sudo npm config set @into-cps-association:registry https://npm.pkg.github.com
+sudo npm install -g @into-cps-association/libms
 ```
 
-The _github package registry_ asks for username and password. The username is
-the GitHub username and the password is the GitHub
-[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, the personal access token
-needs to have _read:packages_ scope.
+The _github package registry_ asks for a username and password. The
+username is the GitHub username and the password is a GitHub
+[personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+with the _read:packages_ scope.
 
 ## :rocket: Use
 
@@ -77,14 +71,12 @@ Options:
   -h, --help           display help for libms
 ```
 
-Both the options are not mandatory.
+Neither option is mandatory.
 
-See [configuration](config.md) for explanation of
-configuration conventions.
-The config is saved `libms.yaml` file by convention. If `-c` is not specified
-The **libms** looks for
-`libms.yaml` file in the working directory from which it is run.
-To run **libms** without explicitly specifying the configuration
+See [configuration](config.md) for the configuration conventions.
+By convention the configuration is saved in a `libms.yaml` file. If
+`-c` is not given, **libms** looks for `libms.yaml` in the working
+directory from which it is run. To run **libms** with that default
 file, run
 
 ```bash
@@ -98,14 +90,14 @@ $libms -c FILE-PATH
 $libms --config FILE-PATH
 ```
 
-If the environment file is named something other than `libms.yaml`,
-for example as `libms-config.yaml`, run
+If the configuration file has another name, for example
+`libms-config.yaml`, run
 
 ```sh
 $libms -c "config/libms-config.yaml"
 ```
 
-Press `Ctl+C` to halt the application.
+Press `Ctrl+C` to halt the application.
 To run the microservice in the background, use
 
 ```bash
@@ -116,18 +108,15 @@ The lib microservice is now running and ready to serve files.
 
 ### Protocol Support
 
-The **libms** supports GraphQL protocol by default.
-This microservice can also serve files in a browser with files transferred
-over HTTP protocol.
-
-This option needs to be enabled with `-H http.json` flag.
-A sample [http config](http.json) provided here can be used.
+**libms** supports the GraphQL protocol by default. It can also serve
+files to a browser over HTTP. Enable this with the `-H http.json` flag;
+the sample [http config](http.json) can be used.
 
 ```bash
 $nohup libms [-H http.json] & disown
 ```
 
-The regular file upload and download options become available.
+The usual file upload and download options then become available.
 
 ## Service Endpoints
 

@@ -1,36 +1,37 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-ℹ️ The instructions in this document help update the username and
-password for the localhost version of the **DTaaS** installation.
+This document explains how to change the username and password of the
+localhost **DTaaS** installation.
 
-## ⚙️ Update Configuration
+## Update Configuration
 
-Duplicate `config/dex-config.yaml.example` to
-`config/dex-config.yaml`.
+Copy `config/dex-config.yaml.example` to `config/dex-config.yaml`.
 Update these fields in `config/dex-config.yaml`:
 
 - `email`
 - `hash` (bcrypt hash of the chosen password)
 - `username`, `name`, `preferredUsername`
 
-Dex configuration details are documented in [`dex.md`](dex.md).
+The Dex configuration is described in [`dex.md`](dex.md).
 
 Edit `config/.env`.
 
-| URL Path     | Example Value | Explanation                           |
+| Variable     | Example Value | Explanation                           |
 | :----------- | :------------ | :------------------------------------ |
 | DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
 
-⚠️ Important alignment for local/passwordDB mode:
+The username must match in both files when Dex uses its local password
+database:
 
 - In `config/.env`, choose `DEFAULT_USER=<user>`.
-- In `config/dex-config.yaml`, set static user `username`
+- In `config/dex-config.yaml`, set the static user's `username`
   and `preferredUsername` to the same value.
 
-✅ This keeps DTaaS user-scoped routes aligned with OIDC identity claims.
+This keeps the user-scoped DTaaS routes in line with the OIDC identity
+claims.
 
-## ▶️ Run
+## Run
 
 Start the application:
 
@@ -44,29 +45,30 @@ Stop the application:
 docker compose --env-file config/.env down
 ```
 
-### 🌍 Use
+### Use
 
-The application will be accessible at:
-<http://localhost> from web browser.
-Sign in using the new user credentials in Dex configuration file (`config/dex-config.yaml`).
+Open <http://localhost> in a web browser.
+Sign in with the new user credentials from the Dex configuration file
+(`config/dex-config.yaml`).
 
-All the functionality of DTaaS should be available
-through the single page client now.
+All DTaaS functionality except the DevOps features is available
+through the single page client.
 
-## 📚 Documentation
+## Documentation
 
 See
 <https://into-cps-association.github.io/DTaaS/development/index.html>
-for complete documentation.
+for the complete documentation.
 
-## ℹ️ OAuth Scope Notes
+## OAuth Scope Notes
 
-Scope note for local/passwordDB mode:
+Scopes in local password database mode:
 
 - Supported: `openid profile email groups offline_access`
-- Not supported by Dex local passwordDB: `read_user read_repository api`
+- Not supported by the Dex local password database:
+  `read_user read_repository api`
 
-## 🔗 References
+## References
 
 Image sources:
 

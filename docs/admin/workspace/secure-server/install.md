@@ -4,34 +4,29 @@
 This guide explains how to deploy the workspace application for
 **secure multi-user deployments with Keycloak** for authentication.
 
-## ❓ Prerequisites
+## Prerequisites
 
-✅ Docker Engine v27 or later
-
-✅ Sufficient system resources (at least 2GB RAM per workspace instance)
-
-✅ Port 80 and 443 are available on the host
-
-✅ Valid TLS certificates
-
-✅ Domain name pointing to the server
+- Docker Engine v27 or later
+- Sufficient system resources (at least 2GB RAM per workspace instance)
+- Ports 80 and 443 available on the host
+- Valid TLS certificates
+- A domain name pointing to the server
 
 Download **workspace-keycloak-production-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 
-## 🗒️ Design
+## Design
 
-An illustration of the installation setup is shown here.
+The installation setup is shown here.
 
 <img src="secure-server.png"
   alt="Workspace production installation using Keycloak" width="800px" />
 
-## 📁 User Directories
+## User Directories
 
-All the deployment options require user directories for
-storing workspace files. These need to
-be created for `USERNAME1` and `USERNAME2` set in `config/.env` file.
+Every deployment option needs user directories for the workspace files.
+Create them for the `USERNAME1` and `USERNAME2` values set in `config/.env`.
 
 ```bash
 # create required files
@@ -41,36 +36,36 @@ cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 Follow the pre-installation steps in
-[`configuration.md`](configuration.md) for creating valid configuration.
+[`configuration.md`](configuration.md) to create a valid configuration.
 
-▶️ Start the application:
+Start the application:
 
 ```bash
 docker compose --env-file config/.env up -d
 ```
 
-### 🌵 Temporary Issues
+### Temporary Issues
 
-The following issues in application startup are expected behaviour.
-This problem will be resolved during post-installation.
+The following startup issues are expected at this stage and go away after
+the post-installation steps:
 
-👉 `traefik-forward-auth` service will be restarting at this stage.
-👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
+- The `traefik-forward-auth` service keeps restarting.
+- Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
-[`configuration.md`](configuration.md). Restart `traefik-forward-auth`
+[`configuration.md`](configuration.md), then restart `traefik-forward-auth`:
 
 ```bash
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
-The application will be accessible at <https://intocps.org> from web browser.
-Login using the user credentials set in **Keycloak**.
+The application is now available at <https://intocps.org>.
+Log in with the user credentials set in **Keycloak**.
 
-Stop the demo:
+Stop the application:
 
 ```bash
 docker compose --env-file config/.env down
@@ -82,11 +77,11 @@ To stop and remove volumes:
 docker compose --env-file config/.env down -v
 ```
 
-## 🔧 Customisation
+## Customisation
 
 ### Adding More Users
 
-Create user account for USERNAME3 in **Keycloak**.
+Create a user account for USERNAME3 in **Keycloak**.
 
 Create the user's workspace directory:
 
@@ -108,6 +103,7 @@ Add a new service in `docker-compose.yml`:
       - "./files/${USERNAME3:-user3}:/workspace"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.u3.entryPoints=web-secure"
       - "traefik.http.routers.u3.rule=Host(`${SERVER_DNS:-localhost}`) && PathPrefix(`/${USERNAME3:-user3}`)"
       - "traefik.http.routers.u3.tls=true"
       - "traefik.http.routers.u3.middlewares=traefik-forward-auth"
@@ -115,18 +111,18 @@ Add a new service in `docker-compose.yml`:
       - users
 ```
 
-Add the desired `USERNAME3` variable in `config/.env`:
+Add the `USERNAME3` variable to `config/.env`:
 
 ```bash
 # Username Configuration
 # These usernames will be used as path prefixes for user workspaces
-# Example: http://localhost/user1, http://localhost/user2
+# Example: https://intocps.org/user1, https://intocps.org/user2
 USERNAME1=user1
 USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in `forward-auth-conf`:
+Add a Forward Auth rule for user3 to `config/forward-auth-conf`:
 
 ```txt
 
@@ -135,17 +131,17 @@ rule.user3_access.rule=PathPrefix(`/user3`)
 rule.user3_access.whitelist = user3@localhost
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Certificate Issues
 
-**Problem**: "NET::ERR_CERT_INVALID" in browser
+**Problem**: "NET::ERR_CERT_INVALID" in the browser
 
 **Solutions**:
 
-- Verify certificate files exist in `./certs/` directory
-- Check certificate file permissions
-- For self-signed certs, add security exception in browser
+- Verify that the certificate files exist in the `./certs/` directory
+- Check the certificate file permissions
+- For self-signed certificates, add a security exception in the browser
 
 ### OAuth2 Issues
 
@@ -153,14 +149,14 @@ rule.user3_access.whitelist = user3@localhost
 
 **Solutions**:
 
-- Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
-- Check `SERVER_DNS` environment variable is set correctly
-- Ensure `COOKIE_DOMAIN` matches the domain
-- Verify OAuth2 application is approved and active
+- Verify that the OAuth2 callback URL matches `https://intocps.org/_oauth`
+- Check that the `SERVER_DNS` environment variable is set correctly
+- Ensure that `COOKIE_DOMAIN` matches the domain
+- Verify that the OAuth2 application is approved and active
 
 ### Service Access Issues
 
-**Problem**: Cannot access workspace after authentication
+**Problem**: Cannot access the workspace after authentication
 
 **Solutions**:
 
@@ -169,7 +165,7 @@ rule.user3_access.whitelist = user3@localhost
 - View logs: `docker logs`
 - Verify Traefik routes:
   `docker compose --env-file config/.env logs traefik`
-- Test OAuth2 service:
+- Test the OAuth2 service:
   `docker compose --env-file config/.env logs traefik-forward-auth`
 
 ### Port Conflicts
@@ -180,9 +176,10 @@ rule.user3_access.whitelist = user3@localhost
 
 - Check for other services: `sudo netstat -tlnp | grep -E ':(80|443)'`
 - Stop conflicting services
-- Or modify port mappings in compose file (not recommended for production)
+- Or change the port mappings in the compose file (not recommended for
+  production)
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
 - [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)

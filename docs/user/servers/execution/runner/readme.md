@@ -1,14 +1,14 @@
 # Runner
 
-A utility service to manage safe execution of remote scripts / commands.
-The user launches this from the command line and lets the utility
-manage the commands to be executed.
+A utility service for the safe execution of remote scripts and commands.
+The user launches it from the command line, and the utility
+manages the commands to be executed.
 
-The runner utility runs as a service and provides
-REST API interface to safely execute remote commands.
-Multiple runners can be active simultaneously on one computer.
-The commands are sent via the REST API and are executed on the computer
-with active runner.
+The runner runs as a service and provides a
+REST API for executing remote commands safely.
+Several runners can be active at the same time on one computer.
+Commands are sent through the REST API and executed on the computer
+running the runner.
 
 <!-- markdownlint-disable MD046 -->
 <!-- prettier-ignore -->
@@ -35,7 +35,7 @@ sudo npm install -g @into-cps-association/runner
 The package is available in GitHub
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages).
 
-Set the registry and install the package with the following commands
+Set the registry and install the package with the following commands:
 
 ```bash
 sudo npm config set @into-cps-association:registry \
@@ -43,15 +43,15 @@ sudo npm config set @into-cps-association:registry \
 sudo npm install -g @into-cps-association/runner
 ```
 
-The _npm install_ command asks for username and password. The username is
-the GitHub username and the password is the GitHub
+The _npm install_ command asks for a username and password. The username is
+your GitHub username and the password is a GitHub
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
-In order for the npm to download the package, the personal access token
-needs to have _read:packages_ scope.
+For npm to download the package, the personal access token
+needs the _read:packages_ scope.
 
 ## :gear: Configure
 
-The utility requires config specified in YAML format.
+The utility needs a configuration file in YAML format.
 The template configuration file is:
 
 ```yaml
@@ -63,35 +63,35 @@ commands:  # list of permitted scripts
   - terminate
 ```
 
-It is suggested that the configuration file be named as _runner.yaml_
-and placed in the directory in which the _runner_ microservice is run.
+Name the configuration file _runner.yaml_ and place it in the
+directory from which the _runner_ microservice is run.
 
-The `location` refers to the relative location of the scripts directory
-with respect to the location of _runner.yaml_ file.
+`location` is the path of the scripts directory relative to the
+_runner.yaml_ file.
 
-However, there is no limitation on either the configuration filename or
-the `location`. The path to _runner.yaml_ can either be relative or
-absolute path. However, the `location` path is always relative path
-with respect to the path of _runner.yaml_ file.
+You can choose any configuration filename and any `location`.
+The path to the configuration file can be relative or absolute,
+but the `location` path is always relative to the configuration file.
 
 :fontawesome-solid-circle-info:
-The commands must be executable. Ensure that the commands
-have execute permission on Linux platforms.
+The commands must be executable. On Linux, make sure the commands
+have execute permission.
 
 ## :pen: Create Commands
 
-The runner requires commands / scripts to be run.
-These need to be placed in the `location` specified in
+The runner needs commands or scripts to run.
+Place them in the `location` directory specified in the
 _runner.yaml_ file. The location is relative to
 the directory of the _runner.yaml_ file.
 
 On Windows, each command needs a PowerShell script with the `.ps1`
 extension, for example _create.ps1_ for the _create_ command.
-The runner executes it with `powershell.exe -ExecutionPolicy Bypass -File`.
+The runner executes it with
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File`.
 A directory can hold both versions of a script, so that the same
 commands work on Linux and Windows.
 
-The runner can also be run in a docker container. Please see the
+The runner can also run in a docker container. See the
 [docker instructions](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/execution/runner/DOCKER.md).
 
 ## :rocket: Use
@@ -110,9 +110,9 @@ Options:
   -h --help             display help
 ```
 
-The config option is not mandatory. If it is not used, **runner** looks for
-_runner.yaml_ in the directory from which it is being run.
-Once launched, the utility runs at the port specified in
+The config option is optional. Without it, **runner** looks for
+_runner.yaml_ in the directory from which it is run.
+Once launched, the utility listens on the port specified in the
 _runner.yaml_ file.
 
 ```bash
@@ -121,15 +121,16 @@ runner -c FILE-PATH       #absolute or relative path to config file
 runner --config FILE-PATH #absolute or relative path to config file
 ```
 
-If launched on one computer,
-the service is accessible at `http://localhost:<port>`.
+On the computer where it runs,
+the service is available at `http://localhost:<port>`.
 
-Access to the service on the network is available at `http://<ip or hostname>:<port>/`.
+Other computers on the network can reach it at
+`http://<ip or hostname>:<port>/`.
 
 ### Application Programming Interface (API)
 
-Three REST API methods are active. The route paths and the responses given
-for these two sources are:
+Three REST API methods are available. Their routes and responses
+are:
 
 | REST API Route                 | HTTP Method | Return Value                                                            | Comment                                                                                        |
 | :----------------------------- | :---------- | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- |
@@ -137,10 +138,13 @@ for these two sources are:
 | localhost:port                 | GET         | Returns the execution status of the last command sent via POST request. |                                                                                                |
 | localhost:port/history         | GET         | Returns the array of POST requests received so far.                     |                                                                                                |
 
+<!-- markdownlint-disable MD046 -->
+
 #### POST Request to /
 
-Executes a command. The command name given here must exist
-in _location_ directory.
+Executes a command. The command must be listed under `commands` in
+the configuration file and exist in the _location_ directory.
+A command that is not permitted, or that fails, gets an HTTP 400 response.
 
 === "Valid HTTP Request"
 
@@ -170,7 +174,7 @@ in _location_ directory.
     }
     ```
 
-=== "HTTP Response - Inalid Command"
+=== "HTTP Response - Invalid Command"
 
     ``` http-request
     Connection: close
@@ -222,7 +226,7 @@ Shows the status of the command last executed.
     }
     ```
 
-=== "HTTP Response - Inalid Command"
+=== "HTTP Response - Invalid Command"
 
     ``` http-request
     Connection: close
@@ -241,6 +245,8 @@ Shows the status of the command last executed.
       }
     }
     ```
+
+<!-- markdownlint-enable MD046 -->
 
 #### GET Request to /history
 

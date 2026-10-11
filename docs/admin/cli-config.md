@@ -1,17 +1,17 @@
 # CLI Configuration Reference
 
-This page is the complete reference for `dtaas.toml`, the single
-source of truth for all DTaaS CLI commands. Generate a blank template
-with `dtaas admin config generate`, fill it in, then confirm it is
-valid with `dtaas admin config validate` before running any other
-command. The installation workflow itself is covered in
+This page is the reference for `dtaas.toml`, the configuration file
+that every DTaaS CLI command reads. Generate a template with
+`dtaas config generate`, fill it in, and check it with
+`dtaas config validate` before running any other command. The
+installation workflow is covered in
 [Install with DTaaS CLI](cli.md).
 
-## 🧭 Which Sections Does My Deployment Need?
+## Which sections does my deployment need?
 
-Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
+Required ✅ &nbsp; Optional ○ &nbsp; Not used —
 
-### 🖥️ Server Deployments
+### Server deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 | --- | :---: | :---: | :---: | :---: |
@@ -26,7 +26,7 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[secure-server]` | — | — | ✅ | — |
 | `[secure-server-gitlab]` | — | — | — | ✅ |
 
-### 🧑‍💻 Workspace Deployments
+### Workspace deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 | --- | :---: | :---: |
@@ -38,11 +38,11 @@ Required ✅ &nbsp; Optional ○ &nbsp; Not-Used —
 | `[workspace-localhost]` | ✅ | — |
 | `[workspace-secure-server]` | — | ✅ |
 
-## 📄 Annotated `dtaas.toml`
+## Annotated `dtaas.toml`
 
-The full file below shows every possible key with inline comments.
-Copy it as a starting point and delete sections that do not apply to
-your deployment type (see matrix above).
+The file below shows every key with inline comments. Copy it as a
+starting point and delete the sections that your deployment type does
+not use (see the tables above).
 
 ```toml
 # ── Common settings (all deployment types) ────────────────────────────────────
@@ -62,7 +62,7 @@ path = "/opt/dtaas"
 tls = true
 
 # Absolute path to the directory containing fullchain.pem and privkey.pem.
-# Used by generate-deployment (seeds certs/) and admin update --certs.
+# Used by deployment generate (seeds certs/) and platform update --certs.
 certs-src = "/etc/letsencrypt/live/dtaas.example.com"
 
 # ── Per-user container resource limits (optional, all types) ──────────────────
@@ -78,7 +78,7 @@ shm_size   = "512m"   # shared memory unit required
 # ── Starting users (all deployment types) ─────────────────────────────────────
 # One self-contained [[users]] block per user, hand-edited once at install
 # time. Presence in this file is the desired state there are no add/delete
-# lists. Additional users added later with `dtaas admin user add` live in the
+# lists. Additional users added later with `dtaas user add` live in the
 # CLI-owned dtaas.users.registry.json instead.
 # Usernames must match GitLab accounts and be unique across the array.
 #
@@ -102,13 +102,13 @@ load_balance = false
 #                                secure-server-gitlab) ────────────────────────
 # This is a SEPARATE OAuth application from the traefik-forward-auth app
 # configured in [insecure-server] / [secure-server] below.
-# Redirect URI: https://<server-dns>/signin-oidc
+# Redirect URI: https://<server-dns>/Library
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
 
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
-# Off by default. When provision = true, `dtaas admin user add` also creates
+# Off by default. When provision = true, `dtaas user add` also creates
 # each new user's GitLab account and a Personal Access Token (see
 # "Add Users" in cli.md). The provisioning token must be able to create users
 # (an admin token); supply it via the DTAAS_GITLAB_PAT environment variable
@@ -147,8 +147,9 @@ oauth-client-secret = "s3cr3t"
 oauth-secret        = "random-signing-string"
 
 # ── secure-server-gitlab deployment (bundled GitLab production-ready) ───────
-# oauth-url is omitted; it is derived from the bundled GitLab service.
+# oauth-url points at the bundled GitLab, served under /gitlab.
 [secure-server-gitlab]
+oauth-url           = "https://dtaas.example.com/gitlab"
 oauth-client-id     = "abc123"
 oauth-client-secret = "s3cr3t"
 oauth-secret        = "random-signing-string"
@@ -172,9 +173,9 @@ client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
 
-## ✅ Validation Rules
+## Validation rules
 
-`dtaas admin config validate` reads `dtaas.toml` (from `--output-dir`
+`dtaas config validate` reads `dtaas.toml` (from `--output-dir`
 first, then the current directory) and reports all problems at once:
 
 | Field | Rule |
@@ -200,97 +201,98 @@ first, then the current directory) and reports all problems at once:
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
-Deployment-section URLs include `react-app-oauth-url`, `oauth-url`,
-`auth-authority`, and `keycloak-issuer-url` across `[frontend]`,
+Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
+`auth-authority` and `keycloak-issuer-url` in `[frontend]`,
 `[localhost]`, `[insecure-server]`, `[secure-server]`,
-`[workspace-localhost]`, and `[workspace-secure-server]`; each is
-checked only when its section is present.
+`[secure-server-gitlab]`, `[workspace-localhost]` and
+`[workspace-secure-server]`. Each is checked only when its section is
+present. `config validate` checks every section in the file, while
+`platform update --config` checks only the section of the installed
+deployment type, plus `[frontend]`.
 
 `path` and `certs-src` are checked against the local filesystem, so
-run `validate` on the deployment host.
+run `validate` on the deployment host. If a check fails with a
+permission error (for example, `certs-src` under the root-owned
+`/etc/letsencrypt`), the CLI prints the command to re-run with
+`sudo`.
 
 The `[common.resources]` limit fields (`cpus`, `pids_limit`,
 `mem_limit`, `shm_size`) are required only when `set_limits` is
-`true` (the default). With `set_limits = false` they are optional and
-ignored; any value still present is validated.
+`true`, the default. With `set_limits = false` they are optional and
+ignored, but any value that is present is still validated.
 
-## 🔀 Configuration Substitution
+## Configuration substitution
 
-When `dtaas.toml` is present, `generate-deployment` reads
-deployment-specific values from it and substitutes them into the
-generated files automatically. Each `--type` reads from its matching
-top-level section in `dtaas.toml`. Values are written into dotenv
-files (`config/.env`, `config/conf.server`) and the React client
-config (`config/client.js`).
+When `dtaas.toml` is present, `deployment generate` substitutes its
+values into the generated files. `platform update --config` repeats
+the same substitution on an installed deployment. Each `--type` reads
+from its matching top-level section in `dtaas.toml`. Depending on the
+type, values go into the dotenv files (`config/.env`,
+`config/conf.server`), the React client config (`config/client.js`,
+or `config/env.local.js` for `workspace-localhost`) and the Dex
+config (`config/dex-config.yaml` for `workspace-localhost`).
 
-The `[frontend]` section supplies `REACT_APP_CLIENT_ID` and
-`REACT_APP_AUTH_AUTHORITY` for the DTaaS web client; these are a
-separate OAuth application from the traefik-forward-auth credentials
-configured in `[insecure-server]` / `[secure-server]`. The `[common]`
-and `[[users]]` sections are substituted across all types.
+For the server types, the `[frontend]` section supplies
+`REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` for the DTaaS web
+client. That is a separate OAuth application from the
+traefik-forward-auth credentials in `[insecure-server]`,
+`[secure-server]` and `[secure-server-gitlab]`. The redirect URIs in
+`config/client.js` are built from `[common].server-dns`, and the
+first two `[[users]]` records fill `USERNAME1` and `USERNAME2`.
 
-If `dtaas.toml` is not found, a note is printed and generated files
-keep their default placeholder values.
+If `dtaas.toml` is not found, the command prints a note and the
+generated files keep their placeholder values.
 
-### 🔐 TLS Certificate Placement
+### TLS certificate placement
 
 For the TLS types (`secure-server`, `secure-server-gitlab`,
-`workspace-secure-server`), `generate-deployment` also populates the
+`workspace-secure-server`), `deployment generate` also fills the
 `certs/` directory in the output. It reads
 `[common.security].certs-src` from `dtaas.toml` and copies the latest
-`fullchain.pem` and `privkey.pem` there.
+`fullchain.pem` and `privkey.pem` from there.
 
-## 👥 User Files
+## User files
 
-User management spans three files, each with a single owner, modelled
-on the config/state split Terraform uses for `.tf` vs
-`terraform.tfstate`:
+User management spans three files, each with a single owner. The
+split follows the one Terraform makes between `.tf` and
+`terraform.tfstate` files:
 
 | File | Owner | Contents | Git |
 | --- | --- | --- | --- |
-| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Tracked, hand-edited |
+| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Hand-edited; keep out of Git, as it can hold credentials |
 | `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) | Tracked, CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored, runtime cache |
 
-- **`dtaas.toml`** is written once by a human and never rewritten by
-  the CLI, so a comment-bearing, reviewed config is never silently
-  mutated.
-- **`dtaas.users.registry.json`** is a database the CLI owns and
-  mutates atomically (the way `useradd` owns `/etc/passwd`). Edit its
-  users through `dtaas admin user add --file users.csv` / `delete` /
-  `pause` / `stop` / `resume`, not by hand. `users.csv` copied by
-  `dtaas admin config generate` is the human-editable bulk input that
-  feeds `add`/`delete`. `desired_status` defaults to `running` for a
-  user who has never been paused or stopped, and `user add` /
-  `config reconcile --fix` skip starting any user whose
-  `desired_status` is not `running`.
-- **`.dtaas.state.json`** is a disposable cache of what is actually
-  running, refreshed on every add/delete. It is git-ignored and safe
-  to delete.
+- **`dtaas.toml`** is written by a person and never rewritten by the
+  CLI, so its comments and reviewed values stay as they are.
+- **`dtaas.users.registry.json`** is a database that the CLI owns and
+  updates atomically, the way `useradd` owns `/etc/passwd`. Change its
+  users with `dtaas user add --file users.csv`, `delete`, `pause`,
+  `stop` and `resume`, not by hand. The `users.csv` written by
+  `dtaas config generate` is the bulk input for `add` and `delete`.
+  `desired_status` is `running` for a user who has never been paused
+  or stopped, and `user add` and `config reconcile --fix` do not start
+  any user whose `desired_status` is something else.
+- **`.dtaas.state.json`** is a disposable cache of what is running,
+  refreshed on every add and delete. It is git-ignored and safe to
+  delete.
 
-### 🔍 Checking for Drift
+### Checking for drift
 
-`dtaas admin config reconcile` reports drift between
-`dtaas.users.registry.json` (which **should** be provisioned) and the
-live `compose.users.yml` services (which **are** provisioned). It lists:
-
-- **missing** — registered but not currently provisioned;
-- **unexpected** — provisioned but not in the registry (investigate:
-  may be a manual edit or a partial delete);
-- **drifted** — provisioned, but the live config no longer matches
-  what `.dtaas.state.json` recorded when it was last provisioned;
-- **desired-status drift** — provisioned, but the live container
-  state does not match the user's registry `desired_status` (e.g.
-  `desired 'paused' but container is 'running'`).
-
+`dtaas config reconcile` compares `dtaas.users.registry.json` (the
+users who **should** be provisioned) with the live
+`compose.users.yml` services (the users who **are** provisioned). It
+reports **missing**, **unexpected**, **drifted**, **absent** and
+**desired-status** drift; see
+[`config reconcile`](cli.md#config-reconcile) for what each means.
 When everything matches, it prints `In sync: no drift detected.`
-Without `--fix`, this is read-only. Pass `--fix` to reprovision
-**missing** and **drifted** users, and to pause/stop/start every
-provisioned user to match its `desired_status`; **unexpected**
-services are never touched by `--fix` — use `dtaas admin user delete`
-for those.
 
-Suspending a user with `dtaas admin user pause`/`stop` is intentional
-and durable: it is reflected as that user's `desired_status`, so a
-later `reconcile` treats the suspension as the desired state instead
-of reporting it as drift.
+Without `--fix`, the command is read-only. `--fix` reprovisions
+missing and drifted users, restarts absent users' containers, and
+pauses, stops or starts every provisioned user to match its
+`desired_status`. It never touches **unexpected** services; remove
+those with `dtaas user delete`.
+
+Pausing or stopping a user with `dtaas user pause` or `stop` is
+recorded as that user's `desired_status`. A later `reconcile` treats
+the suspension as the desired state instead of reporting it as drift.

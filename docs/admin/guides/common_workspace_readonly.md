@@ -2,20 +2,17 @@
 
 ## Why
 
-In some cases it may be necessary to restrict the access rights of some users
-to the common assets.
-In order to make the common area read only,
-the install script section performing the creation
-of user workspaces must be changed.
+Some installations need to stop users from changing the common assets.
+To make the common area read only, change the volume definitions of the
+user workspace services.
 
 !!! note
-    These step needs to be performed before installation of the application.
+    Make these changes before installing the application.
 
 ## How
 
-To make the common assets read-only for a user,
-the following changes need to be made to
-the secure-server `docker-compose.yml` file.
+To make the common assets read only, change the user services in
+the secure-server `docker-compose.yml` file as follows.
 
 ```docker
   ...
@@ -33,9 +30,13 @@ the secure-server `docker-compose.yml` file.
 
 ```
 
-Note the `:ro` at the end of the line. This suffix makes
-the common assets read only.
+The `:ro` suffix at the end of the line makes the common assets read
+only.
 
-To apply the same kind of read only restriction for
-new users as well, make a similar change to any additional `userX`
-service blocks added in `deploy/dtaas/docker/secure-server/docker-compose.yml`.
+To apply the same restriction to new users, make the same change to any
+additional `userX` service blocks in
+`deploy/dtaas/docker/secure-server/docker-compose.yml`. Users added with
+the [DTaaS CLI](../cli.md) get their volumes from the
+`users.server.yml` and `users.server.secure.yml` templates in the
+installation directory, so add `:ro` to the `/workspace/common` volume
+there as well.

@@ -1,14 +1,17 @@
 # Local Testing :test_tube:
 
-This guide provides a practical local test loop for contributors working in the
-DTaaS monorepo.
+This guide gives a local test loop for contributors working in the
+DTaaS monorepo. The authoritative build and test command for each project
+is in the "Build and test commands" section of `PROJECT.md`; the commands
+below follow it. The development container in `developer/devenv/` has
+every toolchain they need.
 
 ## Recommended Order
 
 1. Run syntax and lint checks for the changed component.
 2. Run fast local tests (unit or focused integration).
 3. Run broader test suites before opening a pull request.
-4. Build docs if markdown or navigation changed.
+4. Build the docs if markdown or navigation changed.
 
 ## Client (React + TypeScript)
 
@@ -16,10 +19,15 @@ Run from `client/`:
 
 ```bash
 yarn syntax
+yarn build
+yarn config:test
 yarn test:unit
 yarn test:int
-yarn build
 ```
+
+`yarn config:test` copies the test configuration into `public/env.js`
+and `build/env.js`. Use the `yarn test:*` scripts rather than bare
+`jest`: they load the setup files that the tests depend on.
 
 For end-to-end checks:
 
@@ -42,7 +50,9 @@ yarn build
 yarn test:all
 ```
 
-For API-level checks for cloudcmd integration, use `yarn test:http`.
+For API-level checks of the cloudcmd integration, use `yarn test:http`.
+It needs a configured `.env` file and starts the library microservice
+under pm2.
 
 ## Runner Microservice (NestJS)
 
@@ -54,11 +64,45 @@ yarn build
 yarn test
 ```
 
-Use `yarn test:int` and `yarn test:e2e` for deeper coverage.
+`yarn test:unit` and `yarn test:int` run the unit and integration tests
+separately.
+
+## Logger Microservice (NestJS)
+
+Run from `servers/logger/`:
+
+```bash
+yarn syntax
+yarn test
+```
+
+## DT Automation Library (TypeScript)
+
+Run from `lib/dt-automation/`:
+
+```bash
+yarn syntax
+yarn test:unit
+```
+
+The package has no `test` script.
 
 ## DTaaS CLI (Python)
 
 Run from `cli/`:
+
+```bash
+poetry install
+poetry run python src/pkg/build.py
+poetry run pytest
+```
+
+The build step copies the shared code from `lib/` into the package; the
+tests cannot be collected without it.
+
+## GitLab Common Library (Python)
+
+Run from `lib/gitlab_common/`:
 
 ```bash
 poetry install
@@ -71,18 +115,23 @@ Run from `deploy/services/cli/`:
 
 ```bash
 poetry install
-poetry run pytest
+poetry run python -m dtaas_services.pkg.build
+CI=true poetry run pytest --ignore=tests/system_tests
 ```
+
+The CLI checks for root before it validates arguments, so non-root runs
+need `CI=true`. The tests in `tests/system_tests` call `docker`.
 
 ## Documentation Validation
 
-Run from repository root:
+Run from the repository root:
 
 ```bash
 mkdocs build -f mkdocs-github.yml
 ```
 
-If on Linux and full docs validation with optional PDF wiring is needed:
+On Linux, to validate the full docs build including the optional PDF
+export:
 
 ```bash
 MKDOCS_ENABLE_PDF_EXPORT=1 mkdocs build -f mkdocs.yml
@@ -90,6 +139,6 @@ MKDOCS_ENABLE_PDF_EXPORT=1 mkdocs build -f mkdocs.yml
 
 ## Practical Tip
 
-When changing multiple components, validate each package in isolation first.
-This keeps failures local, shortens debug time, and avoids chasing unrelated
-test errors.
+When changing several components, validate each package on its own
+first. Failures then stay local and are quicker to debug, and unrelated
+test errors do not get in the way.

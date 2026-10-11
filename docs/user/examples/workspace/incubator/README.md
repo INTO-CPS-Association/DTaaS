@@ -2,86 +2,84 @@
 
 ## Overview
 
-This is a case study of an Incubator intended to demonstrate
-the steps and processes involved in developing a digital twin system.
-This incubator is an insulated container with the ability to maintain a temperature
-and provide heating, but not cooling. A picture of the incubator is provided below.
+This case study of an incubator shows the steps involved in developing
+a digital twin system. The incubator is an insulated container that can
+maintain a temperature by heating, but it cannot cool. A picture of the
+incubator is shown below.
 
 ![Incubator Picture](figures/incubator_pt.png)
 
-The overall purpose of the system is to reach a certain temperature within
-a box and keep the temperature regardless of content.
-An overview of the system can be seen below:
+The system reaches a set temperature inside a box and holds that
+temperature regardless of the content.
+An overview of the system is shown below:
 
 ![Incubator Schematic](figures/system.svg)
 
 The system consists of:
 
-* 1x styrofoam box in order to have an insulated container
-* 1x heat source to heat up the content within the Styrofoam box.
-* 1x fan to distribute the heating within the box
-* 2x temperature sensor to monitor the temperature within the box
-* 1x temperature Sensor to monitor the temperature outside the box
-* 1x controller to actuate the heat source and the fan and read sensory
-  information from the temperature sensors, and communicate with
-  the digital twin.
+* 1x Styrofoam box as the insulated container
+* 1x heat source to heat the content of the Styrofoam box
+* 1x fan to distribute the heat within the box
+* 2x temperature sensors to monitor the temperature inside the box
+* 1x temperature sensor to monitor the temperature outside the box
+* 1x controller that actuates the heat source and the fan, reads
+  the temperature sensors, and communicates with the digital twin
 
-The original repository for the example can be found: [Original repository](https://github.com/INTO-CPS-Association/example_digital-twin_incubator/).
-This trimmed version of the codebase does not have the following:
+The example comes from the
+[original repository](https://github.com/INTO-CPS-Association/example_digital-twin_incubator/).
+This trimmed version of the codebase leaves out:
 
 * docker support
 * tests
 * datasets
 
-The original repository contains the complete documentation of
-the example, including the full system architecture, instructions for
-running with a physical twin, and instructions for running
-a 3D visualisation of the incubator.
+The original repository has the complete documentation of the example,
+including the full system architecture and instructions for running with
+a physical twin or a 3D visualisation of the incubator.
 
 ## Digital Twin Structure
 
 ![System overview of the incubator](figures/dt-structure.svg)
 
-This diagrams shows the main components and the interfaces they use to communicate.
-All components communicate via the RabbitMQ message exchange,
-and the data is stored in a time series database.
-The RabbitMQ and InfluxDB are platform services hosted by the DTaaS.
+This diagram shows the main components and the interfaces they use to
+communicate. All components communicate through the RabbitMQ message
+exchange, and the data is stored in a time series database.
+RabbitMQ and InfluxDB are platform services hosted by the DTaaS.
 
-The Incubator digital twin is a pre-packaged digital twin. It can be
-used as is or integrated with other digital twins.
+The Incubator digital twin is pre-packaged. It can be used as is or
+integrated with other digital twins.
 
-The mock physical twin is executed from
+The mock physical twin runs from the
 `incubator/mock_plant/real_time_model_solver.py` script.
 
 ## Digital Twin Configuration
 
-This example uses a plethora of Python scripts to run the digital twin.
-By default, it is configured to run with a mock physical twin.
-Furthermore, it depends on RabbitMQ and InfluxDB instances.
+This example uses many Python scripts to run the digital twin.
+By default, it runs with a mock physical twin. It also needs RabbitMQ
+and InfluxDB instances.
 
 There is one configuration file: `simulation.conf`.
 The RabbitMQ and InfluxDB configuration parameters must be updated.
 
 ## Lifecycle Phases
 
-The lifecycles that are covered include:
+The example covers these lifecycle phases:
 
 | Lifecycle Phase | Completed Tasks                                                                                     |
 | --------------- | --------------------------------------------------------------------------------------------------- |
-| Create          | Potentially updates the system and installs Python dependencies                                     |
+| Create          | Installs missing system packages and the Python dependencies                                        |
 | Execute         | Executes the Incubator digital twin and produces output in the terminal and in _incubator/log.log_. |
 | Clean           | Removes the log file.                                                                               |
 
 ## Run the example
 
-To run the example, change the present directory.
+To run the example, change to its directory.
 
 ```bash
 cd /workspace/examples/digital_twins/incubator
 ```
 
-If required, change the execute permission of lifecycle scripts
-that need to be executed, for example:
+If required, make the lifecycle scripts executable, for example:
 
 ```bash
 chmod +x lifecycle/create
@@ -91,7 +89,8 @@ Now, run the following scripts:
 
 ### Create
 
-Potentially updates the system and installs Python dependencies.
+Installs any missing system packages (Python 3, pip and venv) and the
+Python dependencies in a virtual environment.
 
 ```bash
 lifecycle/create
@@ -100,7 +99,7 @@ lifecycle/create
 ### Execute
 
 Executes the Incubator digital twin with a mock physical twin.
-Pushes the results in the terminal, _incubator/log.log_, and in InfluxDB.
+Writes the results to the terminal, _incubator/log.log_ and InfluxDB.
 
 ```bash
 lifecycle/execute
@@ -116,8 +115,8 @@ lifecycle/clean
 
 ## Examining the results
 
-After starting all services successfully, the controller service will
-start producing output that looks like the following:
+Once all services have started, the controller service produces output
+like the following:
 
 ````log
 time           execution_interval  elapsed  heater_on  fan_on   room   box_air_temperature  state
@@ -128,10 +127,10 @@ time           execution_interval  elapsed  heater_on  fan_on   room   box_air_t
 19/11 16:18:11  3.00                0.01     True       True    10.69  19.41                Heating
 ````
 
-An InfluxDB dashboard can be setup based on
+An InfluxDB dashboard can be set up from
 `incubator/digital_twin/data_access/influxdbserver/dashboards/incubator_data.json`.
-If the dashboard on the InfluxDB is setup properly,
-the following visualisation can be seen:
+Once the dashboard is set up in InfluxDB, it shows the following
+visualisation:
 
 ![Influx Dashboard](figures/visualisation.png)
 
@@ -141,8 +140,7 @@ the following visualisation can be seen:
 [Incubator repository](https://github.com/INTO-CPS-Association/example_digital-twin_incubator/)
 with commit ID: 989ccf5909a684ad26a9c3ec16be2390667643aa
 
-To understand what a digital twin is, one or more of the following
-resources are recommended:
+The following resources explain what a digital twin is:
 
 1. Feng, Hao, Cláudio Gomes, Casper Thule, Kenneth Lausdahl,
    Alexandros Iosifidis, and Peter Gorm Larsen. “Introduction to

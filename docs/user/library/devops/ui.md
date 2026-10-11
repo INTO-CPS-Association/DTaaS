@@ -1,31 +1,31 @@
 # Reusable Assets and DevOps
 
-[DevOps](https://en.wikipedia.org/wiki/DevOps) has been
-a well established software development practice.
-An experimental feature integrating DevOps
-is being introduced in the DTaaS platform.
+[DevOps](https://en.wikipedia.org/wiki/DevOps) is a well-established
+software development practice. The DTaaS platform has an experimental
+feature that brings DevOps to digital twins.
 
-This feature requires specific installation setup.
+This feature requires a specific installation setup:
 
 1. [Integrated GitLab installation](../../../admin/gitlab/integration.md)
-1. A valid GitLab repository for the logged in user. See
-   an [example repository](https://gitlab.com/dtaas/user1). This repository
-   can be cloned and customised as needed.
-1. [A linked GitLab Runner](../../../admin/gitlab/runner-linux.md)
-   to the user GitLab repository.
+1. A valid GitLab repository for the logged-in user. See
+   an [example repository](https://gitlab.com/dtaas/user1). You can
+   clone this repository and customise it as needed.
+1. [A GitLab Runner](../../../admin/gitlab/runner-linux.md) linked
+   to the user's GitLab repository.
 
-Once these requirements are satisfied, the **Library** page shows all
-the reusable assets available stored in the linked GitLab repository.
-An empty list is shown if there are no assets of a specific category.
+Once these requirements are met, open the **Library Page** by clicking
+**Automation** in the menu and then the **Library Page** card. The page
+shows all the reusable assets stored in the linked GitLab repository.
+A category with no assets shows an empty list.
 
 ![Empty list in Library preview page](empty-list.png)
 
-The page gets populated with any existing assets. All available DTs
-are shown in the following figure.
+Otherwise the page lists the existing assets. The following figure
+shows all the available DTs.
 
 ![Selected DT](dt_selection.png)
 
-Any existing DT asset can be selected and it gets added to
-the **Selection** pane on the right. After selecting all the required
-assets, clicking on the _Proceed_ button transitions to
-[DT create stage](../../digital-twins/devops/ui.md)
+Click **Add** on an asset to add it to the **Selection** pane on the
+right. After selecting all the required assets, click the
+**Create a Digital Twin** button to go to the
+[DT create stage](../../digital-twins/devops/ui.md).

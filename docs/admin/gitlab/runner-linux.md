@@ -1,40 +1,39 @@
 # GitLab Runner Integration
 
-For Windows-specific setup guidance, see `runner-windows.md`.
+For Windows hosts, see [runner-windows.md](runner-windows.md).
 
-This document outlines the steps needed to create a `gitlab-runner`
-that will be responsible for the execution of Digital Twins. Many such
-runners can be installed and linked with the integrated GitLab.
+This page creates a `gitlab-runner` that executes digital twins.
+You can install several such runners and link them to the integrated
+GitLab.
 
-An illustration of the intended installation setup is shown below.
+The diagram shows the intended installation.
 
 ![GitLab Runner Integration](gitlab-integrated-runner.png)
 
 There are two installation scenarios:
 
-1. __Localhost Installation__ - The integrated runner is used locally with
+1. __Localhost Installation__: the integrated runner runs locally with
    a GitLab instance hosted at `https://localhost/gitlab`.
-1. __Server Installation__ - The integrated runner is used with a GitLab
-   instance hosted on a production server. This server may be a remote server
-   and not necessarily the host, and may have TLS enabled with a self-signed
-   certificate.
+1. __Server Installation__: the integrated runner works with a GitLab
+   instance on a production server. That server may be a remote machine
+   rather than the host, and may use TLS with a self-signed certificate.
 
-Following the steps below sets up the integrated runner which can be used to
-execute digital twins from the Digital Twins Preview Page.
+The steps below set up an integrated runner that can execute digital
+twins from the Digital Twins Preview Page.
 
 ## Prerequisites
 
 A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
-For an explanation of how to set up a GitLab instance that integrates with a
-DTaaS platform, refer to [the GitLab instance document](index.md)
+To set up a GitLab instance that integrates with a DTaaS platform, see
+[the GitLab instance document](index.md)
 and [the GitLab integration guide](integration.md).
 
-The rest of this document assumes a running DTaaS platform with a
-GitLab instance is in place.
+The rest of this page assumes a running DTaaS platform with a GitLab
+instance.
 
 ## Runner Scopes
 
-A GitLab Runner can be configured for three different scopes:
+A GitLab Runner can have one of three scopes:
 
 | Runner Scope      | Description                                                |
 | ----------------- | ---------------------------------------------------------- |
@@ -42,15 +41,16 @@ A GitLab Runner can be configured for three different scopes:
 | Group Runner      | Available to all projects and subgroups in a group.        |
 | Project Runner    | Associated with one specific project.                      |
 
-Creating __instance runners__ is recommended as they are the most straightforward,
-but any type will work. More about these three types can be found on
-[the official GitLab documentation page](https://docs.gitlab.com/ee/ci/runners/runners_scope.html).
+__Instance runners__ are the simplest to set up and are recommended, but
+any type works. The
+[official GitLab documentation](https://docs.gitlab.com/ee/ci/runners/runners_scope.html)
+describes the three types.
 
 ## Obtaining A Registration Token
 
-First, obtain the token necessary to register the runner for the GitLab
-instance. Open the GitLab instance (remote or local) and depending on the
-chosen runner scope, follow the steps given below:
+First, obtain the token that registers the runner with the GitLab
+instance. Open the GitLab instance (remote or local) and follow the
+steps for the chosen runner scope:
 
 | Runner Scope      | Steps                                                                                                                                                                                                                                                           |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -58,38 +58,38 @@ chosen runner scope, follow the steps given below:
 | Group Runner      | 1. On the __DTaaS__ group page, navigate to __Settings > CI/CD > Runners__.<br>2. Ensure the __Enable shared runners for this group__ option is enabled.<br>3. On the __DTaaS__ group page, navigate to __Build > Runners__.<br>4. Select __New group runner__. |
 | Project Runner    | 1. On the __DTaaS__ group page, select the project named after the GitLab username.<br>2. Navigate to __Settings > CI/CD > Runners__.<br>3. Select __New project runner__.                                                                                      |
 
-For any chosen scope, a page to create a runner will be displayed:
+Each scope then shows a page for creating the runner:
 
 1. Under __Platform__, select the Linux operating system.
 1. Under __Tags__, add a `linux` tag.
 1. Select __Create runner__.
 
-The following screen should then appear:
+The following screen appears:
 
 ![Runner Registration Screen](./runner-registration.png)
 
-Be sure to save the generated runner authentication token.
+Save the generated runner authentication token.
 
 ## Configuring the Runner
 
-Depending on the installation scenario, the runner setup reads certain
-configuration settings:
+The runner compose files are in `deploy/services/runner`:
 
-1. __Localhost Installation (legacy compose files)__ uses
-  `deploy/docker/.env.local`.
-1. __Server Installation (legacy compose files)__ uses
-  `deploy/docker/.env.server`.
-1. __Integrated package installation__ uses
-  `deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env`.
+| Scenario  | Compose file                | Variables it reads        |
+| :-------- | :-------------------------- | :------------------------ |
+| Localhost | `compose.runner.local.yml`  | `DTAAS_DIR`               |
+| Server    | `compose.runner.server.yml` | `DTAAS_DIR`, `SERVER_DNS` |
 
-The runner compose templates under `deploy/services/runner` were originally
-written for `deploy/docker/*` layouts. For package-based installs, update
-certificate mount paths in `compose.runner.local.yml` and
-`compose.runner.server.yml` to match the active package directory.
+Both files mount the TLS certificate of the GitLab host from
+`${DTAAS_DIR}/deploy/docker/certs/...`. That directory no longer exists
+in the repository, so edit the certificate volume in the compose file to
+point to the certificate in use, for example
+`deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/fullchain.pem`
+for the integrated package. In the server scenario, remove the
+certificate volume if GitLab does not use a self-signed certificate.
 
-The runner must be registered with the GitLab instance so that they may
-communicate with each other. `deploy/services/runner/runner-config.toml`
-has the following template:
+The runner must be registered with the GitLab instance before the two
+can communicate. `deploy/services/runner/runner-config.toml` contains
+this template:
 
 ```toml
 [[runners]]
@@ -107,62 +107,53 @@ has the following template:
     network_mode = "host" # Disable this in secure contexts
 ```
 
-1. Set the `url` variable to the URL of the GitLab instance.
-1. Set the `token` variable to the runner registration token obtained earlier.
-1. For the server installation scenario, remove the line
+1. Set `url` to the URL of the GitLab instance.
+1. Set `token` to the runner authentication token obtained earlier.
+1. In the server installation scenario, remove the line
    `network_mode = "host"`.
 
-A list of advanced configuration options is provided on the
-[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+The
+[GitLab documentation](https://docs.gitlab.com/runner/configuration/advanced-configuration.html)
+lists the advanced configuration options.
 
 ## Start the GitLab Runner
 
-The following commands may be used to start and stop the `gitlab-runner`
-container respectively, depending on the installation scenario:
-
-1. Go to the DTaaS home directory (`DTaaS_DIR`) and execute one of
-   the following commands.
+Run these commands from the DTaaS repository directory. Each pair starts
+and then stops the `gitlab-runner` container.
 
 1. Localhost Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.local.yml \
-      --env-file deploy/docker/.env.local up -d
-    docker compose -f deploy/services/runner/compose.runner.local.yml \
-      --env-file deploy/docker/.env.local down
+    export DTAAS_DIR=$(pwd)
+    docker compose -f deploy/services/runner/compose.runner.local.yml up -d
+    docker compose -f deploy/services/runner/compose.runner.local.yml down
     ```
 
 1. Server Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.server.yml \
-      --env-file deploy/docker/.env.server up -d
-    docker compose -f deploy/services/runner/compose.runner.server.yml \
-      --env-file deploy/docker/.env.server down
+    export DTAAS_DIR=$(pwd)
+    export SERVER_DNS=intocps.org
+    docker compose -f deploy/services/runner/compose.runner.server.yml up -d
+    docker compose -f deploy/services/runner/compose.runner.server.yml down
     ```
 
-For package-based integrated installations, use the same compose files but set
-`--env-file` to
-`deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env` and
-adjust the certificate volume mounts in the compose file accordingly.
-
-Once the container starts, the runner within it will run automatically.
-Whether the runner is operational can be verified by navigating to the page
-where the runner was created. For example, an Instance Runner would look like this:
+The runner inside the container starts automatically. To check that it
+works, open the page where the runner was created. An Instance Runner,
+for example, looks like this:
 
 ![Status indicator under Admin Area > Runners](./runner-activation.png)
 
-A GitLab runner is now ready to accept jobs for the GitLab instance.
+The GitLab runner is now ready to accept jobs from the GitLab instance.
 
 ## Pipeline Trigger Token
 
-The Digital Twins Preview Page uses the GitLab API which requires a
+The Digital Twins Preview Page uses the GitLab API, which requires a
 [Pipeline Trigger Token](https://docs.gitlab.com/ee/api/pipeline_triggers.html).
-Go to the project in the __DTaaS__ group and navigate to
+Open the project in the __DTaaS__ group and navigate to
 __Settings > CI/CD > Pipeline trigger tokens__. Add a new token with any
-description as desired.
+description.
 
 ![Creating a Pipeline Trigger Token](./pipeline-token.PNG)
 
-The Digital Twins Preview Page can now be used to manage and execute
-digital twins.
+The Digital Twins Preview Page can now manage and execute digital twins.

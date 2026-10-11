@@ -1,8 +1,8 @@
 # Automation Examples
 
-These examples demonstrate the use of DevOps features in the DTaaS platform.
-GitLab CI/CD pipelines automate the lifecycle management of digital twins,
-enabling create, execute, and clean phases to run without manual intervention.
+These examples use the DevOps features of the DTaaS platform.
+GitLab CI/CD pipelines run the lifecycle scripts of each digital twin,
+such as create, execute, and clean, without manual steps.
 
 ## Available Examples
 

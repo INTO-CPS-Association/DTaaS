@@ -1,20 +1,20 @@
 # 📚 Documentation Workflow
 
-This file defines the process for building, validating, and publishing project
-documentation.
+How to build, check and publish the project documentation.
 
-The documentation stack is based on
+The documentation is built with
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
-Two MkDocs configuration files are maintained:
+There are two MkDocs configuration files:
 
-- **mkdocs.yml**: primary project configuration.
-- **mkdocs-github.yml**: CI-oriented configuration used by GitHub Actions.
+- **mkdocs.yml**: the main configuration, which also declares the PDF
+  export plugin.
+- **mkdocs-github.yml**: the configuration that GitHub Actions builds.
 
-All commands below are intended to be executed from the repository root.
+Run all commands below from the repository root.
 
 ## 📦 Install Documentation Dependencies
 
-Install documentation dependencies in the project virtual environment:
+Install the documentation dependencies in a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -24,31 +24,30 @@ pip install -r script/docs/mkdocs-requirements.txt
 pip install -r script/docs/mkdocs-requirements-github.txt
 ```
 
-Fetch Git LFS-managed documentation assets before previewing or building the
-site:
+Fetch the documentation images and videos, which are stored in Git LFS,
+before previewing or building the site:
 
 ```bash
 git lfs install
 git lfs pull --include="docs/**"
 ```
 
-If Git LFS assets are not fetched, MkDocs now aborts the build instead of
-copying pointer files into `site/`.
+If the LFS files have not been fetched, MkDocs aborts the build rather than
+copy pointer files into `site/`.
 
 ## 🔍 Run Markdown Linting
 
-The repository uses markdown linting to enforce formatting consistency.
+Markdown linting keeps the formatting consistent.
 
 ```bash
 npx markdownlint-cli docs/**/*.md
 ```
 
-Any lint findings should be resolved prior to committing documentation changes.
+Fix any lint findings before committing documentation changes.
 
 ## 📊 Format Markdown Tables
 
-Uneven table formatting can cause quality gate failures. The table formatter can
-be run as follows:
+Unevenly formatted tables can fail the quality gates. To format them, run:
 
 ```bash
 python script/docs/format_tables.py
@@ -59,7 +58,7 @@ python script/docs/format_tables.py
 ### Local Preview
 
 ```bash
-#On Linux
+# On Linux
 mkdocs serve -f mkdocs.yml
 # On Windows
 mkdocs serve -f mkdocs-github.yml
@@ -71,7 +70,7 @@ mkdocs serve -f mkdocs-github.yml
 mkdocs build -f mkdocs-github.yml
 ```
 
-For full configuration validation (including optional PDF plugin wiring), run:
+To check the full configuration, including the optional PDF plugin, run:
 
 ```bash
 # On Linux
@@ -85,24 +84,24 @@ mkdocs build -f mkdocs-github.yml
 
 ## 🚀 Publish Documentation
 
-MkDocs can produce HTML and, where enabled, PDF output. The PDF output
-generation is supported only on Linux.
+MkDocs produces HTML and, when enabled, PDF output. PDF generation works
+only on Linux.
 
-PDF generation is controlled by the `MKDOCS_ENABLE_PDF_EXPORT` environment
-variable:
+The `MKDOCS_ENABLE_PDF_EXPORT` environment variable turns PDF generation
+off (`0`) or on (`1`):
 
 ```bash
 export MKDOCS_ENABLE_PDF_EXPORT=0
 export MKDOCS_ENABLE_PDF_EXPORT=1
 ```
 
-To publish documentation content to the `webpage-docs` branch:
+To publish the documentation to the `webpage-docs` branch:
 
 ```bash
 export MKDOCS_ENABLE_PDF_EXPORT=1
-script\docs.sh [version]
-git push webpage-docs
+script/docs.sh [version]
+git push origin webpage-docs
 ```
 
-The published site is served via GitHub Pages at
+GitHub Pages serves the published site at
 [https://into-cps-association.github.io/DTaaS/](https://into-cps-association.github.io/DTaaS/).

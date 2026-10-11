@@ -1,13 +1,12 @@
 # OAuth 2.0 for React Client
 
-To enable user authorisation on the DTaaS React client website,
-the OAuth 2.0 authorisation protocol is used, specifically the PKCE
-authorisation flow. The following steps describe the setup process:
+The DTaaS React client website authorises users with the OAuth 2.0
+PKCE authorisation flow. The setup steps are:
 
 **1. Choose a GitLab Server:**
 
 - OAuth 2.0 authorisation must be set up on a GitLab server.
-  An on-premise GitLab installation is preferrable to commercial
+  An on-premises GitLab installation is preferable to the commercial
   <https://gitlab.com>.
 - The
   [GitLab Omnibus Docker](https://docs.gitlab.com/ee/install/docker.html)
@@ -17,18 +16,18 @@ authorisation flow. The following steps describe the setup process:
 
 **2. Determine the Website's Hostname:**
 
-- Before setting up OAuth on GitLab, the hostname for the website must be determined.
-  Using a self-hosted GitLab instance is recommended, which will be used in
-  other parts of the DTaaS platform.
+- Decide the hostname of the website before setting up OAuth on GitLab.
+  A self-hosted GitLab instance is recommended, because other parts of
+  the DTaaS platform use it too.
 
 **3. Define Callback and Logout URLs:**
 
 - For the PKCE authorisation flow to function correctly, two URLs are required:
   a callback URL and a logout URL.
-- The callback URL informs the OAuth 2.0 provider of the page where
-  signed-in users should be redirected. It differs from the landing
-  homepage of the DTaaS platform.
-- The logout URL specifies where users will be directed after logging out.
+- The callback URL tells the OAuth 2.0 provider where to redirect
+  signed-in users. It differs from the landing homepage of the DTaaS
+  platform.
+- The logout URL is where users go after logging out.
 
 **4. OAuth 2.0 Application Creation:**
 
@@ -42,8 +41,8 @@ authorisation flow. The following steps describe the setup process:
 **5. Application ID:**
 
 - After successfully creating the OAuth 2.0 application, GitLab generates
-  an application ID. This is a long string of HEX values required for
-  the configuration files.
+  an application ID. This long hexadecimal string is needed in the
+  configuration files.
 
   ![Scopes for Client OAuth 2.0 Application](client-oauth-scopes.png)
 
@@ -64,14 +63,14 @@ authorisation flow. The following steps describe the setup process:
 **7. Create User Accounts:**
 
 User accounts must be created in GitLab for all usernames chosen during
-installation. The _trial_ installation script includes two default
-usernames - _user1_ and _user2_. For all other installation scenarios,
-accounts with specific usernames must be created on GitLab.
+installation. The server deployment packages use two default usernames,
+_user1_ and _user2_. Create GitLab accounts for whichever usernames
+your installation uses.
 
 ## Username claim resolution for OIDC providers
 
-DTaaS resolves the logged-in username from common OIDC claims so that
-multiple providers are supported (e.g., GitLab, Keycloak, Dex).
+DTaaS resolves the logged-in username from common OIDC claims, so it
+works with several providers (for example GitLab, Keycloak and Dex).
 
 The client checks claims in this order:
 
@@ -90,21 +89,21 @@ that do not expose `profile` URLs to authenticate correctly.
 The resolved username is restricted to a URL-path-safe character set
 (`A-Z a-z 0-9 . _ @ + -`, and never the `..` sequence). A claim that
 does not match is skipped in favour of the next claim in the order
-above. This is a safety measure because the username is later used,
-unencoded, as a path segment in backend GitLab URLs (see below).
+above. The check exists because the username is later used, unencoded,
+as a path segment in backend GitLab URLs (see below).
 
 ### Provider support versus backend account requirements
 
 The sign-in steps above are written for GitLab because the rest of the
-DTaaS platform (workspaces, digital twins, libraries) is backed by a
-GitLab instance. The username-resolution logic, however, is
-provider-agnostic and works with any OIDC provider that issues one of
-the claims listed above (for example Keycloak, Dex or GitHub).
+DTaaS platform (workspaces, digital twins, libraries) relies on a
+GitLab instance. The username resolution itself works with any OIDC
+provider that issues one of the claims listed above (for example
+Keycloak, Dex or GitHub).
 
 Authenticating with a non-GitLab provider only signs the user into the
-website. Backend features additionally require that the **resolved
-username matches an existing account (namespace) on the configured
-GitLab instance**, because requests are constructed as
+website. Backend features also require that the resolved username
+matches an existing account (namespace) on the configured GitLab
+instance, because requests are constructed as
 `{gitlab}/{group}/{username}/-/raw/...`. If no GitLab account with that
 username exists, sign-in succeeds but GitLab-backed operations fail.
 Administrators using an external identity provider must therefore keep

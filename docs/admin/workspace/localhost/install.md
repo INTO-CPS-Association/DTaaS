@@ -1,21 +1,18 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-## 🛠️ Install
+## Install
 
-The installation instructions provided in this README are
-ideal for running the **DTaaS on localhost served over HTTP connection**.
-
-✅ This installation is ideal for single users intending to use
-DTaaS on their own computers.
+These instructions run **DTaaS on localhost, served over HTTP**.
+This installation suits a single user running DTaaS on their own computer.
 
 Download **workspace-dex-localhost-xx.zip** from the latest
 [release / pre-release](https://github.com/INTO-CPS-Association/DTaaS/releases)
 page.
 
-## 🏗️ Design
+## Design
 
-An illustration of the installation setup is shown here.
+The installation setup is shown here.
 
 <img src="localhost.png" alt="DTaaS Localhost" width="600px" />
 
@@ -25,51 +22,49 @@ An illustration of the installation setup is shown here.
 - Ports 80 and 5556 available on the host
 - At least 2GB RAM available
 
-## ⚡ Quick Demo
+## Quick Demo
 
-The description below refers to filenames. All the commands
-mentioned below are to be run this directory.
+Run all the commands below from the extracted package directory.
 
-Copy example configuration files first:
+Copy the example configuration files first:
 
 ```bash
 cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
-▶️ Start the demo:
+Start the demo:
 
 ```bash
 docker compose --env-file config/.env up -d
 ```
 
-The application will be accessible at <http://localhost> from web browser.
-Login using the default credentials.
+Open <http://localhost> in a web browser and log in with the default
+credentials:
 
-**👤 User email:** `user@intocps.org`
-**🔑 Password:** `user`
+- **User email:** `user@intocps.org`
+- **Password:** `user`
 
-⏹️ Stop the demo:
+Stop the demo:
 
 ```bash
 docker compose --env-file config/.env down
 ```
 
-## 🌵Limitations
+## Limitations
 
-1. All the functionality of DTaaS except DevOps features should be
-   available through the single page client now.
+1. All DTaaS functionality except the DevOps features is available
+   through the single page client.
 1. The installation has default user credentials.
-   See [instructions](custom-user.md) for help with changing
-   the user credentials.
+   See the [instructions](custom-user.md) for changing them.
 
-## 📚 Documentation
+## Documentation
 
 See
 <https://into-cps-association.github.io/DTaaS/development/index.html>
-for complete documentation.
+for the complete documentation.
 
-## 🔗 References
+## References
 
 Image sources:
 

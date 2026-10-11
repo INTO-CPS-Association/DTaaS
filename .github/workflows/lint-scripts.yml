@@ -9,6 +9,8 @@ name: Lint Miscellaneous Scripts
       - '**.yaml'
       - '.shellcheckrc'
       - '.yamllint.yml'
+      - '.agents/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/lint-scripts.yml'
   pull_request:
     paths:
@@ -18,6 +20,8 @@ name: Lint Miscellaneous Scripts
       - '**.yaml'
       - '.shellcheckrc'
       - '.yamllint.yml'
+      - '.agents/skills/**'
+      - '.claude/skills/**'
   workflow_dispatch:
 
 concurrency:
@@ -90,6 +94,70 @@ jobs:
           pylint cli/ servers/ script/ deploy/services/cli/ deploy/workspace/ \
             --rcfile='${{ github.workspace }}/.pylintrc' \
             --fail-under=9 --recursive=y || echo "No Python files to lint"
+
+  javascript-lint:
+    name: Lint and Test Node Scripts (${{ matrix.skill }})
+    runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: [upgrade-npm-packages, capture-docs-screenshots]
+    defaults:
+      run:
+        working-directory: .agents/skills/${{ matrix.skill }}/scripts
+    steps:
+      - name: Checkout code
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: false
+
+      - name: Setup node
+        # v7.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '26'
+
+      # The scripts have no npm dependencies; the linters are installed
+      # here only, at exact versions, without a package.json.
+      - name: Install linting tools
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts \
+            eslint@10.11.0 @eslint/js@10.0.1 prettier@3.9.9
+
+      - name: Run eslint
+        run: node_modules/.bin/eslint .
+
+      - name: Run prettier
+        run: node_modules/.bin/prettier --check .
+
+      - name: Run unit tests
+        run: node --test ./*.test.js
+
+      # Claude Code reads .claude/skills, so every skill keeps a stub there
+      # whose frontmatter must match the canonical .agents/skills copy. The
+      # check covers every skill, so one matrix leg runs it.
+      - name: Check Claude Code skill stubs
+        if: matrix.skill == 'upgrade-npm-packages'
+        working-directory: .
+        run: |
+          frontmatter() { awk '/^---$/ { n++; next } n == 1' "$1"; }
+          status=0
+          for skill in .agents/skills/*/; do
+            name=$(basename "$skill")
+            stub=".claude/skills/$name/SKILL.md"
+            if [ ! -f "$stub" ]; then
+              echo "::error file=$stub::missing Claude Code stub for $name"
+              status=1
+            elif ! diff <(frontmatter "$skill/SKILL.md") <(frontmatter "$stub"); then
+              echo "::error file=$stub::frontmatter differs from $skill/SKILL.md"
+              status=1
+            fi
+          done
+          exit $status
 
   yaml-lint:
     name: Lint YAML Files
