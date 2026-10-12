@@ -14,7 +14,12 @@ For a full configuration reference, see [CONFIG.md](CONFIG.md).
 This package deploys DTaaS with Traefik, OAuth forward-auth, and
 multiple user workspaces.
 
-<img src="server.png" alt="DTaaS on Server" width="600px" />
+![DTaaS on Server](server.png)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 The `docker-compose.yml` starts the following services:
 

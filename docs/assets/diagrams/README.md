@@ -20,6 +20,7 @@ placed later.
 | `admin/gitlab/gitlab-independent-install.png` | `admin/gitlab/index.md` |
 | `admin/gitlab/gitlab-integrated-runner.png` | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md` |
 | `developer/system/multi-domain.png` | `developer/system/extensions.md` |
+| `deploy/dtaas/docker/server/server.png` | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL |
 | Architecture with public and private cloud | Not placed |
 | Workspace and assets | Not placed |
 | DTaaS localhost, with forward-auth | Not placed, see below |
@@ -32,6 +33,11 @@ package runs Traefik, the client, the logger and one user workspace, without
 forward-auth, and the localhost diagram in this file draws forward-auth. The
 image in the documentation stays as it is until the diagram matches the
 package.
+
+The installation packages under `deploy/` keep their own copy of four of these
+images, so a downloaded package shows its diagram without the website.
+`export_diagrams.py` writes those copies from the exported images (see
+`DEPLOY_COPIES` in the script), so a package copy is never edited by hand.
 
 ## Design Rules
 

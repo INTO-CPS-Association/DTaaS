@@ -21,7 +21,12 @@ This package installs the DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
 authorisation provider and the DevOps backend for digital twin projects.
 
-<img src="server.png" alt="DTaaS on Server" width="600px" />
+![DTaaS on Server](server.png)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 The `docker-compose.yml` starts the following services:
 
