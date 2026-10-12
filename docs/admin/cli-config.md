@@ -17,7 +17,7 @@ installation workflow is covered in
 | `[common.security]` | Not used | Not used | Required | Required |
 | `[common.resources]` | Optional | Optional | Optional | Optional |
 | `[gitlab]` | Optional | Optional | Optional | Optional |
-| `[[users]]` | Required | Required | Required | Required |
+| `[[users]]` | Optional | Required | Required | Required |
 | `[frontend]` | Not used | Required | Required | Required |
 | `[localhost]` | Required | Not used | Not used | Not used |
 | `[insecure-server]` | Not used | Required | Not used | Not used |
@@ -32,7 +32,7 @@ installation workflow is covered in
 | `[common.security]` | Not used | Required |
 | `[common.resources]` | Optional | Optional |
 | `[gitlab]` | Optional | Optional |
-| `[[users]]` | Required | Required |
+| `[[users]]` | Optional | Required |
 | `[workspace-localhost]` | Required | Not used |
 | `[workspace-secure-server]` | Not used | Required |
 
@@ -43,6 +43,9 @@ starting point and delete the sections that your deployment type does
 not use (see the tables above).
 
 ```toml
+# URL of the DTaaS repository (required, all deployment types).
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+
 # ── Common settings (all deployment types) ────────────────────────────────────
 [common]
 # Public hostname of the server. Use "localhost" for local deployments,

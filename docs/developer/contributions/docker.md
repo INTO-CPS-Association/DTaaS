@@ -39,10 +39,10 @@ on, the `feature/distributed-demo` branch. Because the push trigger
 covers only the source code directories, a change to a Dockerfile alone
 does not re-publish an already published package version.
 
-The logger microservice workflow (`.github/workflows/logger-ms.yml`) has
-no Docker build check. It publishes the image built from
-`developer/check/logger.dockerfile` on pushes to `feature/*` and
-`release-v*` branches, and its push trigger includes that Dockerfile.
+The logger microservice workflow (`.github/workflows/logger-ms.yml`)
+builds and checks the image from `developer/check/logger.dockerfile`. It
+publishes that image on pushes to `feature/*` and `release-v*` branches,
+and its push trigger includes that Dockerfile.
 
 ## Publish Docker Images
 
