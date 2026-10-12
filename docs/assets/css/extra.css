@@ -20,14 +20,6 @@
 @font-face {
   font-family: "Inter";
   font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../fonts/inter-latin-500-normal.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url("../fonts/inter-latin-700-normal.woff2") format("woff2");
@@ -82,4 +74,19 @@
   --md-accent-fg-color--transparent: rgb(0 171 164 / 10%);
   --md-accent-bg-color: var(--dtaas-primary-dark);
   --md-accent-bg-color--light: rgb(0 37 70 / 70%);
+}
+
+/*
+ * Links in running text are underlined. The link blue is close to the body
+ * text in lightness, so colour alone does not set a link apart, and the
+ * underline gives a cue that does not depend on colour.
+ */
+.md-typeset a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.md-typeset a:hover,
+.md-typeset a:focus-visible {
+  text-decoration-thickness: 2px;
 }
