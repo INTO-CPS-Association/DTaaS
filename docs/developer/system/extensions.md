@@ -48,10 +48,10 @@ proposal:
   such as pages, navigation entries, digital twin tabs, asset previews,
   anchor kinds, converters, encoding presets and substrates, as one
   `DtaasExtension` object.
-- The host passes platform services to each extension through a
-  `HostServices` object: authentication, the library, the workspace
-  contents API, GitLab, user interface helpers, logging, settings and
-  configuration. An extension does not import client internals.
+- The host passes platform services to each extension through a `HostServices`
+  object: authentication, the library, the workspace contents API, GitLab, live
+  signals, the visualisation service, user interface helpers, logging, settings
+  and configuration. An extension does not import client internals.
 - The client lists the extensions compiled into a build in one file,
   `src/extensions.ts`. A deployment can disable a compiled-in extension
   in `env.js` with `REACT_APP_EXTENSIONS_DISABLED`.
@@ -61,10 +61,10 @@ proposal:
 - `bim-kit` is moved onto the contract, and the wiring files in
   `client/src/route/bim/` move into it.
 
-The SDK declares a contract revision (`sdk: 1`) that is separate from
-its npm version, and a host built on the SDK refuses an extension
-built for another revision. The `examples/bim` folder of the SDK repository ports
-`bim-kit` 0.1.1 onto the contract as a private package.
+The SDK declares a contract revision (`sdk: 1`) that is separate from its npm
+version, and a host built on the SDK refuses an extension built for another
+revision. The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1
+onto the contract as a private package.
 
 The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are

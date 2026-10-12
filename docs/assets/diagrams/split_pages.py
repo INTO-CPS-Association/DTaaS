@@ -34,6 +34,7 @@ def box(cell):
 
 
 def edge_box(cell, geometry):
+    """Return the bounding box of the free points of an edge."""
     # drawio keeps a stale end point after an end is connected to a shape,
     # so only the ends that are not connected count.
     ignored = {'sourcePoint'} if cell.get('source') else set()
@@ -47,6 +48,7 @@ def edge_box(cell, geometry):
 
 
 def near(a, b):
+    """Tell whether two boxes are closer than the gap."""
     return (a[0] - GAP < b[2] and b[0] - GAP < a[2]
             and a[1] - GAP < b[3] and b[1] - GAP < a[3])
 
@@ -56,6 +58,7 @@ def clusters(boxes):
     parent = list(range(len(boxes)))
 
     def find(i):
+        """Return the root of the group that holds box i."""
         while parent[i] != i:
             parent[i] = parent[parent[i]]
             i = parent[i]
@@ -72,10 +75,12 @@ def clusters(boxes):
 
 
 def is_text(cell):
+    """Tell whether a cell is a plain text label."""
     return (cell.get('style') or '').startswith('text;')
 
 
 def is_title(cell):
+    """Tell whether a cell is a section title of the original page."""
     return is_text(cell) and TITLE in (cell.get('value') or '')
 
 
@@ -92,6 +97,7 @@ def top_level_ids(root, layer):
 
 
 def attached(cell, keep, top_of):
+    """Tell whether an edge ends on a cell that is kept."""
     ends = (cell.get('source'), cell.get('target'))
     return any(end and top_of.get(end) in keep for end in ends)
 
@@ -115,17 +121,22 @@ def split(diagram):
         page = copy.deepcopy(diagram)
         page.set('name', f"{diagram.get('name')}-{index:02d}")
         page.set('id', f"{diagram.get('id')}-{index:02d}")
-        page_root = page.find('mxGraphModel/root')
-        # A removed group takes its children with it.
-        for cell in list(page_root):
-            if cell.get('id') in (base, layer):
-                continue
-            if top_of.get(cell.get('id')) not in keep:
-                page_root.remove(cell)
+        keep_only(page.find('mxGraphModel/root'), keep, top_of, (base, layer))
         yield page
 
 
+def keep_only(root, keep, top_of, structural):
+    """Remove every cell outside the kept top level cells."""
+    # A removed group takes its children with it.
+    for cell in list(root):
+        if cell.get('id') in structural:
+            continue
+        if top_of.get(cell.get('id')) not in keep:
+            root.remove(cell)
+
+
 def main():
+    """Write a drawio file with one page per diagram."""
     if len(sys.argv) != 3:
         raise SystemExit(__doc__)
     source, target = (pathlib.Path(arg) for arg in sys.argv[1:])

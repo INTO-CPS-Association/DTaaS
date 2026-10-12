@@ -536,7 +536,7 @@
         <mxCell id="UekJGINigLjTJO7OAAqp-35" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eaf1fb;strokeColor=none;" value="&lt;span&gt;traefik forward-auth&lt;/span&gt;" vertex="1">
           <mxGeometry height="49" width="80" x="3080.31" y="-292" as="geometry" />
         </mxCell>
-        <mxCell id="UekJGINigLjTJO7OAAqp-37" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/libms&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="UekJGINigLjTJO7OAAqp-37" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/lib&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="3040.31" y="-228" as="geometry" />
         </mxCell>
         <mxCell id="UekJGINigLjTJO7OAAqp-38" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/user1&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
@@ -580,7 +580,7 @@
         <mxCell id="UekJGINigLjTJO7OAAqp-0" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=0;whiteSpace=wrap;html=1;rotation=0;fillColor=#f5f6fa;dashed=1;dashPattern=8 8;fontColor=#333b4c;strokeColor=#94a0b8;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="" vertex="1">
           <mxGeometry height="88.5" width="84" x="3316.44" y="219" as="geometry" />
         </mxCell>
-        <mxCell id="vi77GQZE-va_ygLvs5nQ-59" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;Note: The text starting with / at the beginning indicates the URL route at which a certain service is available. For example, user workspace is available at https://foo.com/user1&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="vi77GQZE-va_ygLvs5nQ-59" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;Note: The text starting with / at the beginning indicates the URL route at which a certain service is available. For example, user workspace is available at https://intocps.org/user1&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="50" width="463.26" x="2888.6800000000003" y="438" as="geometry" />
         </mxCell>
         <mxCell id="Fb5g7KOamzeEp-tUsixX-0" edge="1" parent="KeG63aSpRuXNrPvZmxFO-1" source="aJ1wJWLBeB5Yzifdzy9B-254" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;">
@@ -712,7 +712,7 @@
         <mxCell id="aJ1wJWLBeB5Yzifdzy9B-278" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/gitlab&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="3180.44" y="304" as="geometry" />
         </mxCell>
-        <mxCell id="aJ1wJWLBeB5Yzifdzy9B-279" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/libms&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="aJ1wJWLBeB5Yzifdzy9B-279" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/lib&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="3040.31" y="302" as="geometry" />
         </mxCell>
         <mxCell id="aJ1wJWLBeB5Yzifdzy9B-280" parent="KeG63aSpRuXNrPvZmxFO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/user1&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
@@ -1108,7 +1108,7 @@
         <mxCell id="2WJjZC69SbeaYorzOpKH-62" parent="v6i8HoHBXmyDTCzz0mmW-6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/gitlab&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="320.1800000000003" y="197" as="geometry" />
         </mxCell>
-        <mxCell id="2WJjZC69SbeaYorzOpKH-63" parent="v6i8HoHBXmyDTCzz0mmW-6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/libms&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="2WJjZC69SbeaYorzOpKH-63" parent="v6i8HoHBXmyDTCzz0mmW-6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/lib&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="180.05000000000018" y="195" as="geometry" />
         </mxCell>
         <mxCell id="2WJjZC69SbeaYorzOpKH-64" parent="v6i8HoHBXmyDTCzz0mmW-6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/user1&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
@@ -1216,7 +1216,7 @@
             <mxPoint x="1018.2000000000003" y="299.25" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="gU5Azu22nVsg72kt19vJ-19" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
+        <mxCell id="gU5Azu22nVsg72kt19vJ-19" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="978.2000000000003" y="338.25" as="geometry" />
         </mxCell>
         <mxCell id="gU5Azu22nVsg72kt19vJ-20" edge="1" parent="KeG63aSpRuXNrPvZmxFO-1" source="gU5Azu22nVsg72kt19vJ-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="gU5Azu22nVsg72kt19vJ-8">
@@ -1227,7 +1227,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="gU5Azu22nVsg72kt19vJ-21" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
+        <mxCell id="gU5Azu22nVsg72kt19vJ-21" parent="KeG63aSpRuXNrPvZmxFO-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="886.2000000000003" y="338.25" as="geometry" />
         </mxCell>
         <mxCell id="gU5Azu22nVsg72kt19vJ-22" edge="1" parent="KeG63aSpRuXNrPvZmxFO-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
@@ -1770,7 +1770,7 @@
             <mxPoint x="150.25" y="180" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-48" parent="l88ALDhOUXXDp8om8Efv-66" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-48" parent="l88ALDhOUXXDp8om8Efv-66" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="110.25" y="219" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-49" edge="1" parent="l88ALDhOUXXDp8om8Efv-66" source="l88ALDhOUXXDp8om8Efv-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="l88ALDhOUXXDp8om8Efv-37">
@@ -1781,7 +1781,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-50" parent="l88ALDhOUXXDp8om8Efv-66" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-50" parent="l88ALDhOUXXDp8om8Efv-66" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="18.25" y="219" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-51" edge="1" parent="l88ALDhOUXXDp8om8Efv-66" source="l88ALDhOUXXDp8om8Efv-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.979;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" target="l88ALDhOUXXDp8om8Efv-42">
@@ -1814,7 +1814,7 @@
             <mxPoint x="150.28500000000008" y="179" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-57" parent="l88ALDhOUXXDp8om8Efv-66" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/libms&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-57" parent="l88ALDhOUXXDp8om8Efv-66" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/lib&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="179.1199999999999" y="196" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-58" parent="l88ALDhOUXXDp8om8Efv-66" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/user2&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
@@ -1911,7 +1911,7 @@
             <mxPoint x="150.25" y="180" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-83" parent="l88ALDhOUXXDp8om8Efv-68" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-83" parent="l88ALDhOUXXDp8om8Efv-68" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="110.25" y="219" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-84" edge="1" parent="l88ALDhOUXXDp8om8Efv-68" source="l88ALDhOUXXDp8om8Efv-85" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="l88ALDhOUXXDp8om8Efv-72">
@@ -1922,7 +1922,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-85" parent="l88ALDhOUXXDp8om8Efv-68" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;2&lt;/sub&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-85" parent="l88ALDhOUXXDp8om8Efv-68" style="rounded=1;whiteSpace=wrap;html=1;" value="User&lt;br&gt;Workspace&lt;sub&gt;1&lt;/sub&gt;" vertex="1">
           <mxGeometry height="47" width="81.75" x="18.25" y="219" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-86" edge="1" parent="l88ALDhOUXXDp8om8Efv-68" source="l88ALDhOUXXDp8om8Efv-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.979;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" target="l88ALDhOUXXDp8om8Efv-77">
@@ -1955,7 +1955,7 @@
             <mxPoint x="150.28500000000008" y="179" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-92" parent="l88ALDhOUXXDp8om8Efv-68" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/libms&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-92" parent="l88ALDhOUXXDp8om8Efv-68" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/lib&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="50" x="179.1199999999999" y="196" as="geometry" />
         </mxCell>
         <mxCell id="l88ALDhOUXXDp8om8Efv-93" parent="l88ALDhOUXXDp8om8Efv-68" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;/user2&lt;/i&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;" vertex="1">
@@ -1986,7 +1986,7 @@
             <mxPoint x="157.66000000000008" y="179" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="l88ALDhOUXXDp8om8Efv-67" parent="l88ALDhOUXXDp8om8Efv-68" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;https://gitlab.com&lt;br&gt;OR&lt;br&gt;https://intocps.com/gitlab&lt;/font&gt;&lt;/i&gt;" vertex="1">
+        <mxCell id="l88ALDhOUXXDp8om8Efv-67" parent="l88ALDhOUXXDp8om8Efv-68" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" value="&lt;i&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;https://gitlab.com&lt;br&gt;OR&lt;br&gt;https://intocps.org/gitlab&lt;/font&gt;&lt;/i&gt;" vertex="1">
           <mxGeometry height="30" width="86.01" x="410" y="270" as="geometry" />
         </mxCell>
       </root>

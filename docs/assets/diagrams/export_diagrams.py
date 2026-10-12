@@ -29,6 +29,7 @@ SCALE = 2
 
 
 def main():
+    """Export every page named after a docs path."""
     if not pathlib.Path(DRAWIO).exists():
         raise SystemExit(f'drawio not found at {DRAWIO}, set DRAWIO')
     print(f'using {DRAWIO}')

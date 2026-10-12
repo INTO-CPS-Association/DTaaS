@@ -136,6 +136,7 @@ def recolour(text):
 
 
 def swap(chunk):
+    """Replace mapped colours in a piece of text with no image in it."""
     chunk = HEX.sub(lambda m: COLOURS.get(m.group(0).lower(), m.group(0)), chunk)
     for old, new in RGB.items():
         chunk = chunk.replace(old, new)
@@ -143,12 +144,13 @@ def swap(chunk):
 
 
 def logo_style():
+    """Return the drawio style of an image cell that shows the logo."""
     data = base64.b64encode(LOGO.read_bytes()).decode('ascii')
     return f'shape=image;aspect=fixed;image=data:image/svg+xml,{data};'
 
 
 def old_wordmarks(model):
-    """Yield (group, title) for each emoji wordmark and the title beside it."""
+    """Yield (group, members, titles) for each emoji wordmark."""
     cells = {cell.get('id'): cell for cell in model.iter('mxCell')}
     for group in cells.values():
         members = [c for c in cells.values() if c.get('parent') == group.get('id')]
@@ -164,6 +166,7 @@ def old_wordmarks(model):
 
 
 def replace_wordmarks(root):
+    """Put the logo where each old wordmark was."""
     style = logo_style()
     for model in root.iter('root'):
         found = list(old_wordmarks(model))
@@ -184,6 +187,7 @@ def replace_wordmarks(root):
 
 
 def main():
+    """Recolour the input file and write the result."""
     if len(sys.argv) != 3:
         raise SystemExit(__doc__)
     source, target = (pathlib.Path(arg) for arg in sys.argv[1:])
