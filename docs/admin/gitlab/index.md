@@ -18,6 +18,9 @@ then continue with the [integration guide](integration.md).
 
 ![Services CLI GitLab Install](gitlab-independent-install.png)
 
+Server 1 runs DTaaS and server 2 runs GitLab. The routes and the thick
+arrow mean the same as in Option A.
+
 Use the [services CLI](../services/cli.md) if GitLab runs as one of the
 platform services, then continue with the
 [integration guide](integration.md).
