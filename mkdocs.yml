@@ -9,6 +9,25 @@ theme:
   locale: en
   logo: assets/brand/dtaas-mark-white.svg
   favicon: assets/brand/dtaas-mark.svg
+  # Inter is self-hosted in docs/assets/fonts, so no Google Fonts request.
+  font: false
+  # Colours come from docs/assets/css/extra.css, which repeats the
+  # application's tokens. The first entry whose media query matches wins.
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.tracking
@@ -167,6 +186,9 @@ nav:
       - Third Party: third-party.md
 
 use_directory_urls: false
+
+extra:
+  generator: false
 
 extra_css:
   - assets/css/extra.css

@@ -1,3 +1,85 @@
-.wy-nav-content {
-    max-width: 100% !important;
+/*
+ * Site theme. The colours repeat client/src/theme/tokens.ts so the
+ * documentation and the application read as one product. Change them there
+ * first and then here.
+ */
+
+/*
+ * Inter is served from this site, so a reader's browser makes no request to
+ * Google Fonts. Latin subset only, the same files the application ships.
+ * Licence: OFL.txt in the same folder.
+ */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-latin-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-latin-700-normal.woff2") format("woff2");
+}
+
+:root {
+  --dtaas-primary: #003d73;
+  --dtaas-primary-dark: #002546;
+  --dtaas-accent: #00aba4;
+  --dtaas-mark-accent: #37a0cb;
+
+  /* Material appends its own system stack after this name. */
+  --md-text-font: "Inter";
+
+  /* The blue cast of the application's greys, hsl(220, ...). */
+  --md-hue: 220;
+}
+
+/*
+ * The header is the navy field au.dk uses for a solid block, the same ground
+ * the mark sits on.
+ */
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color: var(--dtaas-primary-dark);
+  --md-primary-fg-color--light: var(--dtaas-primary);
+  --md-primary-fg-color--dark: var(--dtaas-primary-dark);
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgb(255 255 255 / 70%);
+}
+
+/*
+ * Light scheme. Material colours link hover and focus with the accent, and
+ * the turquoise is 2.85:1 on white, so text keeps to the blues here and the
+ * turquoise appears only as a filled tint.
+ */
+[data-md-color-scheme="default"][data-md-color-accent="custom"] {
+  --md-typeset-a-color: var(--dtaas-primary);
+  --md-accent-fg-color: var(--dtaas-primary-dark);
+  --md-accent-fg-color--transparent: rgb(0 171 164 / 10%);
+  --md-accent-bg-color: #ffffff;
+  --md-accent-bg-color--light: rgb(255 255 255 / 70%);
+}
+
+/*
+ * Dark scheme. The primary tint would pass on slate but sits too close to the
+ * body text to read as a link, so links take the cyan of the mark, which is
+ * meant for a dark ground. The turquoise passes on slate and marks hover.
+ */
+[data-md-color-scheme="slate"][data-md-color-accent="custom"] {
+  --md-typeset-a-color: var(--dtaas-mark-accent);
+  --md-accent-fg-color: var(--dtaas-accent);
+  --md-accent-fg-color--transparent: rgb(0 171 164 / 10%);
+  --md-accent-bg-color: var(--dtaas-primary-dark);
+  --md-accent-bg-color--light: rgb(0 37 70 / 70%);
 }
