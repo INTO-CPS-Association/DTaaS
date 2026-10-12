@@ -23,6 +23,18 @@ See the list of
 [code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
 on GitHub.
 
+| Contribution                                               | Contributors                    |
+| :--------------------------------------------------------- | :------------------------------ |
+| Interface redesign with Material UI ([#1765][pr-1765])     | Jady Pamella Barbacena da Silva |
+| Building Models page for IFC models ([#1768][pr-1768])     | Jady Pamella Barbacena da Silva |
+| Client security fixes ([#1769][pr-1769], [#1783][pr-1783]) | Jady Pamella Barbacena da Silva |
+| Documentation theme and diagrams in the new design         | Jady Pamella Barbacena da Silva |
+
+[pr-1765]: https://github.com/INTO-CPS-Association/DTaaS/pull/1765
+[pr-1768]: https://github.com/INTO-CPS-Association/DTaaS/pull/1768
+[pr-1769]: https://github.com/INTO-CPS-Association/DTaaS/pull/1769
+[pr-1783]: https://github.com/INTO-CPS-Association/DTaaS/pull/1783
+
 ## Example Contributors
 
 | Example Name                                          | Contributors                                |
@@ -50,7 +62,9 @@ on GitHub.
    E., & Larsen, P. G. (2023).
    Digital Twin as a Service (DTaaS): A Platform for
    Digital Twin Developers and Users.
-   [arXiv preprint arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
+   In 2023 IEEE Smart World Congress (SWC), pp. 1-8. IEEE.
+   [doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
+   Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
 1. Astitva Sehgal for developer and example documentation.
 1. Tanusree Roy and Farshid Naseri for asking interesting questions
    that ended up in the FAQ.
