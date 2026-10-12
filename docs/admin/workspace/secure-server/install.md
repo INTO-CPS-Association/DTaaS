@@ -20,8 +20,12 @@ page.
 
 The installation setup is shown here.
 
-<img src="secure-server.png"
-  alt="Workspace production installation using Keycloak" width="800px" />
+![Workspace production installation using Keycloak](secure-server.png)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 ## User Directories
 

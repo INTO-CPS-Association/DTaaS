@@ -14,7 +14,10 @@ page.
 
 The installation setup is shown here.
 
-<img src="localhost.png" alt="DTaaS Localhost" width="600px" />
+![DTaaS Localhost](localhost.png)
+
+A path such as `/user` is the URL route of that service, for example
+`http://localhost/user`.
 
 ## Prerequisites
 

@@ -6,6 +6,11 @@ DTaaS supports two ways of installing a local GitLab instance.
 
 ![Integrated GitLab Install](gitlab-integrated-install.png)
 
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
+
 See [secure server with GitLab](../dtaas/secure-server-gitlab/install.md),
 then continue with the [integration guide](integration.md).
 

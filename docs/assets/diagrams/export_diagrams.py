@@ -24,8 +24,11 @@ SOURCE = HERE / 'dtaas-diagrams.drawio'
 DRAWIO = os.environ.get(
     'DRAWIO', '/Applications/draw.io.app/Contents/MacOS/draw.io')
 
-# Twice the drawn size, so the images stay sharp on a high density screen.
-SCALE = 2
+# Every image is drawn this many pixels wide: twice the widest content column
+# of the documentation, so it stays sharp on a high density screen. The pages
+# show each image at the column width, so every diagram is shown at the same
+# scale relative to its own width, which `restyle_drawio.py` sizes text for.
+EXPORT_WIDTH = 1600
 
 
 def main():
@@ -41,8 +44,9 @@ def main():
             continue
         target = DOCS / name
         # drawio numbers pages from 1.
-        subprocess.run([DRAWIO, '-x', '-f', 'png', '-s', str(SCALE),
-                        '-p', str(number), '-o', str(target), str(SOURCE)],
+        subprocess.run([DRAWIO, '-x', '-f', 'png', '--theme', 'light',
+                        '--width', str(EXPORT_WIDTH), '-p', str(number),
+                        '-o', str(target), str(SOURCE)],
                        check=True, capture_output=True)
         print(f'wrote {target.relative_to(DOCS.parent)}')
 

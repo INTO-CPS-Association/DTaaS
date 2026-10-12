@@ -5,6 +5,11 @@ for the DTaaS platform. The diagram shows the intended installation.
 
 ![GitLab Runner Integration](gitlab-integrated-runner.png)
 
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
+
 ## Step-by-Step Setup Process
 
 ### 1. Install GitLab Runner

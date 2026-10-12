@@ -1,0 +1,102 @@
+"""Shrink the raster logos embedded in the diagrams file.
+
+drawio cannot share an image between cells, so every cell carries its own
+copy as base64. The traefik logo alone was a 870 by 1200 PNG repeated in
+eleven cells. Each raster image is scaled down to the pixels the export
+actually draws, which is twice the size the documentation shows at its widest
+column, so nothing is lost in the PNG files.
+
+A JPEG has no transparency, and the GitLab logo was one: it showed as a white
+box on the grey server frame. A JPEG is therefore turned into a PNG and its
+white background into transparency.
+
+Needs Pillow:
+
+    uv run --with pillow python docs/assets/diagrams/shrink_images.py in out
+
+Usage: python3 shrink_images.py <input.drawio> <output.drawio>
+"""
+
+import base64
+import io
+import math
+import re
+
+from PIL import Image
+
+from drawio_style import rewrite_file
+from export_diagrams import EXPORT_WIDTH
+from restyle_drawio import Page
+
+RASTER = re.compile(r'image=data:image/(png|jpg|jpeg),([A-Za-z0-9+/=]+)')
+
+
+def white_to_alpha(image):
+    """Turn a white background into transparency, keeping soft edges."""
+    rgba = image.convert('RGBA')
+    pixels = rgba.load()
+    for x in range(rgba.width):
+        for y in range(rgba.height):
+            pixels[x, y] = clear_white(pixels[x, y])
+    return rgba
+
+
+def clear_white(pixel):
+    """Return one pixel with its white part made transparent."""
+    # How far the pixel is from white decides how opaque it stays, and the
+    # colour is divided back out so an edge does not keep a white halo.
+    alpha = 255 - min(pixel[:3])
+    if alpha == 0:
+        return 0, 0, 0, 0
+    colour = (round(255 - (255 - c) * 255 / alpha) for c in pixel[:3])
+    return (*colour, alpha)
+
+
+def shrink(data, kind, size):
+    """Return the image as base64 PNG data, no larger than the given size."""
+    image = Image.open(io.BytesIO(base64.b64decode(data)))
+    if image.mode == 'P' and image.width <= size[0] and image.height <= size[1]:
+        return data  # already shrunk by an earlier run
+    image = image.convert('RGBA')
+    if image.width > size[0] or image.height > size[1]:
+        image.thumbnail(size, Image.Resampling.LANCZOS)
+    if kind != 'png':
+        image = white_to_alpha(image)
+    # A logo has few colours, so a palette of 256 keeps it unchanged to the
+    # eye at half the bytes.
+    image = image.quantize(256, method=Image.Quantize.FASTOCTREE)
+    out = io.BytesIO()
+    image.save(out, 'PNG', optimize=True)
+    return base64.b64encode(out.getvalue()).decode('ascii')
+
+
+def shrink_cell(cell, pixels_per_unit):
+    """Rewrite the raster image of one cell, if it has one."""
+    style = cell.get('style') or ''
+    match = RASTER.search(style)
+    box = cell.find('mxGeometry')
+    if match is None or box is None:
+        return
+    size = tuple(math.ceil(float(box.get(side)) * pixels_per_unit)
+                 for side in ('width', 'height'))
+    data = shrink(match.group(2), match.group(1), size)
+    cell.set('style', style.replace(match.group(0),
+                                    f'image=data:image/png,{data}'))
+
+
+def shrink_page(diagram):
+    """Shrink every raster image on one page."""
+    page = Page(diagram)
+    pixels_per_unit = EXPORT_WIDTH / page.width
+    for cell in page.root:
+        shrink_cell(cell, pixels_per_unit)
+
+
+def main():
+    """Shrink every raster image in the input file and write the result."""
+    target = rewrite_file(__doc__, shrink_page)
+    print(f'wrote {target}, {target.stat().st_size // 1024} KiB')
+
+
+if __name__ == '__main__':
+    main()
