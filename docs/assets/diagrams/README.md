@@ -65,7 +65,7 @@ them and can be run again on its own output without changing anything.
    python3 docs/assets/diagrams/restyle_drawio.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with pillow python docs/assets/diagrams/shrink_images.py \
+   uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
    ```
@@ -84,18 +84,21 @@ them and can be run again on its own output without changing anything.
    colours, fonts and sizes, and a larger font can need a box moved by hand.
 
 The export draws text with the fonts installed on the machine. Install Inter
-first, or drawio falls back to another face without a warning. The
-`@fontsource/inter` package of the client carries it as `woff2`, which
-`fonttools` turns into a font the system can install:
+first, or drawio falls back to another face without a warning. The diagrams use
+two weights, 400 and 700, and the documentation site already carries both as
+`woff2` in `docs/assets/fonts`. `fonttools` turns each into a font the system
+can install:
 
 ```bash
-uvx --with brotli --from fonttools fonttools ttLib.woff2 decompress \
-  -o Inter-Regular.ttf \
-  client/node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2
+for weight in 400 700; do
+  uvx --with brotli==1.2.0 --from fonttools==4.66.1 \
+    fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" \
+    "docs/assets/fonts/inter-latin-$weight-normal.woff2"
+done
 ```
 
-Do the same for the weights 500, 600 and 700, and copy the files to
-`~/Library/Fonts` on macOS or `~/.local/share/fonts` on Linux.
+Copy the two files to `~/Library/Fonts` on macOS or `~/.local/share/fonts` on
+Linux.
 
 ## How the File Was Made
 
@@ -107,7 +110,7 @@ it are kept so the conversion can be repeated on a later version of that file:
 python3 docs/assets/diagrams/retheme_drawio.py original.drawio themed.drawio
 python3 docs/assets/diagrams/split_pages.py themed.drawio split.drawio
 python3 docs/assets/diagrams/restyle_drawio.py split.drawio styled.drawio
-uv run --with pillow python docs/assets/diagrams/shrink_images.py \
+uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py \
   styled.drawio dtaas-diagrams.drawio
 ```
 
@@ -128,13 +131,18 @@ page and a script for it would be longer than the change:
   instead of `intocps.com`, as the compose files in `deploy/` have them.
 - The service at `/` is `Client` on every page, the name of the `client`
   service in every compose file.
-- `admin/gitlab/gitlab-integrated-install.png` and
-  `admin/gitlab/gitlab-integrated-runner.png` gained the Logger at `/logger`,
-  which the integrated GitLab package routes.
+- `admin/gitlab/gitlab-integrated-install.png`,
+  `admin/gitlab/gitlab-integrated-runner.png` and
+  `admin/gitlab/gitlab-independent-install.png` gained the Logger at
+  `/logger`, which the secure server packages route. On the independent page
+  Server 2 became narrower so the page stays under 600 units wide, where
+  12-unit text is still 14 pixels.
 - The WebApp picture, a bitmap with its label drawn in another typeface, is
   the drawio globe icon with an Inter label.
 - Labels were moved clear of lines and frames after the switch to Inter, which
-  is wider than Helvetica, and the server tags moved left of the DTaaS mark.
+  is wider than Helvetica. Route labels such as `/logger` and `/auth` sit
+  between two connector lines with space on both sides, and the server tags
+  moved left of the DTaaS mark with a clear gap.
 - `developer/system/multi-domain.png` was laid out again so its labels fit at
   25 drawio units: the columns are wider, compose, configuration and execution
   are rows instead of rotated columns, and the label of each stack of cards is

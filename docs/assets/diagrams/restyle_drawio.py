@@ -98,7 +98,7 @@ def replace_people(page):
 
 
 def remove_notes(page):
-    """Remove notes written into the picture; the page text carries them."""
+    """Remove notes written into the picture, which the page text carries."""
     for cell in list(page.root):
         if ds.plain_text(cell.get('value')).startswith('Note:'):
             page.root.remove(cell)

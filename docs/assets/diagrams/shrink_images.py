@@ -1,7 +1,7 @@
 """Shrink the raster logos embedded in the diagrams file.
 
 drawio cannot share an image between cells, so every cell carries its own
-copy as base64. The traefik logo alone was a 870 by 1200 PNG repeated in
+copy as base64. The traefik logo alone was an 870 by 1200 PNG repeated in
 eleven cells. Each raster image is scaled down to the pixels the export
 actually draws, which is twice the size the documentation shows at its widest
 column, so nothing is lost in the PNG files.
@@ -12,7 +12,7 @@ white background into transparency.
 
 Needs Pillow:
 
-    uv run --with pillow python docs/assets/diagrams/shrink_images.py in out
+    uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py in out
 
 Usage: python3 shrink_images.py <input.drawio> <output.drawio>
 """

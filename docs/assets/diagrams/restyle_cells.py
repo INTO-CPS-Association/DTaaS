@@ -77,8 +77,6 @@ def style_edge(style, page):
 def style_shape(style, what, page, boundary):
     """Set the border of a box or a stencil, and the corner of a box."""
     style['strokeColor'] = stroke(style.get('strokeColor', GREY_700))
-    if style['strokeColor'] == 'default':
-        style['strokeColor'] = GREY_700
     pixels = BOUNDARY_PX if boundary else LINE_PX
     style['strokeWidth'] = number(page.units(pixels))
     if what == 'box':
