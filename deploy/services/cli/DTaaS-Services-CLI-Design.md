@@ -9,7 +9,7 @@ GitLab).
 
 It applies the same principle adopted for the deployment CLI:
 
-```
+```text
 dtaas-services <noun> <verb> [target] [flags]
 ```
 
@@ -28,17 +28,17 @@ two CLIs feel like one family.
 
 Like the deployment CLI, `dtaas-services` currently mixes three shapes.
 
-**1a. Top-level hyphenated verb-noun**
+### 1a. Top-level hyphenated verb-noun
 
-```
+```text
 dtaas-services generate-project [--path <dir>]
 ```
 
 Verb first, noun glued on with a hyphen.
 
-**1b. Flat top-level verbs**
+### 1b. Flat top-level verbs
 
-```
+```text
 dtaas-services setup
 dtaas-services install   [-s <service>]
 dtaas-services start     [-s <services>]
@@ -53,9 +53,9 @@ Eight bare verbs on the root group. The object acted on (the services) is
 implicit; `setup` and `install` are different *kinds* of action (host
 provisioning vs. per-service schema init) but read as peers of `start`/`stop`.
 
-**1c. Noun-grouped verbs**
+### 1c. Noun-grouped verbs
 
-```
+```text
 dtaas-services user add            [-s <services>]
 dtaas-services user reset-password [-s <services>]
 ```
@@ -193,7 +193,7 @@ Already `noun verb`; kept as-is.
 The nouns line up with the documented Quick Start, so the command sequence now
 reads as a legible progression through the lifecycle stages:
 
-```
+```text
 dtaas-services project generate          # scaffold config/, data/, compose files
 #   edit config/services.env, config/credentials.csv, config/gitlab_oauth.json
 dtaas-services host setup                # copy certs + set permissions (root)
@@ -316,7 +316,7 @@ The current layout already maps cleanly onto the noun set — the command module
 are grouped almost exactly along these lines, so the change is mostly wiring
 groups in `cmd.py` rather than moving logic.
 
-```
+```text
 dtaas_services/
   cmd.py                    # root `services` group; wires the noun groups
   commands/

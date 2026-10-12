@@ -102,8 +102,9 @@ Create a copy of this example file without the example suffix:
 cp config/forward-auth-conf.example config/forward-auth-conf
 ```
 
-Then update the traefik forward auth configuration file with the usernames and emails of
-the Keycloak users that correspond to user1 and user2 respectively.
+Then update the traefik forward auth configuration file with the usernames
+and emails of the Keycloak users that correspond to user1 and user2
+respectively.
 
 ```txt
 rule.user1_access.action=auth
@@ -131,7 +132,7 @@ an OAuth2 application for each, with the integrated **Keycloak** service.
 **For detailed Keycloak setup instructions,
 see [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md)**
 
-#### Configure Environment Variables
+### Configure Environment Variables
 
 1. **For Keycloak (default)**, edit `config/.env` and fill in the Keycloak credentials:
 
