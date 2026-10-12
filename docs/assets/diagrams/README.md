@@ -19,9 +19,9 @@ placed later.
 | `admin/gitlab/gitlab-integrated-install.png` | `admin/gitlab/index.md` |
 | `admin/gitlab/gitlab-independent-install.png` | `admin/gitlab/index.md` |
 | `admin/gitlab/gitlab-integrated-runner.png` | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md` |
+| `developer/system/multi-domain.png` | `developer/system/extensions.md` |
 | Architecture with public and private cloud | Not placed |
 | Workspace and assets | Not placed |
-| Multi-domain digital twins | Not placed |
 | DTaaS localhost, with forward-auth | Not placed, see below |
 | Developer docker setup | Not placed |
 | Two servers with runners | Not placed |

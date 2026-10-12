@@ -76,6 +76,10 @@ The microservices responsible for the user requirements are:
    DTs. It directs the _DT Execution Manager_ to execute, save and
    terminate DTs.
 
+The web application can also carry domain-specific pages that come
+from separate npm packages. [Client Extensions](extensions.md) describes
+the current state and the proposed extension architecture.
+
 Several of these components are not implemented yet; the table below
 gives their status. The [architecture review](review/architecture-review.md)
 describes the system as implemented.

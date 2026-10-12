@@ -16,6 +16,8 @@ A more detailed C4 architectural representation is
 - NestJS library, runner and logger microservices.
 - `@into-cps-association/dt-automation`, an npm library with the data,
   state and GitLab operations for creating, managing and executing DTs.
+- `@into-cps-association/bim-kit`, maintained in the `ifc-utils`
+  repository, for the Building Models page.
 - `gitlab-common`, a Python library shared by the two CLIs.
 - Python CLIs for DTaaS administration (`dtaas`) and platform services
   management (`dtaas-services`).
@@ -42,6 +44,8 @@ workflows and the library microservice, which is still evolving.
 - Improve scenario automation and configuration guidance.
 - Strengthen test coverage and CI reliability across packages.
 - Continue improving DevOps execution visibility in the client UI.
+- Evaluate the proposed [client extension architecture](extensions.md),
+  which adds domain-specific pages through npm packages.
 - Keep package publishing and release flows consistent across npm, Docker, and
   Poetry-based tools.
 
