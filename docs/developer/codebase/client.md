@@ -1,4 +1,4 @@
-# React Client :computer:
+# React Client
 
 The DTaaS web client is a React and TypeScript single page application.
 Users compose digital twins, browse assets, edit configuration and run

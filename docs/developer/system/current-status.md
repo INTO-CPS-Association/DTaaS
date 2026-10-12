@@ -1,4 +1,4 @@
-# Current Status :clipboard:
+# Current Status
 
 DTaaS is a monorepo under active development. It has deployment
 scenarios meant for production use, and work continues on execution
@@ -23,7 +23,7 @@ A more detailed C4 architectural representation is
   management (`dtaas-services`).
 - Scenario-based admin documentation for DTaaS and workspace deployments.
 
-## Security and Access Model :lock:
+## Security and Access Model
 
 Two authorization patterns are in use:
 
@@ -33,7 +33,7 @@ Two authorization patterns are in use:
 Traefik and its forward-auth middleware protect routes and mediate
 access at the gateway.
 
-## Workspaces and Assets :technologist:
+## Workspaces and Assets
 
 Workspace deployments give each user an isolated environment and share
 assets between users. Asset management currently uses file-system

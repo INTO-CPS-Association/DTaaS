@@ -28,7 +28,7 @@ Place the following two items in the directory from which
   sudo chown -R 1000:1000 logs
   ```
 
-## :rocket: Use
+## Use
 
 Use the [docker compose](compose.logger.yml) file to start the service.
 

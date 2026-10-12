@@ -34,7 +34,7 @@ Linux hosts give the directory to that user:
 sudo chown -R 1000:1000 files
 ```
 
-## :rocket: Use
+## Use
 
 Use the [docker compose](compose.lib.yml) file to start the service.
 

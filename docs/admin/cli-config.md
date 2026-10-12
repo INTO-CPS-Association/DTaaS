@@ -9,34 +9,32 @@ installation workflow is covered in
 
 ## Which sections does my deployment need?
 
-Required ✅ &nbsp; Optional ○ &nbsp; Not used —
-
 ### Server deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 | --- | :---: | :---: | :---: | :---: |
-| `[common]` | ✅ | ✅ | ✅ | ✅ |
-| `[common.security]` | — | — | ✅ | ✅ |
-| `[common.resources]` | ○ | ○ | ○ | ○ |
-| `[gitlab]` | ○ | ○ | ○ | ○ |
-| `[[users]]` | ✅ | ✅ | ✅ | ✅ |
-| `[frontend]` | — | ✅ | ✅ | ✅ |
-| `[localhost]` | ✅ | — | — | — |
-| `[insecure-server]` | — | ✅ | — | — |
-| `[secure-server]` | — | — | ✅ | — |
-| `[secure-server-gitlab]` | — | — | — | ✅ |
+| `[common]` | Required | Required | Required | Required |
+| `[common.security]` | Not used | Not used | Required | Required |
+| `[common.resources]` | Optional | Optional | Optional | Optional |
+| `[gitlab]` | Optional | Optional | Optional | Optional |
+| `[[users]]` | Required | Required | Required | Required |
+| `[frontend]` | Not used | Required | Required | Required |
+| `[localhost]` | Required | Not used | Not used | Not used |
+| `[insecure-server]` | Not used | Required | Not used | Not used |
+| `[secure-server]` | Not used | Not used | Required | Not used |
+| `[secure-server-gitlab]` | Not used | Not used | Not used | Required |
 
 ### Workspace deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 | --- | :---: | :---: |
-| `[common]` | ✅ | ✅ |
-| `[common.security]` | — | ✅ |
-| `[common.resources]` | ○ | ○ |
-| `[gitlab]` | ○ | ○ |
-| `[[users]]` | ✅ | ✅ |
-| `[workspace-localhost]` | ✅ | — |
-| `[workspace-secure-server]` | — | ✅ |
+| `[common]` | Required | Required |
+| `[common.security]` | Not used | Required |
+| `[common.resources]` | Optional | Optional |
+| `[gitlab]` | Optional | Optional |
+| `[[users]]` | Required | Required |
+| `[workspace-localhost]` | Required | Not used |
+| `[workspace-secure-server]` | Not used | Required |
 
 ## Annotated `dtaas.toml`
 

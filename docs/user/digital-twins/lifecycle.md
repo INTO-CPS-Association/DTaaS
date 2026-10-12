@@ -1,4 +1,4 @@
-# :recycle: Digital Twin Lifecycle
+# Digital Twin Lifecycle
 
 Physical products in the real world go through a product lifecycle.
 A simplified four-stage product lifecycle is shown here.
@@ -63,8 +63,9 @@ Each phase of the DT lifecycle has its own program. A program
 can be as simple as a script that launches other programs or sends messages
 to a live digital twin.
 
-:fontawesome-solid-circle-info: **The recommended way to implement lifecycle**
-**phases within DTaaS is with scripts, for example shell scripts.**
+!!! note
+    **The recommended way to implement lifecycle**
+    **phases within DTaaS is with scripts, for example shell scripts.**
 
 ## Example Lifecycle Scripts
 

@@ -1,4 +1,4 @@
-# :gear: Configure Library Microservice
+# Configure Library Microservice
 
 The microservice reads its configuration from a YAML file.
 The template configuration file is:

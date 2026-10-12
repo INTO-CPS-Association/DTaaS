@@ -72,4 +72,4 @@ These examples use GitLab DevOps pipelines to run the lifecycle scripts
 of digital twins on the DTaaS platform.
 See the [automation examples overview](./automation/index.md) for details.
 
-:material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
+[DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

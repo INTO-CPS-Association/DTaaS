@@ -91,7 +91,7 @@ sudo npm list -g # should list @dtaas/runner in the packages
 sudo npm remove --global @dtaas/runner
 ```
 
-### :rocket: Use the packages
+### Use the packages
 
 Packages in the private npm registry are used like regular packages
 installed from [npmjs](https://www.npmjs.com/).

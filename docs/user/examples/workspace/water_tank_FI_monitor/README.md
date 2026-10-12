@@ -43,7 +43,8 @@ This example uses four models, one specification and one tool:
 The DT is executed with two configuration files, `multimodelFI.json` and
 `simulation-config.json`. Edit them to customise the DT.
 
-:fontawesome-solid-circle-info: The faults are defined in __wt_fault.xml__.
+!!! note
+    The faults are defined in __wt_fault.xml__.
 
 ## Lifecycle Phases
 

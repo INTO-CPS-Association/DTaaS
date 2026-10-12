@@ -1,4 +1,4 @@
-# DevOps Framework :gear:
+# DevOps Framework
 
 The DevOps framework lets the DTaaS client manage the lifecycle of a
 Digital Twin through the GitLab API and GitLab CI/CD pipelines. With it

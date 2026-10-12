@@ -4,7 +4,7 @@ The DTaaS website can record how you use it: page navigation, button
 and link clicks, form changes and notifications. The events are captured
 in the browser and can be reviewed on the **Workflow Logs** page.
 
-## 🔓 Enabling Logging
+## Enabling Logging
 
 Logging is off by default. To turn it on, select the
 **Keep a local activity log** checkbox in the **Logging Settings**
@@ -18,7 +18,7 @@ logging server, the Settings page shows a second checkbox,
 and works independently of the local log. Keep remote logging on only
 with the consent of the person whose activity is being recorded.
 
-## 👁️ Viewing the Logs
+## Viewing the Logs
 
 > **URL**: `https://intocps.org/insights/log` or
 > `http://localhost:4000/insights/log`
@@ -41,7 +41,7 @@ The toolbar above the log list has these controls:
 | Download All JSONL          | Exports the displayed entries as a `.jsonl` file.                                       |
 | Live update                 | Streams new events into the view as they are recorded.                                  |
 
-## 🗂️ Log Entries (Card View)
+## Log Entries (Card View)
 
 Each entry is shown as a card with:
 
@@ -53,7 +53,7 @@ Each entry is shown as a card with:
 - Any extra context recorded for the event, shown as small chips
   (for example a link's target URL or the new value of a form field).
 
-## 🔍 Filtering Logs {#filtering-logs}
+## Filtering Logs {#filtering-logs}
 
 Type into the **Filter logs** box to show only the entries whose event
 type, label, element, page or context contains the search text. The
@@ -65,7 +65,7 @@ example *3 of 10 log entries*.
 While a filter is active, the **Download All JSONL** button becomes
 **Download Filtered JSONL** and exports only the entries shown.
 
-## 🧾 Raw View
+## Raw View
 
 **Raw view** shows the same entries as pretty-printed JSON Lines instead
 of cards and adds a **Copy to clipboard** button. To keep the page
@@ -125,7 +125,7 @@ it causes appears as:
 | `sessionId`        | A random identifier generated for the current browser session.                       |
 | `userHash`         | A SHA-256 hash of the username, which links events without storing the name in plain text. |
 
-## 🔴 Live Updates
+## Live Updates
 
 **Live update** subscribes the page to new log events as they are
 recorded elsewhere in the browser (including other open tabs) and
@@ -133,7 +133,7 @@ reloads the list automatically. It is off by default, because reloading
 a large log store continuously is unnecessary when you are only reviewing
 past entries.
 
-## 🗑️ Clearing Logs
+## Clearing Logs
 
 The :material-delete-outline: icon opens a confirmation dialog, and
 **Clear Logs** in that dialog permanently deletes all stored log
@@ -141,7 +141,7 @@ entries. This cannot be undone. It only clears the entries stored in the
 browser and has no effect on copies already sent to a remote logging
 server.
 
-## 🔒 Privacy and Storage
+## Privacy and Storage
 
 - Log entries are stored locally in the browser (IndexedDB) and never
   leave the device, unless the DTaaS installation is configured with a
@@ -155,7 +155,7 @@ server.
 - The `sessionId` field is a random value generated per browser session
   and is not linked to the user's identity.
 
-## 💭 Summary
+## Summary
 
 This page described the logging feature of the DTaaS website: turning it
 on in Settings, viewing and filtering events on the Workflow Logs page,

@@ -1,4 +1,4 @@
-# OAuth 2.0 and Keycloak Summary :lock:
+# OAuth 2.0 and Keycloak Summary
 
 DTaaS uses OAuth 2.0/OIDC at two levels:
 

@@ -1,4 +1,4 @@
-# :european_castle: System Overview
+# System Overview
 
 The Digital Twin as a Service (DTaaS) platform supports the whole
 digital twin (DT) lifecycle. Users create, configure, execute and share

@@ -17,7 +17,7 @@ running the runner.
     the PowerShell version of each script.
 <!-- markdownlint-enable MD046 -->
 
-## :arrow_down: Install
+## Install
 
 ### NPM Registry
 
@@ -49,7 +49,7 @@ your GitHub username and the password is a GitHub
 For npm to download the package, the personal access token
 needs the _read:packages_ scope.
 
-## :gear: Configure
+## Configure
 
 The utility needs a configuration file in YAML format.
 The template configuration file is:
@@ -73,11 +73,11 @@ You can choose any configuration filename and any `location`.
 The path to the configuration file can be relative or absolute,
 but the `location` path is always relative to the configuration file.
 
-:fontawesome-solid-circle-info:
-The commands must be executable. On Linux, make sure the commands
-have execute permission.
+!!! note
+    The commands must be executable. On Linux, make sure the commands
+    have execute permission.
 
-## :pen: Create Commands
+## Create Commands
 
 The runner needs commands or scripts to run.
 Place them in the `location` directory specified in the
@@ -94,7 +94,7 @@ commands work on Linux and Windows.
 The runner can also run in a docker container. See the
 [docker instructions](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/execution/runner/DOCKER.md).
 
-## :rocket: Use
+## Use
 
 Display help.
 

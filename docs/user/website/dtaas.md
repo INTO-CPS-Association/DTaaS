@@ -73,7 +73,7 @@ page of the DTaaS website.
 
 The application bar at the top of every page shows the DTaaS logo and
 title in the middle. On the right are three buttons. The GitHub icon
-opens the DTaaS code repository and the :question: icon opens this
+opens the DTaaS code repository and the question-mark icon opens this
 documentation. The round avatar, which shows your profile picture or
 the first letter of your username, opens a menu with **Account** and
 **Logout**. The **Account** page has a **Profile** tab and a
@@ -195,9 +195,10 @@ structure on the server.
 !!! note
     Assets (files) can be uploaded using the **upload** button.
 
-:fontawesome-solid-circle-info: The file manager is based on Jupyter Notebook,
-and all tasks available in Jupyter Notebook can be
-performed here.
+!!! note
+    The file manager is based on Jupyter Notebook,
+    and all tasks available in Jupyter Notebook can be
+    performed here.
 
 ## Digital Twins Page
 
@@ -233,9 +234,10 @@ page explains them further.
     These scripts can be executed from VSCode, or from VNC GUI when they
     produce graphical results.
 
-:fontawesome-solid-circle-info: The reusable assets (files) shown in
-the file manager are also available in Jupyter Lab. Jupyter Lab also has
-a git plugin for linking files with external git repositories.
+!!! note
+    The reusable assets (files) shown in
+    the file manager are also available in Jupyter Lab. Jupyter Lab also has
+    a git plugin for linking files with external git repositories.
 
 ## Workbench
 

@@ -23,7 +23,7 @@ Additional resources:
 [Codebase Overview](codebase/index.md) maps the directories of the
 monorepo.
 
-## :computer: Development Environment
+## Development Environment
 
 The recommended development setup is the devcontainer defined in
 `.devcontainer/devcontainer.json`. It runs the containerised environment
@@ -69,7 +69,7 @@ option with care.
 
 -->
 
-## :building_construction: Development Workflow
+## Development Workflow
 
 Contributors follow this procedure:
 
@@ -99,16 +99,14 @@ quality.
 [Local Testing](contributions/local-testing.md) lists the build and test
 commands to run before opening a PR.
 
-## ✨ Coding Agents and Editors
+## Coding Agents and Editors
 
 The project makes extensive use of coding agents. The primary
 usage scenarios include:
 
-👍 Co-development assistance
-
-👍 Code review support
-
-👍 Draft pull requests for prototyping ideas
+- Co-development assistance
+- Code review support
+- Draft pull requests for prototyping ideas
 
 Every coding agent reads the same instructions: `AGENTS.md` for the
 general coding guidelines and `PROJECT.md` for the repository-specific
@@ -121,14 +119,13 @@ particularly when such code embeds significant programming logic.
 
 The following practices are strictly prohibited:
 
-👎 Contributing unknown or unreviewed code
-
-👎 Failing to understand the implications of generated code
+- Contributing unknown or unreviewed code
+- Failing to understand the implications of generated code
 
 **Summary**: Contributors must fully understand their contributions
 and should not delegate critical thinking to coding agents.
 
-## :eye: Code Quality
+## Code Quality
 
 Code quality is checked by:
 

@@ -49,8 +49,9 @@ no Docker build check. It publishes the image built from
 Build and publish the Docker images. This step is needed only to
 publish images to Docker Hub.
 
-:stop_sign: Only project maintainers publish images. Other developers
-can skip this step.
+!!! warning
+    Only project maintainers publish images. Other developers
+    can skip this step.
 
 The DTaaS development team publishes reusable packages, which together
 form the complete DTaaS application.
