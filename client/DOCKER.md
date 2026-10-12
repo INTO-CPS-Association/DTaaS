@@ -4,14 +4,14 @@ This container image provides the client application for
 Digital Twin as a Service (DTaaS).
 It delivers a React single-page web application for DTaaS.
 
-## 🔐 Authorisation
+## Authorisation
 
 The React client website uses OAuth authorisation.
 The
 [authorisation page](../docs/admin/client/auth.md)
 provides details on setting up OAuth authorisation for the client application.
 
-## 🐳 Use in Docker Environment
+## Use in Docker Environment
 
 ### Create Configuration
 

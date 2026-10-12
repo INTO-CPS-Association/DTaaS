@@ -5,11 +5,11 @@ the DTaaS workspace deployment.
 
 ## Key Benefits
 
-✅ **Standards-Based**: Uses OIDC/OAuth2 standards
+**Standards-Based**: Uses OIDC/OAuth2 standards
 
-✅ **Enterprise-Ready**: Supports SSO, MFA, user federation
+**Enterprise-Ready**: Supports SSO, MFA, user federation
 
-✅ **Minimal Changes**: Environment-variable based configuration
+**Minimal Changes**: Environment-variable based configuration
 
 ## Overview
 
@@ -79,7 +79,7 @@ The following instructions are part of post-install step.
 5. Click on **Create attribute** with
    - name: profile
    - display name: profile
-   - Permission: **who can edit** ✅ on admin
+   - Permission: **who can edit** checked on admin
 6. Click **Create**
 
 #### Create Users

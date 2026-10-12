@@ -1,9 +1,9 @@
-# :runner: Developer Instructions
+# Developer Instructions
 
 This microservice needs a configuration file and a directory of scripts.
 Please see [README](./README.md) for this information.
 
-## :gear: Configure
+## Configure
 
 The `config` directory has two sample configuration files:
 
@@ -29,7 +29,7 @@ The `test/data/scripts` directory has a bash script and a PowerShell
 configuration and these scripts into the runner directory before they
 run and delete them afterwards.
 
-## :hammer_and_wrench: Developer Commands
+## Developer Commands
 
 ```bash
 yarn install    # Install dependencies for the microservice
@@ -51,7 +51,7 @@ The jest and nestjs combination can not detect tests in files
 with _config_ in their names. Hence, the config word has been
 replaced with _options_ in the names of test files.
 
-## :package: :ship: NPM package
+## NPM package
 
 The package version is hardcoded as `PACKAGE_VERSION: string` in
 [CLI code](src/config/commander.ts). This package version needs to be
@@ -89,7 +89,7 @@ yarn publish #increments version, publishes to registry and adds a git tag
 npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.0.2
 ```
 
-## :rocket: Access the service
+## Access the service
 
 ## Service Endpoint
 

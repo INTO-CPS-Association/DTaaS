@@ -1,4 +1,4 @@
-# 🚀 Installation
+# Installation
 
 These are installation instructions for the DTaaS application.
 The setup requires a machine with at least 16 GB RAM, 8 vCPUs,

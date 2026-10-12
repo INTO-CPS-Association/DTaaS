@@ -4,19 +4,19 @@ This guide explains how to deploy the workspace container with Traefik reverse
 proxy, OAuth2 authentication, and TLS/HTTPS support for secure multi-user
 deployments.
 
-## ❓ Prerequisites
+## Prerequisites
 
-✅ Docker Engine v27 or later  
+Docker Engine v27 or later  
 
-✅ Docker Compose v2.x  
+Docker Compose v2.x  
 
-✅ Sufficient system resources (at least 1GB RAM per workspace instance)  
+Sufficient system resources (at least 1GB RAM per workspace instance)  
 
-✅ Valid TLS certificates (production) or self-signed certs (testing)
+Valid TLS certificates (production) or self-signed certs (testing)
 
-✅ Domain name pointing to the server (production) or localhost (testing)
+Domain name pointing to the server (production) or localhost (testing)
 
-## 🗒️ Design
+## Design
 
 ```text
 User Request → Traefik → Forward Auth → Keycloak (OIDC)
@@ -37,7 +37,7 @@ The `docker-compose.yml` file provides a production-ready setup with:
   auth, and user workspaces
 - **Two Docker networks**: `dtaas-frontend` and `dtaas-users`
 
-## ⚙️ Initial Configuration
+## Initial Configuration
 
 Please follow the steps in [`CONFIGURATION.md`](CONFIGURATION.md)
 for creating suitable configuration.
@@ -57,7 +57,7 @@ cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files
 ```
 
-## :rocket: Start Services
+## Start Services
 
 To start all services with TLS:
 
@@ -73,7 +73,7 @@ This will:
 3. Start workspace instances for user1 and user2, protected by
    authentication
 
-## :technologist: Accessing Workspaces
+## Accessing Workspaces
 
 Once all services are running, access the workspaces through Traefik with HTTPS:
 
@@ -127,7 +127,7 @@ The endpoint values are dynamically populated with the user's username from the
 `MAIN_USER` environment variable. This variable corresponds to `USERNAME1` of
 `config/.env` file.
 
-## 🔒 Authentication Flow
+## Authentication Flow
 
 1. User attempts to access a workspace URL
 2. Traefik forwards the request to traefik-forward-auth
@@ -137,7 +137,7 @@ The endpoint values are dynamically populated with the user's username from the
 6. traefik-forward-auth exchanges code for token and creates session
 7. User is redirected to original URL and gains access
 
-## 🛑 Stopping Services
+## Stopping Services
 
 To stop all services:
 
@@ -151,7 +151,7 @@ To stop and remove volumes:
 docker compose --env-file config/.env down -v
 ```
 
-## 🔧 Customisation
+## Customisation
 
 ### Adding More Users
 
@@ -210,7 +210,7 @@ Bring up the user workspace.
 docker compose --env-file config/.env up -d --force-recreate user3
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Certificate Issues
 
@@ -244,7 +244,7 @@ docker compose --env-file config/.env up -d --force-recreate user3
 - Stop conflicting services
 - Or modify port mappings in compose file (not recommended for production)
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
 - [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)

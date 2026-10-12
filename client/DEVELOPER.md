@@ -3,7 +3,7 @@
 This document provides developer guidance for the React single-page
 web application.
 
-## 🛠️ Setup and Build
+## Setup and Build
 
 A ready-made container with Node, yarn and the rest of the toolchain
 is available; see
@@ -60,7 +60,7 @@ yarn test:e2e:ext  #run end-to-end tests against application
 yarn test:all   #run all tests
 ```
 
-## 🔐 Authorisation
+## Authorisation
 
 The React client website uses OAuth authorisation.
 The
@@ -78,7 +78,7 @@ The application uses client ID:
 It can be used for development purposes.
 A <https://gitlab.com> account is required to use this OAuth application.
 
-## 📦 Custom Configuration
+## Custom Configuration
 
 An `env.js` file is required in the root directory of `build` during runtime.
 This file configures the application endpoints.

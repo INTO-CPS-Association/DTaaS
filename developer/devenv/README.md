@@ -1,4 +1,4 @@
-# 🧰 Development Environment
+# Development Environment
 
 A container carrying every toolchain this repository needs: Node, Python,
 Ruby, and the linting and documentation tools. Your host stays untouched

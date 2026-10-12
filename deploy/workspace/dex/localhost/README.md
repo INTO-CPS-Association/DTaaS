@@ -1,15 +1,15 @@
 <!-- markdownlint-disable MD041 -->
 ![DTaaS logo](dtaas.png)
 
-## 🛠️ Install
+## Install
 
 The installation instructions provided in this README are
 ideal for running the **DTaaS on localhost served over HTTP connection**.
 
-✅ This installation is ideal for single users intending to use
+This installation is ideal for single users intending to use
 DTaaS on their own computers.
 
-## 🏗️ Design
+## Design
 
 An illustration of the installation setup is shown here.
 
@@ -24,7 +24,7 @@ A path such as `/user` is the URL route of that service, for example
 - Ports 80 and 5556 available on the host
 - At least 2GB RAM available
 
-## ⚡ Quick Demo
+## Quick Demo
 
 The description below refers to filenames. All the commands
 mentioned below are to be run this directory.
@@ -36,7 +36,7 @@ cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
-▶️ Start the demo:
+Start the demo:
 
 ```bash
 docker compose --env-file config/.env up -d
@@ -45,16 +45,16 @@ docker compose --env-file config/.env up -d
 The application will be accessible at <http://localhost> from web browser.
 Login using the default credentials.
 
-**👤 User email:** `user@intocps.org`
-**🔑 Password:** `user`
+**User email:** `user@intocps.org`
+**Password:** `user`
 
-⏹️ Stop the demo:
+Stop the demo:
 
 ```bash
 docker compose --env-file config/.env down
 ```
 
-## 🌵Limitations
+## Limitations
 
 1. All the functionality of DTaaS except DevOps features should be
    available through the single page client now.
@@ -62,13 +62,13 @@ docker compose --env-file config/.env down
    See [instructions](CUSTOM_USER.md) for help with changing
    the user credentials.
 
-## 📚 Documentation
+## Documentation
 
 Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## 🔗 References
+## References
 
 Image sources:
 

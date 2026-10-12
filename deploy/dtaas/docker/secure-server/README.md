@@ -87,7 +87,7 @@ cp /path/to/privkey.pem certs/privkey.pem
 If certificates are missing or invalid, Traefik runs with self-signed
 certificates.
 
-### 4. Configure OAuth 2.0 Applications in GitLab :fox_face:
+### 4. Configure OAuth 2.0 Applications in GitLab
 
 1. Create user accounts (see
    [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)).

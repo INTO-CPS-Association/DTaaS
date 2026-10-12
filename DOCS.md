@@ -1,4 +1,4 @@
-# 📚 Documentation Workflow
+# Documentation Workflow
 
 How to build, check and publish the project documentation.
 
@@ -13,7 +13,7 @@ There are two MkDocs configuration files:
 
 Run all commands below from the repository root.
 
-## 📦 Install Documentation Dependencies
+## Install Documentation Dependencies
 
 Install the documentation dependencies in a virtual environment:
 
@@ -38,7 +38,7 @@ The documentation images and videos are stored in Git LFS. The
 are missing, MkDocs aborts the build rather than copy pointer files into
 `site/`.
 
-## 🔍 Run Markdown Linting
+## Run Markdown Linting
 
 Markdown linting keeps the formatting consistent.
 
@@ -48,7 +48,7 @@ npx markdownlint-cli docs/**/*.md
 
 Fix any lint findings before committing documentation changes.
 
-## 📊 Format Markdown Tables
+## Format Markdown Tables
 
 Unevenly formatted tables can fail the quality gates. To format them, run:
 
@@ -56,7 +56,7 @@ Unevenly formatted tables can fail the quality gates. To format them, run:
 python script/docs/format_tables.py
 ```
 
-## 🏗️ Build and Preview Documentation
+## Build and Preview Documentation
 
 `script/docs/docs.py` builds and previews the documentation on Linux,
 macOS and Windows:
@@ -76,7 +76,7 @@ Without `--pdf`, the commands use `mkdocs-github.yml`. With `--pdf`, they
 use `mkdocs.yml`, whose PDF plugin needs the Pango libraries
 (`libpango-1.0-0` and `libpangoft2-1.0-0` on Debian and Ubuntu).
 
-## 🚀 Publish Documentation
+## Publish Documentation
 
 The `Publish documentation` workflow
 (`.github/workflows/docs-publish.yml`) publishes the site at

@@ -8,7 +8,7 @@ entry point.
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 From a clean machine to a running DTaaS deployment in seven steps.
 
@@ -52,35 +52,35 @@ dtaas platform uninstall
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [DTaaS Command Line Interface](#dtaas-command-line-interface)
-  - [⚡ Quick Start](#-quick-start)
-  - [📋 Table of Contents](#-table-of-contents)
-  - [📦 Installation](#-installation)
-  - [🛠 Commands](#-commands)
-    - [🗒️ config](#️-config)
+  - [Quick Start](#quick-start)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Commands](#commands)
+    - [config](#config)
     - [deployment generate](#deployment-generate)
       - [Configuration substitution](#configuration-substitution)
       - [TLS certificate placement](#tls-certificate-placement)
-    - [🚀 platform install](#-platform-install)
-    - [🧹 platform uninstall](#-platform-uninstall)
+    - [platform install](#platform-install)
+    - [platform uninstall](#platform-uninstall)
     - [Lifecycle operations: status / stop / start / pause / resume](#lifecycle-operations)
-    - [🔁 platform update --certs](#-platform-update---certs)
-    - [🧩 platform update --config](#-platform-update---config)
+    - [platform update --certs](#platform-update---certs)
+    - [platform update --config](#platform-update---config)
     - [Deprecated command spellings](#deprecated-command-spellings)
-    - [➕ user add](#-user-add)
-    - [➖ user delete](#-user-delete)
-    - [⏯️ user pause / stop / resume](#️-user-pause--stop--resume)
-    - [🔍 config reconcile](#-config-reconcile)
-  - [👥 User files](#-user-files)
-  - [⚙️ Configuration Reference dtaas.toml](#️-configuration-reference-dtaastoml)
+    - [user add](#user-add)
+    - [user delete](#user-delete)
+    - [user pause / stop / resume](#user-pause--stop--resume)
+    - [config reconcile](#config-reconcile)
+  - [User files](#user-files)
+  - [Configuration Reference dtaas.toml](#configuration-reference-dtaastoml)
     - [Which sections does my deployment need?](#which-sections-does-my-deployment-need)
     - [Annotated dtaas.toml](#annotated-dtaastoml)
 
 ---
 
-## 📦 Installation
+## Installation
 
 Installation inside a virtual environment is strongly recommended to avoid
 conflicts with system-wide packages.
@@ -101,9 +101,9 @@ dtaas --help
 
 ---
 
-## 🛠 Commands
+## Commands
 
-### 🗒️ config
+### config
 
 Manage `dtaas.toml` independently of the rest of the project. This is the
 first step in the setup workflow generate a template, fill it in, then
@@ -201,7 +201,7 @@ dtaas deployment generate --type <name>
 | `workspace-localhost` | Workspace service with Dex on localhost | dev/demo only |
 | `workspace-secure-server` | Workspace service with Keycloak | **production-supported** |
 
-> ⚠️ **Warning** Types marked *dev/demo only* or *insecure/demo only* run
+> **Warning** Types marked *dev/demo only* or *insecure/demo only* run
 > over plain HTTP with default or static credentials. **Do not expose them to
 > the internet or shared networks.** Production-supported types still require
 > manual hardening steps documented in the `README.md` and `CONFIGURATION.md`
@@ -249,7 +249,7 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 
 ---
 
-### 🚀 platform install
+### platform install
 
 Brings a generated deployment up with a single command.
 
@@ -281,7 +281,7 @@ The command fails with a clear error if `docker-compose.yml` is missing,
 
 ---
 
-### 🧹 platform uninstall
+### platform uninstall
 
 Tears the deployment down, stopping and removing containers and networks.
 
@@ -332,7 +332,7 @@ non-zero on failure, so they are safe to call from CI/ops scripts.
 
 `platform stop`/`start`/`pause`/`resume` act on the **core services only** —
 they never touch per-user containers. Suspend or resume individual additional
-users with [`dtaas user stop`/`pause`/`resume`](#️-user-pause--stop--resume)
+users with [`dtaas user stop`/`pause`/`resume`](#user-pause--stop--resume)
 instead. `platform status`, being read-only, still reports the whole
 installation (core services **and** user containers).
 
@@ -356,7 +356,7 @@ installation (core services **and** user containers).
 > a brief, instantly reversible suspension. `pause` expects running containers
 > and will error if the deployment is already stopped.
 
-#### 📊 platform status
+#### platform status
 
 Reports the state of every service, for both the deployment and user
 workloads.
@@ -397,7 +397,7 @@ dtaas platform status --json
 | `--output-dir PATH` | `.` | Installation directory |
 | `--json` | off | Emit machine-readable JSON instead of the table |
 
-#### ⏹️ platform stop / ▶️ platform start
+#### platform stop / platform start
 
 `stop` stops all services with `docker compose stop`; `start` brings the
 stopped containers back with `docker compose start`. Containers and networks
@@ -418,7 +418,7 @@ repeatedly.
 |---|---|---|
 | `--output-dir PATH` | `.` | Installation directory |
 
-#### ⏸️ platform pause / ▶️ platform resume
+#### platform pause / platform resume
 
 `pause` freezes every running container in place with `docker compose pause`;
 `resume` thaws them with `docker compose unpause`. Memory is preserved and
@@ -440,7 +440,7 @@ installed (no containers in any state).
 
 ---
 
-### 🔁 platform update --certs
+### platform update --certs
 
 Rotates TLS certificates of a running deployment in place: no project
 regeneration or manual file copying required.
@@ -471,7 +471,7 @@ to run repeatedly.
 
 ---
 
-### 🧩 platform update --config
+### platform update --config
 
 Re-applies the values in `dtaas.toml` to an already-installed deployment's
 service config files without regenerating the project.
@@ -526,7 +526,7 @@ removed in the next major version. Update scripts to the new spellings:
 | `dtaas admin config <verb>` | `dtaas config <verb>` |
 | `dtaas admin install\|uninstall\|update` | `dtaas platform install\|uninstall\|update` |
 | `dtaas admin status` | `dtaas platform status` |
-| `dtaas admin stop\|start\|pause\|resume` | `dtaas platform stop\|start\|pause\|resume` ⚠️ scope narrowed, see below |
+| `dtaas admin stop\|start\|pause\|resume` | `dtaas platform stop\|start\|pause\|resume` Warning: scope narrowed, see below |
 | `dtaas admin user add\|delete\|pause\|stop\|resume` | `dtaas user add\|delete\|pause\|stop\|resume` |
 
 > **Scope change: `admin stop`/`start`/`pause`/`resume`.** Pre-2.0, these acted
@@ -534,7 +534,7 @@ removed in the next major version. Update scripts to the new spellings:
 > Their 2.0 replacements act on the **core services only**; per-user
 > containers are left untouched. To reproduce the old whole-installation
 > effect, also target every additional user with
-> [`dtaas user stop`/`pause`/`resume --all`](#️-user-pause--stop--resume)
+> [`dtaas user stop`/`pause`/`resume --all`](#user-pause--stop--resume)
 > (`admin start` maps to `user resume --all`, since there is no `user start`).
 > The running CLI also prints this as a warning when you use the old spelling.
 >
@@ -556,11 +556,11 @@ skeleton, alongside the deployment compose tree.
 
 ---
 
-### ➕ user add
+### user add
 
 Provisions users on a running DTaaS instance. Additional users are recorded in
 the CLI-owned `dtaas.users.registry.json`
-(see [User files](#-user-files)), not in `dtaas.toml`.
+(see [User files](#user-files)), not in `dtaas.toml`.
 
 **Options:**
 
@@ -774,7 +774,7 @@ and unconstrained users by toggling `set_limits` between runs.
 
 ---
 
-### ➖ user delete
+### user delete
 
 Removes one or more users from a running DTaaS instance, like `userdel`.
 
@@ -825,7 +825,7 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 
 ---
 
-### ⏯️ user pause / stop / resume
+### user pause / stop / resume
 
 Suspend or resume **specific additional (registry) users** without touching
 the rest of the installation, targeting one or more `USERNAMES`, a
@@ -883,7 +883,7 @@ alice, bob paused successfully
 
 ---
 
-### 🔍 config reconcile
+### config reconcile
 
 Reports drift between `dtaas.users.registry.json` (which **should** be
 provisioned) and the live `compose.users.yml` services (which **are**
@@ -928,7 +928,7 @@ that's actually running is a deliberate action use
 
 ---
 
-## 👥 User files
+## User files
 
 User management spans three files, each with a single owner, modelled on the
 config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
@@ -954,7 +954,7 @@ config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
 
 ---
 
-## ⚙️ Configuration Reference dtaas.toml
+## Configuration Reference dtaas.toml
 
 `dtaas.toml` is the single source of truth for all CLI commands. Generate a
 blank template with `dtaas config generate`, fill it in, then confirm
@@ -962,36 +962,30 @@ it is valid with `dtaas config validate` before running any other command.
 
 ### Which sections does my deployment need?
 
-Required ✅
-
-Optional ○
-
-Not-Used —
-
 #### Server deployments
 
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 |---|:---:|:---:|:---:|:---:|
-| `[common]` | ✅ | ✅ | ✅ | ✅ |
-| `[common.security]` | — | — | ✅ | ✅ |
-| `[common.resources]` | ○ | ○ | ○ | ○ |
-| `[[users]]` | ✅ | ✅ | ✅ | ✅ |
-| `[frontend]` | — | ✅ | ✅ | ✅ |
-| `[localhost]` | ✅ | — | — | — |
-| `[insecure-server]` | — | ✅ | — | — |
-| `[secure-server]` | — | — | ✅ | — |
-| `[secure-server-gitlab]` | — | — | — | ✅ |
+| `[common]` | Required | Required | Required | Required |
+| `[common.security]` | Not used | Not used | Required | Required |
+| `[common.resources]` | Optional | Optional | Optional | Optional |
+| `[[users]]` | Required | Required | Required | Required |
+| `[frontend]` | Not used | Required | Required | Required |
+| `[localhost]` | Required | Not used | Not used | Not used |
+| `[insecure-server]` | Not used | Required | Not used | Not used |
+| `[secure-server]` | Not used | Not used | Required | Not used |
+| `[secure-server-gitlab]` | Not used | Not used | Not used | Required |
 
 #### Workspace deployments
 
 | Section | `workspace-localhost` | `workspace-secure-server` |
 |---|:---:|:---:|
-| `[common]` | ✅ | ✅ |
-| `[common.security]` | — | ✅ |
-| `[common.resources]` | ○ | ○ |
-| `[[users]]` | ✅ | ✅ |
-| `[workspace-localhost]` | ✅ | — |
-| `[workspace-secure-server]` | — | ✅ |
+| `[common]` | Required | Required |
+| `[common.security]` | Not used | Required |
+| `[common.resources]` | Optional | Optional |
+| `[[users]]` | Required | Required |
+| `[workspace-localhost]` | Required | Not used |
+| `[workspace-secure-server]` | Not used | Required |
 
 ### Annotated dtaas.toml
 
