@@ -1,0 +1,242 @@
+/*
+ * The landing page of the published site, docs/redirect-page.html. It sits
+ * outside MkDocs, so it carries the theme itself. The colours repeat
+ * client/src/theme/tokens.ts, like extra.css does.
+ */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-latin-700-normal.woff2") format("woff2");
+}
+
+:root {
+  --primary: #003d73;
+  --primary-dark: #002546;
+  --banner: #002546;
+  --primary-tint: #eaf1fb;
+  --page: #f5f6fa;
+  --card: #ffffff;
+  --border: #dadee7;
+  --text: #1a1f29;
+  --muted: #47536b;
+  --link: #003d73;
+  --button-text: #ffffff;
+  /* The turquoise is 2.85:1 on white, too faint for a focus ring there. */
+  --focus: #002546;
+  --radius: 8px;
+  color-scheme: light dark;
+}
+
+/* The header keeps its navy field in both schemes, as on the main site. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0e131b;
+    --card: #171e29;
+    --border: #2c3647;
+    --text: #e8ecf3;
+    --muted: #a9b3c6;
+    --link: #8cc8e6;
+    --primary-tint: #1f2a3a;
+    /* A navy button disappears on the dark card, so it turns light. */
+    --primary: #8cc8e6;
+    --primary-dark: #b3dbef;
+    --button-text: #0e131b;
+    --focus: #e8ecf3;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.banner {
+  background: var(--banner);
+  padding: 1.5rem 1rem;
+}
+
+.banner img {
+  display: block;
+  width: min(100%, 26rem);
+  height: auto;
+  margin: 0 auto;
+}
+
+main {
+  max-width: 44rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+}
+
+.lead {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+thead th {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody th {
+  font-weight: 700;
+}
+
+.note {
+  display: block;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Both actions are at least 44 px high, the smallest comfortable target. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 7rem;
+  padding: 0 1rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button.primary {
+  background: var(--primary);
+  color: var(--button-text);
+}
+
+.button.primary:hover {
+  background: var(--primary-dark);
+}
+
+.button.secondary {
+  border: 2px solid var(--link);
+  color: var(--link);
+}
+
+.button.secondary:hover {
+  background: var(--primary-tint);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.none {
+  color: var(--muted);
+}
+
+footer {
+  max-width: 44rem;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+footer a {
+  color: var(--link);
+}
+
+/*
+ * On a narrow screen each version becomes a block: its name on one line and
+ * the two actions side by side below it. The column headings are then
+ * redundant, so they are hidden from sight but kept for screen readers.
+ */
+@media (max-width: 30rem) {
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody th {
+    grid-column: 1 / -1;
+  }
+
+  tbody th,
+  td {
+    display: block;
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .none {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}

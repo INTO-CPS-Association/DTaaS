@@ -92,7 +92,9 @@ through GitHub Pages. No one publishes by hand.
 
 Before tagging a release, add its row to the table in
 `docs/redirect-page.html`, which becomes the landing page. The workflow
-refuses a release that the landing page does not list.
+refuses a release that the landing page does not list. The page takes its
+style from `docs/assets/css/landing.css`, and `script/docs/pages.py` copies
+that file, the logo and the fonts to the site root with it.
 
 To publish a release tagged before the workflow existed, run the workflow
 from the **Actions** tab on `feature/distributed-demo` and enter the tag.

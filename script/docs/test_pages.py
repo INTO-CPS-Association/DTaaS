@@ -24,7 +24,8 @@ def fixture_docs_dir(tmp_path: Path) -> Path:
     """A docs/ directory whose landing page lists version1.0."""
     docs = tmp_path / "docs"
     write(docs / "redirect-page.html", '<a href="version1.0/index.html">')
-    write(docs / pages.BRAND_LOGO, "<svg/>")
+    for asset in pages.LANDING_ASSETS:
+        write(docs / asset, "x")
     return docs
 
 
@@ -64,7 +65,8 @@ def test_assemble_replaces_version(tmp_path, site_dir, docs_dir):
     assert not (pages_dir / "development" / "pdf").exists()
     assert (pages_dir / "DTaaS-development.pdf").read_bytes() == b"%PDF"
     assert (pages_dir / "index.html").is_file()
-    assert (pages_dir / pages.BRAND_LOGO).is_file()
+    for asset in pages.LANDING_ASSETS:
+        assert (pages_dir / asset).is_file()
 
 
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):
