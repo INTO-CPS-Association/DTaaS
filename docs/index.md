@@ -12,13 +12,11 @@ on the DTaaS platform.
 **Share**: share ready-to-use DTs
 with other users, or share the services that one DT offers.
 
-This short tour shows the current interface:
-
-![Tour of the DTaaS website pages](user/dtaas-user_4x.gif)
-
-The longer v1.0 walkthrough, recorded before the interface was redesigned,
-is available as
+This walkthrough shows the DTaaS v1.0 interface and workflow:
 <!-- markdownlint-disable MD013 -->
+![DTaaS v1.0 user walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif)
+
+The full-resolution recording is also available as
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.mp4).
 
 An overview of the DTaaS platform is available as

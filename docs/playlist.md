@@ -6,19 +6,15 @@ a standard and a `4x` version exist, this page shows the `4x` version.
 
 ## Current GIF previews
 
-### Tour of the current interface
-
-![Tour of the DTaaS website pages](user/dtaas-user_4x.gif)
-
-Referenced from [index.md](index.md) and
-[user/website/dtaas.md](user/website/dtaas.md).
-
 ### DTaaS v1.0 feature walkthrough
 
-Recorded before the interface was redesigned, available as
 <!-- markdownlint-disable MD013 -->
+![DTaaS v1.0 user walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.gif)
+
+Also available as
 [MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/user/20260426_dtaas/dtaas-user_4x.mp4).
-Referenced from [index.md](index.md).
+Referenced from [index.md](index.md) and
+[user/website/dtaas.md](user/website/dtaas.md).
 
 ### DTaaS on localhost: installation and walkthrough
 
