@@ -318,3 +318,12 @@ def test_platform_update_requires_a_flag(runner):
 
     assert result.exit_code != 0
     assert "Nothing to update" in result.output
+
+
+def test_version_reports_the_installed_version(runner):
+    """'dtaas --version' answers which build is installed, which is the first
+    thing to establish when a manual test behaves unexpectedly."""
+    result = runner.invoke(dtaas, ["--version"])
+
+    assert result.exit_code == 0
+    assert "dtaas" in result.output

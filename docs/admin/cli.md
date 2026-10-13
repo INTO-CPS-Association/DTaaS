@@ -706,36 +706,67 @@ provision = true
 api_url = "https://gitlab.example.com"
 ```
 
-The provisioning token must be able to create users, so it has to be
-an admin token. The CLI reads it from the `DTAAS_GITLAB_PAT`
-environment variable, and the generated template deliberately has no
-key for it. A `[gitlab].pat` key also works and takes precedence over
-the variable.
+Provisioning needs an admin token, set up once per installation by a
+GitLab administrator:
+
+**1. Use an administrator account.** In **Admin area > Users**, click
+**Edit** on the account and check that **User type** is
+**Administrator**.
+
+![Administrator user type](root-edit.png)
+
+**2. Create its token**, signed in as that account, under
+**User Settings > Access Tokens**. Tick the `api` scope, and `admin_mode`
+too if the instance has Admin Mode enabled, then export the token where
+you run `dtaas`:
+
+![Create a personal access token](create-PAT.png)
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-Each provisioned user needs an initial GitLab password. Supply it with
-`--password` (for a single-user add, the CLI prompts with hidden input
-if you omit it) or with a `password` column in `users.csv`:
+That screenshot comes from the
+[GitLab tutorial](../user/gitlab/tutorial.md), where a regular user
+creates a token for cloning; for provisioning, `api` on an administrator
+account is what matters. Choose an expiry you will rotate, because
+provisioning stops working the day the token lapses. The generated
+`dtaas.toml` also ships a commented `[gitlab].pat` key for installations
+that would rather keep the token in the file; `DTAAS_GITLAB_PAT` is used
+first whenever it is set.
+
+The token the CLI issues to each user is far narrower: it is named
+`dtaas`, carries `read_repository` and `write_repository` only, and
+expires after 365 days. Issued tokens are saved to
+`gitlab_user_tokens.json` (mode `0600`); treat that file as a credential
+store.
+
+Each new user needs an initial GitLab password, taken from `--password`
+or the `password` column of `users.csv`, then from `[[users]].password`
+for a `dtaas.toml` starting user, and otherwise prompted for with hidden
+input on a single-user add. The `users.csv` that `dtaas config generate`
+writes already has the column:
 
 ```csv
 username,email,groups,load_balance,password
 alice,alice@intocps.org,additional,true,S3cur3-p4ss
 ```
 
-The password is used only to create the account. It is never written
-to `dtaas.users.registry.json`, `.dtaas.state.json` or logs. Issued
-tokens are saved to `gitlab_user_tokens.json` (mode `0600`); treat that
-file as a credential store.
+A run in which a new user has no password is refused before anything is
+changed, naming those users. The password is used only to create the
+account and is never written to `dtaas.users.registry.json`,
+`.dtaas.state.json` or logs.
 
-Re-running `user add` for a user who is already provisioned retries
-only the steps that failed before. Once a token has been issued for a
-user, a later run does not issue another. An existing GitLab account
-is left untouched and reported with a warning. A GitLab failure does
-not affect the containers, which are already running by then, but it
-makes the command exit non-zero.
+Naming a `dtaas.toml` starting user, for example
+`dtaas user add username1`, creates only its GitLab account and token:
+its workspace container and its email come from `dtaas.toml`.
+
+Re-running `user add` for a user retries only what failed before: once a
+token has been issued, a later run does not issue another. An existing
+GitLab account that this run did not create is left untouched and
+reported with a warning. A GitLab failure does not affect the
+containers, which are already running by then, but it makes the command
+exit non-zero.
 
 For a self-hosted GitLab behind an internal CA, set
 `[gitlab].ssl_verify` to the path of the CA bundle. `false` turns
@@ -803,6 +834,13 @@ to take effect:
 ```bash
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
+
+A delete never touches GitLab: the user's account and its token stay
+there until a GitLab administrator removes them. The saved token is
+dropped from `gitlab_user_tokens.json` and the CLI names what it left
+behind. Delete the GitLab account before adding the same username
+again, because `user add` cannot issue a token for an account it did not
+create.
 
 **Options:**
 

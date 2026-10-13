@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
+from src.cmd_user_utils import StagedUsers
 # pylint: disable=redefined-outer-name
 
 
@@ -44,10 +45,10 @@ def test_admin_install_forwards_to_platform_install(runner):
 def test_admin_user_add_forwards_to_user_add(runner):
     """'admin user add' forwards to user add and warns."""
     with patch(
-        "src.cmd_user.stage_users_for_add", return_value=([], {})
+        "src.cmd_user.stage_users_for_add", return_value=StagedUsers(["alice"])
     ) as mock_stage, patch("src.cmd_utils.configPkg.Config") as mock_cfg, patch(
         "src.cmd_user.userPkg.add_users", return_value=None
-    ):
+    ), patch("src.cmd_user.userPkg.check_add_supported", return_value=None):
         mock_cfg.return_value.get_gitlab_provision.return_value = (False, None)
         result = runner.invoke(
             dtaas, ["admin", "user", "add", "alice", "--email", "a@x.io"]

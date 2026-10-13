@@ -7,6 +7,7 @@ check builds on.
 """
 
 from . import utils
+from .config_validate_gitlab import check_gitlab
 from .validators import (
     get_nested,
     is_email,
@@ -126,55 +127,6 @@ def _check_users(data):
     return errors
 
 
-def _gitlab_provision_errors(gitlab):
-    """Check gitlab.provision type and return the provision flag."""
-    provision = gitlab.get("provision")
-    if provision is not None and not isinstance(provision, bool):
-        return ["gitlab.provision must be true or false"], provision
-    return [], provision
-
-
-def _gitlab_pat_errors(gitlab):
-    """Check gitlab.pat is not set but empty."""
-    pat = gitlab.get("pat")
-    if pat is not None and not str(pat).strip():
-        return [
-            "gitlab.pat is set but empty; remove the key to use "
-            "DTAAS_GITLAB_PAT instead, or provide a real token"
-        ]
-    return []
-
-
-def _gitlab_ssl_verify_errors(gitlab):
-    """Check gitlab.ssl_verify is bool or string path."""
-    ssl_verify = gitlab.get("ssl_verify")
-    if ssl_verify is not None and not isinstance(ssl_verify, (bool, str)):
-        return ["gitlab.ssl_verify must be true, false, or a CA bundle path"]
-    return []
-
-
-def _check_gitlab(data):
-    """[gitlab], when present, must have well-typed fields and a valid
-    api_url -- required when provision is true, so a malformed or missing
-    URL is caught before 'user add' runs, not after containers already
-    exist."""
-    gitlab = get_nested(data, "gitlab")
-    if gitlab is None:
-        return []
-    if not isinstance(gitlab, dict):
-        return ["gitlab section is not a table"]
-
-    prov_errors, provision = _gitlab_provision_errors(gitlab)
-    errors = prov_errors
-    api_url_check = required if provision is True else optional
-    errors += api_url_check(
-        data, ("gitlab", "api_url"), (is_url, "gitlab.api_url must be a valid URL")
-    )
-    errors += _gitlab_pat_errors(gitlab)
-    errors += _gitlab_ssl_verify_errors(gitlab)
-    return errors
-
-
 # Deployment-section fields checked when present: (section, key, predicate, label).
 _DEPLOY_FIELDS = (
     ("frontend", "react-app-oauth-url", is_url, "URL"),
@@ -235,7 +187,7 @@ _CHECKS = (
     _check_certs_src,
     _check_resources,
     _check_users,
-    _check_gitlab,
+    check_gitlab,
 )
 
 

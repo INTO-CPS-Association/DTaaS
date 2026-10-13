@@ -9,6 +9,7 @@ services.gitlab`` and the DTaaS CLI's ``pkg.gitlab``.
 """
 
 from .client import get_gitlab_client
+from .messages import with_hint
 from .users import (
     CreateOutcome,
     CreateUserResult,
@@ -20,6 +21,7 @@ from .validators import validate_user_row
 
 __all__ = [
     "get_gitlab_client",
+    "with_hint",
     "create_user",
     "create_user_pat",
     "validate_user_row",

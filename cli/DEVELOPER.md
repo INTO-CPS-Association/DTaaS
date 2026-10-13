@@ -92,6 +92,10 @@ checks are syntactic, but `path` and `certs-src` are verified against the local
 filesystem (the directory must exist), so `validate` is expected to run on the
 deployment host.
 
+The `[gitlab]` section's own checks live in `src/pkg/config_validate_gitlab.py`
+(`check_gitlab`), called from `config_validate.py`'s check list; they were
+split out to keep that module within its line count.
+
 `platform update --config` is backed by _src/pkg/config_update.py_, which
 re-applies `dtaas.toml` to an installed deployment in place. It reuses the
 existing substitution engine rather than duplicating it:
@@ -151,19 +155,25 @@ section.
 `src/pkg/gitlab/` is built on `gitlab_common` (vendored from
 `lib/gitlab_common` by `src/pkg/build.py`, like the deploy templates below
 see [lib/gitlab_common/README.md](../lib/gitlab_common/README.md) for why it
-is copied rather than depended on) for the client and user/PAT primitives, so
-no GitLab client or idempotency code is reimplemented in the CLI:
+is copied rather than depended on) for the client and the user/PAT
+primitives, so no GitLab API code is reimplemented in the CLI. What stays
+here is the deployment glue: reading `dtaas.toml`, deciding which users to
+act on, persisting the issued tokens and printing the outcome.
 
-- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` and
-  `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
-  variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
-  instance.
+- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` from
+  `dtaas.toml` and resolves the PAT from the `DTAAS_GITLAB_PAT` environment
+  variable, falling back to `[gitlab].pat`, then builds a
+  `gitlab_common.get_gitlab_client` instance.
 - `provisioner.py`'s `ensure_user_resources(gl, user)` (a `GitlabUser` of
   username/email/password, plus an optional registry-stored user id)
   creates the user's GitLab account and Personal Access Token via
   `gitlab_common.create_user`/`create_user_pat`. It is idempotent: an
   already-existing account is left with its current credentials and gets no
-  new PAT.
+  new PAT, since `create_user` reports it as ALREADY_EXISTS with no id and
+  the account belongs to whoever registered it.
+- Every call in `gitlab_common` catches `errors.API_ERRORS` (a GitLab error
+  or a `requests` one, which python-gitlab does not wrap), so a dropped
+  connection is always one user's failure and never the run's.
 
 This is wired into `dtaas user add` (`pkg/users_gitlab.py`'s `provision_gitlab_users`)
 behind the `[gitlab].provision` flag (default `false`, so existing
@@ -179,8 +189,39 @@ same CSV after a partial failure) skips a user who already has a token rather
 than minting a second one. A GitLab failure for one user (or for the whole
 step, e.g. an unreachable instance) is reported and does not affect container
 provisioning, which has already completed by that point, nor other users.
-Scoped today to what `gitlab_common` provides user creation and PAT
-issuance; group/project provisioning is not implemented.
+Each user's token is persisted as soon as it is issued rather than at the
+end of the run: a token still in memory while later users are provisioned
+is one an interrupted run loses while it stays live on GitLab, and the next
+run would mint a second one. `add_users` skips the GitLab step only for
+`passwords=None` (what `config reconcile --fix` passes).
+`stage_users_for_add` keys the password map by every user named in the run,
+with None where no password was given, because `target_usernames` reaches
+an already-registered user only through that map: a user named with no
+entry at all would get no GitLab step and nothing would be said about them.
+`_account_step` checks `gitlab_pat_issued` before the password, so a re-run
+reports the issued token rather than a missing password. A client that
+cannot be built then fails only the users this run would have created an
+account for (a password and no token yet). Two visible consequences follow.
+A `--file` import whose CSV has no password column is refused by
+`require_passwords` before anything is written, naming the users with
+neither a password nor an account from an earlier run; a user who already
+has one is not refused, and their account step reports the issued token
+rather than a missing password. And `cmd_user` does not prompt for a
+password for a user already marked `gitlab_pat_issued`, since
+`_account_step` would discard it.
+`users_gitlab.py` holds that flow, `users_gitlab_targets.py` decides who is
+in it, and `users_gitlab_records.py` is the disk half: the 0600 token file
+and the registry markers. Group and project provisioning are not
+implemented.
+
+Everything these steps print goes through `pkg/messages.py`'s `echo_hint`,
+over `gitlab_common.with_hint`. A failure, warning or skip opens with one
+line short enough to scan in a run that touches many users, and keeps what
+a reader has to act on (the PAT scopes behind a 401 or 403, GitLab's own
+words on a 409) in an indented line underneath. A message that already
+carries a hint keeps its shape when it becomes the detail of another, so the
+per user line can wrap a provisioner result without the two running
+together.
 
 ### User registry and runtime state
 

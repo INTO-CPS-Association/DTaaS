@@ -1,11 +1,13 @@
 """Template-copy functions behind 'dtaas config generate' and 'deployment generate'."""
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
 import click
 from .constants import SECRET_FILENAMES
 
+IS_POSIX = os.name == "posix"
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
 CONFIG_TOML = "dtaas.toml"
@@ -201,9 +203,9 @@ def create_user_dirs(dest_dir, usernames):
 
 
 def set_files_permissions(dest_dir):
-    """Set ownership/permissions on files/ dir (requires sudo)."""
+    """Set ownership/permissions on files/ dir (requires sudo, POSIX only)."""
     files_dir = Path(dest_dir) / "files"
-    if not files_dir.is_dir():
+    if not IS_POSIX or not files_dir.is_dir():
         return
     try:
         subprocess.run(

@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock
 
+import requests
 from gitlab.exceptions import GitlabCreateError, GitlabError
 from gitlab_common import (
     CreateOutcome,
@@ -60,6 +61,18 @@ def test_create_user_already_exists():
     assert result.outcome is CreateOutcome.ALREADY_EXISTS
     assert result.ok is True
     assert result.user_id is None
+
+
+def test_create_user_already_exists_keeps_gitlabs_reason():
+    """GitLab answers 409 for a taken username and for an email already on
+    another account; the caller needs to know which, so its words are kept."""
+    gl = MagicMock()
+    gl.users.create.side_effect = GitlabCreateError(
+        "Email has already been taken", response_code=409
+    )
+    result = create_user(gl, **_fields())
+    assert result.outcome is CreateOutcome.ALREADY_EXISTS
+    assert "Email has already been taken" in result.error
 
 
 def test_create_user_non_409_create_error():
@@ -145,3 +158,28 @@ def test_create_user_pat_empty_token():
     ok, error = create_user_pat(gl, 42, TEST_USERNAME)
     assert ok is False
     assert "Empty token" in error
+
+
+DROPPED = requests.ConnectionError("connection reset")
+
+
+def test_create_user_reports_a_dropped_connection():
+    """A connection that never reached GitLab is a requests error, which
+    python-gitlab does not wrap. It is this user's failure, reported in the
+    result, so a caller creating many users is not aborted by it."""
+    gl = MagicMock()
+    gl.users.create.side_effect = DROPPED
+    result = create_user(
+        gl, username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD
+    )
+    assert result.outcome is CreateOutcome.FAILED
+    assert "connection reset" in result.error
+
+
+def test_create_user_pat_reports_a_dropped_connection():
+    """The same holds for the token half, against the same instance."""
+    gl = MagicMock()
+    gl.users.get.side_effect = DROPPED
+    ok, error = create_user_pat(gl, 42, TEST_USERNAME)
+    assert ok is False
+    assert "connection reset" in error

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtaas"
-version = "2.1.0"
+version = "2.2.0"
 description = "DTaaS CLI"
 authors = ["Astitva Sehgal", "Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"
@@ -16,24 +16,25 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.10"
 PyYAML = "^6.0.3"
-click = "^8.4.2"
-tomlkit = "^0.15.0"
+click = "^8.5.0"
+tomlkit = "^0.15.1"
 python-on-whales = "^0.81.0"
-cryptography = "^49.0.0"
-email-validator = "^2.2.0"
-fqdn = "^1.5.1"
-python-gitlab = "^8.3.0"
+cryptography = "^50.0.2"
+email-validator = "^2.3.0"
+fqdn = "^1.6.0"
+python-gitlab = "^8.6.0"
+requests = "^2.34.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"
-pylint = "^4.0.6"
+pylint = "^4.1.1"
 pytest-cov = "^7.1.0"
-setuptools = "^82.0.1"
+setuptools = "^84.0.0"
 zipp = "^4.1.0"
 safety = "^3.8.1"
-pyright = "^1.1.411"
-nltk = "^3.9.4"
-authlib = "^1.7.2"
+pyright = "^1.1.414"
+nltk = "^3.10.3"
+authlib = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=80.0.0"]
@@ -46,3 +47,9 @@ dtaas = "src.cmd:dtaas"
 include = ["src", "tests"]
 pythonVersion = "3.10"
 typeCheckingMode = "basic"
+
+[tool.coverage.run]
+# src/gitlab_common is a copy of lib/gitlab_common made by build.py. Its code
+# is measured by the lib's own tests; this package's tests mock it, so
+# counting the copy here would report the lib as mostly untested.
+omit = ["src/gitlab_common/*"]

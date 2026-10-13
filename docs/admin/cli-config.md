@@ -84,9 +84,10 @@ shm_size   = "512m"   # shared memory unit required
 # Usernames must match GitLab accounts and be unique across the array.
 #
 # email enables traefik-forward-auth routing rules automatically;
-# groups/load_balance carry per-user tags. password is optional (used by
-# future GitLab-provisioning onboarding); avoid committing a real secret
-# here; prefer supplying it at runtime instead.
+# groups/load_balance carry per-user tags. password is optional: it is the
+# initial GitLab password when `dtaas user add <username>` provisions this
+# starting user's account. Avoid committing a real secret here; prefer
+# supplying it at runtime instead.
 [[users]]
 username     = "alice"
 email        = "alice@example.com"
@@ -111,11 +112,12 @@ react-app-oauth-url = "https://gitlab.example.com"
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas user add` also creates
 # each new user's GitLab account and a Personal Access Token (see
-# "Add Users" in cli.md). The provisioning token must be able to create users
-# (an admin token); supply it via the DTAAS_GITLAB_PAT environment variable
-# rather than committing it here. A [gitlab].pat key overrides the env var if
-# set. ssl_verify may be a CA-bundle path for a GitLab behind an internal CA;
-# false disables verification (a warning is printed) and true (default) uses
+# "Add Users" in cli.md). The provisioning token must belong to an
+# administrator and carry the api scope (plus admin_mode on an instance with
+# Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
+# rather than committing it here. A [gitlab].pat key is the fallback when the
+# variable is unset or empty. ssl_verify may be a CA-bundle path for a GitLab
+# behind an internal CA; false disables verification (a warning is printed) and true (default) uses
 # the system trust store.
 [gitlab]
 provision  = false
