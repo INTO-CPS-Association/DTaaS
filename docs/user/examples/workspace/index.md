@@ -37,5 +37,6 @@ The examples vary in complexity. Try them in the following order:
    ./incubator-NuRV-monitor-service/README.md)
 1. [Incubator with NuRV Runtime Monitor FMU as Service](
    ./incubator-NuRV-fmu-monitor-service/README.md)
+1. [The Kitchen Building Model](./the_kitchen/README.md)
 
 [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
