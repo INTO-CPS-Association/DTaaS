@@ -3,7 +3,7 @@
 This page walks through the DTaaS website with screenshots.
 A short screen recording is also available.
 
-![DTaaS user view](../dtaas-user_4x.gif)
+![Tour of the DTaaS website pages](../dtaas-user_4x.gif)
 
 This tutorial uses `https://intocps.org` as an example base URL.
 Replace it with the URL of your installation.
