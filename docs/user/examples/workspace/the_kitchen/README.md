@@ -6,8 +6,10 @@ This example puts a building model in the DTaaS library and gives each of its
 rooms a simulated temperature sensor. The building is The Kitchen at Aarhus
 University. Its model has 72 rooms (`IfcSpace`) and no sensors, so the example
 proposes one temperature sensor per room. Rooms are not drawn in the 3D view,
-so each sensor is bound by its IFC `GlobalId` to a wall inside the room, the one
-nearest to the room's centre that no other room has taken.
+so each sensor is bound by its IFC `GlobalId` to a wall or column inside the
+room, the one nearest to the room's centre that no other room has taken. When a
+room has none left, the sensor goes on another drawn object in it, such as a
+door.
 
 ![The model on the Buildings page, with the 72 proposed sensors](buildings-bim.png)
 
@@ -52,6 +54,10 @@ The publisher reads the broker from these environment variables:
 | `MQTT_PORT` | `1883` | MQTT port of the broker |
 | `MQTT_USERNAME` | not set | User name, when the broker asks for one |
 | `MQTT_PASSWORD` | not set | Password, when the broker asks for one |
+| `MQTT_TLS` | not set | Set to `1` to connect over TLS, for example on port 8883 |
+
+Without `MQTT_TLS`, the user name and password travel unencrypted, so set it
+whenever the broker is not on the same machine.
 
 ## Lifecycle Phases
 
@@ -60,7 +66,7 @@ The publisher reads the broker from these environment variables:
 | Create | Installs the tools, places the model and writes the derived files |
 | Execute | Starts the publisher in the background |
 | Terminate | Stops the publisher and clears its log |
-| Clean | Clears the publisher log |
+| Clean | Clears the publisher log and PID file |
 
 ## Run the Example
 
