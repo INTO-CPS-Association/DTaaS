@@ -830,15 +830,15 @@ forward-auth rule removed) and dropped from `dtaas.users.registry.json`. Users
 that are not currently provisioned are reported and skipped, but are still
 removed from the registry.
 
-**GitLab is never touched by a delete.** The account and the Personal Access
-Token issued to it stay where they are, since only a GitLab admin can remove
-them. For a user the CLI had
-provisioned, `user delete` says so by name and drops their entry from
-`gitlab_user_tokens.json`, so the credentials file never claims a token for
-a user the CLI no longer tracks. The token itself stays live on GitLab and
-can then only be revoked there. **Delete the GitLab account before re-adding
-the same username**: `user add` finds the account already there, cannot know
-its credentials, and so issues no token for it.
+> **Note: the GitLab account stays.** `user delete` removes the user from the
+> DTaaS installation only. By design, their GitLab account and its Personal
+> Access Token stay on GitLab, so the user can still sign in there. For a user
+> the CLI had provisioned, `user delete` says so by name and drops their entry
+> from `gitlab_user_tokens.json`, so the credentials file never claims a token
+> for a user the CLI no longer tracks; the token can then only be revoked in
+> GitLab. To remove an account, a GitLab administrator deletes it in GitLab.
+> **Do that before re-adding the same username**: `user add` finds the account
+> already there, cannot know its credentials, and so issues no token for it.
 
 Preview a removal without making any changes with `--dry-run`:
 

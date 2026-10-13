@@ -34,7 +34,10 @@ The removed user no longer has backend authorisation.
 
 **3. Remove the user from the GitLab instance (optional):**
 
-The
+The CLI leaves the user's GitLab account and Personal Access Token in
+place, so the user can still sign in to GitLab. Delete the account if
+the user should lose access, and always before adding the same username
+again. The
 [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/delete_account.html)
 describe how to delete an account.
 

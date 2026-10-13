@@ -827,12 +827,15 @@ to take effect:
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
 ```
 
-A delete never touches GitLab: the user's account and its token stay
-there until a GitLab administrator removes them. The saved token is
-dropped from `gitlab_user_tokens.json` and the CLI names what it left
-behind. Delete the GitLab account before adding the same username
-again, because `user add` cannot issue a token for an account it did not
-create.
+!!! note "The GitLab account stays"
+    `user delete` removes the user from the DTaaS installation only. By
+    design, their GitLab account and its Personal Access Token stay on
+    GitLab, so the user can still sign in there. The CLI names the users
+    it left on GitLab and drops their saved tokens from
+    `gitlab_user_tokens.json`, so a token can then only be revoked in
+    GitLab. To remove an account, a GitLab administrator deletes it in
+    GitLab. Do that before adding the same username again: `user add`
+    cannot issue a token for an account it did not create.
 
 **Options:**
 
