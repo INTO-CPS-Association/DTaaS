@@ -1,4 +1,4 @@
-# The Kitchen Building Model
+# BIM - Building Information Modeling
 
 ## Overview
 

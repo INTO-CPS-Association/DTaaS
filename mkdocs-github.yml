@@ -89,7 +89,7 @@ nav:
                   user/examples/workspace/incubator-NuRV-monitor-service/README.md
               - Incubator with NuRV FMU Service:
                   user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
-              - The Kitchen Building Model:
+              - BIM - Building Information Modeling:
                   user/examples/workspace/the_kitchen/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
           - Automation:
