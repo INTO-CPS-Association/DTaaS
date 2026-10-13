@@ -90,3 +90,19 @@
 .md-typeset a:focus-visible {
   text-decoration-thickness: 2px;
 }
+
+/*
+ * These diagrams draw dark lines and text on a transparent background, so on
+ * the slate scheme they would disappear. They get the white of the light
+ * scheme behind them. The selectors match on file name, and a white backing
+ * changes nothing for an opaque image that happens to share the name.
+ */
+[data-md-color-scheme="slate"] .md-typeset img:is(
+    [src$="localhost.png"],
+    [src$="design-sequence.png"],
+    [src$="oauth2-workflow.png"],
+    [src$="testPyramid.png"],
+    [src$="mass-spring-damper_multibody_system.png"]
+  ) {
+  background-color: #ffffff;
+}

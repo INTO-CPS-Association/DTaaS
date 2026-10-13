@@ -235,5 +235,7 @@ plugins:
       cover: true
       cover_logo: assets/brand/png/dtaas-logo-full-192h.png
       cover_subtitle: ""
+      # Hides the dark-scheme copy of a logo. See styles.scss there.
+      custom_template_path: script/docs/pdf-template
       enabled_if_env: MKDOCS_ENABLE_PDF_EXPORT
       output_path: pdf/DTaaS-docs.pdf

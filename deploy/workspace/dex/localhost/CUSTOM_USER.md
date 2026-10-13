@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full.svg#gh-light-mode-only)
+![DTaaS logo](dtaas-logo-full-white.svg#gh-dark-mode-only)
 
 The instructions in this document help update the username and
 password for the localhost version of the **DTaaS** installation.

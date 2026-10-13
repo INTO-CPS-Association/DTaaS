@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](../../../assets/brand/png/dtaas-logo-full-192h.png#only-light)
+![DTaaS logo](../../../assets/brand/png/dtaas-logo-full-white-192h.png#only-dark)
 
 This document explains how to change the username and password of the
 localhost **DTaaS** installation.

@@ -1,0 +1,9 @@
+// Extra styles for the PDF export. The with-pdf plugin in mkdocs.yml reads
+// this file through its custom_template_path option.
+
+// A page may publish an image twice, one copy for each colour scheme, with
+// Material's #only-light and #only-dark fragments. The PDF has no colour
+// scheme and prints on white, so it keeps the light copy only.
+img[src$="#only-dark"] {
+  display: none;
+}
