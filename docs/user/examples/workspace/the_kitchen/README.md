@@ -5,8 +5,11 @@
 This example puts a building model in the DTaaS library and gives each of its
 rooms a simulated temperature sensor. The building is The Kitchen at Aarhus
 University. Its model has 72 rooms (`IfcSpace`) and no sensors, so the example
-proposes one temperature sensor per room and binds it to the room by its IFC
-`GlobalId`.
+proposes one temperature sensor per room. Rooms are not drawn in the 3D view,
+so each sensor is bound by its IFC `GlobalId` to a wall inside the room, the one
+nearest to the room's centre that no other room has taken.
+
+![The model on the Buildings page, with the 72 proposed sensors](buildings-bim.png)
 
 The **Buildings** page of the DTaaS client draws the model from the library.
 The binding manifest written by this example tells the page which reading
@@ -20,7 +23,7 @@ The model is used in this example with permission.
 | File | What it does |
 |:---|:---|
 | `models/the_kitchen.ifc` | The building model, IFC 2X3 |
-| `lifecycle/make_manifest.py` | Proposes one sensor per room and writes the binding manifest |
+| `lifecycle/make_manifest.py` | Proposes one sensor per room, places it on a wall of the room and writes the binding manifest |
 | `lifecycle/publish_readings.py` | Publishes a simulated temperature per room over MQTT |
 | `lifecycle/requirements.txt` | The IFC converters from ifc-utils and the MQTT client |
 
@@ -77,8 +80,8 @@ chmod +x lifecycle/*
 
 Installs ifc-explorer, ifc-converter and paho-mqtt into a virtual environment
 in `.venv`. Then copies the model into `/workspace/common/models` and writes the
-geometry, the property tree and the binding manifest beside it. The conversion
-takes about a minute.
+geometry, the property tree and the binding manifest beside it. This takes
+about three minutes.
 
 ```bash
 lifecycle/create
