@@ -16,7 +16,7 @@ BUILT_PDF = Path("pdf") / "DTaaS-docs.pdf"
 # The files the landing page links to, relative to docs/. The page sits at
 # the site root, outside every version directory, so it brings its own copy.
 LANDING_ASSETS = (
-    Path("assets") / "brand" / "dtaas-logo-full-white.svg",
+    Path("assets") / "brand" / "dtaas-mark-white.svg",
     Path("assets") / "brand" / "dtaas-mark.svg",
     Path("assets") / "css" / "landing.css",
     Path("assets") / "fonts" / "inter-latin-400-normal.woff2",

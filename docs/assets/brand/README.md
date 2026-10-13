@@ -108,7 +108,7 @@ Changing the mark changes these, so check them after a rebuild.
 | The documentation site header | `mkdocs.yml`, `mkdocs-github.yml`, `logo:` |
 | The documentation site tab | the same files, `favicon:` |
 | The PDF export cover | `mkdocs.yml`, `cover_logo:` |
-| The landing page of the published site | `docs/redirect-page.html`, the white lockup and the mark, copied to the site root by `script/docs/pages.py` |
+| The landing page of the published site | `docs/redirect-page.html`, the white mark beside the name in text, and the mark as its tab icon, copied to the site root by `script/docs/pages.py` |
 | The application toolbar | `client/src/components/BrandMark.tsx`, which carries the geometry inline |
 | The application tab | `client/public/favicon.svg` |
 
