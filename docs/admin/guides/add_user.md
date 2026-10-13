@@ -7,8 +7,10 @@ This page adds a user to a DTaaS installation, using the username
 
 Create an account for the new user on the GitLab instance and note its
 username and email. If GitLab provisioning (`[gitlab].provision` in
-`dtaas.toml`) is enabled, the DTaaS CLI creates the account in the next
-step instead.
+`dtaas.toml`) is enabled, the DTaaS CLI creates the account and a
+Personal Access Token in the next step instead; give the initial
+password with `--password` or at the hidden prompt (see
+[GitLab provisioning](../cli.md#gitlab-provisioning-optional)).
 
 **2. Create the user workspace:**
 
@@ -23,10 +25,11 @@ The CLI creates the workspace files, starts the workspace container and,
 because `--email` is given, appends the forward-auth rule for the user to
 `config/conf.server`.
 
-**3. Add backend authorisation by hand (only without `--email`):**
+**3. Add backend authorisation by hand (only without an email):**
 
-Without `--email`, the CLI writes no forward-auth rule. In that case, add
-three lines to `config/conf.server`:
+A single-user add requires `--email`, but a user added from a
+`users.csv` row with an empty `email` cell gets no forward-auth rule.
+In that case, add three lines to `config/conf.server`:
 
 ```txt
 rule.onlyu3.action=auth

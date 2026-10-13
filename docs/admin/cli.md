@@ -22,6 +22,7 @@ source .venv/bin/activate     # Linux / macOS
 
 pip install dtaas
 dtaas --help                  # verify
+dtaas --version               # which build is installed
 ```
 
 The package needs Python 3.10 or newer.
@@ -67,8 +68,9 @@ the prompt.
     plain HTTP with default or static credentials. **Do not expose
     them to the internet or shared networks.** Production-supported
     types still require the manual hardening steps documented in the
-    `README.md` and `CONFIGURATION.md` shipped with each generated
-    project.
+    `README.md` and configuration notes (`CONFIG.md`, or
+    `CONFIGURATION.md` for `workspace-secure-server`) shipped with each
+    generated project.
 
 The generated packages match the
 [manual installation scenarios](overview.md#manual-installation-scenarios-advanced).
@@ -92,6 +94,11 @@ The main sections are:
   containers (`cpus`, `mem_limit`, `pids_limit`, `shm_size`), with a
   `set_limits` flag that turns enforcement off. Adjust them to the
   host capacity and your tenancy policy.
+- `[[users]]`: the starting users, one record each.
+- `[gitlab]`: optional GitLab account provisioning for `user add`
+  (see [GitLab provisioning](#gitlab-provisioning-optional)).
+- `[frontend]`: the OAuth application of the DTaaS web client, for the
+  server types.
 - One section per deployment type, such as `[secure-server]`, which
   holds the OAuth credentials for that type.
 
@@ -104,51 +111,47 @@ the full list.
 An abridged `dtaas.toml`:
 
 ```toml
-# This is the config for DTaaS CLI
-
-name = "Digital Twin as a Service (DTaaS)"
-version = "2.1.0"
-owner = "The INTO-CPS-Association"
-git-repo = "https://github.com/into-cps-association/DTaaS.git"
+name="Digital Twin as a Service (DTaaS)"
+version="2.2.0"
+owner="The INTO-CPS-Association"
+git-repo="https://github.com/into-cps-association/DTaaS.git"
 
 [common]
-# Server hostname either localhost or a valid hostname, ex: intocps.org
-server-dns = "localhost"
-# absolute path to the DTaaS application directory
-# Specify the directory of DTaaS installation
-# Linux example
-path = "/Users/username/DTaaS"
+server-dns="localhost"
+# Absolute path to the DTaaS installation. Separate it with / or \\, never a
+# single \, which fails with "Invalid unicode value".
+path="/home/XXX/DTaaS"
 # Windows example
-#path = "C:\\Users\\XXX\\DTaaS"
-# Note: You have to either use / or \\ when specifying path, else you would get 
-# "Error while getting toml file: dtaas.toml, Invalid unicode value"
+#path="C:\\Users\\XXX\\DTaaS"
+
+[common.security]
+tls=true
+certs-src='/etc/letsencrypt/archive/intocps.org'
 
 [common.resources]
-# Default resource limits applied when creating user workspace containers.
-# Keys:
-# - cpus: integer count of virtual CPUs to allocate to the container
-# - mem_limit: memory limit string accepted by Docker (e.g. "4G", "512M")
-# - pids_limit: maximum number of processes the container may create
-# - shm_size: size for /dev/shm (shared memory), e.g. "512m"
-#
-# Adjust these values to match your host capacity and tenancy policy.
-cpus = 4
-mem_limit = "4G"
-pids_limit = 4960
-shm_size = "512m"
-
-# Example: Increase memory and lower CPU for heavier-memory workloads
-# cpus = 2
-# mem_limit = "8G"
-
+# Enforce the per-user limits below; false creates users with no CPU, memory
+# or process caps and ignores the fields.
+set_limits=true
+cpus=4 # Virtual CPU
+mem_limit="4G"
+pids_limit=4960 # Number of processes
+shm_size="512m" # Shared memory size
 
 [[users]]
-username = "username1"
-email = "username1@intocps.org"
+username="username1"
+email="username1@intocps.org"
+groups=["default","dtaas"]
+load_balance=true
 
-[[users]]
-username = "username2"
-email = "username2@intocps.org"
+[gitlab]
+provision=false
+api_url="https://gitlab.com"
+ssl_verify=true
+#pat="glpat-xxxxxxxxxxxxxxxxxxxx"
+
+[frontend]
+react-app-client-id="your_client_id_here"
+react-app-oauth-url="https://gitlab.com"
 ...
 ```
 
@@ -577,31 +580,8 @@ lists them.
 | `--dry-run` | off | Report what would change without writing or restarting |
 | `--output-dir PATH` | `.` | Installation directory |
 
-`--certs` and `--config` can be combined in one invocation.
-
-### Deprecated command spellings
-
-Version 2.0.0 of the CLI moved every command to the
-`dtaas <noun> <verb>` grammar. The old spellings still work for one
-release as hidden aliases. Each prints a deprecation warning and then
-runs the new command. Update your scripts:
-
-| Old spelling | New spelling |
-| :----------- | :----------- |
-| `dtaas generate-project` | `dtaas config generate` + `dtaas deployment generate` |
-| `dtaas generate-deployment --type <t>` | `dtaas deployment generate --type <t>` |
-| `dtaas admin config <verb>` | `dtaas config <verb>` |
-| `dtaas admin install`, `uninstall`, `update`, `status` | `dtaas platform <verb>` |
-| `dtaas admin stop`, `start`, `pause`, `resume` | `dtaas platform <verb>` (scope narrowed, see below) |
-| `dtaas admin user add`, `delete`, `pause`, `stop`, `resume` | `dtaas user <verb>` |
-
-!!! warning "Scope change"
-    Before 2.0, `admin stop`, `start`, `pause` and `resume` acted on
-    the whole installation, including every additional user. The
-    `platform` replacements act on the core services only. To get the
-    old effect, also run `dtaas user stop --all`, `pause --all` or
-    `resume --all`. `admin start` maps to `user resume --all`, since
-    there is no `user start`.
+`--certs` and `--config` can be combined in one invocation; at least
+one of them is required.
 
 ## User management
 
@@ -648,13 +628,14 @@ dtaas user add --file users.csv
 ```
 
 ```csv
-username,email,groups,load_balance
-alice,alice@intocps.org,additional,true
-bob,bob@intocps.org,additional;beta-testers,false
+username,email,groups,load_balance,password
+alice,alice@intocps.org,additional,true,
+bob,bob@intocps.org,additional;beta-testers;load-balanced-tier1,false,
 ```
 
 `groups` is a `;`-separated list and `load_balance` is `true` or
-`false`. Give either a `USERNAME` or `--file`, not both. A bare
+`false`. The `password` column is used only with GitLab provisioning
+(see below). Give either a `USERNAME` or `--file`, not both. A bare
 `dtaas user add` with neither is rejected, so it cannot reprovision
 the whole registry by accident.
 
@@ -662,9 +643,12 @@ Both forms merge the users into the CLI-owned
 `dtaas.users.registry.json` with `desired_status` set to `running`.
 **Only the newly added users are started**; users already running are
 left alone, so adding one user never recreates the others. A username
-that is already declared in `dtaas.toml`'s `[[users]]` or already in
-the registry is skipped with a warning. It is never added twice or
-overwritten.
+already in the registry is reported (`'alice' already exists,
+skipping`) and never added twice or overwritten. A username declared
+in `dtaas.toml`'s `[[users]]` is reported as a starting user, whose
+workspace `dtaas.toml` manages; with GitLab provisioning on, naming
+one creates its GitLab account (see below). A run that adds nobody
+ends with `No new users added.` and exits `0`.
 
 To reprovision **every** registry user at once (for example after
 `compose.users.yml` was lost), use `dtaas config reconcile --fix`.
@@ -673,22 +657,24 @@ To reprovision **every** registry user at once (for example after
 
 | Option | Default | Description |
 | :----- | :------ | :----------- |
-| `USERNAME` | — | Add one user (requires `--email`) |
+| `USERNAME` | — | Add one user (requires `--email`, except for a `dtaas.toml` starting user) |
 | `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing) |
+| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user, and another address given for one is reported and not applied |
 | `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups |
 | `--load-balance` / `--no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). Prefer the `users.csv` `password` column or the interactive prompt, because a command-line value is visible in shell history and the process list |
+| `--password TEXT` | — | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password`. Prefer the `users.csv` `password` column or the interactive prompt, because a command-line value is visible in shell history and the process list |
 
-For each user, the command checks for a `files/<username>` directory.
-If it does not exist, the command creates it with the correct file
-structure. An existing directory must be owned by the user running
-the **dtaas** command on the host; otherwise the command fails.
+For each registry user, the command copies `files/template/` into
+`files/<username>`, creating the directory when it is missing, and
+sets its ownership to `1000:100` where it has the permission to;
+without that permission it leaves the ownership as it is and carries
+on.
 
 When a user has an *email*, the CLI adds the matching
 traefik-forward-auth routing rule to `config/conf.server`, so you do
-not need to edit `conf.server` by hand. Restart the container for the
-change to take effect:
+not need to edit `conf.server` by hand. A user added from a
+`users.csv` row with an empty `email` cell gets no rule. Restart the
+container for the change to take effect:
 
 ```bash
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
@@ -749,8 +735,14 @@ writes already has the column:
 
 ```csv
 username,email,groups,load_balance,password
-alice,alice@intocps.org,additional,true,S3cur3-p4ss
+alice,alice@intocps.org,additional,true,Kq7v-Rm3x-Zt9w
 ```
+
+GitLab applies its own password rules: it refuses a password that is
+too short or built from common words (for example one that contains
+`pass` or the user's name). A refused password fails that user's
+GitLab step with GitLab's reason; fix it and run the same command
+again.
 
 A run in which a new user has no password is refused before anything is
 changed, naming those users. The password is used only to create the
@@ -931,7 +923,7 @@ whenever it can read the deployment.
 - `user add` writes every registry user into `compose.users.yml` but
   starts only the users added in that run. Users whose
   `desired_status` is not `running` are never started.
-- An empty registry makes `user add` a no-op.
+- `config reconcile --fix` with an empty registry does nothing.
 - Usernames may contain `.`, `_` and `-` and must start with a letter
   or digit. Whitespace, path separators and shell metacharacters are
   rejected.

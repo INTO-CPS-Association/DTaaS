@@ -3,8 +3,7 @@
 Every command follows a single grammar -- dtaas <noun> <verb> -- with four
 nouns: config, deployment, platform, user (see DTaaS-CLI-Design.md). Each noun
 is a Click group defined in its own cmd_<noun>.py module and attached here in
-the config -> deployment -> platform -> user workflow order. Deprecated old
-spellings are registered from cmd_aliases.py for one release.
+the config -> deployment -> platform -> user workflow order.
 """
 
 import click
@@ -12,7 +11,6 @@ from .cmd_config import config_group
 from .cmd_deployment import deployment_group
 from .cmd_platform import platform_group
 from .cmd_user import user_group
-from .cmd_aliases import register_aliases
 
 # The noun groups in workflow order: configure, then generate the files, then
 # operate the platform, then manage users. dtaas --help lists them in this order.
@@ -81,7 +79,6 @@ dtaas.add_command(config_group)
 dtaas.add_command(deployment_group)
 dtaas.add_command(platform_group)
 dtaas.add_command(user_group)
-register_aliases(dtaas)
 
 
 if __name__ == "__main__":

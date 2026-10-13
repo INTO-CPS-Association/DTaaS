@@ -66,10 +66,7 @@ The CLI has two layers of code:
   _src/cmd_utils.py_ (uninstall/reconcile/update orchestration),
   _src/cmd_deploy_utils.py_ (deployment-generation helpers), and
   _src/cmd_user_utils.py_ (user-input resolution/validation for
-  _src/cmd_user.py_'s commands). Deprecated pre-2.0 spellings
-  (`admin ...`, `generate-deployment`, `generate-project`) live in
-  _src/cmd_aliases.py_ as hidden aliases that warn and forward; that module is
-  a self-contained deprecation-window layer, deletable in one step.
+  _src/cmd_user.py_'s commands).
 
 - Package layer: This is the _cli/src/pkg_ directory.
   It contains the
@@ -312,7 +309,7 @@ It has the following sections:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.0.0"
+version="2.2.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 ```
@@ -342,7 +339,7 @@ shm_size="512m"
   compose files.
 - _path_: absolute path to the DTaaS installation; required for workspace
   creation and docker services.
-- _tls_: `false` uses `user.server.yml`; `true` (default) uses `user.server.secure.yml`.
+- _tls_: `false` uses `users.server.yml`; `true` uses `users.server.secure.yml`.
 - _certs-src_: source directory of the TLS certificates. For TLS deploy types,
   `deployment generate` copies the latest `fullchain.pem`/`privkey.pem` from
   here into the deployment's `certs/` directory (see `src/pkg/certs.py`).
@@ -370,11 +367,9 @@ email="username2@intocps.org"
   CLI-owned `dtaas.users.registry.json`.
 - _username_/_email_ are required (_email_ is written to `config/conf.server`
   on `dtaas user add`); _groups_/_load_balance_ are optional per-user
-  tags; _password_ is an optional field reserved for future GitLab-onboarding
-  provisioning; avoid committing a real secret in it.
-- This schema previously went through an intermediate `starting = [...]` list
-  plus per-user `[users.<name>]` sub-table stage; that stage is now itself
-  superseded by `[[users]]`.
+  tags; _password_ is the optional initial GitLab password used when
+  `dtaas user add <username>` provisions that starting user's account; avoid
+  committing a real secret in it.
 
 See [User registry and runtime state](#user-registry-and-runtime-state) for the
 registry and `.dtaas.state.json` cache.
@@ -391,6 +386,22 @@ OAuth credentials for the DTaaS React client website. This is a separate OAuth a
 from the server-side one (traefik-forward-auth). Values are substituted into `config/client.js`
 by `deployment generate`.
 
+#### [gitlab]
+
+```toml
+[gitlab]
+provision=false
+api_url="https://gitlab.com"
+ssl_verify=true
+#pat="glpat-xxxxxxxxxxxxxxxxxxxx"
+```
+
+Optional GitLab account provisioning for `dtaas user add`, read by
+`pkg/gitlab/client.py` and `pkg/users_gitlab.py`; see
+[GitLab user provisioning](#gitlab-user-provisioning). The admin token comes
+from the `DTAAS_GITLAB_PAT` environment variable first, with `pat` as the
+fallback.
+
 #### Deployment sections
 
 Each deploy type has its own section (`[localhost]`, `[insecure-server]`,
@@ -402,7 +413,6 @@ substituted into `.env` and `conf.server` by `deployment generate`.
 
 ```bash
 pip install poetry               # install poetry to the system
-poetry shell                     # activate the poetry virtual environment
 cd cli                           # switch to the cli directory
 poetry install                   # install all required python packages
 ```
@@ -411,7 +421,7 @@ Two things are generated and not committed to the repository. Before running
 tests or building the package, copy them from their sources:
 
 ```bash
-python src/pkg/build.py
+poetry run python -m src.pkg.build
 ```
 
 This populates `src/templates/deploy/` from `deploy/dtaas` and
@@ -426,9 +436,9 @@ Make changes to _cli/src_.
 To test changes locally:
 
 ```bash
-poetry shell            # activate the poetry virtual environment
-python src/pkg/build.py # required before build/tests see Setup above
-poetry build            # build the python package
+poetry run python -m src.pkg.build  # required before build/tests, see Setup
+poetry run dtaas --help              # run the CLI from source
+poetry build                         # build the python package
 ```
 
 ## Linting
@@ -436,7 +446,7 @@ poetry build            # build the python package
 From the _cli_ directory, run:
 
 ```bash
-pylint src --rcfile=../.pylintrc
+poetry run pylint src tests --rcfile=../.pylintrc
 ```
 
 ## Type Checking
@@ -444,7 +454,7 @@ pylint src --rcfile=../.pylintrc
 From the _cli_ directory, run:
 
 ```bash
-pyright src
+poetry run pyright src
 ```
 
 Pyright is configured in `pyproject.toml` under `[tool.pyright]`.
@@ -457,7 +467,7 @@ _test_*.py_ naming convention.
 To run all tests with coverage:
 
 ```bash
-pytest --cov=src --cov-report=xml --cov-report=term-missing
+poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing
 ```
 
 ### Caveat

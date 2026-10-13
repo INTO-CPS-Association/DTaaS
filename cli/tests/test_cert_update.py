@@ -1,4 +1,4 @@
-"""Tests for cert_update ('dtaas admin update --certs' orchestration).
+"""Tests for cert_update ('dtaas platform update --certs' orchestration).
 
 Certificate validation and the Traefik reload are mocked here so these tests
 focus on staging, the atomic swap, permissions, and the fail-safe behaviour.

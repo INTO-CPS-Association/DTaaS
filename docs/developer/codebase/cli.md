@@ -38,11 +38,6 @@ dtaas
     └── pause / stop / resume     # suspend or resume single users
 ```
 
-The old spellings (`dtaas admin ...`, `dtaas generate-deployment` and
-`dtaas generate-project`) still work for one release. `cmd_aliases.py`
-registers them as hidden commands that print a deprecation warning and
-forward to the new command.
-
 ## Package Structure
 
 The CLI package is organised as follows:
@@ -58,10 +53,11 @@ cli/
 │   ├── cmd_lifecycle.py          # 'platform status/stop/start/...'
 │   ├── cmd_user.py               # 'user add/delete/status'
 │   ├── cmd_user_lifecycle.py     # 'user pause/stop/resume'
-│   ├── cmd_aliases.py            # Deprecated old spellings
 │   ├── cmd_options.py            # Shared Click options
 │   ├── cmd_utils.py              # Shared command helpers
 │   ├── cmd_user_utils.py         # User input resolution
+│   ├── cmd_user_emails.py        # Emails given but not applied
+│   ├── cmd_user_passwords.py     # Initial GitLab passwords
 │   ├── cmd_deploy_utils.py       # Deployment command helpers
 │   ├── pkg/                      # Implementation modules
 │   │   ├── build.py              # Vendors shared code into src/
@@ -71,19 +67,25 @@ cli/
 │   │   ├── config.py             # dtaas.toml parsing and access
 │   │   ├── config_update.py      # In-place configuration re-apply
 │   │   ├── config_validate.py    # Configuration validation rules
+│   │   ├── config_validate_gitlab.py # [gitlab] validation rules
 │   │   ├── constants.py          # Constant definitions
 │   │   ├── deploy.py             # Install/uninstall orchestration
 │   │   ├── deploy_config.py      # Scenario configuration mapping
 │   │   ├── _deploy_data.py       # Per-scenario substitution specs
 │   │   ├── gitlab/               # Optional GitLab user provisioning
 │   │   ├── lifecycle.py          # Platform status/stop/start/pause
+│   │   ├── messages.py           # Shape of user command output
 │   │   ├── project.py            # Template copying for 'generate'
 │   │   ├── registry.py           # User registry (JSON)
+│   │   ├── registry_csv.py       # users.csv parsing
 │   │   ├── state.py              # Runtime state cache
 │   │   ├── user_files.py         # User file cleanup on uninstall
-│   │   ├── users.py              # User add/delete handlers
+│   │   ├── users.py              # User add handler
 │   │   ├── users_compose.py      # Per-user compose generation
+│   │   ├── users_delete.py       # User delete handler
 │   │   ├── users_gitlab.py       # GitLab account and token setup
+│   │   ├── users_gitlab_records.py # Saved tokens and markers
+│   │   ├── users_gitlab_targets.py # Users to provision in GitLab
 │   │   ├── users_lifecycle.py    # Per-user pause/stop/resume
 │   │   ├── users_utils.py        # User management helpers
 │   │   ├── utils.py              # File I/O and utilities

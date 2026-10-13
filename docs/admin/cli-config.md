@@ -43,7 +43,12 @@ starting point and delete the sections that your deployment type does
 not use (see the tables above).
 
 ```toml
-# URL of the DTaaS repository (required, all deployment types).
+# ── Metadata (top level) ──────────────────────────────────────────────────────
+# Describes the instance. git-repo, the URL of the DTaaS repository, is
+# required for all deployment types; validate checks no other key here.
+name     = "Digital Twin as a Service (DTaaS)"
+version  = "2.2.0"
+owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 # ── Common settings (all deployment types) ────────────────────────────────────
@@ -99,12 +104,14 @@ username     = "bob"
 email        = "bob@example.com"
 groups       = ["default", "dtaas"]
 load_balance = false
+# password   = "Kq7v-Rm3x-Zt9w"   # initial GitLab password, see above
 
 # ── React web client OAuth app (insecure-server, secure-server,
 #                                secure-server-gitlab) ────────────────────────
 # This is a SEPARATE OAuth application from the traefik-forward-auth app
 # configured in [insecure-server] / [secure-server] below.
 # Redirect URI: https://<server-dns>/Library
+# Scopes: api read_user read_repository openid profile   Type: not Confidential
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
@@ -117,8 +124,8 @@ react-app-oauth-url = "https://gitlab.example.com"
 # Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
 # rather than committing it here. A [gitlab].pat key is the fallback when the
 # variable is unset or empty. ssl_verify may be a CA-bundle path for a GitLab
-# behind an internal CA; false disables verification (a warning is printed) and true (default) uses
-# the system trust store.
+# behind an internal CA; false disables verification (a warning is printed)
+# and true (default) uses the system trust store.
 [gitlab]
 provision  = false
 api_url    = "https://gitlab.example.com"
@@ -126,10 +133,11 @@ api_url    = "https://gitlab.example.com"
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 
 # ── localhost deployment (dev / demo only) ────────────────────────────────────
+# GitLab OAuth app for the web client; auth-authority is the GitLab URL.
 [localhost]
 default-user   = "alice"
 client-id      = "dtaas-local"
-auth-authority = "https://dex.example.com"
+auth-authority = "https://gitlab.example.com"
 
 # ── insecure-server deployment (HTTP, demo only not internet-facing) ─────────
 # GitLab OAuth app for traefik-forward-auth.
@@ -187,7 +195,7 @@ first, then the current directory) and reports all problems at once:
 | `[common].server-dns` | Must be `localhost`, an IP, or a fully qualified hostname |
 | `[common].path` | Must be an absolute path to an existing directory |
 | `[common.security].certs-src` | When present, must be an absolute path to an existing directory |
-| `[common.resources].set_limits` | When present, `true` or `false` (default `true`) |
+| `[common.resources].set_limits` | `false` turns the limits off; any other value, or no key, keeps them on |
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
@@ -196,7 +204,7 @@ first, then the current directory) and reports all problems at once:
 | `[[users]].email` | Required, valid RFC 5321/5322 address (no DNS lookup) |
 | `[[users]].groups` | When present, must be a list of strings |
 | `[[users]].load_balance` | When present, must be `true` or `false` |
-| `[[users]].password` | When present, must be a string |
+| `[[users]].password` | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
 | `[gitlab].provision` | When present, `true` or `false` (default `false`) |
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
@@ -262,8 +270,8 @@ split follows the one Terraform makes between `.tf` and
 
 | File | Owner | Contents | Git |
 | --- | --- | --- | --- |
-| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Hand-edited; keep out of Git, as it can hold credentials |
-| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) | Tracked, CLI-written, never hand-edited |
+| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`, optional `password`) | Hand-edited; keep out of Git, as it can hold credentials |
+| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for starting users that `user add` has provisioned on GitLab | Tracked, CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored, runtime cache |
 
 - **`dtaas.toml`** is written by a person and never rewritten by the

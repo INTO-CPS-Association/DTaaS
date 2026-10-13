@@ -68,7 +68,6 @@ dtaas platform uninstall
     - [Lifecycle operations: status / stop / start / pause / resume](#lifecycle-operations)
     - [platform update --certs](#platform-update---certs)
     - [platform update --config](#platform-update---config)
-    - [Deprecated command spellings](#deprecated-command-spellings)
     - [user add](#user-add)
     - [user delete](#user-delete)
     - [user pause / stop / resume](#user-pause--stop--resume)
@@ -135,7 +134,7 @@ directory) and reports all problems at once:
 | `[common].server-dns` | Must be `localhost`, an IP, or a fully qualified hostname |
 | `[common].path` | Must be an absolute path to an existing directory |
 | `[common.security].certs-src` | When present, must be an absolute path to an existing directory |
-| `[common.resources].set_limits` | When present, `true` or `false` (default `true`) |
+| `[common.resources].set_limits` | `false` turns the limits off; any other value, or no key, keeps them on |
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
@@ -145,14 +144,21 @@ directory) and reports all problems at once:
 | `[[users]].groups` | When present, must be a list of strings |
 | `[[users]].load_balance` | When present, must be `true` or `false` |
 | `[[users]].password` | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
+| `[gitlab].provision` | When present, `true` or `false` (default `false`) |
+| `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true` |
+| `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
+| `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
-Deployment-section URLs include `react-app-oauth-url`, `oauth-url`,
+Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 `auth-authority`, and `keycloak-issuer-url` across `[frontend]`,
-`[localhost]`, `[insecure-server]`, `[secure-server]`, `[workspace-localhost]`,
-and `[workspace-secure-server]`; each is checked only when its section is
-present.
+`[localhost]`, `[insecure-server]`, `[secure-server]`,
+`[secure-server-gitlab]`, `[workspace-localhost]`, and
+`[workspace-secure-server]`; each is checked only when its section is
+present. `config validate` checks every section in the file, while
+`platform update --config` checks only the installed type's section, plus
+`[frontend]`.
 
 `path` and `certs-src` are checked against the local filesystem, run
 `validate` on the deployment host. If a check fails with a permission error
@@ -177,8 +183,11 @@ validated.
 ### deployment generate
 
 Copies the full project structure for a specific deployment scenario
-`docker-compose.yml`, config examples, and supporting files, into a target
-directory ready to be customised.
+(`docker-compose.yml`, config examples, and supporting files) into a target
+directory ready to be customised. It also writes the user workspace
+templates that `user add` builds new workspaces from: `users.server.yml`,
+`users.server.secure.yml`, `users.resources.yml`, and the `files/template/`
+skeleton.
 
 ```bash
 dtaas deployment generate --type <name>
@@ -189,7 +198,7 @@ dtaas deployment generate --type <name>
 | Option | Default | Description |
 |---|---|---|
 | `--type NAME` | *(required)* | Deployment scenario (see table below) |
-| `--output-dir PATH` | `.` | Target directory (must already exist) |
+| `--output-dir PATH` | `.` | Target directory (created if missing) |
 | `--force` | off | Overwrite files that already exist |
 
 #### Available types
@@ -206,7 +215,8 @@ dtaas deployment generate --type <name>
 > **Warning** Types marked *dev/demo only* or *insecure/demo only* run
 > over plain HTTP with default or static credentials. **Do not expose them to
 > the internet or shared networks.** Production-supported types still require
-> manual hardening steps documented in the `README.md` and `CONFIGURATION.md`
+> manual hardening steps documented in the `README.md` and configuration
+> notes (`CONFIG.md`, or `CONFIGURATION.md` for `workspace-secure-server`)
 > shipped with each generated project.
 
 **Examples:**
@@ -248,6 +258,12 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 `workspace-secure-server`), `deployment generate` also populates the
 `certs/` directory in the output. It reads `[common.security].certs-src` from
 `dtaas.toml` and copies the latest `fullchain.pem` and `privkey.pem` there.
+
+> **Tip: verify the Docker image tag**
+> `users.server.yml` and `users.server.secure.yml` contain a pinned workspace
+> image tag (e.g. `intocps/workspace:main-56c6f68`). Check
+> [Docker Hub](https://hub.docker.com/r/intocps/workspace/tags) and update the
+> tag to a current, stable version before deploying.
 
 ---
 
@@ -372,7 +388,7 @@ PROJECT     SERVICE            STATE        HEALTH
 deployment  traefik            running      healthy
 deployment  client             running      -
 deployment  gitlab             not created  -
-users       user-alice         paused       -
+users       alice              paused       -
 ```
 
 State values are `running`, `paused`, `stopped` (a terminated container, what
@@ -401,7 +417,7 @@ dtaas platform status --json
 
 #### platform stop / platform start
 
-`stop` stops all services with `docker compose stop`; `start` brings the
+`stop` stops the core services with `docker compose stop`; `start` brings the
 stopped containers back with `docker compose start`. Containers and networks
 are **kept**, so `stop` is not an uninstall.
 
@@ -410,7 +426,9 @@ dtaas platform stop
 dtaas platform start
 ```
 
-Both report `no existing DTaaS / Workspace installation` and exit `0` when
+After `stop`, the command notes how many per-user containers are still
+running and suggests `dtaas user stop --all`. Both commands print
+`There is no existing DTaaS / Workspace installation` and exit `0` when
 nothing is installed (no containers in any state), so they are safe to call
 repeatedly.
 
@@ -422,17 +440,18 @@ repeatedly.
 
 #### platform pause / platform resume
 
-`pause` freezes every running container in place with `docker compose pause`;
-`resume` thaws them with `docker compose unpause`. Memory is preserved and
-resume is near-instant.
+`pause` freezes the running core service containers in place with
+`docker compose pause`; `resume` thaws them with `docker compose unpause`.
+Memory is preserved and resume is near-instant.
 
 ```bash
 dtaas platform pause
 dtaas platform resume
 ```
 
-Both report the absent-installation case and exit `0` when nothing is
-installed (no containers in any state).
+Like `stop`, `pause` notes any per-user containers still running. Both
+report the absent-installation case and exit `0` when nothing is installed
+(no containers in any state).
 
 **Options:**
 
@@ -510,51 +529,8 @@ apply if problems are found. It is **idempotent** a second run with no
 | `--dry-run` | off | Report what would change without writing or restarting |
 | `--output-dir PATH` | `.` | Installation directory |
 
-> `--certs` and `--config` may be combined in a single invocation.
-
----
-
-### Deprecated command spellings
-
-Version 2.0.0 moved every command to a single `dtaas <noun> <verb>` grammar.
-The old spellings still work for **one release** as hidden aliases that print a
-deprecation notice to stderr and forward to the new command; they will be
-removed in the next major version. Update scripts to the new spellings:
-
-| Old spelling | New spelling |
-|---|---|
-| `dtaas generate-project` | `dtaas config generate` + `dtaas deployment generate` |
-| `dtaas generate-deployment --type <t>` | `dtaas deployment generate --type <t>` |
-| `dtaas admin config <verb>` | `dtaas config <verb>` |
-| `dtaas admin install\|uninstall\|update` | `dtaas platform install\|uninstall\|update` |
-| `dtaas admin status` | `dtaas platform status` |
-| `dtaas admin stop\|start\|pause\|resume` | `dtaas platform stop\|start\|pause\|resume` Warning: scope narrowed, see below |
-| `dtaas admin user add\|delete\|pause\|stop\|resume` | `dtaas user add\|delete\|pause\|stop\|resume` |
-
-> **Scope change: `admin stop`/`start`/`pause`/`resume`.** Pre-2.0, these acted
-> on the **whole installation** (core services and every additional user).
-> Their 2.0 replacements act on the **core services only**; per-user
-> containers are left untouched. To reproduce the old whole-installation
-> effect, also target every additional user with
-> [`dtaas user stop`/`pause`/`resume --all`](#user-pause--stop--resume)
-> (`admin start` maps to `user resume --all`, since there is no `user start`).
-> The running CLI also prints this as a warning when you use the old spelling.
->
-> **`user status` has no old spelling.** It is new in 2.0 (the closest
-> pre-2.0 equivalent, whole-installation `admin status`, is now `platform
-> status`), so there was never an `admin user status` to alias.
-
-The old `generate-project` folded into two commands: `dtaas config generate`
-now solely writes `dtaas.toml`, while `dtaas deployment generate` writes the
-Docker Compose user-workspace templates (`users.server.yml`,
-`users.server.secure.yml`, `users.resources.yml`) and the `files/template/`
-skeleton, alongside the deployment compose tree.
-
-> **Tip: verify the Docker image tag**
-> `users.server.yml` and `users.server.secure.yml` contain a pinned workspace
-> image tag (e.g. `intocps/workspace:main-56c6f68`). Check
-> [Docker Hub](https://hub.docker.com/r/intocps/workspace/tags) and update the
-> tag to a current, stable version before deploying.
+> `--certs` and `--config` may be combined in a single invocation; at least
+> one of them is required.
 
 ---
 
@@ -601,17 +577,21 @@ dtaas user add --file users.csv
 `dtaas config generate` writes a sample `users.csv` next to `dtaas.toml`:
 
 ```csv
-username,email,groups,load_balance
-alice,alice@intocps.org,additional,true
-bob,bob@intocps.org,additional;beta-testers,false
+username,email,groups,load_balance,password
+alice,alice@intocps.org,additional,true,
+bob,bob@intocps.org,additional;beta-testers;load-balanced-tier1,false,
 ```
 
-`groups` is a `;`-separated list and `load_balance` is `true`/`false`. Both
+`groups` is a `;`-separated list and `load_balance` is `true`/`false`. The
+`password` column is used only with GitLab provisioning (see below). Both
 forms merge into the registry (never hand-edited) with `desired_status` set to
-`running`, then **only the newly-added users are started** — already-running
+`running`, then **only the newly-added users are started**: already-running
 users are left untouched, so adding one user never recreates the rest. A
-username already declared in `dtaas.toml`'s `[[users]]` or the registry is
-**skipped with a warning**: it is never added twice or overwritten.
+username already in the registry is reported (`'alice' already exists,
+skipping`) and never added twice or overwritten. A username declared in
+`dtaas.toml`'s `[[users]]` is reported as a starting user, whose workspace
+`dtaas.toml` manages; with GitLab provisioning on, naming one creates its
+GitLab account (see below).
 
 #### GitLab provisioning (optional)
 
@@ -678,9 +658,15 @@ carries the column with empty cells, ready to fill in:
 
 ```csv
 username,email,groups,load_balance,password
-alice,alice@intocps.org,additional,true,S3cur3-p4ss
-bob,bob@intocps.org,additional;beta-testers,false,An0ther-p4ss
+alice,alice@intocps.org,additional,true,Kq7v-Rm3x-Zt9w
+bob,bob@intocps.org,additional;beta-testers,false,Wd4p-Hs8n-Qc2y
 ```
+
+GitLab applies its own password rules to these initial passwords: it
+refuses a password that is too short or built from common words (for
+example one that contains `pass` or the user's name). A refused password
+fails that user's GitLab step with GitLab's reason; fix the password and run
+the same command again.
 
 `--password` is visible in shell history and to anyone on the host who can
 list processes (`ps`), since the OS records a command's actual arguments.
@@ -717,10 +703,11 @@ An already-existing GitLab account is left with its current password, issued
 no new token, and reported with an explicit warning (its credentials were not
 created by this run and are unknown to it) rather than as an unremarkable
 success.
-Container provisioning is unaffected by any
-GitLab outcome containers are already up by the time GitLab provisioning
-runs but a GitLab failure (a missing/skipped password does not count) now
-makes the `user add` command itself exit non-zero, so scripts can detect it.
+Container provisioning is unaffected by any GitLab outcome, since the
+containers are already up by the time GitLab provisioning runs. A GitLab
+failure still makes the `user add` command exit non-zero, so scripts can
+detect it; a skipped user (a token already issued) does not count as a
+failure.
 
 Issued tokens are saved to `gitlab_user_tokens.json` as `{"username":
 "token"}`, in the current working directory alongside `dtaas.toml` and
@@ -759,14 +746,15 @@ registry user at once (e.g. after `compose.users.yml` was lost), use
 | `--load-balance / --no-load-balance` | on | Mark `USERNAME` for load balancing |
 | `--password TEXT` | — | GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password` in dtaas.toml. Visible in shell history and the process list, prefer the `users.csv` `password` column (`chmod 600` it) or the interactive prompt for non-interactive/scripted use |
 
-For each username the CLI checks whether `files/<username>/` already exists.
-If not, a new directory with the correct structure is created from
-`files/template/`. The directory, if it already exists, must be owned by the
-user running the `dtaas` command; otherwise the command fails.
+For each registry user the CLI copies `files/template/` into
+`files/<username>/`, creating the directory when it is missing, and sets its
+ownership to `1000:100` where it has the permission to; without that
+permission it leaves the ownership as it is and carries on.
 
-When an `email` is provided for a user in `dtaas.toml`, the CLI automatically
-adds a traefik-forward-auth routing rule to `config/conf.server`. Restart
-the container for the change to take effect:
+When a user has an email, the CLI automatically adds a traefik-forward-auth
+routing rule for them to `config/conf.server`. A user added from a
+`users.csv` row with an empty `email` cell gets no rule. Restart the
+container for the change to take effect:
 
 ```bash
 docker compose --env-file config/.env up -d --force-recreate traefik-forward-auth
@@ -800,10 +788,10 @@ and unconstrained users by toggling `set_limits` between runs.
 
 > **Notes**
 >
-> - `user add` starts a container for a new user or restarts a stopped one; it
->   reports *Running* for containers already up without restarting them.
-> - Provisioning is idempotent: re-running `user add` reprovisions every
->   registry user without duplicating work. An empty registry is a no-op.
+> - `user add` writes every registry user into `compose.users.yml` but
+>   starts only the users added in that run. Users whose `desired_status` is
+>   not `running` are never started.
+> - `config reconcile --fix` with an empty registry does nothing.
 > - Usernames may include '.', '_' and '-' (must start with a letter or digit).
 >   (Whitespace, path separators, and shell metacharacters are rejected.)
 > - This command does not enable AuthMS authentication.
@@ -886,10 +874,8 @@ dtaas user pause --file users.csv
 dtaas user stop --all
 ```
 
-`--all` is also how to reproduce the pre-2.0 whole-installation
-`admin stop`/`pause`/`resume` for the additional-users half: pair it with the
-core-only [`dtaas platform stop`/`pause`/`resume`](#lifecycle-operations) (see
-[Deprecated command spellings](#deprecated-command-spellings)).
+To suspend or resume the whole installation, pair `--all` here with the
+core-only [`dtaas platform stop`/`pause`/`resume`](#lifecycle-operations).
 
 | Command | `docker compose` verb | Effect | Reverse with |
 |---|---|---|---|
@@ -899,8 +885,7 @@ core-only [`dtaas platform stop`/`pause`/`resume`](#lifecycle-operations) (see
 
 Each command also writes a `desired_status` (`"paused"`/`"stopped"`/`"running"`)
 into `dtaas.users.registry.json` for the users it acted on. This is what makes
-the suspension durable: a later `dtaas user add` (which idempotently
-re-provisions every registry user on every run) or `dtaas config
+the suspension durable: a later `dtaas user add` or `dtaas config
 reconcile --fix` checks `desired_status` and will **not** silently restart a
 user you paused or stopped. Only `user resume` (or hand-editing the
 registry) clears it back to `"running"`.
@@ -946,20 +931,28 @@ It lists:
   manual edit or a partial delete);
 - **drifted** provisioned, but the live config no longer matches what
   `.dtaas.state.json` recorded when it was last provisioned;
+- **absent** provisioned (the user has a compose service), but the container
+  is gone, for example after an interrupted `user add`;
 - **desired-status drift** provisioned, but the live container state does not
   match the user's registry `desired_status` (e.g. `desired 'paused' but
   container is 'running'`).
 
-When everything matches, it prints `In sync: no drift detected.`
+When everything matches, it prints `In sync: no drift detected.` If Docker is
+unreachable, it warns that container state could not be verified, reports
+only the drift it can read from the compose file, and never reports
+`In sync`.
 
 Without `--fix`, this is read-only. Pass `--fix` to reprovision **missing** and
-**drifted** users and to pause/stop/start every provisioned user to match its
-`desired_status` (equivalent to running `dtaas user add`, so it acts on
-the current directory, not `--output-dir`):
+**drifted** users, restart the containers of **absent** users, and
+pause/stop/start every provisioned user to match its `desired_status`:
 
 ```bash
 dtaas config reconcile --fix
 ```
+
+`--fix` runs the same code as `dtaas user add`, so it acts on the current
+directory: combining it with an `--output-dir` other than the current
+directory is rejected. It also refuses to run when Docker is unreachable.
 
 **unexpected** services are never touched by `--fix` removing something
 that's actually running is a deliberate action use
@@ -981,7 +974,7 @@ config/state split Terraform uses for `.tf` vs `terraform.tfstate`:
 
 | File | Owner | Contents | Git |
 |---|---|---|---|
-| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Tracked hand-edited |
+| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`, optional `password`) | Hand-edited; keep out of Git, as it can hold credentials |
 | `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for dtaas.toml starting users that `user add` has provisioned on GitLab | Tracked CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored runtime cache |
 
@@ -1015,7 +1008,8 @@ it is valid with `dtaas config validate` before running any other command.
 | `[common]` | Required | Required | Required | Required |
 | `[common.security]` | Not used | Not used | Required | Required |
 | `[common.resources]` | Optional | Optional | Optional | Optional |
-| `[[users]]` | Required | Required | Required | Required |
+| `[gitlab]` | Optional | Optional | Optional | Optional |
+| `[[users]]` | Optional | Required | Required | Required |
 | `[frontend]` | Not used | Required | Required | Required |
 | `[localhost]` | Required | Not used | Not used | Not used |
 | `[insecure-server]` | Not used | Required | Not used | Not used |
@@ -1029,7 +1023,8 @@ it is valid with `dtaas config validate` before running any other command.
 | `[common]` | Required | Required |
 | `[common.security]` | Not used | Required |
 | `[common.resources]` | Optional | Optional |
-| `[[users]]` | Required | Required |
+| `[gitlab]` | Optional | Optional |
+| `[[users]]` | Optional | Required |
 | `[workspace-localhost]` | Required | Not used |
 | `[workspace-secure-server]` | Not used | Required |
 
@@ -1040,6 +1035,13 @@ as a starting point and delete sections that do not apply to your deployment
 type (see matrix above).
 
 ```toml
+# ── Metadata (top level) ──────────────────────────────────────────────────────
+# Describes the instance. Only git-repo is checked by validate (an http(s) URL).
+name     = "Digital Twin as a Service (DTaaS)"
+version  = "2.2.0"
+owner    = "The INTO-CPS-Association"
+git-repo = "https://github.com/into-cps-association/DTaaS.git"
+
 # ── Common settings (all deployment types) ────────────────────────────────────
 [common]
 # Public hostname of the server. Use "localhost" for local deployments,
@@ -1078,9 +1080,10 @@ shm_size   = "512m"   # shared memory unit required
 # Usernames must match GitLab accounts and be unique across the array.
 #
 # email enables traefik-forward-auth routing rules automatically;
-# groups/load_balance carry per-user tags. password is optional (used by
-# future GitLab-provisioning onboarding); avoid committing a real secret
-# here; prefer supplying it at runtime instead.
+# groups/load_balance carry per-user tags. password is optional: it is the
+# initial GitLab password when `dtaas user add <username>` provisions this
+# starting user's account. Avoid committing a real secret here; prefer
+# supplying it at runtime instead.
 [[users]]
 username     = "alice"
 email        = "alice@example.com"
@@ -1092,21 +1095,40 @@ username     = "bob"
 email        = "bob@example.com"
 groups       = ["default", "dtaas"]
 load_balance = false
+# password   = "Kq7v-Rm3x-Zt9w"   # initial GitLab password, see above
 
 # ── React web client OAuth app (insecure-server, secure-server,
 #                                secure-server-gitlab) ────────────────────────
 # This is a SEPARATE OAuth application from the traefik-forward-auth app
 # configured in [insecure-server] / [secure-server] below.
-# Redirect URI: https://<server-dns>/signin-oidc
+# Redirect URI: https://<server-dns>/Library
+# Scopes: api read_user read_repository openid profile   Type: not Confidential
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
 
+# ── GitLab user provisioning (optional, all types) ───────────────────────────
+# Off by default. When provision = true, `dtaas user add` also creates
+# each new user's GitLab account and a Personal Access Token (see
+# "Add Users" in cli.md). The provisioning token must belong to an
+# administrator and carry the api scope (plus admin_mode on an instance with
+# Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
+# rather than committing it here. A [gitlab].pat key is the fallback when the
+# variable is unset or empty. ssl_verify may be a CA-bundle path for a GitLab
+# behind an internal CA; false disables verification (a warning is printed)
+# and true (default) uses the system trust store.
+[gitlab]
+provision  = false
+api_url    = "https://gitlab.example.com"
+# pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
+# ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
+
 # ── localhost deployment (dev / demo only) ────────────────────────────────────
+# GitLab OAuth app for the web client; auth-authority is the GitLab URL.
 [localhost]
 default-user   = "alice"
 client-id      = "dtaas-local"
-auth-authority = "https://dex.example.com"
+auth-authority = "https://gitlab.example.com"
 
 # ── insecure-server deployment (HTTP, demo only not internet-facing) ─────────
 # GitLab OAuth app for traefik-forward-auth.
@@ -1127,8 +1149,9 @@ oauth-client-secret = "s3cr3t"
 oauth-secret        = "random-signing-string"
 
 # ── secure-server-gitlab deployment (bundled GitLab production-ready) ───────
-# oauth-url is omitted; it is derived from the bundled GitLab service.
+# oauth-url points at the bundled GitLab, served under /gitlab.
 [secure-server-gitlab]
+oauth-url           = "https://dtaas.example.com/gitlab"
 oauth-client-id     = "abc123"
 oauth-client-secret = "s3cr3t"
 oauth-secret        = "random-signing-string"
