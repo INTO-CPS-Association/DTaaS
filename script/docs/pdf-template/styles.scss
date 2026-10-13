@@ -7,3 +7,32 @@
 img[src$="#only-dark"] {
   display: none;
 }
+
+// Two print rules of the with-pdf plugin make WeasyPrint stop early and
+// drop every later chapter without an error. The PDF then ended after the
+// User chapter, without Admin, FAQ, Developer, Thanks and License. Both are
+// undone here.
+//
+// The plugin gives every chapter and every nested section a minimum height
+// of one page. A chapter or a group of pages longer than that, such as User
+// or Admin > DTaaS > Secure Server, then ends the document. The cover keeps
+// its full page.
+article:not(#doc-cover),
+section + section {
+  min-height: 0;
+}
+
+// pymdownx.highlight renders every code block with line numbers as a
+// one-row flex table that WeasyPrint cannot split across pages. In print it
+// becomes a plain block, and the line number column, which only serves the
+// anchors on the site, is hidden.
+.md-typeset .highlighttable,
+.md-typeset .highlighttable tbody,
+.md-typeset .highlighttable tr,
+.md-typeset .highlighttable td.code {
+  display: block;
+}
+
+.md-typeset .highlighttable td.linenos {
+  display: none;
+}
