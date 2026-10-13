@@ -34,6 +34,19 @@ MIN_TEXT_PX = 14
 MARK_PX = 32
 INSET_PX = 8
 
+# Pages that draw a concept and not the DTaaS system, so their largest box is
+# not the DTaaS boundary and they carry no mark.
+NO_MARK = {
+    'developer/system/architecture.png',
+    'developer/system/research-overview/devops.png',
+    'developer/system/research-overview/dt-assets-relationship.png',
+    'developer/system/research-overview/dtaas-class-instance.png',
+    'developer/system/research-overview/federated-dtaas.png',
+    'admin/servers/lib/file-system-layout.png',
+    'user/digital-twins/asset-relationship.png',
+    'user/servers/lib/author.png',
+}
+
 USER_ICON = ('html=1;shape=mxgraph.ios7.icons.user;verticalLabelPosition='
              'bottom;verticalAlign=top;align=center;dashed=0;shadow=0;')
 
@@ -144,7 +157,8 @@ def restyle_page(diagram, lockup):
     for cell in styled:
         restyle(cell, page, boundary)
     # A page that already carries the full lockup as its title needs no mark.
-    if boundary is not None and lockup not in ET.tostring(page.root, 'unicode'):
+    marked = diagram.get('name') not in NO_MARK
+    if marked and boundary is not None and lockup not in ET.tostring(page.root, 'unicode'):
         place_mark(page, boundary)
 
 

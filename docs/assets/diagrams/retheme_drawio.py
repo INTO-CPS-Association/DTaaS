@@ -110,6 +110,46 @@ COLOURS = {
     # Orange titles written inside labels as HTML.
     '#cc6600': PRIMARY,
     '#ff8000': PRIMARY,
+    # The research and library figures added in October 2026. Strong blues,
+    # purples and greens become the primary family, light fills the tints.
+    '#0000cc': PRIMARY,
+    '#001dbc': PRIMARY,
+    '#0050ef': PRIMARY,
+    '#10739e': PRIMARY,
+    '#3700cc': PRIMARY,
+    '#3f8624': PRIMARY,
+    '#4277bb': PRIMARY,
+    '#4d27aa': PRIMARY,
+    '#990099': PRIMARY,
+    '#b0084d': PRIMARY,
+    '#006600': PRIMARY_DARK,
+    '#006633': PRIMARY_DARK,
+    '#1a3300': PRIMARY_DARK,
+    '#a50040': PRIMARY_DARK,
+    '#006666': ACCENT_DARK,
+    '#b09500': ACCENT_DARK,
+    '#d79b00': ACCENT_DARK,
+    '#00cc00': ACCENT,
+    '#e3c800': ACCENT,
+    '#0080f0': MARK_ACCENT,
+    '#326ce5': MARK_ACCENT,
+    '#66b2ff': MARK_ACCENT,
+    '#232f3d': GREY_700,
+    '#232f3e': GREY_700,
+    '#36393d': GREY_700,
+    '#505050': GREY_700,
+    '#f9f7ed': GREY_50,
+    '#b1ddf0': PRIMARY_TINT,
+    '#ccccff': PRIMARY_TINT,
+    '#cce5ff': PRIMARY_TINT,
+    '#66ff66': ACCENT_TINT,
+    '#9ac7bf': ACCENT_TINT,
+    '#ccffff': ACCENT_TINT,
+    '#cdeb8b': ACCENT_TINT,
+    '#ffd966': ACCENT_TINT,
+    '#ffe6cc': ACCENT_TINT,
+    '#ffff88': ACCENT_TINT,
+    '#ff3333': ERROR,
 }
 
 # Navy written inside labels as rgb().
@@ -166,20 +206,43 @@ def old_wordmarks(model):
         yield group, members, titles
 
 
+def grouped_wordmark(group, members, titles):
+    """Where the logo goes for a wordmark drawn as a group, and what it replaces."""
+    box = group.find('mxGeometry')
+    x = float(box.get('x') or 0)
+    y = float(box.get('y') or 0) + (float(box.get('height')) - LOGO_HEIGHT) / 2
+    return [group, *members, *titles], group.get('parent'), group.get('id'), x, y
+
+
+def loose_wordmark(group, members, titles):
+    """The same for a wordmark that lies loose on the page instead of in a group.
+
+    Here members is every cell on the page, so only the emoji and the words of
+    the wordmark are taken, and its place is the box around those pieces.
+    """
+    words = ('emoji', '>DTaaS<', 'Digital Twin as a Service<')
+    marks = [c for c in members if any(w in (c.get('value') or '') for w in words)]
+    pieces = [c for c in [*marks, *titles] if c.find('mxGeometry') is not None]
+    boxes = [c.find('mxGeometry') for c in pieces]
+    x = min(float(b.get('x') or 0) for b in boxes)
+    top = min(float(b.get('y') or 0) for b in boxes)
+    bottom = max(float(b.get('y') or 0) + float(b.get('height') or 0) for b in boxes)
+    y = top + (bottom - top - LOGO_HEIGHT) / 2
+    return pieces, group.get('id'), pieces[0].get('id'), x, y
+
+
 def replace_wordmarks(root):
     """Put the logo where each old wordmark was."""
     style = logo_style()
     for model in root.iter('root'):
-        found = list(old_wordmarks(model))
-        for group, members, titles in found:
-            box = group.find('mxGeometry')
-            x = float(box.get('x') or 0)
-            y = float(box.get('y') or 0) + (float(box.get('height')) - LOGO_HEIGHT) / 2
-            for cell in [group, *members, *titles]:
+        for group, members, titles in list(old_wordmarks(model)):
+            place = grouped_wordmark if group.find('mxGeometry') is not None else loose_wordmark
+            removed, parent, logo_id, x, y = place(group, members, titles)
+            for cell in removed:
                 model.remove(cell)
             logo = ET.SubElement(model, 'mxCell', {
-                'id': group.get('id'), 'value': '', 'style': style,
-                'vertex': '1', 'parent': group.get('parent'),
+                'id': logo_id, 'value': '', 'style': style,
+                'vertex': '1', 'parent': parent,
             })
             ET.SubElement(logo, 'mxGeometry', {
                 'x': str(x), 'y': str(y), 'width': str(LOGO_WIDTH),

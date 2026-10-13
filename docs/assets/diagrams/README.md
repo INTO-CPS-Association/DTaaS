@@ -23,6 +23,15 @@ placed later.
 | `user/DTaaS-user-view.png` | `user/features.md` |
 | `developer/system/research-overview/system-architecture.png` | `developer/system/research-overview.md` |
 | `deploy/dtaas/docker/server/server.png` | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL |
+| `developer/system/architecture.png` | `developer/system/architecture.md` |
+| `developer/system/research-overview/devops.png` | `developer/system/research-overview.md` |
+| `developer/system/research-overview/dt-assets-relationship.png` | `developer/system/research-overview.md` |
+| `developer/system/research-overview/dtaas-class-instance.png` | `developer/system/research-overview.md` |
+| `developer/system/research-overview/dtaas-userview.png` | `developer/system/research-overview.md` |
+| `developer/system/research-overview/federated-dtaas.png` | `developer/system/research-overview.md` |
+| `admin/servers/lib/file-system-layout.png` | `admin/servers/lib/docker.md`, `admin/servers/lib/npm.md` |
+| `user/digital-twins/asset-relationship.png` | `user/digital-twins/create.md` |
+| `user/servers/lib/author.png` | `FAQ.md` |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
 | DTaaS localhost, with forward-auth | Not placed, see below |
@@ -163,3 +172,43 @@ page and a script for it would be longer than the change:
 
 The pages the documentation does not show follow the same rules, but they were
 not checked label by label for overlaps.
+
+## The Pages Added in October 2026
+
+Nine pages were added from two drawio files Prasad Talasila shared on 13
+October 2026: `DTaaS_new_theme_more_figures.drawio`, a working canvas with
+several versions of most figures, and `DTaaS-layers-on-devops.drawio`, the
+source of `devops.png`. Each page is the version that matches the image the
+documentation showed before, cut out of the canvas and passed through
+`retheme_drawio.py`, `restyle_drawio.py` and `shrink_images.py`. The other
+figures of the canvas stay with Prasad, as they differ from the images in the
+documentation or are not used yet.
+
+Two scripts changed for these pages. `retheme_drawio.py` maps the colours the
+new figures use and replaces a wordmark that lies loose on the page instead
+of in a group. `restyle_drawio.py` leaves the DTaaS mark off the pages listed
+in `NO_MARK`, which draw a concept and not the DTaaS system, so their largest
+box is not the DTaaS boundary.
+
+The hand edits, by page:
+
+- `developer/system/architecture.png`: the running figures, the clipboard and
+  the DTs icon were emoji, two of them fetched from an external site. The
+  runners are gone, the clipboard is a note shape and the DTs icon is the
+  drawio users icon. The two boxes on the right are wider and several labels
+  moved off their icons.
+- `developer/system/research-overview/dt-assets-relationship.png` and
+  `dtaas-class-instance.png`: the title written into the picture is gone, as
+  the page text names the figure. In the first, every arrow joins its two
+  boxes and carries its own label, where the sketch split each arrow around a
+  label with loose ends.
+- `developer/system/research-overview/federated-dtaas.png` and
+  `user/digital-twins/asset-relationship.png`: labels moved off the lines.
+- `developer/system/research-overview/dtaas-userview.png`: redrawn in about
+  1000 units instead of 2000, with the data acquisition below the platform,
+  so its labels reach 14 pixels at the column width. Every element and arrow
+  of the sketch is kept.
+- `admin/servers/lib/file-system-layout.png`: redrawn. The sketch put five
+  labelled cards in each of seven folders, up to twelve labels in a row, which
+  no font size makes legible at the column width. Each folder shows the five
+  asset types as coloured squares, and one legend names them.
