@@ -235,7 +235,9 @@ def replace_wordmarks(root):
     """Put the logo where each old wordmark was."""
     style = logo_style()
     for model in root.iter('root'):
-        for group, members, titles in list(old_wordmarks(model)):
+        # Collected first, because the loop removes cells from the model.
+        found = list(old_wordmarks(model))
+        for group, members, titles in found:
             place = grouped_wordmark if group.find('mxGeometry') is not None else loose_wordmark
             removed, parent, logo_id, x, y = place(group, members, titles)
             for cell in removed:
