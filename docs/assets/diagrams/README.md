@@ -20,8 +20,10 @@ placed later.
 | `admin/gitlab/gitlab-independent-install.png` | `admin/gitlab/index.md` |
 | `admin/gitlab/gitlab-integrated-runner.png` | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md` |
 | `developer/system/multi-domain.png` | `developer/system/extensions.md` |
+| `user/DTaaS-user-view.png` | `user/features.md` |
+| `developer/system/research-overview/system-architecture.png` | `developer/system/research-overview.md` |
 | `deploy/dtaas/docker/server/server.png` | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL |
-| Architecture with public and private cloud | Not placed |
+| Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
 | DTaaS localhost, with forward-auth | Not placed, see below |
 | Developer docker setup | Not placed |
