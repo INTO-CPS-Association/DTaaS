@@ -17,44 +17,41 @@ The following projects have funded this project.
 * Digital Twins for Cyber-Physical Systems (DiT4CPS) - a project sponsored by
   the Grundfos Foundation.
 
-## Developers
+## Example Contributors
 
-See the list of
-[code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
-on GitHub.
-
-| Contribution                                               | Contributors                    |
-| :--------------------------------------------------------- | :------------------------------ |
-| Interface redesign with Material UI ([#1765][pr-1765])     | Jady Pamella Barbacena da Silva |
-| Building Models page for IFC models ([#1768][pr-1768])     | Jady Pamella Barbacena da Silva |
-| Client security fixes ([#1769][pr-1769], [#1783][pr-1783]) | Jady Pamella Barbacena da Silva |
-| Documentation theme and diagrams in the new design         | Jady Pamella Barbacena da Silva |
+| Example Name                                               | Contributors                                |
+| :--------------------------------------------------------- | :------------------------------------------ |
+| Mass Spring Damper                                         | Prasad Talasila                             |
+| Water Tank Fault Injection                                 | Henrik Ejersbo and Mirgita Frasheri         |
+| Water Tank Model Swap                                      | Henrik Ejersbo and Mirgita Frasheri         |
+| Desktop Robotti with RabbitMQ                              | Mirgita Frasheri                            |
+| Water Treatment Plant and OPC-UA                           | Lucia Royo and Alejandro Labarias           |
+| Three Water Tanks with DT Manager Framework                | Santiago Gil Arboleda                       |
+| Flex-Cell with Two Industrial Robots                       | Santiago Gil Arboleda                       |
+| Incubator                                                  | Morten Haahr Kristensen                     |
+| Firefighters in Emergency Environments                     | Lars Vosteen and Hannes Iven                |
+| Mass Spring Damper with NuRV Runtime Monitor               | Alberto Bonizzi                             |
+| Incubator with NuRV Runtime Monitor                        | Alberto Bonizzi and Morten Haahr Kristensen |
+| Incubator with NuRV Runtime Monitor Service                | Valdemar Tang                               |
+| Water Tank Fault Injection with NuRV Runtime Monitor       | Alberto Bonizzi                             |
+| Incubator Co-Simulation with NuRV Runtime Monitor FMU      | Morten Haahr Kristensen                     |
+| Incubator with NuRV Runtime Monitor FMU as Service         | Valdemar Tang and Morten Haahr Kristensen   |
+| Incubator with NuRV Runtime Monitor as Service             | Morten Haahr Kristensen and Valdemar Tang   |
+| Interface redesign with Material UI ([#1765][pr-1765])     | Jady Pamella Barbacena da Silva             |
+| Building Models page for IFC models ([#1768][pr-1768])     | Jady Pamella Barbacena da Silva             |
+| Client security fixes ([#1769][pr-1769], [#1783][pr-1783]) | Jady Pamella Barbacena da Silva             |
+| Documentation theme and diagrams in the new design         | Jady Pamella Barbacena da Silva             |
 
 [pr-1765]: https://github.com/INTO-CPS-Association/DTaaS/pull/1765
 [pr-1768]: https://github.com/INTO-CPS-Association/DTaaS/pull/1768
 [pr-1769]: https://github.com/INTO-CPS-Association/DTaaS/pull/1769
 [pr-1783]: https://github.com/INTO-CPS-Association/DTaaS/pull/1783
 
-## Example Contributors
+## Developers
 
-| Example Name                                          | Contributors                                |
-| :---------------------------------------------------- | :------------------------------------------ |
-| Mass Spring Damper                                    | Prasad Talasila                             |
-| Water Tank Fault Injection                            | Henrik Ejersbo and Mirgita Frasheri         |
-| Water Tank Model Swap                                 | Henrik Ejersbo and Mirgita Frasheri         |
-| Desktop Robotti with RabbitMQ                         | Mirgita Frasheri                            |
-| Water Treatment Plant and OPC-UA                      | Lucia Royo and Alejandro Labarias           |
-| Three Water Tanks with DT Manager Framework           | Santiago Gil Arboleda                       |
-| Flex-Cell with Two Industrial Robots                  | Santiago Gil Arboleda                       |
-| Incubator                                             | Morten Haahr Kristensen                     |
-| Firefighters in Emergency Environments                | Lars Vosteen and Hannes Iven                |
-| Mass Spring Damper with NuRV Runtime Monitor          | Alberto Bonizzi                             |
-| Incubator with NuRV Runtime Monitor                   | Alberto Bonizzi and Morten Haahr Kristensen |
-| Incubator with NuRV Runtime Monitor Service           | Valdemar Tang                               |
-| Water Tank Fault Injection with NuRV Runtime Monitor  | Alberto Bonizzi                             |
-| Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen                     |
-| Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
-| Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
+See the list of
+[code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
+on GitHub.
 
 ## Documentation
 
