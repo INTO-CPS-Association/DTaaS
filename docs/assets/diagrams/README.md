@@ -120,6 +120,9 @@ uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py \
   styled.drawio dtaas-diagrams.drawio
 ```
 
+The scripts that take files on the command line accept only `.drawio`
+files under the current directory.
+
 `retheme_drawio.py` maps each colour to a colour of the theme, read from
 `client/src/theme/tokens.ts`, and replaces the old wordmark with the logo in
 `docs/assets/brand`. `split_pages.py` gives each diagram its own page.

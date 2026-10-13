@@ -10,9 +10,9 @@ Usage: python3 split_pages.py <input.drawio> <output.drawio>
 """
 
 import copy
-import pathlib
-import sys
 import xml.etree.ElementTree as ET
+
+from drawio_style import drawio_arguments
 
 # Cells closer than this, in drawio units, belong to the same diagram.
 GAP = 40
@@ -128,18 +128,16 @@ def split(diagram):
 def keep_only(root, keep, top_of, structural):
     """Remove every cell outside the kept top level cells."""
     # A removed group takes its children with it.
-    for cell in list(root):
-        if cell.get('id') in structural:
-            continue
-        if top_of.get(cell.get('id')) not in keep:
-            root.remove(cell)
+    doomed = [cell for cell in root
+              if cell.get('id') not in structural
+              and top_of.get(cell.get('id')) not in keep]
+    for cell in doomed:
+        root.remove(cell)
 
 
 def main():
     """Write a drawio file with one page per diagram."""
-    if len(sys.argv) != 3:
-        raise SystemExit(__doc__)
-    source, target = (pathlib.Path(arg) for arg in sys.argv[1:])
+    source, target = drawio_arguments(__doc__)
     tree = ET.parse(source)
     pages = [p for d in tree.getroot().iter('diagram') for p in split(d)]
     out = ET.Element('mxfile', {'host': 'drawio', 'pages': str(len(pages))})

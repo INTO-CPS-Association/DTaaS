@@ -13,8 +13,9 @@ Usage: python3 retheme_drawio.py <input.drawio> <output.drawio>
 import base64
 import pathlib
 import re
-import sys
 import xml.etree.ElementTree as ET
+
+from drawio_style import drawio_arguments
 
 # Resolved from this file, so the script runs from any directory.
 HERE = pathlib.Path(__file__).resolve().parent
@@ -188,9 +189,7 @@ def replace_wordmarks(root):
 
 def main():
     """Recolour the input file and write the result."""
-    if len(sys.argv) != 3:
-        raise SystemExit(__doc__)
-    source, target = (pathlib.Path(arg) for arg in sys.argv[1:])
+    source, target = drawio_arguments(__doc__)
     root = ET.fromstring(recolour(source.read_text()))
     replace_wordmarks(root)
     target.write_text(ET.tostring(root, encoding='unicode'))

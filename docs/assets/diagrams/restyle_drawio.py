@@ -99,9 +99,10 @@ def replace_people(page):
 
 def remove_notes(page):
     """Remove notes written into the picture, which the page text carries."""
-    for cell in list(page.root):
-        if ds.plain_text(cell.get('value')).startswith('Note:'):
-            page.root.remove(cell)
+    notes = [cell for cell in page.root
+             if ds.plain_text(cell.get('value')).startswith('Note:')]
+    for cell in notes:
+        page.root.remove(cell)
 
 
 def find_boundary(page):
@@ -139,9 +140,9 @@ def restyle_page(diagram, lockup):
     remove_notes(page)
     replace_people(page)
     boundary = find_boundary(page)
-    for cell in list(page.root):
-        if cell.get('style') is not None:
-            restyle(cell, page, boundary)
+    styled = [cell for cell in page.root if cell.get('style') is not None]
+    for cell in styled:
+        restyle(cell, page, boundary)
     # A page that already carries the full lockup as its title needs no mark.
     if boundary is not None and lockup not in ET.tostring(page.root, 'unicode'):
         place_mark(page, boundary)

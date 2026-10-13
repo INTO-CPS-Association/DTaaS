@@ -104,8 +104,33 @@ def clean_label(label, minimum):
     # A subscript prints the instance number below the text size, so the
     # number follows the name at full size instead.
     label = re.sub(r'<sub>(.*?)</sub>', r' \1', label)
-    label = re.sub(r'(<br\s*/?>)+$', '', label.strip())
+    label = strip_trailing_breaks(label)
     return raise_sizes(label, minimum) if minimum else label
+
+
+def drawio_arguments(usage):
+    """Return the input and output drawio files named on the command line.
+
+    Both must be .drawio files inside the current directory, so a mistyped
+    or crafted argument cannot read or overwrite a file elsewhere.
+    """
+    if len(sys.argv) != 3:
+        raise SystemExit(usage)
+    base = pathlib.Path.cwd().resolve()
+    paths = [pathlib.Path(arg).resolve() for arg in sys.argv[1:]]
+    for path in paths:
+        if path.suffix != '.drawio' or not path.is_relative_to(base):
+            raise SystemExit(f'{path} must be a .drawio file under {base}')
+    return paths
+
+
+def strip_trailing_breaks(label):
+    """Remove line breaks at the end of a label, without a regex."""
+    label = label.strip()
+    endings = ('<br>', '<br/>', '<br />')
+    while label.lower().endswith(endings):
+        label = label[:label.rfind('<')].rstrip()
+    return label
 
 
 def rewrite_file(usage, change):
@@ -114,9 +139,7 @@ def rewrite_file(usage, change):
     The two arguments are the input and the output file, which may be the
     same. Return the path of the output file.
     """
-    if len(sys.argv) != 3:
-        raise SystemExit(usage)
-    source, target = (pathlib.Path(arg) for arg in sys.argv[1:])
+    source, target = drawio_arguments(usage)
     tree = ET.parse(source)
     for diagram in tree.getroot().iter('diagram'):
         change(diagram)
