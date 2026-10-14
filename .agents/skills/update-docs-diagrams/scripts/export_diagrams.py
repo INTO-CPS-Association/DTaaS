@@ -112,7 +112,8 @@ CONTRAST_EXCEPTIONS = {}
 def check_contrast(failures):
     """Stop the export when a placed page has an unlisted contrast failure."""
     unlisted = [(page, cell, problem) for page, cell, problem in failures
-                if target_of(page) and (page, cell) not in CONTRAST_EXCEPTIONS]
+                if target_of(page) and dark_target(target_of(page))
+                and (page, cell) not in CONTRAST_EXCEPTIONS]
     for page, cell, problem in unlisted:
         print(f'low contrast on {page}, cell {cell}: {problem}')
     if unlisted:
@@ -147,9 +148,21 @@ def export(source, number, target):
     print(f'wrote {target.relative_to(REPO)}')
 
 
+# Pages exported in their light version only. Their third-party logos keep
+# dark lettering that does not read on the slate page, so the documentation
+# shows the light image on a white backing (the on-white class) in both
+# schemes.
+LIGHT_ONLY = {
+    'developer/system/current-status-developer.png',
+}
+
+
 def dark_target(target):
     """Where the dark image of a documentation page goes, or None."""
-    if not target.resolve().is_relative_to(ALLOWED[0]):
+    resolved = target.resolve()
+    if not resolved.is_relative_to(ALLOWED[0]):
+        return None
+    if resolved.relative_to(ALLOWED[0]).as_posix() in LIGHT_ONLY:
         return None
     return target.with_name(f'{target.stem}-dark{target.suffix}')
 

@@ -37,6 +37,14 @@ placed later.
 | `admin/servers/lib/file-system-layout.png` | `admin/servers/lib/docker.md`, `admin/servers/lib/npm.md` |
 | `user/digital-twins/asset-relationship.png` | `user/digital-twins/create.md` |
 | `user/servers/lib/author.png` | `FAQ.md` |
+| `developer/system/research-overview/lifecycle-phases.png` | `developer/system/research-overview.md`, `developer/technical-concepts/gitlab.md`, `user/digital-twins/devops/ui.md` |
+| `developer/system/research-overview/user-interaction-in-federated-DTaaS.png` | `developer/system/research-overview.md` |
+| `developer/system/research-overview/shm-dt-workflow.png` | `developer/system/research-overview.md` |
+| `developer/system/current-status-developer.png` | `developer/system/current-status.md`, light only |
+| `developer/technical-concepts/oauth/design-sequence.png` | `developer/technical-concepts/oauth/design.md` |
+| `developer/technical-concepts/oauth/oauth2-workflow.png` | `developer/technical-concepts/oauth/authms.md`, `developer/technical-concepts/oauth/oauth2.0.md` |
+| `admin/servers/traefik-oauth.png` | `admin/servers/auth.md` |
+| `user/servers/lib/library-assets.png` | `user/servers/lib/assets.md` |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
 | Developer docker setup | Not placed |
@@ -67,6 +75,12 @@ The export stops when a cell of a placed page has text below 4.5 to 1 or a
 line or border below 3 to 1 in the dark variant, unless the cell is listed in
 `CONTRAST_EXCEPTIONS` in `export_diagrams.py` with its reason. The list is
 empty: every dark image meets both minimums.
+
+A page listed in `LIGHT_ONLY` in `export_diagrams.py` gets no dark variant.
+`developer/system/current-status-developer.png` is the one page there: its
+product logos keep dark lettering that does not read on the slate page, so
+`current-status.md` shows the light image with the `{.on-white}` class, on a
+white backing in both schemes.
 
 ## Design Rules
 
@@ -262,3 +276,20 @@ The hand edits, by page:
   labelled cards in each of seven folders, up to twelve labels in a row, which
   no font size makes legible at the column width. Each folder shows the five
   asset types as coloured squares, and one legend names them.
+- The eight figures added on 14 October 2026, from `lifecycle-phases.png` to
+  `library-assets.png` in the table above, had no drawio source. They are
+  redrawn from the images the documentation showed, keeping every box, arrow
+  and label, and then themed with `retheme_drawio.py`, `restyle_drawio.py`
+  and `shrink_images.py`. Each page is at most 1000 units wide, so its text
+  reaches 14 pixels at the column width, and the concept pages are in
+  `NO_MARK`. Illustrations and third-party product logos, such as the wind
+  turbine of `shm-dt-workflow.png` and the service logos of
+  `current-status-developer.png`, are cropped from those images without
+  changing a pixel, apart from a white or pale background made transparent.
+  `user/digital-twins/devops/ui.md` now shows `lifecycle-phases.png`, which
+  was the same drawing as its own copy, `devops-lifecycle.png`.
+- `system-architecture-c4.png` and `implementation-status.png` keep their
+  images. Their colours code the layers of ISO 23247, and the theme palette
+  has two tints and a grey scale, so the theme would merge two of the four
+  layers, and their density keeps the text under 14 pixels at the column
+  width unless the layout changes.

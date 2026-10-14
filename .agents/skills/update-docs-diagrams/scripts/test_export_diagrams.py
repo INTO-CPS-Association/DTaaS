@@ -31,6 +31,12 @@ class TargetOfTest(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(SystemExit):
                 ed.target_of(name)
 
+    def test_light_only_pages_get_no_dark_copy(self):
+        """Light only pages get no dark copy."""
+        name = 'developer/system/current-status-developer.png'
+        self.assertIn(name, ed.LIGHT_ONLY)
+        self.assertIsNone(ed.dark_target(ed.target_of(name)))
+
     def test_dark_copy_only_for_docs(self):
         """Dark copy only for docs."""
         target = ed.target_of('admin/x/server.png')
@@ -45,6 +51,10 @@ class CheckContrastTest(unittest.TestCase):
         """A failure on a placed page stops the export."""
         with self.assertRaises(SystemExit):
             ed.check_contrast([('admin/x/server.png', '7', 'text 3.9 to 1')])
+
+    def test_failures_on_light_only_pages_are_ignored(self):
+        """Failures on light only pages are ignored."""
+        ed.check_contrast([('developer/system/current-status-developer.png', '7', 'text 3.9 to 1')])
 
     def test_failures_on_unplaced_pages_are_ignored(self):
         """Failures on unplaced pages are ignored."""

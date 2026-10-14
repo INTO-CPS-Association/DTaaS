@@ -6,7 +6,8 @@ that is part of the application. The security is based on [Traefik forward-auth]
 The illustration shows the docker containers and the authorisation
 setup.
 
-![traefik OAuth 2.0](./traefik-oauth.png)
+![traefik OAuth 2.0](traefik-oauth.png#only-light)
+![traefik OAuth 2.0](traefik-oauth-dark.png#only-dark)
 
 The **traefik forward-auth** can use any OAuth 2.0 provider. The DTaaS
 uses GitLab as the authorisation provider, with the OAuth 2.0 web /

@@ -98,7 +98,8 @@ specific physical assets).
 
 ## 5. Lifecycle-Driven Engineering
 
-![Lifecycle Phases on DTaaS](research-overview/lifecycle-phases.png)
+![Lifecycle Phases on DTaaS](research-overview/lifecycle-phases.png#only-light)
+![Lifecycle Phases on DTaaS](research-overview/lifecycle-phases-dark.png#only-dark)
 
 Lifecycle coverage is a core requirement. The platform supports the
 create, manage, execute and stop phases, with iterative
@@ -140,11 +141,13 @@ Related recording:
 
 - [Federated DTaaS video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_Federated-DTaaS.mp4)
 
-![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS.png)
+![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS.png#only-light)
+![User interactions in Federated DTaaS](research-overview/user-interaction-in-federated-DTaaS-dark.png#only-dark)
 
 ## 7. Application: Structural Health Monitoring
 
-![SHM DT Workflow](research-overview/shm-dt-workflow.png)
+![SHM DT Workflow](research-overview/shm-dt-workflow.png#only-light)
+![SHM DT Workflow](research-overview/shm-dt-workflow-dark.png#only-dark)
 
 Structural health monitoring (SHM) of civil infrastructure shows DTaaS
 used to integrate specialised engineering workflows. In this domain,

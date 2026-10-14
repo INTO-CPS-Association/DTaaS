@@ -78,7 +78,8 @@ the edits made by hand. Run every command from the repository root.
    `scripts/dark_variant.py` makes the dark variant from the light page by
    brightness, and the export writes it beside the light image with a
    `-dark` suffix. A page shows the pair with `#only-light` and
-   `#only-dark`, so a new image needs both lines.
+   `#only-dark`, so a new image needs both lines. A page in `LIGHT_ONLY`
+   gets no dark variant and is shown with `{.on-white}`.
 
    Before it draws anything, the export lists every cell of a placed page
    whose dark text falls below 4.5 to 1, or whose line or border falls below

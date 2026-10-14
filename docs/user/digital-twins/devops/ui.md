@@ -27,7 +27,8 @@ The **Digital Twins Page** implements the **Create**, **Manage** and
 **Execute** stages of a [DT lifecycle](../lifecycle.md). The suggested
 order of the lifecycle stages is:
 
-![Suggested sequence of lifecycle stages](images/devops-lifecycle.png).
+![Suggested sequence of lifecycle stages](../../../developer/system/research-overview/lifecycle-phases.png#only-light)
+![Suggested sequence of lifecycle stages](../../../developer/system/research-overview/lifecycle-phases-dark.png#only-dark)
 
 Each of the **Create**, **Manage** and **Execute** stages has its own tab.
 The DT assets for the Create stage are selected on the

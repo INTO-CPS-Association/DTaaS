@@ -131,7 +131,8 @@ and `terminate`, which are simple
 [BASH scripts](https://www.gnu.org/software/bash/). They correspond to
 stages in a digital twin's lifecycle.
 
-![Digital Twin Lifecycle](../system/research-overview/lifecycle-phases.png)
+![Digital Twin Lifecycle](../system/research-overview/lifecycle-phases.png#only-light)
+![Digital Twin Lifecycle](../system/research-overview/lifecycle-phases-dark.png#only-dark)
 
 ## Child Pipelines
 

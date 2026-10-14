@@ -45,6 +45,15 @@ NO_MARK = {
     'admin/servers/lib/file-system-layout.png',
     'user/digital-twins/asset-relationship.png',
     'user/servers/lib/author.png',
+    'developer/system/current-status-developer.png',
+    'developer/system/research-overview/implementation-status.png',
+    'developer/system/research-overview/lifecycle-phases.png',
+    'developer/system/research-overview/shm-dt-workflow.png',
+    'developer/system/research-overview/system-architecture-c4.png',
+    'developer/system/research-overview/user-interaction-in-federated-DTaaS.png',
+    'developer/technical-concepts/oauth/design-sequence.png',
+    'developer/technical-concepts/oauth/oauth2-workflow.png',
+    'user/servers/lib/library-assets.png',
 }
 
 USER_ICON = ('html=1;shape=mxgraph.ios7.icons.user;verticalLabelPosition='
