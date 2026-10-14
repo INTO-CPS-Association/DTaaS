@@ -217,9 +217,9 @@ extra_css:
   - assets/css/extra.css
 
 extra_javascript:
-  # yamllint disable-line rule:line-length
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  # The configuration has to load before MathJax reads it.
+  - assets/js/mathjax-config.js
+  - assets/js/mathjax-3.2.2/tex-svg.js
 
 markdown_extensions:
   - attr_list
@@ -243,8 +243,8 @@ markdown_extensions:
   - admonition
   - pymdownx.tabbed:
       alternate_style: true
-  - mdx_math:
-      enable_dollar_delimiter: True
+  - pymdownx.arithmatex:
+      generic: true
 
 hooks:
   - script/docs/mkdocs_hooks.py
