@@ -5,21 +5,26 @@ name: Release Packages
     paths:
       - 'deploy/dtaas/**'
       - 'deploy/workspace/**'
+      - 'script/release-packages.sh'
       - '.github/workflows/release-packages.yml'
   pull_request:
     paths:
       - 'deploy/dtaas/**'
       - 'deploy/workspace/**'
+      - 'script/release-packages.sh'
       - '.github/workflows/release-packages.yml'
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  release-packages:
-    name: Build and Upload Release Packages
+  build:
+    name: Build and Verify Release Packages
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       actions: write
@@ -31,73 +36,57 @@ jobs:
         with:
           lfs: false
 
-      # The packages carry their own diagrams, which are LFS objects. Only
-      # deploy/ is fetched, not the documentation images and drawio canvases.
-      - name: Fetch Git LFS objects of the packages
+      - name: Fetch Git LFS assets
+        # Package images are LFS-tracked; without this step the zips
+        # would ship pointer files. Fetch only what the packages need.
         run: |
           git lfs install --local
-          git lfs pull --include="deploy/**"
+          git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
 
-      - name: Check that no package image is an LFS pointer
+      - name: Set package version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
-          pointers=$(git ls-files -z 'deploy/**/*.png' \
-            | xargs -0 grep -l --max-count=1 '^version https://git-lfs' || true)
-          if [ -n "$pointers" ]; then
-            echo "::error::LFS pointers instead of images:"
-            echo "$pointers"
-            exit 1
+          if [ -n "$TAG" ]; then
+            echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSION=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
           fi
 
-      - name: Upload dtaas-localhost
+      - name: Build packages
+        run: script/release-packages.sh build "$VERSION" dist
+
+      - name: Verify packages
+        run: script/release-packages.sh verify "$VERSION" dist
+
+      - name: Upload packages
         # v7.0.1
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: dtaas-localhost
-          path: deploy/dtaas/docker/localhost
+          name: release-packages
+          path: dist/*.zip
           if-no-files-found: error
           retention-days: 2
 
-      - name: Upload dtaas-server
-        # v7.0.1
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: dtaas-server
-          path: deploy/dtaas/docker/server
-          if-no-files-found: error
-          retention-days: 2
+  publish:
+    name: Attach Packages to Release
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
 
-      - name: Upload dtaas-secure-server
-        # v7.0.1
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+    steps:
+      - name: Download packages
+        # v8.0.1
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: dtaas-secure-server
-          path: deploy/dtaas/docker/secure-server
-          if-no-files-found: error
-          retention-days: 2
+          name: release-packages
+          path: dist
 
-      - name: Upload dtaas-secure-server-integrated-gitlab
-        # v7.0.1
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: dtaas-secure-server-integrated-gitlab
-          path: deploy/dtaas/docker/secure-server_with_integrated-gitlab
-          if-no-files-found: error
-          retention-days: 2
-
-      - name: Upload workspace-dex-localhost
-        # v7.0.1
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: workspace-dex-localhost
-          path: deploy/workspace/dex/localhost
-          if-no-files-found: error
-          retention-days: 2
-
-      - name: Upload workspace-keycloak-production
-        # v7.0.1
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: workspace-keycloak-production
-          path: deploy/workspace/keycloak/production
-          if-no-files-found: error
-          retention-days: 2
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber --repo "$GITHUB_REPOSITORY"
