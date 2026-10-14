@@ -36,3 +36,12 @@ section + section {
 .md-typeset .highlighttable td.linenos {
   display: none;
 }
+
+// The PDF draws an image at one CSS pixel per image pixel, up to the column
+// width. A crop of a screenshot taken at 1600 pixels, such as the sign-in
+// card, then prints almost as wide as a whole page. At two image pixels per
+// CSS pixel every screenshot keeps the scale of the page it was taken from,
+// and the full pages and diagrams still fill the column.
+.md-typeset img {
+  image-resolution: 2dppx;
+}
