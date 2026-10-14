@@ -61,7 +61,7 @@ cd developer/check
 cp config/.env.example config/.env
 cp config/client.js.example config/client.js
 cp config/conf.dev.example config/conf.dev
-cp config/libms.dev.yaml.example config/libms.dev.yml
+cp config/libms.dev.yaml.example config/libms.dev.yaml
 sudo chown -R 1000:100 files/*
 mkdir -p logs/logger
 sudo chown -R 1000:1000 logs
