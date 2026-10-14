@@ -14,7 +14,7 @@ The docker compose environment creates the following development scenario.
 
 ## 📁 Folder Structure
 
-There are four Dockerfiles for building the containers:
+The Dockerfiles for building the containers are:
 
 - **client.dockerfile**: Dockerfile for building
   the client application container.
@@ -28,6 +28,11 @@ There are four Dockerfiles for building the containers:
   microservice container from published npm package at npmjs.com.
   This Dockerfile is only used during publishing. It is used neither
   in the development builds nor in Github actions.
+- **logger.dockerfile**: Dockerfile for building the logger
+  microservice container from source code. It is used in the
+  development builds and for publishing. Its entrypoint,
+  **logger-entrypoint.sh**, gives the mounted log and certs directories
+  to the `node` user before starting the service.
 
 In addition, there are docker compose and configuration files.
 
@@ -39,8 +44,8 @@ In addition, there are docker compose and configuration files.
 
 ## 🛠️ Build and Publish Docker Images
 
-The GitHub Actions workflows publish Docker images of the client website
-and libms to
+The GitHub Actions workflows publish Docker images of the client website,
+libms and logger-ms to
 [GitHub](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS)
 and
 [Docker Hub](https://hub.docker.com/u/intocps).
@@ -58,6 +63,8 @@ cp config/client.js.example config/client.js
 cp config/conf.dev.example config/conf.dev
 cp config/libms.dev.yaml.example config/libms.dev.yml
 sudo chown -R 1000:100 files/*
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs
 docker compose --env-file config/.env build
 ```
 
@@ -137,6 +144,8 @@ A brief explanation of the packages is given below.
 | dtaas-web | React web application | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web) |
 | libms |Library microservice | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms) |
 | | | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms) |
+| logger-ms | Logger microservice | [npmjs](https://www.npmjs.com/package/@into-cps-association/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/logger-ms) |
+| | | [docker hub](https://hub.docker.com/r/intocps/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/logger-ms) |
 | runner | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner) |
 
 ### React Website
@@ -189,3 +198,34 @@ To test the library microservice on localhost, please use
 docker run -d -v ${PWD}/files:/dtaas/libms/files \
   -p 4001:4001 intocps/libms:latest
 ```
+
+### Logger Microservice
+
+The logger microservice image is built from the source code
+with `logger.dockerfile`. Use the version in
+`servers/logger/package.json` as the image tag.
+
+```sh
+docker login -u <username> -p <password>
+docker build -t intocps/logger-ms:latest -f ./developer/check/logger.dockerfile .
+docker tag intocps/logger-ms:latest intocps/logger-ms:<version>
+docker push intocps/logger-ms:latest
+docker push intocps/logger-ms:<version>
+```
+
+To tag version 0.1.2 for example, use
+
+```sh
+docker tag intocps/logger-ms:latest intocps/logger-ms:0.1.2
+```
+
+To test the logger microservice on localhost, please use
+
+```bash
+mkdir logs
+sudo chown -R 1000:1000 logs
+docker run -d -v ${PWD}/logs:/dtaas/logger/logs \
+  -p 4003:4003 intocps/logger-ms:latest
+```
+
+The captured events are written to `logs/workflow-logs.jsonl`.

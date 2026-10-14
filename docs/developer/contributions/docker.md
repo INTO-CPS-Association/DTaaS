@@ -130,3 +130,34 @@ To test the library microservice on localhost, use
 docker run -d -v ${PWD}/files:/dtaas/libms/files \
   -p 4001:4001 intocps/libms:latest
 ```
+
+### Logger Microservice
+
+The logger microservice image is built from the source code
+with `logger.dockerfile`. Use the version in
+`servers/logger/package.json` as the image tag.
+
+```sh
+docker login -u <username> -p <password>
+docker build -t intocps/logger-ms:latest -f ./developer/check/logger.dockerfile .
+docker tag intocps/logger-ms:latest intocps/logger-ms:<version>
+docker push intocps/logger-ms:latest
+docker push intocps/logger-ms:<version>
+```
+
+For example, to tag version 0.1.2, use
+
+```sh
+docker tag intocps/logger-ms:latest intocps/logger-ms:0.1.2
+```
+
+To test the logger microservice on localhost, use
+
+```bash
+mkdir logs
+sudo chown -R 1000:1000 logs
+docker run -d -v ${PWD}/logs:/dtaas/logger/logs \
+  -p 4003:4003 intocps/logger-ms:latest
+```
+
+The captured events are written to `logs/workflow-logs.jsonl`.

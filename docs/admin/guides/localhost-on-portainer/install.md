@@ -102,6 +102,14 @@ cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 
+The logger microservice writes its events to `logs/logger`. Create the
+directory and give it to uid 1000, the user that runs the logger:
+
+```bash
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs/logger
+```
+
 ### 1.6 Create the Portainer Stack
 
 ![Portainer Stacks](dtaas-stack-create.png)

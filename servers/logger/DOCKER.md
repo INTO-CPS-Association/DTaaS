@@ -23,15 +23,22 @@ services:
       - "4003:4003"
 ```
 
-### Logs Directory
+### Create Logs Directory
 
 The logger microservice appends the captured events to
-`logs/workflow-logs.jsonl`, in the same file system location as that of
-the `compose.logger.yml` file. Docker creates the `logs` directory on the
-first start if it is missing. The container starts as `root`, gives the
-directory to the `node` user (uid 1000) that runs the service, and then
-drops to that user, so the directory needs no preparation. The captured
-events on the host belong to uid 1000.
+`logs/workflow-logs.jsonl`. Create a directory named `logs`
+in the same file system location as that of the `compose.logger.yml` file.
+
+The logger runs as the `node` user (uid 1000). On Linux hosts,
+give the directory to uid 1000:
+
+```bash
+mkdir logs
+sudo chown -R 1000:1000 logs
+```
+
+If the `logs` directory does not exist, Docker creates it as `root`.
+Images before 0.1.2 cannot write into such a directory.
 
 ## :gear: Configure
 

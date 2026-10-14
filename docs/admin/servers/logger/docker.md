@@ -19,9 +19,16 @@ curl -o logger.yaml \
 ```
 
 The captured events go to a `logs` directory in the same location.
-Docker creates it on the first start, and the container gives it to the
-`node` user (uid 1000) before starting the service, so it needs no
-preparation.
+The logger runs as the `node` user (uid 1000), so create the directory
+and, on Linux hosts, give it to uid 1000:
+
+```bash
+mkdir logs
+sudo chown -R 1000:1000 logs
+```
+
+If the `logs` directory does not exist, Docker creates it as `root`.
+Images before 0.1.2 cannot write into such a directory.
 
 ## :rocket: Use
 
