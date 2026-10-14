@@ -1,7 +1,7 @@
 # Publish Packages :package:
 
 DTaaS is a monorepo that publishes npm packages, Docker images, Python
-packages and deployment bundles.
+packages and installation packages.
 
 ## Package Channels
 
@@ -9,8 +9,8 @@ packages and deployment bundles.
   GitHub Packages and the npm registry
 - Docker images: GitHub Container Registry and Docker Hub
 - Python packages: the DTaaS CLI and the platform-services CLI on PyPI
-- Deployment bundles: GitHub Actions artifacts built by the
-  `Release Packages` workflow
+- Installation packages: zip files attached to each GitHub release by
+  the `Release Packages` workflow
 
 ## JavaScript/TypeScript Packages
 
@@ -78,12 +78,60 @@ own.
 Use Poetry for versioning and keep the lock files up to date so that
 builds are reproducible.
 
-## Deployment Bundles
+## Installation Packages
 
-The `Release Packages` workflow (`release-packages.yml`) runs when
-`deploy/dtaas/` or `deploy/workspace/` changes. It uploads each
-installation scenario under `deploy/dtaas/docker/` and
-`deploy/workspace/` as a GitHub Actions artifact.
+The installation packages attached to each GitHub release are built by
+the `Release Packages` workflow (`.github/workflows/release-packages.yml`)
+with `script/release-packages.sh`. Each package is
+`<package>-<version>.zip`, holding every tracked file of its source
+directory under `deploy/dtaas/docker/` or `deploy/workspace/`.
+
+The workflow builds and verifies the packages whenever
+`deploy/dtaas/`, `deploy/workspace/`, the script or the workflow
+changes, and keeps them for two days as one `release-packages` artifact
+of the workflow run. Publishing a GitHub release also attaches them to
+the release. Do not edit or re-zip them by hand; change the source
+directory instead.
+
+To build and check the packages locally:
+
+```bash
+git lfs install --local
+git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
+script/release-packages.sh build dev dist
+script/release-packages.sh verify dev dist
+```
+
+`git lfs install --local` sets up the Git LFS filters. Without them,
+the fetched images look like uncommitted changes and the script refuses
+to build.
+
+To replace the packages of an existing release, check out its tag,
+build the packages with the script from the default branch into a fresh
+directory and upload them:
+
+```bash
+git switch --detach v1.0
+git lfs install --local
+git lfs pull --include="deploy/dtaas/**,deploy/workspace/**"
+git show origin/feature/distributed-demo:script/release-packages.sh > /tmp/release-packages.sh
+rm -rf dist-1.0
+bash /tmp/release-packages.sh build 1.0 dist-1.0
+bash /tmp/release-packages.sh verify 1.0 dist-1.0
+gh release upload v1.0 dist-1.0/*-1.0.zip --clobber --repo INTO-CPS-Association/DTaaS
+```
+
+`--clobber` replaces only assets with the same name. Releases up to
+v1.0 carry packages without a version in their name, such as
+`dtaas-localhost.zip`, so delete those after the upload:
+
+```bash
+for name in dtaas-localhost dtaas-server dtaas-secure-server \
+  dtaas-secure-server-integrated-gitlab workspace-dex-localhost \
+  workspace-keycloak-production; do
+  gh release delete-asset v1.0 "$name.zip" --yes --repo INTO-CPS-Association/DTaaS
+done
+```
 
 ## Release Guidance
 
