@@ -90,7 +90,8 @@ describe('ConfigItems', () => {
         <ConfigItem
           label="Test Label"
           value="test value"
-          validation={undefined as ValidationType | undefined}
+          // A caller that passes no validation at all, which the type forbids.
+          validation={undefined as unknown as ValidationType}
         />,
       );
 
