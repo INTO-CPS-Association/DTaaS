@@ -3,7 +3,13 @@
 This page walks through the DTaaS website with screenshots.
 A short screen recording is also available.
 
-![Tour of the DTaaS website pages](../dtaas-user_4x.gif)
+<video controls muted playsinline preload="metadata"
+  poster="../dtaas-user_4x-poster.png" width="960" height="540"
+  aria-label="Tour of the DTaaS website pages">
+  <source src="../dtaas-user_4x.mp4" type="video/mp4" />
+  <img src="../dtaas-user_4x-poster.png"
+    alt="Tour of the DTaaS website pages" />
+</video>
 
 This tutorial uses `https://intocps.org` as an example base URL.
 Replace it with the URL of your installation.

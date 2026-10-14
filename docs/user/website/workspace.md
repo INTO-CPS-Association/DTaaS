@@ -3,7 +3,13 @@
 This page walks through the website of the workspace software platform
 with screenshots. A short screen recording is also available.
 
-![Workspace tools opened from the Workbench](../workspace_web.gif)
+<video controls muted playsinline preload="metadata"
+  poster="../workspace_web-poster.png" width="960" height="540"
+  aria-label="Workspace tools opened from the Workbench">
+  <source src="../workspace_web.mp4" type="video/mp4" />
+  <img src="../workspace_web-poster.png"
+    alt="Workspace tools opened from the Workbench" />
+</video>
 
 The user workspace in DTaaS is a personal Linux environment
 given to each registered user.
