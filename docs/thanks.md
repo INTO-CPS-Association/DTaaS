@@ -37,7 +37,6 @@ The following projects have funded this project.
 | Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen                     |
 | Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
 | Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
-| Documentation theme and diagrams in the new design    | Jady Pamella Barbacena da Silva             |
 
 ## Developers
 
@@ -55,5 +54,6 @@ on GitHub.
    [doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
    Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
 1. Astitva Sehgal for developer and example documentation.
+1. Jady Pamella Barbacena da Silva for the documentation theme and diagrams.
 1. Tanusree Roy and Farshid Naseri for asking interesting questions
    that ended up in the FAQ.
