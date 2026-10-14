@@ -94,6 +94,16 @@ def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_di
     assert "cdn.jsdelivr.net" in html
 
 
+def test_remove_polyfill_leaves_files_outside_the_site(tmp_path):
+    tag = '<script src="https://polyfill.io/v3/polyfill.min.js"></script>\n'
+    outside = write(tmp_path / "outside.html", tag)
+    site = tmp_path / "pages"
+    site.mkdir()
+    (site / "link.html").symlink_to(outside)
+    assert pages.remove_polyfill(site) == 0
+    assert outside.read_text("utf-8") == tag
+
+
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):
     """Publishing one version leaves the others untouched."""
     pages_dir = tmp_path / "pages"

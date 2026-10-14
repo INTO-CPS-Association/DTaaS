@@ -115,8 +115,14 @@ def is_polyfill_tag(line: str) -> bool:
 
 def remove_polyfill(pages_dir: Path) -> int:
     """Remove every polyfill.io script line from the site; return the pages fixed."""
+    root = pages_dir.resolve()
     fixed = 0
-    for page in pages_dir.rglob("*.html"):
+    for found in root.rglob("*.html"):
+        # A symbolic link in the checkout could lead out of the site, and
+        # nothing outside it is rewritten.
+        page = found.resolve()
+        if not page.is_relative_to(root):
+            continue
         lines = page.read_text("utf-8").splitlines(keepends=True)
         kept = [line for line in lines if not is_polyfill_tag(line)]
         if len(kept) != len(lines):
