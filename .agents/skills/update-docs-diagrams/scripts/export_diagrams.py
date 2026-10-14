@@ -11,6 +11,11 @@ documentation images, so a downloaded package shows its diagram offline. Those
 copies are written from the exported images, listed in DEPLOY_COPIES, so the
 two can never drift apart.
 
+Every page under `docs/` is exported twice: the light image, and beside it a
+`-dark` image made by dark_variant.py for the slate scheme of the site. The
+pages show the one that suits the reader through `#only-light` and
+`#only-dark`.
+
 The drawio desktop application does the drawing. Its binary is taken from the
 DRAWIO environment variable, and defaults to the macOS install location.
 
@@ -21,7 +26,10 @@ import os
 import pathlib
 import shutil
 import subprocess
+import tempfile
 import xml.etree.ElementTree as ET
+
+from dark_variant import write_dark
 
 # Resolved from this file, so the script runs from any directory.
 HERE = pathlib.Path(__file__).resolve().parent
@@ -87,24 +95,40 @@ def copy_to_packages():
             print(f'copied {source} to {copy}')
 
 
+def export(source, number, target):
+    """Draw one page of a drawio file to a PNG file."""
+    # drawio numbers pages from 1.
+    subprocess.run([DRAWIO, '-x', '-f', 'png', '--theme', 'light',
+                    '--width', str(EXPORT_WIDTH), '-p', str(number),
+                    '-o', str(target), str(source)],
+                   check=True, capture_output=True)
+    print(f'wrote {target.relative_to(REPO)}')
+
+
+def dark_target(target):
+    """Where the dark image of a documentation page goes, or None."""
+    if not target.is_relative_to(DOCS):
+        return None
+    return target.with_name(f'{target.stem}-dark{target.suffix}')
+
+
 def main():
     """Export every placed page, then copy images into the packages and pages."""
     if not pathlib.Path(DRAWIO).exists():
         raise SystemExit(f'drawio not found at {DRAWIO}, set DRAWIO')
     print(f'using {DRAWIO}')
-    pages = ET.parse(SOURCE).getroot().iter('diagram')
-    for number, page in enumerate(pages, start=1):
-        name = page.get('name')
-        target = target_of(name)
-        if target is None:
-            print(f'skipped page {number}, {name}')
-            continue
-        # drawio numbers pages from 1.
-        subprocess.run([DRAWIO, '-x', '-f', 'png', '--theme', 'light',
-                        '--width', str(EXPORT_WIDTH), '-p', str(number),
-                        '-o', str(target), str(SOURCE)],
-                       check=True, capture_output=True)
-        print(f'wrote {target.relative_to(REPO)}')
+    names = [page.get('name') for page in ET.parse(SOURCE).getroot().iter('diagram')]
+    with tempfile.TemporaryDirectory() as scratch:
+        dark = pathlib.Path(scratch) / 'dark.drawio'
+        write_dark(SOURCE, dark)
+        for number, name in enumerate(names, start=1):
+            target = target_of(name)
+            if target is None:
+                print(f'skipped page {number}, {name}')
+                continue
+            export(SOURCE, number, target)
+            if dark_target(target):
+                export(dark, number, dark_target(target))
     copy_to_packages()
     copy_logos()
 

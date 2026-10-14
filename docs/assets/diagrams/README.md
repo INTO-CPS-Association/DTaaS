@@ -58,6 +58,17 @@ In the same way, each installation page under `docs/admin/dtaas/` and
 do, and `export_diagrams.py` writes those copies from `docs/assets/brand/png`
 (see `LOGO_PAGES`).
 
+## Light and Dark Variants
+
+Every page under `docs/` is exported twice. `dark_variant.py` turns each light
+fill, including the white drawio draws when a shape names none, into the slate
+page of the site with a fifth of its own colour, so tints keep their hue. Dark
+lines and dark stencil icons become light, text takes the light or the dark
+text colour by contrast with its new fill, and the DTaaS lockup becomes its
+white version. Text drawn in the colour of its ground stays hidden, as it is
+in the light image. The pages show the pair with `#only-light` and
+`#only-dark`, and the PDF prints the light one.
+
 ## Design Rules
 
 Every page follows the rules of `docs/assets/brand/README.md`, with sizes taken

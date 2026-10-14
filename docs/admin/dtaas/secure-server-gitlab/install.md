@@ -21,7 +21,8 @@ This package installs DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab is both the OAuth 2.0
 authorisation provider and the DevOps backend for digital twin projects.
 
-![DTaaS on Server](server.png)
+![DTaaS on Server](server.png#only-light)
+![DTaaS on Server](server-dark.png#only-dark)
 
 A path such as `/user1` is the URL route of that service, for example
 `https://intocps.org/user1`.

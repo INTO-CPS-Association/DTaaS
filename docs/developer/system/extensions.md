@@ -72,7 +72,8 @@ grouped into a generic set and a set for each domain, such as IFC for
 construction and buildings. Of the two extensions drawn, the Buildings
 page exists in the client today, as a hand-wired route.
 
-![Multi-domain digital twins](multi-domain.png)
+![Multi-domain digital twins](multi-domain.png#only-light)
+![Multi-domain digital twins](multi-domain-dark.png#only-dark)
 
 The SDK repository documents the proposal in detail:
 

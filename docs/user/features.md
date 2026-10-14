@@ -18,7 +18,8 @@ The DTaaS software platform offers:
 Each installation of the DTaaS platform includes
 the features shown in the following diagram.
 
-![Features](DTaaS-user-view.png)
+![Features](DTaaS-user-view.png#only-light)
+![Features](DTaaS-user-view-dark.png#only-dark)
 
 Every user gets a dedicated workspace.
 These workspaces are containerized Linux desktops.

@@ -34,7 +34,8 @@ The platform provides the following capabilities:
 
 The figure shows the system architecture of the DTaaS software platform.
 
-![System architecture](architecture.png)
+![System architecture](architecture.png#only-light)
+![System architecture](architecture-dark.png#only-dark)
 
 ### System Components
 

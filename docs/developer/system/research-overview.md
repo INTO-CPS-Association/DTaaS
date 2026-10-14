@@ -20,7 +20,8 @@ and scripts) and services. Users compose these assets into digital twin
 configurations that can be executed, monitored and evolved
 independently.
 
-![DT asset relationship](research-overview/dt-assets-relationship.png)
+![DT asset relationship](research-overview/dt-assets-relationship.png#only-light)
+![DT asset relationship](research-overview/dt-assets-relationship-dark.png#only-dark)
 
 The platform targets operability: creating, configuring, executing,
 monitoring and evolving twins in long-running environments. This sets
@@ -52,7 +53,8 @@ infrastructure.
 
 ## 3. System Architecture
 
-![System Architecture](research-overview/system-architecture.png)
+![System Architecture](research-overview/system-architecture.png#only-light)
+![System Architecture](research-overview/system-architecture-dark.png#only-dark)
 
 The architecture divides the platform into four concern areas:
 
@@ -81,7 +83,8 @@ implemented architecture in detail.
 
 ## 4. User View
 
-![DTaaS user view](research-overview/dtaas-userview.png)
+![DTaaS user view](research-overview/dtaas-userview.png#only-light)
+![DTaaS user view](research-overview/dtaas-userview-dark.png#only-dark)
 
 Users see DTaaS as a single web interface for workspace operations,
 asset browsing, digital twin execution and result exploration. Each
@@ -90,7 +93,8 @@ the common library. The platform supports both class-level twin
 definitions (reusable templates) and instance-level twins (bound to
 specific physical assets).
 
-![DT class and instance](research-overview/dtaas-class-instance.png)
+![DT class and instance](research-overview/dtaas-class-instance.png#only-light)
+![DT class and instance](research-overview/dtaas-class-instance-dark.png#only-dark)
 
 ## 5. Lifecycle-Driven Engineering
 
@@ -108,7 +112,8 @@ execution configurations are refined based on operational experience.
 
 ## 6. DevOps and Federation
 
-![DevOps with GitLab](research-overview/devops.png)
+![DevOps with GitLab](research-overview/devops.png#only-light)
+![DevOps with GitLab](research-overview/devops-dark.png#only-dark)
 
 GitLab-backed DevOps automation is a core platform capability.
 Repository structure, pipeline triggers and OAuth configuration are
@@ -122,7 +127,8 @@ Related recordings:
 - [DTaaS DevOps workflows](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250712-DTaaS_DevOps_workflows.mov)
 - [DTaaS and DevOps](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250502_DTaaS-and-DevOps.mp4)
 
-![Federated DTaaS](research-overview/federated-dtaas.png)
+![Federated DTaaS](research-overview/federated-dtaas.png#only-light)
+![Federated DTaaS](research-overview/federated-dtaas-dark.png#only-dark)
 
 The federation extension lets multiple DTaaS instances discover and
 reuse each other's assets across organisational boundaries. Federated

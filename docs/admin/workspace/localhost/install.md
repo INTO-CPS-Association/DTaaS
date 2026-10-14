@@ -15,7 +15,8 @@ page.
 
 The installation setup is shown here.
 
-![DTaaS Localhost](localhost.png)
+![DTaaS Localhost](localhost.png#only-light)
+![DTaaS Localhost](localhost-dark.png#only-dark)
 
 A path such as `/user` is the URL route of that service, for example
 `http://localhost/user`.

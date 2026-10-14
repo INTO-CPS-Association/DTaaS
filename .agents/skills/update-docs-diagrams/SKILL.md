@@ -50,19 +50,25 @@ the edits made by hand. Run every command from the repository root.
    draws a concept and not the DTaaS system goes into `NO_MARK` in
    `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
 
-1. **Export** every placed page, the copies the installation packages carry,
-   and the logo beside each installation page:
+1. **Export** every placed page in a light and a dark variant, the copies
+   the installation packages carry, and the logo beside each installation
+   page:
 
    ```bash
    python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
    ```
 
-1. **Review every changed image** by opening it. Look for labels that
-   overlap a line, an icon or another label, text that wraps inside a box
-   that is too narrow, arrows that kept old corner points, and emoji. The
-   scripts set colours, fonts and sizes, and a larger font can need a box
-   moved by hand. Fix the page in drawio, export again, and add the hand edit
-   to `docs/assets/diagrams/README.md`.
+   `scripts/dark_variant.py` makes the dark variant from the light page by
+   brightness, and the export writes it beside the light image with a
+   `-dark` suffix. A page shows the pair with `#only-light` and
+   `#only-dark`, so a new image needs both lines.
+
+1. **Review every changed image**, light and dark, by opening it. Look for
+   labels that overlap a line, an icon or another label, text that wraps
+   inside a box that is too narrow, arrows that kept old corner points, and
+   emoji. The scripts set colours, fonts and sizes, and a larger font can
+   need a box moved by hand. Fix the page in drawio, export again, and add
+   the hand edit to `docs/assets/diagrams/README.md`.
 
 1. **Check the result.** Every exported PNG is a Git LFS pointer
    (`git lfs ls-files`), the images read on the light and the dark scheme of

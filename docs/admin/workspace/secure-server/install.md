@@ -21,7 +21,8 @@ page.
 
 The installation setup is shown here.
 
-![Workspace production installation using Keycloak](secure-server.png)
+![Workspace production installation using Keycloak](secure-server.png#only-light)
+![Workspace production installation using Keycloak](secure-server-dark.png#only-dark)
 
 A path such as `/user1` is the URL route of that service, for example
 `https://intocps.org/user1`.

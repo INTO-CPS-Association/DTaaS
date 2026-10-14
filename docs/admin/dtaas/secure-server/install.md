@@ -16,7 +16,8 @@ For the full configuration reference, see [config.md](config.md).
 This package deploys DTaaS with Traefik, OAuth forward-auth and
 two user workspaces.
 
-![DTaaS on Server](server.png)
+![DTaaS on Server](server.png#only-light)
+![DTaaS on Server](server-dark.png#only-dark)
 
 A path such as `/user1` is the URL route of that service, for example
 `https://intocps.org/user1`.
