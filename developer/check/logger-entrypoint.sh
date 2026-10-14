@@ -9,7 +9,10 @@ set -eu
 if [ "$(id -u)" -eq 0 ]; then
 	log_dir=$(dirname "$LOGGER_LOG_FILE_PATH")
 	mkdir -p "$log_dir" "$LOGGER_CERTS_DIR"
-	chown -R node:node "$log_dir"
+	# The log directory holds only the log file and its rotations, so the
+	# files directly inside it are enough, and nothing deeper is walked as root.
+	chown node:node "$log_dir"
+	find "$log_dir" -maxdepth 1 -type f -exec chown node:node {} +
 	# The certs directory may hold certificates the host provided, so only
 	# the directory itself changes owner.
 	chown node:node "$LOGGER_CERTS_DIR"

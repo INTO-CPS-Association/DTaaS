@@ -25,6 +25,8 @@ RUN mkdir -p logs certs && chown node:node logs certs
 ENV LOGGER_HOSTNAME=0.0.0.0
 ENV LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl
 ENV LOGGER_CERTS_DIR=/dtaas/logger/certs
-# The entrypoint gives mounted directories to node, then runs as node.
+# No USER instruction on purpose: the container starts as root only so
+# the entrypoint can give the bind-mounted directories, which Docker
+# creates as root, to node. It then drops to node before the service runs.
 ENTRYPOINT ["logger-entrypoint"]
 CMD ["yarn", "start"]

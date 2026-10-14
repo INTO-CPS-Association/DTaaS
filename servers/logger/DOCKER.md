@@ -95,6 +95,8 @@ proxy, this is a shared budget for all proxied requests; size
 When `LOGGER_TLS=true`, also mount a cert directory to
 `/dtaas/logger/certs` (or another directory pointed to by
 `LOGGER_CERTS_DIR`). Missing cert/key files are generated automatically.
+The container gives only the directory itself to uid 1000, so make
+certificate files you provide readable by uid 1000.
 
 The
 [logger README](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/README.md)
