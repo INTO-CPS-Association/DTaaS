@@ -27,7 +27,7 @@ services:
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
 
   logger-ms:
-    image: intocps/logger-ms:0.1.1
+    image: intocps/logger-ms:0.1.2
     restart: unless-stopped
     volumes:
       - "./logs/logger:/dtaas/logger/logs"
