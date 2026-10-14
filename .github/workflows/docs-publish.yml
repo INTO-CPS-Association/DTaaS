@@ -211,6 +211,11 @@ jobs:
           python script/docs/docs.py assemble --version development \
             --site-dir site/development --pages-dir pages
 
+      - name: Check script hosts
+        # Every page of every version, the released ones included, may load
+        # scripts only from the hosts in script/docs/script_hosts.py.
+        run: python script/docs/docs.py check-scripts --site-dir pages
+
       - name: Upload site
         # Hidden files such as pages/.git are left out of the artifact.
         # v5.0.0

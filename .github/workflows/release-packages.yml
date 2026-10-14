@@ -29,7 +29,24 @@ jobs:
         # v7.0.1
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          lfs: true
+          lfs: false
+
+      # The packages carry their own diagrams, which are LFS objects. Only
+      # deploy/ is fetched, not the documentation images and drawio canvases.
+      - name: Fetch Git LFS objects of the packages
+        run: |
+          git lfs install --local
+          git lfs pull --include="deploy/**"
+
+      - name: Check that no package image is an LFS pointer
+        run: |
+          pointers=$(git ls-files -z 'deploy/**/*.png' \
+            | xargs -0 grep -l --max-count=1 '^version https://git-lfs' || true)
+          if [ -n "$pointers" ]; then
+            echo "::error::LFS pointers instead of images:"
+            echo "$pointers"
+            exit 1
+          fi
 
       - name: Upload dtaas-localhost
         # v7.0.1

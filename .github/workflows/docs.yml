@@ -59,6 +59,22 @@ jobs:
           git lfs install --local
           git lfs pull --include="docs/**"
 
+      # A PNG committed while LFS was not set up, or damaged on the way, is
+      # copied into the site as a broken image without any error. Every PNG
+      # must begin with the PNG signature.
+      - name: Check that every PNG is a PNG file
+        shell: bash
+        run: |
+          status=0
+          while IFS= read -r -d '' file; do
+            signature=$(head -c 8 "$file" | od -An -tx1 | tr -d ' \n')
+            if [ "$signature" != 89504e470d0a1a0a ]; then
+              echo "::error file=$file::not a PNG file"
+              status=1
+            fi
+          done < <(git ls-files -z -- 'docs/*.png' 'docs/*.PNG')
+          exit $status
+
       - name: Set up Python
         # v7.0.0
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
