@@ -27,12 +27,15 @@ class GitlabUserResult:
 
     Lives here with the candidate it comes from: this module holds the run's
     per user bookkeeping, while users_gitlab.py does the provisioning.
+    *token_lost* marks a token GitLab issued that could not be saved, which
+    ends the run's GitLab step.
     """
 
     username: str
     new_id: object
     token: object
     failed: bool
+    token_lost: bool = False
 
 
 def changed_user_id(result, existing_user_id):

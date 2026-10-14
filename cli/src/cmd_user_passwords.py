@@ -6,12 +6,20 @@ worth stating in one place. In order: --password or the users.csv password
 column, then [[users]].password in dtaas.toml for a starting user, then a
 hidden prompt for a single user add.
 
-A password is used once, to create a GitLab account, and is never persisted:
-it reaches the provisioning step through this map alone and never
-dtaas.users.registry.json (see registry_csv.read_csv_passwords).
+The CLI never writes a password anywhere: it reaches the provisioning step
+through this map alone and never dtaas.users.registry.json (see
+registry_csv.read_csv_passwords). The files it may read one from are the
+admin's own, though, and hold it in plaintext: [[users]].password in
+dtaas.toml and the users.csv password column. A run that takes a password
+from one warns when that file is readable by other users, and a
+[[users]].password key is pointed out once its account exists, since it
+stays a valid GitLab login until the user changes it.
 """
 
+import os
+import stat
 from dataclasses import dataclass, field
+from pathlib import Path
 import click
 from .gitlab_common import with_hint
 from .pkg import registry as registryPkg
@@ -23,6 +31,12 @@ NO_PASSWORD_HINT = (
     "(and chmod 600 the file), pass --password for a single user, or set "
     "[[users]].password for a dtaas.toml starting user."
 )
+
+
+CONFIG_FILE = "dtaas.toml"
+
+# Mode bits do not say who can read a file on Windows, where ACLs decide.
+IS_WINDOWS = os.name == "nt"
 
 
 @dataclass(frozen=True)
@@ -91,6 +105,46 @@ def _configured_passwords(sources, named, passwords):
     }
 
 
+def _file_mode(path):
+    """The permission bits of *path*."""
+    return stat.S_IMODE(os.stat(path).st_mode)
+
+
+def _warn_if_shared(path, passwords):
+    """Warn when *path*, which supplied *passwords*, is readable by other
+    users. Nothing is checked on Windows (see IS_WINDOWS)."""
+    if not path or not any(passwords.values()) or IS_WINDOWS:
+        return
+    if _file_mode(path) & 0o077:
+        click.echo(
+            with_hint(
+                f"Warning: {Path(path).name} is readable by other users.",
+                "It holds plaintext GitLab passwords. Restrict it with: "
+                f"chmod 600 {path}",
+            )
+        )
+
+
+def configured_names(sources, named):
+    """The users *named* whose [[users]].password dtaas.toml holds."""
+    return [name for name in named if sources.configured.get(name)]
+
+
+def remind_configured_passwords(names):
+    """Point at the [[users]].password keys dtaas.toml still holds for
+    *names* once their GitLab accounts exist."""
+    done = [name for name in names if has_account(name)]
+    if done:
+        listed = ", ".join(f"'{name}'" for name in done)
+        click.echo(
+            with_hint(
+                f"Warning: remove [[users]].password from {CONFIG_FILE}.",
+                f"It is kept there in plaintext for {listed}, and stays a "
+                "valid GitLab login until changed.",
+            )
+        )
+
+
 def _prompt_password(username):
     """Ask for *username*'s initial GitLab password with hidden input.
 
@@ -114,10 +168,14 @@ def resolve_passwords(sources, named, provision):
     since nothing will read them.
     """
     passwords = dict.fromkeys(named)
-    passwords.update(_explicit_passwords(sources))
+    explicit = _explicit_passwords(sources)
+    passwords.update(explicit)
     if not provision:
         return passwords
-    passwords.update(_configured_passwords(sources, named, passwords))
+    _warn_if_shared(sources.user_input.csv_file, explicit)
+    configured = _configured_passwords(sources, named, passwords)
+    _warn_if_shared(CONFIG_FILE, configured)
+    passwords.update(configured)
     name = sources.user_input.username
     if name and not passwords.get(name) and not has_account(name):
         passwords[name] = _prompt_password(name)

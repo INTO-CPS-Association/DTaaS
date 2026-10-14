@@ -737,16 +737,30 @@ their own:
   `write_repository` scopes only, and expires after 365 days.
 - Password order: `--password` or the CSV `password` column, then
   `[[users]].password` for a starting user, then the hidden prompt (single
-  user only). Passwords are used once, to create the account, and are never
-  saved or logged. `--password` is visible in shell history and `ps`, so
-  prefer the prompt or the CSV.
+  user only). The CLI uses a password once, to create the account, and
+  never saves or logs it. `[[users]].password` and the CSV column are
+  plaintext files you keep, though: a run that reads one warns when the
+  file is readable by other users (`chmod 600` it), and once the account
+  exists it reminds you to remove `[[users]].password`, which stays a valid
+  GitLab login until the user changes it. `--password` is visible in shell
+  history and `ps`, so prefer the prompt or the CSV.
 - GitLab refuses a password that is too short or built from common words
   (for example one containing `pass` or the username).
-- A username or email already taken on GitLab is a `Warning:`, not a
-  failure: the account is left alone and gets no token, since this run did
-  not create it and does not know its credentials.
+- A username or email already taken on GitLab fails the run for that user:
+  the account is left alone and gets no token, since this run did not
+  create it and does not know its credentials. Delete it in GitLab, or use
+  another username or email, and run the same command again.
 - Any other GitLab failure makes `user add` exit non-zero, naming the users
   concerned; their containers stay up.
+- A token is never left live without being saved: when
+  `gitlab_user_tokens.json` cannot be read or written no account is
+  created, a token that cannot be saved is revoked at once, and a retry
+  revokes any token an earlier run issued but did not save.
+- When `DTAAS_GITLAB_PAT` and `[gitlab].pat` hold different tokens, the
+  exported one is used and a `Note:` line says so.
+- Run one `dtaas` command at a time per installation: the registry and
+  `gitlab_user_tokens.json` are rewritten without a lock, so two runs at
+  once can lose each other's changes.
 - For a GitLab behind an internal CA, set `[gitlab].ssl_verify` to the CA
   bundle's path. `false` turns verification off and prints a warning.
 - `user delete` never removes the GitLab account; see
@@ -841,14 +855,18 @@ that are not currently provisioned are reported and skipped, but are still
 removed from the registry.
 
 > **Note: the GitLab account stays.** `user delete` removes the user from the
-> DTaaS installation only. By design, their GitLab account and its Personal
-> Access Token stay on GitLab, so the user can still sign in there. For a user
-> the CLI had provisioned, `user delete` says so by name and drops their entry
-> from `gitlab_user_tokens.json`, so the credentials file never claims a token
-> for a user the CLI no longer tracks; the token can then only be revoked in
-> GitLab. To remove an account, a GitLab administrator deletes it in GitLab.
-> **Do that before re-adding the same username**: `user add` finds the account
-> already there, cannot know its credentials, and so issues no token for it.
+> DTaaS installation and revokes the Personal Access Tokens named `dtaas` that
+> the CLI issued to them, so they lose repository access. Their GitLab account
+> stays, so the user can still sign in there. A revoked token is dropped from
+> `gitlab_user_tokens.json`. Revoking uses the same admin token as `user add`
+> (`DTAAS_GITLAB_PAT` or `[gitlab].pat`, and `[gitlab].api_url`), even when
+> `[gitlab].provision` is now off. When a token cannot be revoked (GitLab
+> unreachable, admin token missing or refused), the delete still completes,
+> the token stays in `gitlab_user_tokens.json`, and the command exits with an
+> error naming the user: revoke that token in GitLab. To remove an account, a
+> GitLab administrator deletes it in GitLab. **Do that before re-adding the
+> same username**: `user add` finds the account already there, cannot know its
+> credentials, and so issues no token for it.
 
 Preview a removal without making any changes with `--dry-run`:
 

@@ -21,6 +21,7 @@ from .cmd_utils import run_user_command
 from .cmd_lifecycle import echo_status
 from .cmd_options import file_option, json_option
 from .cmd_user_lifecycle import add_user_lifecycle_commands
+from .cmd_user_passwords import remind_configured_passwords
 from .cmd_user_utils import (
     UserAddInput,
     resolve_usernames,
@@ -127,6 +128,7 @@ def add(**kwargs):
         err = userPkg.add_users(
             config_obj, start_only=staged.added, passwords=staged.passwords
         )
+        remind_configured_passwords(staged.configured)
         return err or _add_summary(staged)
 
     run_user_command(

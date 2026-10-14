@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock
 
+import pytest
 import requests
 from gitlab.exceptions import GitlabCreateError, GitlabError
 from gitlab_common import (
@@ -10,6 +11,7 @@ from gitlab_common import (
     PatOptions,
     create_user,
     create_user_pat,
+    revoke_user_pats,
 )
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
@@ -183,3 +185,50 @@ def test_create_user_pat_reports_a_dropped_connection():
     ok, error = create_user_pat(gl, 42, TEST_USERNAME)
     assert ok is False
     assert "connection reset" in error
+
+
+def _gl_with_tokens(*names):
+    """Mock client whose active tokens carry *names*, with ids 1, 2, ..."""
+    tokens = []
+    for index, name in enumerate(names, 1):
+        token = Mock(id=index)
+        token.name = name  # Mock(name=...) would name the mock itself
+        tokens.append(token)
+    gl = MagicMock()
+    gl.personal_access_tokens.list.return_value = tokens
+    return gl
+
+
+def test_revoke_user_pats_revokes_only_the_named_active_tokens():
+    """The CLI's tokens go; a token the user named otherwise stays."""
+    gl = _gl_with_tokens("dtaas", "laptop", "dtaas")
+
+    ok, error = revoke_user_pats(gl, 42)
+
+    assert (ok, error) == (True, "")
+    gl.personal_access_tokens.list.assert_called_once_with(
+        user_id=42, state="active", get_all=True
+    )
+    revoked = [c.args[0] for c in gl.personal_access_tokens.delete.call_args_list]
+    assert revoked == [1, 3]
+
+
+def test_revoke_user_pats_with_nothing_to_revoke_succeeds():
+    """No token left under that name means nothing is left to revoke."""
+    gl = _gl_with_tokens("laptop")
+
+    assert revoke_user_pats(gl, 42) == (True, "")
+    gl.personal_access_tokens.delete.assert_not_called()
+
+
+@pytest.mark.parametrize("failure", [GitlabError("403 Forbidden"), DROPPED])
+def test_revoke_user_pats_reports_a_failure(failure):
+    """A refused or dropped request is reported, never raised."""
+    gl = _gl_with_tokens("dtaas")
+    gl.personal_access_tokens.delete.side_effect = failure
+
+    ok, error = revoke_user_pats(gl, 42)
+
+    assert ok is False
+    assert "GitLab user 42" in error
+    assert str(failure) in error

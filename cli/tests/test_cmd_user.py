@@ -192,3 +192,19 @@ def test_user_status_maps_missing_deployment_to_error(runner):
 
     assert result.exit_code != 0
     assert "docker-compose.yml" in result.output
+
+
+def test_add_points_at_configured_passwords_even_when_gitlab_fails(
+    runner, mock_user_pkg
+):
+    """The reminder runs after provisioning whatever its outcome: an account
+    created before a later failure still has its password in dtaas.toml."""
+    mock_user_pkg["add"].return_value = Exception("GitLab provisioning failed")
+    staged = StagedUsers([], ["alice"], {"alice": "pw"}, ["alice"])
+    with patch("src.cmd_user.stage_users_for_add", return_value=staged), patch(
+        "src.cmd_user.remind_configured_passwords"
+    ) as remind:
+        result = runner.invoke(dtaas, ["user", "add", "alice"])
+
+    assert result.exit_code != 0
+    remind.assert_called_once_with(["alice"])

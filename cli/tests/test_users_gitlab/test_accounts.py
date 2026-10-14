@@ -163,12 +163,12 @@ def test_add_users_gitlab_skips_user_whose_pat_was_already_issued(
     assert "already issued" in capsys.readouterr().out
 
 
-def test_add_users_gitlab_already_exists_warns_but_is_not_a_command_failure(
+def test_add_users_gitlab_already_exists_fails_the_command(
     mock_config, mock_registry, mock_utils, mock_user_operations, capsys
 ):
-    """An account that already existed before this run is echoed as an
-    unconditional warning -- not silently treated as an unremarkable success
-    -- but does not fail the command, since this run changed nothing."""
+    """An account that already existed before this run gets no token, so the
+    user is left without one: the command fails, naming them, and nothing is
+    written for them."""
     mock_config.get_gitlab_provision.return_value = (True, None)
     mock_registry["load"].return_value = {"alice": {"email": "a@x.io"}}
     gl = MagicMock()
@@ -177,19 +177,15 @@ def test_add_users_gitlab_already_exists_warns_but_is_not_a_command_failure(
         "src.pkg.users_gitlab.gitlabPkg.resolve_client", return_value=(gl, None)
     ), patch(
         "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources",
-        return_value=ProvisionResult(
-            "alice", True, "account already exists", already_exists=True
-        ),
+        return_value=ProvisionResult("alice", False, "account already exists"),
     ), patch("src.pkg.users_gitlab_records.utils.write_secret_file") as mock_write:
         err = users.add_users(
             mock_config, start_only=["alice"], passwords={"alice": "pw"}
         )
 
-    assert err is None
+    assert "alice" in str(err)
     mock_write.assert_not_called()
-    out = capsys.readouterr().out
-    assert "Warning" in out
-    assert "alice" in out
+    assert "GitLab provisioning failed for 'alice'" in capsys.readouterr().out
 
 
 @pytest.mark.usefixtures("mock_utils", "mock_user_operations")
@@ -240,8 +236,8 @@ def test_client_error_fails_only_users_with_an_account_to_create(
 def test_one_users_unexpected_failure_does_not_end_the_run(
     mock_config, mock_registry, mock_utils, mock_user_operations, capsys
 ):
-    """A failure the API layer did not expect (here an unreadable token file)
-    is that user's alone. It used to abort the loop, so a bulk add reported
+    """A failure the API layer did not expect (here a response shaped unlike
+    GitLab's) is that user's alone. It used to abort the loop, so a bulk add reported
     one error and silently never attempted the users after it."""
     mock_config.get_gitlab_provision.return_value = (True, None)
     mock_registry["load"].return_value = {
@@ -249,7 +245,7 @@ def test_one_users_unexpected_failure_does_not_end_the_run(
         "bob": {"email": "b@x.io"},
     }
     accounts = [
-        ProvisionResult("alice", True, "created", "glpat-alice", user_id=1),
+        AttributeError("response has no 'id'"),
         ProvisionResult("bob", True, "created", "glpat-bob", user_id=2),
     ]
 
@@ -258,8 +254,7 @@ def test_one_users_unexpected_failure_does_not_end_the_run(
     ), patch(
         "src.pkg.users_gitlab.gitlabPkg.ensure_user_resources", side_effect=accounts
     ) as mock_ensure, patch(
-        "src.pkg.users_gitlab_records.utils.write_secret_file",
-        side_effect=[OSError("token file is not writable"), None],
+        "src.pkg.users_gitlab_records.utils.write_secret_file"
     ), patch(
         "src.pkg.users_gitlab_records.set_gitlab_user_ids"
     ), patch(
@@ -278,4 +273,4 @@ def test_one_users_unexpected_failure_does_not_end_the_run(
     assert err is not None
     assert "alice" in str(err)
     assert "bob" not in str(err)
-    assert "token file is not writable" in capsys.readouterr().out
+    assert "response has no 'id'" in capsys.readouterr().out

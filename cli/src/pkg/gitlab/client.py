@@ -13,6 +13,11 @@ NO_PAT_ERROR = with_hint(
     f"Export {PAT_ENV_VAR}, or set [gitlab].pat in dtaas.toml.",
 )
 
+ENV_OVERRIDE_NOTE = with_hint(
+    f"Note: using the admin token from {PAT_ENV_VAR}.",
+    "[gitlab].pat in dtaas.toml holds a different token and is ignored.",
+)
+
 SSL_WARNING = with_hint(
     "Warning: [gitlab].ssl_verify is disabled.",
     "GitLab API traffic, the admin PAT and provisioned users' passwords "
@@ -27,7 +32,9 @@ def resolve_pat(config_obj):
     The environment takes precedence so a rotated token, or a run aimed at
     another instance, needs no edit to a dtaas.toml the whole installation
     shares. [gitlab].pat is still read first, to surface a malformed
-    [gitlab] section rather than mask it behind a working env var.
+    [gitlab] section rather than mask it behind a working env var. When both
+    hold different tokens, a note says which one is used, since a token left
+    exported for one installation would otherwise go to this one silently.
 
     Returns:
         Tuple of (pat, err)
@@ -35,7 +42,10 @@ def resolve_pat(config_obj):
     pat, err = config_obj.get_gitlab_pat()
     if err is not None:
         return None, err
-    pat = os.environ.get(PAT_ENV_VAR, "").strip() or pat
+    env_pat = os.environ.get(PAT_ENV_VAR, "").strip()
+    if env_pat and pat and env_pat != pat:
+        click.echo(ENV_OVERRIDE_NOTE, err=True)
+    pat = env_pat or pat
     if not pat:
         return None, Exception(NO_PAT_ERROR)
     return pat, None

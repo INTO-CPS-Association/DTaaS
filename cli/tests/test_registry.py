@@ -1,7 +1,6 @@
 """Tests for the CLI-owned user registry store."""
 
 import json
-from unittest.mock import patch
 import pytest
 from src.pkg.registry import (
     load_registry,
@@ -12,7 +11,6 @@ from src.pkg.registry import (
     set_desired_status,
     set_gitlab_pat_issued,
     set_gitlab_user_ids,
-    _partition_new,
 )
 # pylint: disable=protected-access
 

@@ -333,7 +333,9 @@ api_url    = "https://gitlab.example.com"
 
 The CLI uses `DTAAS_GITLAB_PAT` whenever it is exported and not empty,
 and `[gitlab].pat` otherwise, so a rotated token needs no edit to a
-`dtaas.toml` the whole installation shares. The token must belong to a
+`dtaas.toml` the whole installation shares. When both are set to
+different tokens, a `Note:` line says the exported one is used. The
+token must belong to a
 GitLab administrator and carry the `api` scope, plus `admin_mode` on an
 instance with Admin Mode enabled.
 
@@ -352,13 +354,21 @@ one it finds:
 2. `[[users]].password` in `dtaas.toml`, for a starting user.
 3. A hidden prompt, asked twice, when a single user is added.
 
-A password is used once, to create the account. It is never written to
+A password is used once, to create the account. The CLI never writes it to
 `dtaas.users.registry.json`, `.dtaas.state.json` or a log. A run in
 which a named user has no password and no account from an earlier run
 is refused before anything changes. `--password` is visible in shell
 history and in the process list, so prefer the prompt, or the CSV
 column with `chmod 600 users.csv` (the CLI sets that mode only on the
 sample `users.csv` that `config generate` writes).
+
+`[[users]].password` and the CSV column hold passwords in plaintext.
+When a run takes a password from `dtaas.toml` or `users.csv` and that
+file is readable by other users, the CLI prints a warning with the
+`chmod 600` command (on Linux and macOS; Windows file modes do not say
+who can read a file). Once a starting user's account exists, the CLI
+also reminds you to remove their `[[users]].password`: it stays a valid
+GitLab login until the user changes it.
 
 ### Files written {#gitlab-files-written}
 
@@ -377,13 +387,21 @@ added the moment it is issued:
 A run adds to the file and never rewrites the other entries. Should a
 user's entry ever be replaced, the old token is kept under a
 `"<username> (superseded <timestamp>)"` key and a warning says to revoke
-it in GitLab, where it is still valid. `user delete` drops the deleted
-users' entries, while their accounts and tokens stay on GitLab.
+it in GitLab if it is still active. `user delete` revokes the deleted
+users' tokens on GitLab and then drops their entries; a token that could
+not be revoked keeps its entry. Their GitLab accounts stay.
+
+Before creating any account, `user add` checks that this file can be
+read and written, and removes a leftover `gitlab_user_tokens.json.tmp`
+from an interrupted run. A token that still cannot be saved is revoked
+on GitLab at once, and the run issues no further tokens.
 
 `dtaas.users.registry.json` records, per user, the GitLab account id
 (`gitlab_user_id`) and whether a token was issued
 (`gitlab_pat_issued`). That is how a re-run knows what is already done:
-a user with an account id but no token gets a token for that account,
+a user with an account id but no token gets a new token for that
+account, after any token an earlier run issued but never saved is
+revoked,
 and a user with a token gets nothing more. Starting users carry the
 same two markers in the separate `starting_users` section, since they
 have no entry under `users`:
@@ -414,3 +432,7 @@ have no entry under `users`:
 `dtaas.toml`, `users.csv` and `gitlab_user_tokens.json` are gitignored
 and written with mode `0600`, since they can hold the admin token, user
 passwords and user tokens respectively.
+
+The registry and `gitlab_user_tokens.json` are read and rewritten
+without a lock, so run one `dtaas` command at a time per installation:
+two `user add` runs at once can lose each other's changes.

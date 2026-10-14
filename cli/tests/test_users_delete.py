@@ -116,45 +116,23 @@ def test_delete_users_dry_run_makes_no_changes(
     out = capsys.readouterr().out
     assert "Would deprovision and stop: user1" in out
     assert "Would remove from registry: user1, ghost" in out
-    assert "GitLab accounts and tokens stay untouched" in out
+    assert "GitLab accounts stay; CLI tokens would be revoked" in out
 
 
-def test_delete_reports_the_gitlab_resources_it_leaves(
-    mock_registry, mock_utils, mock_user_operations, capsys, tmp_path
+def test_delete_finishes_then_fails_when_a_token_is_not_revoked(
+    mock_registry, mock_utils, mock_user_operations
 ):
-    """A user with GitLab markers is reported: the account and its token stay
-    on GitLab, and re-adding the name finds the account there."""
-    mock_registry["load"].return_value = {
-        "user1": {"email": "u@x.io", "gitlab_user_id": 42, "gitlab_pat_issued": True}
-    }
+    """The workspace and registry entry still go, and the command fails."""
     mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
-    (tmp_path / "gitlab_user_tokens.json").write_text(
-        '{"user1": "glpat-live", "other": "glpat-keep"}', encoding="utf-8"
-    )
 
-    assert users_delete.delete_users(["user1"]) is None
+    with patch(
+        "src.pkg.users_delete.release_gitlab_records", return_value=["user1"]
+    ):
+        err = users_delete.delete_users(["user1"])
 
-    out = capsys.readouterr().out
-    assert "nothing was removed in GitLab for 'user1'" in out
-    assert "Delete the account there before re-adding" in out
-
-
-def test_delete_drops_only_the_deleted_users_token(
-    mock_registry, mock_utils, mock_user_operations, tmp_path
-):
-    """The credentials file keeps every other user's token."""
-    import json  # pylint: disable=import-outside-toplevel
-
-    mock_registry["load"].return_value = {"user1": {"gitlab_pat_issued": True}}
-    mock_utils["import"].return_value = ({"services": {"user1": {}}}, None)
-    tokens = tmp_path / "gitlab_user_tokens.json"
-    tokens.write_text(
-        '{"user1": "glpat-live", "other": "glpat-keep"}', encoding="utf-8"
-    )
-
-    users_delete.delete_users(["user1"])
-
-    assert json.loads(tokens.read_text(encoding="utf-8")) == {"other": "glpat-keep"}
+    assert "GitLab tokens not revoked for: user1" in str(err)
+    mock_registry["remove"].assert_called_once_with(["user1"])
+    mock_user_operations["state"].assert_called_once()
 
 
 def test_delete_says_nothing_about_gitlab_for_an_unprovisioned_user(

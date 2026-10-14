@@ -5,9 +5,9 @@ its own concern, and holding both in one module took it past this package's
 file size limit. The compose and container plumbing both halves drive is
 users_compose.py's.
 
-Deleting a user removes their workspace and the CLI's record of them. It
-never touches GitLab: the account and its Personal Access Token are
-reported and left alone, since only a GitLab admin can remove them (see users_gitlab_records.release_gitlab_records).
+Deleting a user removes their workspace and the CLI's record of them. On
+GitLab the account stays, and only the Personal Access Tokens this CLI
+issued to it are revoked (see users_gitlab_records.release_gitlab_records).
 """
 
 from . import utils
@@ -15,7 +15,7 @@ from .constants import COMPOSE_USERS_YML
 from .registry import load_registry, remove_from_registry
 from .state import write_state
 from .users_compose import stop_user_containers
-from .users_gitlab_records import release_gitlab_records
+from .users_gitlab_records import release_gitlab_records, revoke_failure_exc
 from .users_utils import (
     categorize_users,
     remove_conf_server_entry,
@@ -44,7 +44,11 @@ def _delete_context(usernames):
 
 
 def _remove_users(compose, existing, usernames):
-    """Stop containers, rewrite compose, clear auth rules, and update state."""
+    """Stop containers, rewrite compose, clear auth rules, and update state.
+
+    A token that could not be revoked fails the command, but only once the
+    rest of the delete is done, as a GitLab failure never undoes 'user add'.
+    """
     if existing:
         err = stop_user_containers(existing)
         utils.check_error(err)
@@ -54,10 +58,11 @@ def _remove_users(compose, existing, usernames):
     for username in usernames:
         remove_conf_server_entry(username)
     # Before the registry entry goes: it is what records whether this user
-    # has anything on GitLab to report and to stop tracking.
-    release_gitlab_records(load_registry(), usernames)
+    # has anything on GitLab to revoke and to stop tracking.
+    not_revoked = release_gitlab_records(load_registry(), usernames)
     remove_from_registry(usernames)
     write_state(compose.get("services", {}))
+    utils.check_error(revoke_failure_exc(not_revoked))
 
 
 def delete_users(usernames, dry_run=False):

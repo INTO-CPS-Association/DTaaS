@@ -1,6 +1,7 @@
 """Tests for GitLab client resolution (pkg/gitlab/client.py)."""
 
 from unittest.mock import MagicMock
+import pytest
 from src.pkg.gitlab.client import PAT_ENV_VAR, resolve_client, resolve_pat
 
 API_URL = "https://gitlab.example.com"
@@ -101,3 +102,18 @@ def test_resolve_client_does_not_warn_for_a_ca_bundle_path(monkeypatch, capsys):
     assert err is None
     assert gl.ssl_verify == "/etc/ssl/certs/corp-ca.pem"
     assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize(
+    "file_pat,noted", [("glpat-stale-file-token", True), (PAT, False), ("", False)]
+)
+def test_resolve_pat_notes_when_the_env_var_overrides_another_token(
+    monkeypatch, capsys, file_pat, noted
+):
+    """A token left exported for another installation is not used silently;
+    the same token in both places, or none in dtaas.toml, says nothing."""
+    monkeypatch.setenv(PAT_ENV_VAR, PAT)
+
+    resolve_pat(_config(pat=file_pat))
+
+    assert ("using the admin token from DTAAS_GITLAB_PAT" in capsys.readouterr().err) is noted

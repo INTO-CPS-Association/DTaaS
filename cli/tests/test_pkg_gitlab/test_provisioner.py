@@ -1,10 +1,13 @@
 """Tests for GitLab user provisioning (pkg/gitlab/provisioner.py)."""
 
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, patch
 from gitlab.exceptions import GitlabCreateError, GitlabError
+import pytest
 from src.pkg.gitlab.provisioner import (
+    PERMISSION_HINT,
     GitlabUser,
     ensure_user_resources,
+    revoke_issued_tokens,
 )
 
 USERNAME = "alice"
@@ -69,7 +72,6 @@ def test_ensure_user_resources_retries_pat_with_existing_user_id():
     assert result.ok is True
     assert result.token == TOKEN
     assert result.user_id == 7
-    assert result.already_exists is False
     gl.users.create.assert_not_called()
     gl.users.get.assert_called_once_with(7)
 
@@ -87,20 +89,19 @@ def test_ensure_user_resources_retry_pat_failure_is_reported():
     gl.users.create.assert_not_called()
 
 
-def test_ensure_user_resources_already_exists_is_idempotent_noop():
-    """An existing account is reported as ok with no PAT issued -- the
-    password is never applied to someone else's account -- and flagged
-    distinctly via already_exists so callers can warn rather than treat it
-    as an unremarkable success."""
+def test_an_account_that_already_exists_is_a_failure_with_no_token():
+    """The password is never applied to an account this CLI did not create,
+    no PAT is issued for it, and the user is left without one, which is a
+    failure the admin has to resolve in GitLab."""
     gl = MagicMock()
     gl.users.create.side_effect = GitlabCreateError(response_code=409)
 
     result = ensure_user_resources(gl, _user())
 
-    assert result.ok is True
+    assert result.ok is False
     assert result.token == ""
-    assert result.already_exists is True
-    assert "nothing was created" in result.message
+    assert "already exists; no token issued" in result.message
+    assert "Delete that account in GitLab" in result.message
     gl.users.get.assert_not_called()
 
 
@@ -115,7 +116,7 @@ def test_a_conflict_carries_gitlabs_own_reason():
 
     result = ensure_user_resources(gl, _user())
 
-    assert result.already_exists is True
+    assert result.ok is False
     assert "Email has already been taken" in result.message
 
 
@@ -198,3 +199,48 @@ def test_a_refused_pat_is_reported_with_what_to_check():
 
     assert result.ok is False
     assert "administrator" in result.message
+
+
+@pytest.mark.parametrize(
+    "revoked, hinted",
+    [((True, ""), False), ((False, "403 Forbidden"), True), ((False, "timeout"), False)],
+)
+def test_revoke_issued_tokens(revoked, hinted):
+    """A refusal of the admin credentials carries the token hint."""
+    with patch("src.pkg.gitlab.provisioner.revoke_user_pats", return_value=revoked):
+        ok, message = revoke_issued_tokens(MagicMock(), 42)
+
+    assert ok is revoked[0]
+    assert (PERMISSION_HINT in message) is hinted
+
+
+def test_a_retry_revokes_the_lost_token_before_issuing_a_new_one():
+    """A token an earlier run issued but never saved goes first."""
+    gl = _gl_with_pat(TOKEN)
+    calls = MagicMock()
+    with patch(
+        "src.pkg.gitlab.provisioner.revoke_user_pats", return_value=(True, "")
+    ) as mock_revoke:
+        calls.attach_mock(mock_revoke, "revoke")
+        calls.attach_mock(gl.users.get.return_value.personal_access_tokens.create, "issue")
+        result = ensure_user_resources(gl, _user(existing_user_id=7))
+
+    assert result.token == TOKEN
+    assert [c[0] for c in calls.mock_calls] == ["revoke", "issue"]
+    mock_revoke.assert_called_once_with(gl, 7)
+
+
+def test_a_retry_issues_nothing_while_the_lost_token_is_still_valid():
+    """No second live token: a failed revoke stops the retry."""
+    gl = _gl_with_pat(TOKEN)
+    with patch(
+        "src.pkg.gitlab.provisioner.revoke_user_pats",
+        return_value=(False, "403 Forbidden"),
+    ):
+        result = ensure_user_resources(gl, _user(existing_user_id=7))
+
+    assert result.ok is False
+    assert result.token == ""
+    assert "Earlier token not revoked" in result.message
+    assert PERMISSION_HINT in result.message
+    gl.users.get.return_value.personal_access_tokens.create.assert_not_called()

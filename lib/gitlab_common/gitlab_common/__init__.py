@@ -16,6 +16,7 @@ from .users import (
     PatOptions,
     create_user,
     create_user_pat,
+    revoke_user_pats,
 )
 from .validators import validate_user_row
 
@@ -24,6 +25,7 @@ __all__ = [
     "with_hint",
     "create_user",
     "create_user_pat",
+    "revoke_user_pats",
     "validate_user_row",
     "CreateOutcome",
     "CreateUserResult",

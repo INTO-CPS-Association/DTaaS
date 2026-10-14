@@ -706,17 +706,14 @@ GitLab administrator:
 too if the instance has Admin Mode enabled, then export the token where
 you run `dtaas`:
 
-![Create a personal access token](create-PAT.png)
-
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-That screenshot comes from the
-[GitLab tutorial](../user/gitlab/tutorial.md), where a regular user
-creates a token for cloning; for provisioning, `api` on an administrator
-account is what matters. Choose an expiry you will rotate, because
-provisioning stops working the day the token lapses.
+Choose an expiry you will rotate, because provisioning stops working the
+day the token lapses. When `DTAAS_GITLAB_PAT` and `[gitlab].pat` hold
+different tokens, the exported one is used and the CLI prints
+`Note: using the admin token from DTAAS_GITLAB_PAT.`
 
 ##### Scenarios
 
@@ -823,25 +820,54 @@ GitLab account and token created for 'bob'.
 No new users added.
 ```
 
-A retry never issues a second token for a user, so repeating the
+A retry never leaves a second live token for a user, so repeating the
 command after a partial failure is always safe. When the account was
-created but its token was not, the retry issues the token to that same
-account (the registry keeps its id) instead of creating the account
-again. A token that is lost or revoked is replaced in GitLab directly.
+created but its token was not saved, the retry first revokes any token
+named `dtaas` that an earlier run issued, then issues a new one to that
+same account (the registry keeps its id) instead of creating the
+account again. A token that is lost or revoked is replaced in GitLab
+directly.
+
+**A token that cannot be saved.** Before creating any account, `user
+add` checks `gitlab_user_tokens.json`. A leftover
+`gitlab_user_tokens.json.tmp` from an interrupted run is removed with a
+warning; a file that is not a JSON object, or cannot be written, stops
+the GitLab step for every user. Should a save still fail after a token
+was issued (a full disk, for example), that token is revoked at once,
+and no further token is issued in that run:
+
+```text
+GitLab token for 'alice' not saved; revoked.
+  [Errno 28] No space left on device
+  Once tokens can be saved to gitlab_user_tokens.json again, run 'dtaas user add alice' to issue a new one.
+GitLab provisioning stopped for: bob
+  Tokens cannot be saved to gitlab_user_tokens.json, so no further token is issued this run.
+Error: Error while adding users
+  GitLab provisioning failed for: alice, bob
+    Their containers were still provisioned.
+```
+
+If the token cannot be revoked either, the first line reads `GitLab
+token for 'alice' not saved, still valid.` and says to revoke it in
+GitLab.
 
 **An account that already exists.** When the username, or the email, is
 already taken on GitLab, the account is left as it is and no token is
 issued: this run did not create it and does not know its credentials.
-That is a warning, not a failure, and the command exits `0`:
+The container is still provisioned, and the command fails. Delete the
+account in GitLab, or use another username or email, then run the same
+command again:
 
 ```console
 $ dtaas user add --email carol@intocps.org carol
 GitLab password for 'carol':
 Repeat for confirmation:
-Warning: GitLab account exists for 'carol'.
-  GitLab reported a conflict; nothing was created.
-    The username is already registered, or its email is already on another account. Either way the credentials are unknown to this run, so no token was issued for it. GitLab said: 409: Username has already been taken
-Users added successfully
+GitLab provisioning failed for 'carol'.
+  GitLab account already exists; no token issued.
+    The username is already registered, or its email is already on another account, and this CLI did not create it, so its credentials are unknown. Delete that account in GitLab, or use another username or email, then run 'user add' again. GitLab said: 409: Username has already been taken
+Error: Error while adding users
+  GitLab provisioning failed for: carol
+    Their containers were still provisioned.
 ```
 
 **No admin token.** Without `DTAAS_GITLAB_PAT` or `[gitlab].pat`, the
@@ -869,7 +895,7 @@ that lacks a scope), each user's failure ends with a hint on the token:
 GitLab provisioning failed for 'alice'.
   GitLab account creation failed.
     Failed to create user 'alice': 403: 403 Forbidden
-    Check DTAAS_GITLAB_PAT (or [gitlab].pat): creating users and tokens needs a non-expired personal access token with the 'api' scope, owned by an administrator account, and the 'admin_mode' scope as well on an instance with Admin Mode enabled.
+    Check DTAAS_GITLAB_PAT (or [gitlab].pat): creating users and managing their tokens needs a non-expired personal access token with the 'api' scope, owned by an administrator account, and the 'admin_mode' scope as well on an instance with Admin Mode enabled.
 ```
 
 ##### What the user receives
@@ -945,14 +971,36 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 ```
 
 !!! note "The GitLab account stays"
-    `user delete` removes the user from the DTaaS installation only. By
-    design, their GitLab account and its Personal Access Token stay on
-    GitLab, so the user can still sign in there. The CLI names the users
-    it left on GitLab and drops their saved tokens from
-    `gitlab_user_tokens.json`, so a token can then only be revoked in
-    GitLab. To remove an account, a GitLab administrator deletes it in
-    GitLab. Do that before adding the same username again: `user add`
-    cannot issue a token for an account it did not create.
+    `user delete` removes the user from the DTaaS installation and
+    revokes the Personal Access Tokens named `dtaas` that the CLI issued
+    to them, so they lose repository access. Their GitLab account stays,
+    so the user can still sign in there. A revoked token is dropped from
+    `gitlab_user_tokens.json`. Revoking uses the same admin token as
+    `user add`, even when `[gitlab].provision` is now off. To remove an
+    account, a GitLab administrator deletes it in GitLab. Do that before
+    adding the same username again: `user add` cannot issue a token for
+    an account it did not create.
+
+    ```text
+    GitLab token revoked for 'alice'.
+      The GitLab account stays. Delete it in GitLab before adding the same username again.
+    Users deleted successfully
+    ```
+
+    When a token cannot be revoked (GitLab unreachable, admin token
+    missing or refused), the rest of the delete still completes, the
+    token stays in `gitlab_user_tokens.json`, and the command fails
+    naming the user. Revoke that token in GitLab:
+
+    ```text
+    GitLab token not revoked for 'alice'.
+      No GitLab PAT configured for provisioning.
+        Export DTAAS_GITLAB_PAT, or set [gitlab].pat in dtaas.toml.
+      The token is still valid and stays in gitlab_user_tokens.json; revoke it in GitLab.
+    Error: Error while deleting users
+      GitLab tokens not revoked for: alice
+        Their workspaces were still deleted.
+    ```
 
 **Options:**
 

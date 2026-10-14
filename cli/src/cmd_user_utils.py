@@ -14,7 +14,12 @@ from .pkg import registry_csv as registryCsvPkg
 from .pkg.messages import with_hint
 from .pkg.users_utils import validate_usernames
 from .cmd_user_emails import warn_unused_emails
-from .cmd_user_passwords import PasswordSources, require_passwords, resolve_passwords
+from .cmd_user_passwords import (
+    PasswordSources,
+    configured_names,
+    require_passwords,
+    resolve_passwords,
+)
 
 
 def from_config(getter, fallback):
@@ -77,12 +82,14 @@ class StagedUsers:
     containers are started), *starting* the dtaas.toml starting users named
     this run, whose workspaces dtaas.toml owns and whose GitLab half alone is
     provisioned, and *passwords* holds a password (or None) for every user
-    named, both kinds included.
+    named, both kinds included. *configured* are the users named whose
+    [[users]].password dtaas.toml holds.
     """
 
     added: list
     starting: list = field(default_factory=list)
     passwords: dict = field(default_factory=dict)
+    configured: list = field(default_factory=list)
 
 
 def _users_from_args(user_input, starting_emails):
@@ -197,7 +204,7 @@ def stage_users_for_add(user_input, provision=False):
     added = _register_users(named, starting)
     if provision:
         registryPkg.register_starting_users(starting)
-    return StagedUsers(added, starting, passwords)
+    return StagedUsers(added, starting, passwords, configured_names(sources, named))
 
 
 def resolve_usernames(

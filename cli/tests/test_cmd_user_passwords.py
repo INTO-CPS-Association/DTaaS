@@ -6,16 +6,29 @@ import pytest
 from src.cmd_user_passwords import (
     PasswordSources,
     _read_csv_passwords,
+    configured_names,
     has_account,
+    remind_configured_passwords,
     require_passwords,
     resolve_passwords,
 )
 from src.cmd_user_utils import UserAddInput
 from src.pkg.registry import register_new_users, register_starting_users
 
-# pylint: disable=protected-access
+# pylint: disable=protected-access,redefined-outer-name
 
 NAMED = {"alice": {"email": "a@x.io"}}
+
+
+@pytest.fixture(autouse=True)
+def file_mode(tmp_path, monkeypatch):
+    """Run in a scratch directory and take the POSIX path on every platform,
+    with password files at 0600 unless a test says otherwise; returns the
+    mock to change the mode."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("src.cmd_user_passwords.IS_WINDOWS", False)
+    with patch("src.cmd_user_passwords._file_mode", return_value=0o600) as mode:
+        yield mode
 
 
 def _csv(tmp_path, cells):
@@ -159,3 +172,81 @@ def test_no_prompt_once_the_token_was_issued(tmp_path, monkeypatch):
 
     prompt.assert_not_called()
     assert passwords == {"alice": None}
+
+
+def _csv_input(tmp_path):
+    """A users.csv add whose row carries a password."""
+    return UserAddInput(None, _csv(tmp_path, "S3cur3-p4ss"), None, (), True)
+
+
+def _toml_input():
+    """A single add of a starting user whose password is in dtaas.toml."""
+    return UserAddInput("alice", None, "a@x.io", (), True)
+
+
+MODES = [(0o644, False, True), (0o640, False, True), (0o600, False, False),
+         (0o644, True, False)]
+
+
+@pytest.mark.parametrize(
+    "case", [(source, *mode) for source in ("csv", "toml") for mode in MODES]
+)
+def test_a_password_file_others_can_read_is_warned_about(tmp_path, capsys, case):
+    """Plaintext passwords in a file group or others can read are pointed
+    out with the fix; Windows mode bits say nothing, so nothing is checked."""
+    source, mode, windows, warned = case
+    if source == "csv":
+        sources = PasswordSources(_csv_input(tmp_path))
+    else:
+        sources = PasswordSources(_toml_input(), {"alice": "from-dtaas-toml"})
+
+    with patch("src.cmd_user_passwords._file_mode", return_value=mode), patch(
+        "src.cmd_user_passwords.IS_WINDOWS", windows
+    ):
+        resolve_passwords(sources, NAMED, True)
+
+    out = capsys.readouterr().out
+    assert ("is readable by other users" in out) is warned
+    assert ("chmod 600" in out) is warned
+
+
+def test_no_warning_when_no_password_is_read_from_a_file(
+    tmp_path, capsys, file_mode
+):
+    """Provisioning off, or no password in the file: nothing is used, so
+    nothing is warned about."""
+    file_mode.return_value = 0o644
+
+    resolve_passwords(PasswordSources(_csv_input(tmp_path)), NAMED, False)
+    resolve_passwords(
+        PasswordSources(UserAddInput(None, _csv(tmp_path, ""), None, (), True)),
+        NAMED,
+        True,
+    )
+
+    assert capsys.readouterr().out == ""
+
+
+@pytest.mark.parametrize("accounts,named", [({"alice": 7}, True), ({}, False)])
+def test_the_configured_password_is_pointed_out_once_its_account_exists(
+    capsys, accounts, named
+):
+    """Only users with an account are named: for the others the key is still
+    needed to create one."""
+    register_new_users(
+        {name: {"gitlab_user_id": uid} for name, uid in accounts.items()}, []
+    )
+
+    remind_configured_passwords(["alice", "bob"])
+
+    out = capsys.readouterr().out
+    assert ("remove [[users]].password from dtaas.toml" in out) is named
+    assert ("'alice'" in out) is named
+    assert "'bob'" not in out
+
+
+def test_configured_names_lists_only_users_with_the_key():
+    """An empty or missing [[users]].password is not one to remove."""
+    sources = PasswordSources(_toml_input(), {"alice": "pw", "bob": ""})
+
+    assert configured_names(sources, ["alice", "bob", "carol"]) == ["alice"]

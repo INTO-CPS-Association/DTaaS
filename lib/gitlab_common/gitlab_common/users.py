@@ -1,4 +1,4 @@
-"""GitLab user provisioning: create users and issue Personal Access Tokens."""
+"""GitLab user provisioning: create users, issue and revoke Personal Access Tokens."""
 
 import logging
 from dataclasses import dataclass
@@ -166,3 +166,32 @@ def create_user_pat(
         return True, token
     except API_ERRORS as exc:
         return False, f"Failed to create PAT for '{username}': {exc}"
+
+
+def revoke_user_pats(
+    gl: gitlab.Gitlab, user_id: int, name: str = DEFAULT_PAT_NAME
+) -> Tuple[bool, str]:
+    """Revoke a GitLab user's active Personal Access Tokens named *name*.
+
+    Only tokens with that name are revoked, so a token the user made for
+    themselves under another name keeps working. Finding none is a success:
+    there is nothing left to revoke.
+
+    Args:
+        gl: Authenticated gitlab.Gitlab client, owned by an administrator.
+        user_id: GitLab user ID.
+        name: Name of the tokens to revoke.
+
+    Returns:
+        Tuple of (success, error); *error* is empty on success.
+    """
+    try:
+        tokens = gl.personal_access_tokens.list(
+            user_id=user_id, state="active", get_all=True
+        )
+        for token in tokens:
+            if token.name == name:
+                gl.personal_access_tokens.delete(token.id)
+        return True, ""
+    except API_ERRORS as exc:
+        return False, f"Failed to revoke the tokens of GitLab user {user_id}: {exc}"
