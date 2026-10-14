@@ -1,6 +1,6 @@
 # Testing
 
-## :question: Fundamental Concepts in Software Testing
+## Fundamental Concepts in Software Testing
 
 ### Definition of Software Testing
 
@@ -37,9 +37,9 @@ simple domain-specific language (DSL) with natural language constructs
 (e.g., English-like sentences) that express behaviour and expected outcomes.
 The Mocha and Cucumber testing libraries are built around BDD.
 
-## :building_construction: Testing Workflow
+## Testing Workflow
 
-![Test pyramid diagram](testPyramid.png)
+![Test pyramid diagram](testPyramid.png){.on-white}
 
 (Ref: Ham Vocke,
 [The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html))

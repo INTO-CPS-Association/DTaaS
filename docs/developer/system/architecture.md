@@ -1,4 +1,4 @@
-# :european_castle: System Overview
+# System Overview
 
 The Digital Twin as a Service (DTaaS) platform supports the whole
 digital twin (DT) lifecycle. Users create, configure, execute and share
@@ -34,7 +34,8 @@ The platform provides the following capabilities:
 
 The figure shows the system architecture of the DTaaS software platform.
 
-![System architecture](architecture.png)
+![System architecture](architecture.png#only-light)
+![System architecture](architecture-dark.png#only-dark)
 
 ### System Components
 
@@ -75,6 +76,10 @@ The microservices responsible for the user requirements are:
 1. **DT Lifecycle Manager** manages the lifecycle operations on all
    DTs. It directs the _DT Execution Manager_ to execute, save and
    terminate DTs.
+
+The web application can also carry domain-specific pages that come
+from separate npm packages. [Client Extensions](extensions.md) describes
+the current state and the proposed extension architecture.
 
 Several of these components are not implemented yet; the table below
 gives their status. The [architecture review](review/architecture-review.md)

@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full-192h.png#only-light)
+![DTaaS logo](dtaas-logo-full-white-192h.png#only-dark)
 
 This guide installs DTaaS on localhost over **HTTP** with a single user
 workspace.
@@ -14,7 +15,8 @@ For the configuration reference, see [config.md](config.md).
 
 The diagram shows the Docker containers in this package.
 
-<img src="localhost.png" alt="DTaaS Localhost" width="600px" />
+<img src="localhost.png#only-light" alt="DTaaS Localhost" width="600px" />
+<img src="localhost-dark.png#only-dark" alt="DTaaS Localhost" width="600px" />
 
 ## Requirements
 

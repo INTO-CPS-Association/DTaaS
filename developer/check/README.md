@@ -1,4 +1,4 @@
-# 🐳 Docker Workflow for DTaaS
+# Docker Workflow for DTaaS
 
 Docker images are useful for development. Developers are advised
 to build the required images locally and use them during development.
@@ -12,7 +12,7 @@ The docker compose environment creates the following development scenario.
 
 ![developer](developer-docker.png)
 
-## 📁 Folder Structure
+## Folder Structure
 
 The Dockerfiles for building the containers are:
 
@@ -42,7 +42,7 @@ In addition, there are docker compose and configuration files.
 - **conf.dev** OAuth 2.0 configuration required by
   the Traefik forward-auth service
 
-## 🛠️ Build and Publish Docker Images
+## Build and Publish Docker Images
 
 The GitHub Actions workflows publish Docker images of the client website,
 libms and logger-ms to
@@ -68,7 +68,7 @@ sudo chown -R 1000:1000 logs
 docker compose --env-file config/.env build
 ```
 
-## 📦 Running Docker Containers
+## Running Docker Containers
 
 The following steps describe how to use the application with Docker.
 
@@ -118,7 +118,7 @@ through the single page client now.
 Build and publish the docker images. This step is required only for
 the publication of images to Docker Hub.
 
-:stop_sign: This publishing step is managed
+Warning: This publishing step is managed
 only by project maintainers. Regular developers can skip this step.
 
 The DTaaS development team publishes reusable packages which are then

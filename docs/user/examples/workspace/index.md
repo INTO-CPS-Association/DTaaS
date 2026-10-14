@@ -38,4 +38,4 @@ The examples vary in complexity. Try them in the following order:
 1. [Incubator with NuRV Runtime Monitor FMU as Service](
    ./incubator-NuRV-fmu-monitor-service/README.md)
 
-:material-download: [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
+[DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)

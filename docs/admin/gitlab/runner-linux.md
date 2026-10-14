@@ -8,7 +8,13 @@ GitLab.
 
 The diagram shows the intended installation.
 
-![GitLab Runner Integration](gitlab-integrated-runner.png)
+![GitLab Runner Integration](gitlab-integrated-runner.png#only-light)
+![GitLab Runner Integration](gitlab-integrated-runner-dark.png#only-dark)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 There are two installation scenarios:
 

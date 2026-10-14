@@ -1,4 +1,4 @@
-# React Client :computer:
+# React Client
 
 The DTaaS web client is a React and TypeScript single page application.
 Users compose digital twins, browse assets, edit configuration and run
@@ -48,7 +48,12 @@ the Building Models page. The Material UI theme and design tokens live
 in `theme/`.
 
 The shared backend package lives under `lib/dt-automation/` and the
-client consumes it as `@into-cps-association/dt-automation`.
+client consumes it from npm as `@into-cps-association/dt-automation`.
+The Building Models page comes from `@into-cps-association/bim-kit`,
+which is maintained in the
+[ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils)
+repository. [Client Extensions](../system/extensions.md) describes both
+packages and the proposed extension architecture.
 
 ## Backend Integration Layer
 

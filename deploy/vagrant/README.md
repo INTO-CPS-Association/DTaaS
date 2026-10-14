@@ -19,8 +19,8 @@ Two provisioning scripts are provided:
 
 | Script name | Purpose | Default |
 |:---|:---|:---|
-| `user.sh` | user installation | :white_check_mark: |
-| `developer.sh` | developer installation | :x: |
+| `user.sh` | user installation | Yes |
+| `developer.sh` | developer installation | No |
 
 The default installation provisions the user environment only.
 Developer installation can be skipped unless additional tooling is required.
@@ -36,7 +36,7 @@ The relevant lines are:
 Uncomment the second line to include developer software components.
 No changes are required for a user-only installation.
 
-🛑The vagrant installation times out if the scripts take too long.
+Warning: The vagrant installation times out if the scripts take too long.
 The uncommenting of `developer.sh` might prolong the installation time
 thus resulting in unsuccessful completion of vagrant installation.
 The `developer.sh` script can be run from inside the vagrant machine

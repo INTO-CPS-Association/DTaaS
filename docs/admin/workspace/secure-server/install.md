@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full-192h.png#only-light)
+![DTaaS logo](dtaas-logo-full-white-192h.png#only-dark)
 
 This guide explains how to deploy the workspace application for
 **secure multi-user deployments with Keycloak** for authentication.
@@ -20,8 +21,13 @@ page.
 
 The installation setup is shown here.
 
-<img src="secure-server.png"
-  alt="Workspace production installation using Keycloak" width="800px" />
+![Workspace production installation using Keycloak](secure-server.png#only-light)
+![Workspace production installation using Keycloak](secure-server-dark.png#only-dark)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 ## User Directories
 

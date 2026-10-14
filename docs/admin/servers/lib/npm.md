@@ -19,13 +19,14 @@ particular file structure is needed; any directory will do.
 DTaaS users expect the following file system structure for their
 reusable assets.
 
-![File System Layout](file-system-layout.png)
+![File System Layout](file-system-layout.png#only-light)
+![File System Layout](file-system-layout-dark.png#only-dark)
 
 A skeleton file structure is available in the
 [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/deploy/dtaas/docker/localhost/files).
 Copy it to create a file system for users.
 
-## :arrow_down: Install
+## Install
 
 The npm package is available in GitHub
 [packages registry](https://github.com/orgs/INTO-CPS-Association/packages)
@@ -54,7 +55,7 @@ username is the GitHub username and the password is a GitHub
 [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 with the _read:packages_ scope.
 
-## :rocket: Use
+## Use
 
 Display help.
 

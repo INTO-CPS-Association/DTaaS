@@ -3,12 +3,35 @@ site_name: Digital Twin as a Service (DTaaS)
 repo_url: https://github.com/into-cps-association/DTaaS
 repo_name: DTaaS
 copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
+# The drawio files the diagrams were made from are kept with the source, not
+# published with the site.
+exclude_docs: |
+  assets/diagrams/originals/
 
 theme:
   name: material
   locale: en
   logo: assets/brand/dtaas-mark-white.svg
   favicon: assets/brand/dtaas-mark.svg
+  # Inter is self-hosted in docs/assets/fonts, so no Google Fonts request.
+  font: false
+  # Colours come from docs/assets/css/extra.css, which repeats the
+  # application's tokens. The first entry whose media query matches wins.
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.tracking
@@ -126,6 +149,7 @@ nav:
       - System:
           - Architecture: developer/system/architecture.md
           - Current Status: developer/system/current-status.md
+          - Client Extensions: developer/system/extensions.md
           - Research Overview: developer/system/research-overview.md
           - Code Review:
               - Overview: developer/system/review/index.md
@@ -167,14 +191,16 @@ nav:
 
 use_directory_urls: false
 
+extra:
+  generator: false
+
 extra_css:
   - assets/css/extra.css
 
 extra_javascript:
-  # yamllint disable-line rule:line-length
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  # The configuration has to load before MathJax reads it.
+  - assets/js/mathjax-config.js
+  - assets/js/mathjax-3.2.2/tex-svg.js
 
 markdown_extensions:
   - attr_list
@@ -198,8 +224,8 @@ markdown_extensions:
   - admonition
   - pymdownx.tabbed:
       alternate_style: true
-  - mdx_math:
-      enable_dollar_delimiter: True
+  - pymdownx.arithmatex:
+      generic: true
 
 hooks:
   - script/docs/mkdocs_hooks.py
@@ -212,5 +238,7 @@ plugins:
       cover: true
       cover_logo: assets/brand/png/dtaas-logo-full-192h.png
       cover_subtitle: ""
+      # Hides the dark-scheme copy of a logo. See styles.scss there.
+      custom_template_path: script/docs/pdf-template
       enabled_if_env: MKDOCS_ENABLE_PDF_EXPORT
       output_path: pdf/DTaaS-docs.pdf

@@ -4,7 +4,7 @@ You need the settings when you first set up the DTaaS and again whenever
 you work with a different configuration. The main settings are
 collected on one page for both cases.
 
-## ⚙️ Changing Settings
+## Changing Settings
 
 The parameters for sending information to and receiving it from the
 storage and execution services (e.g., GitLab) may need to be adjusted
@@ -107,9 +107,9 @@ reloads the available digital twins using the **Branch Name** and
 **Default**: `mass-spring-damper`, or the first digital twin in the list
 if `mass-spring-damper` is not available
 
-## 📋 Logging Settings
+## Logging Settings
 
-### 🔓 Keep a Local Activity Log
+### Keep a Local Activity Log
 
 The **Keep a local activity log** checkbox controls whether the DTaaS
 records workflow events in your browser (stored locally in IndexedDB).
@@ -121,7 +121,7 @@ also sends the events to that server. It is off by default as well.
 See [Logs](logs.md) for viewing and downloading logs at
 `/insights/log`.
 
-## 💾 Saving and Resetting Changes
+## Saving and Resetting Changes
 
 When you are satisfied with the changes, press **Save Settings** so that
 they persist after you leave the Settings page.
@@ -140,7 +140,7 @@ DT Directory or Branch Name, saving fetches the digital twins again from
 the remote repository. The Digital Twins should then be visible and
 ready to be executed, edited and shared.
 
-## 💭 Summary
+## Summary
 
 This page described how to edit the settings, both to initialise the
 DTaaS for a project and during continuous use (for example, to change

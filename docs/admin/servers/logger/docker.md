@@ -30,7 +30,7 @@ sudo chown -R 1000:1000 logs
 If the `logs` directory does not exist, Docker creates it as `root`.
 Images before 0.1.2 cannot write into such a directory.
 
-## :rocket: Use
+## Use
 
 Use the [docker compose](compose.logger.yml) file to start the service.
 

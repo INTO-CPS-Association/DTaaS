@@ -7,6 +7,7 @@ Run from any directory with the MkDocs requirements installed:
   python script/docs/docs.py version [TAG]
   python script/docs/docs.py assemble --version NAME --site-dir DIR \\
       --pages-dir DIR
+  python script/docs/docs.py check-scripts --site-dir DIR
 
 build and serve fetch the documentation media from Git LFS first.
 PDF export needs mkdocs.yml and its with-pdf plugin, which work only on
@@ -83,6 +84,21 @@ def assemble(args: argparse.Namespace) -> None:
     )
 
 
+def check_scripts(args: argparse.Namespace) -> None:
+    """Fail when a page of the site loads a script from an unapproved host."""
+    # The release job copies only docs.py and pages.py into the checkout of
+    # an older tag, which has no script_hosts.py, so it is imported here.
+    import script_hosts  # pylint: disable=import-outside-toplevel
+
+    found = script_hosts.foreign_scripts(Path(args.site_dir).resolve())
+    if found:
+        raise pages.PublishError(
+            "scripts from hosts outside script_hosts.ALLOWED_HOSTS:\n"
+            + "\n".join(found)
+        )
+    print(f"every script in {args.site_dir} comes from an approved host")
+
+
 def parser() -> argparse.ArgumentParser:
     """Describe the command line."""
     root = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
@@ -102,6 +118,9 @@ def parser() -> argparse.ArgumentParser:
     for option in ("--version", "--site-dir", "--pages-dir"):
         assemble_cmd.add_argument(option, required=True)
     assemble_cmd.set_defaults(handler=assemble)
+    check_cmd = commands.add_parser("check-scripts", help="check script hosts")
+    check_cmd.add_argument("--site-dir", required=True)
+    check_cmd.set_defaults(handler=check_scripts)
     return root
 
 

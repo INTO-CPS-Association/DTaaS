@@ -1,5 +1,6 @@
 """Tests for assembling the published documentation site."""
 
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -24,7 +25,8 @@ def fixture_docs_dir(tmp_path: Path) -> Path:
     """A docs/ directory whose landing page lists version1.0."""
     docs = tmp_path / "docs"
     write(docs / "redirect-page.html", '<a href="version1.0/index.html">')
-    write(docs / pages.BRAND_LOGO, "<svg/>")
+    for asset in pages.LANDING_ASSETS:
+        write(docs / asset, "x")
     return docs
 
 
@@ -64,7 +66,45 @@ def test_assemble_replaces_version(tmp_path, site_dir, docs_dir):
     assert not (pages_dir / "development" / "pdf").exists()
     assert (pages_dir / "DTaaS-development.pdf").read_bytes() == b"%PDF"
     assert (pages_dir / "index.html").is_file()
-    assert (pages_dir / pages.BRAND_LOGO).is_file()
+    for asset in pages.LANDING_ASSETS:
+        assert (pages_dir / asset).is_file()
+
+
+def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
+    """Assemble writes the current year."""
+    write(docs_dir / "redirect-page.html", "&copy; 2022 - {{ year }}")
+    pages_dir = tmp_path / "pages"
+    pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
+    landing = (pages_dir / "index.html").read_text("utf-8")
+    assert landing == f"&copy; 2022 - {date.today().year}"
+
+
+def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_dir):
+    """Assemble removes polyfill from old versions."""
+    pages_dir = tmp_path / "pages"
+    old_page = write(
+        pages_dir / "version0.3" / "index.html",
+        "<head>\n"
+        '        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6">'
+        "</script>\n"
+        '        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/x.js"></script>\n'
+        "</head>\n",
+    )
+    pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
+    html = old_page.read_text("utf-8")
+    assert "polyfill.io" not in html
+    assert "cdn.jsdelivr.net" in html
+
+
+def test_remove_polyfill_leaves_files_outside_the_site(tmp_path):
+    """Remove polyfill leaves files outside the site."""
+    tag = '<script src="https://polyfill.io/v3/polyfill.min.js"></script>\n'
+    outside = write(tmp_path / "outside.html", tag)
+    site = tmp_path / "pages"
+    site.mkdir()
+    (site / "link.html").symlink_to(outside)
+    assert pages.remove_polyfill(site) == 0
+    assert outside.read_text("utf-8") == tag
 
 
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):

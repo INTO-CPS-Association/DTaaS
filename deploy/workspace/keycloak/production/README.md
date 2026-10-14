@@ -1,12 +1,13 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full.svg#gh-light-mode-only)
+![DTaaS logo](dtaas-logo-full-white.svg#gh-dark-mode-only)
 
-🎉 Thank you for downloading **Digital Twin as a Service**.
+Thank you for downloading **Digital Twin as a Service**.
 
 This guide explains how to deploy the application for
 secure multi-user deployments.
 
-## ❓ Prerequisites
+## Prerequisites
 
 - Docker Engine v27 or later
 - At least 2 GB RAM per workspace instance
@@ -14,13 +15,18 @@ secure multi-user deployments.
 - Valid TLS certificates
 - Domain name pointing to the server
 
-## 🗒️ Design
+## Design
 
 An illustration of the installation setup is shown here.
 
 ![Workspace production installation using Keycloak](secure-server.png)
 
-## 📁 User Directories
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
+
+## User Directories
 
 All the deployment options require user directories for
 storing workspace files. These need to
@@ -34,24 +40,24 @@ cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 Follow the pre-installation steps in
 [`CONFIGURATION.md`](CONFIGURATION.md) to create valid configuration.
 
-▶️ Start the application:
+Start the application:
 
 ```bash
 docker compose --env-file config/.env up -d
 ```
 
-### 🌵 Temporary Issues
+### Temporary Issues
 
 The following issues during application startup are expected behaviour
 and will be resolved during post-installation.
 
-👉 `traefik-forward-auth` service will be restarting at this stage.
-👉 Visiting `https://intocps.org` shows `HTTP ERROR 500`.
+`traefik-forward-auth` service will be restarting at this stage.
+Visiting `https://intocps.org` shows `HTTP ERROR 500`.
 
 Now complete the post-installation steps in
 [`CONFIGURATION.md`](CONFIGURATION.md). Restart `traefik-forward-auth`
@@ -75,7 +81,7 @@ To stop and remove volumes:
 docker compose --env-file config/.env down -v
 ```
 
-## 🔧 Customisation
+## Customisation
 
 ### Adding More Users
 
@@ -128,7 +134,7 @@ rule.user3_access.rule=PathPrefix(`/user3`)
 rule.user3_access.whitelist = user3@localhost
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Certificate Issues
 
@@ -175,7 +181,7 @@ rule.user3_access.whitelist = user3@localhost
 - Stop conflicting services
 - Or modify port mappings in compose file (not recommended for production)
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
 - [Traefik Forward Auth](https://github.com/thomseddon/traefik-forward-auth)

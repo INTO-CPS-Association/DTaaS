@@ -35,8 +35,9 @@ This example uses two models and one tool:
 The DT is executed with two configuration files, `multimodelFI.json` and
 `simulation-config.json`. Edit them to customise the DT.
 
-:fontawesome-solid-circle-info: The faults are defined in
-`/workspace/examples/data/water_tank_FI/input/wt_fault.xml`.
+!!! note
+    The faults are defined in
+    `/workspace/examples/data/water_tank_FI/input/wt_fault.xml`.
 
 ## Lifecycle Phases
 

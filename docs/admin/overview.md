@@ -136,7 +136,7 @@ use it.
 
 [Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.mp4)
 
-## Administration :gear:
+## Administration
 
 - [DTaaS CLI](cli.md)
 - [GitLab server guidance](gitlab/index.md)

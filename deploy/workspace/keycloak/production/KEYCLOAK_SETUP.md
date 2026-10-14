@@ -5,11 +5,11 @@ the DTaaS workspace deployment.
 
 ## Key Benefits
 
-✅ **Standards-Based**: Uses OIDC/OAuth2 standards
+**Standards-Based**: Uses OIDC/OAuth2 standards
 
-✅ **Enterprise-Ready**: Supports SSO, MFA, user federation
+**Enterprise-Ready**: Supports SSO, MFA, user federation
 
-✅ **Minimal Changes**: Environment-variable based configuration
+**Minimal Changes**: Environment-variable based configuration
 
 ## Overview
 
@@ -72,14 +72,16 @@ The following instructions are part of post-install step.
 
 #### Create a Realm
 
-1. In the top-left dropdown (currently showing "Master"), click **Create Realm**  
-2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in `config/.env`)  
+1. In the top-left dropdown (currently showing "Master"), click
+   **Create Realm**  
+2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in
+   `config/.env`)  
 3. Click **Create**
 4. Click on **Realm Settings** -> **User Profile**
 5. Click on **Create attribute** with
    - name: profile
    - display name: profile
-   - Permission: **who can edit** ✅ on admin
+   - Permission: **who can edit** checked on admin
 6. Click **Create**
 
 #### Create Users
@@ -119,8 +121,8 @@ The following instructions are part of post-install step.
 5. Login settings:
    - **Root URL**: `https://intocps.org`
    - **Valid redirect URIs**:
-    - `https://intocps.org/_oauth/*`
-    - `https://intocps.org/*`
+     - `https://intocps.org/_oauth/*`
+     - `https://intocps.org/*`
    - **Valid post logout redirect URIs**: `https://intocps.org/*`
    - **Web origins**: `https://intocps.org`
    - Click **Save**
@@ -213,7 +215,8 @@ keycloak:
 
 ### Cannot Access Keycloak Admin Console
 
-- Ensure the Keycloak service is running: `docker compose --env-file config/.env ps`
+- Ensure the Keycloak service is running:
+  `docker compose --env-file config/.env ps`
 - Check Keycloak logs: `docker compose --env-file config/.env logs keycloak`
 - Verify port 80/443 is accessible
 
@@ -248,11 +251,13 @@ To access custom user attributes:
 
 ### Role-Based Access Control (RBAC)
 
-RBAC is supported in Keycloak but not implemented in the traefik-forward-auth service by default.
+RBAC is supported in Keycloak but not implemented in the traefik-forward-auth
+service by default.
 
 ### Single Sign-On (SSO)
 
-Keycloak supports SSO across multiple applications. Configure additional clients for other services as needed.
+Keycloak supports SSO across multiple applications. Configure additional
+clients for other services as needed.
 
 ## References
 

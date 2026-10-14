@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full-192h.png#only-light)
+![DTaaS logo](dtaas-logo-full-white-192h.png#only-dark)
 
 This guide installs a **secure, multi-user DTaaS deployment** that uses
 an **external GitLab instance** for OAuth 2.0 authorisation.
@@ -15,7 +16,13 @@ For the full configuration reference, see [config.md](config.md).
 This package deploys DTaaS with Traefik, OAuth forward-auth and
 two user workspaces.
 
-<img src="server.png" alt="DTaaS on Server" width="600px" />
+![DTaaS on Server](server.png#only-light)
+![DTaaS on Server](server-dark.png#only-dark)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 The `docker-compose.yml` starts the following services:
 

@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full.svg#gh-light-mode-only)
+![DTaaS logo](dtaas-logo-full-white.svg#gh-dark-mode-only)
 
 Thank you for downloading **Digital Twin as a Service**.
 
@@ -15,13 +16,18 @@ configuration reference, see [CONFIG.md](CONFIG.md).
 > this guide. Replace it with the actual server hostname of the
 > installation.
 
-## :globe_with_meridians: Overview
+## Overview
 
 This package installs the DTaaS as a multi-user web application with an
 integrated GitLab CE instance. GitLab serves as both the OAuth 2.0
 authorisation provider and the DevOps backend for digital twin projects.
 
-<img src="server.png" alt="DTaaS on Server" width="600px" />
+![DTaaS on Server](server.png)
+
+A path such as `/user1` is the URL route of that service, for example
+`https://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 The `docker-compose.yml` starts the following services:
 
@@ -34,7 +40,7 @@ The `docker-compose.yml` starts the following services:
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
 | **gitlab** | Integrated GitLab CE (OAuth 2.0 provider) |
 
-## :clipboard: Prerequisites
+## Prerequisites
 
 | Requirement | Details |
 | :--- | :--- |
@@ -42,7 +48,7 @@ The `docker-compose.yml` starts the following services:
 | **Domain name** | A domain name (e.g. `intocps.org`) or IP address |
 | **TLS certificate** | `fullchain.pem` and `privkey.pem` for the domain. Obtain via [certbot](https://certbot.eff.org/) or a certificate provider |
 
-## :rocket: Quick Start
+## Quick Start
 
 ### 1. Create Configuration Files
 
@@ -99,7 +105,7 @@ Wait a few minutes for GitLab to become healthy:
 watch docker ps
 ```
 
-### 5. Configure GitLab :fox_face:
+### 5. Configure GitLab
 
 Once the GitLab container shows as `healthy`:
 
@@ -137,7 +143,7 @@ Once the GitLab container shows as `healthy`:
    docker compose --env-file config/.env up -d --force-recreate client traefik-forward-auth
    ```
 
-### 6. Verify :white_check_mark:
+### 6. Verify
 
 | URL | Expected result |
 | :--- | :--- |
@@ -146,13 +152,13 @@ Once the GitLab container shows as `healthy`:
 | `https://intocps.org/user1` | User 1 workspace (after sign-in) |
 | `https://intocps.org/user2` | User 2 workspace (after sign-in) |
 
-## :stop_sign: Stop
+## Stop
 
 ```bash
 docker compose --env-file config/.env down
 ```
 
-## :file_folder: Directory Layout
+## Directory Layout
 
 ```text
 .
@@ -174,7 +180,7 @@ docker compose --env-file config/.env down
 └── README.md              # This file — quick-start guide
 ```
 
-## :book: Administration Summary
+## Administration Summary
 
 The full DTaaS documentation is available at
 <https://into-cps-association.github.io/DTaaS/>.
@@ -192,13 +198,13 @@ The sections relevant for administrators are summarised below.
 | [CLI tool](https://into-cps-association.github.io/DTaaS/development/admin/cli.html) | Command-line interface for managing a DTaaS installation |
 | [Renew TLS certificates](https://into-cps-association.github.io/DTaaS/development/admin/guides/renew_certs.html) | Updating expired TLS certificates |
 
-## :link: Documentation
+## Documentation
 
 Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## :framed_picture: References
+## References
 
 Image sources:
 [Traefik logo](https://www.laub-home.de/wiki/Traefik_SSL_Reverse_Proxy_f%C3%BCr_Docker_Container),

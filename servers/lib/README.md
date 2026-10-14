@@ -7,7 +7,7 @@ from local file system or public git repositories. It is possible to
 * Query available files and download them using GraphQL API
 * Clone public git repositories and serve them as local files
 
-## :arrow_down: Install
+## Install
 
 ### Default NPM Registry
 
@@ -36,7 +36,7 @@ your Github username and the password is your Github
 In order for the npm to download the package, your personal access token
 needs to have _read:packages_ scope.
 
-## :gear: Configure
+## Configure
 
 The microservices requires config specified in yaml format.
 The template configuration file is:
@@ -97,7 +97,7 @@ enables library microservice to clone
 HTTP(S) protocol is supported.
 The `.git` suffix is optional.
 
-## :rocket: Use
+## Use
 
 Display help.
 

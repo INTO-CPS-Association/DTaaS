@@ -3,7 +3,13 @@
 This page walks through the website of the workspace software platform
 with screenshots. A short screen recording is also available.
 
-![DTaaS user view](../workspace_web.gif)
+<video controls muted playsinline preload="metadata"
+  poster="../workspace_web-poster.png" width="960" height="540"
+  aria-label="Workspace tools opened from the Workbench">
+  <source src="../workspace_web.mp4" type="video/mp4" />
+  <img src="../workspace_web-poster.png"
+    alt="Workspace tools opened from the Workbench" />
+</video>
 
 The user workspace in DTaaS is a personal Linux environment
 given to each registered user.
@@ -52,7 +58,7 @@ page of the DTaaS website.
 
 The application bar at the top of every page shows the DTaaS logo and
 title in the middle. On the right are three buttons. The GitHub icon
-opens the DTaaS code repository and the :question: icon opens this
+opens the DTaaS code repository and the question-mark icon opens this
 documentation. The round avatar, which shows your profile picture or
 the first letter of your username, opens a menu with **Account** and
 **Logout**. The **Account** page has a **Settings** tab where you can
@@ -134,9 +140,10 @@ structure on the server.
 !!! note
     Assets (files) can be uploaded using the **upload** button.
 
-:fontawesome-solid-circle-info: The file manager is based on Jupyter Notebook,
-and all tasks available in Jupyter Notebook can be
-performed here.
+!!! note
+    The file manager is based on Jupyter Notebook,
+    and all tasks available in Jupyter Notebook can be
+    performed here.
 
 ## Digital Twins Page
 
@@ -172,9 +179,10 @@ page explains them further.
     These scripts can be executed from VSCode, or from VNC GUI when they
     produce graphical results.
 
-:fontawesome-solid-circle-info: The reusable assets (files) shown in
-the file manager are also available in Jupyter Lab. Jupyter Lab also has
-a git plugin for linking files with external git repositories.
+!!! note
+    The reusable assets (files) shown in
+    the file manager are also available in Jupyter Lab. Jupyter Lab also has
+    a git plugin for linking files with external git repositories.
 
 ## Workbench
 

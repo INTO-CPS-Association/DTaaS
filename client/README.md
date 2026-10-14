@@ -3,7 +3,7 @@
 React single-page web application for the Digital Twin as a Service (DTaaS)
 platform.
 
-## 🔐 Authorisation
+## Authorisation
 
 The React client website uses OAuth authorisation.
 The [authorisation page](../docs/admin/client/auth.md)
@@ -15,7 +15,7 @@ the client application.
 Refer to [DOCKER.md](DOCKER.md) for containerised deployment of
 the client service.
 
-## 📦 Use in Node.js Environment
+## Use in Node.js Environment
 
 The following steps are required only when building the client application
 from source code. Docker images are the recommended deployment approach.

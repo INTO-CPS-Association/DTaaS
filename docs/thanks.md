@@ -17,12 +17,6 @@ The following projects have funded this project.
 * Digital Twins for Cyber-Physical Systems (DiT4CPS) - a project sponsored by
   the Grundfos Foundation.
 
-## Developers
-
-See the list of
-[code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
-on GitHub.
-
 ## Example Contributors
 
 | Example Name                                          | Contributors                                |
@@ -44,13 +38,22 @@ on GitHub.
 | Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
 | Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
 
+## Developers
+
+See the list of
+[code contributors](https://github.com/INTO-CPS-Association/DTaaS/graphs/contributors)
+on GitHub.
+
 ## Documentation
 
 1. Talasila, P., Gomes, C., Mikkelsen, P. H., Arboleda, S. G., Kamburjan,
    E., & Larsen, P. G. (2023).
    Digital Twin as a Service (DTaaS): A Platform for
    Digital Twin Developers and Users.
-   [arXiv preprint arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
+   In 2023 IEEE Smart World Congress (SWC), pp. 1-8. IEEE.
+   [doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
+   Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
 1. Astitva Sehgal for developer and example documentation.
+1. Jady Pamella Barbacena da Silva for the documentation theme and diagrams.
 1. Tanusree Roy and Farshid Naseri for asking interesting questions
    that ended up in the FAQ.

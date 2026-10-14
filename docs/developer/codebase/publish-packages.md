@@ -1,4 +1,4 @@
-# Publish Packages :package:
+# Publish Packages
 
 DTaaS is a monorepo that publishes npm packages, Docker images, Python
 packages and installation packages.

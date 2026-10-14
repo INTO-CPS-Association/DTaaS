@@ -326,18 +326,18 @@ A point-by-point audit of the design against the two references.
 
 | Guideline (clig.dev / git) | This design |
 | --- | --- |
-| **`noun verb` two-level subcommands** (`docker container create`, `git remote add`) | Adopted as the single rule. ✔ |
-| **Be consistent across subcommands** (same flag names, output) | `--output-dir`, `--file`/`csv_file`, `--json`, `--force`, `--dry-run` reused verbatim across every noun (§8). ✔ |
-| **Don't have ambiguous or similarly-named commands** | Flat `install`/`uninstall`/`stop`/`pause`/`update` siblings are disambiguated by the `platform` noun; `update`'s scope is now explicit. ✔ |
-| **Use consistent verbs across object types** | `status`/`stop`/`pause`/`resume` mean the same thing under both `platform` and `user`. ✔ |
-| **Make it easy to see current state** (`git status`) | `platform status` (whole install) + `user status` (per-user), table + `--json`. ✔ |
-| **Display machine-readable output with `--json`** | `status` verbs offer `--json`; success/error go to the correct streams. ✔ |
-| **Prefer flags to args** | Targets use a positional `<username>` (justified below); bulk input uses `--file`; all refinement is via flags. ◑ (see note) |
-| **Confirm before anything dangerous** | `uninstall --remove-user-files` prompts (`--yes` to skip); `user delete`/`stop` operate on explicit targets. ✔ |
-| **Keep changes additive; warn before non-additive changes** | Migration uses a deprecation-alias window, not a flag day (§8). ✔ |
-| **Don't allow arbitrary abbreviations of subcommands** | No prefix-matching; every noun and verb is spelled in full. Aliases (if any) are explicit and stable. ✔ |
-| **Don't have a catch-all subcommand** | No implicit default verb; `dtaas platform` with no verb shows help. ✔ |
-| **Return zero/non-zero exit codes correctly** | Idempotent absent-case = exit 0, preserved. ✔ |
+| **`noun verb` two-level subcommands** (`docker container create`, `git remote add`) | Adopted as the single rule. Met. |
+| **Be consistent across subcommands** (same flag names, output) | `--output-dir`, `--file`/`csv_file`, `--json`, `--force`, `--dry-run` reused verbatim across every noun (§8). Met. |
+| **Don't have ambiguous or similarly-named commands** | Flat `install`/`uninstall`/`stop`/`pause`/`update` siblings are disambiguated by the `platform` noun; `update`'s scope is now explicit. Met. |
+| **Use consistent verbs across object types** | `status`/`stop`/`pause`/`resume` mean the same thing under both `platform` and `user`. Met. |
+| **Make it easy to see current state** (`git status`) | `platform status` (whole install) + `user status` (per-user), table + `--json`. Met. |
+| **Display machine-readable output with `--json`** | `status` verbs offer `--json`; success/error go to the correct streams. Met. |
+| **Prefer flags to args** | Targets use a positional `<username>` (justified below); bulk input uses `--file`; all refinement is via flags. Partially met (see note). |
+| **Confirm before anything dangerous** | `uninstall --remove-user-files` prompts (`--yes` to skip); `user delete`/`stop` operate on explicit targets. Met. |
+| **Keep changes additive; warn before non-additive changes** | Migration uses a deprecation-alias window, not a flag day (§8). Met. |
+| **Don't allow arbitrary abbreviations of subcommands** | No prefix-matching; every noun and verb is spelled in full. Aliases (if any) are explicit and stable. Met. |
+| **Don't have a catch-all subcommand** | No implicit default verb; `dtaas platform` with no verb shows help. Met. |
+| **Return zero/non-zero exit codes correctly** | Idempotent absent-case = exit 0, preserved. Met. |
 
 **Note on "prefer flags to args".** clig.dev prefers flags, but also says
 *"Multiple arguments are fine for simple actions against multiple files"*

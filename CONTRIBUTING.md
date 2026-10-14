@@ -6,7 +6,7 @@ This guide describes how to contribute to the Digital Twin as a Service
 All participation must comply with the
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## 🎯 Purpose
+## Purpose
 
 The contribution process keeps every change traceable and reviewable, and
 holds it to the project's quality standards.
@@ -17,7 +17,7 @@ Background material for contributors:
 - [Developer video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605_Developer-recorded_web.mp4)
 - [Research paper](https://arxiv.org/abs/2305.07244)
 
-## 🛠️ Development Environment
+## Development Environment
 
 The repository includes a devcontainer definition at
 `.devcontainer/devcontainer.json`.
@@ -33,7 +33,7 @@ Recommended toolchain versions:
 - Node.js 26
 - Python 3.14
 
-## 🔄 Workflow
+## Workflow
 
 1. Create a fork of the repository in a personal GitHub account.
 2. Configure
@@ -51,7 +51,7 @@ Recommended toolchain versions:
 Each pull request should represent a coherent user story, bug fix, or
 quality improvement.
 
-## 🤖 Coding Agents and Editors
+## Coding Agents and Editors
 
 Coding agents are used in this repository for work such as:
 
@@ -71,7 +71,7 @@ request description.
 
 Do not contribute code that you have not reviewed and understood.
 
-## ✅ Quality Gates
+## Quality Gates
 
 These systems evaluate quality:
 

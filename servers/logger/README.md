@@ -1,10 +1,10 @@
-# :notebook: Logger microservice
+# Logger microservice
 
 The logger microservice ingests workflow log events produced by the DTaaS
 client and stores them as JSON Lines (`.jsonl`), which is easy to process with
 `jq`.
 
-## :arrow_down: Install
+## Install
 
 ### Default NPM Registry
 
@@ -171,7 +171,7 @@ Log writes are best-effort analytics storage. Graceful shutdown closes the
 write stream, but recent events may be lost on hard container termination
 because writes are not fsynced per request.
 
-## :rocket: Use
+## Use
 
 Start the logger with the `logger.yaml` file in the working directory,
 or with the built-in defaults if there is no such file:

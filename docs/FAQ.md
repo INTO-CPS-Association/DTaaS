@@ -69,7 +69,8 @@
 
     The core purpose of DTaaS is to help users
     create DTs from assets already available in the library.
-    ![Create Library Assets](./user/servers/lib/author.png)
+    ![Create Library Assets](./user/servers/lib/author.png#only-light)
+    ![Create Library Assets](./user/servers/lib/author-dark.png#only-dark)
     However, users can use the services available in their
     workspace to install asset authoring tools there.
     These authoring tools can then be used to create and publish new assets.

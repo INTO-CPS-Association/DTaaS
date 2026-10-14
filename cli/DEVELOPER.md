@@ -3,7 +3,7 @@
 This document outlines the development strategy and contribution guidelines.
 The source code for the CLI is located in the _cli/src_ directory.
 
-## 📦 Dependencies
+## Dependencies
 
 A ready-made container with Python, Poetry and the rest of the toolchain
 is available; see
@@ -46,7 +46,7 @@ The CLI is written in Python and uses the following libraries:
   used via the shared `gitlab_common` module (see below) for GitLab user
   provisioning.
 
-## 🏗️ Code Structure
+## Code Structure
 
 The CLI has two layers of code:
 
@@ -357,7 +357,7 @@ Each deploy type has its own section (`[localhost]`, `[insecure-server]`,
 `[workspace-secure-server]`). These hold server-side OAuth credentials
 substituted into `.env` and `conf.server` by `deployment generate`.
 
-## ⚙️ Setup
+## Setup
 
 ```bash
 pip install poetry               # install poetry to the system
@@ -379,7 +379,7 @@ This populates `src/templates/deploy/` from `deploy/dtaas` and
 whenever either source changes. Without it, `import src.cmd` fails with
 `ModuleNotFoundError: No module named 'src.gitlab_common'`.
 
-## 🔧 Development
+## Development
 
 Make changes to _cli/src_.
 To test changes locally:
@@ -390,7 +390,7 @@ python src/pkg/build.py # required before build/tests see Setup above
 poetry build            # build the python package
 ```
 
-## 🔍 Linting
+## Linting
 
 From the _cli_ directory, run:
 
@@ -398,7 +398,7 @@ From the _cli_ directory, run:
 pylint src --rcfile=../.pylintrc
 ```
 
-## 🔬 Type Checking
+## Type Checking
 
 From the _cli_ directory, run:
 
@@ -409,7 +409,7 @@ pyright src
 Pyright is configured in `pyproject.toml` under `[tool.pyright]`.
 Pyright errors should be resolved before submitting a pull request.
 
-## 🧪 Testing
+## Testing
 
 Test files are placed in the _cli/tests_ directory and must follow the
 _test_*.py_ naming convention.
@@ -426,7 +426,7 @@ and the same path in the `test_import_toml` function in _test_utils.py_.
 The integration tests in _test_cli.py_ run CLI commands directly and will
 fail if the DTaaS path is not set correctly.
 
-## 🔒 Security Check
+## Security Check
 
 To scan for known security vulnerabilities in dependencies, use the `safety` tool.
 
@@ -439,7 +439,7 @@ This command checks all installed packages against a database of
 known vulnerabilities and provides detailed information about any
 security issues found.
 
-## 📤 Publishing
+## Publishing
 
 The CLI is published to [PyPI](https://pypi.org/).
 Once new changes are merged into the DTaaS
@@ -453,7 +453,7 @@ create a personal PyPI account, generate an
 poetry publish
 ```
 
-## 🗺️ Future Work
+## Future Work
 
 The long-term objective for the CLI is to serve as the standard tool for
 administrators to set up, manage, and interact with a DTaaS instance.
@@ -468,7 +468,7 @@ The following are the planned next steps:
   We need to include such usernames, simply by internally replacing
   '.' instances in usernames by '-' or '_'.
 
-## 👥 User Management Files: Design Rationale
+## User Management Files: Design Rationale
 
 This section explains _why_ user management is split across three files. For
 _where_ each piece is implemented, see

@@ -28,6 +28,8 @@ on a light page and a dark one, which is why there is no separate light form.
 | Anything on the web, at any size | the `.svg` files |
 | A fixed size, or a tool that cannot read SVG | `png/`, seven sizes for the mark and four heights for each lockup |
 | A favicon | `dtaas-mark.svg`, which is what both mkdocs configs use. `client/public/favicon.svg` is the application's own copy of the same geometry |
+| A documentation page header | `dtaas-logo-full-192h.png#only-light` and `dtaas-logo-full-white-192h.png#only-dark`, two images in a row, so the page shows the one that suits the reader's colour scheme. The two files are copies of the ones in `png/`, written beside each page by the `update-docs-diagrams` skill |
+| A README in an installation package under `deploy/` | The copies of `dtaas-logo-full.svg` and `dtaas-logo-full-white.svg` in that package folder, with `#gh-light-mode-only` and `#gh-dark-mode-only`. A package is downloaded on its own, so it keeps its own copies. Copy them again after a change to the lockups |
 
 ## The Variants
 
@@ -106,7 +108,7 @@ Changing the mark changes these, so check them after a rebuild.
 | The documentation site header | `mkdocs.yml`, `mkdocs-github.yml`, `logo:` |
 | The documentation site tab | the same files, `favicon:` |
 | The PDF export cover | `mkdocs.yml`, `cover_logo:` |
-| The redirect page | `docs/redirect-page.html` |
+| The landing page of the published site | `docs/redirect-page.html`, the white mark beside the name in text, and the mark as its tab icon, copied to the site root by `script/docs/pages.py` |
 | The application toolbar | `client/src/components/BrandMark.tsx`, which carries the geometry inline |
 | The application tab | `client/public/favicon.svg` |
 

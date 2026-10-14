@@ -9,7 +9,7 @@ GitLab).
 
 It applies the same principle adopted for the deployment CLI:
 
-```
+```text
 dtaas-services <noun> <verb> [target] [flags]
 ```
 
@@ -28,17 +28,17 @@ two CLIs feel like one family.
 
 Like the deployment CLI, `dtaas-services` currently mixes three shapes.
 
-**1a. Top-level hyphenated verb-noun**
+### 1a. Top-level hyphenated verb-noun
 
-```
+```text
 dtaas-services generate-project [--path <dir>]
 ```
 
 Verb first, noun glued on with a hyphen.
 
-**1b. Flat top-level verbs**
+### 1b. Flat top-level verbs
 
-```
+```text
 dtaas-services setup
 dtaas-services install   [-s <service>]
 dtaas-services start     [-s <services>]
@@ -53,9 +53,9 @@ Eight bare verbs on the root group. The object acted on (the services) is
 implicit; `setup` and `install` are different *kinds* of action (host
 provisioning vs. per-service schema init) but read as peers of `start`/`stop`.
 
-**1c. Noun-grouped verbs**
+### 1c. Noun-grouped verbs
 
-```
+```text
 dtaas-services user add            [-s <services>]
 dtaas-services user reset-password [-s <services>]
 ```
@@ -193,7 +193,7 @@ Already `noun verb`; kept as-is.
 The nouns line up with the documented Quick Start, so the command sequence now
 reads as a legible progression through the lifecycle stages:
 
-```
+```text
 dtaas-services project generate          # scaffold config/, data/, compose files
 #   edit config/services.env, config/credentials.csv, config/gitlab_oauth.json
 dtaas-services host setup                # copy certs + set permissions (root)
@@ -273,18 +273,18 @@ continue to exit `0`.
 
 | Guideline (clig.dev / git) | This design |
 |---|---|
-| **`noun verb` two-level subcommands** (`docker container create`) | Adopted as the single rule across the whole tool. ✔ |
-| **Be consistent across subcommands** | One target convention (`--services/-s`), shared error/exit handling, shared confirmation pattern. ✔ |
-| **Don't have ambiguous or similarly-named commands** | `setup` vs `install` vs `generate-project` are separated by noun: `host setup`, `service install`, `project generate`. ✔ |
-| **Use consistent verbs across object types** | `status`, `install`, and generation verbs mean the same thing here as in the deployment CLI. ✔ |
-| **Make it easy to see current state** (`git status`) | `service status`, table by default, `--json` for scripts (§6). ✔ |
-| **Display machine-readable output with `--json`** | Added to `service status`. ✔ (new) |
-| **Prefer flags to args** | Targets are flags (`--services/-s`), never positional. ✔ |
-| **Use standard flag names** | `--force` for overwrite; `--volumes` promoted over non-standard `-v`. ✔ (corrected) |
-| **Confirm before anything dangerous** | `clean` prompts already; add confirm/`--yes` to `remove --volumes`. ◑ (follow-up) |
-| **Keep changes additive; warn before non-additive changes** | Old spellings kept as deprecated aliases for one release (§8). ✔ |
-| **Don't allow arbitrary abbreviations** | Full noun+verb spellings; aliases explicit and stable. ✔ |
-| **Don't have a catch-all subcommand** | `dtaas-services <noun>` with no verb prints that noun's help. ✔ |
+| **`noun verb` two-level subcommands** (`docker container create`) | Adopted as the single rule across the whole tool. Met. |
+| **Be consistent across subcommands** | One target convention (`--services/-s`), shared error/exit handling, shared confirmation pattern. Met. |
+| **Don't have ambiguous or similarly-named commands** | `setup` vs `install` vs `generate-project` are separated by noun: `host setup`, `service install`, `project generate`. Met. |
+| **Use consistent verbs across object types** | `status`, `install`, and generation verbs mean the same thing here as in the deployment CLI. Met. |
+| **Make it easy to see current state** (`git status`) | `service status`, table by default, `--json` for scripts (§6). Met. |
+| **Display machine-readable output with `--json`** | Added to `service status`. Met (new). |
+| **Prefer flags to args** | Targets are flags (`--services/-s`), never positional. Met. |
+| **Use standard flag names** | `--force` for overwrite; `--volumes` promoted over non-standard `-v`. Met (corrected). |
+| **Confirm before anything dangerous** | `clean` prompts already; add confirm/`--yes` to `remove --volumes`. Partially met (follow-up). |
+| **Keep changes additive; warn before non-additive changes** | Old spellings kept as deprecated aliases for one release (§8). Met. |
+| **Don't allow arbitrary abbreviations** | Full noun+verb spellings; aliases explicit and stable. Met. |
+| **Don't have a catch-all subcommand** | `dtaas-services <noun>` with no verb prints that noun's help. Met. |
 
 **Where git informs the design.** `git` groups its top-level help by workflow
 stage. The services CLI's stages — `project → host → service → user` — become
@@ -316,7 +316,7 @@ The current layout already maps cleanly onto the noun set — the command module
 are grouped almost exactly along these lines, so the change is mostly wiring
 groups in `cmd.py` rather than moving logic.
 
-```
+```text
 dtaas_services/
   cmd.py                    # root `services` group; wires the noun groups
   commands/

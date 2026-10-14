@@ -1,4 +1,4 @@
-# Local Testing :test_tube:
+# Local Testing
 
 This guide gives a local test loop for contributors working in the
 DTaaS monorepo. The authoritative build and test command for each project

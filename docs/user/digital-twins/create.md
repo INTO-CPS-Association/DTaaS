@@ -6,7 +6,8 @@ follow the instructions in [library assets](../servers/lib/assets.md).
 
 The library assets depend on one another as shown below.
 
-![Relation between reusable assets](asset-relationship.png)
+![Relation between reusable assets](asset-relationship.png#only-light)
+![Relation between reusable assets](asset-relationship-dark.png#only-dark)
 
 A digital twin is created by linking assets in a meaningful way.
 The relationship can be written as:

@@ -40,7 +40,7 @@ sudo chown -R 1000:1000 logs
 If the `logs` directory does not exist, Docker creates it as `root`.
 Images before 0.1.2 cannot write into such a directory.
 
-## :gear: Configure
+## Configure
 
 The microservice reads its configuration from `logger.yaml`.
 Download the sample configuration and save it as `logger.yaml`,

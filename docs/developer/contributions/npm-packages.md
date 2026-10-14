@@ -75,31 +75,31 @@ The package version in `package.json` is updated accordingly. See the
 [verdaccio docs](https://verdaccio.org/docs/installation/#basic-usage)
 for more information.
 
-To unpublish a package, for example `@dtaas/runner@0.0.2`, run:
+To unpublish a package, for example `@into-cps-association/runner@0.0.2`, run:
 
 ```bash
 npm unpublish --registry http://localhost:4873/ \
-  @dtaas/runner@0.0.2
+  @into-cps-association/runner@0.0.2
 ```
 
 To install or uninstall this utility for all users, run:
 
 ```bash
 sudo npm install --registry http://localhost:4873 \
-  -g @dtaas/runner
-sudo npm list -g # should list @dtaas/runner in the packages
-sudo npm remove --global @dtaas/runner
+  -g @into-cps-association/runner
+sudo npm list -g # should list @into-cps-association/runner in the packages
+sudo npm remove --global @into-cps-association/runner
 ```
 
-### :rocket: Use the packages
+### Use the packages
 
 Packages in the private npm registry are used like regular packages
 installed from [npmjs](https://www.npmjs.com/).
 
-For example, to use the `@dtaas/runner@0.0.2` package, run:
+For example, to use the `@into-cps-association/runner@0.0.2` package, run:
 
 ```bash
 sudo npm install --registry http://localhost:4873 \
-  -g @dtaas/runner
+  -g @into-cps-association/runner
 runner # launch the digital twin runner
 ```

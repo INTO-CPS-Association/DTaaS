@@ -7,13 +7,24 @@ docs/redirect-page.html, that links to them.
 
 import re
 import shutil
+from datetime import date
 from pathlib import Path
 
 from mkdocs_hooks import find_unresolved_lfs_files, format_unresolved_files
 
 DEVELOPMENT = "development"
 BUILT_PDF = Path("pdf") / "DTaaS-docs.pdf"
-BRAND_LOGO = Path("assets") / "brand" / "dtaas-logo-full.svg"
+# The files the landing page links to, relative to docs/. The page sits at
+# the site root, outside every version directory, so it brings its own copy.
+LANDING_ASSETS = (
+    Path("assets") / "brand" / "dtaas-mark-white.svg",
+    Path("assets") / "brand" / "dtaas-mark.svg",
+    Path("assets") / "css" / "landing.css",
+    Path("assets") / "fonts" / "inter-latin-400-normal.woff2",
+    Path("assets") / "fonts" / "inter-latin-700-normal.woff2",
+)
+# Replaced by the current year when the landing page is installed.
+YEAR_MARK = "{{ year }}"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)(?:\.\d+)*$")
 # GitHub Pages refuses sites over 1 GB; stop with room to spare.
 MAX_SITE_BYTES = 900 * 1024**2
@@ -86,6 +97,41 @@ def reject_oversized_site(pages_dir: Path) -> int:
     return size
 
 
+# polyfill.io changed owner in 2024 and served malicious code. The versions
+# published before then load it, so every assembly strips it from the site,
+# and a release commits the cleaned pages back to webpage-docs.
+POLYFILL_SOURCES = ('src="https://polyfill.io/', 'src="https://cdn.polyfill.io/')
+
+
+def is_polyfill_tag(line: str) -> bool:
+    """Whether a line is a script element that loads polyfill.io."""
+    tag = line.strip()
+    return (
+        tag.startswith("<script")
+        and tag.endswith("</script>")
+        and any(source in tag for source in POLYFILL_SOURCES)
+    )
+
+
+def remove_polyfill(pages_dir: Path) -> int:
+    """Remove every polyfill.io script line from the site; return the pages fixed."""
+    root = pages_dir.resolve()
+    fixed = 0
+    for found in root.rglob("*.html"):
+        # A symbolic link in the checkout could lead out of the site, and
+        # nothing outside it is rewritten.
+        page = found.resolve()
+        if not page.is_relative_to(root):
+            continue
+        lines = page.read_text("utf-8").splitlines(keepends=True)
+        kept = [line for line in lines if not is_polyfill_tag(line)]
+        if len(kept) != len(lines):
+            with page.open("w", encoding="utf-8") as cleaned:
+                cleaned.writelines(kept)
+            fixed += 1
+    return fixed
+
+
 def require_release_row(landing_page: Path, version: str) -> None:
     """Refuse a release whose version has no row on the landing page."""
     if f'href="{version}/index.html"' not in landing_page.read_text("utf-8"):
@@ -107,11 +153,18 @@ def install_version(site_dir: Path, pages_dir: Path, version: str) -> None:
 
 
 def install_landing_page(docs_dir: Path, pages_dir: Path) -> None:
-    """Copy the landing page and the logo it shows into the site root."""
-    shutil.copyfile(docs_dir / "redirect-page.html", pages_dir / "index.html")
-    logo = pages_dir / BRAND_LOGO
-    logo.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(docs_dir / BRAND_LOGO, logo)
+    """Copy the landing page and the files it links to into the site root.
+
+    The copyright line ends at the year the site is published, written in
+    place of YEAR_MARK, so it never goes stale.
+    """
+    landing = (docs_dir / "redirect-page.html").read_text("utf-8")
+    landing = landing.replace(YEAR_MARK, str(date.today().year))
+    (pages_dir / "index.html").write_text(landing, "utf-8")
+    for asset in LANDING_ASSETS:
+        target = pages_dir / asset
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(docs_dir / asset, target)
 
 
 def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> int:
@@ -123,5 +176,6 @@ def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> i
         require_release_row(docs_dir / "redirect-page.html", version)
     install_version(site_dir, pages_dir, version)
     install_landing_page(docs_dir, pages_dir)
+    remove_polyfill(pages_dir)
     reject_lfs_pointers(pages_dir)
     return reject_oversized_site(pages_dir)

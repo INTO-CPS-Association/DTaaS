@@ -1,6 +1,7 @@
 # DTaaS — Server Deployment (External GitLab)
 
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full.svg#gh-light-mode-only)
+![DTaaS logo](dtaas-logo-full-white.svg#gh-dark-mode-only)
 
 Thank you for downloading **Digital Twin as a Service**.
 
@@ -16,7 +17,12 @@ For a full configuration reference, see [CONFIG.md](CONFIG.md).
 This package deploys DTaaS with Traefik, OAuth forward-auth, and
 multiple user workspaces.
 
-<img src="server.png" alt="DTaaS on Server" width="600px" />
+![DTaaS on Server](server.png)
+
+A path such as `/user1` is the URL route of that service, for example
+`http://intocps.org/user1`.
+The thick arrow is the forward-auth check: Traefik asks
+traefik-forward-auth to authorise each request before it routes it.
 
 The `docker-compose.yml` starts the following services:
 

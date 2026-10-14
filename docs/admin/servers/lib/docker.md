@@ -20,7 +20,8 @@ in the directory from which `compose.lib.yml` will be run, is enough.
 DTaaS users expect the following file system structure for their
 reusable assets.
 
-![File System Layout](file-system-layout.png)
+![File System Layout](file-system-layout.png#only-light)
+![File System Layout](file-system-layout-dark.png#only-dark)
 
 A skeleton file structure is available in the
 [DTaaS codebase](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/deploy/dtaas/docker/localhost/files).
@@ -34,7 +35,7 @@ Linux hosts give the directory to that user:
 sudo chown -R 1000:1000 files
 ```
 
-## :rocket: Use
+## Use
 
 Use the [docker compose](compose.lib.yml) file to start the service.
 

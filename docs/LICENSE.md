@@ -1,5 +1,6 @@
 # License
 
+```text linenums="0"
 --- Start of Definition of INTO-CPS Association Public License ---
 
 /*
@@ -299,3 +300,4 @@ The GPL Version 3 license definition has been obtained from
 It is also reproduced in the INTO-CPS distribution.
 
 --- End of Definition of INTO-CPS Association Public License ---
+```

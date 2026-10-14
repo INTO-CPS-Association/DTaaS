@@ -1,6 +1,6 @@
-# 📖 Developer Instructions
+# Developer Instructions
 
-## :gear: Configure
+## Configure
 
 The logger runs with built-in defaults, so a configuration file is
 optional for local development. To use one, copy the sample configuration:
@@ -13,7 +13,7 @@ The `config/logger.yaml` file is not tracked by git.
 Please see [README](./README.md#configuration) for the configuration fields
 and environment variables.
 
-## :hammer_and_wrench: Developer Commands
+## Developer Commands
 
 ```bash
 yarn install       # Install dependencies for the microservice
@@ -91,7 +91,7 @@ The `compose.logger.yml` file uses the same configuration file with the
 published `intocps/logger-ms` image.
 See [DOCKER.md](./DOCKER.md) for running the published image.
 
-## :package: :ship: Packages
+## Packages
 
 The Github actions workflow of
 [logger microservice](../../.github/workflows/logger-ms.yml) publishes the

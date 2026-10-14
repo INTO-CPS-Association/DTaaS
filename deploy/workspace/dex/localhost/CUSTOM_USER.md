@@ -1,10 +1,11 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](dtaas.png)
+![DTaaS logo](dtaas-logo-full.svg#gh-light-mode-only)
+![DTaaS logo](dtaas-logo-full-white.svg#gh-dark-mode-only)
 
-ℹ️ The instructions in this document help update the username and
+The instructions in this document help update the username and
 password for the localhost version of the **DTaaS** installation.
 
-## ⚙️ Update Configuration
+## Update Configuration
 
 Duplicate `config/dex-config.yaml.example` to
 `config/dex-config.yaml`.
@@ -22,15 +23,15 @@ Edit `config/.env`.
   | :----------- | :------------ | :------------------------------------ |
   | DEFAULT_USER | 'user'        | Dex username set in `dex-config.yaml` |
 
-⚠️ Important alignment for local/passwordDB mode:
+Warning: Important alignment for local/passwordDB mode:
 
 - In `config/.env`, set `DEFAULT_USER=<desired-user>`.
 - In `config/dex-config.yaml`, set static user `username`
   and `preferredUsername` to the same value.
 
-✅ This keeps DTaaS user-scoped routes aligned with OIDC identity claims.
+This keeps DTaaS user-scoped routes aligned with OIDC identity claims.
 
-## ▶️ Run
+## Run
 
 Start the application:
 
@@ -44,7 +45,7 @@ Stop the application:
 docker compose --env-file config/.env down
 ```
 
-### 🌍 Use
+### Use
 
 The application will be accessible at:
 <http://localhost> from web browser.
@@ -53,20 +54,20 @@ Sign in using the new user credentials in Dex configuration file (`config/dex-co
 All the functionality of DTaaS should be available to you
 through the single page client now.
 
-## 📚 Documentation
+## Documentation
 
 Please see
 <https://into-cps-association.github.io/DTaaS/development/index.html>
 for complete documentation.
 
-## ℹ️ OAuth Scope Notes
+## OAuth Scope Notes
 
 Scope note for local/passwordDB mode:
 
 - Supported: `openid profile email groups offline_access`
 - Not supported by Dex local passwordDB: `read_user read_repository api`
 
-## 🔗 References
+## References
 
 Image sources:
 

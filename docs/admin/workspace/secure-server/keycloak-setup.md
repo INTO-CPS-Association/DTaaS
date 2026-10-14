@@ -77,7 +77,7 @@ The following instructions are part of the post-install step.
 5. Click **Create attribute** with
    - name: profile
    - display name: profile
-   - Permission: **who can edit** ✅ on admin
+   - Permission: **who can edit** selected on admin
 6. Click **Create**
 
 #### Create Users

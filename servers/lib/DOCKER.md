@@ -60,10 +60,10 @@ sudo chown -R 1000:1000 files
 If the `files` directory does not exist, Docker creates it as `root`, and
 libms cannot write into it.
 
-:label: The directory structure is optional if you are using
+The directory structure is optional if you are using
 libms as a standalone service.
 
-## :gear: Configure
+## Configure
 
 The microservices requires config specified in `libms.yaml` file.
 The template configuration file is:

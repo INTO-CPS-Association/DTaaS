@@ -1,4 +1,4 @@
-# 📖 Developer Instructions
+# Developer Instructions
 
 ## Prerequisites
 
@@ -9,12 +9,12 @@ Install it with:
 npm install -g pm2
 ```
 
-## :gear: Configure
+## Configure
 
 This microservice needs library assets and configuration
 file. Please see [README](./README.md) for this information.
 
-## :hammer_and_wrench: Developer Commands
+## Developer Commands
 
 ```bash
 yarn install    # Install dependencies for the microservice
@@ -73,7 +73,7 @@ To kill a process, use:
 
 **NOTE:** To list processes spawned by pm2, use `pm2 list`.
 
-## :package: :ship: Packages
+## Packages
 
 ### Docker images
 
@@ -124,7 +124,7 @@ The microservices require configuration and the docker version
 of the microservices uses the configuration
 file available in `config/libms.dev.yaml`.
 
-For more see [configuration documentation](./README.md#gear-configure).
+For more see [configuration documentation](./README.md#configure).
 The `config/libms.dev.yaml` file is used for configuration of the container.
 
 A new directory named `files` is created in `servers/lib` directory and

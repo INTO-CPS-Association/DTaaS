@@ -44,7 +44,7 @@ the gateway.
 
 The sequence diagram shows how the integrated Auth MS works.
 
-![authorization sequence diagram](design-sequence.png)
+![authorization sequence diagram](design-sequence.png){.on-white}
 
 - The user makes every request through the React website, the frontend of
   the DTaaS platform.
