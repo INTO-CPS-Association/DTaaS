@@ -28,6 +28,7 @@ in this package. For the quick-start installation guide, see
     - [:warning: Important Rules](#warning-important-rules)
   - [:lock: certs/ — TLS Certificates](#lock-certs--tls-certificates)
   - [:file\_folder: files/ — User Workspace Directories](#file_folder-files--user-workspace-directories)
+  - [:scroll: logs/logger/ — Logger Microservice Events](#scroll-logslogger--logger-microservice-events)
   - [:closed\_lock\_with\_key: OAuth 2.0 Application Setup](#closed_lock_with_key-oauth-20-application-setup)
     - [:computer: DTaaS Client Authorization (React Frontend)](#computer-dtaas-client-authorization-react-frontend)
     - [:satellite: DTaaS Server Authorization (Traefik Forward-Auth)](#satellite-dtaas-server-authorization-traefik-forward-auth)
@@ -236,6 +237,22 @@ sudo chown -R 1000:100 files/*
 
 The UID `1000` and GID `100` match the default user inside the
 workspace container.
+
+---
+
+## :scroll: logs/logger/ — Logger Microservice Events
+
+The logger microservice writes the captured events to
+`logs/logger/workflow-logs.jsonl`. Create the directory and give it to
+uid 1000, the user that runs the logger:
+
+```bash
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs/logger
+```
+
+`logs/` itself holds the GitLab logs, so change the owner of
+`logs/logger` only.
 
 ---
 

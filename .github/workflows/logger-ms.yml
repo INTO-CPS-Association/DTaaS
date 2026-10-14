@@ -5,11 +5,13 @@ name: Logger microservice
     paths:
       - 'servers/logger/**'
       - 'developer/check/logger.dockerfile'
+      - 'developer/check/logger-entrypoint.sh'
       - '.github/workflows/logger-ms.yml'
   pull_request:
     paths:
       - 'servers/logger/**'
       - 'developer/check/logger.dockerfile'
+      - 'developer/check/logger-entrypoint.sh'
       - '.github/workflows/logger-ms.yml'
   workflow_dispatch:
 
