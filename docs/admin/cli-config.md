@@ -307,3 +307,110 @@ those with `dtaas user delete`.
 Pausing or stopping a user with `dtaas user pause` or `stop` is
 recorded as that user's `desired_status`. A later `reconcile` treats
 the suspension as the desired state instead of reporting it as drift.
+
+## GitLab provisioning settings
+
+The `[gitlab]` section turns on GitLab account provisioning for
+`dtaas user add`. For what the command does and prints in each case,
+see [GitLab provisioning](cli.md#gitlab-provisioning-optional).
+
+```toml
+[gitlab]
+provision  = true
+api_url    = "https://gitlab.example.com"
+# pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
+# ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
+```
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `provision` | `false` | `true` makes `user add` create each user's GitLab account and token |
+| `api_url` | none | The GitLab instance; required when `provision` is `true` |
+| `pat` | none | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty |
+| `ssl_verify` | `true` | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off |
+
+### Admin token
+
+The CLI uses `DTAAS_GITLAB_PAT` whenever it is exported and not empty,
+and `[gitlab].pat` otherwise, so a rotated token needs no edit to a
+`dtaas.toml` the whole installation shares. The token must belong to a
+GitLab administrator and carry the `api` scope, plus `admin_mode` on an
+instance with Admin Mode enabled.
+
+For a self-hosted GitLab behind an internal CA, point `ssl_verify` at
+the CA bundle rather than turning it off. With `ssl_verify = false`,
+the admin token and every user's initial password cross the network
+without certificate checks, and the CLI prints a warning on each run.
+
+### Initial passwords
+
+Each new account needs an initial password. The CLI takes the first
+one it finds:
+
+1. `--password` on the command line, or the `password` column of the
+   `users.csv` given with `--file`.
+2. `[[users]].password` in `dtaas.toml`, for a starting user.
+3. A hidden prompt, asked twice, when a single user is added.
+
+A password is used once, to create the account. It is never written to
+`dtaas.users.registry.json`, `.dtaas.state.json` or a log. A run in
+which a named user has no password and no account from an earlier run
+is refused before anything changes. `--password` is visible in shell
+history and in the process list, so prefer the prompt, or the CSV
+column with `chmod 600 users.csv` (the CLI sets that mode only on the
+sample `users.csv` that `config generate` writes).
+
+### Files written {#gitlab-files-written}
+
+`gitlab_user_tokens.json` holds the token issued to each user, keyed by
+username. It is written to the current directory, next to `dtaas.toml`
+(not to `--output-dir`), with mode `0600`, and each user's token is
+added the moment it is issued:
+
+```json
+{
+  "alice": "glpat-xxxxxxxxxxxxxxxxxxxx",
+  "bob": "glpat-yyyyyyyyyyyyyyyyyyyy"
+}
+```
+
+A run adds to the file and never rewrites the other entries. Should a
+user's entry ever be replaced, the old token is kept under a
+`"<username> (superseded <timestamp>)"` key and a warning says to revoke
+it in GitLab, where it is still valid. `user delete` drops the deleted
+users' entries, while their accounts and tokens stay on GitLab.
+
+`dtaas.users.registry.json` records, per user, the GitLab account id
+(`gitlab_user_id`) and whether a token was issued
+(`gitlab_pat_issued`). That is how a re-run knows what is already done:
+a user with an account id but no token gets a token for that account,
+and a user with a token gets nothing more. Starting users carry the
+same two markers in the separate `starting_users` section, since they
+have no entry under `users`:
+
+```json
+{
+  "users": {
+    "alice": {
+      "email": "alice@intocps.org",
+      "groups": [
+        "additional"
+      ],
+      "load_balance": true,
+      "desired_status": "running",
+      "gitlab_user_id": 42,
+      "gitlab_pat_issued": true
+    }
+  },
+  "starting_users": {
+    "username1": {
+      "gitlab_user_id": 7,
+      "gitlab_pat_issued": true
+    }
+  }
+}
+```
+
+`dtaas.toml`, `users.csv` and `gitlab_user_tokens.json` are gitignored
+and written with mode `0600`, since they can hold the admin token, user
+passwords and user tokens respectively.

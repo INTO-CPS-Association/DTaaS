@@ -683,14 +683,14 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 #### GitLab provisioning (optional)
 
 When `[gitlab].provision = true` in `dtaas.toml` (off by default),
-`user add` also creates each new user's GitLab account and a Personal
-Access Token:
+`user add` also creates a GitLab account for each user it adds and issues
+that account a Personal Access Token (PAT). The containers are provisioned
+first; a GitLab failure never undoes them, but it does make the command
+exit non-zero. The `[gitlab]` keys, the password sources and the files
+written are described in
+[GitLab provisioning settings](cli-config.md#gitlab-provisioning-settings).
 
-```toml
-[gitlab]
-provision = true
-api_url = "https://gitlab.example.com"
-```
+##### Set up the admin token
 
 Provisioning needs an admin token, set up once per installation by a
 GitLab administrator:
@@ -716,53 +716,170 @@ That screenshot comes from the
 [GitLab tutorial](../user/gitlab/tutorial.md), where a regular user
 creates a token for cloning; for provisioning, `api` on an administrator
 account is what matters. Choose an expiry you will rotate, because
-provisioning stops working the day the token lapses. The generated
-`dtaas.toml` also ships a commented `[gitlab].pat` key for installations
-that would rather keep the token in the file; `DTAAS_GITLAB_PAT` is used
-first whenever it is set.
+provisioning stops working the day the token lapses.
 
-The token the CLI issues to each user is far narrower: it is named
-`dtaas`, carries `read_repository` and `write_repository` only, and
-expires after 365 days. Issued tokens are saved to
-`gitlab_user_tokens.json` (mode `0600`); treat that file as a credential
-store.
+##### Scenarios
 
-Each new user needs an initial GitLab password, taken from `--password`
-or the `password` column of `users.csv`, then from `[[users]].password`
-for a `dtaas.toml` starting user, and otherwise prompted for with hidden
-input on a single-user add. The `users.csv` that `dtaas config generate`
-writes already has the column:
+Each scenario shows what `dtaas user add` prints. The output of
+`docker compose` while containers start is left out.
+
+**Add one user.** Without `--password`, the CLI asks for the initial
+GitLab password with hidden input, twice:
+
+```console
+$ dtaas user add --email alice@intocps.org alice
+GitLab password for 'alice':
+Repeat for confirmation:
+GitLab account and token created for 'alice'.
+  The token is in gitlab_user_tokens.json.
+Users added successfully
+```
+
+**Add users from a CSV.** Fill in the `password` column of `users.csv`,
+then make the file readable by you alone:
 
 ```csv
 username,email,groups,load_balance,password
 alice,alice@intocps.org,additional,true,Kq7v-Rm3x-Zt9w
+bob,bob@intocps.org,additional;beta-testers,false,Wd4p-Hs8n-Qc2y
 ```
 
-GitLab applies its own password rules: it refuses a password that is
-too short or built from common words (for example one that contains
-`pass` or the user's name). A refused password fails that user's
-GitLab step with GitLab's reason; fix it and run the same command
-again.
+```console
+$ chmod 600 users.csv
+$ dtaas user add --file users.csv
+GitLab account and token created for 'alice'.
+  The token is in gitlab_user_tokens.json.
+GitLab account and token created for 'bob'.
+  The token is in gitlab_user_tokens.json.
+Users added successfully
+```
 
-A run in which a new user has no password is refused before anything is
-changed, naming those users. The password is used only to create the
-account and is never written to `dtaas.users.registry.json`,
-`.dtaas.state.json` or logs.
+**A starting user.** Naming a `[[users]]` user of `dtaas.toml` creates
+only their GitLab account and token. Their workspace already runs from
+`docker-compose.yml`, their email is the one in `dtaas.toml`, and their
+password is `[[users]].password` or, when that is unset, the prompt:
 
-Naming a `dtaas.toml` starting user, for example
-`dtaas user add username1`, creates only its GitLab account and token:
-its workspace container and its email come from `dtaas.toml`.
+```console
+$ dtaas user add username1
+'username1' is a dtaas.toml starting user.
+  Its workspace is managed there, not by 'user add'.
+GitLab account and token created for 'username1'.
+  The token is in gitlab_user_tokens.json.
+No new users added.
+```
 
-Re-running `user add` for a user retries only what failed before: once a
-token has been issued, a later run does not issue another. An existing
-GitLab account that this run did not create is left untouched and
-reported with a warning. A GitLab failure does not affect the
-containers, which are already running by then, but it makes the command
-exit non-zero.
+An `--email` that differs from the one in `dtaas.toml` is not applied,
+and the run says so:
 
-For a self-hosted GitLab behind an internal CA, set
-`[gitlab].ssl_verify` to the path of the CA bundle. `false` turns
-verification off entirely and prints a warning.
+```console
+$ dtaas user add --email other@intocps.org username1
+Warning: the email given for 'username1' is not used.
+  dtaas.toml declares username1@intocps.org for this starting user, and that is the address GitLab gets.
+...
+```
+
+**A user with no password.** When a named user has no password and no
+account from an earlier run, the whole run is refused before anything is
+registered or started. Fill in the `password` column and run the same
+command again:
+
+```console
+$ dtaas user add --file users.csv
+Error: No GitLab password for 'bob'.
+  [gitlab].provision is enabled in dtaas.toml, so a new user needs an initial GitLab password: add a 'password' column to their users.csv row (and chmod 600 the file), pass --password for a single user, or set [[users]].password for a dtaas.toml starting user.
+```
+
+**A password GitLab refuses.** GitLab refuses a password that is too
+short or built from common words, for example one that contains `pass`
+or the username. The user's container is up, but their account is not
+created. The line under `GitLab account creation failed.` is GitLab's own
+reason, for example:
+
+```console
+$ dtaas user add --file users.csv
+GitLab account and token created for 'alice'.
+  The token is in gitlab_user_tokens.json.
+GitLab provisioning failed for 'bob'.
+  GitLab account creation failed.
+    Failed to create user 'bob': 400: {'password': ['must not contain commonly used combinations of words and letters']}
+Error: Error while adding users
+  GitLab provisioning failed for: bob
+    Their containers were still provisioned.
+```
+
+**Retry after a failure.** Fix the cause (here, bob's password in
+`users.csv`) and run the same command again. Both users are already
+registered, so their containers are left alone; alice already has a
+token and is skipped, and only bob's account is created:
+
+```console
+$ dtaas user add --file users.csv
+'alice' already exists, skipping
+'bob' already exists, skipping
+GitLab account step skipped for 'alice'.
+  A Personal Access Token was already issued on an earlier run (see gitlab_user_tokens.json). A re-run does not reissue one.
+GitLab account and token created for 'bob'.
+  The token is in gitlab_user_tokens.json.
+No new users added.
+```
+
+A retry never issues a second token for a user, so repeating the
+command after a partial failure is always safe. When the account was
+created but its token was not, the retry issues the token to that same
+account (the registry keeps its id) instead of creating the account
+again. A token that is lost or revoked is replaced in GitLab directly.
+
+**An account that already exists.** When the username, or the email, is
+already taken on GitLab, the account is left as it is and no token is
+issued: this run did not create it and does not know its credentials.
+That is a warning, not a failure, and the command exits `0`:
+
+```console
+$ dtaas user add --email carol@intocps.org carol
+GitLab password for 'carol':
+Repeat for confirmation:
+Warning: GitLab account exists for 'carol'.
+  GitLab reported a conflict; nothing was created.
+    The username is already registered, or its email is already on another account. Either way the credentials are unknown to this run, so no token was issued for it. GitLab said: 409: Username has already been taken
+Users added successfully
+```
+
+**No admin token.** Without `DTAAS_GITLAB_PAT` or `[gitlab].pat`, the
+containers are still provisioned, the GitLab step is skipped for
+everyone, and the command fails. Export the token and run the same
+command again:
+
+```console
+$ dtaas user add --email alice@intocps.org alice
+GitLab password for 'alice':
+Repeat for confirmation:
+GitLab provisioning skipped for every user.
+  No GitLab PAT configured for provisioning.
+    Export DTAAS_GITLAB_PAT, or set [gitlab].pat in dtaas.toml.
+Error: Error while adding users
+  GitLab provisioning failed for: alice
+    Their containers were still provisioned.
+```
+
+**A token GitLab rejects.** When GitLab answers `401` (an invalid or
+expired token) or `403` (a token whose owner is not an administrator, or
+that lacks a scope), each user's failure ends with a hint on the token:
+
+```console
+GitLab provisioning failed for 'alice'.
+  GitLab account creation failed.
+    Failed to create user 'alice': 403: 403 Forbidden
+    Check DTAAS_GITLAB_PAT (or [gitlab].pat): creating users and tokens needs a non-expired personal access token with the 'api' scope, owned by an administrator account, and the 'admin_mode' scope as well on an instance with Admin Mode enabled.
+```
+
+##### What the user receives
+
+Each issued token is named `dtaas`, has the `read_repository` and
+`write_repository` scopes only, and expires after 365 days. It is saved
+to `gitlab_user_tokens.json` the moment it is issued; see
+[Files written](cli-config.md#gitlab-files-written) for that file and
+the registry markers. Hand each user their token, which they use to
+clone and push their repositories, and their initial password.
 
 #### Resource limits (optional)
 

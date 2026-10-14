@@ -194,7 +194,7 @@ The sections relevant for administrators are summarised below.
 | [Server OAuth 2.0](https://into-cps-association.github.io/DTaaS/development/admin/servers/auth.html) | Creating the OAuth 2.0 application for Traefik forward-auth |
 | [GitLab installation](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/index.html) | Setting up a local GitLab instance |
 | [GitLab integration](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/integration.html) | Connecting the GitLab instance to DTaaS as OAuth 2.0 provider |
-| [Add / remove users](https://into-cps-association.github.io/DTaaS/development/admin/guides/add_user.html) | Step-by-step guide for managing user accounts on a running installation |
+| [Add / remove users](https://into-cps-association.github.io/DTaaS/development/admin/cli.html#user-management) | Adding and removing users on a running installation with the DTaaS CLI |
 | [CLI tool](https://into-cps-association.github.io/DTaaS/development/admin/cli.html) | Command-line interface for managing a DTaaS installation |
 | [Renew TLS certificates](https://into-cps-association.github.io/DTaaS/development/admin/guides/renew_certs.html) | Updating expired TLS certificates |
 
