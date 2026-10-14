@@ -21,6 +21,13 @@ describe('graphqlOptions', () => {
     expect(options.playground).toBe(false);
   });
 
+  it('serves GraphiQL when the playground option is left out', () => {
+    const options = graphqlOptions(jestMockConfigService());
+
+    expect(options.graphiql).toBe(true);
+    expect(options.playground).toBe(false);
+  });
+
   it('serves no landing page when the playground is disabled', () => {
     const options = graphqlOptions(configWithPlayground('false'));
 
