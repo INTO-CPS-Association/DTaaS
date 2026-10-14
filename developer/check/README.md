@@ -82,18 +82,18 @@ This scenario is intended for software developers.
 The following configuration files require updating:
 
 1. **developer/check/config/.env** :
-  Refer to the [Docker installation
-  documentation](../../admin/dtaas/server/install.md) for
-   guidance on updating this configuration file.
+  Refer to the [server configuration
+  documentation](../../deploy/dtaas/docker/server/CONFIG.md#configenv---docker-compose-environment)
+   for guidance on updating this configuration file.
 1. **developer/check/config/conf.dev** :
-  Refer to the [Docker installation
-  documentation](../../admin/dtaas/server/install.md) for
-   guidance on updating this configuration file.
+  Refer to the [server configuration
+  documentation](../../deploy/dtaas/docker/server/CONFIG.md#configconfserver---traefik-forward-auth-rules)
+   for guidance on updating this configuration file.
 1. **developer/check/config/client.js** :
-   Refer to the [client configuration documentation](../../admin/client/config.md)
+   Refer to the [client configuration documentation](../../docs/admin/client/config.md)
    for guidance on updating this configuration file.
 1. **developer/check/config/libms.dev.yaml** :
-   Refer to the [library microservice configuration documentation](../../admin/servers/lib/docker.md)
+   Refer to the [library microservice configuration documentation](../../docs/admin/servers/lib/docker.md)
    for guidance on updating this configuration file.
 
 The docker commands need to be executed from the `developer/check` directory.
