@@ -95,7 +95,9 @@ them and can be run again on its own output without changing anything.
 ## Updating a Diagram
 
 1. Open `dtaas-diagrams.drawio` in drawio and edit the page.
-1. Apply the rules and shrink any new raster logo:
+1. Apply the rules and shrink any new raster logo. The restyle undoes the
+   hand edits listed below, so run it on a copy that holds only the new or
+   changed page and bring that page back:
 
    ```bash
    python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
@@ -234,6 +236,12 @@ The hand edits, by page:
   1000 units instead of 2000, with the data acquisition below the platform,
   so its labels reach 14 pixels at the column width. Every element and arrow
   of the sketch is kept.
+- `developer/system/research-overview/dt-assets-relationship.png`,
+  `dtaas-userview.png` and `federated-dtaas.png`, and four pages not placed
+  yet: Prasad Talasila corrected the line routing and bends in drawio on 13
+  October 2026 (`dtaas-diagrams-changes-diff.drawio`), and the pages are taken
+  from his file as they are. The thin arrows of `federated-dtaas.png` keep his
+  width of 1.
 - `admin/servers/lib/file-system-layout.png`: redrawn. The sketch put five
   labelled cards in each of seven folders, up to twelve labels in a row, which
   no font size makes legible at the column width. Each folder shows the five

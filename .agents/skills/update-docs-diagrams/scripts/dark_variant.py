@@ -34,7 +34,8 @@ LIGHT_BLUE_LINE = '#8cc8e6'
 
 LOCKUP = REPO / 'docs/assets/brand/dtaas-logo-full.svg'
 LOCKUP_WHITE = REPO / 'docs/assets/brand/dtaas-logo-full-white.svg'
-COLOUR_IN_LABEL = re.compile(r'(color\s*[:=]\s*"?\s*)(#[0-9a-fA-F]{6})', re.I)
+# The colour of text written into a label, and not a background-color.
+COLOUR_IN_LABEL = re.compile(r'((?<![-\w])color\s*[:=]\s*"?\s*)(#[0-9a-fA-F]{6})', re.I)
 HEX = re.compile(r'^#[0-9a-fA-F]{6}$')
 
 
@@ -99,6 +100,17 @@ def dark_ground(style, what):
     return ground, old_ground
 
 
+def text_colour(ground, old_text, old_ground):
+    """The text colour on a new ground, keeping hidden text hidden."""
+    if old_ground and ds.contrast(old_text, old_ground) < 1.5:
+        # Text drawn in the colour of its ground was hidden on purpose, such
+        # as a name under a logo that already spells it. It stays hidden.
+        return ground
+    # The one with the higher contrast. A mid-tone fill kept from the light
+    # image may not reach 4.5 to 1 with either.
+    return max((LIGHT_TEXT, DARK_TEXT), key=lambda colour: ds.contrast(colour, ground))
+
+
 def dark_cell(cell, lockup):
     """Turn one cell into its dark variant."""
     style = ds.parse_style(cell.get('style'))
@@ -119,13 +131,7 @@ def dark_cell(cell, lockup):
         style['strokeColor'] = dark_line(stroke)
     if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], None):
         style['labelBackgroundColor'] = SLATE
-    # The text colour with the higher contrast on its ground. A mid-tone fill
-    # kept from the light image may not reach 4.5 to 1 with either.
-    text = max((LIGHT_TEXT, DARK_TEXT), key=lambda colour: ds.contrast(colour, ground))
-    if old_ground and ds.contrast(old_text, old_ground) < 1.5:
-        # Text drawn in the colour of its ground was hidden on purpose, such
-        # as a name under a logo that already spells it. It stays hidden.
-        text = ground
+    text = text_colour(ground, old_text, old_ground)
     style['fontColor'] = text
     cell.set('style', ds.dump_style(style))
     if cell.get('value'):

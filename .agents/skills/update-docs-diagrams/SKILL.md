@@ -16,8 +16,8 @@ the edits made by hand. Run every command from the repository root.
 
 ## Steps
 
-1. **Check the prerequisites.** The drawio desktop application is installed;
-   set `DRAWIO` to its binary when it is not at
+1. **Check the prerequisites.** The drawio desktop application is installed.
+   Set `DRAWIO` to its binary when it is not at
    `/Applications/draw.io.app/Contents/MacOS/draw.io`. Inter 400 and 700 are
    installed as system fonts, or drawio exports with another face without a
    warning. `docs/assets/diagrams/README.md` shows how to make the two font
@@ -32,7 +32,7 @@ the edits made by hand. Run every command from the repository root.
    ```
 
    `retheme_drawio.py` maps every colour to the theme and replaces the old
-   emoji wordmark with the logo. It prints the colours it could not map; add
+   emoji wordmark with the logo. It prints the colours it could not map. Add
    each one to `COLOURS` before going on. `split_pages.py` gives each
    diagram of a crowded page its own page. Copy the pages you need into
    `dtaas-diagrams.drawio` and name each after the image it replaces.
@@ -49,6 +49,12 @@ the edits made by hand. Run every command from the repository root.
    Both can run again on their own output without changing it. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
    `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
+
+   Several pages carry edits made by hand after the restyle, listed in
+   `docs/assets/diagrams/README.md`, and running the restyle on the whole
+   file undoes them. Run it on a copy that holds only the new or changed
+   page, and bring that page back into `dtaas-diagrams.drawio`. A page edited
+   by hand in drawio, keeping the theme, needs no restyle.
 
 1. **Export** every placed page in a light and a dark variant, the copies
    the installation packages carry, and the logo beside each installation
