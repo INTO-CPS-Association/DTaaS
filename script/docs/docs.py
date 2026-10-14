@@ -23,7 +23,6 @@ import sys
 from pathlib import Path
 
 import pages
-import script_hosts
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = REPO_ROOT / "docs"
@@ -87,6 +86,10 @@ def assemble(args: argparse.Namespace) -> None:
 
 def check_scripts(args: argparse.Namespace) -> None:
     """Fail when a page of the site loads a script from an unapproved host."""
+    # The release job copies only docs.py and pages.py into the checkout of
+    # an older tag, which has no script_hosts.py, so it is imported here.
+    import script_hosts  # pylint: disable=import-outside-toplevel
+
     found = script_hosts.foreign_scripts(Path(args.site_dir).resolve())
     if found:
         raise pages.PublishError(

@@ -1,5 +1,10 @@
 """Tests for the documentation command line."""
 
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
 
 import docs
@@ -59,3 +64,18 @@ def test_build_needs_git_lfs(monkeypatch, capsys):
     monkeypatch.setattr(docs.shutil, "which", lambda _: None)
     assert docs.main(["build"]) == 1
     assert "git-lfs is not installed" in capsys.readouterr().err
+
+
+def test_runs_with_only_the_files_the_release_job_copies(tmp_path):
+    # docs-publish.yml copies docs.py and pages.py into the checkout of an
+    # older tag, which has mkdocs_hooks.py but not the newer modules.
+    here = Path(docs.__file__).parent
+    for name in ("docs.py", "pages.py", "mkdocs_hooks.py"):
+        shutil.copy(here / name, tmp_path / name)
+    result = subprocess.run(
+        [sys.executable, str(tmp_path / "docs.py"), "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
