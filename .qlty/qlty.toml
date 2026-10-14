@@ -158,8 +158,8 @@ name = "shellcheck"
 [[plugin]]
 name = "shfmt"
 
-# Indent shell scripts by two spaces, as the repository's scripts do.
-# shfmt ignores .editorconfig when -s is given, so pass the options here.
+# Indent shell scripts by two spaces, as the repository's scripts do;
+# shfmt indents with tabs unless told otherwise.
 [plugins.definitions.shfmt.drivers.format]
 script = "shfmt -w -s -i 2 -ci ${target}"
 

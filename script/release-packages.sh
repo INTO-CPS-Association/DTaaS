@@ -31,9 +31,12 @@ fail() {
   exit 1
 }
 
+# A pointer file is under 1024 bytes and starts with the spec line; a
+# file that only quotes that line further down is not a pointer.
 reject_lfs_pointers() {
   local dir="$1" pointers
-  pointers=$(grep -rlxF "$LFS_POINTER" "$dir" || true)
+  pointers=$(find "$dir" -type f -size -1024c -exec awk -v spec="$LFS_POINTER" \
+    'FNR == 1 && $0 == spec { print FILENAME } { nextfile }' {} +)
   [[ -z $pointers ]] ||
     fail "Git LFS pointers instead of content (run 'git lfs pull'):
 $pointers"
@@ -67,14 +70,24 @@ build_package() {
   echo "built $zip"
 }
 
-# The zip must hold <name>/ and, inside it, exactly the tracked files.
+# The entries a correct zip holds: <name>/, each tracked file under it
+# and every directory above a tracked file, directories ending in '/'.
+expected_entries() {
+  local name="$1" src="$2"
+  git -C "$src" ls-files | awk -v root="$name/" '
+    { print root $0
+      n = split($0, part, "/"); dir = root
+      for (i = 1; i < n; i++) { dir = dir part[i] "/"; print dir } }
+    END { print root }' | LC_ALL=C sort -u
+}
+
+# The zip must hold exactly the expected entries: no other top-level
+# entry, file, directory or link.
 verify_file_list() {
-  local zip="$1" name="$2" src="$3" extract="$4"
-  [[ "$(ls -A "$extract")" == "$name" ]] ||
-    fail "$zip: expected a single top-level directory '$name/'"
-  diff <(git -C "$src" ls-files | sort) \
-    <(cd "$extract/$name" && find . -type f | sed 's#^\./##' | sort) >&2 ||
-    fail "$zip: file list differs from $src (< repository, > zip)"
+  local zip="$1" name="$2" src="$3"
+  diff <(expected_entries "$name" "$src") \
+    <(unzip -Z1 "$zip" | LC_ALL=C sort) >&2 ||
+    fail "$zip: entries differ from $src (< repository, > zip)"
 }
 
 verify_contents() {
@@ -94,7 +107,7 @@ verify_package() {
   require_committed "$src"
   mkdir -p "$extract"
   unzip -q "$zip" -d "$extract"
-  verify_file_list "$zip" "$name" "$src" "$extract"
+  verify_file_list "$zip" "$name" "$src"
   verify_contents "$zip" "$name" "$src" "$extract"
   echo "verified $zip"
 }
