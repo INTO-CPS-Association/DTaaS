@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD041 -->
-![DTaaS logo](../../../assets/brand/png/dtaas-logo-full-192h.png#only-light)
-![DTaaS logo](../../../assets/brand/png/dtaas-logo-full-white-192h.png#only-dark)
+![DTaaS logo](dtaas-logo-full-192h.png#only-light)
+![DTaaS logo](dtaas-logo-full-white-192h.png#only-dark)
 
 This guide installs a **secure, multi-user DTaaS deployment** that uses
 an **external GitLab instance** for OAuth 2.0 authorisation.

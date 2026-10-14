@@ -19,7 +19,8 @@ from drawio_style import drawio_arguments
 
 # Resolved from this file, so the script runs from any directory.
 HERE = pathlib.Path(__file__).resolve().parent
-REPO = HERE.parents[2]
+# scripts, update-docs-diagrams, skills, .agents, then the repository.
+REPO = HERE.parents[3]
 LOGO = REPO / 'docs/assets/brand/dtaas-logo-full.svg'
 TOKENS = REPO / 'client/src/theme/tokens.ts'
 

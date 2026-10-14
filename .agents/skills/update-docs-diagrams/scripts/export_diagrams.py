@@ -25,9 +25,10 @@ import xml.etree.ElementTree as ET
 
 # Resolved from this file, so the script runs from any directory.
 HERE = pathlib.Path(__file__).resolve().parent
-DOCS = HERE.parents[1]
-REPO = DOCS.parent
-SOURCE = HERE / 'dtaas-diagrams.drawio'
+# scripts, update-docs-diagrams, skills, .agents, then the repository.
+REPO = HERE.parents[3]
+DOCS = REPO / 'docs'
+SOURCE = DOCS / 'assets/diagrams/dtaas-diagrams.drawio'
 
 DRAWIO = os.environ.get(
     'DRAWIO', '/Applications/draw.io.app/Contents/MacOS/draw.io')
@@ -58,6 +59,26 @@ def target_of(name):
     return REPO / name if name.startswith('deploy/') else DOCS / name
 
 
+# The installation pages show the logo from a copy beside the page, as the
+# packages under deploy/ do, so a page and its images move together.
+LOGOS = ['dtaas-logo-full-192h.png', 'dtaas-logo-full-white-192h.png']
+LOGO_PAGES = [
+    'admin/dtaas/localhost',
+    'admin/dtaas/secure-server',
+    'admin/dtaas/secure-server-gitlab',
+    'admin/workspace/localhost',
+    'admin/workspace/secure-server',
+]
+
+
+def copy_logos():
+    """Write the copies of the logo beside the installation pages."""
+    for folder in LOGO_PAGES:
+        for logo in LOGOS:
+            shutil.copyfile(DOCS / 'assets/brand/png' / logo, DOCS / folder / logo)
+        print(f'copied the logos to docs/{folder}')
+
+
 def copy_to_packages():
     """Write the package copies of the documentation images."""
     for source, copies in DEPLOY_COPIES.items():
@@ -67,7 +88,7 @@ def copy_to_packages():
 
 
 def main():
-    """Export every placed page, then copy images into the packages."""
+    """Export every placed page, then copy images into the packages and pages."""
     if not pathlib.Path(DRAWIO).exists():
         raise SystemExit(f'drawio not found at {DRAWIO}, set DRAWIO')
     print(f'using {DRAWIO}')
@@ -85,6 +106,7 @@ def main():
                        check=True, capture_output=True)
         print(f'wrote {target.relative_to(REPO)}')
     copy_to_packages()
+    copy_logos()
 
 
 if __name__ == '__main__':

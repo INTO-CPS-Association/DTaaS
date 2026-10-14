@@ -1,0 +1,80 @@
+---
+name: update-docs-diagrams
+description: Edit, restyle and export the architecture and installation diagrams of the documentation from docs/assets/diagrams/dtaas-diagrams.drawio, in the colours of the website theme. Use when asked to change a diagram, add one from a new drawio file, refresh the exported images, or after a change to the theme colours.
+license: INTO-CPS Association Public License, in LICENSE.md at the repository root
+compatibility: Requires Python 3.11 or later, uv for the image step, the drawio desktop application, and the Inter font installed on the machine that exports.
+---
+
+# Update the documentation diagrams
+
+`docs/assets/diagrams/dtaas-diagrams.drawio` holds one diagram per page. A
+page named after a path under `docs/` is exported to that path, and a page
+named after a path under `deploy/` to that path in the repository. The
+scripts in `scripts/` apply the design rules of the theme to the file and
+export it. `docs/assets/diagrams/README.md` lists the pages, the rules and
+the edits made by hand. Run every command from the repository root.
+
+## Steps
+
+1. **Check the prerequisites.** The drawio desktop application is installed;
+   set `DRAWIO` to its binary when it is not at
+   `/Applications/draw.io.app/Contents/MacOS/draw.io`. Inter 400 and 700 are
+   installed as system fonts, or drawio exports with another face without a
+   warning. `docs/assets/diagrams/README.md` shows how to make the two font
+   files from the copies in `docs/assets/fonts`.
+
+1. **Edit the page** in drawio, or bring in a diagram from another drawio
+   file:
+
+   ```bash
+   python3 .agents/skills/update-docs-diagrams/scripts/retheme_drawio.py new.drawio themed.drawio
+   python3 .agents/skills/update-docs-diagrams/scripts/split_pages.py themed.drawio split.drawio
+   ```
+
+   `retheme_drawio.py` maps every colour to the theme and replaces the old
+   emoji wordmark with the logo. It prints the colours it could not map; add
+   each one to `COLOURS` before going on. `split_pages.py` gives each
+   diagram of a crowded page its own page. Copy the pages you need into
+   `dtaas-diagrams.drawio` and name each after the image it replaces.
+
+1. **Apply the rules** and shrink the embedded logos:
+
+   ```bash
+   python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
+     docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
+   uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+     docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
+   ```
+
+   Both can run again on their own output without changing it. A page that
+   draws a concept and not the DTaaS system goes into `NO_MARK` in
+   `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
+
+1. **Export** every placed page, the copies the installation packages carry,
+   and the logo beside each installation page:
+
+   ```bash
+   python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
+   ```
+
+1. **Review every changed image** by opening it. Look for labels that
+   overlap a line, an icon or another label, text that wraps inside a box
+   that is too narrow, arrows that kept old corner points, and emoji. The
+   scripts set colours, fonts and sizes, and a larger font can need a box
+   moved by hand. Fix the page in drawio, export again, and add the hand edit
+   to `docs/assets/diagrams/README.md`.
+
+1. **Check the result.** Every exported PNG is a Git LFS pointer
+   (`git lfs ls-files`), the images read on the light and the dark scheme of
+   the site, and `mkdocs build --strict --config-file mkdocs-github.yml`
+   passes.
+
+## Rules the scripts enforce
+
+- Lines, arrows and borders are primary or grey 700, at least 3 to 1 on
+  their ground. The turquoise and cyan of the palette are only fills.
+- Text is Inter, never italic, at least 4.5 to 1 on its fill, and at least
+  14 pixels when the image is shown 700 pixels wide. A wide diagram needs
+  larger fonts in drawio units, or a narrower layout.
+- One user icon, one box style, one arrow style, no emoji, and no note
+  written into the picture.

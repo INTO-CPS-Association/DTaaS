@@ -28,7 +28,7 @@ on a light page and a dark one, which is why there is no separate light form.
 | Anything on the web, at any size | the `.svg` files |
 | A fixed size, or a tool that cannot read SVG | `png/`, seven sizes for the mark and four heights for each lockup |
 | A favicon | `dtaas-mark.svg`, which is what both mkdocs configs use. `client/public/favicon.svg` is the application's own copy of the same geometry |
-| A documentation page header | `png/dtaas-logo-full-192h.png#only-light` and `png/dtaas-logo-full-white-192h.png#only-dark`, two images in a row, so the page shows the one that suits the reader's colour scheme |
+| A documentation page header | `dtaas-logo-full-192h.png#only-light` and `dtaas-logo-full-white-192h.png#only-dark`, two images in a row, so the page shows the one that suits the reader's colour scheme. The two files are copies of the ones in `png/`, written beside each page by the `update-docs-diagrams` skill |
 | A README in an installation package under `deploy/` | The copies of `dtaas-logo-full.svg` and `dtaas-logo-full-white.svg` in that package folder, with `#gh-light-mode-only` and `#gh-dark-mode-only`. A package is downloaded on its own, so it keeps its own copies. Copy them again after a change to the lockups |
 
 ## The Variants

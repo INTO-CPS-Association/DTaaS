@@ -4,6 +4,10 @@ The architecture and installation diagrams of the documentation, drawn in the
 colours of the interface theme. `dtaas-diagrams.drawio` is the source, with one
 diagram per page, and the PNG files in the documentation are exported from it.
 
+The scripts that make and export the file are the `update-docs-diagrams` agent
+skill, in `.agents/skills/update-docs-diagrams/`. Its `SKILL.md` gives the
+steps, and every command below runs from the repository root.
+
 ## Pages
 
 A page named after a path under `docs/` is exported to that path. The other
@@ -49,6 +53,10 @@ The installation packages under `deploy/` keep their own copy of four of these
 images, so a downloaded package shows its diagram without the website.
 `export_diagrams.py` writes those copies from the exported images (see
 `DEPLOY_COPIES` in the script), so a package copy is never edited by hand.
+In the same way, each installation page under `docs/admin/dtaas/` and
+`docs/admin/workspace/` shows the logo from a copy beside it, as the packages
+do, and `export_diagrams.py` writes those copies from `docs/assets/brand/png`
+(see `LOGO_PAGES`).
 
 ## Design Rules
 
@@ -79,10 +87,10 @@ them and can be run again on its own output without changing anything.
 1. Apply the rules and shrink any new raster logo:
 
    ```bash
-   python3 docs/assets/diagrams/restyle_drawio.py \
+   python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py \
+   uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
    ```
@@ -90,7 +98,7 @@ them and can be run again on its own output without changing anything.
 1. Export every page to its place in the documentation:
 
    ```bash
-   python3 docs/assets/diagrams/export_diagrams.py
+   python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
    ```
 
    The script needs the drawio desktop application. Set `DRAWIO` to its
@@ -124,10 +132,10 @@ diagram on a single page, in the drawio default colours. The scripts that did
 it are kept so the conversion can be repeated on a later version of that file:
 
 ```bash
-python3 docs/assets/diagrams/retheme_drawio.py original.drawio themed.drawio
-python3 docs/assets/diagrams/split_pages.py themed.drawio split.drawio
-python3 docs/assets/diagrams/restyle_drawio.py split.drawio styled.drawio
-uv run --with pillow==12.3.0 python docs/assets/diagrams/shrink_images.py \
+python3 .agents/skills/update-docs-diagrams/scripts/retheme_drawio.py original.drawio themed.drawio
+python3 .agents/skills/update-docs-diagrams/scripts/split_pages.py themed.drawio split.drawio
+python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py split.drawio styled.drawio
+uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
   styled.drawio dtaas-diagrams.drawio
 ```
 
