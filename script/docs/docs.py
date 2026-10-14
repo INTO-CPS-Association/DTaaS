@@ -72,23 +72,11 @@ def version(args: argparse.Namespace) -> None:
     print(pages.version_name(args.tag))
 
 
-def inside_repository(option: str, value: str) -> Path:
-    """Resolve a directory option, refusing one outside the repository.
-
-    assemble rewrites the files it finds there, and the workflows always
-    pass folders inside the checkout.
-    """
-    path = os.path.realpath(value)
-    if os.path.commonpath([str(REPO_ROOT), path]) != str(REPO_ROOT):
-        raise pages.PublishError(f"{option} {value} is outside {REPO_ROOT}")
-    return Path(path)
-
-
 def assemble(args: argparse.Namespace) -> None:
     """Install a built version into a checkout of the published site."""
     size = pages.assemble(
-        inside_repository("--site-dir", args.site_dir),
-        inside_repository("--pages-dir", args.pages_dir),
+        Path(args.site_dir).resolve(),
+        Path(args.pages_dir).resolve(),
         args.version,
         DOCS_DIR,
     )

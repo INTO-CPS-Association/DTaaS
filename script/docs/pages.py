@@ -126,7 +126,8 @@ def remove_polyfill(pages_dir: Path) -> int:
         lines = page.read_text("utf-8").splitlines(keepends=True)
         kept = [line for line in lines if not is_polyfill_tag(line)]
         if len(kept) != len(lines):
-            page.write_text("".join(kept), "utf-8")
+            with page.open("w", encoding="utf-8") as cleaned:
+                cleaned.writelines(kept)
             fixed += 1
     return fixed
 

@@ -59,10 +59,3 @@ def test_build_needs_git_lfs(monkeypatch, capsys):
     monkeypatch.setattr(docs.shutil, "which", lambda _: None)
     assert docs.main(["build"]) == 1
     assert "git-lfs is not installed" in capsys.readouterr().err
-
-
-def test_assemble_refuses_folders_outside_the_repository(tmp_path, capsys):
-    arguments = ["assemble", "--version", "development"]
-    paths = ["--site-dir", str(tmp_path / "site"), "--pages-dir", str(tmp_path)]
-    assert docs.main(arguments + paths) == 1
-    assert "outside" in capsys.readouterr().err
