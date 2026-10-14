@@ -102,7 +102,7 @@ them and can be run again on its own output without changing anything.
    python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
    ```
@@ -128,7 +128,7 @@ can install:
 
 ```bash
 for weight in 400 700; do
-  uvx --with brotli==1.2.0 --from fonttools==4.66.1 \
+  uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt \
     fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" \
     "docs/assets/fonts/inter-latin-$weight-normal.woff2"
 done
@@ -147,7 +147,7 @@ it are kept so the conversion can be repeated on a later version of that file:
 python3 .agents/skills/update-docs-diagrams/scripts/retheme_drawio.py original.drawio themed.drawio
 python3 .agents/skills/update-docs-diagrams/scripts/split_pages.py themed.drawio split.drawio
 python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py split.drawio styled.drawio
-uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
   styled.drawio dtaas-diagrams.drawio
 ```
 

@@ -42,11 +42,12 @@ the edits made by hand. Run every command from the repository root.
    ```bash
    python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with pillow==12.3.0 python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
    ```
 
-   Both can run again on their own output without changing it. A page that
+   Both can run again on their own output without changing it. The image
+   and font tools are pinned with hashes in `scripts/requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
    `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
 
@@ -76,6 +77,9 @@ the edits made by hand. Run every command from the repository root.
    the reason. A page name that resolves outside `docs/` and `deploy/` also
    stops the export. The unit tests beside the scripts run with
    `python3 -m unittest discover --pattern 'test_*.py'` from `scripts/`.
+   They also check that every logo and diagram copy equals its source, and
+   that the colours repeated in the stylesheets and the scripts equal
+   `client/src/theme/tokens.ts`, so a hand edit to a copy fails the build.
 
 1. **Review every changed image**, light and dark, by opening it. Look for
    labels that overlap a line, an icon or another label, text that wraps

@@ -13,7 +13,7 @@ since only raster images are rewritten.
 
 Needs Pillow:
 
-    uv run --with pillow==12.3.0 python \
+    uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python \
         .agents/skills/update-docs-diagrams/scripts/shrink_images.py in out
 
 Usage: python3 shrink_images.py <input.drawio> <output.drawio>

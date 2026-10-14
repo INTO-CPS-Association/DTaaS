@@ -65,3 +65,20 @@ updates:
       separator: "-"
     cooldown:
       default-days: 3
+
+  # The image and font tools of the update-docs-diagrams agent skill, pinned
+  # with hashes. A release waits ten days, as for every tool the diagrams use.
+  - package-ecosystem: "pip"
+    directory: "/.agents/skills/update-docs-diagrams/scripts"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "prasadtalasila"
+    commit-message:
+      prefix: "diagrams-pip: "
+    target-branch: "dependabot-merge"
+    pull-request-branch-name:
+      separator: "-"
+    cooldown:
+      default-days: 10
