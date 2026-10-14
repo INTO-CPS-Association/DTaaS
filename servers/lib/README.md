@@ -47,7 +47,7 @@ mode: 'local'    #git or local
 local-path: '..\..\files'
 log-level: 'debug'
 apollo-path: '/lib'
-graphql-playground: 'true'    # 'false' turns off GraphiQL at apollo-path
+graphql-playground: 'true'
 
 git-repos:   #only used in git mode
   - user1:
