@@ -18,6 +18,7 @@ placed later.
 | --- | --- |
 | `admin/dtaas/secure-server/server.png` | `admin/dtaas/secure-server/install.md` |
 | `admin/dtaas/secure-server-gitlab/server.png` | `admin/dtaas/secure-server-gitlab/install.md` |
+| `admin/dtaas/localhost/localhost.png` | `admin/dtaas/localhost/install.md` |
 | `admin/workspace/localhost/localhost.png` | `admin/workspace/localhost/install.md` |
 | `admin/workspace/secure-server/secure-server.png` | `admin/workspace/secure-server/install.md` |
 | `admin/gitlab/gitlab-integrated-install.png` | `admin/gitlab/index.md` |
@@ -38,18 +39,11 @@ placed later.
 | `user/servers/lib/author.png` | `FAQ.md` |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
-| DTaaS localhost, with forward-auth | Not placed, see below |
 | Developer docker setup | Not placed |
 | Two servers with runners | Not placed |
 | Two servers with runners, release | Not placed |
 
-`admin/dtaas/localhost/localhost.png` is not generated here. The localhost
-package runs Traefik, the client, the logger and one user workspace, without
-forward-auth, and the localhost diagram in this file draws forward-auth. The
-image in the documentation stays as it is until the diagram matches the
-package.
-
-The installation packages under `deploy/` keep their own copy of four of these
+The installation packages under `deploy/` keep their own copy of five of these
 images, so a downloaded package shows its diagram without the website.
 `export_diagrams.py` writes those copies from the exported images (see
 `DEPLOY_COPIES` in the script), so a package copy is never edited by hand.
@@ -237,11 +231,14 @@ The hand edits, by page:
   so its labels reach 14 pixels at the column width. Every element and arrow
   of the sketch is kept.
 - `developer/system/research-overview/dt-assets-relationship.png`,
-  `dtaas-userview.png` and `federated-dtaas.png`, and four pages not placed
-  yet: Prasad Talasila corrected the line routing and bends in drawio on 13
+  `dtaas-userview.png`, `federated-dtaas.png`,
+  `admin/dtaas/localhost/localhost.png` and three pages not placed yet:
+  Prasad Talasila corrected the line routing and bends in drawio on 13
   October 2026 (`dtaas-diagrams-changes-diff.drawio`), and the pages are taken
   from his file as they are. The thin arrows of `federated-dtaas.png` keep his
-  width of 1.
+  width of 1. The localhost diagram draws no logger, although the localhost
+  package still runs one, because the logger has no use on localhost (Prasad
+  Talasila, 14 October 2026).
 - `admin/servers/lib/file-system-layout.png`: redrawn. The sketch put five
   labelled cards in each of seven folders, up to twelve labels in a row, which
   no font size makes legible at the column width. Each folder shows the five

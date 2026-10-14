@@ -49,6 +49,8 @@ EXPORT_WIDTH = 1600
 
 # Documentation image, relative to docs/, and its copies in the packages.
 DEPLOY_COPIES = {
+    'admin/dtaas/localhost/localhost.png': [
+        'deploy/dtaas/docker/localhost/localhost.png'],
     'admin/dtaas/secure-server/server.png': [
         'deploy/dtaas/docker/secure-server/server.png'],
     'admin/dtaas/secure-server-gitlab/server.png': [
