@@ -78,6 +78,22 @@ def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
     assert landing == f"&copy; 2022 - {date.today().year}"
 
 
+def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_dir):
+    pages_dir = tmp_path / "pages"
+    old_page = write(
+        pages_dir / "version0.3" / "index.html",
+        "<head>\n"
+        '        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6">'
+        "</script>\n"
+        '        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/x.js"></script>\n'
+        "</head>\n",
+    )
+    pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
+    html = old_page.read_text("utf-8")
+    assert "polyfill.io" not in html
+    assert "cdn.jsdelivr.net" in html
+
+
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):
     """Publishing one version leaves the others untouched."""
     pages_dir = tmp_path / "pages"

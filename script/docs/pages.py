@@ -97,6 +97,26 @@ def reject_oversized_site(pages_dir: Path) -> int:
     return size
 
 
+# polyfill.io changed owner in 2024 and served malicious code. The versions
+# published before then load it, so every assembly strips it from the site,
+# and a release commits the cleaned pages back to webpage-docs.
+POLYFILL_TAG = re.compile(
+    r'[ \t]*<script[^>]*\bsrc="https://(?:cdn\.)?polyfill\.io/[^"]*"[^>]*>\s*</script>\n?'
+)
+
+
+def remove_polyfill(pages_dir: Path) -> int:
+    """Remove every polyfill.io script tag from the site; return the pages fixed."""
+    fixed = 0
+    for page in pages_dir.rglob("*.html"):
+        html = page.read_text("utf-8")
+        cleaned = POLYFILL_TAG.sub("", html)
+        if cleaned != html:
+            page.write_text(cleaned, "utf-8")
+            fixed += 1
+    return fixed
+
+
 def require_release_row(landing_page: Path, version: str) -> None:
     """Refuse a release whose version has no row on the landing page."""
     if f'href="{version}/index.html"' not in landing_page.read_text("utf-8"):
@@ -141,5 +161,6 @@ def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> i
         require_release_row(docs_dir / "redirect-page.html", version)
     install_version(site_dir, pages_dir, version)
     install_landing_page(docs_dir, pages_dir)
+    remove_polyfill(pages_dir)
     reject_lfs_pointers(pages_dir)
     return reject_oversized_site(pages_dir)
