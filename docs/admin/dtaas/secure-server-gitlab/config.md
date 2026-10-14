@@ -198,6 +198,20 @@ sudo chown -R 1000:100 files/*
 UID `1000` and GID `100` match the default user inside the
 workspace container.
 
+## logs/logger/ - Logger Microservice Events
+
+The logger microservice writes the captured events to
+`logs/logger/workflow-logs.jsonl`. Create the directory and give it to
+uid 1000, the user that runs the logger:
+
+```bash
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs/logger
+```
+
+`logs/` itself holds the GitLab logs, so change the owner of
+`logs/logger` only.
+
 ## OAuth 2.0 Application Setup
 
 Once the GitLab instance is running, register two OAuth 2.0 applications

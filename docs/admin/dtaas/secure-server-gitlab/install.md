@@ -74,6 +74,9 @@ mkdir -p logs/logger
 sudo chown -R 1000:1000 logs/logger
 ```
 
+`logs/` itself holds the GitLab logs, so change the owner of
+`logs/logger` only.
+
 ### 3. Add TLS Certificates
 
 ```bash
