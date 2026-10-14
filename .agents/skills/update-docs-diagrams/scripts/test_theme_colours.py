@@ -11,7 +11,7 @@ import re
 import unittest
 
 import dark_variant as dv
-import retheme_drawio as rd
+import palette as rd
 
 EXTRA_CSS = rd.REPO / 'docs/assets/css/extra.css'
 LANDING_CSS = rd.REPO / 'docs/assets/css/landing.css'
@@ -46,6 +46,7 @@ class ThemeColoursTest(unittest.TestCase):
     """Each repeated colour equals the one it was taken from."""
 
     def test_site_stylesheet_uses_the_brand_colours(self):
+        """Site stylesheet uses the brand colours."""
         site = css_variables(EXTRA_CSS.read_text())
         for variable, token in (('dtaas-primary', 'primary'),
                                 ('dtaas-primary-dark', 'primaryDark'),
@@ -55,6 +56,7 @@ class ThemeColoursTest(unittest.TestCase):
                 self.assertEqual(site[variable], rd.token(token))
 
     def test_landing_page_uses_the_brand_and_grey_colours(self):
+        """Landing page uses the brand and grey colours."""
         light, _ = landing_schemes()
         expected = {'primary': rd.token('primary'),
                     'primary-dark': rd.token('primaryDark'),
@@ -67,20 +69,24 @@ class ThemeColoursTest(unittest.TestCase):
                 self.assertEqual(light[variable], colour)
 
     def test_diagram_greys_are_the_token_greys(self):
+        """Diagram greys are the token greys."""
         for step in (50, 100, 400, 600, 700):
             with self.subTest(step=step):
                 self.assertEqual(getattr(rd, f'GREY_{step}'), greys()[step])
 
     def test_site_hue_is_the_grey_hue(self):
+        """Site hue is the grey hue."""
         hue = re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1)
         self.assertIn(f"hsl({hue}, ", rd.TOKENS.read_text())
 
     def test_dark_ground_is_the_slate_page_of_the_site(self):
         # Material draws the slate page as hsl(var(--md-hue), 15%, 14%).
+        """Dark ground is the slate page of the site."""
         hue = int(re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1))
         self.assertEqual(dv.SLATE, hsl_to_hex(hue, 15, 14))
 
     def test_dark_lines_and_text_are_the_landing_dark_colours(self):
+        """Dark lines and text are the landing dark colours."""
         _, dark = landing_schemes()
         self.assertEqual(dv.LIGHT_TEXT, dark['text'])
         self.assertEqual(dv.LIGHT_LINE, dark['muted'])

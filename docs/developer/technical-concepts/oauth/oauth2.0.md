@@ -66,7 +66,7 @@ obtain an access token, which lets it fetch user information. With that
 information, the Auth MS verifies the user's identity and decides whether
 the user may access the requested resource.
 
-![OAuth 2.0 workflow diagram](oauth2-workflow.png){ .on-white }
+![OAuth 2.0 workflow diagram](oauth2-workflow.png){.on-white}
 
 The diagram shows the requests from the Auth MS to the OAuth 2.0 provider
 in abbreviated form. The [Auth MS implementation documentation](authms.md)

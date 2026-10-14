@@ -71,6 +71,7 @@ def test_assemble_replaces_version(tmp_path, site_dir, docs_dir):
 
 
 def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
+    """Assemble writes the current year."""
     write(docs_dir / "redirect-page.html", "&copy; 2022 - {{ year }}")
     pages_dir = tmp_path / "pages"
     pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
@@ -79,6 +80,7 @@ def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
 
 
 def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_dir):
+    """Assemble removes polyfill from old versions."""
     pages_dir = tmp_path / "pages"
     old_page = write(
         pages_dir / "version0.3" / "index.html",
@@ -95,6 +97,7 @@ def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_di
 
 
 def test_remove_polyfill_leaves_files_outside_the_site(tmp_path):
+    """Remove polyfill leaves files outside the site."""
     tag = '<script src="https://polyfill.io/v3/polyfill.min.js"></script>\n'
     outside = write(tmp_path / "outside.html", tag)
     site = tmp_path / "pages"

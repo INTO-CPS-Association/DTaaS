@@ -6,8 +6,9 @@ looks the same in a small diagram and a large one.
 """
 
 import drawio_style as ds
-from retheme_drawio import (ACCENT, ACCENT_DARK, GREY_700, MARK_ACCENT,
-                            PRIMARY, PRIMARY_DARK, PRIMARY_TINT)
+from palette import (
+    ACCENT, ACCENT_DARK, GREY_700, MARK_ACCENT, PRIMARY, PRIMARY_DARK, PRIMARY_TINT
+)
 
 LINE_PX = 1.5
 HEAVY_PX = 3

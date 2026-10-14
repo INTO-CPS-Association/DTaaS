@@ -25,7 +25,7 @@ import re
 import xml.etree.ElementTree as ET
 
 import drawio_style as ds
-from retheme_drawio import REPO
+from palette import REPO
 
 # The page of Material's slate scheme, hsl(220, 15%, 14%) with the hue the
 # site sets, so the image blends into the page. test_theme_colours.py checks it.
@@ -139,6 +139,19 @@ def low_contrast(cell, style, ground, hidden):
     return found
 
 
+def dark_details(style, what):
+    """Darken the gradient, the swimlane fill, the line and the label ground."""
+    for key in ('gradientColor', 'swimlaneFillColor'):
+        colour = hex_of(style.get(key), None)
+        if colour:
+            style[key] = dark_fill(colour)
+    stroke = hex_of(style.get('strokeColor'), '#000000')
+    if stroke and (what in ('shape', 'edge') or 'strokeColor' in style):
+        style['strokeColor'] = dark_line(stroke)
+    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], None):
+        style['labelBackgroundColor'] = SLATE
+
+
 def dark_cell(cell, swaps):
     """Turn one cell into its dark variant, and return its contrast failures."""
     style = ds.parse_style(cell.get('style'))
@@ -153,15 +166,7 @@ def dark_cell(cell, swaps):
         return []
     old_text = hex_of(style.get('fontColor'), '#000000') or '#000000'
     ground, old_ground = dark_ground(style, what)
-    for key in ('gradientColor', 'swimlaneFillColor'):
-        colour = hex_of(style.get(key), None)
-        if colour:
-            style[key] = dark_fill(colour)
-    stroke = hex_of(style.get('strokeColor'), '#000000')
-    if stroke and (what in ('shape', 'edge') or 'strokeColor' in style):
-        style['strokeColor'] = dark_line(stroke)
-    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], None):
-        style['labelBackgroundColor'] = SLATE
+    dark_details(style, what)
     text = text_colour(ground, old_text, old_ground)
     style['fontColor'] = text
     cell.set('style', ds.dump_style(style))

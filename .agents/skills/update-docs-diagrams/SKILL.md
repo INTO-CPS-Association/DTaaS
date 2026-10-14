@@ -39,9 +39,10 @@ the edits made by hand. Run every command from the repository root.
 
    `retheme_drawio.py` maps every colour to the theme and replaces the old
    emoji wordmark with the logo. It prints the colours it could not map. Add
-   each one to `COLOURS` before going on. `split_pages.py` gives each
-   diagram of a crowded page its own page. Copy the pages you need into
-   `dtaas-diagrams.drawio` and name each after the image it replaces.
+   each one to `COLOURS` in `scripts/palette.py` before going on.
+   `split_pages.py` gives each diagram of a crowded page its own page. Copy
+   the pages you need into `dtaas-diagrams.drawio` and name each after the
+   image it replaces.
 
 1. **Apply the rules** and shrink the embedded logos:
 

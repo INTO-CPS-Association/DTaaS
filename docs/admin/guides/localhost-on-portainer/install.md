@@ -59,7 +59,7 @@ Unzip the **dtaas-localhost-xx.zip** package, which contains the
 installation files. This scenario uses **GitLab OAuth** for
 authentication and needs a GitLab account on <https://gitlab.com>.
 
-![DTaaS Localhost](localhost.png){ .on-white }
+![DTaaS Localhost](localhost.png){.on-white}
 
 ### 1.1 Configuration
 
@@ -148,7 +148,7 @@ installation files.
 This scenario uses **Dex** as a local identity provider.
 It needs no external account and comes with default credentials.
 
-![Workspace Localhost](localhost.png){ .on-white }
+![Workspace Localhost](localhost.png){.on-white}
 
 ### 2.1 Configuration
 

@@ -161,14 +161,15 @@ uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requireme
 The scripts that take files on the command line accept only `.drawio`
 files under the current directory.
 
-`retheme_drawio.py` maps each colour to a colour of the theme, read from
+`retheme_drawio.py` maps each colour to a colour of the theme, through the
+`COLOURS` table of `palette.py`, which reads the brand colours from
 `client/src/theme/tokens.ts`, and replaces the old wordmark with the logo in
 `docs/assets/brand`. `split_pages.py` gives each diagram its own page.
 `restyle_drawio.py`, with `restyle_cells.py` and `drawio_style.py`, applies the
 design rules above. `shrink_images.py` scales every embedded raster logo down
-to the pixels the export draws, turns the GitLab JPEG into a PNG with a
-transparent background, and stores each logo with a palette, which took the
-file from 3.5 MB to under 450 KB.
+to the pixels the export draws, turns a JPEG into a PNG with a transparent
+background, and stores each logo with a palette, which took the
+file from 3.5 MB to about 750 KB.
 
 These edits were made by hand in drawio, because each one concerns a single
 page and a script for it would be longer than the change:
@@ -219,10 +220,10 @@ figures of the canvas stay with Prasad, as they differ from the images in the
 documentation or are not used yet.
 
 Two scripts changed for these pages. `retheme_drawio.py` maps the colours the
-new figures use and replaces a wordmark that lies loose on the page instead
-of in a group. `restyle_drawio.py` leaves the DTaaS mark off the pages listed
-in `NO_MARK`, which draw a concept and not the DTaaS system, so their largest
-box is not the DTaaS boundary.
+new figures use, added to `COLOURS` in `palette.py`, and replaces a wordmark
+that lies loose on the page instead of in a group. `restyle_drawio.py` leaves
+the DTaaS mark off the pages listed in `NO_MARK`, which draw a concept and not
+the DTaaS system, so their largest box is not the DTaaS boundary.
 
 The hand edits, by page:
 

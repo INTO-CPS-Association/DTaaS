@@ -2,8 +2,9 @@
 
 from pathlib import Path
 
-import docs
 from script_hosts import foreign_scripts
+
+import docs
 
 
 def page(site: Path, name: str, body: str) -> None:
@@ -14,6 +15,7 @@ def page(site: Path, name: str, body: str) -> None:
 
 
 def test_local_and_allowed_scripts_pass(tmp_path: Path) -> None:
+    """Local and allowed scripts pass."""
     page(tmp_path, "index.html", '<script src="assets/js/mathjax-config.js"></script>')
     page(
         tmp_path,
@@ -25,6 +27,7 @@ def test_local_and_allowed_scripts_pass(tmp_path: Path) -> None:
 
 
 def test_an_unlisted_host_is_reported(tmp_path: Path) -> None:
+    """An unlisted host is reported."""
     page(
         tmp_path,
         "version0.3/user/index.html",
@@ -34,11 +37,13 @@ def test_an_unlisted_host_is_reported(tmp_path: Path) -> None:
 
 
 def test_a_protocol_relative_src_is_reported(tmp_path: Path) -> None:
+    """A protocol relative src is reported."""
     page(tmp_path, "index.html", '<script src="//evil.example/x.js"></script>')
     assert foreign_scripts(tmp_path) == ["index.html: evil.example"]
 
 
 def test_the_command_fails_on_an_unlisted_host(tmp_path: Path, capsys) -> None:
+    """The command fails on an unlisted host."""
     page(tmp_path, "index.html", '<script src="https://polyfill.io/x.js"></script>')
     assert docs.main(["check-scripts", "--site-dir", str(tmp_path)]) == 1
     assert "polyfill.io" in capsys.readouterr().err

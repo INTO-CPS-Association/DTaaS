@@ -99,7 +99,7 @@
 /*
  * These images draw dark lines and text on a transparent background, so on
  * the slate scheme they would disappear. A page marks each one with the
- * on-white class, { .on-white } after the image, and it gets the white of
+ * on-white class, {.on-white} after the image, and it gets the white of
  * the light scheme behind it. A diagram with a dark variant does not need it.
  */
 [data-md-color-scheme="slate"] .md-typeset img.on-white {

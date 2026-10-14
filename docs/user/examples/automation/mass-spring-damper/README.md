@@ -7,7 +7,7 @@ and shows how a co-simulation based DT can be used within DTaaS.
 
 ## Example Diagram
 
-![Mass Spring Damper System](mass-spring-damper_multibody_system.png){ .on-white }
+![Mass Spring Damper System](mass-spring-damper_multibody_system.png){.on-white}
 
 ## Example Structure
 

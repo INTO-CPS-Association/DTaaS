@@ -23,7 +23,7 @@ This discussion uses the following constants:
 Assume also that DTaaS uses a dedicated GitLab instance at
 <https://gitlab.intocps.org> (instead of <https://intocps.org>).
 
-![OAuth 2.0 workflow diagram](oauth2-workflow.png){ .on-white }
+![OAuth 2.0 workflow diagram](oauth2-workflow.png){.on-white}
 
 A successful OAuth 2.0 workflow has the following steps:
 

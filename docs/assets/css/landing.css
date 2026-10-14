@@ -64,7 +64,13 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--text);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Arial,
+    sans-serif;
   font-size: 1rem;
   line-height: 1.5;
 }

@@ -39,7 +39,7 @@ The Mocha and Cucumber testing libraries are built around BDD.
 
 ## Testing Workflow
 
-![Test pyramid diagram](testPyramid.png){ .on-white }
+![Test pyramid diagram](testPyramid.png){.on-white}
 
 (Ref: Ham Vocke,
 [The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html))

@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 
 import drawio_style as ds
 from restyle_cells import kind, number, restyle
-from retheme_drawio import REPO
+from palette import REPO
 
 MARK = REPO / 'docs/assets/brand/dtaas-mark.svg'
 LOCKUP = REPO / 'docs/assets/brand/dtaas-logo-full.svg'
