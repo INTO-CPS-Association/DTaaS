@@ -27,10 +27,11 @@ import xml.etree.ElementTree as ET
 import drawio_style as ds
 from retheme_drawio import REPO
 
-# The page of Material's slate scheme, so the image blends into the page.
-SLATE = '#1e2129'
+# The page of Material's slate scheme, hsl(220, 15%, 14%) with the hue the
+# site sets, so the image blends into the page. test_theme_colours.py checks it.
+SLATE = '#1e2229'
 LIGHT_TEXT = '#e8ecf3'
-DARK_TEXT = '#1e2129'
+DARK_TEXT = '#1e2229'
 LIGHT_LINE = '#a9b3c6'
 LIGHT_BLUE_LINE = '#8cc8e6'
 

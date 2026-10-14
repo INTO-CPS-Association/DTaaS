@@ -49,5 +49,40 @@ class CheckContrastTest(unittest.TestCase):
             ed.check_contrast([('admin/x/server.png', '7', 'text 3.9 to 1')])
 
 
+def same_bytes(copy, source):
+    """Whether a copy holds the bytes of its source.
+
+    An LFS file is compared as its pointer when LFS is not fetched, and the
+    pointer names the content hash, so equal pointers mean equal images.
+    """
+    return copy.read_bytes() == source.read_bytes()
+
+
+class CopiesTest(unittest.TestCase):
+    """Every copy of a logo or diagram equals the file it is copied from."""
+
+    def test_package_diagrams_match_the_documentation(self):
+        for source, copies in ed.DEPLOY_COPIES.items():
+            for copy in copies:
+                with self.subTest(copy=copy):
+                    self.assertTrue(same_bytes(ed.REPO / copy, ed.DOCS / source))
+
+    def test_logos_beside_install_pages_match_the_brand_folder(self):
+        for folder in ed.LOGO_PAGES:
+            for logo in ed.LOGOS:
+                with self.subTest(folder=folder, logo=logo):
+                    self.assertTrue(same_bytes(ed.DOCS / folder / logo,
+                                               ed.DOCS / 'assets/brand/png' / logo))
+
+    def test_package_logos_match_the_brand_folder(self):
+        brand = ed.DOCS / 'assets/brand'
+        copies = [copy for copy in (ed.REPO / 'deploy').rglob('*.svg')
+                  if (brand / copy.name).is_file()]
+        self.assertTrue(copies)
+        for copy in copies:
+            with self.subTest(copy=str(copy.relative_to(ed.REPO))):
+                self.assertTrue(same_bytes(copy, brand / copy.name))
+
+
 if __name__ == '__main__':
     unittest.main()
