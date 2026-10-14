@@ -96,6 +96,11 @@ $docker pull dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
 The **Deploy > Container registry** page of the project lists the
 stored images.
 
+Images belong to the project they are pushed to. Only users with access
+to that project can pull them, and only project members with at least
+the Developer role can push. To share an image, give other users access
+to the project.
+
 A pipeline in the same project can run its jobs in a stored image.
 GitLab gives the job a token that can pull from the project's registry:
 
