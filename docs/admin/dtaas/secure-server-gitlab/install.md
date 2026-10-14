@@ -127,12 +127,13 @@ Once the GitLab container shows as `healthy`:
 
 ### 6. Verify
 
-| URL                          | Expected result                                   |
-| :--------------------------- | :------------------------------------------------ |
-| `https://intocps.org`        | DTaaS web interface (redirects to GitLab sign-in) |
-| `https://intocps.org/gitlab` | Integrated GitLab instance                        |
-| `https://intocps.org/user1`  | User 1 workspace (after sign-in)                  |
-| `https://intocps.org/user2`  | User 2 workspace (after sign-in)                  |
+| URL                              | Expected result                                   |
+| :------------------------------- | :------------------------------------------------ |
+| `https://intocps.org`            | DTaaS web interface (redirects to GitLab sign-in) |
+| `https://intocps.org/gitlab`     | Integrated GitLab instance                        |
+| `https://intocps.org/user1`      | User 1 workspace (after sign-in)                  |
+| `https://intocps.org/user2`      | User 2 workspace (after sign-in)                  |
+| `https://intocps.org:5050/v2/`   | Container registry: `401` with `UNAUTHORIZED`     |
 
 ## Stop
 

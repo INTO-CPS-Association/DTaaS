@@ -79,6 +79,8 @@ Commands follow the form `dtaas-services <noun> <verb>`. The nouns are
      certificate paths)
    * `CERTS_SRC`: directory that holds the TLS certificates to copy
    * `GITLAB_PORT`: port for the local GitLab instance (default: `8090`)
+   * `GITLAB_REGISTRY_PORT`: port for the GitLab container registry
+     (default: `5050`)
    * `GITLAB_ROOT_NEW_PASSWORD`: strong password to set for the GitLab
      root admin
    * `TB_SYSADMIN_NEW_PASSWORD`: new password for the ThingsBoard

@@ -75,6 +75,41 @@ After adding the required Library assets:
 $git push origin
 ```
 
+## Container Registry
+
+The integrated GitLab includes a private container registry. Each
+GitLab project can store container images, for example ready-to-use
+environments for digital twins. The registry listens on its own port,
+`5050` unless the administrator has chosen another one.
+
+Log in with your GitLab username and a PAT that has the `api` or
+`write_registry` scope, then push and pull images under your project:
+
+```sh
+$docker login dtaas-digitaltwin.com:5050
+$docker tag my-dt-env:1.0 \
+  dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+$docker push dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+$docker pull dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+```
+
+The **Deploy > Container registry** page of the project lists the
+stored images.
+
+A pipeline in the same project can run its jobs in a stored image.
+GitLab gives the job a token that can pull from the project's registry:
+
+```yaml
+simulate:
+  image: $CI_REGISTRY_IMAGE/my-dt-env:1.0
+  script:
+    - ./simulate.sh
+```
+
+GitLab sets `CI_REGISTRY`, `CI_REGISTRY_IMAGE`, `CI_REGISTRY_USER` and
+`CI_REGISTRY_PASSWORD` in every job, so a pipeline can also log in and
+publish images to the project's registry.
+
 ## Next Steps
 
 A [GitLab runner](../../admin/gitlab/runner-linux.md) must be linked

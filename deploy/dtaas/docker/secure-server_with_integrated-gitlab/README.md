@@ -134,6 +134,7 @@ Once the GitLab container shows as `healthy`:
 | `https://intocps.org/gitlab` | Integrated GitLab instance |
 | `https://intocps.org/user1` | User 1 workspace (after sign-in) |
 | `https://intocps.org/user2` | User 2 workspace (after sign-in) |
+| `https://intocps.org:5050/v2/` | Container registry: `401` with `UNAUTHORIZED` |
 
 ## :stop_sign: Stop
 

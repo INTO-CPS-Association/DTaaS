@@ -154,6 +154,8 @@ nav:
           - Code of Conduct: developer/contributions/conduct.md
           - Coding Agents: developer/contributions/coding-agents.md
           - Local Testing: developer/contributions/local-testing.md
+          - Local Server Testing: developer/contributions/local-server-testing.md
+          - Local Registry Testing: developer/contributions/local-registry-testing.md
           - Docker Check: developer/contributions/docker.md
           - GitHub Actions: developer/contributions/github-actions.md
           - Publish NPM Packages: developer/contributions/npm-packages.md
