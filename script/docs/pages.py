@@ -100,19 +100,27 @@ def reject_oversized_site(pages_dir: Path) -> int:
 # polyfill.io changed owner in 2024 and served malicious code. The versions
 # published before then load it, so every assembly strips it from the site,
 # and a release commits the cleaned pages back to webpage-docs.
-POLYFILL_TAG = re.compile(
-    r'[ \t]*<script[^>]*\bsrc="https://(?:cdn\.)?polyfill\.io/[^"]*"[^>]*>\s*</script>\n?'
-)
+POLYFILL_SOURCES = ('src="https://polyfill.io/', 'src="https://cdn.polyfill.io/')
+
+
+def is_polyfill_tag(line: str) -> bool:
+    """Whether a line is a script element that loads polyfill.io."""
+    tag = line.strip()
+    return (
+        tag.startswith("<script")
+        and tag.endswith("</script>")
+        and any(source in tag for source in POLYFILL_SOURCES)
+    )
 
 
 def remove_polyfill(pages_dir: Path) -> int:
-    """Remove every polyfill.io script tag from the site; return the pages fixed."""
+    """Remove every polyfill.io script line from the site; return the pages fixed."""
     fixed = 0
     for page in pages_dir.rglob("*.html"):
-        html = page.read_text("utf-8")
-        cleaned = POLYFILL_TAG.sub("", html)
-        if cleaned != html:
-            page.write_text(cleaned, "utf-8")
+        lines = page.read_text("utf-8").splitlines(keepends=True)
+        kept = [line for line in lines if not is_polyfill_tag(line)]
+        if len(kept) != len(lines):
+            page.write_text("".join(kept), "utf-8")
             fixed += 1
     return fixed
 
