@@ -79,30 +79,29 @@
 /*
  * Links in running text are underlined. The link blue is close to the body
  * text in lightness, so colour alone does not set a link apart, and the
- * underline gives a cue that does not depend on colour.
+ * underline gives a cue that does not depend on colour. Heading anchors,
+ * buttons and footnote back-references are controls with their own look, so
+ * they keep it.
  */
-.md-typeset a {
+.md-typeset a:not(.headerlink):not(.md-button):not(.footnote-backref) {
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
 
-.md-typeset a:hover,
-.md-typeset a:focus-visible {
+.md-typeset
+  a:not(.headerlink):not(.md-button):not(.footnote-backref):is(
+    :hover,
+    :focus-visible
+  ) {
   text-decoration-thickness: 2px;
 }
 
 /*
- * These diagrams draw dark lines and text on a transparent background, so on
- * the slate scheme they would disappear. They get the white of the light
- * scheme behind them. The selectors match on file name, and a white backing
- * changes nothing for an opaque image that happens to share the name.
+ * These images draw dark lines and text on a transparent background, so on
+ * the slate scheme they would disappear. A page marks each one with the
+ * on-white class, { .on-white } after the image, and it gets the white of
+ * the light scheme behind it. A diagram with a dark variant does not need it.
  */
-[data-md-color-scheme="slate"] .md-typeset img:is(
-    [src$="localhost.png"],
-    [src$="design-sequence.png"],
-    [src$="oauth2-workflow.png"],
-    [src$="testPyramid.png"],
-    [src$="mass-spring-damper_multibody_system.png"]
-  ) {
+[data-md-color-scheme="slate"] .md-typeset img.on-white {
   background-color: #ffffff;
 }

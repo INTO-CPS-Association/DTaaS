@@ -12,7 +12,7 @@ More information about NuRV is available on the
 
 ## Example Diagram
 
-![Mass Spring Damper System](mass-spring-damper_multibody_system.png)
+![Mass Spring Damper System](mass-spring-damper_multibody_system.png){ .on-white }
 
 ## Example Structure
 
