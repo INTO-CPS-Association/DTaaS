@@ -3,6 +3,10 @@ site_name: Digital Twin as a Service (DTaaS)
 repo_url: https://github.com/into-cps-association/DTaaS
 repo_name: DTaaS
 copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
+# The drawio files the diagrams were made from are kept with the source, not
+# published with the site.
+exclude_docs: |
+  assets/diagrams/originals/
 
 theme:
   name: material

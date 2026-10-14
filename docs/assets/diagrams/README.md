@@ -194,6 +194,13 @@ not checked label by label for overlaps.
 
 ## The Pages Added in October 2026
 
+The drawio files received are kept as they arrived, in `originals/`, so every
+page can be traced back to its source: `2026-10-12_DTaaS-new-theme.drawio`
+for the installation and architecture pages, and
+`2026-10-13_DTaaS_new_theme_more_figures.drawio` with
+`2026-10-13_DTaaS-layers-on-devops.drawio` for the nine pages below. They are
+Git LFS objects and are not published with the site.
+
 Nine pages were added from two drawio files Prasad Talasila shared on 13
 October 2026: `DTaaS_new_theme_more_figures.drawio`, a working canvas with
 several versions of most figures, and `DTaaS-layers-on-devops.drawio`, the

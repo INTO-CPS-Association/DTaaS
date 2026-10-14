@@ -9,3 +9,7 @@
 *.PNG filter=lfs diff=lfs merge=lfs -text
 *.JPEG filter=lfs diff=lfs merge=lfs -text
 *.JPG filter=lfs diff=lfs merge=lfs -text
+
+# The drawio files the diagrams were made from, as received. They are large
+# working canvases, so they are stored in Git LFS.
+docs/assets/diagrams/originals/*.drawio filter=lfs diff=lfs merge=lfs -text
