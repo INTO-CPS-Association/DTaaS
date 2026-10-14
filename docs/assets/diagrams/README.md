@@ -113,9 +113,11 @@ them and can be run again on its own output without changing anything.
    python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
    ```
 
-   The script needs the drawio desktop application. Set `DRAWIO` to its
-   binary if it is not at `/Applications/draw.io.app`. Every image is 1600
-   pixels wide, twice the widest content column.
+   The script needs the drawio desktop application. It finds it through
+   `DRAWIO`, then `drawio` on the `PATH`, as on Linux, then its install place
+   on macOS and Windows. On a Linux machine without a display, run the script
+   under `xvfb-run -a`. On Windows, run `python` in place of `python3`. Every
+   image is 1600 pixels wide, twice the widest content column.
 
 1. Open every exported image and check that nothing overlaps. The scripts set
    colours, fonts and sizes, and a larger font can need a box moved by hand.
@@ -135,7 +137,12 @@ done
 ```
 
 Copy the two files to `~/Library/Fonts` on macOS or `~/.local/share/fonts` on
-Linux.
+Linux. On Windows, make the two files in PowerShell, then open each one and
+choose Install:
+
+```powershell
+foreach ($weight in 400, 700) { uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" "docs/assets/fonts/inter-latin-$weight-normal.woff2" }
+```
 
 ## How the File Was Made
 

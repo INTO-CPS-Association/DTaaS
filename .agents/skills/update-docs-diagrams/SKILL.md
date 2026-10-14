@@ -17,11 +17,17 @@ the edits made by hand. Run every command from the repository root.
 ## Steps
 
 1. **Check the prerequisites.** The drawio desktop application is installed.
-   Set `DRAWIO` to its binary when it is not at
-   `/Applications/draw.io.app/Contents/MacOS/draw.io`. Inter 400 and 700 are
-   installed as system fonts, or drawio exports with another face without a
-   warning. `docs/assets/diagrams/README.md` shows how to make the two font
-   files from the copies in `docs/assets/fonts`.
+   The export finds it through the `DRAWIO` variable, then `drawio` on the
+   `PATH`, which is where the Linux packages put it, then the installer's
+   place on macOS (`/Applications/draw.io.app/Contents/MacOS/draw.io`) and on
+   Windows (`C:\Program Files\draw.io\draw.io.exe`). Set `DRAWIO` only when
+   it is somewhere else. On a Linux machine without a display, run the export
+   under `xvfb-run -a`. Inter 400 and 700 are installed as system fonts, or
+   drawio exports with another face without a warning.
+   `docs/assets/diagrams/README.md` shows how to make the two font files from
+   the copies in `docs/assets/fonts`. The commands below are written for
+   macOS and Linux. On Windows, run `python` in place of `python3`, and put
+   each command on one line.
 
 1. **Edit the page** in drawio, or bring in a diagram from another drawio
    file:
@@ -47,7 +53,10 @@ the edits made by hand. Run every command from the repository root.
    ```
 
    Both can run again on their own output without changing it. The image
-   and font tools are pinned with hashes in `scripts/requirements.txt`. A page that
+   and font tools are pinned with hashes in
+   `.agents/skills/update-docs-diagrams/scripts/requirements.txt`, which
+   holds only these three tools and installs on Windows, macOS and Linux. It
+   is a different file from `script/docs/mkdocs-requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
    `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
 

@@ -49,6 +49,25 @@ class CheckContrastTest(unittest.TestCase):
             ed.check_contrast([('admin/x/server.png', '7', 'text 3.9 to 1')])
 
 
+class FindDrawioTest(unittest.TestCase):
+    """The binary comes from DRAWIO, the PATH or the installer's place."""
+
+    def test_the_variable_wins(self):
+        with unittest.mock.patch.dict(ed.os.environ, {'DRAWIO': '/x/drawio'}):
+            self.assertEqual(ed.find_drawio(), '/x/drawio')
+
+    def test_the_path_comes_next(self):
+        with unittest.mock.patch.dict(ed.os.environ, {}, clear=True), \
+                unittest.mock.patch.object(ed.shutil, 'which', return_value='/usr/bin/drawio'):
+            self.assertEqual(ed.find_drawio(), '/usr/bin/drawio')
+
+    def test_windows_uses_the_installer_place(self):
+        with unittest.mock.patch.dict(ed.os.environ, {}, clear=True), \
+                unittest.mock.patch.object(ed.shutil, 'which', return_value=None), \
+                unittest.mock.patch.object(ed.platform, 'system', return_value='Windows'):
+            self.assertEqual(ed.find_drawio(), r'C:\Program Files\draw.io\draw.io.exe')
+
+
 def same_bytes(copy, source):
     """Whether a copy holds the bytes of its source.
 

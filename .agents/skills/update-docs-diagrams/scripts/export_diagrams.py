@@ -17,13 +17,16 @@ pages show the one that suits the reader through `#only-light` and
 `#only-dark`.
 
 The drawio desktop application does the drawing. Its binary is taken from the
-DRAWIO environment variable, and defaults to the macOS install location.
+DRAWIO environment variable, then from drawio on the PATH, as the Linux
+packages install it, and then from the default install location on macOS and
+Windows.
 
 Usage: python3 export_diagrams.py
 """
 
 import os
 import pathlib
+import platform
 import shutil
 import subprocess
 import tempfile
@@ -38,8 +41,20 @@ REPO = HERE.parents[3]
 DOCS = REPO / 'docs'
 SOURCE = DOCS / 'assets/diagrams/dtaas-diagrams.drawio'
 
-DRAWIO = os.environ.get(
-    'DRAWIO', '/Applications/draw.io.app/Contents/MacOS/draw.io')
+# Where the drawio desktop installer puts the binary on each system.
+DRAWIO_INSTALLED = {
+    'Darwin': '/Applications/draw.io.app/Contents/MacOS/draw.io',
+    'Windows': r'C:\Program Files\draw.io\draw.io.exe',
+}
+
+
+def find_drawio():
+    """The drawio binary: DRAWIO, then drawio on the PATH, then the installer's place."""
+    return (os.environ.get('DRAWIO') or shutil.which('drawio')
+            or DRAWIO_INSTALLED.get(platform.system(), 'drawio'))
+
+
+DRAWIO = find_drawio()
 
 # Every image is drawn this many pixels wide: twice the widest content column
 # of the documentation, so it stays sharp on a high density screen. The pages
