@@ -7,6 +7,7 @@ docs/redirect-page.html, that links to them.
 
 import re
 import shutil
+from datetime import date
 from pathlib import Path
 
 from mkdocs_hooks import find_unresolved_lfs_files, format_unresolved_files
@@ -22,6 +23,8 @@ LANDING_ASSETS = (
     Path("assets") / "fonts" / "inter-latin-400-normal.woff2",
     Path("assets") / "fonts" / "inter-latin-700-normal.woff2",
 )
+# Replaced by the current year when the landing page is installed.
+YEAR_MARK = "{{ year }}"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)(?:\.\d+)*$")
 # GitHub Pages refuses sites over 1 GB; stop with room to spare.
 MAX_SITE_BYTES = 900 * 1024**2
@@ -115,8 +118,14 @@ def install_version(site_dir: Path, pages_dir: Path, version: str) -> None:
 
 
 def install_landing_page(docs_dir: Path, pages_dir: Path) -> None:
-    """Copy the landing page and the files it links to into the site root."""
-    shutil.copyfile(docs_dir / "redirect-page.html", pages_dir / "index.html")
+    """Copy the landing page and the files it links to into the site root.
+
+    The copyright line ends at the year the site is published, written in
+    place of YEAR_MARK, so it never goes stale.
+    """
+    landing = (docs_dir / "redirect-page.html").read_text("utf-8")
+    landing = landing.replace(YEAR_MARK, str(date.today().year))
+    (pages_dir / "index.html").write_text(landing, "utf-8")
     for asset in LANDING_ASSETS:
         target = pages_dir / asset
         target.parent.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,6 @@
 """Tests for assembling the published documentation site."""
 
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -67,6 +68,14 @@ def test_assemble_replaces_version(tmp_path, site_dir, docs_dir):
     assert (pages_dir / "index.html").is_file()
     for asset in pages.LANDING_ASSETS:
         assert (pages_dir / asset).is_file()
+
+
+def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
+    write(docs_dir / "redirect-page.html", "&copy; 2022 - {{ year }}")
+    pages_dir = tmp_path / "pages"
+    pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
+    landing = (pages_dir / "index.html").read_text("utf-8")
+    assert landing == f"&copy; 2022 - {date.today().year}"
 
 
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):
