@@ -51,6 +51,17 @@ cp -R files/template files/<DEFAULT_USER>
 sudo chown -R 1000:100 files/*
 ```
 
+## logs/logger/
+
+The logger microservice writes the captured events to
+`logs/logger/workflow-logs.jsonl`. Create the directory and give it to
+uid 1000, the user that runs the logger:
+
+```bash
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs/logger
+```
+
 ## Reload client config
 
 After editing `config/client.js`, reload only the client service:

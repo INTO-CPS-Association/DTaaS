@@ -79,6 +79,14 @@ cp -R files/template files/<USERNAME2>
 sudo chown -R 1000:100 files/*
 ```
 
+The logger microservice writes its events to `logs/logger`. Create the
+directory and give it to uid 1000, the user that runs the logger:
+
+```bash
+mkdir -p logs/logger
+sudo chown -R 1000:1000 logs/logger
+```
+
 ### 3. Start Services
 
 ```bash
@@ -130,6 +138,8 @@ docker compose --env-file config/.env down
 |- files/
 |  |- common/             # Shared files across all workspaces
 |  \- template/           # sample user workspace files
+|- logs/
+|  \- logger/             # Logger microservice events
 |- docker-compose.yml     # Service definitions
 |- CONFIG.md              # Detailed configuration reference
 \- README.md              # This file

@@ -4,6 +4,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./config/logger.yaml:/dtaas/logger/logger.yaml
-      - ./logs:/dtaas/logger/logs  # must be writable by uid 1000
+      - ./logs:/dtaas/logger/logs
     ports:
       - "4003:4003"

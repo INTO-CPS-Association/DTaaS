@@ -9,7 +9,7 @@ mode: 'local' or 'git'
 local-path: '/home/Desktop/files'
 log-level: 'debug'
 apollo-path: '/lib' or ''
-graphql-playground: 'false' or 'true'
+graphql-playground: 'true' or 'false'
 
 #Only needed if git mode
 git-repos:
@@ -23,6 +23,12 @@ git-repos:
 
 The `local-path` variable is the path to the local directory that the
 library microservice serves to users.
+
+With `graphql-playground: 'true'`, a browser that opens `apollo-path`
+gets GraphiQL, a web page for writing and running GraphQL queries.
+This is also the behaviour when the option is left out.
+With `'false'`, the microservice serves no such page and accepts only
+the GraphQL queries themselves.
 
 Replace the default values with values suited to the deployment and
 save the configuration as a YAML file, for example `libms.yaml`.

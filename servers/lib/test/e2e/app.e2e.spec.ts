@@ -72,6 +72,17 @@ describe('End to End test for the application', () => {
     const { data } = await client.query({ query });
     expect({ data }).toEqual(expectedResponse);
   }
+  it('should serve GraphiQL at the Apollo path to a browser', async () => {
+    const response = await request(
+      `http://localhost:${configService.getPort()}`,
+    )
+      .get(configService.getApolloPath())
+      .set('Accept', 'text/html');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('<title>GraphiQL</title>');
+    expect(response.text).toContain(`url: '${configService.getApolloPath()}'`);
+  }, 10000);
+
   it('should return the directory contents requested with HTTP POST query', async () => {
     await HTTPQuery(e2elistDirectory, expectedListDirectoryResponse);
   }, 10000);
