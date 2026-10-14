@@ -29,11 +29,16 @@ The logger microservice appends the captured events to
 `logs/workflow-logs.jsonl`. Create a directory named `logs`
 in the same file system location as that of the `compose.logger.yml` file.
 
-The logger runs as the `node` user (uid 1000). If that user cannot write
-to the `logs` directory, for example because Docker created it as `root`,
-the container makes `node` its owner at start-up and then drops root
-privileges. No manual `chown` is needed. This applies from version 0.1.2
-of the image.
+The logger container runs as the `node` user (uid 1000). On Linux hosts,
+give the directory to uid 1000:
+
+```bash
+mkdir logs
+sudo chown -R 1000:1000 logs
+```
+
+If the `logs` directory does not exist, Docker creates it as `root`, and
+the logger cannot write into it.
 
 ## :gear: Configure
 
@@ -67,14 +72,12 @@ throttle-limit: 120
 Replace the default values with the appropriate values for your setup.
 
 Environment variables always override the values in `logger.yaml`.
-The image sets three of them:
+The image sets two of them:
 
 - `LOGGER_HOSTNAME=0.0.0.0`, so the service listens on all container
   interfaces.
 - `LOGGER_LOG_FILE_PATH=/dtaas/logger/logs/workflow-logs.jsonl`, so the
   events are written into the mounted `logs` directory.
-- `LOGGER_CERTS_DIR=/dtaas/logger/certs`, so a generated certificate
-  lands in the `certs` directory, mounted or not.
 
 The other runtime variables are:
 
@@ -84,6 +87,7 @@ The other runtime variables are:
 - `LOGGER_CORS_ALLOW_CREDENTIALS`
 - `LOGGER_AUTH_TOKEN`
 - `LOGGER_TLS`
+- `LOGGER_CERTS_DIR`
 - `LOGGER_MAX_PAYLOAD_BYTES`
 - `LOGGER_LOG_MAX_BYTES`
 - `LOGGER_LOG_RETENTION_FILES`
@@ -94,11 +98,9 @@ The throttle uses the TCP peer address. When the service is behind a reverse
 proxy, this is a shared budget for all proxied requests; size
 `LOGGER_THROTTLE_LIMIT` for the expected aggregate workload.
 
-When `LOGGER_TLS=true`, the logger serves HTTPS with the `fullchain.pem`
-and `privkey.pem` files in `/dtaas/logger/certs` and generates a
-self-signed pair with `openssl` when they are missing. Mount a directory
-there to keep the certificate across restarts or to provide your own;
-like the `logs` directory, the container gives it to `node` at start-up.
+When `LOGGER_TLS=true`, also mount a cert directory to
+`/dtaas/logger/certs` (or another directory pointed to by
+`LOGGER_CERTS_DIR`). Missing cert/key files are generated automatically.
 
 The
 [logger README](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/README.md)

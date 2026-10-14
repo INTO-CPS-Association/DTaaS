@@ -20,12 +20,12 @@ Place the following two items in the directory from which
     https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS/feature/distributed-demo/servers/logger/config/logger.yaml.sample
   ```
 
-* A `logs` directory for the captured events. The logger runs as uid
-  1000; if that user cannot write to the directory, the container makes
-  it the owner at start-up (image version 0.1.2 and later).
+* A `logs` directory for the captured events. The container runs as
+  uid 1000, so on Linux hosts give the directory to that user:
 
   ```bash
   mkdir logs
+  sudo chown -R 1000:1000 logs
   ```
 
 ## :rocket: Use
