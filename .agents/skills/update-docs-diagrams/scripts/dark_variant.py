@@ -11,8 +11,10 @@ in a diagram needs no change here:
   the fill it ends up on.
 - A dark stencil icon, drawn in its fill colour, becomes light like a line.
 - Text drawn in the colour of its ground, hidden on purpose, stays hidden.
-- The DTaaS lockup, dark text drawn in an image, is swapped for its white
-  version. Raster logos are left as they are.
+- Every label below 4.5 to 1 and every line below 3 to 1 on its new ground
+  is reported, so the export can refuse a variant that is hard to read.
+- The DTaaS lockup and the GitLab logo, dark text drawn in an image, are
+  swapped for their white versions. Raster logos are left as they are.
 
 Used by export_diagrams.py, which exports the result next to each light image
 with a -dark suffix.
@@ -32,8 +34,16 @@ DARK_TEXT = '#1e2129'
 LIGHT_LINE = '#a9b3c6'
 LIGHT_BLUE_LINE = '#8cc8e6'
 
-LOCKUP = REPO / 'docs/assets/brand/dtaas-logo-full.svg'
-LOCKUP_WHITE = REPO / 'docs/assets/brand/dtaas-logo-full-white.svg'
+# Each logo drawn with dark text, and the white version its owner publishes.
+ASSETS = REPO / '.agents/skills/update-docs-diagrams/assets'
+WHITE_VERSIONS = [
+    (REPO / 'docs/assets/brand/dtaas-logo-full.svg',
+     REPO / 'docs/assets/brand/dtaas-logo-full-white.svg'),
+    (ASSETS / 'gitlab-logo-100-rgb.svg', ASSETS / 'gitlab-logo-200-rgb.svg'),
+]
+# Minimum WCAG contrast ratios, for text and for lines and borders.
+TEXT_MINIMUM = 4.5
+LINE_MINIMUM = 3.0
 # The colour of text written into a label, and not a background-color.
 COLOUR_IN_LABEL = re.compile(r'((?<![-\w])color\s*[:=]\s*"?\s*)(#[0-9a-fA-F]{6})', re.I)
 HEX = re.compile(r'^#[0-9a-fA-F]{6}$')
@@ -111,15 +121,35 @@ def text_colour(ground, old_text, old_ground):
     return max((LIGHT_TEXT, DARK_TEXT), key=lambda colour: ds.contrast(colour, ground))
 
 
-def dark_cell(cell, lockup):
-    """Turn one cell into its dark variant."""
+def low_contrast(cell, style, ground, hidden):
+    """The ways one dark cell falls short of the contrast minimums."""
+    found = []
+    text = style.get('fontColor')
+    if ds.plain_text(cell.get('value')) and not hidden:
+        ratio = ds.contrast(text, ground)
+        if ratio < TEXT_MINIMUM:
+            found.append(f'text {ratio:.1f} to 1')
+    stroke = hex_of(style.get('strokeColor'), None)
+    # Lines and box borders are judged against the page around them.
+    if stroke and (cell.get('edge') == '1' or cell.get('vertex') == '1'):
+        ratio = ds.contrast(stroke, SLATE)
+        if ratio < LINE_MINIMUM:
+            found.append(f'line {ratio:.1f} to 1')
+    return found
+
+
+def dark_cell(cell, swaps):
+    """Turn one cell into its dark variant, and return its contrast failures."""
     style = ds.parse_style(cell.get('style'))
     what = kind(style, cell)
     if what == 'group':
-        return
+        return []
     if what == 'image':
-        cell.set('style', ds.dump_style(style).replace(*lockup))
-        return
+        image = ds.dump_style(style)
+        for logo, white in swaps:
+            image = image.replace(logo, white)
+        cell.set('style', image)
+        return []
     old_text = hex_of(style.get('fontColor'), '#000000') or '#000000'
     ground, old_ground = dark_ground(style, what)
     for key in ('gradientColor', 'swimlaneFillColor'):
@@ -136,6 +166,7 @@ def dark_cell(cell, lockup):
     cell.set('style', ds.dump_style(style))
     if cell.get('value'):
         cell.set('value', COLOUR_IN_LABEL.sub(lambda m: m.group(1) + text, cell.get('value')))
+    return low_contrast(cell, style, ground, hidden=text == ground)
 
 
 def encoded(path):
@@ -144,12 +175,20 @@ def encoded(path):
 
 
 def write_dark(source, target):
-    """Write the dark variant of a drawio file."""
+    """Write the dark variant of a drawio file.
+
+    Returns the cells below the contrast minimums, as (page name, cell id,
+    what falls short) tuples.
+    """
     tree = ET.parse(source)
-    lockup = (encoded(LOCKUP), encoded(LOCKUP_WHITE))
-    for model in tree.getroot().iter('mxGraphModel'):
+    swaps = [(encoded(logo), encoded(white)) for logo, white in WHITE_VERSIONS]
+    failures = []
+    for page in tree.getroot().iter('diagram'):
+        model = page.find('mxGraphModel')
         model.set('background', SLATE)
         for cell in model.iter('mxCell'):
             if cell.get('style') is not None:
-                dark_cell(cell, lockup)
+                failures += [(page.get('name'), cell.get('id'), problem)
+                             for problem in dark_cell(cell, swaps)]
     tree.write(target, encoding='utf-8')
+    return failures

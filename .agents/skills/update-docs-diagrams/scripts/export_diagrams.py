@@ -62,11 +62,19 @@ DEPLOY_COPIES = {
 }
 
 
+# A page name is a path, and a page brought in from another drawio file can
+# carry any name, so every target must stay inside these two folders.
+ALLOWED = (DOCS.resolve(), (REPO / 'deploy').resolve())
+
+
 def target_of(name):
     """Return where a page is exported, or None for an unplaced page."""
-    if not name.endswith('.png'):
+    if not name or not name.endswith('.png') or pathlib.PurePath(name).is_absolute():
         return None
-    return REPO / name if name.startswith('deploy/') else DOCS / name
+    target = ((REPO if name.startswith('deploy/') else DOCS) / name).resolve()
+    if not any(target.is_relative_to(root) for root in ALLOWED):
+        raise SystemExit(f'page name {name!r} resolves outside docs/ and deploy/')
+    return target
 
 
 # The installation pages show the logo from a copy beside the page, as the
@@ -79,6 +87,23 @@ LOGO_PAGES = [
     'admin/workspace/localhost',
     'admin/workspace/secure-server',
 ]
+
+
+# Cells of placed pages allowed below the contrast minimums of dark_variant.py,
+# as (page name, cell id): the reason. Empty: every dark image passes.
+CONTRAST_EXCEPTIONS = {}
+
+
+def check_contrast(failures):
+    """Stop the export when a placed page has an unlisted contrast failure."""
+    unlisted = [(page, cell, problem) for page, cell, problem in failures
+                if target_of(page) and (page, cell) not in CONTRAST_EXCEPTIONS]
+    for page, cell, problem in unlisted:
+        print(f'low contrast on {page}, cell {cell}: {problem}')
+    if unlisted:
+        raise SystemExit(f'{len(unlisted)} cells below the contrast minimums, '
+                         'fix them in drawio or list them in CONTRAST_EXCEPTIONS')
+    print('every dark variant meets the contrast minimums')
 
 
 def copy_logos():
@@ -109,7 +134,7 @@ def export(source, number, target):
 
 def dark_target(target):
     """Where the dark image of a documentation page goes, or None."""
-    if not target.is_relative_to(DOCS):
+    if not target.resolve().is_relative_to(ALLOWED[0]):
         return None
     return target.with_name(f'{target.stem}-dark{target.suffix}')
 
@@ -122,7 +147,7 @@ def main():
     names = [page.get('name') for page in ET.parse(SOURCE).getroot().iter('diagram')]
     with tempfile.TemporaryDirectory() as scratch:
         dark = pathlib.Path(scratch) / 'dark.drawio'
-        write_dark(SOURCE, dark)
+        check_contrast(write_dark(SOURCE, dark))
         for number, name in enumerate(names, start=1):
             target = target_of(name)
             if target is None:

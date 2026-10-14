@@ -159,6 +159,36 @@ jobs:
           done
           exit $status
 
+  python-skill-tests:
+    name: Test Python Skill Scripts (${{ matrix.skill }})
+    runs-on: ubuntu-latest
+    timeout-minutes: *job_timeout
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: [update-docs-diagrams]
+    defaults:
+      run:
+        working-directory: .agents/skills/${{ matrix.skill }}/scripts
+    steps:
+      - name: Checkout code
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: false
+
+      - name: Set up Python
+        # v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+
+      # The tests use the standard library only, so nothing is installed.
+      - name: Run unit tests
+        run: python -m unittest discover --pattern 'test_*.py' --verbose
+
   yaml-lint:
     name: Lint YAML Files
     runs-on: ubuntu-latest

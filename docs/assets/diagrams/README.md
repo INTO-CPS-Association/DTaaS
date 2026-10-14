@@ -58,10 +58,15 @@ Every page under `docs/` is exported twice. `dark_variant.py` turns each light
 fill, including the white drawio draws when a shape names none, into the slate
 page of the site with a fifth of its own colour, so tints keep their hue. Dark
 lines and dark stencil icons become light, text takes the light or the dark
-text colour by contrast with its new fill, and the DTaaS lockup becomes its
-white version. Text drawn in the colour of its ground stays hidden, as it is
-in the light image. The pages show the pair with `#only-light` and
-`#only-dark`, and the PDF prints the light one.
+text colour by contrast with its new fill, and the DTaaS lockup and the GitLab
+logo become their white versions. Text drawn in the colour of its ground stays
+hidden, as it is in the light image. The pages show the pair with
+`#only-light` and `#only-dark`, and the PDF prints the light one.
+
+The export stops when a cell of a placed page has text below 4.5 to 1 or a
+line or border below 3 to 1 in the dark variant, unless the cell is listed in
+`CONTRAST_EXCEPTIONS` in `export_diagrams.py` with its reason. The list is
+empty: every dark image meets both minimums.
 
 ## Design Rules
 
@@ -239,6 +244,12 @@ The hand edits, by page:
   width of 1. The localhost diagram draws no logger, although the localhost
   package still runs one, because the logger has no use on localhost (Prasad
   Talasila, 14 October 2026).
+- Every page with GitLab: the cell shows the official logo from the GitLab
+  press kit (<https://about.gitlab.com/press/press-kit/>), the SVG unchanged,
+  in a box of its own proportions centred where the older logo was. The two
+  SVG files are in `.agents/skills/update-docs-diagrams/assets/`. On
+  `admin/gitlab/gitlab-integrated-runner.png` the two curves to the runners
+  start at the right edge of the wider logo.
 - `admin/servers/lib/file-system-layout.png`: redrawn. The sketch put five
   labelled cards in each of seven folders, up to twelve labels in a row, which
   no font size makes legible at the column width. Each folder shows the five

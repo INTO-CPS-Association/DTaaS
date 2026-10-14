@@ -69,6 +69,14 @@ the edits made by hand. Run every command from the repository root.
    `-dark` suffix. A page shows the pair with `#only-light` and
    `#only-dark`, so a new image needs both lines.
 
+   Before it draws anything, the export lists every cell of a placed page
+   whose dark text falls below 4.5 to 1, or whose line or border falls below
+   3 to 1, and stops. Fix the cell in drawio, or, when the low contrast is
+   intended, add it to `CONTRAST_EXCEPTIONS` in `export_diagrams.py` with
+   the reason. A page name that resolves outside `docs/` and `deploy/` also
+   stops the export. The unit tests beside the scripts run with
+   `python3 -m unittest discover --pattern 'test_*.py'` from `scripts/`.
+
 1. **Review every changed image**, light and dark, by opening it. Look for
    labels that overlap a line, an icon or another label, text that wraps
    inside a box that is too narrow, arrows that kept old corner points, and
@@ -90,3 +98,6 @@ the edits made by hand. Run every command from the repository root.
   larger fonts in drawio units, or a narrower layout.
 - One user icon, one box style, one arrow style, no emoji, and no note
   written into the picture.
+- A third-party logo is its owner's file, unchanged. GitLab's official SVG,
+  in colour and in white for the dark variant, is in `assets/`, taken from
+  <https://about.gitlab.com/press/press-kit/>.

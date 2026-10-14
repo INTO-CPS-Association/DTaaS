@@ -6,9 +6,10 @@ eleven cells. Each raster image is scaled down to the pixels the export
 actually draws, which is twice the size the documentation shows at its widest
 column, so nothing is lost in the PNG files.
 
-A JPEG has no transparency, and the GitLab logo was one: it showed as a white
-box on the grey server frame. A JPEG is therefore turned into a PNG and its
-white background into transparency.
+A JPEG has no transparency, so it is turned into a PNG and its white
+background into transparency. A logo whose owner forbids changes to it, such
+as GitLab's, is embedded as the owner's SVG and never passes through here,
+since only raster images are rewritten.
 
 Needs Pillow:
 
