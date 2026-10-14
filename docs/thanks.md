@@ -37,7 +37,6 @@ The following projects have funded this project.
 | Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen                     |
 | Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
 | Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
-| BIM - Building Information Modeling                   | Jady Pamella Barbacena da Silva             |
 | Documentation theme and diagrams in the new design    | Jady Pamella Barbacena da Silva             |
 
 ## Developers
