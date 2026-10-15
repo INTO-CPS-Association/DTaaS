@@ -17,9 +17,9 @@ The following projects have funded this project.
 * Digital Twins for Cyber-Physical Systems (DiT4CPS) - a project sponsored by
   the Grundfos Foundation.
 
-## Example Contributors
+## Contributions
 
-| Example Name                                          | Contributors                                |
+| Contribution                                          | Contributors                                |
 | :---------------------------------------------------- | :------------------------------------------ |
 | Mass Spring Damper                                    | Prasad Talasila                             |
 | Water Tank Fault Injection                            | Henrik Ejersbo and Mirgita Frasheri         |
@@ -37,6 +37,9 @@ The following projects have funded this project.
 | Incubator Co-Simulation with NuRV Runtime Monitor FMU | Morten Haahr Kristensen                     |
 | Incubator with NuRV Runtime Monitor FMU as Service    | Valdemar Tang and Morten Haahr Kristensen   |
 | Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
+| Developer and example documentation                   | Astitva Sehgal                              |
+| Documentation theme and diagrams                      | Jady Pamella Barbacena da Silva             |
+| Questions that ended up in the FAQ                    | Tanusree Roy and Farshid Naseri             |
 
 ## Developers
 
@@ -55,9 +58,3 @@ Digital Twin Developers and Users.
 In 2023 IEEE Smart World Congress (SWC), pp. 1-8. IEEE.
 [doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
 Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
-
-| Documentation Contribution                 | Contributors                    |
-| :----------------------------------------- | :------------------------------ |
-| Developer and example documentation        | Astitva Sehgal                  |
-| Documentation theme and diagrams           | Jady Pamella Barbacena da Silva |
-| Questions that ended up in the FAQ         | Tanusree Roy and Farshid Naseri |
