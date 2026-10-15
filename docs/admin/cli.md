@@ -431,18 +431,17 @@ dtaas platform status
 ```
 
 ```text
-PROJECT     SERVICE            STATE        HEALTH
-deployment  traefik            running      healthy
-deployment  client             running      -
-deployment  gitlab             not created  -
-users       alice              paused       -
+PROJECT     SERVICE            STATE
+deployment  traefik            running
+deployment  client             running
+deployment  gitlab             not created
+users       alice              paused
 ```
 
 The state is one of `running`, `paused`, `stopped` (a terminated
 container, which Docker calls `exited`), `restarting` or
 `not created` (a service defined in `docker-compose.yml` that has no
-container yet). `HEALTH` shows the container healthcheck status, or
-`-` when the service has no healthcheck.
+container yet).
 
 For automation, `--json` prints the same records as JSON:
 
@@ -452,7 +451,7 @@ dtaas platform status --json
 
 ```json
 [
-  {"project": "deployment", "service": "traefik", "state": "running", "health": "healthy"}
+  {"project": "deployment", "service": "traefik", "state": "running"}
 ]
 ```
 

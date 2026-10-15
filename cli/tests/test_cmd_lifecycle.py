@@ -16,18 +16,8 @@ def runner():
 
 
 _ROWS = [
-    {
-        "project": "deployment",
-        "service": "traefik",
-        "state": "running",
-        "health": "healthy",
-    },
-    {
-        "project": "deployment",
-        "service": "client",
-        "state": "not created",
-        "health": None,
-    },
+    {"project": "deployment", "service": "traefik", "state": "running"},
+    {"project": "deployment", "service": "client", "state": "not created"},
 ]
 
 
@@ -40,8 +30,7 @@ def test_status_table_output(runner):
     assert "PROJECT" in result.output
     assert "traefik" in result.output
     assert "not created" in result.output
-    # No healthcheck renders as a dash, never the literal "None".
-    assert "None" not in result.output
+    assert result.output.splitlines()[0].split() == ["PROJECT", "SERVICE", "STATE"]
 
 
 def test_status_json_output(runner):

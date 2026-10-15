@@ -7,16 +7,13 @@ from src.pkg import lifecycle
 # pylint: disable=protected-access
 
 
-def _fake_container(
-    service=None, name="c", status: str | None = "running", paused=False, health=None
-):
+def _fake_container(service=None, name="c", status: str | None = "running", paused=False):
     """Build a stand-in for a python-on-whales Container with the fields used."""
     container = MagicMock()
     container.name = name
     container.config.labels = {"com.docker.compose.service": service} if service else {}
     container.state.paused = paused
     container.state.status = status
-    container.state.health = MagicMock(status=health) if health else None
     return container
 
 
@@ -58,20 +55,10 @@ def test_state_name_unknown_when_status_missing():
     assert lifecycle._state_name(_fake_container(status=None)) == "unknown"
 
 
-def test_health_name_none_without_healthcheck():
-    """_health_name is None when the container has no healthcheck."""
-    assert lifecycle._health_name(_fake_container(health=None)) is None
-
-
-def test_health_name_reports_health_status():
-    """_health_name surfaces the healthcheck status when present."""
-    assert lifecycle._health_name(_fake_container(health="healthy")) == "healthy"
-
-
 def test_collect_status_merges_running_absent_and_users(tmp_path):
     """collect_status reports live services, 'not created' ones, and user rows."""
     (tmp_path / "docker-compose.yml").write_text("services: {}")
-    deployment = _client_with([_fake_container(service="traefik", health="healthy")])
+    deployment = _client_with([_fake_container(service="traefik")])
     users = _client_with([_fake_container(service="user-alice", paused=True)])
     with patch("src.pkg.lifecycle.deploy._client", return_value=deployment), patch(
         "src.pkg.lifecycle.deploy.compose_services",
@@ -81,11 +68,14 @@ def test_collect_status_merges_running_absent_and_users(tmp_path):
 
     by_service = {row["service"]: row for row in rows}
     assert by_service["traefik"]["state"] == "running"
-    assert by_service["traefik"]["health"] == "healthy"
     assert by_service["client"]["state"] == "not created"
     assert by_service["client"]["project"] == "deployment"
     assert by_service["user-alice"]["project"] == "users"
     assert by_service["user-alice"]["state"] == "paused"
+    # Running, not created and user rows all carry the same three fields.
+    assert {frozenset(row) for row in rows} == {
+        frozenset({"project", "service", "state"})
+    }
 
 
 def test_collect_status_without_user_compose(tmp_path):

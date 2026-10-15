@@ -148,9 +148,9 @@ def test_add_names_a_registered_user_for_the_gitlab_step(
 
 
 _STATUS_ROWS = [
-    {"project": "deployment", "service": "traefik", "state": "running", "health": None},
-    {"project": "users", "service": "alice", "state": "running", "health": None},
-    {"project": "users", "service": "bob", "state": "paused", "health": None},
+    {"project": "deployment", "service": "traefik", "state": "running"},
+    {"project": "users", "service": "alice", "state": "running"},
+    {"project": "users", "service": "bob", "state": "paused"},
 ]
 _REGISTRY = {"alice": {}, "bob": {}}
 
