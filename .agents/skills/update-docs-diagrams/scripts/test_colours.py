@@ -10,11 +10,11 @@ import colorsys
 import re
 import unittest
 
-import dark_variant as dv
-import palette as rd
+import colours as c
+from settings import REPO, TOKENS
 
-EXTRA_CSS = rd.REPO / 'docs/assets/css/extra.css'
-LANDING_CSS = rd.REPO / 'docs/assets/css/landing.css'
+EXTRA_CSS = REPO / 'docs/assets/css/extra.css'
+LANDING_CSS = REPO / 'docs/assets/css/landing.css'
 
 
 def hsl_to_hex(hue, saturation, lightness):
@@ -25,7 +25,7 @@ def hsl_to_hex(hue, saturation, lightness):
 
 def greys():
     """The grey scale of tokens.ts, as hex by step."""
-    found = re.findall(r"(\d+): 'hsl\((\d+), (\d+)%, (\d+)%\)'", rd.TOKENS.read_text())
+    found = re.findall(r"(\d+): 'hsl\((\d+), (\d+)%, (\d+)%\)'", TOKENS.read_text())
     return {int(step): hsl_to_hex(*map(int, hsl)) for step, *hsl in found}
 
 
@@ -53,14 +53,14 @@ class ThemeColoursTest(unittest.TestCase):
                                 ('dtaas-accent', 'accent'),
                                 ('dtaas-mark-accent', 'markAccent')):
             with self.subTest(variable=variable):
-                self.assertEqual(site[variable], rd.token(token))
+                self.assertEqual(site[variable], c.token(token))
 
     def test_landing_page_uses_the_brand_and_grey_colours(self):
         """Landing page uses the brand and grey colours."""
         light, _ = landing_schemes()
-        expected = {'primary': rd.token('primary'),
-                    'primary-dark': rd.token('primaryDark'),
-                    'primary-tint': rd.token('primaryTint'),
+        expected = {'primary': c.token('primary'),
+                    'primary-dark': c.token('primaryDark'),
+                    'primary-tint': c.token('primaryTint'),
                     'page': greys()[50],
                     'border': greys()[200],
                     'muted': greys()[600]}
@@ -72,25 +72,25 @@ class ThemeColoursTest(unittest.TestCase):
         """Diagram greys are the token greys."""
         for step in (50, 100, 400, 600, 700):
             with self.subTest(step=step):
-                self.assertEqual(getattr(rd, f'GREY_{step}'), greys()[step])
+                self.assertEqual(getattr(c, f'GREY_{step}'), greys()[step])
 
     def test_site_hue_is_the_grey_hue(self):
         """Site hue is the grey hue."""
         hue = re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1)
-        self.assertIn(f"hsl({hue}, ", rd.TOKENS.read_text())
+        self.assertIn(f"hsl({hue}, ", TOKENS.read_text())
 
     def test_dark_ground_is_the_slate_page_of_the_site(self):
         # Material draws the slate page as hsl(var(--md-hue), 15%, 14%).
         """Dark ground is the slate page of the site."""
         hue = int(re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1))
-        self.assertEqual(dv.SLATE, hsl_to_hex(hue, 15, 14))
+        self.assertEqual(c.SLATE, hsl_to_hex(hue, 15, 14))
 
     def test_dark_lines_and_text_are_the_landing_dark_colours(self):
         """Dark lines and text are the landing dark colours."""
         _, dark = landing_schemes()
-        self.assertEqual(dv.LIGHT_TEXT, dark['text'])
-        self.assertEqual(dv.LIGHT_LINE, dark['muted'])
-        self.assertEqual(dv.LIGHT_BLUE_LINE, dark['link'])
+        self.assertEqual(c.LIGHT_TEXT, dark['text'])
+        self.assertEqual(c.LIGHT_LINE, dark['muted'])
+        self.assertEqual(c.LIGHT_BLUE_LINE, dark['link'])
 
 
 if __name__ == '__main__':

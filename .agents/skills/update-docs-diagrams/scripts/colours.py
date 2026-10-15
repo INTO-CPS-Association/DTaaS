@@ -1,19 +1,21 @@
-"""The colours of the interface theme, as the diagram scripts use them.
+"""The colours of the diagrams, and the arithmetic that judges them.
 
 The brand colours are read from `client/src/theme/tokens.ts`, the
 authoritative source. The greys are its hsl() greys written as hex, since
-drawio wants hex, and test_theme_colours.py checks that they still match.
-COLOURS maps every colour the original drawio files use to one of these.
+drawio wants hex, and test_colours.py checks that they and the dark scheme
+colours still match the theme and the site stylesheets. COLOURS maps every
+colour the original drawio files use to one of the theme colours.
 """
 
-import pathlib
 import re
 
-# Resolved from this file, so the script runs from any directory.
-HERE = pathlib.Path(__file__).resolve().parent
-# scripts, update-docs-diagrams, skills, .agents, then the repository.
-REPO = HERE.parents[3]
-TOKENS = REPO / 'client/src/theme/tokens.ts'
+from settings import TOKENS
+
+WHITE = '#ffffff'
+
+# Minimum WCAG contrast ratios, for text and for lines and borders.
+TEXT_MINIMUM = 4.5
+LINE_MINIMUM = 3.0
 
 
 def token(name):
@@ -43,6 +45,58 @@ GREY_100 = '#ebeef4'
 GREY_400 = '#94a0b8'
 GREY_600 = '#47536b'
 GREY_700 = '#333b4c'
+
+# The dark variant. SLATE is the page of Material's slate scheme,
+# hsl(220, 15%, 14%) with the hue the site sets, so an image blends into the
+# page. The text and line colours are those of the landing page dark scheme.
+SLATE = '#1e2229'
+LIGHT_TEXT = '#e8ecf3'
+DARK_TEXT = '#1e2229'
+LIGHT_LINE = '#a9b3c6'
+LIGHT_BLUE_LINE = '#8cc8e6'
+
+
+def channels(colour):
+    """The red, green and blue of a #rrggbb colour, from 0 to 255."""
+    return [int(colour[i:i + 2], 16) for i in (1, 3, 5)]
+
+
+def to_hex(values):
+    """The #rrggbb colour of three channels from 0 to 255."""
+    return '#' + ''.join(f'{round(c):02x}' for c in values)
+
+
+def luminance(colour):
+    """Return the WCAG relative luminance of a #rrggbb colour."""
+    linear = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+              for c in (value / 255 for value in channels(colour))]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def contrast(first, second):
+    """Return the WCAG contrast ratio of two #rrggbb colours."""
+    high, low = sorted((luminance(first), luminance(second)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def blend(colour, opacity):
+    """Mix a colour with white, as drawio draws it at an opacity in percent."""
+    return to_hex(255 - (255 - c) * opacity / 100 for c in channels(colour))
+
+
+def mix(colour, share):
+    """The slate page with a share of a colour mixed in."""
+    return to_hex(s * (1 - share) + c * share
+                  for s, c in zip(channels(SLATE), channels(colour)))
+
+
+def text_colour(fill, candidates):
+    """Return the first candidate that reaches the text minimum on the fill."""
+    for colour in candidates:
+        if contrast(colour, fill) >= TEXT_MINIMUM:
+            return colour
+    raise ValueError(f'no text colour reaches {TEXT_MINIMUM} to 1 on {fill}')
+
 
 # Old colour, lower case, to theme colour, grouped by what the colour drew.
 COLOURS = {

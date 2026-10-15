@@ -9,10 +9,13 @@ compatibility: Requires Python 3.11 or later, uv for the image step, the drawio 
 
 `docs/assets/diagrams/dtaas-diagrams.drawio` holds one diagram per page. A
 page named after a path under `docs/` is exported to that path, and a page
-named after a path under `deploy/` to that path in the repository. The
-scripts in `scripts/` apply the design rules of the theme to the file and
-export it. `docs/assets/diagrams/README.md` lists the pages, the rules and
-the edits made by hand. Run every command from the repository root.
+named after a path under `deploy/` to that path in the repository.
+`scripts/diagrams.py` is the one command: its steps apply the design rules of
+the theme to the file and export it. The lists a maintainer edits (pages
+without the mark, light-only pages, contrast exceptions, copies) are all in
+`scripts/settings.py`, and the colours in `scripts/colours.py`.
+`docs/assets/diagrams/README.md` lists the pages, the rules and the edits
+made by hand. Run every command from the repository root.
 
 ## Steps
 
@@ -33,23 +36,23 @@ the edits made by hand. Run every command from the repository root.
    file:
 
    ```bash
-   python3 .agents/skills/update-docs-diagrams/scripts/retheme_drawio.py new.drawio themed.drawio
-   python3 .agents/skills/update-docs-diagrams/scripts/split_pages.py themed.drawio split.drawio
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py retheme new.drawio themed.drawio
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py split themed.drawio split.drawio
    ```
 
-   `retheme_drawio.py` maps every colour to the theme and replaces the old
-   emoji wordmark with the logo. It prints the colours it could not map. Add
-   each one to `COLOURS` in `scripts/palette.py` before going on.
-   `split_pages.py` gives each diagram of a crowded page its own page. Copy
+   `retheme` maps every colour to the theme and replaces the old emoji
+   wordmark with the logo. It prints the colours it could not map. Add each
+   one to `COLOURS` in `scripts/colours.py` before going on. `split` gives
+   each diagram of a crowded page its own page. Copy
    the pages you need into `dtaas-diagrams.drawio` and name each after the
    image it replaces.
 
 1. **Apply the rules** and shrink the embedded logos:
 
    ```bash
-   python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
    ```
 
@@ -59,7 +62,7 @@ the edits made by hand. Run every command from the repository root.
    holds only these three tools and installs on Windows, macOS and Linux. It
    is a different file from `script/docs/mkdocs-requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
-   `restyle_drawio.py`, or it gets the DTaaS mark on its largest box.
+   `settings.py`, or it gets the DTaaS mark on its largest box.
 
    Several pages carry edits made by hand after the restyle, listed in
    `docs/assets/diagrams/README.md`, and running the restyle on the whole
@@ -72,19 +75,19 @@ the edits made by hand. Run every command from the repository root.
    page:
 
    ```bash
-   python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py export
    ```
 
-   `scripts/dark_variant.py` makes the dark variant from the light page by
+   `scripts/dark.py` makes the dark variant from the light page by
    brightness, and the export writes it beside the light image with a
    `-dark` suffix. A page shows the pair with `#only-light` and
    `#only-dark`, so a new image needs both lines. A page in `LIGHT_ONLY`
-   gets no dark variant and is shown with `{.on-white}`.
+   (in `settings.py`) gets no dark variant and is shown with `{.on-white}`.
 
    Before it draws anything, the export lists every cell of a placed page
    whose dark text falls below 4.5 to 1, or whose line or border falls below
    3 to 1, and stops. Fix the cell in drawio, or, when the low contrast is
-   intended, add it to `CONTRAST_EXCEPTIONS` in `export_diagrams.py` with
+   intended, add it to `CONTRAST_EXCEPTIONS` in `settings.py` with
    the reason. A page name that resolves outside `docs/` and `deploy/` also
    stops the export. The unit tests beside the scripts run with
    `python3 -m unittest discover --pattern 'test_*.py'` from `scripts/`.

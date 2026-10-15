@@ -11,12 +11,10 @@ background into transparency. A logo whose owner forbids changes to it, such
 as GitLab's, is embedded as the owner's SVG and never passes through here,
 since only raster images are rewritten.
 
-Needs Pillow:
+Needs Pillow, so run it through uv with the pinned requirements:
 
-    uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python \
-        .agents/skills/update-docs-diagrams/scripts/shrink_images.py in out
-
-Usage: python3 shrink_images.py <input.drawio> <output.drawio>
+    uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt \
+        python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink in out
 """
 
 import base64
@@ -26,9 +24,8 @@ import re
 
 from PIL import Image
 
-from drawio_style import rewrite_file
-from export_diagrams import EXPORT_WIDTH
-from restyle_drawio import Page
+from drawio import Page
+from settings import EXPORT_WIDTH
 
 RASTER = re.compile(r'image=data:image/(png|jpg|jpeg),([A-Za-z0-9+/=]+)')
 
@@ -92,13 +89,3 @@ def shrink_page(diagram):
     pixels_per_unit = EXPORT_WIDTH / page.width
     for cell in page.root:
         shrink_cell(cell, pixels_per_unit)
-
-
-def main():
-    """Shrink every raster image in the input file and write the result."""
-    target = rewrite_file(__doc__, shrink_page)
-    print(f'wrote {target}, {target.stat().st_size // 1024} KiB')
-
-
-if __name__ == '__main__':
-    main()

@@ -56,17 +56,17 @@ placed later.
 The installation packages under `deploy/` keep their own copy of five of these
 images, so a downloaded package shows its diagram without the website, and
 `developer/check/developer-docker.png` is a copy of `docker-check.png` for the
-README of the developer check stack. `export_diagrams.py` writes those copies
-from the exported images (see `DEPLOY_COPIES` in the script), so a copy is
-never edited by hand.
+README of the developer check stack. The export writes those copies from the
+exported images (see `DEPLOY_COPIES` in `settings.py`), so a copy is never
+edited by hand.
 In the same way, each installation page under `docs/admin/dtaas/` and
 `docs/admin/workspace/` shows the logo from a copy beside it, as the packages
-do, and `export_diagrams.py` writes those copies from `docs/assets/brand/png`
-(see `LOGO_PAGES`).
+do, and the export writes those copies from `docs/assets/brand/png` (see
+`LOGO_PAGES`).
 
 ## Light and Dark Variants
 
-Every page under `docs/` is exported twice. `dark_variant.py` turns each light
+Every page under `docs/` is exported twice. `dark.py` turns each light
 fill, including the white drawio draws when a shape names none, into the slate
 page of the site with a fifth of its own colour, so tints keep their hue. Dark
 lines and dark stencil icons become light, text takes the light or the dark
@@ -77,10 +77,10 @@ hidden, as it is in the light image. The pages show the pair with
 
 The export stops when a cell of a placed page has text below 4.5 to 1 or a
 line or border below 3 to 1 in the dark variant, unless the cell is listed in
-`CONTRAST_EXCEPTIONS` in `export_diagrams.py` with its reason. The list is
+`CONTRAST_EXCEPTIONS` in `settings.py` with its reason. The list is
 empty: every dark image meets both minimums.
 
-A page listed in `LIGHT_ONLY` in `export_diagrams.py` gets no dark variant,
+A page listed in `LIGHT_ONLY` in `settings.py` gets no dark variant,
 and the documentation shows its light image with the `{.on-white}` class, on a
 white backing in both schemes. `current-status-developer.png` is there because
 its product logos keep dark lettering that does not read on the slate page.
@@ -91,7 +91,7 @@ leave indistinguishable.
 ## Design Rules
 
 Every page follows the rules of `docs/assets/brand/README.md`, with sizes taken
-from the width the documentation shows an image at. `restyle_drawio.py` applies
+from the width the documentation shows an image at. The restyle step applies
 them and can be run again on its own output without changing anything.
 
 - Lines, arrows and borders are primary `#003d73` or grey 700 `#333b4c`. The
@@ -119,10 +119,10 @@ them and can be run again on its own output without changing anything.
    changed page and bring that page back:
 
    ```bash
-   python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py \
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
    ```
@@ -130,12 +130,12 @@ them and can be run again on its own output without changing anything.
 1. Export every page to its place in the documentation:
 
    ```bash
-   python3 .agents/skills/update-docs-diagrams/scripts/export_diagrams.py
+   python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py export
    ```
 
-   The script needs the drawio desktop application. It finds it through
+   The export needs the drawio desktop application. It finds it through
    `DRAWIO`, then `drawio` on the `PATH`, as on Linux, then its install place
-   on macOS and Windows. On a Linux machine without a display, run the script
+   on macOS and Windows. On a Linux machine without a display, run the command
    under `xvfb-run -a`. On Windows, run `python` in place of `python3`. Every
    image is 1600 pixels wide, twice the widest content column.
 
@@ -167,26 +167,25 @@ foreach ($weight in 400, 700) { uv run --with-requirements .agents/skills/update
 ## How the File Was Made
 
 The file was converted once from a drawio file that held every installation
-diagram on a single page, in the drawio default colours. The scripts that did
+diagram on a single page, in the drawio default colours. The steps that did
 it are kept so the conversion can be repeated on a later version of that file:
 
 ```bash
-python3 .agents/skills/update-docs-diagrams/scripts/retheme_drawio.py original.drawio themed.drawio
-python3 .agents/skills/update-docs-diagrams/scripts/split_pages.py themed.drawio split.drawio
-python3 .agents/skills/update-docs-diagrams/scripts/restyle_drawio.py split.drawio styled.drawio
-uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/shrink_images.py \
+python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py retheme original.drawio themed.drawio
+python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py split themed.drawio split.drawio
+python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle split.drawio styled.drawio
+uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
   styled.drawio dtaas-diagrams.drawio
 ```
 
-The scripts that take files on the command line accept only `.drawio`
-files under the current directory.
+The steps that take files on the command line accept only `.drawio` files
+under the current directory.
 
-`retheme_drawio.py` maps each colour to a colour of the theme, through the
-`COLOURS` table of `palette.py`, which reads the brand colours from
+`retheme` maps each colour to a colour of the theme, through the `COLOURS`
+table of `colours.py`, which reads the brand colours from
 `client/src/theme/tokens.ts`, and replaces the old wordmark with the logo in
-`docs/assets/brand`. `split_pages.py` gives each diagram its own page.
-`restyle_drawio.py`, with `restyle_cells.py` and `drawio_style.py`, applies the
-design rules above. `shrink_images.py` scales every embedded raster logo down
+`docs/assets/brand`. `split` gives each diagram its own page. `restyle`
+applies the design rules above. `shrink` scales every embedded raster logo down
 to the pixels the export draws, turns a JPEG into a PNG with a transparent
 background, and stores each logo with a palette, which took the
 file from 3.5 MB to about 750 KB.
@@ -235,13 +234,13 @@ October 2026: `DTaaS_new_theme_more_figures.drawio`, a working canvas with
 several versions of most figures, and `DTaaS-layers-on-devops.drawio`, the
 source of `devops.png`. Each page is the version that matches the image the
 documentation showed before, cut out of the canvas and passed through
-`retheme_drawio.py`, `restyle_drawio.py` and `shrink_images.py`. The other
+the retheme, restyle and shrink steps. The other
 figures of the canvas stay with Prasad, as they differ from the images in the
 documentation or are not used yet.
 
-Two scripts changed for these pages. `retheme_drawio.py` maps the colours the
-new figures use, added to `COLOURS` in `palette.py`, and replaces a wordmark
-that lies loose on the page instead of in a group. `restyle_drawio.py` leaves
+Two steps changed for these pages. The retheme maps the colours the new
+figures use, added to `COLOURS` in `colours.py`, and replaces a wordmark that
+lies loose on the page instead of in a group. The restyle leaves
 the DTaaS mark off the pages listed in `NO_MARK`, which draw a concept and not
 the DTaaS system, so their largest box is not the DTaaS boundary.
 
@@ -285,8 +284,8 @@ The hand edits, by page:
 - The eight figures added on 14 October 2026, from `lifecycle-phases.png` to
   `library-assets.png` in the table above, had no drawio source. They are
   redrawn from the images the documentation showed, keeping every box, arrow
-  and label, and then themed with `retheme_drawio.py`, `restyle_drawio.py`
-  and `shrink_images.py`. Each page is at most 1000 units wide, so its text
+  and label, and then themed with the retheme, restyle and shrink steps.
+  Each page is at most 1000 units wide, so its text
   reaches 14 pixels at the column width, and the concept pages are in
   `NO_MARK`. Illustrations and third-party product logos, such as the wind
   turbine of `shm-dt-workflow.png` and the service logos of

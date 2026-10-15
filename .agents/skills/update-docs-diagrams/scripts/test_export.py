@@ -1,9 +1,10 @@
-"""Tests for where export_diagrams.py writes a page."""
+"""Tests for where export.py writes a page, and for the copies it keeps."""
 
 import unittest
 import unittest.mock
 
-import export_diagrams as ed
+import export as ed
+import settings
 
 
 class TargetOfTest(unittest.TestCase):
@@ -12,12 +13,12 @@ class TargetOfTest(unittest.TestCase):
     def test_docs_page_goes_under_docs(self):
         """Docs page goes under docs."""
         self.assertEqual(ed.target_of('admin/x/server.png'),
-                         (ed.DOCS / 'admin/x/server.png').resolve())
+                         (settings.DOCS / 'admin/x/server.png').resolve())
 
     def test_deploy_page_goes_under_deploy(self):
         """Deploy page goes under deploy."""
         self.assertEqual(ed.target_of('deploy/dtaas/x.png'),
-                         (ed.REPO / 'deploy/dtaas/x.png').resolve())
+                         (settings.REPO / 'deploy/dtaas/x.png').resolve())
 
     def test_unplaced_pages_are_skipped(self):
         """Unplaced pages are skipped."""
@@ -34,7 +35,7 @@ class TargetOfTest(unittest.TestCase):
     def test_light_only_pages_get_no_dark_copy(self):
         """Light only pages get no dark copy."""
         name = 'developer/system/current-status-developer.png'
-        self.assertIn(name, ed.LIGHT_ONLY)
+        self.assertIn(name, settings.LIGHT_ONLY)
         self.assertIsNone(ed.dark_target(ed.target_of(name)))
 
     def test_dark_copy_only_for_docs(self):
@@ -63,7 +64,7 @@ class CheckContrastTest(unittest.TestCase):
     def test_a_listed_cell_passes(self):
         """A listed cell passes."""
         listed = {('admin/x/server.png', '7'): 'a mid-tone legend swatch'}
-        with unittest.mock.patch.dict(ed.CONTRAST_EXCEPTIONS, listed):
+        with unittest.mock.patch.dict(settings.CONTRAST_EXCEPTIONS, listed):
             ed.check_contrast([('admin/x/server.png', '7', 'text 3.9 to 1')])
 
 
@@ -103,27 +104,27 @@ class CopiesTest(unittest.TestCase):
 
     def test_package_diagrams_match_the_documentation(self):
         """Package diagrams match the documentation."""
-        for source, copies in ed.DEPLOY_COPIES.items():
+        for source, copies in settings.DEPLOY_COPIES.items():
             for copy in copies:
                 with self.subTest(copy=copy):
-                    self.assertTrue(same_bytes(ed.REPO / copy, ed.DOCS / source))
+                    self.assertTrue(same_bytes(settings.REPO / copy, settings.DOCS / source))
 
     def test_logos_beside_install_pages_match_the_brand_folder(self):
         """Logos beside install pages match the brand folder."""
-        for folder in ed.LOGO_PAGES:
-            for logo in ed.LOGOS:
+        for folder in settings.LOGO_PAGES:
+            for logo in settings.LOGOS:
                 with self.subTest(folder=folder, logo=logo):
-                    self.assertTrue(same_bytes(ed.DOCS / folder / logo,
-                                               ed.DOCS / 'assets/brand/png' / logo))
+                    self.assertTrue(same_bytes(settings.DOCS / folder / logo,
+                                               settings.DOCS / 'assets/brand/png' / logo))
 
     def test_package_logos_match_the_brand_folder(self):
         """Package logos match the brand folder."""
-        brand = ed.DOCS / 'assets/brand'
-        copies = [copy for copy in (ed.REPO / 'deploy').rglob('*.svg')
+        brand = settings.DOCS / 'assets/brand'
+        copies = [copy for copy in (settings.REPO / 'deploy').rglob('*.svg')
                   if (brand / copy.name).is_file()]
         self.assertTrue(copies)
         for copy in copies:
-            with self.subTest(copy=str(copy.relative_to(ed.REPO))):
+            with self.subTest(copy=str(copy.relative_to(settings.REPO))):
                 self.assertTrue(same_bytes(copy, brand / copy.name))
 
 

@@ -1,10 +1,10 @@
-"""Tests for the contrast report of dark_variant.py."""
+"""Tests for the dark variant of dark.py."""
 
 import pathlib
 import tempfile
 import unittest
 
-from dark_variant import write_dark
+from dark import write_dark
 
 PAGE = '''<mxfile><diagram name="docs/x.png"><mxGraphModel><root>
 <mxCell id="0"/><mxCell id="1" parent="0"/>

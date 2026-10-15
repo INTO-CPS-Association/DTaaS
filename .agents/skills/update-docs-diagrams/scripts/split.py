@@ -6,13 +6,11 @@ diagram its own page. A diagram is a set of cells that sit within a small gap
 of each other. Titles and loose notes made only of text are left out, because
 each documentation page already carries its own heading.
 
-Usage: python3 split_pages.py <input.drawio> <output.drawio>
+Run through `diagrams.py split <input.drawio> <output.drawio>`.
 """
 
 import copy
 import xml.etree.ElementTree as ET
-
-from drawio_style import drawio_arguments
 
 # Cells closer than this, in drawio units, belong to the same diagram.
 GAP = 40
@@ -135,17 +133,11 @@ def keep_only(root, keep, top_of, structural):
         root.remove(cell)
 
 
-def main():
-    """Write a drawio file with one page per diagram."""
-    source, target = drawio_arguments(__doc__)
+def split_file(source, target):
+    """Write a drawio file with one page per diagram, and return the page names."""
     tree = ET.parse(source)
     pages = [p for d in tree.getroot().iter('diagram') for p in split(d)]
     out = ET.Element('mxfile', {'host': 'drawio', 'pages': str(len(pages))})
     out.extend(pages)
     target.write_text(ET.tostring(out, encoding='unicode'))
-    for page in pages:
-        print(page.get('name'))
-
-
-if __name__ == '__main__':
-    main()
+    return [page.get('name') for page in pages]

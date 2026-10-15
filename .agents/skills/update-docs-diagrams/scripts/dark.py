@@ -16,35 +16,17 @@ in a diagram needs no change here:
 - The DTaaS lockup and the GitLab logo, dark text drawn in an image, are
   swapped for their white versions. Raster logos are left as they are.
 
-Used by export_diagrams.py, which exports the result next to each light image
+Used by export.py, which exports the result next to each light image
 with a -dark suffix.
 """
 
-import base64
 import re
 import xml.etree.ElementTree as ET
 
-import drawio_style as ds
-from palette import REPO
+import colours as c
+from drawio import dump_style, kind, parse_style, plain_text, svg_data
+from settings import WHITE_VERSIONS
 
-# The page of Material's slate scheme, hsl(220, 15%, 14%) with the hue the
-# site sets, so the image blends into the page. test_theme_colours.py checks it.
-SLATE = '#1e2229'
-LIGHT_TEXT = '#e8ecf3'
-DARK_TEXT = '#1e2229'
-LIGHT_LINE = '#a9b3c6'
-LIGHT_BLUE_LINE = '#8cc8e6'
-
-# Each logo drawn with dark text, and the white version its owner publishes.
-ASSETS = REPO / '.agents/skills/update-docs-diagrams/assets'
-WHITE_VERSIONS = [
-    (REPO / 'docs/assets/brand/dtaas-logo-full.svg',
-     REPO / 'docs/assets/brand/dtaas-logo-full-white.svg'),
-    (ASSETS / 'gitlab-logo-100-rgb.svg', ASSETS / 'gitlab-logo-200-rgb.svg'),
-]
-# Minimum WCAG contrast ratios, for text and for lines and borders.
-TEXT_MINIMUM = 4.5
-LINE_MINIMUM = 3.0
 # The colour of text written into a label, and not a background-color.
 COLOUR_IN_LABEL = re.compile(r'((?<![-\w])color\s*[:=]\s*"?\s*)(#[0-9a-fA-F]{6})', re.I)
 HEX = re.compile(r'^#[0-9a-fA-F]{6}$')
@@ -57,24 +39,17 @@ def hex_of(value, default):
     return value.lower() if HEX.match(value or '') else None
 
 
-def mix(colour, share):
-    """The slate page with a share of a colour mixed in."""
-    channels = [round(int(SLATE[i:i + 2], 16) * (1 - share) + int(colour[i:i + 2], 16) * share)
-                for i in (1, 3, 5)]
-    return '#' + ''.join(f'{c:02x}' for c in channels)
-
-
 def dark_fill(colour):
     """A light fill becomes a dark one that keeps its hue."""
-    return mix(colour, 0.2) if ds.luminance(colour) > 0.35 else colour
+    return c.mix(colour, 0.2) if c.luminance(colour) > 0.35 else colour
 
 
 def dark_line(colour):
     """A dark line becomes light, blue lines the cyan of the mark."""
-    if ds.luminance(colour) >= 0.3:
+    if c.luminance(colour) >= 0.3:
         return colour
     red, blue = int(colour[1:3], 16), int(colour[5:7], 16)
-    return LIGHT_BLUE_LINE if blue > red + 40 else LIGHT_LINE
+    return c.LIGHT_BLUE_LINE if blue > red + 40 else c.LIGHT_LINE
 
 
 def is_icon(style):
@@ -82,61 +57,62 @@ def is_icon(style):
     return str(style.get('shape', '')).startswith('mxgraph.')
 
 
-def kind(style, cell):
-    """What a cell draws: edge, group, image, text or shape."""
-    if cell.get('edge') == '1':
-        return 'edge'
-    if ('group',) in style:
-        return 'group'
+def role(style, cell):
+    """What a cell is for the dark variant: edge, group, image, text or shape.
+
+    Any cell that embeds an image counts as an image, whatever its shape,
+    since its logo may have a white version to swap in.
+    """
+    what = kind(style, cell)
+    if what in ('edge', 'group'):
+        return what
     if style.get('shape') == 'image' or 'image' in style:
         return 'image'
-    if ('text',) in style:
-        return 'text'
-    return 'shape'
+    return 'text' if ('text',) in style else 'shape'
 
 
 def dark_ground(style, what):
     """Darken the fill of a cell and return its new and its old ground."""
-    ground = SLATE
-    old_ground = hex_of(style.get('fillColor'), ds.WHITE) if what == 'shape' else ds.WHITE
+    ground = c.SLATE
+    old_ground = hex_of(style.get('fillColor'), c.WHITE) if what == 'shape' else c.WHITE
     # A text cell names no fill, except 'default', which drawio paints white.
     named = style.get('fillColor')
-    fill = hex_of(named, ds.WHITE if what == 'shape' or named == 'default' else None)
+    fill = hex_of(named, c.WHITE if what == 'shape' or named == 'default' else None)
     if not fill:
         return ground, old_ground
     if what == 'shape' and is_icon(style):
         # An icon is drawn in its fill, so a dark one turns light like a line.
-        if ds.luminance(fill) < 0.3:
+        if c.luminance(fill) < 0.3:
             style['fillColor'] = dark_line(fill)
         return ground, old_ground
     style['fillColor'] = ground = dark_fill(fill)
     return ground, old_ground
 
 
-def text_colour(ground, old_text, old_ground):
+def dark_text(ground, old_text, old_ground):
     """The text colour on a new ground, keeping hidden text hidden."""
-    if old_ground and ds.contrast(old_text, old_ground) < 1.5:
+    if old_ground and c.contrast(old_text, old_ground) < 1.5:
         # Text drawn in the colour of its ground was hidden on purpose, such
         # as a name under a logo that already spells it. It stays hidden.
         return ground
     # The one with the higher contrast. A mid-tone fill kept from the light
     # image may not reach 4.5 to 1 with either.
-    return max((LIGHT_TEXT, DARK_TEXT), key=lambda colour: ds.contrast(colour, ground))
+    return max((c.LIGHT_TEXT, c.DARK_TEXT), key=lambda colour: c.contrast(colour, ground))
 
 
 def low_contrast(cell, style, ground, hidden):
     """The ways one dark cell falls short of the contrast minimums."""
     found = []
     text = style.get('fontColor')
-    if ds.plain_text(cell.get('value')) and not hidden:
-        ratio = ds.contrast(text, ground)
-        if ratio < TEXT_MINIMUM:
+    if plain_text(cell.get('value')) and not hidden:
+        ratio = c.contrast(text, ground)
+        if ratio < c.TEXT_MINIMUM:
             found.append(f'text {ratio:.1f} to 1')
     stroke = hex_of(style.get('strokeColor'), None)
     # Lines and box borders are judged against the page around them.
     if stroke and (cell.get('edge') == '1' or cell.get('vertex') == '1'):
-        ratio = ds.contrast(stroke, SLATE)
-        if ratio < LINE_MINIMUM:
+        ratio = c.contrast(stroke, c.SLATE)
+        if ratio < c.LINE_MINIMUM:
             found.append(f'line {ratio:.1f} to 1')
     return found
 
@@ -151,18 +127,18 @@ def dark_details(style, what):
     if stroke and (what in ('shape', 'edge') or 'strokeColor' in style):
         style['strokeColor'] = dark_line(stroke)
     # A label background named 'default' is drawn white, like a hex one.
-    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], ds.WHITE):
-        style['labelBackgroundColor'] = SLATE
+    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], c.WHITE):
+        style['labelBackgroundColor'] = c.SLATE
 
 
 def dark_cell(cell, swaps):
     """Turn one cell into its dark variant, and return its contrast failures."""
-    style = ds.parse_style(cell.get('style'))
-    what = kind(style, cell)
+    style = parse_style(cell.get('style'))
+    what = role(style, cell)
     if what == 'group':
         return []
     if what == 'image':
-        image = ds.dump_style(style)
+        image = dump_style(style)
         for logo, white in swaps:
             image = image.replace(logo, white)
         cell.set('style', image)
@@ -170,17 +146,12 @@ def dark_cell(cell, swaps):
     old_text = hex_of(style.get('fontColor'), '#000000') or '#000000'
     ground, old_ground = dark_ground(style, what)
     dark_details(style, what)
-    text = text_colour(ground, old_text, old_ground)
+    text = dark_text(ground, old_text, old_ground)
     style['fontColor'] = text
-    cell.set('style', ds.dump_style(style))
+    cell.set('style', dump_style(style))
     if cell.get('value'):
         cell.set('value', COLOUR_IN_LABEL.sub(lambda m: m.group(1) + text, cell.get('value')))
     return low_contrast(cell, style, ground, hidden=text == ground)
-
-
-def encoded(path):
-    """The base64 form drawio keeps an embedded SVG in."""
-    return base64.b64encode(path.read_bytes()).decode('ascii')
 
 
 def write_dark(source, target):
@@ -190,11 +161,11 @@ def write_dark(source, target):
     what falls short) tuples.
     """
     tree = ET.parse(source)
-    swaps = [(encoded(logo), encoded(white)) for logo, white in WHITE_VERSIONS]
+    swaps = [(svg_data(logo), svg_data(white)) for logo, white in WHITE_VERSIONS]
     failures = []
     for page in tree.getroot().iter('diagram'):
         model = page.find('mxGraphModel')
-        model.set('background', SLATE)
+        model.set('background', c.SLATE)
         for cell in model.iter('mxCell'):
             if cell.get('style') is not None:
                 failures += [(page.get('name'), cell.get('id'), problem)
