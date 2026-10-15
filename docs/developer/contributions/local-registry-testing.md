@@ -1,22 +1,36 @@
 # Local Registry Testing
 
-Use this guide to try the GitLab container registry and a GitLab runner
-on a development machine. It picks up where
-[Local Server Testing](local-server-testing.md) ends, with the
-integrated GitLab package running under `intocps.test`.
-
-## Push and Pull Images
-
-The Docker daemon trusts a registry's certificate only if it finds the
-CA in `/etc/docker/certs.d/<host>:<port>/ca.crt`. Rancher Desktop links
-that directory to `~/.docker/certs.d` on the host:
+This guide covers the GitLab container registry and a GitLab runner on
+a development machine. It assumes the integrated GitLab package runs
+under `intocps.test`, as set up in
+[Local Server Testing](local-server-testing.md). The script's `check`
+command runs every test below:
 
 ```bash
-mkdir -p ~/.docker/certs.d/intocps.test:5050
-cp "$(mkcert -CAROOT)/rootCA.pem" ~/.docker/certs.d/intocps.test:5050/ca.crt
+python3 script/local_server/local_server.py check
 ```
 
-With Docker Engine, copy the file into `/etc/docker/certs.d/` instead.
+## Trust the Registry CA
+
+The Docker daemon pulls and pushes images, so the daemon, not only the
+browser, must trust the CA that signed the registry's certificate. The
+`host` command of the script does this for the runtime of the active
+Docker context. Where the CA goes depends on the runtime:
+
+| Runtime                 | CA location                                                                                         |
+| :---------------------- | :-------------------------------------------------------------------------------------------------- |
+| Docker Engine (Linux)   | `/etc/docker/certs.d/<host>:<port>/ca.crt`, written with `sudo`                                     |
+| Docker Engine in WSL2   | `/etc/docker/certs.d/<host>:<port>/ca.crt` inside the WSL distribution                              |
+| Docker Desktop          | macOS: `~/.docker/certs.d/<host>:<port>/ca.crt` or the keychain. Windows: the Windows certificate store. Restart Docker Desktop afterwards |
+| Rancher Desktop (Linux) | `~/.docker/certs.d/<host>:<port>/ca.crt`, which Rancher Desktop links into its virtual machine      |
+
+Docker does not document a location for Docker Desktop on Linux; the
+script uses `~/.docker/certs.d` there, as on macOS. With Docker Engine
+in WSL2, browsers on Windows also need the CA in the Windows
+certificate store and the hostname in the Windows `hosts` file.
+
+## Push and Pull by Hand
+
 Log in with a GitLab username and a personal access token that has the
 `api` or `write_registry` scope, then push and pull an image to a
 project:
@@ -28,59 +42,25 @@ docker push intocps.test:5050/<group>/<project>/alpine:3
 docker pull intocps.test:5050/<group>/<project>/alpine:3
 ```
 
-Use the port set in `REGISTRY_PORT` (integrated package) or
-`GITLAB_REGISTRY_PORT` (services CLI) if it is not `5050`.
+The `check` command does the same with the root token, in the project
+`dtaas/registry-test`.
 
-## Run Pipelines
+The registry port is `REGISTRY_PORT` in the integrated package's
+`config/.env`, or `GITLAB_REGISTRY_PORT` in the services CLI's
+`config/services.env`; both default to `5050`. The services CLI does
+not report the registry: `dtaas-services service status` lists only the
+containers.
 
-Attach the runner to the `dtaas-frontend` network so that its jobs
-reach GitLab and the registry through Traefik. In
-`~/dtaas-local-test/runner`, create `compose.yml`:
+## Pipeline Test
 
-```yaml
-services:
-  gitlab-runner:
-    container_name: gitlab-runner
-    image: gitlab/gitlab-runner:alpine
-    volumes:
-      - "./config.toml:/etc/gitlab-runner/config.toml:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./intocps.test.crt:/etc/gitlab-runner/certs/intocps.test.crt:ro"
-    networks:
-      - frontend
+The `check` command registers an instance runner and starts it from
+`~/dtaas-local-test/runner`. The runner and its jobs join the
+`dtaas-frontend` network, where `intocps.test` resolves to Traefik, and
+the runner gives jobs the CA in `CI_SERVER_TLS_CA_FILE`. The runner is
+not privileged.
 
-networks:
-  frontend:
-    name: dtaas-frontend
-    external: true
-```
-
-Copy `$(mkcert -CAROOT)/rootCA.pem` to `intocps.test.crt`, create an
-instance runner in GitLab (**Admin > CI/CD > Runners**), and write its
-token into `config.toml`:
-
-```toml
-concurrent = 2
-
-[[runners]]
-  name = "local-test-runner"
-  url = "https://intocps.test/gitlab/"
-  token = "glrt-..."
-  executor = "docker"
-  [runners.docker]
-    image = "alpine:3"
-    privileged = false
-    volumes = ["/cache"]
-    network_mode = "dtaas-frontend"
-```
-
-Start it with `docker compose up -d`. After editing `config.toml`, run
-`docker compose up -d --force-recreate`. An editor that replaces the
-file leaves the container reading the old copy.
-
-This pipeline publishes an image to the project's registry without a
-privileged runner, then runs a job inside it. The runner passes the CA
-to jobs in `CI_SERVER_TLS_CA_FILE`.
+The command then commits this pipeline to `dtaas/registry-test` and
+runs it:
 
 ```yaml
 stages: [publish, reuse]
@@ -103,15 +83,13 @@ reuse:
     - cat /etc/os-release
 ```
 
-If GitLab restarts while a job starts, the job can stay in `running`
-without a log. Cancel the pipeline and run it again.
+The first job publishes an image to the project's registry, and the
+second job runs inside that image. The check passes when both jobs
+succeed. If GitLab restarts while a job starts, the job can stay in
+`running` without a log; run `check` again.
 
 ## Clean Up
 
-```bash
-cd ~/dtaas-local-test/runner && docker compose down
-rm -r ~/.docker/certs.d/intocps.test:*
-```
-
-Then follow the clean-up steps of the
-[Local Server Testing](local-server-testing.md) guide.
+The `down` and `clean` commands of the script also stop the runner.
+The CA copies in `~/.docker/certs.d/` or `/etc/docker/certs.d/` stay
+until you delete them.

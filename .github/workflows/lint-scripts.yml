@@ -74,7 +74,7 @@ jobs:
       - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pylint
+          pip install flake8 pylint pytest
 
       - name: Run flake8
         run: |
@@ -94,6 +94,9 @@ jobs:
           pylint cli/ servers/ script/ deploy/services/cli/ deploy/workspace/ \
             --rcfile='${{ github.workspace }}/.pylintrc' \
             --fail-under=9 --recursive=y || echo "No Python files to lint"
+
+      - name: Test the local server script
+        run: python -m pytest script/local_server
 
   javascript-lint:
     name: Lint and Test Node Scripts (${{ matrix.skill }})

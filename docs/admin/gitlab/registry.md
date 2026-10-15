@@ -24,18 +24,10 @@ so no new certificate is needed.
 In the integrated package, Traefik terminates TLS on the registry port
 and forwards requests to GitLab without the OAuth 2.0 middleware.
 GitLab authenticates registry clients itself. With the services CLI,
-GitLab serves the registry over TLS directly.
-
-## Open the Firewall
-
-Allow incoming TCP connections on the registry port, for example:
-
-```bash
-sudo ufw allow 5050/tcp
-```
-
-Also open the port in any cloud security group or network firewall in
-front of the server.
+GitLab serves the registry over TLS directly. The services CLI does not
+report the registry: `dtaas-services service status` lists only the
+containers. The registry URL is `https://<HOSTNAME>:<GITLAB_REGISTRY_PORT>`,
+with both values taken from `config/services.env`.
 
 ## Upgrade an Existing Installation
 

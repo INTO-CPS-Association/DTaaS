@@ -40,6 +40,7 @@ Non-obvious. Use these rather than guessing a script name.
 | `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
 | `lib/gitlab_common` | `poetry run pytest` |
 | `deploy/services/cli` | `poetry run python -m dtaas_services.pkg.build && CI=true poetry run pytest --ignore=tests/system_tests` |
+| `script/local_server` | `python -m pytest script/local_server` (from the repository root) |
 
 Why each is written that way:
 

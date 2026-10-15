@@ -2,17 +2,13 @@
 
 The `server`, `secure-server` and `secure-server_with_integrated-gitlab`
 packages, and the services CLI, expect a server with a domain name and
-TLS certificates. This guide runs them on one development machine
-under the hostname `intocps.test`, with certificates from a local
-certificate authority.
+TLS certificates. This guide runs the integrated GitLab package on one
+development machine under the hostname `intocps.test`, with
+certificates from a local certificate authority.
 
 The `.test` top-level domain is reserved (RFC 6761) and never resolves
 on the public Internet, so the hostname cannot hide a real website.
 Do not use `intocps.org`; it is the project's public domain.
-
-The commands below are for Linux with
-[Rancher Desktop](https://rancherdesktop.io/) as the container runtime.
-Steps that apply only to Rancher Desktop say so.
 
 ## What This Covers
 
@@ -21,196 +17,139 @@ sign-in flow, the GitLab container registry and GitLab runners. It does
 not test public certificates, public DNS, firewalls or access from other
 machines.
 
-## 1. Add the Hostname
+## Prerequisites
+
+- Linux with Python 3.10 or later and `sudo` rights.
+- Docker Engine, Docker Desktop or [Rancher Desktop](https://rancherdesktop.io/),
+  running. GitLab needs at least 4 GB of memory; on Rancher Desktop,
+  give the virtual machine 8 GB and keep Kubernetes off:
+
+  ```bash
+  rdctl start --kubernetes.enabled=false --container-engine.name=moby \
+    --virtual-machine.memory-in-gb 8 --virtual-machine.number-cpus 4
+  ```
+
+- [mkcert](https://github.com/FiloSottile/mkcert), or `apt-get` so that
+  the script can install it.
+
+## Run the Script
+
+From the repository root:
 
 ```bash
-echo "127.0.0.1 intocps.test" | sudo tee -a /etc/hosts
+python3 script/local_server/local_server.py all
 ```
 
-The browser, `curl` and `docker login` now resolve `intocps.test` to
-the local machine. Rancher Desktop forwards the host's `/etc/hosts` to
-its virtual machine and to containers, where `127.0.0.1` means the
-container itself. Step 6 handles that.
+The script asks for the `sudo` password when it changes the host. The
+first run takes about ten minutes, most of it waiting for GitLab. It
+ends with the [registry check](local-registry-testing.md) and prints
+`Registry check passed.` when everything works.
 
-## 2. Allow Ports 80 and 443 (Rancher Desktop)
-
-Rancher Desktop runs as a normal user, so Linux stops it from binding
-ports below 1024. Lower the limit:
-
-```bash
-sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
-# Keep the setting after a reboot (optional)
-echo "net.ipv4.ip_unprivileged_port_start=80" |
-  sudo tee /etc/sysctl.d/99-rancher-desktop.conf
-```
-
-GitLab needs at least 4 GB of memory. Give the Rancher Desktop virtual
-machine 8 GB and keep Kubernetes off:
-
-```bash
-rdctl start --kubernetes.enabled=false --container-engine.name=moby \
-  --virtual-machine.memory-in-gb 8 --virtual-machine.number-cpus 4
-```
-
-## 3. Create a Local Certificate Authority
-
-Install [mkcert](https://github.com/FiloSottile/mkcert). `libnss3-tools`
-lets mkcert add its root CA to Firefox and Chrome.
-
-```bash
-sudo apt install mkcert libnss3-tools
-mkcert -install
-```
-
-`mkcert -install` creates a root CA in `$(mkcert -CAROOT)` and adds it
-to the system and browser trust stores. Restart the browser afterwards.
-
-## 4. Prepare a Package
-
-Copy the package out of the repository so that test data and secrets
-stay out of Git. On Rancher Desktop the copy must be under your home
-directory, which is the only host directory the virtual machine mounts.
-
-```bash
-mkdir -p ~/dtaas-local-test
-cp -r deploy/dtaas/docker/secure-server_with_integrated-gitlab \
-  ~/dtaas-local-test/integrated-gitlab
-cd ~/dtaas-local-test/integrated-gitlab
-cp config/.env.example config/.env
-cp config/conf.server.example config/conf.server
-cp config/client.js.example config/client.js
-```
-
-Set `SERVER_DNS=intocps.test` in `config/.env`, and replace the example
-hostname with `intocps.test` in every URL in `config/.env` and
-`config/client.js`. Then create the TLS certificates:
-
-```bash
-mkcert -cert-file certs/fullchain.pem -key-file certs/privkey.pem \
-  intocps.test localhost 127.0.0.1 ::1
-```
-
-For the `server` and `secure-server` packages, register the OAuth 2.0
-applications on <https://gitlab.com> with redirect URIs under
-`https://intocps.test`. The browser follows the redirects, so
-gitlab.com does not need to reach the machine.
-
-## 5. Build a CA-Aware traefik-forward-auth Image
-
-`traefik-forward-auth` exchanges the OAuth 2.0 code with GitLab from
-inside its container. The upstream `thomseddon/traefik-forward-auth:latest`
-image does not trust the mkcert CA, so an exchange over HTTPS with a
-GitLab that uses an mkcert certificate fails with
-`x509: certificate signed by unknown authority`. That happens, for
-example, when the `secure-server` package uses the services CLI GitLab
-at `https://intocps.test:8090/gitlab`. In the integrated GitLab package
-the exchange goes to `http://gitlab` inside the Docker network, so the
-upstream image works there too.
-
-Build an image that trusts the mkcert CA:
-
-```bash
-mkdir -p ~/dtaas-local-test/forward-auth
-cd ~/dtaas-local-test/forward-auth
-cp "$(mkcert -CAROOT)/rootCA.pem" rootCA.crt
-cat > Dockerfile <<'EOF'
-# Stage 1: prepare the root CA certificate
-FROM alpine:latest AS cert-builder
-RUN apk add --no-cache ca-certificates
-COPY rootCA.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
-
-# Stage 2: copy the updated certificate bundle into the final image
-FROM thomseddon/traefik-forward-auth:latest
-COPY --from=cert-builder /etc/ssl/certs/ca-certificates.crt \
-     /etc/ssl/certs/ca-certificates.crt
-CMD ["traefik-forward-auth"]
-EOF
-docker build -t traefik-forward-auth-local:latest .
-```
-
-The [self-signed certificates guide](../../admin/guides/self-signed-certs.md)
-explains the same image for servers.
-
-## 6. Add a Compose Override
-
-Create `compose.local.yml` next to `docker-compose.yml`, instead of
-editing the package's compose file:
-
-```yaml
-services:
-  traefik:
-    networks:
-      frontend:
-        aliases:
-          - intocps.test
-      users: {}
-  traefik-forward-auth:
-    image: traefik-forward-auth-local:latest
-  gitlab:
-    hostname: gitlab
-    volumes:
-      - gitlab-config:/etc/gitlab
-      - gitlab-logs:/var/log/gitlab
-      - gitlab-data:/var/opt/gitlab
-
-volumes:
-  gitlab-config:
-  gitlab-logs:
-  gitlab-data:
-```
-
-- The network alias makes `intocps.test` resolve to Traefik inside the
-  `dtaas-frontend` network, for containers such as GitLab runners.
-- Docker also publishes a container's `hostname` on the network. The
-  package sets GitLab's hostname to `SERVER_DNS`, which would make
-  `intocps.test` resolve to GitLab instead, so the override renames it.
-- The named volumes replace the GitLab bind mounts, so GitLab's data
-  stays on the virtual machine's disk rather than on the `sshfs` mount
-  through which Rancher Desktop shares the home directory.
-
-On Rancher Desktop, create the bind-mounted directories before the
-first start, because Docker cannot create them on the `sshfs` mount:
-
-```bash
-mkdir -p logs/logger
-cp -R files/template files/user1
-cp -R files/template files/user2
-```
-
-Start the services with both files:
-
-```bash
-docker compose --env-file config/.env \
-  -f docker-compose.yml -f compose.local.yml up -d
-```
-
-GitLab takes several minutes to start. Its container reports
-`healthy` before the web interface is ready; wait until
-<https://intocps.test/gitlab> loads. The `root` password is in the
-container:
+Then open <https://intocps.test> and sign in as `user1` or `user2`. The
+passwords, and a root access token for the GitLab API, are in
+`~/dtaas-local-test/secrets/`. The GitLab `root` password is in the
+GitLab container:
 
 ```bash
 docker exec gitlab grep Password: /etc/gitlab/initial_root_password
 ```
 
-Continue with the package's install guide from the step that creates
-the OAuth 2.0 applications.
+`all` runs these commands in order. Each one can also run on its own
+and can be repeated:
 
-## 7. Test the Registry and Runners
+| Command     | What it does                                                       |
+| :---------- | :----------------------------------------------------------------- |
+| `host`      | Changes the host: hosts entry, port limit, mkcert CA, registry CA  |
+| `package`   | Copies and configures the package, builds the forward-auth image   |
+| `up`        | Starts the services and waits until GitLab and the registry answer |
+| `configure` | Creates the GitLab users and the OAuth 2.0 applications            |
+| `check`     | Tests the registry by hand and from a pipeline                     |
+| `down`      | Stops the runner and the services, keeping GitLab's data           |
+| `clean`     | Stops everything, deletes GitLab's data and the hosts entry        |
 
-[Local Registry Testing](local-registry-testing.md) continues from
-here with the container registry and a GitLab runner.
+Every command accepts `--hostname` (default `intocps.test`),
+`--registry-port` (default `5050`) and `--workdir` (default
+`~/dtaas-local-test`). On Rancher Desktop the working directory must be
+under your home directory, the only host directory its virtual machine
+mounts.
 
-## 8. Clean Up
+## What the Script Changes
+
+### Host
+
+The script adds `127.0.0.1 intocps.test` to `/etc/hosts`.
+On Rancher Desktop, which runs as a normal user, it also lowers
+`net.ipv4.ip_unprivileged_port_start` to 80 so that ports 80 and 443
+can be forwarded, and keeps the setting in
+`/etc/sysctl.d/99-rancher-desktop.conf`. It installs mkcert if needed
+and runs `mkcert -install`, which adds the mkcert root CA to the system
+and browser trust stores. Restart the browser afterwards.
+
+### Package
+
+The script copies the package to
+`~/dtaas-local-test/integrated-gitlab`, so test data and secrets stay
+out of Git. It sets `SERVER_DNS`, `OAUTH_URL` and `REGISTRY_PORT` in
+`config/.env`, replaces `intocps.org` in `config/client.js`, and creates
+a certificate for `intocps.test`. It also creates the bind-mounted
+directories, because Docker on Rancher Desktop cannot create them on
+the `sshfs` mount of the home directory.
+
+### Forward-Auth Image
+
+The upstream
+`thomseddon/traefik-forward-auth:latest` image does not trust the
+mkcert CA, so an OAuth 2.0 code exchange over HTTPS with a GitLab that
+uses an mkcert certificate fails with
+`x509: certificate signed by unknown authority`. That happens, for
+example, when the `secure-server` package uses the services CLI GitLab
+at `https://intocps.test:8090/gitlab`. The script builds
+`traefik-forward-auth-local:latest`, which adds the mkcert CA to the
+upstream image as the
+[self-signed certificates guide](../../admin/guides/self-signed-certs.md)
+describes. In the integrated GitLab package the exchange goes to
+`http://gitlab` inside the Docker network, so the upstream image would
+also work there.
+
+### Compose Override
+
+Next to `docker-compose.yml` the script writes
+`compose.local.yml`, which the `up` and `down` commands pass to Docker
+Compose:
+
+- A network alias makes `intocps.test` resolve to Traefik inside the
+  `dtaas-frontend` network, for containers such as GitLab runners.
+- GitLab's `hostname` becomes `gitlab`. Docker publishes a container's
+  hostname on its networks, and the package sets GitLab's hostname to
+  `SERVER_DNS`, which would make `intocps.test` resolve to GitLab
+  instead of Traefik.
+- The override uses the forward-auth image above.
+- Named volumes replace the GitLab bind mounts, so GitLab's data stays
+  on the virtual machine's disk instead of the `sshfs` mount.
+
+### GitLab
+
+GitLab reports `healthy` minutes before its web interface
+works, so the script waits for the sign-in page and the registry
+instead. It then creates `user1` and `user2` with the emails that
+`config/conf.server` allows, registers the two OAuth 2.0 applications,
+writes their IDs into `config/.env` and `config/client.js`, and
+recreates the `client` and `traefik-forward-auth` services.
+
+## Other Packages
+
+The `server` and `secure-server` packages use OAuth 2.0 applications on
+<https://gitlab.com>, which the script cannot create. Prepare them by
+hand with the same hostname and certificate: register the applications
+with redirect URIs under `https://intocps.test`. The browser follows
+the redirects, so gitlab.com does not need to reach the machine.
+
+## Clean Up
 
 ```bash
-cd ~/dtaas-local-test/integrated-gitlab
-docker compose --env-file config/.env \
-  -f docker-compose.yml -f compose.local.yml down -v
+python3 script/local_server/local_server.py clean
 rdctl shutdown
 ```
 
-To undo the machine changes, remove the `intocps.test` line from
-`/etc/hosts`, delete `/etc/sysctl.d/99-rancher-desktop.conf`, and run
-`mkcert -uninstall` to remove the root CA from the trust stores.
+`clean` keeps the mkcert CA and the port setting. To remove them, run
+`mkcert -uninstall` and delete `/etc/sysctl.d/99-rancher-desktop.conf`.
