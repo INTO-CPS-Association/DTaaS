@@ -113,6 +113,7 @@ nav:
       - GitLab:
           - Server: admin/gitlab/index.md
           - Integration: admin/gitlab/integration.md
+          - Container Registry: admin/gitlab/registry.md
           - Runner:
               - Linux: admin/gitlab/runner-linux.md
               - Windows: admin/gitlab/runner-windows.md

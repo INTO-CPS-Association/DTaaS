@@ -1,8 +1,8 @@
 # Local Registry Testing
 
-This guide tests the GitLab container registry and GitLab runners on a
-development machine. It continues the
-[Local Server Testing](local-server-testing.md) guide, with the
+Use this guide to try the GitLab container registry and a GitLab runner
+on a development machine. It picks up where
+[Local Server Testing](local-server-testing.md) ends, with the
 integrated GitLab package running under `intocps.test`.
 
 ## Push and Pull Images
@@ -33,8 +33,8 @@ Use the port set in `REGISTRY_PORT` (integrated package) or
 
 ## Run Pipelines
 
-Run a runner on the `dtaas-frontend` network so that its jobs reach
-GitLab and the registry through Traefik. In
+Attach the runner to the `dtaas-frontend` network so that its jobs
+reach GitLab and the registry through Traefik. In
 `~/dtaas-local-test/runner`, create `compose.yml`:
 
 ```yaml
@@ -75,8 +75,8 @@ concurrent = 2
 ```
 
 Start it with `docker compose up -d`. After editing `config.toml`, run
-`docker compose up -d --force-recreate`: editors that replace the file
-leave the container reading the old copy.
+`docker compose up -d --force-recreate`. An editor that replaces the
+file leaves the container reading the old copy.
 
 This pipeline publishes an image to the project's registry without a
 privileged runner, then runs a job inside it. The runner passes the CA

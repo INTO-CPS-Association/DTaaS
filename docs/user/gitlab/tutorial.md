@@ -77,10 +77,10 @@ $git push origin
 
 ## Container Registry
 
-The integrated GitLab includes a private container registry. Each
-GitLab project can store container images, for example ready-to-use
-environments for digital twins. The registry listens on its own port,
-`5050` unless the administrator has chosen another one.
+The DTaaS GitLab has a private container registry. Each GitLab project
+can store container images, such as ready-to-use environments for its
+digital twins. The registry has its own port, `5050` unless the
+administrator has chosen another one.
 
 Log in with your GitLab username and a PAT that has the `api` or
 `write_registry` scope, then push and pull images under your project:
