@@ -46,14 +46,18 @@ on GitHub.
 
 ## Documentation
 
-1. Talasila, P., Gomes, C., Mikkelsen, P. H., Arboleda, S. G., Kamburjan,
-   E., & Larsen, P. G. (2023).
-   Digital Twin as a Service (DTaaS): A Platform for
-   Digital Twin Developers and Users.
-   In 2023 IEEE Smart World Congress (SWC), pp. 1-8. IEEE.
-   [doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
-   Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
-1. Astitva Sehgal for developer and example documentation.
-1. Jady Pamella Barbacena da Silva for the documentation theme and diagrams.
-1. Tanusree Roy and Farshid Naseri for asking interesting questions
-   that ended up in the FAQ.
+The platform is described in this paper:
+
+Talasila, P., Gomes, C., Mikkelsen, P. H., Arboleda, S. G., Kamburjan,
+E., & Larsen, P. G. (2023).
+Digital Twin as a Service (DTaaS): A Platform for
+Digital Twin Developers and Users.
+In 2023 IEEE Smart World Congress (SWC), pp. 1-8. IEEE.
+[doi:10.1109/SWC57546.2023.10448890](https://doi.org/10.1109/SWC57546.2023.10448890).
+Preprint: [arXiv:2305.07244](https://arxiv.org/abs/2305.07244).
+
+| Documentation Contribution                 | Contributors                    |
+| :----------------------------------------- | :------------------------------ |
+| Developer and example documentation        | Astitva Sehgal                  |
+| Documentation theme and diagrams           | Jady Pamella Barbacena da Silva |
+| Questions that ended up in the FAQ         | Tanusree Roy and Farshid Naseri |

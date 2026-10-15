@@ -404,3 +404,12 @@ The hand edits, by page:
     between Reusable Assets and the configuration box.
   The layout check now also reports an icon under the label of its box and
   a connector label that crosses a border or covers a picture.
+- A review of every placed image against the first images, from before the
+  theme work, found more, also fixed by hand:
+  - The red padlock of `dtaas-userview.png` is the outline padlock of the
+    icon set, in the colour of the person beside it.
+  - `secure-server-gitlab/server.png` shows two people, as the first image.
+  - The running figures of the twins on `architecture.png` are back.
+  - The Else line of `design-sequence.png` ends in a circle again.
+  - Mandatory of `asset-relationship.png` and User of
+    `current-status-developer.png` moved clear of the boxes and icons.

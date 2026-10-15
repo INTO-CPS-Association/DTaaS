@@ -16,6 +16,7 @@ where drawio routes it. Boxes and text come from the drawio file.
 
 import re
 import xml.etree.ElementTree as ET
+from collections import Counter
 
 from drawio import Page, kind, parse_style
 from geometry import crosses, far, heading, inside, slanted, SLACK
@@ -76,16 +77,24 @@ def drawn_lines(svg_root):
 
 
 def svg_offset(svg_root, page):
-    """The shift from page coordinates to the coordinates of the SVG."""
+    """The shift from page coordinates to the coordinates of the SVG.
+
+    Each box drawn as a rectangle of its own size gives the shift. An icon
+    can hold a rectangle of the same width somewhere inside it, so the shift
+    most boxes agree on is taken.
+    """
+    votes = Counter()
     for group in svg_root.iter(f'{SVG}g'):
         cell = page.cells.get(group.get('data-cell-id'))
         shape = next(group.iter(f'{SVG}rect'), None)
         if cell is None or shape is None or cell.get('vertex') != '1':
             continue
         box = page.absolute(cell)
-        if box and abs(float(shape.get('width', -1)) - (box[2] - box[0])) < 1:
-            return float(shape.get('x')) - box[0], float(shape.get('y')) - box[1]
-    return 0.0, 0.0
+        size = (float(shape.get('width', -1)), float(shape.get('height', -1)))
+        if box and abs(size[0] - (box[2] - box[0])) < 1 and abs(size[1] - (box[3] - box[1])) < 1:
+            votes[(round(float(shape.get('x')) - box[0], 1),
+                   round(float(shape.get('y')) - box[1], 1))] += 1
+    return votes.most_common(1)[0][0] if votes else (0.0, 0.0)
 
 
 def page_line(d, offset):
