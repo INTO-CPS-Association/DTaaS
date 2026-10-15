@@ -5,6 +5,7 @@ import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
 from src.cmd_user_utils import StagedUsers
+from src.pkg.registry import register_new_users
 # pylint: disable=redefined-outer-name
 
 
@@ -24,6 +25,7 @@ def mock_user_pkg():
     ):
         mock_cfg.return_value = MagicMock()
         mock_cfg.return_value.get_gitlab_provision.return_value = (False, None)
+        mock_cfg.return_value.get_starting_users.return_value = ([], None)
         yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
 
 
@@ -45,7 +47,9 @@ def test_delete_user_dry_run(runner, mock_user_pkg):
 
     assert result.exit_code == 0
     assert "Dry run complete" in result.output
-    mock_user_pkg["delete"].assert_called_once_with(["alice"], dry_run=True)
+    mock_user_pkg["delete"].assert_called_once_with(
+        ["alice"], dry_run=True, starting=[]
+    )
 
 
 def test_delete_users_with_file(runner, mock_user_pkg, tmp_path):
@@ -61,7 +65,9 @@ def test_delete_users_with_file(runner, mock_user_pkg, tmp_path):
     result = runner.invoke(dtaas, ["user", "delete", "--file", str(csv_file)])
 
     assert result.exit_code == 0
-    mock_user_pkg["delete"].assert_called_once_with(["alice", "bob"], dry_run=False)
+    mock_user_pkg["delete"].assert_called_once_with(
+        ["alice", "bob"], dry_run=False, starting=[]
+    )
 
 
 def test_add_rejects_an_unsupported_deployment(runner, mock_user_pkg):
@@ -208,3 +214,23 @@ def test_add_points_at_configured_passwords_even_when_gitlab_fails(
 
     assert result.exit_code != 0
     remind.assert_called_once_with(["alice"])
+
+
+def test_add_retries_a_lost_token_without_a_password(
+    runner, mock_user_pkg, tmp_path, monkeypatch
+):
+    """'dtaas user add alice' for an account with an id and no token asks for
+    no password and hands alice to add_users, where her token is retried."""
+    monkeypatch.chdir(tmp_path)
+    register_new_users({"alice": {"email": "a@x.io", "gitlab_user_id": 7}}, [])
+    config = mock_user_pkg["config"].return_value
+    config.get_gitlab_provision.return_value = (True, None)
+    for getter in ("get_starting_users", "get_user_emails", "get_user_passwords"):
+        getattr(config, getter).return_value = ({}, None)
+    mock_user_pkg["add"].return_value = None
+
+    result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code == 0, result.output
+    assert "GitLab password" not in result.output
+    assert mock_user_pkg["add"].call_args.kwargs["passwords"] == {"alice": None}

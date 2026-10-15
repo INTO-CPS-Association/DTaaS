@@ -388,8 +388,9 @@ A run adds to the file and never rewrites the other entries. Should a
 user's entry ever be replaced, the old token is kept under a
 `"<username> (superseded <timestamp>)"` key and a warning says to revoke
 it in GitLab if it is still active. `user delete` revokes the deleted
-users' tokens on GitLab and then drops their entries; a token that could
-not be revoked keeps its entry. Their GitLab accounts stay.
+users' tokens on GitLab, starting users' included, and then drops their
+entries; a token that could not be revoked keeps its entry. Their GitLab
+accounts stay.
 
 Before creating any account, `user add` checks that this file can be
 read and written, and removes a leftover `gitlab_user_tokens.json.tmp`
@@ -400,8 +401,8 @@ on GitLab at once, and the run issues no further tokens.
 (`gitlab_user_id`) and whether a token was issued
 (`gitlab_pat_issued`). That is how a re-run knows what is already done:
 a user with an account id but no token gets a new token for that
-account, after any token an earlier run issued but never saved is
-revoked,
+account, with no password needed, after any token an earlier run
+issued but never saved is revoked,
 and a user with a token gets nothing more. Starting users carry the
 same two markers in the separate `starting_users` section, since they
 have no entry under `users`:

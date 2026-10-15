@@ -30,13 +30,20 @@ def test_save_gitlab_tokens_keeps_superseded_entry_rather_than_overwriting(
     assert "revoke it there" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize(
+    "new_id,line",
+    [
+        (42, "GitLab account and token created for 'alice'"),
+        (None, "GitLab token issued for 'alice'"),
+    ],
+)
 def test_an_account_is_reported_once_its_token_is_on_disk(
-    tmp_path, monkeypatch, capsys
+    capsys, token_file, new_id, line
 ):
     """A run that creates an account and then fails later used to read as a
-    total failure, with nothing saying a live token had just been issued."""
-    monkeypatch.chdir(tmp_path)
-    result = SimpleNamespace(username="alice", new_id=42, token="glpat-new")
+    total failure, with nothing saying a live token had just been issued. A
+    retry (no new account id) reports the token alone."""
+    result = SimpleNamespace(username="alice", new_id=new_id, token="glpat-new")
 
     with patch("src.pkg.users_gitlab_records.set_gitlab_user_ids"), patch(
         "src.pkg.users_gitlab_records.set_gitlab_pat_issued"
@@ -44,7 +51,7 @@ def test_an_account_is_reported_once_its_token_is_on_disk(
         users_gitlab_records.persist_account_result(result)
 
     out = capsys.readouterr().out
-    assert "GitLab account and token created for 'alice'" in out
+    assert line in out
     assert "gitlab_user_tokens.json" in out
 
 

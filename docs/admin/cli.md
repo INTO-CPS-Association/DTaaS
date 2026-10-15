@@ -702,17 +702,20 @@ GitLab administrator:
 ![Administrator user type](root-edit.png)
 
 **2. Create its token**, signed in as that account, under
-**User Settings > Access Tokens**. Tick the `api` scope, and `admin_mode`
-too if the instance has Admin Mode enabled, then export the token where
-you run `dtaas`:
+**User settings > Access > Personal access tokens** (**Add new token**).
+Tick the `api` scope, and `admin_mode` too if the instance has Admin
+Mode enabled, then export the token where you run `dtaas`:
+
+![Create a personal access token](create-PAT.png)
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-Choose an expiry you will rotate, because provisioning stops working the
-day the token lapses. When `DTAAS_GITLAB_PAT` and `[gitlab].pat` hold
-different tokens, the exported one is used and the CLI prints
+Choose an expiry you will rotate, because provisioning stops working
+the day the token lapses. When
+`DTAAS_GITLAB_PAT` and `[gitlab].pat` hold different tokens, the
+exported one is used and the CLI prints
 `Note: using the admin token from DTAAS_GITLAB_PAT.`
 
 ##### Scenarios
@@ -825,8 +828,18 @@ command after a partial failure is always safe. When the account was
 created but its token was not saved, the retry first revokes any token
 named `dtaas` that an earlier run issued, then issues a new one to that
 same account (the registry keeps its id) instead of creating the
-account again. A token that is lost or revoked is replaced in GitLab
-directly.
+account again. No password is needed for that, so naming the user again
+is enough:
+
+```console
+$ dtaas user add --email alice@intocps.org alice
+'alice' already exists, skipping
+GitLab token issued for 'alice'.
+  The token is in gitlab_user_tokens.json.
+No new users added.
+```
+
+A token that is lost or revoked is replaced in GitLab directly.
 
 **A token that cannot be saved.** Before creating any account, `user
 add` checks `gitlab_user_tokens.json`. A leftover
@@ -981,26 +994,31 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
     adding the same username again: `user add` cannot issue a token for
     an account it did not create.
 
-    ```text
-    GitLab token revoked for 'alice'.
-      The GitLab account stays. Delete it in GitLab before adding the same username again.
-    Users deleted successfully
-    ```
+    A `dtaas.toml` starting user is handled the same way on GitLab: its
+    token is revoked and its markers are cleared. Its workspace is one of
+    the installation's own, defined in `docker-compose.yml`, so
+    `user delete` keeps its container and forward-auth rule.
 
-    When a token cannot be revoked (GitLab unreachable, admin token
-    missing or refused), the rest of the delete still completes, the
-    token stays in `gitlab_user_tokens.json`, and the command fails
-    naming the user. Revoke that token in GitLab:
+```text
+GitLab token revoked for 'alice'.
+  The GitLab account stays. Delete it in GitLab before adding the same username again.
+Users deleted successfully
+```
 
-    ```text
-    GitLab token not revoked for 'alice'.
-      No GitLab PAT configured for provisioning.
-        Export DTAAS_GITLAB_PAT, or set [gitlab].pat in dtaas.toml.
-      The token is still valid and stays in gitlab_user_tokens.json; revoke it in GitLab.
-    Error: Error while deleting users
-      GitLab tokens not revoked for: alice
-        Their workspaces were still deleted.
-    ```
+When a token cannot be revoked (GitLab unreachable, admin token missing
+or refused), the rest of the delete still completes, the token stays in
+`gitlab_user_tokens.json`, and the command fails naming the user.
+Revoke that token in GitLab:
+
+```text
+GitLab token not revoked for 'alice'.
+  No GitLab PAT configured for provisioning.
+    Export DTAAS_GITLAB_PAT, or set [gitlab].pat in dtaas.toml.
+  The token is still valid and stays in gitlab_user_tokens.json; revoke it in GitLab.
+Error: Error while deleting users
+  GitLab tokens not revoked for: alice
+    Their workspaces were still deleted.
+```
 
 **Options:**
 

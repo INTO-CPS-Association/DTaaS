@@ -110,17 +110,23 @@ def persist_account_result(result):
 
     The account is reported here rather than when it is created, so the line
     appears only once its token is safely on disk, and a run that fails
-    later still shows that a live token was issued.
+    later still shows that a live token was issued. A retry, which issues a
+    token for an account an earlier run created, says only that.
     """
     if result.new_id is not None:
         set_gitlab_user_ids({result.username: result.new_id})
     if result.token:
         _save_gitlab_tokens({result.username: result.token})
         set_gitlab_pat_issued([result.username])
-        echo_hint(
-            f"GitLab account and token created for '{result.username}'.",
-            f"The token is in {GITLAB_USER_TOKENS_FILE}.",
-        )
+        echo_hint(_issued_summary(result), f"The token is in {GITLAB_USER_TOKENS_FILE}.")
+
+
+def _issued_summary(result):
+    """The line reporting *result*'s token: with its account when this run
+    created that account (a new id), alone on a retry."""
+    if result.new_id is None:
+        return f"GitLab token issued for '{result.username}'."
+    return f"GitLab account and token created for '{result.username}'."
 
 
 def _forget_gitlab_tokens(usernames):

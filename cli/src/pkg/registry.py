@@ -114,10 +114,15 @@ def register_new_users(new_users, reserved, path=REGISTRY_FILE):
 
 
 def remove_from_registry(usernames, path=REGISTRY_FILE):
-    """Drop *usernames* from the store and persist it; returns the removed names."""
+    """Drop *usernames* from the store, and their GitLab markers from the
+    starting user section, and persist both; returns the names removed from
+    the store."""
     users = load_registry(path)
     removed = [name for name in usernames if users.pop(name, None) is not None]
     _write_registry(users, path)
+    starting = _section(path, STARTING_KEY)
+    if [name for name in usernames if starting.pop(name, None) is not None]:
+        _write_section(starting, STARTING_KEY, path)
     return removed
 
 

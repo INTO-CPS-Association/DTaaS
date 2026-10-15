@@ -752,6 +752,9 @@ their own:
   another username or email, and run the same command again.
 - Any other GitLab failure makes `user add` exit non-zero, naming the users
   concerned; their containers stay up.
+- An account created on an earlier run whose token was not issued or
+  saved needs no password on a retry: name the user again and only the
+  token is issued.
 - A token is never left live without being saved: when
   `gitlab_user_tokens.json` cannot be read or written no account is
   created, a token that cannot be saved is revoked at once, and a retry
@@ -866,7 +869,10 @@ removed from the registry.
 > error naming the user: revoke that token in GitLab. To remove an account, a
 > GitLab administrator deletes it in GitLab. **Do that before re-adding the
 > same username**: `user add` finds the account already there, cannot know its
-> credentials, and so issues no token for it.
+> credentials, and so issues no token for it. A `dtaas.toml` starting user is
+> handled the same way on GitLab (token revoked, markers cleared), but its
+> workspace is one of the installation's own, defined in `docker-compose.yml`,
+> so `user delete` keeps its container and forward-auth rule.
 
 Preview a removal without making any changes with `--dry-run`:
 

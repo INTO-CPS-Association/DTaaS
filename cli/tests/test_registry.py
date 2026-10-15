@@ -46,6 +46,16 @@ def test_remove_from_registry_drops_named_users(tmp_path):
     assert set(load_registry(path)) == {"bob"}
 
 
+def test_remove_from_registry_drops_starting_user_markers(tmp_path):
+    """A deleted starting user's GitLab markers go too, others stay."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_starting_users(["foo", "bar"], path)
+    set_gitlab_user_ids({"foo": 7, "bar": 8}, path)
+
+    assert remove_from_registry(["foo"], path) == []
+    assert load_starting_gitlab(path) == {"bar": {"gitlab_user_id": 8}}
+
+
 def test_set_desired_status_updates_only_known_users(tmp_path):
     """set_desired_status updates registry members, silently skips unknown names."""
     path = str(tmp_path / "dtaas.users.registry.json")

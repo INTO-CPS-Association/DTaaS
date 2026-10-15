@@ -46,24 +46,34 @@ def _account_skipped(candidate, reason):
     return GitlabUserResult(candidate.username, None, None, False)
 
 
+def _has_work(candidate):
+    """True when the account step can do something for *candidate*: create
+    its account (a password), or retry the token of an account this CLI
+    created earlier (an account id)."""
+    has_input = candidate.password or candidate.existing_user_id is not None
+    return bool(has_input) and not candidate.pat_issued
+
+
 def _account_step(gl, candidate):
     """Create one candidate's GitLab account and Personal Access Token.
 
     Skipped when the PAT was already issued, since a second token would be
-    live on GitLab with no record of it, and skipped without a password
-    (there is nothing to create an account with). The PAT check comes first
-    so a finished account is reported as that, not as missing a password.
+    live on GitLab with no record of it. An account this CLI created earlier
+    (an account id, no token) needs no password: only its token is retried.
+    Any other candidate is skipped without a password, as there is nothing to
+    create an account with. The PAT check comes first so a finished account
+    is reported as that, not as missing a password.
     """
     if candidate.pat_issued:
         return _account_skipped(candidate, PAT_ISSUED_NOTICE)
-    if not candidate.password:
+    if not _has_work(candidate):
         return _account_skipped(candidate, "No GitLab password supplied for this user.")
     result = gitlabPkg.ensure_user_resources(
         gl,
         gitlabPkg.GitlabUser(
             candidate.username,
             candidate.email,
-            candidate.password,
+            candidate.password or "",
             existing_user_id=candidate.existing_user_id,
         ),
     )
@@ -143,7 +153,7 @@ def _persisted(gl, candidate, result):
 
 def _attemptable(candidates):
     """The candidates a run would create an account or a token for."""
-    return [c.username for c in candidates if c.password and not c.pat_issued]
+    return [c.username for c in candidates if _has_work(c)]
 
 
 def _skip_rest(candidates):

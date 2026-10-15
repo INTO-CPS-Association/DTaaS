@@ -131,6 +131,16 @@ def categorize_users(user_list, existing_services):
     return existing, missing
 
 
+def report_starting_users(starting):
+    """Report the dtaas.toml starting users a delete keeps the workspace of."""
+    for username in starting:
+        echo_hint(
+            f"'{username}' is a dtaas.toml starting user.",
+            "Its workspace, if it has one, is part of the installation's "
+            "docker-compose.yml and is kept.",
+        )
+
+
 def report_missing_users(missing):
     """Report users that don't exist.
 

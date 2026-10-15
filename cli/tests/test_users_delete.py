@@ -3,6 +3,11 @@
 from unittest.mock import patch
 import pytest
 from src.pkg import users_delete
+from src.pkg.registry import (
+    load_starting_gitlab,
+    register_starting_users,
+    set_gitlab_user_ids,
+)
 # pylint: disable=redefined-outer-name,unused-argument
 
 
@@ -145,3 +150,30 @@ def test_delete_says_nothing_about_gitlab_for_an_unprovisioned_user(
     users_delete.delete_users(["user1"])
 
     assert "GitLab" not in capsys.readouterr().out
+
+
+@pytest.mark.usefixtures("mock_utils", "mock_user_operations")
+@pytest.mark.parametrize("still_in_toml", [True, False])
+def test_a_starting_users_token_is_revoked_like_any_other(capsys, still_in_toml):
+    """A starting user's token is revoked and its markers cleared, whether or
+    not dtaas.toml still lists it. While it does, its workspace is dtaas.toml's,
+    so its forward-auth rule stays and no 'does not exist' line is printed."""
+    register_starting_users(["username1"])
+    set_gitlab_user_ids({"username1": 9})
+    starting = ["username1"] if still_in_toml else []
+
+    with patch("src.pkg.users_gitlab_records.Config"), patch(
+        "src.pkg.users_gitlab_records.gitlabPkg"
+    ) as api, patch("src.pkg.users_delete.remove_conf_server_entry") as conf:
+        api.resolve_client.return_value = ("gl", None)
+        api.revoke_issued_tokens.return_value = (True, "")
+        err = users_delete.delete_users(["username1"], starting=starting)
+
+    assert err is None
+    api.revoke_issued_tokens.assert_called_once_with("gl", 9)
+    assert load_starting_gitlab() == {}
+    assert (conf.call_count == 0) is still_in_toml
+    out = capsys.readouterr().out
+    assert "GitLab token revoked for 'username1'" in out
+    assert ("is a dtaas.toml starting user" in out) is still_in_toml
+    assert ("does not exist" in out) is not still_in_toml

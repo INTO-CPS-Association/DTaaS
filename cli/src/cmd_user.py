@@ -24,6 +24,7 @@ from .cmd_user_lifecycle import add_user_lifecycle_commands
 from .cmd_user_passwords import remind_configured_passwords
 from .cmd_user_utils import (
     UserAddInput,
+    from_config,
     resolve_usernames,
     stage_users_for_add,
 )
@@ -159,7 +160,9 @@ def delete(usernames, csv_file, dry_run):
     Use --dry-run to preview removals without making any changes.
     """
     resolved = resolve_usernames(usernames, csv_file)
-    err = usersDeletePkg.delete_users(resolved, dry_run=dry_run)
+    err = usersDeletePkg.delete_users(
+        resolved, dry_run=dry_run, starting=from_config("get_starting_users", [])
+    )
     if err is not None:
         raise click.ClickException(with_hint("Error while deleting users", err))
     if dry_run:
