@@ -74,6 +74,9 @@ DEPLOY_COPIES = {
         'deploy/workspace/dex/localhost/localhost.png'],
     'admin/workspace/secure-server/secure-server.png': [
         'deploy/workspace/keycloak/production/secure-server.png'],
+    # Not a package: the README of the developer check stack shows it.
+    'developer/contributions/docker-check.png': [
+        'developer/check/developer-docker.png'],
 }
 
 
@@ -154,6 +157,10 @@ def export(source, number, target):
 # schemes.
 LIGHT_ONLY = {
     'developer/system/current-status-developer.png',
+    # The fills code the four layers of ISO 23247, and the slate page would
+    # leave them indistinguishable.
+    'developer/system/research-overview/implementation-status.png',
+    'developer/system/research-overview/system-architecture-c4.png',
 }
 
 

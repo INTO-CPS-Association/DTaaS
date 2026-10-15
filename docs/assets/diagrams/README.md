@@ -41,20 +41,24 @@ placed later.
 | `developer/system/research-overview/user-interaction-in-federated-DTaaS.png` | `developer/system/research-overview.md` |
 | `developer/system/research-overview/shm-dt-workflow.png` | `developer/system/research-overview.md` |
 | `developer/system/current-status-developer.png` | `developer/system/current-status.md`, light only |
+| `developer/system/research-overview/system-architecture-c4.png` | `developer/system/research-overview.md`, `developer/system/architecture.md`, light only |
+| `developer/system/research-overview/implementation-status.png` | `developer/system/research-overview.md`, `developer/system/current-status.md`, light only |
+| `developer/contributions/docker-check.png` | `developer/contributions/docker.md`, and its copy in `developer/check/README.md` |
+| `admin/gitlab/gitlab-runner-two-servers.png` | `admin/gitlab/runner-linux.md` |
 | `developer/technical-concepts/oauth/design-sequence.png` | `developer/technical-concepts/oauth/design.md` |
 | `developer/technical-concepts/oauth/oauth2-workflow.png` | `developer/technical-concepts/oauth/authms.md`, `developer/technical-concepts/oauth/oauth2.0.md` |
 | `admin/servers/traefik-oauth.png` | `admin/servers/auth.md` |
 | `user/servers/lib/library-assets.png` | `user/servers/lib/assets.md` |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
-| Developer docker setup | Not placed |
-| Two servers with runners | Not placed |
-| Two servers with runners, release | Not placed |
+| Two servers with runners, release | Not placed, it shows the addresses of the release servers |
 
 The installation packages under `deploy/` keep their own copy of five of these
-images, so a downloaded package shows its diagram without the website.
-`export_diagrams.py` writes those copies from the exported images (see
-`DEPLOY_COPIES` in the script), so a package copy is never edited by hand.
+images, so a downloaded package shows its diagram without the website, and
+`developer/check/developer-docker.png` is a copy of `docker-check.png` for the
+README of the developer check stack. `export_diagrams.py` writes those copies
+from the exported images (see `DEPLOY_COPIES` in the script), so a copy is
+never edited by hand.
 In the same way, each installation page under `docs/admin/dtaas/` and
 `docs/admin/workspace/` shows the logo from a copy beside it, as the packages
 do, and `export_diagrams.py` writes those copies from `docs/assets/brand/png`
@@ -76,11 +80,13 @@ line or border below 3 to 1 in the dark variant, unless the cell is listed in
 `CONTRAST_EXCEPTIONS` in `export_diagrams.py` with its reason. The list is
 empty: every dark image meets both minimums.
 
-A page listed in `LIGHT_ONLY` in `export_diagrams.py` gets no dark variant.
-`developer/system/current-status-developer.png` is the one page there: its
-product logos keep dark lettering that does not read on the slate page, so
-`current-status.md` shows the light image with the `{.on-white}` class, on a
-white backing in both schemes.
+A page listed in `LIGHT_ONLY` in `export_diagrams.py` gets no dark variant,
+and the documentation shows its light image with the `{.on-white}` class, on a
+white backing in both schemes. `current-status-developer.png` is there because
+its product logos keep dark lettering that does not read on the slate page.
+`system-architecture-c4.png` and `implementation-status.png` are there because
+their fills code the four layers of ISO 23247, which the slate page would
+leave indistinguishable.
 
 ## Design Rules
 
@@ -288,8 +294,20 @@ The hand edits, by page:
   changing a pixel, apart from a white or pale background made transparent.
   `user/digital-twins/devops/ui.md` now shows `lifecycle-phases.png`, which
   was the same drawing as its own copy, `devops-lifecycle.png`.
-- `system-architecture-c4.png` and `implementation-status.png` keep their
-  images. Their colours code the layers of ISO 23247, and the theme palette
-  has two tints and a grey scale, so the theme would merge two of the four
-  layers, and their density keeps the text under 14 pixels at the column
-  width unless the layout changes.
+- `system-architecture-c4.png` and `implementation-status.png`: redrawn in
+  portrait, 1000 units wide, so their text reaches 14 pixels at the column
+  width. Every element, connection and legend of the original is kept, and
+  some edges enter their shapes from another side. Their fills code the four
+  layers of ISO 23247, and the theme palette has two tints and a grey scale,
+  so after the theme the layer fills are set by hand to a light tint of each
+  original colour: Services `#fdf1d3`, Digital Twin `#ddf0e2`, Data
+  `#fbe1df` and Physical Twin `#ebe3f3`. They are the only fills outside the
+  palette. `developer/system/current-status-developer-c4.png`, the same
+  drawing as `implementation-status.png`, is removed and `current-status.md`
+  shows the redrawn one.
+- `admin/gitlab/gitlab-runner-two-servers.png` and
+  `developer/contributions/docker-check.png` are the pages "Two servers with
+  runners" and "Developer docker setup", placed. On the first, the GitLab logo
+  moved left so the two curves to the runners start at its edge, the runner
+  labels are wider, and three lines that ended above the bus at the old
+  position of traefik end on the bus.

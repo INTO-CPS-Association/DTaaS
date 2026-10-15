@@ -24,6 +24,12 @@ There are two installation scenarios:
    instance on a production server. That server may be a remote machine
    rather than the host, and may use TLS with a self-signed certificate.
 
+In a server installation, GitLab can run on a second server, and the
+runners on further remote servers, as the diagram shows.
+
+![GitLab and runners on separate servers](gitlab-runner-two-servers.png#only-light)
+![GitLab and runners on separate servers](gitlab-runner-two-servers-dark.png#only-dark)
+
 The steps below set up an integrated runner that can execute digital
 twins from the Digital Twins Preview Page.
 

@@ -17,6 +17,13 @@ The `developer/` directory holds two separate things:
   Node, Python and documentation toolchains needed to work on the code.
   See `developer/devenv/README.md`.
 
+The diagram shows the localhost instance that `developer/check/` starts:
+two user workspaces, the library and logger microservices and the client
+behind Traefik, with forward-auth signing users in through GitLab.
+
+![Containers of the developer check instance](docker-check.png#only-light)
+![Containers of the developer check instance](docker-check-dark.png#only-dark)
+
 ## CI Dockerfile Validation
 
 A pull request that modifies `client/**`, `servers/lib/**` or the

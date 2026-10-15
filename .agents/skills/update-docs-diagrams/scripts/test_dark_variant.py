@@ -11,6 +11,8 @@ PAGE = '''<mxfile><diagram name="docs/x.png"><mxGraphModel><root>
 <mxCell id="mid" value="Label" style="rounded=0;fillColor=#808080;" vertex="1" parent="1"/>
 <mxCell id="box" value="Label" style="rounded=0;fillColor=#dae8fc;strokeColor=#1e2129;" vertex="1" parent="1"/>
 <mxCell id="dim" style="endArrow=none;strokeColor=#3a3f4b;" edge="1" parent="1"/>
+<mxCell id="pkce" value="OAuth2" style="edgeLabel;labelBackgroundColor=default;" vertex="1" parent="1"/>
+<mxCell id="note" value="PKCE" style="text;html=1;fillColor=default;" vertex="1" parent="1"/>
 </root></mxGraphModel></diagram></mxfile>'''
 
 
@@ -36,6 +38,26 @@ class LowContrastTest(unittest.TestCase):
     def test_a_dark_line_is_lightened_and_not_reported(self):
         """A dark line is lightened and not reported."""
         self.assertNotIn('dim', {cell for _, cell, _ in self.failures()})
+
+    def test_a_default_label_background_turns_dark(self):
+        """A default label background turns dark."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            source.write_text(PAGE, encoding='utf-8')
+            target = pathlib.Path(scratch) / 'out.drawio'
+            write_dark(source, target)
+            self.assertIn('labelBackgroundColor=#1e2229', target.read_text(encoding='utf-8'))
+
+    def test_a_default_text_fill_turns_dark(self):
+        """A default text fill turns dark."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            source.write_text(PAGE, encoding='utf-8')
+            target = pathlib.Path(scratch) / 'out.drawio'
+            write_dark(source, target)
+            lines = target.read_text(encoding='utf-8').splitlines()
+            note = [line for line in lines if 'id="note"' in line][0]
+            self.assertNotIn('fillColor=default', note)
 
     def test_failures_name_their_page(self):
         """Failures name their page."""

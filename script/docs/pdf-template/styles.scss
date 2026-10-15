@@ -45,3 +45,12 @@ section + section {
 .md-typeset img {
   image-resolution: 2dppx;
 }
+
+// WeasyPrint drops the rest of the document without an error when an image
+// is taller than a page, as the portrait C4 diagrams are. Every image is
+// scaled down, keeping its proportions, to fit the height of one page.
+.md-typeset img {
+  max-height: 210mm;
+  width: auto;
+  max-width: 100%;
+}

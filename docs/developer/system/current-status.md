@@ -6,8 +6,9 @@ automation, reusable assets and contributor tooling.
 
 ![Current development status](current-status-developer.png){.on-white}
 
-A more detailed C4 architectural representation is
-![current-status-developer-c4.png](current-status-developer-c4.png).
+The C4 diagram shows the same status in more detail.
+
+![Implementation status, C4 diagram](research-overview/implementation-status.png){.on-white}
 
 ## Platform Snapshot
 

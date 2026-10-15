@@ -99,7 +99,9 @@ def dark_ground(style, what):
     """Darken the fill of a cell and return its new and its old ground."""
     ground = SLATE
     old_ground = hex_of(style.get('fillColor'), ds.WHITE) if what == 'shape' else ds.WHITE
-    fill = hex_of(style.get('fillColor'), ds.WHITE if what == 'shape' else None)
+    # A text cell names no fill, except 'default', which drawio paints white.
+    named = style.get('fillColor')
+    fill = hex_of(named, ds.WHITE if what == 'shape' or named == 'default' else None)
     if not fill:
         return ground, old_ground
     if what == 'shape' and is_icon(style):
@@ -148,7 +150,8 @@ def dark_details(style, what):
     stroke = hex_of(style.get('strokeColor'), '#000000')
     if stroke and (what in ('shape', 'edge') or 'strokeColor' in style):
         style['strokeColor'] = dark_line(stroke)
-    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], None):
+    # A label background named 'default' is drawn white, like a hex one.
+    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], ds.WHITE):
         style['labelBackgroundColor'] = SLATE
 
 
