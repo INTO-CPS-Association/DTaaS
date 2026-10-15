@@ -15,9 +15,9 @@ class TitleCaseTest(unittest.TestCase):
         """Words take capitals and joining words do not."""
         self.assertEqual(title_case('outputs of function blocks'), 'Outputs of Function Blocks')
 
-    def test_a_joining_word_that_starts_a_line_is_capitalised(self):
-        """A joining word that starts a line is capitalised."""
-        self.assertEqual(title_case('<div>Cloud Services</div><div>on premise</div>'),
+    def test_a_joining_word_that_opens_a_line_keeps_its_case(self):
+        """A joining word that opens a line keeps its case, the rest is capitalised."""
+        self.assertEqual(title_case('<div>Cloud Services</div><div>On premise</div>'),
                          '<div>Cloud Services</div><div>On Premise</div>')
 
     def test_code_names_and_acronyms_keep_their_case(self):
@@ -35,6 +35,15 @@ class TitleCaseTest(unittest.TestCase):
     def test_hyphenated_words_capitalise_each_part(self):
         """Hyphenated words capitalise each part."""
         self.assertEqual(title_case('what-if analysis'), 'What-If Analysis')
+
+    def test_a_joining_word_continuing_a_line_stays_lower_case(self):
+        """A joining word continuing a line stays lower case."""
+        self.assertEqual(title_case('Data<br>and<br>control'), 'Data<br>and<br>Control')
+        self.assertEqual(title_case('Functions,Tools<br>and DTs'), 'Functions,Tools<br>and DTs')
+
+    def test_the_rest_of_a_hyphenated_word_stays_as_written(self):
+        """The rest of a hyphenated word stays as written."""
+        self.assertEqual(title_case('Dash-<br>boards'), 'Dash-<br>boards')
 
     def test_running_twice_changes_nothing(self):
         """Running twice changes nothing."""

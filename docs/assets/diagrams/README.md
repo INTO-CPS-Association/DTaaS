@@ -383,4 +383,24 @@ The hand edits, by page:
     `architecture.png` and `author.png`, the web app on `architecture.png`
     and `current-status-developer.png`, and the cars and houses of
     `current-status-developer.png`.
-  - Every label is in Title Case, and "Dash boards" is one word.
+  - Every label is in Title Case. A joining word that continues the line
+    above, such as "and DTs", keeps its lower case, and "Dashboards" is
+    broken with a hyphen where it does not fit beside its icon.
+- A side-by-side review of every changed image against the one before
+  found more, also fixed by hand:
+  - The runner lines of `gitlab-integrated-runner.png` and
+    `gitlab-runner-two-servers.png` turned on a dashed border. They turn in
+    the gap between the servers, and the remote servers on the second page
+    moved right to widen that gap.
+  - OAuth2 PKCE sat on the border on `localhost.png` and on its arrow on
+    `server.png`, and moved clear of both, with the GitLab URLs below it.
+  - The legend title of `file-system-layout.png` is on one line again.
+  - `architecture.png` shows several users with three copies of the one
+    user icon, as `current-status-developer.png` does.
+  - User 1 of `user-interaction-in-federated-DTaaS.png` sends both arrows
+    from its arm, as one trunk.
+  - Digital Twins in the narrow box of `devops.png` is set at 20.
+  - May Have of `dt-assets-relationship.png` is on two lines, in the gap
+    between Reusable Assets and the configuration box.
+  The layout check now also reports an icon under the label of its box and
+  a connector label that crosses a border or covers a picture.

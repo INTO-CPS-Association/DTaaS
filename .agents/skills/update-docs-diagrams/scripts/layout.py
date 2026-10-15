@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 
 from drawio import Page, kind, parse_style
 from geometry import crosses, far, heading, inside, slanted, SLACK
-from labels import anchors, label_rules, text_box
+from labels import anchors, connector_label_rules, label_rules, text_box
 
 SVG = '{http://www.w3.org/2000/svg}'
 NUMBER = re.compile(r'-?\d+(?:\.\d+)?')
@@ -163,18 +163,22 @@ def shared_points(attach):
 
 
 def label_problems(page, svg_root, offset, shapes_and_lines):
-    """The label rules for every labelled vertex of a page."""
+    """The label rules for every labelled cell of a page."""
     placed = anchors(svg_root)
     problems = []
     for cell in page.root:
         anchor = placed.get(cell.get('id'))
-        if cell.get('vertex') != '1' or not loose(cell, page) or anchor is None:
+        edge = cell.get('edge') == '1'
+        if anchor is None or not (edge or loose(cell, page)):
             continue
-        x, y, room, justify, align = anchor
-        estimate = text_box(cell, (x - offset[0], y - offset[1], room, justify, align))
-        own = page.absolute(cell)
-        problems += [(cell.get('id'), p)
-                     for p in label_rules(cell, own, *shapes_and_lines, estimate)]
+        # The anchor comes in SVG coordinates, the cells in page ones.
+        moved = (anchor[0] - offset[0], anchor[1] - offset[1], *anchor[2:])
+        estimate = text_box(cell, moved)
+        if edge:
+            found = connector_label_rules(estimate, shapes_and_lines[0])
+        else:
+            found = label_rules(cell, page.absolute(cell), *shapes_and_lines, estimate)
+        problems += [(cell.get('id'), problem) for problem in found]
     return problems
 
 

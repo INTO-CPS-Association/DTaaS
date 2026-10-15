@@ -174,7 +174,10 @@ def label_rules(cell, own, shapes, lines, estimate):
     if estimate is None or turned:
         return []
     if what == 'box' and not outside(style):
-        return [] if contains(own, estimate) else ['label overflows its box']
+        found = [] if contains(own, estimate) else ['label overflows its box']
+        # An icon drawn inside the box must not sit under its label.
+        return found + [problem for problem in crossings(widened(estimate), own, *shapes)
+                        if problem.startswith('text covers')]
     if what not in ('text', 'stencil', 'image'):
         return []
     found = crossings(widened(estimate), own, *shapes)
@@ -183,3 +186,11 @@ def label_rules(cell, own, shapes, lines, estimate):
                   if any(crosses(segment, glyphs(widened(estimate), style, cell))
                          for segment in segments)]
     return found
+
+
+def connector_label_rules(estimate, shapes):
+    """The ways the label of a connector breaks the label rules.
+
+    It masks its own line, so only borders and pictures count.
+    """
+    return crossings(widened(estimate), None, *shapes) if estimate else []

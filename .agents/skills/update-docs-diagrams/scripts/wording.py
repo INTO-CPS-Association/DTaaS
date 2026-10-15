@@ -24,12 +24,19 @@ LINE_BREAK = re.compile(r'<br|</?div|</?p[\s>]|\n', re.I)
 CODE = re.compile(r'[/:_@=.]\w|^\.')
 
 
-def title_word(word, first):
-    """One word of a label in Title Case."""
+def title_word(word, first, line_start=False):
+    """One word of a label in Title Case.
+
+    A joining word that opens a line after the first keeps the case it was
+    written in: "and DTs" continues the line above it, while "On premise"
+    starts a description.
+    """
     lead, core, tail = re.match(r'^([(\[]*)(.*?)([)\]\.,;:!?]*)$', word).groups()
     if core.lower() in SPELLING:
         return lead + SPELLING[core.lower()] + tail
     if not core or CODE.search(core) or any(c.isupper() for c in core[1:]) or core.isupper():
+        return word
+    if core.lower() in MINOR and line_start:
         return word
     if core.lower() in MINOR and not first and not lead:
         return lead + core.lower() + tail
@@ -42,19 +49,23 @@ def title_case(label):
 
     Only the text between tags changes. Each line is a title of its own, as
     a C4 box stacks a name, a type and a description, so the first word of
-    every line is capitalised whatever it is.
+    every line is capitalised, except a joining word continuing the line
+    above and the rest of a word broken with a hyphen.
     """
-    first = True
+    first, line_start, broken, text = True, False, False, ''
     pieces = re.split(r'(<[^>]*>|&\w+;|&#\d+;|\n)', label or '')
     for index, piece in enumerate(pieces):
-        if LINE_BREAK.match(piece):
-            first = True
+        if LINE_BREAK.match(piece) and text.strip():
+            broken = text.rstrip().endswith('-')
+            first = line_start = not broken
         if not piece or piece.startswith(('<', '&', '\n')):
             continue
         words = re.split(r'(\s+)', piece)
         for at, word in enumerate(words):
             if word.strip():
-                words[at] = title_word(word, first)
-                first = False
+                # The rest of a word broken with a hyphen stays as written.
+                words[at] = word if broken else title_word(word, first, line_start)
+                first = line_start = broken = False
         pieces[index] = ''.join(words)
+        text += pieces[index]
     return ''.join(pieces)
