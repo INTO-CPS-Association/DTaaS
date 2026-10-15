@@ -73,6 +73,37 @@ LIGHT_ONLY = {
 # variant, as (page name, cell id): the reason. Empty: every dark image passes.
 CONTRAST_EXCEPTIONS = {}
 
+# Pages drawn free hand, where the connector rules of layout.py (no slant, no
+# shared attach point, no line behind another box) do not apply. The label
+# rules still do.
+FREE_FORM = {
+    'developer/system/architecture.png':
+        'spokes and curved arrows drawn around the service mesh',
+    'developer/system/current-status-developer.png':
+        'the same hub as architecture.png, with the status of each part',
+    'developer/technical-concepts/oauth/design-sequence.png':
+        'a sequence diagram, whose messages cross the lifelines between ends',
+    'developer/technical-concepts/oauth/oauth2-workflow.png':
+        'a sequence diagram, whose messages cross the lifelines between ends',
+    'user/servers/lib/author.png':
+        'a two-step flow drawn along a diagonal, with its labels turned to match',
+}
+
+# The network pictogram inside Communication is drawn with lines between
+# small boxes, which are not connectors.
+NETWORK_ICON = 'a line of the network pictogram inside Communication'
+
+# Cells of placed pages allowed to break a layout rule, as (page name, cell
+# id): the reason.
+LAYOUT_EXCEPTIONS = {
+    **{(page, f'j32rHh5SlOpBDfbG7lMq-{cell}'): NETWORK_ICON
+       for page in ('user/DTaaS-user-view.png',
+                    'developer/system/research-overview/system-architecture.png')
+       for cell in (1117, 1118, 1119, 1120)},
+    **{('developer/system/research-overview/dtaas-userview.png', f'u-net-l{line}'):
+       NETWORK_ICON for line in range(4)},
+}
+
 # The installation packages under deploy/ carry their own copy of some
 # documentation images, so a downloaded package shows its diagram offline.
 # Documentation image, relative to docs/, and its copies.

@@ -4,20 +4,22 @@
     python3 diagrams.py split   <input.drawio> <output.drawio>
     python3 diagrams.py restyle <input.drawio> <output.drawio>
     python3 diagrams.py shrink  <input.drawio> <output.drawio>
+    python3 diagrams.py check
     python3 diagrams.py export
 
 retheme maps the colours of a diagram from another drawio file to the theme,
 split gives each diagram of a crowded page its own page, restyle applies the
-design rules, shrink scales the embedded raster logos down, and export draws
-every placed page of docs/assets/diagrams/dtaas-diagrams.drawio, light and
-dark. The input and the output may be the same file. shrink needs Pillow, so
-it runs through uv with requirements.txt, as SKILL.md shows.
+design rules, shrink scales the embedded raster logos down, check runs the
+contrast and layout checks, and export runs them and then draws every placed
+page of docs/assets/diagrams/dtaas-diagrams.drawio, light and dark. The
+input and the output may be the same file. shrink needs Pillow, so it runs
+through uv with requirements.txt, as SKILL.md shows.
 """
 
 import argparse
 
 from drawio import drawio_path, rewrite_pages
-from export import export_all
+from export import check_all, export_all
 from restyle import restyle_page
 from retheme import retheme
 from split import split_file
@@ -66,9 +68,12 @@ def main():
         command = steps.add_parser(name, help=step.__doc__)
         command.add_argument('source', type=drawio_path)
         command.add_argument('target', type=drawio_path)
-    steps.add_parser('export', help='Draw every placed page and write the copies.')
+    steps.add_parser('check', help='Check contrast and layout without drawing.')
+    steps.add_parser('export', help='Check, then draw every placed page and write the copies.')
     args = parser.parse_args()
-    if args.step == 'export':
+    if args.step == 'check':
+        check_all()
+    elif args.step == 'export':
         export_all()
     else:
         FILE_STEPS[args.step](args.source, args.target)

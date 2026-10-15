@@ -80,6 +80,10 @@ def dark_ground(style, what):
     fill = hex_of(named, c.WHITE if what == 'shape' or named == 'default' else None)
     if not fill:
         return ground, old_ground
+    if what == 'text' and named == 'default':
+        # A text box filled to mask a line on the page takes the dark page.
+        style['fillColor'] = c.SLATE
+        return c.SLATE, old_ground
     if what == 'shape' and is_icon(style):
         # An icon is drawn in its fill, so a dark one turns light like a line.
         if c.luminance(fill) < 0.3:
@@ -126,9 +130,13 @@ def dark_details(style, what):
     stroke = hex_of(style.get('strokeColor'), '#000000')
     if stroke and (what in ('shape', 'edge') or 'strokeColor' in style):
         style['strokeColor'] = dark_line(stroke)
-    # A label background named 'default' is drawn white, like a hex one.
-    if 'labelBackgroundColor' in style and hex_of(style['labelBackgroundColor'], c.WHITE):
+    # A label background is the ground behind the label: 'default' is the
+    # page, and a colour is the fill of the box behind it, darkened the same.
+    ground = style.get('labelBackgroundColor')
+    if ground == 'default':
         style['labelBackgroundColor'] = c.SLATE
+    elif hex_of(ground, None):
+        style['labelBackgroundColor'] = dark_fill(hex_of(ground, None))
 
 
 def dark_cell(cell, swaps):

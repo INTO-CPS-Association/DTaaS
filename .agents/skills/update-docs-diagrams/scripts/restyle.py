@@ -7,6 +7,8 @@ The rules, from `docs/assets/brand/README.md` and the WCAG contrast floors:
 - Text is Inter, never italic, bold only for a title, at least 4.5 to 1.
 - Text is at least 14 pixels at the width the documentation shows a page.
 - One person icon, one forward-auth box, one box style, one arrow style.
+- A label background only masks a line, in the colour of the ground behind
+  it, so it never shows as a patch on a coloured box.
 - A note written into the picture goes into the page text instead.
 - The DTaaS mark sits at the top right corner of the DTaaS boundary.
 
@@ -24,6 +26,8 @@ from drawio import (
     Page, clean_label, dump_style, kind, number, parse_style, plain_text, svg_image
 )
 from settings import LOCKUP, MARK, NO_MARK
+from masks import label_ground
+from wording import title_case
 
 LINE_PX = 1.5
 HEAVY_PX = 3
@@ -32,11 +36,12 @@ RADIUS_PX = 8
 MARK_PX = 32
 INSET_PX = 8
 
-# Labels that name a region of a diagram, the only text drawn in bold.
+# Labels that name a region of a diagram, the only text drawn in bold,
+# compared in lower case.
 TITLES = {
-    'Generic', 'Construction / Buildings', 'Other domains', 'Common Services',
-    'Web Interface', 'Workspace', 'Digital Twin Automation Layer',
-    'Domain-specific extensions', 'Digital Twin as a Service (DTaaS)',
+    'generic', 'construction / buildings', 'other domains', 'common services',
+    'web interface', 'workspace', 'digital twin automation layer',
+    'domain-specific extensions', 'digital twin as a service (dtaas)',
 }
 
 # Strokes in a blue or turquoise become primary, every other stroke grey 700.
@@ -100,12 +105,12 @@ def style_text(style, cell, page):
     candidates = [c.WHITE] if dark else [c.GREY_700, c.PRIMARY_DARK]
     style['fontColor'] = c.text_colour(ground, candidates)
     style['fontFamily'] = 'Inter'
-    if plain_text(label) in TITLES:
+    if plain_text(label).lower() in TITLES:
         style['fontStyle'] = '1'
     if page.min_font():
         size = max(int(float(style.get('fontSize', 12))), page.min_font())
         style['fontSize'] = str(size)
-    cell.set('value', clean_label(label, page.min_font()))
+    cell.set('value', title_case(clean_label(label, page.min_font())))
 
 
 def forward_auth(style, cell):
@@ -125,7 +130,7 @@ def restyle_cell(cell, page, boundary):
     """Apply every rule that concerns a single cell."""
     style = parse_style(cell.get('style'))
     what = kind(style, cell)
-    if 'forward-auth' in plain_text(cell.get('value')):
+    if 'forward-auth' in plain_text(cell.get('value')).lower():
         forward_auth(style, cell)
         what = 'box'
     if what == 'text' and style.get('strokeColor', 'none') != 'none':
@@ -136,6 +141,7 @@ def restyle_cell(cell, page, boundary):
         style_shape(style, what, page, cell is boundary)
     if what not in ('group', 'edge'):
         style_text(style, cell, page)
+    label_ground(style, cell, page)
     cell.set('style', dump_style(style))
 
 

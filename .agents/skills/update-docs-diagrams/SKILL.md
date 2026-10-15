@@ -84,23 +84,35 @@ made by hand. Run every command from the repository root.
    `#only-dark`, so a new image needs both lines. A page in `LIGHT_ONLY`
    (in `settings.py`) gets no dark variant and is shown with `{.on-white}`.
 
-   Before it draws anything, the export lists every cell of a placed page
-   whose dark text falls below 4.5 to 1, or whose line or border falls below
-   3 to 1, and stops. Fix the cell in drawio, or, when the low contrast is
-   intended, add it to `CONTRAST_EXCEPTIONS` in `settings.py` with
-   the reason. A page name that resolves outside `docs/` and `deploy/` also
-   stops the export. The unit tests beside the scripts run with
+   Before it draws anything, the export runs two checks, which
+   `diagrams.py check` also runs on their own:
+
+   - **Contrast.** Every cell of a placed page whose dark text falls below
+     4.5 to 1, or whose line or border falls below 3 to 1.
+   - **Layout** (`scripts/layout.py`), on the SVG drawio exports for each
+     placed page: a connector on a slant, two connectors meeting a box at
+     one point from different sides, a connector behind a box that is not
+     one of its ends, a label wider than its box, and text that crosses a
+     border, covers a picture or sits on a line. The text size is estimated
+     from the widths of Inter, so the rules leave a few percent of margin.
+
+   Either check lists what it found and stops. Fix the cell in drawio, or,
+   when the drawing is intended, add it to `CONTRAST_EXCEPTIONS` or
+   `LAYOUT_EXCEPTIONS` in `settings.py` with the reason. A page drawn free
+   hand, such as a sequence diagram, goes into `FREE_FORM`, where only the
+   label rules apply. A page name that resolves outside `docs/` and
+   `deploy/` also stops the export. The unit tests beside the scripts run with
    `python3 -m unittest discover --pattern 'test_*.py'` from `scripts/`.
    They also check that every logo and diagram copy equals its source, and
    that the colours repeated in the stylesheets and the scripts equal
    `client/src/theme/tokens.ts`, so a hand edit to a copy fails the build.
 
-1. **Review every changed image**, light and dark, by opening it. Look for
-   labels that overlap a line, an icon or another label, text that wraps
-   inside a box that is too narrow, arrows that kept old corner points, and
-   emoji. The scripts set colours, fonts and sizes, and a larger font can
-   need a box moved by hand. Fix the page in drawio, export again, and add
-   the hand edit to `docs/assets/diagrams/README.md`.
+1. **Review every changed image**, light and dark, by opening it. The
+   layout check finds most overlaps, and an eye still finds the rest:
+   arrows that kept old corner points, a label that reads as belonging to
+   the wrong line, and emoji. The scripts set colours, fonts and sizes, and
+   a larger font can need a box moved by hand. Fix the page in drawio,
+   export again, and add the hand edit to `docs/assets/diagrams/README.md`.
 
 1. **Check the result.** Every exported PNG is a Git LFS pointer
    (`git lfs ls-files`), the images read on the light and the dark scheme of
@@ -114,8 +126,15 @@ made by hand. Run every command from the repository root.
 - Text is Inter, never italic, at least 4.5 to 1 on its fill, and at least
   14 pixels when the image is shown 700 pixels wide. A wide diagram needs
   larger fonts in drawio units, or a narrower layout.
-- One user icon, one box style, one arrow style, no emoji, and no note
-  written into the picture.
+- Labels are in Title Case, and code, URLs and paths keep their own case
+  (`scripts/wording.py`). A name such as GitLab has one spelling.
+- A label background only masks a line, in the colour of what lies behind
+  it (`scripts/masks.py`). A label inside its own shape has none.
+- One icon per idea on every page: the person, the web app, the physical
+  and the digital twin, listed in `docs/assets/diagrams/README.md`. A UML or
+  C4 diagram keeps the person of its notation.
+- One box style, one arrow style, no emoji, and no note written into the
+  picture.
 - A third-party logo is its owner's file, unchanged. GitLab's official SVG,
   in colour and in white for the dark variant, is in `assets/`, taken from
   <https://about.gitlab.com/press/press-kit/>.

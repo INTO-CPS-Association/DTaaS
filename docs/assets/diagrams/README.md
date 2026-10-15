@@ -88,6 +88,32 @@ its product logos keep dark lettering that does not read on the slate page.
 their fills code the four layers of ISO 23247, which the slate page would
 leave indistinguishable.
 
+## Layout Check
+
+Before it draws anything, the export checks every placed page as drawio
+draws it, from the SVG drawio exports for that page, and stops on a problem
+not listed in `LAYOUT_EXCEPTIONS` in `settings.py`. `diagrams.py check` runs
+the same checks without writing images. The rules, in `layout.py` and
+`labels.py`:
+
+- A connector runs in horizontal and vertical segments.
+- Two connectors do not meet a box at one point from different sides.
+  Branches of one trunk, which leave a box together, are allowed.
+- A connector does not pass behind a box that is not one of its ends.
+- A label fits in its box, and loose text crosses no border, covers no
+  picture and sits on no line unless its background masks it.
+
+The connectors and the place of every label come from the SVG, so a path is
+checked where drawio routes it. The width of a label is estimated from the
+advance widths of Inter, and the rules leave a few percent of margin for
+the kerning the estimate leaves out. A turned label is not checked.
+
+Pages drawn free hand are listed in `FREE_FORM`, where only the label rules
+apply: `architecture.png` and `current-status-developer.png`, a hub with
+spokes and curves, the two OAuth sequence diagrams, whose messages cross the
+lifelines, and `author.png`, a flow drawn along a diagonal. The lines of the
+network pictogram inside Communication are listed in `LAYOUT_EXCEPTIONS`.
+
 ## Design Rules
 
 Every page follows the rules of `docs/assets/brand/README.md`, with sizes taken
@@ -97,15 +123,39 @@ them and can be run again on its own output without changing anything.
 - Lines, arrows and borders are primary `#003d73` or grey 700 `#333b4c`. The
   turquoise and cyan of the palette, and the tints, are only fills, because as
   a line on white they stay under the three to one contrast floor.
-- The one heavy arrow is the forward-auth check, in primary. The pages that
-  show it say so in the text under the image.
+- A heavy arrow in primary marks the main path of a page: the forward-auth
+  check on the installation pages, the flows between twins and services in
+  `federated-dtaas.png`, and the platform links in `architecture.png` and
+  `devops.png`. Every other arrow is grey 700 at the normal width.
 - Text is Inter, never italic, bold only for a title, and at least 4.5 to 1 on
   its fill. A fill drawn see-through is replaced by the solid colour it shows.
 - Every label is at least 14 pixels when the image is shown 700 pixels wide,
   the narrowest content column of the site. A wide diagram therefore needs
   larger fonts in drawio units than a narrow one.
-- One user icon, one forward-auth box, one corner radius and one line width
-  for every box, one style for every arrow.
+- Labels are in Title Case: each word starts with a capital except the
+  short joining words inside a line (of, and, to, with and the like). A URL,
+  a path, a name with an underscore and a word already carrying an inner
+  capital keep their case. GitLab, WebApp and Node.js have one spelling, and
+  systemd keeps its own lower case. `wording.py` holds the rule, which the
+  restyle applies.
+- A label background only masks a line, in the colour of what lies behind
+  it: the fill of the smallest box holding both ends of the connector, or
+  the page. A label inside its own shape has no background, so it never
+  shows as a white patch on a coloured box. `masks.py` holds the rule.
+- One forward-auth box, one corner radius and one line width for every box,
+  one style for every arrow, and one icon per idea:
+
+  | Idea | Icon |
+  | --- | --- |
+  | A person | `mxgraph.ios7.icons.user` |
+  | The web application | `mxgraph.ios7.icons.globe` |
+  | Docker | `img/lib/mscae/Docker.svg` |
+  | GitLab | the official logo in the skill's `assets/` |
+  | A physical or digital twin | `mxgraph.signs.transportation.car_3` and `mxgraph.ios7.icons.home` |
+
+  A UML diagram keeps its stick figure and a C4 diagram its person, since
+  they belong to the notation. A product logo, such as Traefik or Keycloak,
+  stays its owner's.
 - A note about the picture is page text and not part of the picture.
 - The DTaaS mark sits at the top right corner of the DTaaS boundary, the
   largest box of the page. A page that already shows the full lockup as its
@@ -307,6 +357,30 @@ The hand edits, by page:
 - `admin/gitlab/gitlab-runner-two-servers.png` and
   `developer/contributions/docker-check.png` are the pages "Two servers with
   runners" and "Developer docker setup", placed. On the first, the GitLab logo
-  moved left so the two curves to the runners start at its edge, the runner
+  moved left so the two lines to the runners start at its edge, the runner
   labels are wider, and three lines that ended above the bus at the old
   position of traefik end on the bus.
+- On 15 October 2026 the layout check found these, each fixed by hand:
+  - The lines from GitLab to the runners, on `gitlab-integrated-runner.png`
+    and `gitlab-runner-two-servers.png`, and the Evaluate arrow of
+    `asset-relationship.png` were curved or slanted, and run in right
+    angles. The Evaluate arrow ends inside the box above it.
+  - User 1 of `user-interaction-in-federated-DTaaS.png` sent two arrows
+    from one point, and the second leaves lower on its right side.
+  - Labels touched a border, a line or a logo and moved clear of it:
+    OAuth2 PKCE on `localhost.png` and `gitlab-runner-two-servers.png`,
+    OAuth2 Webserver, /user2 on `docker-check.png`, Instantiate, Feed, and
+    DT Execution Manager, User Workspaces and Data and Control on
+    `architecture.png`. Services and Reusable Assets of `architecture.png`
+    sit in a gap narrower than their 20 point text, and are set at 18.
+  - The cards of Graphical Digital Twins take the height of the
+    Heterogeneous Digital Twins ones, so two lines fit.
+  - A Common Services label on `multi-domain.png`, hidden behind the
+    Dashboard and Storage boxes since the original, is removed.
+  - Every arrow of `dtaas-class-instance.png` is grey 700 at the normal
+    width, as its Link arrows were.
+  - The icons follow the table under the design rules: the person on
+    `architecture.png` and `author.png`, the web app on `architecture.png`
+    and `current-status-developer.png`, and the cars and houses of
+    `current-status-developer.png`.
+  - Every label is in Title Case, and "Dash boards" is one word.
