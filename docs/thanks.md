@@ -39,6 +39,7 @@ The following projects have funded this project.
 | Incubator with NuRV Runtime Monitor as Service        | Morten Haahr Kristensen and Valdemar Tang   |
 | Developer and example documentation                   | Astitva Sehgal                              |
 | Documentation theme and diagrams                      | Jady Pamella Barbacena da Silva             |
+| Building Models page and bim-kit library              | Jady Pamella Barbacena da Silva             |
 | Questions that ended up in the FAQ                    | Tanusree Roy and Farshid Naseri             |
 
 ## Developers
