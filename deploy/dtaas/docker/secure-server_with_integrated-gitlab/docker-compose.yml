@@ -188,6 +188,9 @@ services:
       - >-
         traefik.http.services.gitlab-registry.loadbalancer.server.port=${REGISTRY_PORT:-5050}
       - "traefik.http.routers.gitlab-registry.tls=true"
+      # Routers without entryPoints, such as client's catch-all rule, also
+      # match on the registry port; the registry router must win there.
+      - "traefik.http.routers.gitlab-registry.priority=1000"
     networks:
       - frontend
 
