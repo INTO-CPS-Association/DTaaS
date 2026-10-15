@@ -16,7 +16,7 @@ is turned off.
 
 The monitor checks that the energy saving mode is turned on within
 3 simulation steps of an anomaly detection. The property for this is:
-$`G(anomaly \rightarrow (F_{[0,3]}\space energy\_saving))`$.
+$G(anomaly \rightarrow (F_{[0,3]}\space energy\_saving))$.
 The monitor outputs the *Unknown* state as long as the property is
 satisfied and moves to the *False* state once it detects a violation.
 
