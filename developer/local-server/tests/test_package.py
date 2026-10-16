@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import pytest
+
 import package
 from settings import TOOL_DIR, Settings
 
@@ -93,3 +95,13 @@ def test_copy_package_refreshes_compose_file(tmp_path, monkeypatch):
     package.copy_package(settings)
     compose = settings.package_dir / "docker-compose.yml"
     assert compose.read_text(encoding="utf-8") == "changed\n"
+
+
+def test_check_hostname_refuses_another_hostname(tmp_path):
+    """A working directory keeps the hostname of its first run."""
+    package.check_hostname(make_settings(tmp_path))
+    assert (tmp_path / "work" / "hostname").read_text(encoding="utf-8") == "intocps.test\n"
+    package.check_hostname(make_settings(tmp_path))
+    other = Settings("dtaas.test", 5050, tmp_path / "work")
+    with pytest.raises(RuntimeError, match="prepared for intocps.test"):
+        package.check_hostname(other)

@@ -33,5 +33,8 @@ def start(settings):
 
 def stop(settings, remove_volumes=False):
     """Stop the services, and delete GitLab's data if remove_volumes is set."""
+    if not (settings.package_dir / "compose.local.yml").exists():
+        print(f"No prepared package in {settings.package_dir}; nothing to stop.")
+        return
     step("Stopping the services")
     compose(settings, "down", *(["-v"] if remove_volumes else []))

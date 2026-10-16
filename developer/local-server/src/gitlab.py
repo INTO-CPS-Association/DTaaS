@@ -42,6 +42,8 @@ def create_root_token():
     """Create a personal access token for root inside the GitLab container."""
     output = run(["docker", "exec", "gitlab", "gitlab-rails", "runner",
                   ROOT_TOKEN_RUBY], capture=True)
+    if not output:
+        raise RuntimeError("GitLab returned no access token for root")
     return output.splitlines()[-1]
 
 

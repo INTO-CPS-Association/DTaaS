@@ -106,3 +106,10 @@ def test_create_root_token_takes_last_line(monkeypatch):
     monkeypatch.setattr(gitlab, "run", lambda args, capture=False:
                         "warning\nglpat-abc")
     assert gitlab.create_root_token() == "glpat-abc"
+
+
+def test_create_root_token_rejects_empty_output(monkeypatch):
+    """No output means GitLab created no token."""
+    monkeypatch.setattr(gitlab, "run", lambda args, capture=False: "")
+    with pytest.raises(RuntimeError, match="no access token"):
+        gitlab.create_root_token()

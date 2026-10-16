@@ -27,6 +27,7 @@ def start_runner(settings, gitlab):
     shutil.copyfile(RUNNER_FILES / "compose.yml", directory / "compose.yml")
     config = directory / "config.toml"
     config.touch(mode=0o600)
+    config.chmod(0o600)
     config.write_text(runner_config(settings.gitlab_url, runner["token"]),
                       encoding="utf-8")
     shutil.copyfile(settings.ca_file, directory / "ca.crt")

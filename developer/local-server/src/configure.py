@@ -19,12 +19,16 @@ def write_secret(settings, name, value):
     settings.secrets_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     path = settings.secrets_dir / name
     path.touch(mode=0o600)
+    path.chmod(0o600)
     path.write_text(value + "\n", encoding="utf-8")
 
 
 def read_secret(settings, name):
     """Read a secret stored by write_secret."""
-    return (settings.secrets_dir / name).read_text(encoding="utf-8").strip()
+    path = settings.secrets_dir / name
+    if not path.exists():
+        raise RuntimeError(f"{path} is missing; run the 'configure' command first")
+    return path.read_text(encoding="utf-8").strip()
 
 
 def create_users(gitlab):
@@ -50,7 +54,7 @@ def has_oauth_apps(gitlab):
     GitLab's state decides, not the config file: after 'clean' deletes
     GitLab's data, the file still holds the old application ids.
     """
-    apps = gitlab.request("GET", "applications") or []
+    apps = gitlab.request("GET", "applications?per_page=100") or []
     return any(app["application_name"] == SERVER_APP for app in apps)
 
 

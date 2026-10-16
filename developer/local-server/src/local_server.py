@@ -7,7 +7,6 @@ See docs/developer/contributions/local-server-testing.md.
 import argparse
 import subprocess
 import sys
-import urllib.error
 from pathlib import Path
 
 from configure import configure_gitlab
@@ -82,7 +81,8 @@ def main(argv=None):
     command, settings = parse_args(argv)
     try:
         result = COMMANDS[command][1](settings)
-    except (subprocess.CalledProcessError, urllib.error.URLError,
+    # OSError includes urllib's URLError and a missing docker or mkcert.
+    except (subprocess.CalledProcessError, OSError,
             RuntimeError, TimeoutError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

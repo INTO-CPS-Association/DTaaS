@@ -3,6 +3,8 @@
 import stat
 from types import SimpleNamespace
 
+import pytest
+
 from fakes import FakeGitLab
 
 import configure
@@ -55,3 +57,21 @@ def test_has_oauth_apps_reads_gitlab_state():
                            ([{"application_name": configure.SERVER_APP}], True)):
         gitlab = FakeGitLab({("GET", "applications"): apps})
         assert configure.has_oauth_apps(gitlab) is expected
+
+
+def test_read_secret_explains_missing_file(tmp_path):
+    """A missing secret points to the configure command."""
+    settings = Settings("intocps.test", 5050, tmp_path)
+    with pytest.raises(RuntimeError, match="configure"):
+        configure.read_secret(settings, "root-token")
+
+
+def test_write_secret_tightens_existing_file(tmp_path):
+    """An existing secret file loses wider permissions."""
+    settings = Settings("intocps.test", 5050, tmp_path)
+    settings.secrets_dir.mkdir(mode=0o700)
+    path = settings.secrets_dir / "root-token"
+    path.write_text("old", encoding="utf-8")
+    path.chmod(0o644)
+    configure.write_secret(settings, "root-token", "new")
+    assert stat.S_IMODE(path.stat().st_mode) == 0o600

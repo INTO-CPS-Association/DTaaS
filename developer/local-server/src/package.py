@@ -19,6 +19,24 @@ def set_env_value(text, key, value):
     return text.rstrip("\n") + f"\n{key}={value}\n"
 
 
+def check_hostname(settings):
+    """Refuse a working directory prepared for another hostname.
+
+    client.js and the certificate keep the hostname of the first run, so a
+    different hostname needs its own working directory.
+    """
+    marker = settings.workdir / "hostname"
+    if marker.exists():
+        previous = marker.read_text(encoding="utf-8").strip()
+        if previous != settings.hostname:
+            raise RuntimeError(
+                f"{settings.workdir} was prepared for {previous}; "
+                "use another --workdir for a different hostname")
+        return
+    settings.workdir.mkdir(parents=True, exist_ok=True)
+    marker.write_text(settings.hostname + "\n", encoding="utf-8")
+
+
 def copy_package(settings):
     """Copy the package, refreshing its compose file on every run.
 
@@ -85,6 +103,7 @@ def build_forward_auth_image(settings):
 
 def prepare_package(settings):
     """Copy, configure and complete the package so that it can start."""
+    check_hostname(settings)
     copy_package(settings)
     configure_package(settings)
     create_directories(settings)
