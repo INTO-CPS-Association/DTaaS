@@ -1,0 +1,16 @@
+# Docker executor whose jobs join dtaas-frontend, where the server's
+# hostname resolves to Traefik. local_server.py fills in $gitlab_url and
+# $token.
+concurrent = 2
+
+[[runners]]
+  name = "local-test-runner"
+  url = "$gitlab_url/"
+  token = "$token"
+  tls-ca-file = "/etc/gitlab-runner/certs/ca.crt"
+  executor = "docker"
+  [runners.docker]
+    image = "alpine:3"
+    privileged = false
+    volumes = ["/cache"]
+    network_mode = "dtaas-frontend"

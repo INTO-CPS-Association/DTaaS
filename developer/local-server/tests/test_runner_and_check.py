@@ -1,8 +1,9 @@
 """Tests for runner.py and registry_check.py."""
 
+from fakes import FakeGitLab
+
 import registry_check
 import runner
-from fakes import FakeGitLab
 from settings import Settings
 
 
@@ -13,6 +14,7 @@ def test_runner_config_uses_frontend_network():
     assert 'token = "glrt-1"' in config
     assert 'network_mode = "dtaas-frontend"' in config
     assert "privileged = false" in config
+    assert 'tls-ca-file = "/etc/gitlab-runner/certs/ca.crt"' in config
 
 
 def test_start_runner_writes_project(tmp_path, monkeypatch):
@@ -23,8 +25,8 @@ def test_start_runner_writes_project(tmp_path, monkeypatch):
     gitlab = FakeGitLab({("POST", "user/runners"): {"token": "glrt-2"}})
     runner.start_runner(settings, gitlab)
     assert "glrt-2" in (settings.runner_dir / "config.toml").read_text(encoding="utf-8")
-    assert (settings.runner_dir / "intocps.test.crt").read_text(encoding="utf-8") == "CA"
-    assert "intocps.test.crt" in (settings.runner_dir / "compose.yml").read_text(encoding="utf-8")
+    assert (settings.runner_dir / "ca.crt").read_text(encoding="utf-8") == "CA"
+    assert "./ca.crt:" in (settings.runner_dir / "compose.yml").read_text(encoding="utf-8")
 
 
 def test_commit_pipeline_creates_or_updates():

@@ -3,8 +3,9 @@
 import stat
 from types import SimpleNamespace
 
-import configure
 from fakes import FakeGitLab
+
+import configure
 from settings import Settings
 
 
@@ -45,3 +46,12 @@ def test_create_users_returns_only_new_users():
         ensure_user=lambda username, _email, _password: username == "user2")
     created = list(configure.create_users(gitlab))
     assert [user for user, _ in created] == ["user2"]
+
+
+def test_has_oauth_apps_reads_gitlab_state():
+    """Registration depends on the applications GitLab has."""
+    for apps, expected in (([], False),
+                           ([{"application_name": "Other"}], False),
+                           ([{"application_name": configure.SERVER_APP}], True)):
+        gitlab = FakeGitLab({("GET", "applications"): apps})
+        assert configure.has_oauth_apps(gitlab) is expected

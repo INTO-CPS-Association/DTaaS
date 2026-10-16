@@ -1,6 +1,6 @@
 """Run the integrated GitLab package on this machine and test its registry.
 
-Usage: python3 script/local_server/local_server.py <command> [options]
+Usage: python3 developer/local-server/local_server.py <command> [options]
 See docs/developer/contributions/local-server-testing.md.
 """
 

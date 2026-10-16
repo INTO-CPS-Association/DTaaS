@@ -2,49 +2,13 @@
 
 import re
 import shutil
-from string import Template
 
-from settings import PACKAGE_SOURCE, USERS
+from settings import HERE, PACKAGE_SOURCE, USERS
 from shell import run, step
 
 EXAMPLE_HOST = "intocps.org"
 FORWARD_AUTH_IMAGE = "traefik-forward-auth-local:latest"
-FORWARD_AUTH_DOCKERFILE = """\
-FROM alpine:latest AS cert-builder
-RUN apk add --no-cache ca-certificates
-COPY rootCA.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
-
-FROM thomseddon/traefik-forward-auth:latest
-COPY --from=cert-builder /etc/ssl/certs/ca-certificates.crt \\
-     /etc/ssl/certs/ca-certificates.crt
-CMD ["traefik-forward-auth"]
-"""
 CONFIG_FILES = (".env", "conf.server", "client.js")
-# The alias makes the hostname resolve to Traefik inside the frontend network.
-# GitLab gets another hostname because Docker also publishes a container's
-# hostname on its networks. Named volumes keep GitLab's data off bind mounts.
-COMPOSE_OVERRIDE = Template("""services:
-  traefik:
-    networks:
-      frontend:
-        aliases:
-          - $hostname
-      users: {}
-  traefik-forward-auth:
-    image: $image
-  gitlab:
-    hostname: gitlab
-    volumes:
-      - gitlab-config:/etc/gitlab
-      - gitlab-logs:/var/log/gitlab
-      - gitlab-data:/var/opt/gitlab
-
-volumes:
-  gitlab-config:
-  gitlab-logs:
-  gitlab-data:
-""")
 
 
 def set_env_value(text, key, value):
@@ -55,17 +19,18 @@ def set_env_value(text, key, value):
     return text.rstrip("\n") + f"\n{key}={value}\n"
 
 
-def compose_override(hostname):
-    """Return the compose override that adapts the package to one machine."""
-    return COMPOSE_OVERRIDE.substitute(hostname=hostname, image=FORWARD_AUTH_IMAGE)
-
-
 def copy_package(settings):
-    """Copy the package and its example configuration files once."""
+    """Copy the package, refreshing its compose file on every run.
+
+    The compose file always comes from deploy/, so the test runs what
+    ships. Configuration files are copied from their examples only once.
+    """
     target = settings.package_dir
     if not target.exists():
         step(f"Copying the integrated GitLab package to {target}")
         shutil.copytree(PACKAGE_SOURCE, target)
+    shutil.copyfile(PACKAGE_SOURCE / "docker-compose.yml",
+                    target / "docker-compose.yml")
     for name in CONFIG_FILES:
         config = target / "config" / name
         if not config.exists():
@@ -113,7 +78,7 @@ def build_forward_auth_image(settings):
     context = settings.workdir / "forward-auth"
     context.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(settings.ca_file, context / "rootCA.crt")
-    (context / "Dockerfile").write_text(FORWARD_AUTH_DOCKERFILE, encoding="utf-8")
+    shutil.copyfile(HERE / "forward-auth" / "Dockerfile", context / "Dockerfile")
     step(f"Building {FORWARD_AUTH_IMAGE}")
     run(["docker", "build", "-q", "-t", FORWARD_AUTH_IMAGE, str(context)])
 
@@ -124,6 +89,6 @@ def prepare_package(settings):
     configure_package(settings)
     create_directories(settings)
     create_certificates(settings)
-    (settings.package_dir / "compose.local.yml").write_text(
-        compose_override(settings.hostname), encoding="utf-8")
+    shutil.copyfile(HERE / "compose.local.yml",
+                    settings.package_dir / "compose.local.yml")
     build_forward_auth_image(settings)

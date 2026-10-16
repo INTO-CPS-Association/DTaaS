@@ -7,7 +7,7 @@ under `intocps.test`, as set up in
 command runs every test below:
 
 ```bash
-python3 script/local_server/local_server.py check
+python3 developer/local-server/local_server.py check
 ```
 
 ## Trust the Registry CA
@@ -53,14 +53,16 @@ containers.
 
 ## Pipeline Test
 
-The `check` command registers an instance runner and starts it from
-`~/dtaas-local-test/runner`. The runner and its jobs join the
+The `check` command registers an instance runner and starts it in
+`~/dtaas-local-test/runner`, using the compose file and configuration
+template in `developer/local-server/runner/`. The runner and its jobs join the
 `dtaas-frontend` network, where `intocps.test` resolves to Traefik, and
 the runner gives jobs the CA in `CI_SERVER_TLS_CA_FILE`. The runner is
 not privileged.
 
-The command then commits this pipeline to `dtaas/registry-test` and
-runs it:
+The command then commits
+`developer/local-server/registry-test.gitlab-ci.yml` to
+`dtaas/registry-test` and runs it:
 
 ```yaml
 stages: [publish, reuse]

@@ -1,46 +1,18 @@
 """Register and start a GitLab runner on the package's frontend network."""
 
 import shutil
+from string import Template
 
+from settings import HERE
 from shell import run, step
 
-RUNNER_COMPOSE = """services:
-  gitlab-runner:
-    container_name: gitlab-runner
-    image: gitlab/gitlab-runner:alpine
-    volumes:
-      - "./config.toml:/etc/gitlab-runner/config.toml:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./{hostname}.crt:/etc/gitlab-runner/certs/{hostname}.crt:ro"
-    networks:
-      - frontend
-
-networks:
-  frontend:
-    name: dtaas-frontend
-    external: true
-"""
+RUNNER_FILES = HERE / "runner"
 
 
 def runner_config(gitlab_url, token):
-    """Return config.toml for a Docker executor on the frontend network.
-
-    Jobs join dtaas-frontend so that the server's hostname resolves to
-    Traefik, which serves both GitLab and the registry.
-    """
-    return f"""concurrent = 2
-
-[[runners]]
-  name = "local-test-runner"
-  url = "{gitlab_url}/"
-  token = "{token}"
-  executor = "docker"
-  [runners.docker]
-    image = "alpine:3"
-    privileged = false
-    volumes = ["/cache"]
-    network_mode = "dtaas-frontend"
-"""
+    """Return config.toml for the runner from the template file."""
+    template = (RUNNER_FILES / "config.toml.template").read_text(encoding="utf-8")
+    return Template(template).substitute(gitlab_url=gitlab_url, token=token)
 
 
 def start_runner(settings, gitlab):
@@ -52,13 +24,12 @@ def start_runner(settings, gitlab):
     })
     directory = settings.runner_dir
     directory.mkdir(parents=True, exist_ok=True)
-    (directory / "compose.yml").write_text(
-        RUNNER_COMPOSE.format(hostname=settings.hostname), encoding="utf-8")
+    shutil.copyfile(RUNNER_FILES / "compose.yml", directory / "compose.yml")
     config = directory / "config.toml"
     config.touch(mode=0o600)
     config.write_text(runner_config(settings.gitlab_url, runner["token"]),
                       encoding="utf-8")
-    shutil.copyfile(settings.ca_file, directory / f"{settings.hostname}.crt")
+    shutil.copyfile(settings.ca_file, directory / "ca.crt")
     run(["docker", "compose", "up", "-d", "--force-recreate"], cwd=directory)
 
 

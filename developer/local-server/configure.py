@@ -10,6 +10,7 @@ from shell import step
 from stack import compose
 
 CLIENT_SCOPES = "openid profile read_user read_repository api"
+SERVER_APP = "DTaaS Server Authorization"
 CLIENT_ID_PATTERN = re.compile(r"(REACT_APP_CLIENT_ID:\s*')[^']*(')")
 
 
@@ -43,11 +44,21 @@ def create_oauth_app(gitlab, name, redirect_uri, scopes, confidential):
     return app["application_id"], app["secret"]
 
 
+def has_oauth_apps(gitlab):
+    """Tell whether GitLab already has the server OAuth 2.0 application.
+
+    GitLab's state decides, not the config file: after 'clean' deletes
+    GitLab's data, the file still holds the old application ids.
+    """
+    apps = gitlab.request("GET", "applications") or []
+    return any(app["application_name"] == SERVER_APP for app in apps)
+
+
 def configure_oauth(settings, gitlab):
     """Register both applications and write their ids into the config."""
     base = f"https://{settings.hostname}"
     server_id, server_secret = create_oauth_app(
-        gitlab, "DTaaS Server Authorization", f"{base}/_oauth", "read_user", True)
+        gitlab, SERVER_APP, f"{base}/_oauth", "read_user", True)
     client_id, _ = create_oauth_app(
         gitlab, "DTaaS Client Authorization", f"{base}/Library",
         CLIENT_SCOPES, False)
@@ -72,8 +83,7 @@ def configure_gitlab(settings):
     step("Creating users")
     for user, password in create_users(gitlab):
         write_secret(settings, f"{user}-password", password)
-    env_file = settings.package_dir / "config" / ".env"
-    if "your_client_id_here" in env_file.read_text(encoding="utf-8"):
+    if not has_oauth_apps(gitlab):
         step("Registering the OAuth 2.0 applications")
         configure_oauth(settings, gitlab)
         compose(settings, "up", "-d", "--force-recreate",

@@ -6,29 +6,12 @@ import urllib.error
 from configure import read_secret
 from gitlab import GitLab
 from runner import start_runner
+from settings import HERE
 from shell import run, step
 
 TEST_IMAGE = "alpine:3"
 FINAL_STATES = ("success", "failed", "canceled", "skipped")
-PIPELINE = """stages: [publish, reuse]
-
-publish:
-  stage: publish
-  image:
-    name: gcr.io/go-containerregistry/crane:debug
-    entrypoint: [""]
-  script:
-    - export SSL_CERT_FILE="$CI_SERVER_TLS_CA_FILE"
-    - echo "$CI_REGISTRY_PASSWORD" |
-      crane auth login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-    - crane copy alpine:3 "$CI_REGISTRY_IMAGE/ci-env:1.0"
-
-reuse:
-  stage: reuse
-  image: $CI_REGISTRY_IMAGE/ci-env:1.0
-  script:
-    - cat /etc/os-release
-"""
+PIPELINE_FILE = HERE / "registry-test.gitlab-ci.yml"
 
 
 def push_and_pull(settings, token, project_path):
@@ -54,7 +37,8 @@ def commit_pipeline(gitlab, project_id):
     gitlab.request("POST", f"projects/{project_id}/repository/commits", {
         "branch": "main", "commit_message": "Add container registry test",
         "actions": [{"action": "update" if exists else "create",
-                     "file_path": ".gitlab-ci.yml", "content": PIPELINE}],
+                     "file_path": ".gitlab-ci.yml",
+                     "content": PIPELINE_FILE.read_text(encoding="utf-8")}],
     })
 
 

@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import package
-from settings import Settings
+from settings import HERE, Settings
 
 
 def make_settings(tmp_path):
@@ -19,6 +19,7 @@ def fake_package(tmp_path):
     (source / "config" / ".env.example").write_text(
         "SERVER_DNS=localhost\nOAUTH_URL=https://localhost/gitlab\n", encoding="utf-8")
     (source / "config" / "conf.server.example").write_text("rule=1\n", encoding="utf-8")
+    (source / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
     (source / "config" / "client.js.example").write_text(
         "REACT_APP_URL: 'https://intocps.org',\n", encoding="utf-8")
     return source
@@ -33,9 +34,9 @@ def test_set_env_value_replaces_and_appends():
 
 
 def test_compose_override_aliases_hostname_and_renames_gitlab():
-    """The override aliases the hostname to Traefik and renames GitLab."""
-    override = package.compose_override("intocps.test")
-    assert "- intocps.test" in override
+    """The override aliases SERVER_DNS to Traefik and renames GitLab."""
+    override = (HERE / "compose.local.yml").read_text(encoding="utf-8")
+    assert "- ${SERVER_DNS}" in override
     assert "hostname: gitlab" in override
     assert package.FORWARD_AUTH_IMAGE in override
 
@@ -80,3 +81,15 @@ def test_create_certificates_skips_existing(tmp_path, monkeypatch):
     Path(certs / "fullchain.pem").write_text("cert", encoding="utf-8")
     package.create_certificates(settings)
     assert len(calls) == 1
+
+
+def test_copy_package_refreshes_compose_file(tmp_path, monkeypatch):
+    """The compose file follows deploy/ even in an existing copy."""
+    source = fake_package(tmp_path)
+    monkeypatch.setattr(package, "PACKAGE_SOURCE", source)
+    settings = make_settings(tmp_path)
+    package.copy_package(settings)
+    (source / "docker-compose.yml").write_text("changed\n", encoding="utf-8")
+    package.copy_package(settings)
+    compose = settings.package_dir / "docker-compose.yml"
+    assert compose.read_text(encoding="utf-8") == "changed\n"

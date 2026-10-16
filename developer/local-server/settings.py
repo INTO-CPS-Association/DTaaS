@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+HERE = Path(__file__).resolve().parent
+REPO_ROOT = HERE.parents[1]
 PACKAGE_SOURCE = (
     REPO_ROOT / "deploy" / "dtaas" / "docker" / "secure-server_with_integrated-gitlab"
 )

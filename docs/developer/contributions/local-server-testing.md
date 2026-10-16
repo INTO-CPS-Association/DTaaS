@@ -37,7 +37,7 @@ machines.
 From the repository root:
 
 ```bash
-python3 script/local_server/local_server.py all
+python3 developer/local-server/local_server.py all
 ```
 
 The script asks for the `sudo` password when it changes the host. The
@@ -104,8 +104,9 @@ uses an mkcert certificate fails with
 `x509: certificate signed by unknown authority`. That happens, for
 example, when the `secure-server` package uses the services CLI GitLab
 at `https://intocps.test:8090/gitlab`. The script builds
-`traefik-forward-auth-local:latest`, which adds the mkcert CA to the
-upstream image as the
+`traefik-forward-auth-local:latest` from
+`developer/local-server/forward-auth/Dockerfile`, which adds the mkcert
+CA to the upstream image as the
 [self-signed certificates guide](../../admin/guides/self-signed-certs.md)
 describes. In the integrated GitLab package the exchange goes to
 `http://gitlab` inside the Docker network, so the upstream image would
@@ -113,9 +114,11 @@ also work there.
 
 ### Compose Override
 
-Next to `docker-compose.yml` the script writes
-`compose.local.yml`, which the `up` and `down` commands pass to Docker
-Compose:
+The script copies `developer/local-server/compose.local.yml` next to
+the package's `docker-compose.yml`, and the `up` and `down` commands
+pass both files to Docker Compose. The package's own compose file is
+used unchanged, so the test covers what ships. The override does four
+things:
 
 - A network alias makes `intocps.test` resolve to Traefik inside the
   `dtaas-frontend` network, for containers such as GitLab runners.
@@ -147,7 +150,7 @@ the redirects, so gitlab.com does not need to reach the machine.
 ## Clean Up
 
 ```bash
-python3 script/local_server/local_server.py clean
+python3 developer/local-server/local_server.py clean
 rdctl shutdown
 ```
 
