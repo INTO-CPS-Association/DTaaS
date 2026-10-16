@@ -2,12 +2,11 @@
 
 import json
 import ssl
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
-from shell import run
+from shell import run, wait_until
 
 ROOT_TOKEN_RUBY = (
     'u = User.find_by_username("root"); '
@@ -29,13 +28,21 @@ def http_status(url, ca_file):
 
 
 def wait_for(checks, ca_file, timeout=1200, interval=10):
-    """Wait until every (url, status) pair in checks answers with its status."""
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        if all(http_status(url, ca_file) == status for url, status in checks):
-            return
-        time.sleep(interval)
-    raise TimeoutError(f"No expected answer from {[url for url, _ in checks]}")
+    """Wait until every (url, status) pair in checks answers with its status.
+
+    The timeout message lists the last answers; status 0 means no answer
+    or a TLS failure, such as an untrusted certificate.
+    """
+    last = {}
+
+    def all_ready():
+        """Record each URL's answer and tell whether all are as expected."""
+        last.update({url: http_status(url, ca_file) for url, _ in checks})
+        return all(last[url] == status for url, status in checks)
+    try:
+        wait_until(all_ready, timeout, interval, "GitLab and the registry")
+    except TimeoutError as error:
+        raise TimeoutError(f"{error}; last answers: {last}") from error
 
 
 def create_root_token():
@@ -90,15 +97,17 @@ class GitLab:
             {"name": name, "path": name, "namespace_id": group["id"]},
         )
 
-    def ensure_user(self, username, email, password):
-        """Create a confirmed user unless the username exists already."""
-        if self.request("GET", f"users?username={username}"):
-            return False
-        self.request("POST", "users", {
+    def find_user(self, username):
+        """Return the user called username, or None."""
+        users = self.request("GET", f"users?username={username}")
+        return users[0] if users else None
+
+    def create_user(self, username, email, password):
+        """Create a confirmed user and return it."""
+        return self.request("POST", "users", {
             "username": username, "name": username, "email": email,
             "password": password, "skip_confirmation": True,
         })
-        return True
 
 
 def quote(value):

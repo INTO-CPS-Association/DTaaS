@@ -27,14 +27,6 @@ def fake_package(tmp_path):
     return source
 
 
-def test_set_env_value_replaces_and_appends():
-    """Values are replaced in place, appended if missing, and not regex-expanded."""
-    text = "A=1\nB=2\n"
-    assert package.set_env_value(text, "B", "x") == "A=1\nB=x\n"
-    assert package.set_env_value(text, "C", "3") == "A=1\nB=2\nC=3\n"
-    assert package.set_env_value("A=1", "A", r"a\1") == r"A=a\1"
-
-
 def test_compose_override_aliases_hostname_and_renames_gitlab():
     """The override aliases SERVER_DNS to Traefik and renames GitLab."""
     override = (TOOL_DIR / "compose.local.yml").read_text(encoding="utf-8")

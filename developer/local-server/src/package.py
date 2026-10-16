@@ -1,22 +1,14 @@
 """Prepare a copy of the integrated GitLab package for local testing."""
 
-import re
 import shutil
 
+from files import update_env_file
 from settings import TOOL_DIR, PACKAGE_SOURCE, USERS
 from shell import run, step
 
 EXAMPLE_HOST = "intocps.org"
 FORWARD_AUTH_IMAGE = "traefik-forward-auth-local:latest"
 CONFIG_FILES = (".env", "conf.server", "client.js")
-
-
-def set_env_value(text, key, value):
-    """Set key=value in the text of a .env file, appending it if missing."""
-    pattern = re.compile(rf"^{re.escape(key)}=.*$", re.MULTILINE)
-    if pattern.search(text):
-        return pattern.sub(lambda _: f"{key}={value}", text)
-    return text.rstrip("\n") + f"\n{key}={value}\n"
 
 
 def check_hostname(settings):
@@ -58,14 +50,11 @@ def copy_package(settings):
 def configure_package(settings):
     """Point the package's configuration at the test hostname."""
     config = settings.package_dir / "config"
-    env = (config / ".env").read_text(encoding="utf-8")
-    for key, value in (
-        ("SERVER_DNS", settings.hostname),
-        ("OAUTH_URL", settings.gitlab_url),
-        ("REGISTRY_PORT", str(settings.registry_port)),
-    ):
-        env = set_env_value(env, key, value)
-    (config / ".env").write_text(env, encoding="utf-8")
+    update_env_file(config / ".env", {
+        "SERVER_DNS": settings.hostname,
+        "OAUTH_URL": settings.gitlab_url,
+        "REGISTRY_PORT": str(settings.registry_port),
+    })
     client = (config / "client.js").read_text(encoding="utf-8")
     client = client.replace(EXAMPLE_HOST, settings.hostname)
     (config / "client.js").write_text(client, encoding="utf-8")

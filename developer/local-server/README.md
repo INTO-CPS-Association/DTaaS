@@ -18,9 +18,9 @@ not use `intocps.org`; it is the project's public domain.
 
 - Linux with Python 3.10 or later and `sudo` rights. The script needs
   no Python packages.
-- Docker Engine, Docker Desktop or Rancher Desktop, running. GitLab
-  needs at least 4 GB of memory. On Rancher Desktop, give the virtual
-  machine 8 GB and keep Kubernetes off:
+- Docker Engine, Docker Desktop or Rancher Desktop, running, with 8 GB
+  of memory for the containers; a 16 GB host is comfortable. On Rancher
+  Desktop, give the virtual machine 8 GB and keep Kubernetes off:
 
   ```bash
   rdctl start --kubernetes.enabled=false --container-engine.name=moby \
@@ -44,12 +44,8 @@ ends with `Registry check passed.` when everything works.
 
 Then open <https://intocps.test> and sign in as `user1` or `user2`. The
 passwords and a root access token for the GitLab API are in
-`~/dtaas-local-test/secrets/`. The GitLab `root` password is in the
-GitLab container:
-
-```bash
-docker exec gitlab grep Password: /etc/gitlab/initial_root_password
-```
+`~/dtaas-local-test/secrets/`. For the GitLab `root` password, run
+`docker exec gitlab grep Password: /etc/gitlab/initial_root_password`.
 
 ## Commands
 
@@ -83,7 +79,7 @@ directory, the only host directory its virtual machine mounts.
 - On Rancher Desktop, which runs as a normal user, lowers
   `net.ipv4.ip_unprivileged_port_start` to 80 so that ports 80 and 443
   can be forwarded, and keeps the setting in
-  `/etc/sysctl.d/99-rancher-desktop.conf`.
+  `/etc/sysctl.d/99-dtaas-local-server.conf`.
 - Installs mkcert and `libnss3-tools` with `apt-get` if mkcert is
   missing, and runs `mkcert -install`, which adds the mkcert root CA to
   the system and browser trust stores. Restart the browser afterwards.
@@ -97,7 +93,8 @@ directory, the only host directory its virtual machine mounts.
   `docker-compose.yml` again on every run so that the copy follows
   `deploy/`.
 - Sets `SERVER_DNS`, `OAUTH_URL` and `REGISTRY_PORT` in `config/.env`
-  and replaces `intocps.org` in `config/client.js`.
+  on every run, so change the port with `--registry-port`, not in the
+  file. Replaces `intocps.org` in `config/client.js`.
 - Creates the bind-mounted directories (`logs/logger`, `files/user1`,
   `files/user2`). Docker on Rancher Desktop cannot create them on the
   `sshfs` mount of the home directory.
@@ -140,14 +137,16 @@ directory, the only host directory its virtual machine mounts.
 
 - Logs in to the registry with the root token, then pushes and pulls an
   image in the project `dtaas/registry-test`.
+- Checks that `user2`, who is not a project member, cannot pull it.
 - Registers an instance runner and starts it from
   `~/dtaas-local-test/runner` with `runner/compose.yml` and
   `runner/config.toml.template`. The runner and its jobs join
   `dtaas-frontend`, the runner is not privileged, and it gives jobs the
   CA in `CI_SERVER_TLS_CA_FILE`.
-- Commits `registry-test.gitlab-ci.yml` and runs it. Its first job
-  publishes an image to the project's registry with `crane`; its second
-  job runs inside that image. The check passes when both jobs succeed.
+- Commits `registry-test.gitlab-ci.yml` with `[skip ci]` if it changed,
+  then starts one pipeline. Its first job publishes an image with
+  `crane`; its second job runs inside that image. The check passes when
+  both jobs succeed and `user2` was refused.
 
 ## Registry CA Locations
 
@@ -158,9 +157,10 @@ directory, the only host directory its virtual machine mounts.
 | Docker Desktop          | macOS: `~/.docker/certs.d/<host>:<port>/ca.crt` or the keychain. Windows: the Windows certificate store. Restart Docker Desktop afterwards |
 | Rancher Desktop (Linux) | `~/.docker/certs.d/<host>:<port>/ca.crt`, linked into its virtual machine |
 
-The script picks the location from the active Docker context. Docker
-does not document a location for Docker Desktop on Linux; the script
-uses `~/.docker/certs.d` there, as on macOS.
+The script picks the location from the Docker context and the daemon's
+system name, so it also recognises Docker Desktop's WSL integration. It
+writes `~/.docker/certs.d` for Docker Desktop, which Docker documents
+for macOS only; on Windows, add the CA to the certificate store too.
 
 ## Files
 
@@ -198,9 +198,10 @@ python -m pytest
 
 `pytest.ini` puts `src/` and `tests/` on the import path. The
 `Local Server Script` workflow (`.github/workflows/developer-local-server.yml`)
-runs the same checks on Python 3.10 and 3.14 for every change in this
-directory. Run `all` before opening a pull request that changes the
-script or the integrated package.
+runs the same checks on Python 3.10 and 3.14, and renders the
+integrated package with a custom registry port. Run `all` before
+opening a pull request that changes the script or the integrated
+package.
 
 ## Troubleshooting
 
@@ -218,6 +219,9 @@ script or the integrated package.
   while the job started. Run `check` again.
 - **Old runners in Admin > CI/CD > Runners.** Each `check` registers a
   new runner; the earlier ones stay offline and can be deleted.
+- **Rancher Desktop stops in the middle of a run.** The host ran out of
+  memory; `journalctl --user | grep oom-kill` shows it. Close other
+  applications, start Rancher Desktop again, then run `up` and `check`.
 
 ## Limitations
 
@@ -234,15 +238,10 @@ script or the integrated package.
 python3 developer/local-server/src/local_server.py clean
 ```
 
-`clean` keeps the mkcert CA, the registry CA copies and the port
-setting. To remove them, run `mkcert -uninstall`, delete
-`~/.docker/certs.d/intocps.test:*` or `/etc/docker/certs.d/intocps.test:*`,
-and delete `/etc/sysctl.d/99-rancher-desktop.conf`.
+`clean` keeps the mkcert CA (`mkcert -uninstall` removes it), the
+`intocps.test:*` registry CA directories and the port setting file.
 
 ## More Documentation
-
-The same material, split into usage and code, is in the documentation
-site:
 
 - [Local Server Testing](../../docs/developer/contributions/local-server-testing.md)
 - [Local Registry Testing](../../docs/developer/contributions/local-registry-testing.md)

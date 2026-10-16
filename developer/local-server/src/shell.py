@@ -1,6 +1,7 @@
-"""Run external commands and report progress for the local server scripts."""
+"""Run external commands, wait for conditions and report progress."""
 
 import subprocess
+import time
 
 
 def run(args, capture=False, input_text=None, cwd=None):
@@ -23,3 +24,17 @@ def sudo(args, input_text=None):
 def step(message):
     """Print the name of the step that starts now."""
     print(f"==> {message}", flush=True)
+
+
+def wait_until(condition, timeout, interval, description):
+    """Call condition until it returns a true value, and return that value.
+
+    Raises TimeoutError naming description if timeout seconds pass first.
+    """
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        result = condition()
+        if result:
+            return result
+        time.sleep(interval)
+    raise TimeoutError(f"Timed out waiting for {description}")

@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import host
+from settings import Settings
 
 
 def test_has_hosts_entry_matches_hostname_field():
@@ -40,12 +41,17 @@ def test_remove_hosts_entry_keeps_other_lines(tmp_path, monkeypatch):
     assert calls == ["127.0.0.1 localhost\n"]
 
 
-def test_detect_runtime_from_docker_context(monkeypatch):
-    """The Docker context name tells the runtimes apart."""
-    for context, runtime in (("rancher-desktop", "rancher"),
-                             ("desktop-linux", "desktop"),
-                             ("default", "engine")):
-        monkeypatch.setattr(host, "run", lambda args, capture=False, c=context: c)
+def test_detect_runtime_from_context_and_daemon(monkeypatch):
+    """The context name and the daemon's system name tell the runtimes apart."""
+    cases = (("rancher-desktop", "Alpine Linux", "rancher"),
+             ("desktop-linux", "Docker Desktop", "desktop"),
+             ("default", "Docker Desktop", "desktop"),
+             ("default", "Ubuntu 26.04 LTS", "engine"))
+    for context, system, runtime in cases:
+        def fake_run(args, c=context, s=system, **_):
+            """Answer docker context show and docker info."""
+            return c if args[1] == "context" else s
+        monkeypatch.setattr(host, "run", fake_run)
         assert host.detect_runtime() == runtime
 
 
@@ -91,3 +97,26 @@ def test_allow_low_ports_only_for_rancher(tmp_path, monkeypatch):
     limit.write_text("80\n", encoding="utf-8")
     host.allow_low_ports("rancher")
     assert calls == ["sysctl", "tee"]
+
+
+def test_install_mkcert_updates_apt_first(monkeypatch):
+    """A missing mkcert is installed after apt-get update."""
+    calls = []
+    monkeypatch.setattr(host.shutil, "which",
+                        lambda name: None if name == "mkcert" else "/usr/bin/apt-get")
+    monkeypatch.setattr(host, "sudo", lambda args, input_text=None:
+                        calls.append(args[:2]))
+    host.install_mkcert()
+    assert calls == [["apt-get", "update"], ["apt-get", "install"]]
+
+
+def test_prepare_host_runs_steps_in_order(tmp_path, monkeypatch):
+    """The host step maps the hostname before trusting the CAs."""
+    calls = []
+    monkeypatch.setattr(host, "detect_runtime", lambda: "rancher")
+    for name in ("add_hosts_entry", "allow_low_ports", "install_mkcert",
+                 "install_local_ca", "trust_registry_ca"):
+        monkeypatch.setattr(host, name, lambda *args, n=name: calls.append(n))
+    host.prepare_host(Settings("intocps.test", 5050, tmp_path))
+    assert calls == ["add_hosts_entry", "allow_low_ports", "install_mkcert",
+                     "install_local_ca", "trust_registry_ca"]

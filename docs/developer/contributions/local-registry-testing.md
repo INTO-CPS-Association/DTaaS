@@ -24,8 +24,11 @@ Docker context. Where the CA goes depends on the runtime:
 | Docker Desktop          | macOS: `~/.docker/certs.d/<host>:<port>/ca.crt` or the keychain. Windows: the Windows certificate store. Restart Docker Desktop afterwards |
 | Rancher Desktop (Linux) | `~/.docker/certs.d/<host>:<port>/ca.crt`, which Rancher Desktop links into its virtual machine      |
 
-Docker does not document a location for Docker Desktop on Linux; the
-script uses `~/.docker/certs.d` there, as on macOS. With Docker Engine
+The script recognises Docker Desktop by its context name or by the
+daemon's system name, which also covers Docker Desktop's WSL
+integration. It writes `~/.docker/certs.d` for Docker Desktop, which
+Docker documents for macOS only; on Windows, add the CA to the Windows
+certificate store too. With Docker Engine
 in WSL2, browsers on Windows also need the CA in the Windows
 certificate store and the hostname in the Windows `hosts` file.
 
@@ -43,7 +46,10 @@ docker pull intocps.test:5050/<group>/<project>/alpine:3
 ```
 
 The `check` command does the same with the root token, in the project
-`dtaas/registry-test`.
+`dtaas/registry-test`. It then checks access control: `user2`, who is
+not a member of that project, must fail to pull the image. The command
+signs in as `user2` with a short-lived impersonation token that has the
+`read_registry` scope.
 
 The registry port is `REGISTRY_PORT` in the integrated package's
 `config/.env`, or `GITLAB_REGISTRY_PORT` in the services CLI's
@@ -62,7 +68,8 @@ not privileged.
 
 The command then commits
 `developer/local-server/registry-test.gitlab-ci.yml` to
-`dtaas/registry-test` and runs it:
+`dtaas/registry-test`, if the file there differs, with `[skip ci]` in
+the commit message, and starts one pipeline:
 
 ```yaml
 stages: [publish, reuse]
@@ -87,8 +94,8 @@ reuse:
 
 The first job publishes an image to the project's registry, and the
 second job runs inside that image. The check passes when both jobs
-succeed. If GitLab restarts while a job starts, the job can stay in
-`running` without a log; run `check` again.
+succeed and `user2` was refused. If GitLab restarts while a job
+starts, the job can stay in `running` without a log; run `check` again.
 
 ## Clean Up
 

@@ -113,7 +113,23 @@ simulate:
 
 GitLab sets `CI_REGISTRY`, `CI_REGISTRY_IMAGE`, `CI_REGISTRY_USER` and
 `CI_REGISTRY_PASSWORD` in every job, so a pipeline can also log in and
-publish images to the project's registry.
+publish images to the project's registry. This job copies a public image
+into the project's registry without needing a privileged runner:
+
+```yaml
+publish:
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" |
+      crane auth login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - crane copy alpine:3 "$CI_REGISTRY_IMAGE/my-dt-env:1.0"
+```
+
+Building an image from a `Dockerfile` in a pipeline needs a runner that
+supports image builds. Ask the administrator which builds the DTaaS
+runners allow.
 
 ## Next Steps
 

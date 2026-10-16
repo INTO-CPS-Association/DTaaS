@@ -10,6 +10,9 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web-secure.address=:443"
       - "--entrypoints.registry.address=:${REGISTRY_PORT:-5050}"
+      # docker push sends each image layer as one request; Traefik's default
+      # 60 s read timeout would cut off large layers.
+      - "--entrypoints.registry.transport.respondingTimeouts.readTimeout=0"
       - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"

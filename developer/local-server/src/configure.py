@@ -3,8 +3,8 @@
 import re
 import secrets
 
-from gitlab import GitLab, create_root_token
-from package import set_env_value
+from files import update_env_file, write_private
+from gitlab_api import GitLab, create_root_token
 from settings import USERS
 from shell import step
 from stack import compose
@@ -17,10 +17,7 @@ CLIENT_ID_PATTERN = re.compile(r"(REACT_APP_CLIENT_ID:\s*')[^']*(')")
 def write_secret(settings, name, value):
     """Store a generated secret in a file that only the owner can read."""
     settings.secrets_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
-    path = settings.secrets_dir / name
-    path.touch(mode=0o600)
-    path.chmod(0o600)
-    path.write_text(value + "\n", encoding="utf-8")
+    write_private(settings.secrets_dir / name, value + "\n")
 
 
 def read_secret(settings, name):
@@ -31,12 +28,24 @@ def read_secret(settings, name):
     return path.read_text(encoding="utf-8").strip()
 
 
-def create_users(gitlab):
-    """Create the workspace users with the emails that conf.server allows."""
+def create_users(settings, gitlab):
+    """Create the workspace users and store their passwords.
+
+    The emails are the ones that conf.server allows. A user that GitLab
+    has but whose password is not stored, for example after the working
+    directory was deleted, stops the step instead of being left unusable.
+    """
     for user in USERS:
+        password_file = settings.secrets_dir / f"{user}-password"
+        if gitlab.find_user(user):
+            if not password_file.exists():
+                raise RuntimeError(
+                    f"GitLab has {user}, but {password_file} is missing; "
+                    "run 'clean' to start again")
+            continue
         password = secrets.token_urlsafe(12) + "Aa1!"
-        if gitlab.ensure_user(user, f"{user}@emailservice.com", password):
-            yield user, password
+        gitlab.create_user(user, f"{user}@emailservice.com", password)
+        write_secret(settings, f"{user}-password", password)
 
 
 def create_oauth_app(gitlab, name, redirect_uri, scopes, confidential):
@@ -48,14 +57,18 @@ def create_oauth_app(gitlab, name, redirect_uri, scopes, confidential):
     return app["application_id"], app["secret"]
 
 
-def has_oauth_apps(gitlab):
-    """Tell whether GitLab already has the server OAuth 2.0 application.
+def needs_oauth_apps(settings, gitlab):
+    """Tell whether the OAuth 2.0 applications must be registered.
 
-    GitLab's state decides, not the config file: after 'clean' deletes
-    GitLab's data, the file still holds the old application ids.
+    Both sides count: after 'clean', config/.env holds ids of applications
+    that GitLab no longer has; after the working directory is deleted,
+    GitLab has applications whose ids config/.env lacks.
     """
+    env = (settings.package_dir / "config" / ".env").read_text(encoding="utf-8")
+    if "your_client_id_here" in env:
+        return True
     apps = gitlab.request("GET", "applications?per_page=100") or []
-    return any(app["application_name"] == SERVER_APP for app in apps)
+    return not any(app["application_name"] == SERVER_APP for app in apps)
 
 
 def configure_oauth(settings, gitlab):
@@ -67,12 +80,11 @@ def configure_oauth(settings, gitlab):
         gitlab, "DTaaS Client Authorization", f"{base}/Library",
         CLIENT_SCOPES, False)
     config = settings.package_dir / "config"
-    env = (config / ".env").read_text(encoding="utf-8")
-    for key, value in (("OAUTH_CLIENT_ID", server_id),
-                       ("OAUTH_CLIENT_SECRET", server_secret),
-                       ("OAUTH_SECRET", secrets.token_hex(24))):
-        env = set_env_value(env, key, value)
-    (config / ".env").write_text(env, encoding="utf-8")
+    update_env_file(config / ".env", {
+        "OAUTH_CLIENT_ID": server_id,
+        "OAUTH_CLIENT_SECRET": server_secret,
+        "OAUTH_SECRET": secrets.token_hex(24),
+    })
     client = (config / "client.js").read_text(encoding="utf-8")
     (config / "client.js").write_text(
         CLIENT_ID_PATTERN.sub(rf"\g<1>{client_id}\g<2>", client), encoding="utf-8")
@@ -85,9 +97,8 @@ def configure_gitlab(settings):
     write_secret(settings, "root-token", token)
     gitlab = GitLab(settings.gitlab_url, token, settings.ca_file)
     step("Creating users")
-    for user, password in create_users(gitlab):
-        write_secret(settings, f"{user}-password", password)
-    if not has_oauth_apps(gitlab):
+    create_users(settings, gitlab)
+    if needs_oauth_apps(settings, gitlab):
         step("Registering the OAuth 2.0 applications")
         configure_oauth(settings, gitlab)
         compose(settings, "up", "-d", "--force-recreate",

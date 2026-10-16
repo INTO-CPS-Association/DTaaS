@@ -7,7 +7,7 @@ from shell import run, step, sudo
 
 HOSTS_FILE = Path("/etc/hosts")
 PORT_LIMIT_FILE = Path("/proc/sys/net/ipv4/ip_unprivileged_port_start")
-SYSCTL_CONF = Path("/etc/sysctl.d/99-rancher-desktop.conf")
+SYSCTL_CONF = Path("/etc/sysctl.d/99-dtaas-local-server.conf")
 PORT_LIMIT_SETTING = "net.ipv4.ip_unprivileged_port_start=80"
 
 
@@ -43,11 +43,17 @@ def remove_hosts_entry(hostname):
 
 
 def detect_runtime():
-    """Return 'rancher', 'desktop' or 'engine' from the active Docker context."""
+    """Return 'rancher', 'desktop' or 'engine' for the active Docker daemon.
+
+    Docker Desktop's WSL integration uses the 'default' context, so the
+    daemon's operating system name is checked as well.
+    """
     context = run(["docker", "context", "show"], capture=True)
     if context == "rancher-desktop":
         return "rancher"
-    if context.startswith("desktop-"):
+    system = run(["docker", "info", "--format", "{{.OperatingSystem}}"],
+                 capture=True)
+    if context.startswith("desktop-") or system == "Docker Desktop":
         return "desktop"
     return "engine"
 
@@ -68,6 +74,7 @@ def install_mkcert():
     if not shutil.which("apt-get"):
         raise RuntimeError("Install mkcert: https://github.com/FiloSottile/mkcert")
     step("Installing mkcert and libnss3-tools")
+    sudo(["apt-get", "update"])
     sudo(["apt-get", "install", "-y", "mkcert", "libnss3-tools"])
 
 
@@ -98,7 +105,8 @@ def trust_registry_ca(runtime, registry, ca_file):
     target.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ca_file, target / "ca.crt")
     if runtime == "desktop":
-        print("Restart Docker Desktop so that it copies the new CA.")
+        print("Restart Docker Desktop so that it reads the new CA. On Windows,"
+              " also add the CA to the Windows certificate store.")
 
 
 def prepare_host(settings):

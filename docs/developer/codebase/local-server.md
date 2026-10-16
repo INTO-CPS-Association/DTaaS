@@ -84,10 +84,12 @@ The script:
 `TimeoutError` into an error message and exit code 1. A check that runs
 but fails also exits with 1.
 
-The runtime of the active Docker context decides where the registry CA
-goes: `rancher-desktop` and `desktop-*` contexts use
-`~/.docker/certs.d`, any other context uses `/etc/docker/certs.d`
-through `sudo`.
+`host.detect_runtime` decides where the registry CA goes. The
+`rancher-desktop` context means Rancher Desktop; a `desktop-*` context,
+or a daemon whose system name is `Docker Desktop` (as with Docker
+Desktop's WSL integration), means Docker Desktop. Both use
+`~/.docker/certs.d`. Any other daemon is Docker Engine, which reads
+`/etc/docker/certs.d`, written through `sudo`.
 
 ## Development
 
@@ -113,10 +115,14 @@ python3 developer/local-server/src/local_server.py all
 
 The `Local Server Script` workflow,
 `.github/workflows/developer-local-server.yml`, runs flake8, pylint with
-the repository's `.pylintrc` and pytest on Python 3.10 and 3.14. It runs
-for changes under `developer/local-server/`, to `.pylintrc` and to the
-workflow itself. A finding fails the job. The end-to-end run needs
-Docker and `sudo`, so it does not run in CI.
+the repository's `.pylintrc` and pytest on Python 3.10 and 3.14. A
+second job renders the integrated package's `docker-compose.yml` with
+`REGISTRY_PORT=6060` and checks that the port reaches the Traefik
+entrypoint, the port mapping, GitLab's registry settings and the Traefik
+service. The workflow runs for changes under `developer/local-server/`
+and the integrated package, to `.pylintrc` and to the workflow itself.
+A finding fails the job. The end-to-end run needs Docker and `sudo`, so
+it does not run in CI.
 
 ## Adding a Command
 

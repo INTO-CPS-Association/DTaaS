@@ -21,8 +21,9 @@ machines.
 
 - Linux with Python 3.10 or later and `sudo` rights.
 - Docker Engine, Docker Desktop or [Rancher Desktop](https://rancherdesktop.io/),
-  running. GitLab needs at least 4 GB of memory; on Rancher Desktop,
-  give the virtual machine 8 GB and keep Kubernetes off:
+  running, with 8 GB of memory for the containers; a 16 GB host is
+  comfortable. On Rancher Desktop, give the virtual machine 8 GB and
+  keep Kubernetes off:
 
   ```bash
   rdctl start --kubernetes.enabled=false --container-engine.name=moby \
@@ -81,7 +82,7 @@ The script adds `127.0.0.1 intocps.test` to `/etc/hosts`.
 On Rancher Desktop, which runs as a normal user, it also lowers
 `net.ipv4.ip_unprivileged_port_start` to 80 so that ports 80 and 443
 can be forwarded, and keeps the setting in
-`/etc/sysctl.d/99-rancher-desktop.conf`. It installs mkcert if needed
+`/etc/sysctl.d/99-dtaas-local-server.conf`. It installs mkcert if needed
 and runs `mkcert -install`, which adds the mkcert root CA to the system
 and browser trust stores. Restart the browser afterwards.
 
@@ -163,6 +164,9 @@ the redirects, so gitlab.com does not need to reach the machine.
   while the job started. Run `check` again.
 - **Old runners in Admin > CI/CD > Runners.** Each `check` registers a
   new runner; the earlier ones stay offline and can be deleted.
+- **Rancher Desktop stops in the middle of a run.** The host ran out of
+  memory; `journalctl --user | grep oom-kill` shows it. Close other
+  applications, start Rancher Desktop again, then run `up` and `check`.
 
 The code of the script is described in
 [Local Server Script](../codebase/local-server.md).
@@ -175,4 +179,4 @@ rdctl shutdown
 ```
 
 `clean` keeps the mkcert CA and the port setting. To remove them, run
-`mkcert -uninstall` and delete `/etc/sysctl.d/99-rancher-desktop.conf`.
+`mkcert -uninstall` and delete `/etc/sysctl.d/99-dtaas-local-server.conf`.

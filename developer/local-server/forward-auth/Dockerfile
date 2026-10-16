@@ -8,4 +8,3 @@ RUN update-ca-certificates
 FROM thomseddon/traefik-forward-auth:latest
 COPY --from=cert-builder /etc/ssl/certs/ca-certificates.crt \
      /etc/ssl/certs/ca-certificates.crt
-CMD ["traefik-forward-auth"]

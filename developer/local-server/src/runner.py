@@ -3,6 +3,7 @@
 import shutil
 from string import Template
 
+from files import write_private
 from settings import TOOL_DIR
 from shell import run, step
 
@@ -25,11 +26,8 @@ def start_runner(settings, gitlab):
     directory = settings.runner_dir
     directory.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(RUNNER_FILES / "compose.yml", directory / "compose.yml")
-    config = directory / "config.toml"
-    config.touch(mode=0o600)
-    config.chmod(0o600)
-    config.write_text(runner_config(settings.gitlab_url, runner["token"]),
-                      encoding="utf-8")
+    write_private(directory / "config.toml",
+                  runner_config(settings.gitlab_url, runner["token"]))
     shutil.copyfile(settings.ca_file, directory / "ca.crt")
     run(["docker", "compose", "up", "-d", "--force-recreate"], cwd=directory)
 

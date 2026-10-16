@@ -1,7 +1,6 @@
 """Tests for configure.py."""
 
 import stat
-from types import SimpleNamespace
 
 import pytest
 
@@ -42,21 +41,54 @@ def test_configure_oauth_writes_ids(tmp_path):
                          "https://intocps.test/Library"]
 
 
-def test_create_users_returns_only_new_users():
-    """Only newly created users are returned with passwords."""
-    gitlab = SimpleNamespace(
-        ensure_user=lambda username, _email, _password: username == "user2")
-    created = list(configure.create_users(gitlab))
-    assert [user for user, _ in created] == ["user2"]
+class Users(FakeGitLab):
+    """FakeGitLab that knows some users and records created ones."""
+
+    def __init__(self, existing_users):
+        super().__init__()
+        self.existing_users = existing_users
+        self.created = []
+
+    def find_user(self, username):
+        """Return a user if the name is known."""
+        return {"id": 1} if username in self.existing_users else None
+
+    def create_user(self, username, email, _password):
+        """Record the created user."""
+        self.created.append((username, email))
 
 
-def test_has_oauth_apps_reads_gitlab_state():
-    """Registration depends on the applications GitLab has."""
-    for apps, expected in (([], False),
-                           ([{"application_name": "Other"}], False),
-                           ([{"application_name": configure.SERVER_APP}], True)):
+def test_create_users_stores_new_passwords(tmp_path):
+    """New users get a stored password; known users with one are kept."""
+    settings = Settings("intocps.test", 5050, tmp_path)
+    configure.write_secret(settings, "user1-password", "kept")
+    gitlab = Users({"user1"})
+    configure.create_users(settings, gitlab)
+    assert gitlab.created == [("user2", "user2@emailservice.com")]
+    assert configure.read_secret(settings, "user1-password") == "kept"
+    assert configure.read_secret(settings, "user2-password")
+
+
+def test_create_users_stops_without_stored_password(tmp_path):
+    """A known user without a stored password stops the step."""
+    settings = Settings("intocps.test", 5050, tmp_path)
+    with pytest.raises(RuntimeError, match="clean"):
+        configure.create_users(settings, Users({"user1"}))
+
+
+def test_needs_oauth_apps_checks_file_and_gitlab(tmp_path):
+    """Placeholders in .env or a missing application need registration."""
+    settings = Settings("intocps.test", 5050, tmp_path)
+    env = settings.package_dir / "config" / ".env"
+    env.parent.mkdir(parents=True)
+    env.write_text("OAUTH_CLIENT_ID=your_client_id_here\n", encoding="utf-8")
+    assert configure.needs_oauth_apps(settings, FakeGitLab())
+    env.write_text("OAUTH_CLIENT_ID=app1\n", encoding="utf-8")
+    for apps, expected in (([], True),
+                           ([{"application_name": "Other"}], True),
+                           ([{"application_name": configure.SERVER_APP}], False)):
         gitlab = FakeGitLab({("GET", "applications"): apps})
-        assert configure.has_oauth_apps(gitlab) is expected
+        assert configure.needs_oauth_apps(settings, gitlab) is expected
 
 
 def test_read_secret_explains_missing_file(tmp_path):

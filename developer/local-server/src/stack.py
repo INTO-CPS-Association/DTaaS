@@ -1,6 +1,6 @@
 """Start and stop the package's services with the local compose override."""
 
-from gitlab import wait_for
+from gitlab_api import wait_for
 from shell import run, step
 
 

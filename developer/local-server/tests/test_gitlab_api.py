@@ -1,4 +1,4 @@
-"""Tests for gitlab.py."""
+"""Tests for gitlab_api.py."""
 
 import io
 import json
@@ -6,7 +6,7 @@ import urllib.error
 
 import pytest
 
-import gitlab
+import gitlab_api
 
 
 class FakeResponse(io.BytesIO):
@@ -29,32 +29,32 @@ def http_error(code):
 @pytest.fixture(name="client")
 def fixture_client(tmp_path, monkeypatch):
     """Return a GitLab client that skips TLS setup."""
-    monkeypatch.setattr(gitlab.ssl, "create_default_context", lambda cafile: None)
-    return gitlab.GitLab("https://h/gitlab", "token", tmp_path / "ca.pem")
+    monkeypatch.setattr(gitlab_api.ssl, "create_default_context", lambda cafile: None)
+    return gitlab_api.GitLab("https://h/gitlab", "token", tmp_path / "ca.pem")
 
 
 def test_http_status_reports_http_errors_and_no_answer(monkeypatch):
     """HTTP errors give their status; no answer gives 0."""
-    monkeypatch.setattr(gitlab.ssl, "create_default_context", lambda cafile: None)
+    monkeypatch.setattr(gitlab_api.ssl, "create_default_context", lambda cafile: None)
 
     def raise_401(*args, **kwargs):
         """Answer every request with 401."""
         raise http_error(401)
-    monkeypatch.setattr(gitlab.urllib.request, "urlopen", raise_401)
-    assert gitlab.http_status("https://h/v2/", "ca") == 401
+    monkeypatch.setattr(gitlab_api.urllib.request, "urlopen", raise_401)
+    assert gitlab_api.http_status("https://h/v2/", "ca") == 401
 
     def refuse(*args, **kwargs):
         """Fail as if nothing listens."""
         raise urllib.error.URLError("refused")
-    monkeypatch.setattr(gitlab.urllib.request, "urlopen", refuse)
-    assert gitlab.http_status("https://h/v2/", "ca") == 0
+    monkeypatch.setattr(gitlab_api.urllib.request, "urlopen", refuse)
+    assert gitlab_api.http_status("https://h/v2/", "ca") == 0
 
 
 def test_wait_for_times_out(monkeypatch):
     """wait_for raises TimeoutError when the status never matches."""
-    monkeypatch.setattr(gitlab, "http_status", lambda url, ca: 502)
+    monkeypatch.setattr(gitlab_api, "http_status", lambda url, ca: 502)
     with pytest.raises(TimeoutError):
-        gitlab.wait_for([("https://h", 200)], "ca", timeout=0.05, interval=0.01)
+        gitlab_api.wait_for([("https://h", 200)], "ca", timeout=0.05, interval=0.01)
 
 
 def test_request_sends_token_and_json(client, monkeypatch):
@@ -65,7 +65,7 @@ def test_request_sends_token_and_json(client, monkeypatch):
         """Record the request and answer with JSON."""
         sent["request"] = request
         return FakeResponse(b'{"id": 7}')
-    monkeypatch.setattr(gitlab.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(gitlab_api.urllib.request, "urlopen", urlopen)
     assert client.request("POST", "groups", {"name": "g"}) == {"id": 7}
     request = sent["request"]
     assert request.full_url == "https://h/gitlab/api/v4/groups"
@@ -78,7 +78,7 @@ def test_find_returns_none_on_404(client, monkeypatch):
     def raise_404(*args, **kwargs):
         """Answer every request with 404."""
         raise http_error(404)
-    monkeypatch.setattr(gitlab.urllib.request, "urlopen", raise_404)
+    monkeypatch.setattr(gitlab_api.urllib.request, "urlopen", raise_404)
     assert client.find("groups/missing") is None
 
 
@@ -94,22 +94,32 @@ def test_ensure_project_creates_missing_project(client, monkeypatch):
     assert calls[1][2]["namespace_id"] == 2
 
 
-def test_ensure_user_skips_existing_user(client, monkeypatch):
-    """An existing username is not created again."""
+def test_find_user_returns_first_match_or_none(client, monkeypatch):
+    """find_user returns the matching user, or None when there is none."""
+    answers = {"user1": [{"id": 1}], "nobody": []}
     monkeypatch.setattr(client, "request", lambda method, path, data=None:
-                        [{"id": 1}] if method == "GET" else None)
-    assert client.ensure_user("user1", "u@e.com", "pw") is False
+                        answers[path.split("=")[1]])
+    assert client.find_user("user1") == {"id": 1}
+    assert client.find_user("nobody") is None
+
+
+def test_wait_for_reports_last_answers(monkeypatch):
+    """A timeout names the last status of each URL."""
+    monkeypatch.setattr(gitlab_api, "http_status", lambda url, ca: 0)
+    with pytest.raises(TimeoutError, match="https://h/v2/': 0"):
+        gitlab_api.wait_for([("https://h/v2/", 401)], "ca", timeout=0.05,
+                            interval=0.01)
 
 
 def test_create_root_token_takes_last_line(monkeypatch):
     """The token is the last line of the Rails runner output."""
-    monkeypatch.setattr(gitlab, "run", lambda args, capture=False:
+    monkeypatch.setattr(gitlab_api, "run", lambda args, capture=False:
                         "warning\nglpat-abc")
-    assert gitlab.create_root_token() == "glpat-abc"
+    assert gitlab_api.create_root_token() == "glpat-abc"
 
 
 def test_create_root_token_rejects_empty_output(monkeypatch):
     """No output means GitLab created no token."""
-    monkeypatch.setattr(gitlab, "run", lambda args, capture=False: "")
+    monkeypatch.setattr(gitlab_api, "run", lambda args, capture=False: "")
     with pytest.raises(RuntimeError, match="no access token"):
-        gitlab.create_root_token()
+        gitlab_api.create_root_token()

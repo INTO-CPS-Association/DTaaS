@@ -17,7 +17,10 @@ the `/gitlab` path with the GitLab web interface.
 | [Integrated GitLab package](../dtaas/secure-server-gitlab/install.md) | `REGISTRY_PORT`        | `config/.env`         |
 | [Services CLI](../services/cli.md)                                 | `GITLAB_REGISTRY_PORT` | `config/services.env` |
 
-Both variables default to `5050`. The registry uses the TLS certificate
+Both variables default to `5050`. GitLab's own nginx listens on the
+registry port inside the GitLab container, so the port must not be one
+GitLab already uses there, such as 80, 443, 5000 (the registry's own
+port), 8080 or 9090. The registry uses the TLS certificate
 of the GitLab instance. A certificate covers a hostname on every port,
 so no new certificate is needed.
 
@@ -31,9 +34,11 @@ with both values taken from `config/services.env`.
 
 ## Upgrade an Existing Installation
 
-The new port applies only after the GitLab container is recreated.
+The registry is enabled only after the GitLab container is recreated.
 GitLab is unavailable for a few minutes while it reconfigures itself.
-Its data is not changed.
+Its data is not changed. An existing configuration file needs no change
+for the default port, `5050`; add the variable only to use another
+port.
 
 ### Integrated GitLab Package
 
@@ -46,8 +51,11 @@ docker compose --env-file config/.env up -d
 
 ### Services CLI
 
-Refresh the compose files of the services project. The command does not
-overwrite `config/services.env` or the other credential files.
+Refresh the compose files of the services project. The command
+replaces every compose file and the configuration files that hold no
+credentials with the versions in the package, so review local changes
+to them afterwards. It does not overwrite `config/services.env` or the
+other credential files.
 
 ```bash
 dtaas-services project generate --force
@@ -59,6 +67,10 @@ dtaas-services service start -s gitlab
 existing container, which keeps the old port mapping.
 
 ## Verify
+
+Here `<port>` is `REGISTRY_PORT` from the integrated package's
+`config/.env`, or `GITLAB_REGISTRY_PORT` from the services CLI's
+`config/services.env`; both default to `5050`.
 
 Open `https://<server>:<port>/v2/`. The registry answers with HTTP
 status `401` and an `UNAUTHORIZED` error, because the request has no
@@ -73,15 +85,17 @@ docker login <server>:<port>
 
 If the server uses a certificate from a private certificate authority
 (CA), every Docker client of the registry must trust that CA. This
-includes the users' machines and the hosts of GitLab runners. Copy the
-CA certificate to:
+includes the users' machines and the hosts of GitLab runners. Where the
+CA goes depends on the client's Docker runtime:
 
-```text
-/etc/docker/certs.d/<server>:<port>/ca.crt
-```
+| Runtime                 | CA location                                                         |
+| :---------------------- | :------------------------------------------------------------------ |
+| Docker Engine (Linux)   | `/etc/docker/certs.d/<server>:<port>/ca.crt`                        |
+| Docker Engine in WSL2   | `/etc/docker/certs.d/<server>:<port>/ca.crt` inside the distribution |
+| Docker Desktop          | macOS: `~/.docker/certs.d/<server>:<port>/ca.crt` or the keychain. Windows: the Windows certificate store. Restart Docker Desktop afterwards |
+| Rancher Desktop (Linux) | `~/.docker/certs.d/<server>:<port>/ca.crt`, linked into its virtual machine |
 
-Rancher Desktop links this directory to `~/.docker/certs.d` on the
-host. See the [self-signed certificates guide](../guides/self-signed-certs.md)
+See the [self-signed certificates guide](../guides/self-signed-certs.md)
 for the server side.
 
 ## Runners on the Same Server
@@ -89,9 +103,18 @@ for the server side.
 Pipeline jobs pull and push images through the server's public
 hostname. When the runner runs on the DTaaS server itself, behind a NAT
 that does not route traffic back to the server's own public address,
-these connections fail even though the registry works from outside. Map
-the hostname to `127.0.0.1` in `/etc/hosts` on that server to avoid
-this.
+these connections fail even though the registry works from outside.
+Two settings avoid this:
+
+- Map the hostname to `127.0.0.1` in `/etc/hosts` on the server, for the
+  Docker daemon, which pulls the images that jobs run in.
+- Map the hostname to the Docker host inside job containers, for jobs
+  that push or pull images themselves. In the runner's `config.toml`:
+
+  ```toml
+  [runners.docker]
+    extra_hosts = ["<server>:host-gateway"]
+  ```
 
 ## Storage
 
