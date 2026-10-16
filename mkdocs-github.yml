@@ -169,6 +169,7 @@ nav:
           - Runner Microservice: developer/codebase/runner.md
           - DTaaS CLI: developer/codebase/cli.md
           - DTaaS Services: developer/codebase/dtaas-services.md
+          - Local Server Script: developer/codebase/local-server.md
           - Publish Packages: developer/codebase/publish-packages.md
       - Contributions:
           - Code of Conduct: developer/contributions/conduct.md

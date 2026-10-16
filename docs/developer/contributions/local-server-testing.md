@@ -37,7 +37,7 @@ machines.
 From the repository root:
 
 ```bash
-python3 developer/local-server/local_server.py all
+python3 developer/local-server/src/local_server.py all
 ```
 
 The script asks for the `sudo` password when it changes the host. The
@@ -147,10 +147,30 @@ hand with the same hostname and certificate: register the applications
 with redirect URIs under `https://intocps.test`. The browser follows
 the redirects, so gitlab.com does not need to reach the machine.
 
+## Troubleshooting
+
+- **`up` takes long or times out.** GitLab answers `502` for several
+  minutes after it starts; `up` waits up to 20 minutes. Check progress
+  with `docker logs gitlab`.
+- **Ports 80 or 443 cannot be bound on Rancher Desktop.** Run `host`
+  again, or check `sysctl net.ipv4.ip_unprivileged_port_start`.
+- **`docker login` fails with `x509`.** The Docker daemon does not
+  trust the CA. Run `host`, and restart Docker Desktop if you use it.
+- **The registry redirects to the GitLab sign-in.** The package's
+  Traefik router for the registry lost its priority. Run `package` to
+  copy the current compose file from `deploy/`, then `up`.
+- **A pipeline job stays in `running` without a log.** GitLab restarted
+  while the job started. Run `check` again.
+- **Old runners in Admin > CI/CD > Runners.** Each `check` registers a
+  new runner; the earlier ones stay offline and can be deleted.
+
+The code of the script is described in
+[Local Server Script](../codebase/local-server.md).
+
 ## Clean Up
 
 ```bash
-python3 developer/local-server/local_server.py clean
+python3 developer/local-server/src/local_server.py clean
 rdctl shutdown
 ```
 

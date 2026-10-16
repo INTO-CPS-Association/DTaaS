@@ -3,7 +3,7 @@
 import re
 import shutil
 
-from settings import HERE, PACKAGE_SOURCE, USERS
+from settings import TOOL_DIR, PACKAGE_SOURCE, USERS
 from shell import run, step
 
 EXAMPLE_HOST = "intocps.org"
@@ -78,7 +78,7 @@ def build_forward_auth_image(settings):
     context = settings.workdir / "forward-auth"
     context.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(settings.ca_file, context / "rootCA.crt")
-    shutil.copyfile(HERE / "forward-auth" / "Dockerfile", context / "Dockerfile")
+    shutil.copyfile(TOOL_DIR / "forward-auth" / "Dockerfile", context / "Dockerfile")
     step(f"Building {FORWARD_AUTH_IMAGE}")
     run(["docker", "build", "-q", "-t", FORWARD_AUTH_IMAGE, str(context)])
 
@@ -89,6 +89,6 @@ def prepare_package(settings):
     configure_package(settings)
     create_directories(settings)
     create_certificates(settings)
-    shutil.copyfile(HERE / "compose.local.yml",
+    shutil.copyfile(TOOL_DIR / "compose.local.yml",
                     settings.package_dir / "compose.local.yml")
     build_forward_auth_image(settings)

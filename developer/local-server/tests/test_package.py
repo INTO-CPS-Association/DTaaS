@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import package
-from settings import HERE, Settings
+from settings import TOOL_DIR, Settings
 
 
 def make_settings(tmp_path):
@@ -35,7 +35,7 @@ def test_set_env_value_replaces_and_appends():
 
 def test_compose_override_aliases_hostname_and_renames_gitlab():
     """The override aliases SERVER_DNS to Traefik and renames GitLab."""
-    override = (HERE / "compose.local.yml").read_text(encoding="utf-8")
+    override = (TOOL_DIR / "compose.local.yml").read_text(encoding="utf-8")
     assert "- ${SERVER_DNS}" in override
     assert "hostname: gitlab" in override
     assert package.FORWARD_AUTH_IMAGE in override

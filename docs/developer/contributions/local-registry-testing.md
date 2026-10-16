@@ -7,7 +7,7 @@ under `intocps.test`, as set up in
 command runs every test below:
 
 ```bash
-python3 developer/local-server/local_server.py check
+python3 developer/local-server/src/local_server.py check
 ```
 
 ## Trust the Registry CA

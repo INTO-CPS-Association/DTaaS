@@ -1,0 +1,6 @@
+# Tools that check the local server script, installed by the
+# developer-local-server workflow. The script itself uses only the
+# Python standard library and needs nothing installed.
+flake8==7.4.1
+pylint==4.1.2
+pytest==9.1.1

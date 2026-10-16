@@ -3,10 +3,10 @@
 import shutil
 from string import Template
 
-from settings import HERE
+from settings import TOOL_DIR
 from shell import run, step
 
-RUNNER_FILES = HERE / "runner"
+RUNNER_FILES = TOOL_DIR / "runner"
 
 
 def runner_config(gitlab_url, token):

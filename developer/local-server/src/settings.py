@@ -3,8 +3,9 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parents[1]
+# developer/local-server, which holds the template files next to src/
+TOOL_DIR = Path(__file__).resolve().parents[1]
+REPO_ROOT = TOOL_DIR.parents[1]
 PACKAGE_SOURCE = (
     REPO_ROOT / "deploy" / "dtaas" / "docker" / "secure-server_with_integrated-gitlab"
 )

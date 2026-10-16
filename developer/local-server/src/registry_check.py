@@ -6,12 +6,12 @@ import urllib.error
 from configure import read_secret
 from gitlab import GitLab
 from runner import start_runner
-from settings import HERE
+from settings import TOOL_DIR
 from shell import run, step
 
 TEST_IMAGE = "alpine:3"
 FINAL_STATES = ("success", "failed", "canceled", "skipped")
-PIPELINE_FILE = HERE / "registry-test.gitlab-ci.yml"
+PIPELINE_FILE = TOOL_DIR / "registry-test.gitlab-ci.yml"
 
 
 def push_and_pull(settings, token, project_path):
