@@ -4,7 +4,8 @@ from unittest.mock import patch, MagicMock
 import pytest
 from click.testing import CliRunner
 from src.cmd import dtaas
-from src.cmd_user_utils import UserAddInput
+from src.cmd_user_utils import StagedUsers
+from src.pkg.registry import register_new_users
 # pylint: disable=redefined-outer-name
 
 
@@ -18,10 +19,13 @@ def runner():
 def mock_user_pkg():
     """Mock user package functions and Config to avoid filesystem dependency"""
     with patch("src.cmd_user.userPkg.add_users") as mock_add, patch(
-        "src.cmd_user.userPkg.delete_users"
-    ) as mock_delete, patch("src.cmd_utils.configPkg.Config") as mock_cfg:
+        "src.cmd_user.usersDeletePkg.delete_users"
+    ) as mock_delete, patch("src.cmd_utils.configPkg.Config") as mock_cfg, patch(
+        "src.cmd_user.userPkg.check_add_supported", return_value=None
+    ):
         mock_cfg.return_value = MagicMock()
         mock_cfg.return_value.get_gitlab_provision.return_value = (False, None)
+        mock_cfg.return_value.get_starting_users.return_value = ([], None)
         yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
 
 
@@ -32,7 +36,7 @@ def test_delete_user_error(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["user", "delete", "alice"])
 
     assert result.exit_code != 0
-    assert "Error while deleting users: daemon down" in result.output
+    assert "Error while deleting users\n  daemon down" in result.output
 
 
 def test_delete_user_dry_run(runner, mock_user_pkg):
@@ -43,7 +47,9 @@ def test_delete_user_dry_run(runner, mock_user_pkg):
 
     assert result.exit_code == 0
     assert "Dry run complete" in result.output
-    mock_user_pkg["delete"].assert_called_once_with(["alice"], dry_run=True)
+    mock_user_pkg["delete"].assert_called_once_with(
+        ["alice"], dry_run=True, starting=[]
+    )
 
 
 def test_delete_users_with_file(runner, mock_user_pkg, tmp_path):
@@ -59,7 +65,51 @@ def test_delete_users_with_file(runner, mock_user_pkg, tmp_path):
     result = runner.invoke(dtaas, ["user", "delete", "--file", str(csv_file)])
 
     assert result.exit_code == 0
-    mock_user_pkg["delete"].assert_called_once_with(["alice", "bob"], dry_run=False)
+    mock_user_pkg["delete"].assert_called_once_with(
+        ["alice", "bob"], dry_run=False, starting=[]
+    )
+
+
+def test_add_rejects_an_unsupported_deployment(runner, mock_user_pkg):
+    """The deployment check runs before staging, so a localhost installation
+    fails the command without registering anyone."""
+    with patch(
+        "src.cmd_user.userPkg.check_add_supported",
+        return_value=Exception("user add is not supported for localhost installations"),
+    ), patch("src.cmd_user.stage_users_for_add") as mock_stage:
+        result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code != 0
+    assert "not supported for localhost" in result.output
+    mock_stage.assert_not_called()
+
+
+def test_add_reports_when_it_added_nobody(runner, mock_user_pkg):
+    """A run whose every name was already registered must not claim it added
+    users: the skip lines above it are the whole story."""
+    mock_user_pkg["add"].return_value = None
+    with patch(
+        "src.cmd_user.stage_users_for_add",
+        return_value=StagedUsers([], [], {"alice": None}),
+    ):
+        result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code == 0
+    assert "No new users added." in result.output
+    assert "Users added successfully" not in result.output
+
+
+def test_add_reports_success_when_it_added_someone(runner, mock_user_pkg):
+    """A run that did add a user keeps the success line."""
+    mock_user_pkg["add"].return_value = None
+    with patch(
+        "src.cmd_user.stage_users_for_add",
+        return_value=StagedUsers(["alice"], [], {"alice": "pw"}),
+    ):
+        result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code == 0
+    assert "Users added successfully" in result.output
 
 
 def test_add_users_gitlab_provision_check_error(runner, mock_user_pkg):
@@ -72,32 +122,35 @@ def test_add_users_gitlab_provision_check_error(runner, mock_user_pkg):
     result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
 
     assert result.exit_code != 0
-    assert "Error while adding users: bad gitlab section" in result.output
+    assert "Error while adding users\n  bad gitlab section" in result.output
 
 
-def test_add_single_user_prompts_for_password_when_provisioning(runner, mock_user_pkg):
-    """A single-user add with GitLab provisioning enabled and no --password prompts
-    for one interactively (hidden input, confirmed)."""
+def test_add_names_a_registered_user_for_the_gitlab_step(
+    runner, mock_user_pkg, tmp_path, monkeypatch
+):
+    """The real staging hands add_users an already-registered user named
+    with no password: nothing to start, but a GitLab target, so a re-run
+    reports their account as done instead of passing over them in silence."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "dtaas.users.registry.json").write_text(
+        '{"users": {"alice": {"email": "a@x.io", "gitlab_pat_issued": true}}}'
+    )
     mock_user_pkg["add"].return_value = None
-    mock_user_pkg["config"].return_value.get_gitlab_provision.return_value = (True, None)
-
-    with patch("src.cmd_user.stage_users_for_add") as mock_stage:
-        mock_stage.return_value = (["alice"], {"alice": "S3cur3-p4ss"})
-        result = runner.invoke(
-            dtaas,
-            ["user", "add", "alice", "--email", "a@x.io"],
-            input="S3cur3-p4ss\nS3cur3-p4ss\n",
-        )
-
+    config_obj = mock_user_pkg["config"].return_value
+    config_obj.get_gitlab_provision.return_value = (True, None)
+    config_obj.get_starting_users.return_value = ([], None)
+    config_obj.get_user_emails.return_value = ({}, None)
+    config_obj.get_user_passwords.return_value = ({}, None)
+    result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
     assert result.exit_code == 0
-    staged_input = mock_stage.call_args[0][0]
-    assert staged_input.password == "S3cur3-p4ss"
+    kwargs = mock_user_pkg["add"].call_args.kwargs
+    assert (kwargs["start_only"], kwargs["passwords"]) == ([], {"alice": None})
 
 
 _STATUS_ROWS = [
-    {"project": "deployment", "service": "traefik", "state": "running", "health": None},
-    {"project": "users", "service": "alice", "state": "running", "health": None},
-    {"project": "users", "service": "bob", "state": "paused", "health": None},
+    {"project": "deployment", "service": "traefik", "state": "running"},
+    {"project": "users", "service": "alice", "state": "running"},
+    {"project": "users", "service": "bob", "state": "paused"},
 ]
 _REGISTRY = {"alice": {}, "bob": {}}
 
@@ -145,3 +198,39 @@ def test_user_status_maps_missing_deployment_to_error(runner):
 
     assert result.exit_code != 0
     assert "docker-compose.yml" in result.output
+
+
+def test_add_points_at_configured_passwords_even_when_gitlab_fails(
+    runner, mock_user_pkg
+):
+    """The reminder runs after provisioning whatever its outcome: an account
+    created before a later failure still has its password in dtaas.toml."""
+    mock_user_pkg["add"].return_value = Exception("GitLab provisioning failed")
+    staged = StagedUsers([], ["alice"], {"alice": "pw"}, ["alice"])
+    with patch("src.cmd_user.stage_users_for_add", return_value=staged), patch(
+        "src.cmd_user.remind_configured_passwords"
+    ) as remind:
+        result = runner.invoke(dtaas, ["user", "add", "alice"])
+
+    assert result.exit_code != 0
+    remind.assert_called_once_with(["alice"])
+
+
+def test_add_retries_a_lost_token_without_a_password(
+    runner, mock_user_pkg, tmp_path, monkeypatch
+):
+    """'dtaas user add alice' for an account with an id and no token asks for
+    no password and hands alice to add_users, where her token is retried."""
+    monkeypatch.chdir(tmp_path)
+    register_new_users({"alice": {"email": "a@x.io", "gitlab_user_id": 7}}, [])
+    config = mock_user_pkg["config"].return_value
+    config.get_gitlab_provision.return_value = (True, None)
+    for getter in ("get_starting_users", "get_user_emails", "get_user_passwords"):
+        getattr(config, getter).return_value = ({}, None)
+    mock_user_pkg["add"].return_value = None
+
+    result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code == 0, result.output
+    assert "GitLab password" not in result.output
+    assert mock_user_pkg["add"].call_args.kwargs["passwords"] == {"alice": None}

@@ -21,7 +21,7 @@ path = "/home/Desktop/DTaaS"
 # Enable HTTPS/TLS for secure server deployment
 tls=false
 # Source directory holding the TLS certificates (fullchain.pem, privkey.pem)
-# for secure deployments. generate-deployment copies the latest pair into the
+# for secure deployments. deployment generate copies the latest pair into the
 # installation's certs/ directory. Leave unset to copy certificates by hand.
 # Certs path on Linux / MacOS
 certs-src='/etc/letsencrypt/archive/intocps.org'

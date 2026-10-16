@@ -4,6 +4,7 @@ import re
 import click
 from pathlib import Path
 from .constants import CONF_SERVER_RULE_NUM_RE, LOCALHOST_SERVER, USERNAME_RE
+from .messages import echo_hint
 
 CONF_SERVER_PATH = Path("config") / "conf.server"
 
@@ -130,6 +131,16 @@ def categorize_users(user_list, existing_services):
     return existing, missing
 
 
+def report_starting_users(starting):
+    """Report the dtaas.toml starting users a delete keeps the workspace of."""
+    for username in starting:
+        echo_hint(
+            f"'{username}' is a dtaas.toml starting user.",
+            "Its workspace, if it has one, is part of the installation's "
+            "docker-compose.yml and is kept.",
+        )
+
+
 def report_missing_users(missing):
     """Report users that don't exist.
 
@@ -141,10 +152,18 @@ def report_missing_users(missing):
 
 
 def report_delete_preview(existing, usernames):
-    """Print what 'user delete' would do, without changing anything (dry-run)."""
+    """Print what 'user delete' would do, without changing anything (dry-run).
+
+    The GitLab note mirrors the real run's: a delete keeps the GitLab
+    account and revokes only the tokens the CLI issued to it.
+    """
     if existing:
         click.echo(f"Would deprovision and stop: {', '.join(existing)}")
     click.echo(f"Would remove from registry: {', '.join(usernames)}")
+    echo_hint(
+        "GitLab accounts stay; CLI tokens would be revoked.",
+        "A revoked token would be dropped from the credentials file.",
+    )
 
 
 def remove_users_from_compose(compose, user_list):

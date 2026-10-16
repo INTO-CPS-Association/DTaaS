@@ -43,325 +43,12 @@ The CLI is written in Python and uses the following libraries:
 - [Pyright](https://github.com/microsoft/pyright) : Used for static type checking.
 
 - [python-gitlab](https://python-gitlab.readthedocs.io/) : GitLab API client,
-  used via the shared `gitlab_common` module (see below) for GitLab user
-  provisioning.
-
-## Code Structure
-
-The CLI has two layers of code:
-
-- Command line definition layer: every command follows a single
-  `dtaas <noun> <verb>` grammar (see _DTaaS-CLI-Design.md_) with four nouns.
-  _src/cmd.py_ defines the root `dtaas` group and wires the four noun groups
-  in workflow order; each noun is its own module: _src/cmd_config.py_
-  (`config generate|validate|reconcile`), _src/cmd_deployment.py_
-  (`deployment generate`), _src/cmd_platform.py_
-  (`platform install|uninstall|update` plus the lifecycle verbs from
-  _src/cmd_lifecycle.py_), and _src/cmd_user.py_
-  (`user add|delete|status`, plus the `pause|stop|resume` verbs from
-  _src/cmd_user_lifecycle.py_). Options reused across nouns
-  live in _src/cmd_options.py_. The CLI functions call the Package layer
-  functions. Non-command helpers shared by the command definitions are split
-  by concern to keep each file within a reasonable line count:
-  _src/cmd_utils.py_ (uninstall/reconcile/update orchestration),
-  _src/cmd_deploy_utils.py_ (deployment-generation helpers), and
-  _src/cmd_user_utils.py_ (user-input resolution/validation for
-  _src/cmd_user.py_'s commands). Deprecated pre-2.0 spellings
-  (`admin ...`, `generate-deployment`, `generate-project`) live in
-  _src/cmd_aliases.py_ as hidden aliases that warn and forward; that module is
-  a self-contained deprecation-window layer, deletable in one step.
-
-- Package layer: This is the _cli/src/pkg_ directory.
-  It contains the
-  singleton Config class, which is used throughout the CLI.
-  Additionally,
-  it contains the handling functions for each CLI subcommand.
-  These functions perform
-  the actual operations that the CLI command
-  is responsible for. It also
-  has helper functions that can be used across the CLI.
-
-The `config` commands are backed here: `generate_config` in
-_src/pkg/project.py_ copies just the `dtaas.toml` template (reusing the same
-template-copy helpers as `generate_user_templates`), and
-_src/pkg/config_validate.py_ checks the
-values in an existing `dtaas.toml`. Each check in `config_validate.py` returns
-a list of human-readable problems (empty when the value is acceptable) and
-`validate_config` aggregates them so the user sees every issue at once. Most
-checks are syntactic, but `path` and `certs-src` are verified against the local
-filesystem (the directory must exist), so `validate` is expected to run on the
-deployment host.
-
-`platform update --config` is backed by _src/pkg/config_update.py_, which
-re-applies `dtaas.toml` to an installed deployment in place. It reuses the
-existing substitution engine rather than duplicating it:
-`config_validate.collect_errors` gates the run,
-`deploy_config.build_file_specs` produces the per-file specs,
-`deploy_config.diff_specs` previews which files a spec would change
-(read-only, so it also powers `--dry-run`), and `deploy_config.apply_config`
-writes them (idempotently: only changed files are touched). The deployment
-type is detected from the compose service names via `deploy.compose_services`
-(more robust than inspecting config-file names). When any file changed, the
-whole stack is recreated through `deploy.restart_all`
-(`docker compose up -d --force-recreate`), since a config change can affect any
-service. `cmd_utils.run_config_update` adapts it to the CLI (mapping
-`OSError`/`ValueError`/`DockerException` to a `ClickException`), alongside
-`run_cert_update` and `require_update_flag` for the `update` group.
-
-The lifecycle commands (`platform status` / `stop` / `start` / `pause` / `resume`)
-are backed by _src/pkg/lifecycle.py_ and defined in _src/cmd_lifecycle.py_.
-They observe or suspend an installed deployment without removing it (unlike
-`uninstall`). `collect_status` returns per-service records (state and health)
-for **both** the core services and the user-added `compose.users.yml` workloads,
-so `platform status` reports the whole installation (and `user status` narrows
-it to the user rows). The suspend verbs `stop`/`start`/`pause`/`unpause`, by
-contrast, map onto `docker compose stop`/`start`/`pause`/`unpause` on the
-**core services only** per-user containers are suspended individually through
-_users_lifecycle.py_ (`dtaas user stop`/`pause`/`resume`), keeping the platform
-and user axes orthogonal. `_state_name` presents Docker's `exited` status as
-`stopped` so the reported state matches the `platform stop` verb. To keep one
-definition of "the deployment", `lifecycle.py` reuses deploy.py's compose-client
-plumbing (`require_compose_file`, `_client`, `compose_services`) rather than
-re-deriving it. `cmd_lifecycle.py` renders the status records as a table or
-(`--json`) as JSON via `echo_status` (shared with `user status`), and
-`_run_suspend` reports the "nothing installed" case as an exit-0 no-op so the
-commands are safe in CI/ops scripts. The commands are attached to the
-`platform` group by `add_lifecycle_commands`, mirroring how
-`cmd_user_lifecycle.py`'s `add_user_lifecycle_commands` attaches
-`user pause|stop|resume` to the `user` group.
-
-_src/pkg/deploy.py_'s local-file cleanup for `uninstall --remove-user-files`
-lives in a separate _src/pkg/user_files.py_ (pure filesystem work, no docker):
-`delete_user_files` removes the generated per-user workspace directories and
-the CLI-owned `dtaas.users.registry.json`/`.dtaas.state.json`, while keeping
-the `files/common` and `files/template` scaffolding so a later install can
-repopulate user dirs. A plain `uninstall` keeps the registry/state files, so a
-reinstall restores the same additional users.
-
-`platform update --config` validation is scoped to the installed deployment type:
-`config_validate.collect_errors(data, deploy_type)` checks only that type's
-deployment section (plus shared sections like `[frontend]`), so a leftover
-unrelated section -- e.g. a stale `[workspace-secure-server]` block in a
-`secure-server` deployment -- does not block the update. Standalone
-`config validate` passes no deploy_type and still checks every present
-section.
-
-### GitLab user provisioning
-
-`src/pkg/gitlab/` is built on `gitlab_common` (vendored from
-`lib/gitlab_common` by `src/pkg/build.py`, like the deploy templates below
-see [lib/gitlab_common/README.md](../lib/gitlab_common/README.md) for why it
-is copied rather than depended on) for the client and user/PAT primitives, so
-no GitLab client or idempotency code is reimplemented in the CLI:
-
-- `client.py`'s `resolve_client(config_obj)` reads `[gitlab].api_url` and
-  `[gitlab].pat` (falling back to the `DTAAS_GITLAB_PAT` environment
-  variable) from `dtaas.toml`, then builds a `gitlab_common.get_gitlab_client`
-  instance.
-- `provisioner.py`'s `ensure_user_resources(gl, user)` (a `GitlabUser` of
-  username/email/password, plus an optional registry-stored user id)
-  creates the user's GitLab account and Personal Access Token via
-  `gitlab_common.create_user`/`create_user_pat`. It is idempotent: an
-  already-existing account is left with its current credentials and gets no
-  new PAT.
-
-This is wired into `dtaas user add` (`pkg/users_gitlab.py`'s `provision_gitlab_users`)
-behind the `[gitlab].provision` flag (default `false`, so existing
-deployments are unaffected). A password is required per user via
-`--password`, prompted interactively (hidden input) for a single-user add
-when omitted, or via `users.csv`'s `password` column for bulk adds and is
-used only to create the account; it is never written to
-`dtaas.users.registry.json`, `.dtaas.state.json`, or logs. Issued PATs are
-saved to `gitlab_user_tokens.json` (mode `0600`, via
-`utils.write_secret_file`), and the successful issuance is recorded in the
-registry as `gitlab_pat_issued` so a repeated `user add` (e.g. re-running the
-same CSV after a partial failure) skips a user who already has a token rather
-than minting a second one. A GitLab failure for one user (or for the whole
-step, e.g. an unreachable instance) is reported and does not affect container
-provisioning, which has already completed by that point, nor other users.
-Scoped today to what `gitlab_common` provides user creation and PAT
-issuance; group/project provisioning is not implemented.
-
-### User registry and runtime state
-
-User provisioning spans three single-owner files, modelled on the config/state
-split Terraform uses for `.tf` vs `terraform.tfstate`: `dtaas.toml` holds the
-hand-edited `starting` users, `dtaas.users.registry.json` is the CLI-owned store
-of _additional_ users, and `.dtaas.state.json` is a git-ignored runtime cache.
-
-- _src/pkg/registry.py_ owns `dtaas.users.registry.json`. `load_registry` reads
-  the `{username: details}` store (empty when absent), `register_new_users` merges
-  new users, and `remove_from_registry` drops them, each persisted atomically
-  (temp file + `os.replace`), the way `useradd` owns `/etc/passwd`.
-  `read_csv_users` parses a `users.csv` for bulk import. `set_desired_status`
-  writes each user's intended running state (`running`/`paused`/`stopped`,
-  from `constants.DESIRED_STATUSES`) without touching their email/groups/
-  load_balance; see _users_lifecycle.py_ below.
-- _src/pkg/users.py_ `add_users(config_obj, start_only=None)` writes every
-  registry user to `compose.users.yml` (keeping the file complete) but only
-  _starts_ the `start_only` users -- `user add` passes just the newly-added
-  usernames (returned by `stage_users_for_add`), so adding one user never
-  recreates the rest; `config reconcile --fix` passes `None`, meaning start
-  every provisioned user. `delete_users` deprovisions the named users and
-  removes them from the registry (`dry_run=True` previews without changing
-  anything).
-  `cmd_user_utils.resolve_usernames` resolves the usernames to act on from
-  positional args or a `--file`/`-f users.csv` (only the `username` column is
-  read), rejecting the call if both or neither are given; it is shared by
-  `user delete`/`pause`/`stop`/`resume`. `cmd_user_utils.stage_users_for_add`
-  merges a `--file users.csv` (or a single USERNAME) into the registry before
-  `add` runs, and rejects the call (`ClickException`) if neither is given: a
-  bare `user add` is never a silent no-op or an implicit reprovision.
-- _src/pkg/users_lifecycle.py_ backs `user pause`/`stop`/`resume`: siblings of
-  `add`/`delete` that target specific registry users (not the whole
-  installation -- see `lifecycle.py` above for that) via `USERNAMES` or
-  `--file`/`-f`. `pause_users`/`stop_users`/`resume_users` all funnel through
-  `_apply`, which resolves each username against the registry and
-  compose.users.yml's live services (`_split_targets`, distinguishing
-  unregistered from registered-but-not-provisioned), runs the compose action,
-  refreshes `.dtaas.state.json`, and writes the new `desired_status`. The
-  compose actions are state-aware via `_live_states` (a single `compose ps`),
-  so they never error on an already-in-state container: `_pause_targets` skips
-  already-paused ones (`compose pause` errors on a non-running container),
-  `_stop_targets` skips already-stopped ones, and `_resume_targets` dispatches
-  each target to `unpause` (if paused) or `start` (if stopped), leaving
-  already-running ones alone. `cmd_user_utils.reject_starting_users` rejects
-  targeting a `dtaas.toml` starting user before any of this runs, since those
-  aren't registry-tracked and are suspended/resumed as part of the whole
-  installation instead (`platform pause`/`stop`/`resume`).
-- `users_lifecycle.desired_status_drift` / `enforce_desired_status` power the
-  desired-status half of `config reconcile`: `desired_status_drift` lists
-  provisioned users whose live container state differs from their registry
-  `desired_status`, and `enforce_desired_status` pauses/stops/resumes them to
-  match. `cmd_utils.run_reconcile` reports both membership drift (from
-  `state.find_drift`) and this status drift, and `--fix` reprovisions
-  missing/drifted users and then enforces desired_status.
-- `desired_status` is what makes a pause/stop durable: `users.py`'s
-  `_provision_users` computes `_skip_start_users` from the registry's
-  per-user `desired_status` and passes it to `users_compose.finalize_compose`,
-  which still writes every user's compose service definition (so their config
-  is never lost) but skips starting the container for anyone not `running`.
-  Without this, `user add`'s idempotent "re-provision everyone on every run"
-  behavior (and `config reconcile --fix`, which calls the same `add_users`)
-  would silently undo a pause the next time either ran.
-- _src/pkg/state.py_ owns `.dtaas.state.json`. Each add/delete fully overwrites
-  it with a fresh snapshot (not an append-only log) recording, per currently
-  provisioned user, a `config_hash` (a stable sha256 of the compose service)
-  plus best-effort container id/status from python-on-whales.
-  `find_drift(registry_users, state, services)` powers
-  `dtaas config reconcile`: it treats the registry as the desired state
-  and compares it against the live `compose.users.yml` services, reporting
-  _missing_ (registered, not provisioned) and _unexpected_ (provisioned, not
-  registered) users directly from that comparison. The state cache is used
-  only for the third category, _drifted_: a user present in both whose live
-  config no longer matches the hash recorded when it was last provisioned; a
-  user with no recorded hash is not flagged, since reconcile has nothing to
-  compare it against. `cmd_utils.run_reconcile(output_dir, fix=True)` reuses
-  `run_user_command`/`userPkg.add_users` (via `_fix_reconcile`) to reprovision
-  _missing_/_drifted_ users after reporting; it deliberately never acts on
-  _unexpected_ users, since removing something that's actually running is a
-  separate, explicit `user delete` decision.
-
-### TOML File
-
-The base configuration file used by the CLI is the _dtaas.toml_ file.
-It has the following sections:
-
-#### Global variables
-
-```toml
-name="Digital Twin as a Service (DTaaS)"
-version="2.0.0"
-owner="The INTO-CPS-Association"
-git-repo="https://github.com/into-cps-association/DTaaS.git"
-```
-
-These define metadata about the DTaaS instance and are not directly used
-by the CLI.
-
-#### [common]
-
-```toml
-[common]
-server-dns="intocps.org"
-path="/Users/username/DTaaS"
-
-[common.security]
-tls=true
-certs-src="/etc/letsencrypt/archive/intocps.org"
-
-[common.resources]
-cpus=4
-mem_limit="4G"
-pids_limit=4960
-shm_size="512m"
-```
-
-- _server-dns_: determines localhost vs. server deploy; sets routes in docker
-  compose files.
-- _path_: absolute path to the DTaaS installation; required for workspace
-  creation and docker services.
-- _tls_: `false` uses `user.server.yml`; `true` (default) uses `user.server.secure.yml`.
-- _certs-src_: source directory of the TLS certificates. For TLS deploy types,
-  `deployment generate` copies the latest `fullchain.pem`/`privkey.pem` from
-  here into the deployment's `certs/` directory (see `src/pkg/certs.py`).
-- Resource fields set default container limits for user workspaces.
-
-#### [[users]]
-
-```toml
-[[users]]
-username="username1"
-email="username1@intocps.org"
-groups=["default","dtaas"]
-load_balance=true
-
-[[users]]
-username="username2"
-email="username2@intocps.org"
-```
-
-- Each `[[users]]` block is one self-contained, starting user installed with
-  the instance, hand-edited at install time. Presence in the array is the
-  desired state there is no separate add/delete list, and a username never
-  needs to be kept in sync across more than one place. Additional users added
-  later via `dtaas user add` are **not** listed here they live in the
-  CLI-owned `dtaas.users.registry.json`.
-- _username_/_email_ are required (_email_ is written to `config/conf.server`
-  on `dtaas user add`); _groups_/_load_balance_ are optional per-user
-  tags; _password_ is an optional field reserved for future GitLab-onboarding
-  provisioning; avoid committing a real secret in it.
-- This schema previously went through an intermediate `starting = [...]` list
-  plus per-user `[users.<name>]` sub-table stage; that stage is now itself
-  superseded by `[[users]]`.
-
-See [User registry and runtime state](#user-registry-and-runtime-state) for the
-registry and `.dtaas.state.json` cache.
-
-#### [frontend]
-
-```toml
-[frontend]
-react-app-client-id="your_client_id_here"
-react-app-oauth-url="https://gitlab.com"
-```
-
-OAuth credentials for the DTaaS React client website. This is a separate OAuth application
-from the server-side one (traefik-forward-auth). Values are substituted into `config/client.js`
-by `deployment generate`.
-
-#### Deployment sections
-
-Each deploy type has its own section (`[localhost]`, `[insecure-server]`,
-`[secure-server]`, `[secure-server-gitlab]`, `[workspace-localhost]`,
-`[workspace-secure-server]`). These hold server-side OAuth credentials
-substituted into `.env` and `conf.server` by `deployment generate`.
+  used via the shared `gitlab_common` module for GitLab user provisioning.
 
 ## Setup
 
 ```bash
 pip install poetry               # install poetry to the system
-poetry shell                     # activate the poetry virtual environment
 cd cli                           # switch to the cli directory
 poetry install                   # install all required python packages
 ```
@@ -370,12 +57,12 @@ Two things are generated and not committed to the repository. Before running
 tests or building the package, copy them from their sources:
 
 ```bash
-python src/pkg/build.py
+poetry run python -m src.pkg.build
 ```
 
 This populates `src/templates/deploy/` from `deploy/dtaas` and
 `deploy/workspace`, and `src/gitlab_common/` from `lib/gitlab_common` (see
-[GitLab user provisioning](#gitlab-user-provisioning) above). Re-run it
+[lib/gitlab_common/README.md](../lib/gitlab_common/README.md)). Re-run it
 whenever either source changes. Without it, `import src.cmd` fails with
 `ModuleNotFoundError: No module named 'src.gitlab_common'`.
 
@@ -385,9 +72,9 @@ Make changes to _cli/src_.
 To test changes locally:
 
 ```bash
-poetry shell            # activate the poetry virtual environment
-python src/pkg/build.py # required before build/tests see Setup above
-poetry build            # build the python package
+poetry run python -m src.pkg.build  # required before build/tests, see Setup
+poetry run dtaas --help              # run the CLI from source
+poetry build                         # build the python package
 ```
 
 ## Linting
@@ -395,7 +82,7 @@ poetry build            # build the python package
 From the _cli_ directory, run:
 
 ```bash
-pylint src --rcfile=../.pylintrc
+poetry run pylint src tests --rcfile=../.pylintrc
 ```
 
 ## Type Checking
@@ -403,7 +90,7 @@ pylint src --rcfile=../.pylintrc
 From the _cli_ directory, run:
 
 ```bash
-pyright src
+poetry run pyright src
 ```
 
 Pyright is configured in `pyproject.toml` under `[tool.pyright]`.
@@ -416,7 +103,7 @@ _test_*.py_ naming convention.
 To run all tests with coverage:
 
 ```bash
-pytest --cov=src --cov-report=xml --cov-report=term-missing
+poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing
 ```
 
 ### Caveat
@@ -470,9 +157,7 @@ The following are the planned next steps:
 
 ## User Management Files: Design Rationale
 
-This section explains _why_ user management is split across three files. For
-_where_ each piece is implemented, see
-[User registry and runtime state](#user-registry-and-runtime-state) above.
+This section explains _why_ user management is split across three files.
 
 ### The problem this design solves
 

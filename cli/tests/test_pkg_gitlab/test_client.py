@@ -1,6 +1,7 @@
 """Tests for GitLab client resolution (pkg/gitlab/client.py)."""
 
 from unittest.mock import MagicMock
+import pytest
 from src.pkg.gitlab.client import PAT_ENV_VAR, resolve_client, resolve_pat
 
 API_URL = "https://gitlab.example.com"
@@ -16,19 +17,28 @@ def _config(api_url=API_URL, pat="", ssl_verify=True, pat_err=None, url_err=None
     return cfg
 
 
-def test_resolve_pat_prefers_config_value(monkeypatch):
-    """A [gitlab].pat value is used without consulting the environment."""
+def test_resolve_pat_prefers_the_env_var_over_the_config_value(monkeypatch):
+    """DTAAS_GITLAB_PAT wins, so a rotated token or a run aimed at another
+    instance needs no edit to the shared dtaas.toml."""
+    monkeypatch.setenv(PAT_ENV_VAR, PAT)
+    pat, _ = resolve_pat(_config(pat="glpat-stale-file-token"))
+    assert pat == PAT
+
+
+def test_resolve_pat_falls_back_to_the_config_value(monkeypatch):
+    """[gitlab].pat is the fallback for an installation that keeps the token
+    in the file, with no DTAAS_GITLAB_PAT exported."""
     monkeypatch.delenv(PAT_ENV_VAR, raising=False)
     pat, err = resolve_pat(_config(pat=PAT))
     assert err is None
     assert pat == PAT
 
 
-def test_resolve_pat_falls_back_to_env_var(monkeypatch):
-    """An empty [gitlab].pat falls back to DTAAS_GITLAB_PAT."""
-    monkeypatch.setenv(PAT_ENV_VAR, PAT)
-    pat, err = resolve_pat(_config(pat=""))
-    assert err is None
+def test_resolve_pat_ignores_an_empty_env_var(monkeypatch):
+    """An exported but empty DTAAS_GITLAB_PAT is not a token, so it does not
+    shadow a usable [gitlab].pat."""
+    monkeypatch.setenv(PAT_ENV_VAR, "   ")
+    pat, _ = resolve_pat(_config(pat=PAT))
     assert pat == PAT
 
 
@@ -92,3 +102,18 @@ def test_resolve_client_does_not_warn_for_a_ca_bundle_path(monkeypatch, capsys):
     assert err is None
     assert gl.ssl_verify == "/etc/ssl/certs/corp-ca.pem"
     assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize(
+    "file_pat,noted", [("glpat-stale-file-token", True), (PAT, False), ("", False)]
+)
+def test_resolve_pat_notes_when_the_env_var_overrides_another_token(
+    monkeypatch, capsys, file_pat, noted
+):
+    """A token left exported for another installation is not used silently;
+    the same token in both places, or none in dtaas.toml, says nothing."""
+    monkeypatch.setenv(PAT_ENV_VAR, PAT)
+
+    resolve_pat(_config(pat=file_pat))
+
+    assert ("using the admin token from DTAAS_GITLAB_PAT" in capsys.readouterr().err) is noted

@@ -47,6 +47,12 @@ dependency on the other, only a shared source location during development.
 | `validate_user_row(username, email, password)` | Validate user inputs before any API call. |
 | `create_user(gl, *, username, email, password)` | Create a user; returns a `CreateUserResult` with an explicit `CreateOutcome` (CREATED / ALREADY_EXISTS / FAILED) rather than encoding "already exists" as a nullable id. |
 | `create_user_pat(gl, user_id, username, options=None)` | Issue a Personal Access Token. `PatOptions` (name/scopes/expiry) defaults to least-privilege repository scopes; widen explicitly per call site. |
+| `with_hint(summary, hint)` | Format a message as one short summary line with its detail indented underneath, the shape every message in this package and its consumers follows. |
+
+Every GitLab call in this package catches `errors.API_ERRORS`
+(`gitlab.exceptions.GitlabError` plus `requests.RequestException`, which
+python-gitlab does not wrap), so an unreachable instance is reported as one
+user's failure and never raised into a caller's loop over other users.
 
 ## Developing this package in isolation
 

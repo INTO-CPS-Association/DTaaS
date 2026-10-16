@@ -1,4 +1,4 @@
-"""GitLab user provisioning: create users and issue Personal Access Tokens."""
+"""GitLab user provisioning: create users, issue and revoke Personal Access Tokens."""
 
 import logging
 from dataclasses import dataclass
@@ -8,6 +8,8 @@ from typing import Sequence, Tuple
 
 import gitlab
 import gitlab.exceptions
+
+from .errors import API_ERRORS
 
 from .validators import validate_user_row
 
@@ -36,6 +38,13 @@ class CreateUserResult:
     ``user_id`` is set only for :attr:`CreateOutcome.CREATED`; it is None for
     both ALREADY_EXISTS and FAILED, so callers must branch on *outcome*
     rather than on the id.
+
+    ``error`` carries GitLab's own words in both of the other cases: why the
+    request failed for FAILED, and which conflict it reported for
+    ALREADY_EXISTS. GitLab answers 409 both for a username that is taken and
+    for an email that is already on another account, and those are different
+    problems for an admin, so the reason is passed on rather than flattened
+    into one message.
     """
 
     outcome: CreateOutcome
@@ -72,12 +81,14 @@ def create_user(
     Inputs are validated with :func:`validate_user_row` before any API call.
 
     .. warning::
-        When GitLab reports the username is already taken (HTTP 409) the
-        outcome is :attr:`CreateOutcome.ALREADY_EXISTS`: the account belongs to
-        whoever registered it, **the supplied password is not applied**, and no
-        credentials are changed. Do not treat that outcome as "these
-        credentials are now live"; ``user_id`` is None and callers should not
-        issue a token against an account they did not create.
+        When GitLab reports a conflict (HTTP 409) the outcome is
+        :attr:`CreateOutcome.ALREADY_EXISTS`: either the username belongs to
+        whoever registered it or the email is already on another account.
+        **The supplied password is not applied** and no credentials are
+        changed; GitLab's own reason is in ``error``. Do not treat that outcome as "these
+        credentials are now live"; ``user_id`` is None and callers should
+        not issue a token against an account they did not create: its owner
+        is unknown to this run.
 
     Args:
         gl: Authenticated gitlab.Gitlab client.
@@ -105,12 +116,12 @@ def create_user(
         return CreateUserResult(CreateOutcome.CREATED, user_id=user.id)
     except gitlab.exceptions.GitlabCreateError as exc:
         if exc.response_code == 409:
-            logger.info("GitLab user already exists: %s", username)
-            return CreateUserResult(CreateOutcome.ALREADY_EXISTS)
+            logger.info("GitLab reported a conflict for '%s': %s", username, exc)
+            return CreateUserResult(CreateOutcome.ALREADY_EXISTS, error=str(exc))
         return CreateUserResult(
             CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
         )
-    except gitlab.exceptions.GitlabError as exc:
+    except API_ERRORS as exc:
         return CreateUserResult(
             CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
         )
@@ -153,5 +164,34 @@ def create_user_pat(
         if not token:
             return False, f"Empty token in PAT response for '{username}'"
         return True, token
-    except gitlab.exceptions.GitlabError as exc:
+    except API_ERRORS as exc:
         return False, f"Failed to create PAT for '{username}': {exc}"
+
+
+def revoke_user_pats(
+    gl: gitlab.Gitlab, user_id: int, name: str = DEFAULT_PAT_NAME
+) -> Tuple[bool, str]:
+    """Revoke a GitLab user's active Personal Access Tokens named *name*.
+
+    Only tokens with that name are revoked, so a token the user made for
+    themselves under another name keeps working. Finding none is a success:
+    there is nothing left to revoke.
+
+    Args:
+        gl: Authenticated gitlab.Gitlab client, owned by an administrator.
+        user_id: GitLab user ID.
+        name: Name of the tokens to revoke.
+
+    Returns:
+        Tuple of (success, error); *error* is empty on success.
+    """
+    try:
+        tokens = gl.personal_access_tokens.list(
+            user_id=user_id, state="active", get_all=True
+        )
+        for token in tokens:
+            if token.name == name:
+                gl.personal_access_tokens.delete(token.id)
+        return True, ""
+    except API_ERRORS as exc:
+        return False, f"Failed to revoke the tokens of GitLab user {user_id}: {exc}"

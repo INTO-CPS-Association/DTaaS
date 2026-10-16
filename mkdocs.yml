@@ -137,8 +137,6 @@ nav:
       - Guides:
           - Localhost on Portainer: admin/guides/localhost-on-portainer/install.md
           - Check Config: admin/guides/check_config.md
-          - Add user: admin/guides/add_user.md
-          - Remove user: admin/guides/remove_user.md
           - Common Assets: admin/guides/common_workspace_readonly.md
           - Renew Certificates: admin/guides/renew_certs.md
           - Self-Signed Certificates: admin/guides/self-signed-certs.md

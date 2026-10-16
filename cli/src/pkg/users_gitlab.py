@@ -1,178 +1,194 @@
-"""Optional GitLab account/PAT provisioning for 'user add'.
+"""Optional GitLab account and PAT provisioning for 'user add'.
 
 Split out of users.py to keep both files within a reasonable line count,
 mirroring the users_compose.py / users_utils.py split. Driven by the
 `[gitlab].provision` flag in dtaas.toml; a GitLab failure never undoes the
 container provisioning users.py has already done.
+
+Each user gets an account with a Personal Access Token, tracked in the
+registry and persisted as soon as it is issued, so an interrupted run keeps
+what it had already done and a re-run never mints a second token. Who is
+provisioned is decided in users_gitlab_targets.py, and the disk writes live
+in users_gitlab_records.py.
 """
 
-import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from pathlib import Path
-import click
+
 from . import gitlab as gitlabPkg
 from . import utils
 from .constants import GITLAB_USER_TOKENS_FILE
-from .registry import set_gitlab_pat_issued, set_gitlab_user_ids
+from .messages import echo_hint, with_hint
+from .users_gitlab_records import check_token_file, persist_account_result
+from .users_gitlab_targets import GitlabUserResult, changed_user_id
+
+PAT_ISSUED_NOTICE = (
+    "A Personal Access Token was already issued on an earlier run (see "
+    f"{GITLAB_USER_TOKENS_FILE}). A re-run does not reissue one."
+)
 
 
-def _gitlab_target_usernames(ctx, start_only, passwords):
-    """Registry users to attempt GitLab provisioning for this run.
+def _report_account(username, result):
+    """Echo one account outcome; returns the token to persist, if any.
 
-    Mirrors _provision_users' start_only scoping, plus any already-registered
-    user who supplied a password again this run even though their container
-    isn't being (re)started the explicit retry path after a prior PAT-
-    issuance failure, without touching anyone else.
+    An account that already existed on GitLab is a failure: this run did not
+    create it, so it issues no token, and the user is left without one.
     """
-    if start_only is None:
-        started = ctx.user_list
-    else:
-        started = [name for name in start_only if name in ctx.user_list]
-    retries = [
-        name for name in passwords if name in ctx.user_list and name not in started
-    ]
-    return started + retries
+    if not result.ok:
+        echo_hint(f"GitLab provisioning failed for '{username}'.", result.message)
+        return None
+    return result.token
 
 
-def _save_gitlab_tokens(tokens):
-    """Persist newly issued GitLab PATs, merging with any already saved.
+def _account_skipped(candidate, reason):
+    """Report that this candidate's account step was not run, as a skip
+    rather than a failure."""
+    echo_hint(f"GitLab account step skipped for '{candidate.username}'.", reason)
+    return GitlabUserResult(candidate.username, None, None, False)
 
-    A username should not already be present -- the gitlab_pat_issued guard
-    in _provision_one_gitlab_user stops a re-run from reaching here. If one
-    is (e.g. a prior run saved a token then died before recording it in the
-    registry), keep the old value under a timestamped key and warn, rather
-    than dropping it silently: the old token is still live on GitLab and
-    needs manual revocation.
+
+def _has_work(candidate):
+    """True when the account step can do something for *candidate*: create
+    its account (a password), or retry the token of an account this CLI
+    created earlier (an account id)."""
+    has_input = candidate.password or candidate.existing_user_id is not None
+    return bool(has_input) and not candidate.pat_issued
+
+
+def _account_step(gl, candidate):
+    """Create one candidate's GitLab account and Personal Access Token.
+
+    Skipped when the PAT was already issued, since a second token would be
+    live on GitLab with no record of it. An account this CLI created earlier
+    (an account id, no token) needs no password: only its token is retried.
+    Any other candidate is skipped without a password, as there is nothing to
+    create an account with. The PAT check comes first so a finished account
+    is reported as that, not as missing a password.
     """
-    path = Path(GITLAB_USER_TOKENS_FILE)
-    existing = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
-    for username, token in tokens.items():
-        prior = existing.get(username)
-        if prior and prior != token:
-            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-            existing[f"{username} (superseded {stamp})"] = prior
-            click.echo(
-                f"Warning: replaced the saved GitLab token for '{username}'; the "
-                "previous token is still valid on GitLab and must be revoked "
-                "manually."
-            )
-        existing[username] = token
-    utils.write_secret_file(path, json.dumps(existing, indent=2))
-
-
-@dataclass
-class _GitlabCandidate:
-    """One registry user queued for GitLab provisioning this run."""
-
-    username: str
-    email: str
-    existing_user_id: object
-    password: object
-    pat_issued: bool = False
-
-
-@dataclass
-class _GitlabUserResult:
-    """Outcome of provisioning one _GitlabCandidate."""
-
-    username: str
-    new_id: object
-    token: object
-    failed: bool
-
-
-def gitlab_candidates(ctx, start_only, passwords):
-    """A _GitlabCandidate for every user targeted for GitLab provisioning.
-
-    Scoping mirrors _gitlab_target_usernames; a target with no password keeps
-    a None password here and is reported skipped by _provision_one_gitlab_user.
-    """
-    candidates = []
-    for username in _gitlab_target_usernames(ctx, start_only, passwords):
-        details = ctx.users_section.get(username) or {}
-        candidates.append(
-            _GitlabCandidate(
-                username,
-                details.get("email", ""),
-                details.get("gitlab_user_id"),
-                passwords.get(username),
-                bool(details.get("gitlab_pat_issued")),
-            )
-        )
-    return candidates
-
-
-def _changed_user_id(result, existing_user_id):
-    """result.user_id when GitLab returned a new or changed id, else None."""
-    if result.user_id is not None and result.user_id != existing_user_id:
-        return result.user_id
-    return None
-
-
-def _provision_one_gitlab_user(gl, candidate):
-    """Provision one candidate's GitLab account and PAT, returning a
-    _GitlabUserResult. A candidate with no password is reported skipped (not
-    failed); an already-existing account is warned about but not failed and
-    yields no token.
-    """
-    if not candidate.password:
-        click.echo(
-            f"GitLab provisioning skipped for '{candidate.username}': "
-            "no password supplied."
-        )
-        return _GitlabUserResult(candidate.username, None, None, False)
     if candidate.pat_issued:
-        click.echo(
-            f"GitLab provisioning skipped for '{candidate.username}': a Personal "
-            "Access Token was already issued on an earlier run (see "
-            f"{GITLAB_USER_TOKENS_FILE}). A re-run does not reissue one."
-        )
-        return _GitlabUserResult(candidate.username, None, None, False)
+        return _account_skipped(candidate, PAT_ISSUED_NOTICE)
+    if not _has_work(candidate):
+        return _account_skipped(candidate, "No GitLab password supplied for this user.")
     result = gitlabPkg.ensure_user_resources(
         gl,
         gitlabPkg.GitlabUser(
             candidate.username,
             candidate.email,
-            candidate.password,
+            candidate.password or "",
             existing_user_id=candidate.existing_user_id,
         ),
     )
-    new_id = _changed_user_id(result, candidate.existing_user_id)
-    if not result.ok:
-        click.echo(
-            f"GitLab provisioning failed for '{candidate.username}': {result.message}"
-        )
-        return _GitlabUserResult(candidate.username, new_id, None, True)
-    if result.already_exists:
-        click.echo(
-            f"Warning: GitLab provisioning for '{candidate.username}': {result.message}"
-        )
-    token = None if result.already_exists else result.token
-    return _GitlabUserResult(candidate.username, new_id, token, False)
+    return GitlabUserResult(
+        candidate.username,
+        changed_user_id(result, candidate.existing_user_id),
+        _report_account(candidate.username, result),
+        not result.ok,
+    )
 
 
-def _persist_gitlab_results(results):
-    """Persist changed GitLab user ids and newly issued PATs.
+@dataclass(frozen=True)
+class _UnsavedToken:
+    """A token GitLab issued for *username* that this run could not save."""
 
-    Recording gitlab_pat_issued alongside the saved token is what stops a
-    later re-run from minting a second PAT for the same account.
+    username: str
+    user_id: object
+    reason: Exception
+
+
+def _failed(username, reason):
+    """Report one user's GitLab step as failed."""
+    echo_hint(f"GitLab provisioning failed for '{username}'.", reason)
+    return GitlabUserResult(username, None, None, True)
+
+
+def _token_not_saved(gl, unsaved):
+    """Revoke a token that was issued but could not be saved, and say so.
+
+    Nobody holds such a token, so it is revoked at once rather than left
+    live on GitLab; if that fails too, the admin is told to revoke it.
     """
-    new_user_ids = {r.username: r.new_id for r in results if r.new_id is not None}
-    if new_user_ids:
-        set_gitlab_user_ids(new_user_ids)
-    tokens = {r.username: r.token for r in results if r.token}
-    if tokens:
-        _save_gitlab_tokens(tokens)
-        set_gitlab_pat_issued(list(tokens))
+    name = unsaved.username
+    revoked, reason = gitlabPkg.revoke_issued_tokens(gl, unsaved.user_id)
+    if revoked:
+        echo_hint(
+            f"GitLab token for '{name}' not saved; revoked.",
+            f"{unsaved.reason}\nOnce tokens can be saved to "
+            f"{GITLAB_USER_TOKENS_FILE} again, run 'dtaas user add {name}' "
+            "to issue a new one.",
+        )
+    else:
+        echo_hint(
+            f"GitLab token for '{name}' not saved, still valid.",
+            f"{unsaved.reason}\n{reason}\nRevoke it in GitLab.",
+        )
+    return GitlabUserResult(name, None, None, True, token_lost=True)
 
 
-def _issue_gitlab_resources(gl, candidates):
-    """Provision every candidate, persist ids and tokens, and return the
-    usernames that failed."""
-    results = [_provision_one_gitlab_user(gl, candidate) for candidate in candidates]
-    _persist_gitlab_results(results)
-    return [r.username for r in results if r.failed]
+def _provision_one_gitlab_user(gl, candidate):
+    """Provision one candidate's GitLab account and PAT, persisting the result.
+
+    A failure the API layer did not expect is this user's alone: a response
+    shaped unlike GitLab's used to abort the loop, leaving every later user
+    of the run unattempted with nothing said about them. A token that was
+    issued but could not be saved is revoked (_persisted).
+    """
+    try:
+        result = _account_step(gl, candidate)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        return _failed(candidate.username, exc)
+    return _persisted(gl, candidate, result)
+
+
+def _persisted(gl, candidate, result):
+    """*result* once it is on disk; a token that could not be saved is
+    revoked (_token_not_saved)."""
+    try:
+        persist_account_result(result)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        if not result.token:
+            return _failed(candidate.username, exc)
+        user_id = result.new_id or candidate.existing_user_id
+        return _token_not_saved(gl, _UnsavedToken(candidate.username, user_id, exc))
+    return result
+
+
+def _attemptable(candidates):
+    """The candidates a run would create an account or a token for."""
+    return [c.username for c in candidates if _has_work(c)]
+
+
+def _skip_rest(candidates):
+    """Fail the candidates left once tokens can no longer be saved."""
+    pending = _attemptable(candidates)
+    if pending:
+        echo_hint(
+            "GitLab provisioning stopped for: " + ", ".join(pending),
+            f"Tokens cannot be saved to {GITLAB_USER_TOKENS_FILE}, so no "
+            "further token is issued this run.",
+        )
+    return [GitlabUserResult(name, None, None, True) for name in pending]
+
+
+def _provision_all(gl, candidates):
+    """Provision each candidate in turn, stopping once a token could not be
+    saved: every later save would fail the same way."""
+    results = []
+    for index, candidate in enumerate(candidates):
+        results.append(_provision_one_gitlab_user(gl, candidate))
+        if results[-1].token_lost:
+            return results + _skip_rest(candidates[index + 1 :])
+    return results
+
+
+def _gitlab_client(config_obj):
+    """The admin GitLab client, once the token file is known to be usable.
+
+    Returns:
+        Tuple of (client, err)
+    """
+    gl, err = gitlabPkg.resolve_client(config_obj)
+    if err is None:
+        err = check_token_file()
+    return gl, err
 
 
 def provision_gitlab_users(config_obj, candidates):
@@ -185,17 +201,18 @@ def provision_gitlab_users(config_obj, candidates):
     registry-stored gitlab_user_id retries PAT issuance directly against it
     rather than calling create_user again; any new id is persisted. A
     candidate already marked gitlab_pat_issued is skipped, so re-running the
-    command never mints a second token for the same account.
+    command never mints a second token for the same account. Nothing is
+    attempted while the token file cannot be read or written.
     """
     provision, err = config_obj.get_gitlab_provision()
     utils.check_error(err)
     if not provision or not candidates:
         return []
-    gl, err = gitlabPkg.resolve_client(config_obj)
+    gl, err = _gitlab_client(config_obj)
     if err is not None:
-        click.echo(f"GitLab provisioning skipped: {err}")
-        return [c.username for c in candidates]
-    return _issue_gitlab_resources(gl, candidates)
+        echo_hint("GitLab provisioning skipped for every user.", err)
+        return _attemptable(candidates)
+    return [r.username for r in _provision_all(gl, candidates) if r.failed]
 
 
 def gitlab_failure_exc(failed):
@@ -203,7 +220,8 @@ def gitlab_failure_exc(failed):
     if not failed:
         return None
     return Exception(
-        "GitLab provisioning failed for: "
-        + ", ".join(failed)
-        + " (their containers were still provisioned)"
+        with_hint(
+            "GitLab provisioning failed for: " + ", ".join(failed),
+            "Their containers were still provisioned.",
+        )
     )

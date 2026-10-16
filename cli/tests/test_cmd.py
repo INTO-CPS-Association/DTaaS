@@ -67,7 +67,7 @@ def test_deployment_generate_without_config_prints_note(runner):
 
 
 def test_deployment_generate_copies_user_templates(runner):
-    """deployment generate folds in the user-management templates (generate-project)."""
+    """deployment generate also copies the user-management templates."""
     with patch("src.cmd_deployment.projectPkg.generate_deploy_project"), patch(
         "src.cmd_deployment.projectPkg.generate_user_templates"
     ) as mock_templates, patch(
@@ -318,3 +318,12 @@ def test_platform_update_requires_a_flag(runner):
 
     assert result.exit_code != 0
     assert "Nothing to update" in result.output
+
+
+def test_version_reports_the_installed_version(runner):
+    """'dtaas --version' answers which build is installed, which is the first
+    thing to establish when a manual test behaves unexpectedly."""
+    result = runner.invoke(dtaas, ["--version"])
+
+    assert result.exit_code == 0
+    assert "dtaas" in result.output

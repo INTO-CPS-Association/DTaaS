@@ -19,16 +19,13 @@ from .pkg import deploy as deployPkg
 from .cmd_utils import NO_INSTALLATION_MESSAGE
 from .cmd_options import output_dir_option, json_option
 
-_STATUS_HEADERS = ("PROJECT", "SERVICE", "STATE", "HEALTH")
+_STATUS_HEADERS = ("PROJECT", "SERVICE", "STATE")
 
 
 def _status_rows_text(rows):
     """Render status records as aligned columns (header plus one line each)."""
-    table: list[tuple[str, str, str, str]] = [_STATUS_HEADERS]
-    table.extend(
-        (row["project"], row["service"], row["state"], row["health"] or "-")
-        for row in rows
-    )
+    table: list[tuple[str, str, str]] = [_STATUS_HEADERS]
+    table.extend((row["project"], row["service"], row["state"]) for row in rows)
     widths = [max(len(line[i]) for line in table) for i in range(len(_STATUS_HEADERS))]
     return "\n".join(
         "  ".join(cell.ljust(widths[i]) for i, cell in enumerate(line))

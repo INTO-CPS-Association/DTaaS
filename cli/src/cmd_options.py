@@ -40,9 +40,8 @@ def file_option(help_text):
     )
 
 
-# Shared by the generation commands ('deployment generate' and the deprecated
-# 'generate-project' shim), which write into a target directory rather than an
-# existing installation.
+# Used by 'deployment generate', which writes into a target directory rather
+# than an existing installation.
 target_dir_option = click.option(
     "--output-dir",
     default=".",

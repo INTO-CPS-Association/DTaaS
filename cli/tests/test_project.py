@@ -282,7 +282,9 @@ def test_set_files_permissions_chowns_and_chmods_files_dir(tmp_path):
     files_dir = tmp_path / "files"
     files_dir.mkdir()
 
-    with patch("src.pkg.project.subprocess.run") as mock_run:
+    with patch("src.pkg.project.IS_POSIX", True), patch(
+        "src.pkg.project.subprocess.run"
+    ) as mock_run:
         set_files_permissions(str(tmp_path))
 
     commands = [call.args[0] for call in mock_run.call_args_list]
@@ -290,6 +292,19 @@ def test_set_files_permissions_chowns_and_chmods_files_dir(tmp_path):
         ["sudo", "chown", "-R", "1000:100", str(files_dir)],
         ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
     ]
+
+
+def test_set_files_permissions_is_a_noop_off_posix(tmp_path):
+    """The uid:gid pair means nothing on Windows, where the call would only
+    print the host's own "sudo is disabled" notice."""
+    (tmp_path / "files").mkdir()
+
+    with patch("src.pkg.project.IS_POSIX", False), patch(
+        "src.pkg.project.subprocess.run"
+    ) as mock_run:
+        set_files_permissions(str(tmp_path))
+
+    mock_run.assert_not_called()
 
 
 def test_set_files_permissions_ignores_missing_sudo(tmp_path):

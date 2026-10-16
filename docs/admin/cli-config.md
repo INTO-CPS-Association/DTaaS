@@ -43,7 +43,12 @@ starting point and delete the sections that your deployment type does
 not use (see the tables above).
 
 ```toml
-# URL of the DTaaS repository (required, all deployment types).
+# ── Metadata (top level) ──────────────────────────────────────────────────────
+# Describes the instance. git-repo, the URL of the DTaaS repository, is
+# required for all deployment types; validate checks no other key here.
+name     = "Digital Twin as a Service (DTaaS)"
+version  = "2.2.0"
+owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
 # ── Common settings (all deployment types) ────────────────────────────────────
@@ -84,9 +89,10 @@ shm_size   = "512m"   # shared memory unit required
 # Usernames must match GitLab accounts and be unique across the array.
 #
 # email enables traefik-forward-auth routing rules automatically;
-# groups/load_balance carry per-user tags. password is optional (used by
-# future GitLab-provisioning onboarding); avoid committing a real secret
-# here; prefer supplying it at runtime instead.
+# groups/load_balance carry per-user tags. password is optional: it is the
+# initial GitLab password when `dtaas user add <username>` provisions this
+# starting user's account. Avoid committing a real secret here; prefer
+# supplying it at runtime instead.
 [[users]]
 username     = "alice"
 email        = "alice@example.com"
@@ -98,12 +104,14 @@ username     = "bob"
 email        = "bob@example.com"
 groups       = ["default", "dtaas"]
 load_balance = false
+# password   = "Kq7v-Rm3x-Zt9w"   # initial GitLab password, see above
 
 # ── React web client OAuth app (insecure-server, secure-server,
 #                                secure-server-gitlab) ────────────────────────
 # This is a SEPARATE OAuth application from the traefik-forward-auth app
 # configured in [insecure-server] / [secure-server] below.
 # Redirect URI: https://<server-dns>/Library
+# Scopes: api read_user read_repository openid profile   Type: not Confidential
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
@@ -111,12 +119,13 @@ react-app-oauth-url = "https://gitlab.example.com"
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas user add` also creates
 # each new user's GitLab account and a Personal Access Token (see
-# "Add Users" in cli.md). The provisioning token must be able to create users
-# (an admin token); supply it via the DTAAS_GITLAB_PAT environment variable
-# rather than committing it here. A [gitlab].pat key overrides the env var if
-# set. ssl_verify may be a CA-bundle path for a GitLab behind an internal CA;
-# false disables verification (a warning is printed) and true (default) uses
-# the system trust store.
+# "Add Users" in cli.md). The provisioning token must belong to an
+# administrator and carry the api scope (plus admin_mode on an instance with
+# Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
+# rather than committing it here. A [gitlab].pat key is the fallback when the
+# variable is unset or empty. ssl_verify may be a CA-bundle path for a GitLab
+# behind an internal CA; false disables verification (a warning is printed)
+# and true (default) uses the system trust store.
 [gitlab]
 provision  = false
 api_url    = "https://gitlab.example.com"
@@ -124,10 +133,11 @@ api_url    = "https://gitlab.example.com"
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 
 # ── localhost deployment (dev / demo only) ────────────────────────────────────
+# GitLab OAuth app for the web client; auth-authority is the GitLab URL.
 [localhost]
 default-user   = "alice"
 client-id      = "dtaas-local"
-auth-authority = "https://dex.example.com"
+auth-authority = "https://gitlab.example.com"
 
 # ── insecure-server deployment (HTTP, demo only not internet-facing) ─────────
 # GitLab OAuth app for traefik-forward-auth.
@@ -185,7 +195,7 @@ first, then the current directory) and reports all problems at once:
 | `[common].server-dns` | Must be `localhost`, an IP, or a fully qualified hostname |
 | `[common].path` | Must be an absolute path to an existing directory |
 | `[common.security].certs-src` | When present, must be an absolute path to an existing directory |
-| `[common.resources].set_limits` | When present, `true` or `false` (default `true`) |
+| `[common.resources].set_limits` | `false` turns the limits off; any other value, or no key, keeps them on |
 | `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
 | `[common.resources].pids_limit` | Integer |
 | `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
@@ -194,7 +204,7 @@ first, then the current directory) and reports all problems at once:
 | `[[users]].email` | Required, valid RFC 5321/5322 address (no DNS lookup) |
 | `[[users]].groups` | When present, must be a list of strings |
 | `[[users]].load_balance` | When present, must be `true` or `false` |
-| `[[users]].password` | When present, must be a string |
+| `[[users]].password` | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
 | `[gitlab].provision` | When present, `true` or `false` (default `false`) |
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
@@ -260,8 +270,8 @@ split follows the one Terraform makes between `.tf` and
 
 | File | Owner | Contents | Git |
 | --- | --- | --- | --- |
-| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`) | Hand-edited; keep out of Git, as it can hold credentials |
-| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) | Tracked, CLI-written, never hand-edited |
+| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`, optional `password`) | Hand-edited; keep out of Git, as it can hold credentials |
+| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for starting users that `user add` has provisioned on GitLab | Tracked, CLI-written, never hand-edited |
 | `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored, runtime cache |
 
 - **`dtaas.toml`** is written by a person and never rewritten by the
@@ -297,3 +307,133 @@ those with `dtaas user delete`.
 Pausing or stopping a user with `dtaas user pause` or `stop` is
 recorded as that user's `desired_status`. A later `reconcile` treats
 the suspension as the desired state instead of reporting it as drift.
+
+## GitLab provisioning settings
+
+The `[gitlab]` section turns on GitLab account provisioning for
+`dtaas user add`. For what the command does and prints in each case,
+see [GitLab provisioning](cli.md#gitlab-provisioning-optional).
+
+```toml
+[gitlab]
+provision  = true
+api_url    = "https://gitlab.example.com"
+# pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
+# ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
+```
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `provision` | `false` | `true` makes `user add` create each user's GitLab account and token |
+| `api_url` | none | The GitLab instance; required when `provision` is `true` |
+| `pat` | none | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty |
+| `ssl_verify` | `true` | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off |
+
+### Admin token
+
+The CLI uses `DTAAS_GITLAB_PAT` whenever it is exported and not empty,
+and `[gitlab].pat` otherwise, so a rotated token needs no edit to a
+`dtaas.toml` the whole installation shares. When both are set to
+different tokens, a `Note:` line says the exported one is used. The
+token must belong to a
+GitLab administrator and carry the `api` scope, plus `admin_mode` on an
+instance with Admin Mode enabled.
+
+For a self-hosted GitLab behind an internal CA, point `ssl_verify` at
+the CA bundle rather than turning it off. With `ssl_verify = false`,
+the admin token and every user's initial password cross the network
+without certificate checks, and the CLI prints a warning on each run.
+
+### Initial passwords
+
+Each new account needs an initial password. The CLI takes the first
+one it finds:
+
+1. `--password` on the command line, or the `password` column of the
+   `users.csv` given with `--file`.
+2. `[[users]].password` in `dtaas.toml`, for a starting user.
+3. A hidden prompt, asked twice, when a single user is added.
+
+A password is used once, to create the account. The CLI never writes it to
+`dtaas.users.registry.json`, `.dtaas.state.json` or a log. A run in
+which a named user has no password and no account from an earlier run
+is refused before anything changes. `--password` is visible in shell
+history and in the process list, so prefer the prompt, or the CSV
+column with `chmod 600 users.csv` (the CLI sets that mode only on the
+sample `users.csv` that `config generate` writes).
+
+`[[users]].password` and the CSV column hold passwords in plaintext.
+When a run takes a password from `dtaas.toml` or `users.csv` and that
+file is readable by other users, the CLI prints a warning with the
+`chmod 600` command (on Linux and macOS; Windows file modes do not say
+who can read a file). Once a starting user's account exists, the CLI
+also reminds you to remove their `[[users]].password`: it stays a valid
+GitLab login until the user changes it.
+
+### Files written {#gitlab-files-written}
+
+`gitlab_user_tokens.json` holds the token issued to each user, keyed by
+username. It is written to the current directory, next to `dtaas.toml`
+(not to `--output-dir`), with mode `0600`, and each user's token is
+added the moment it is issued:
+
+```json
+{
+  "alice": "glpat-xxxxxxxxxxxxxxxxxxxx",
+  "bob": "glpat-yyyyyyyyyyyyyyyyyyyy"
+}
+```
+
+A run adds to the file and never rewrites the other entries. Should a
+user's entry ever be replaced, the old token is kept under a
+`"<username> (superseded <timestamp>)"` key and a warning says to revoke
+it in GitLab if it is still active. `user delete` revokes the deleted
+users' tokens on GitLab, starting users' included, and then drops their
+entries; a token that could not be revoked keeps its entry. Their GitLab
+accounts stay.
+
+Before creating any account, `user add` checks that this file can be
+read and written, and removes a leftover `gitlab_user_tokens.json.tmp`
+from an interrupted run. A token that still cannot be saved is revoked
+on GitLab at once, and the run issues no further tokens.
+
+`dtaas.users.registry.json` records, per user, the GitLab account id
+(`gitlab_user_id`) and whether a token was issued
+(`gitlab_pat_issued`). That is how a re-run knows what is already done:
+a user with an account id but no token gets a new token for that
+account, with no password needed, after any token an earlier run
+issued but never saved is revoked,
+and a user with a token gets nothing more. Starting users carry the
+same two markers in the separate `starting_users` section, since they
+have no entry under `users`:
+
+```json
+{
+  "users": {
+    "alice": {
+      "email": "alice@intocps.org",
+      "groups": [
+        "additional"
+      ],
+      "load_balance": true,
+      "desired_status": "running",
+      "gitlab_user_id": 42,
+      "gitlab_pat_issued": true
+    }
+  },
+  "starting_users": {
+    "username1": {
+      "gitlab_user_id": 7,
+      "gitlab_pat_issued": true
+    }
+  }
+}
+```
+
+`dtaas.toml`, `users.csv` and `gitlab_user_tokens.json` are gitignored
+and written with mode `0600`, since they can hold the admin token, user
+passwords and user tokens respectively.
+
+The registry and `gitlab_user_tokens.json` are read and rewritten
+without a lock, so run one `dtaas` command at a time per installation:
+two `user add` runs at once can lose each other's changes.

@@ -237,12 +237,13 @@ def test_write_secret_file_writes_content(tmp_path):
     assert not target.with_suffix(target.suffix + ".tmp").exists()
 
 
-def test_write_secret_file_cleans_up_tmp_on_failure(tmp_path):
-    """A failed rename removes the temp file and re-raises the error."""
+@pytest.mark.parametrize("failure", [OSError, KeyboardInterrupt])
+def test_write_secret_file_cleans_up_tmp_on_failure(tmp_path, failure):
+    """A failed rename, or a Ctrl-C, removes the temp file and re-raises."""
     target = tmp_path / "secret.txt"
 
-    with patch("src.pkg.utils.os.replace", side_effect=OSError("boom")):
-        with pytest.raises(OSError, match="boom"):
+    with patch("src.pkg.utils.os.replace", side_effect=failure("boom")):
+        with pytest.raises(failure, match="boom"):
             utils.write_secret_file(str(target), "top-secret")
 
     assert not target.with_suffix(target.suffix + ".tmp").exists()

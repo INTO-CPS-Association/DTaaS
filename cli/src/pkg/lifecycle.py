@@ -48,21 +48,12 @@ def _state_name(container):
     return _STATE_ALIASES.get(status, status)
 
 
-def _health_name(container):
-    """The container's healthcheck status, or None when it has no healthcheck."""
-    health = container.state.health
-    if health is None:
-        return None
-    return health.status
-
-
 def _row(project, container):
     """Build one machine-readable status record for *container*."""
     return {
         "project": project,
         "service": _service_name(container),
         "state": _state_name(container),
-        "health": _health_name(container),
     }
 
 
@@ -78,7 +69,6 @@ def _absent_rows(defined, present):
             "project": DEPLOYMENT_PROJECT,
             "service": name,
             "state": "not created",
-            "health": None,
         }
         for name in sorted(defined - present)
     ]
