@@ -12,7 +12,7 @@ import { ITabs } from 'route/IData';
 import store from 'store/store';
 import AppProvider from 'AppProvider';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import routes from 'routes';
+import routes, { RouteEntry } from 'routes';
 import { mockAuthState, mockAuthStateType } from 'test/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
 import {
@@ -79,9 +79,7 @@ export const previewStore = configureStore({
     }),
 });
 
-type AppRoutes = { path: string; element: React.ReactNode }[];
-
-const renderWithAppProvider = (route: string, routeList: AppRoutes) => {
+const renderWithAppProvider = (route: string, routeList: RouteEntry[]) => {
   globalThis.history.pushState({}, 'Test page', route);
   return render(
     AppProvider({
@@ -106,7 +104,7 @@ const renderWithAppProvider = (route: string, routeList: AppRoutes) => {
 export async function setupIntegrationTest(
   route: string,
   authState?: mockAuthStateType,
-  routeList: AppRoutes = routes,
+  routeList: RouteEntry[] = routes,
 ) {
   cleanup();
   const returnedAuthState = authState ?? mockAuthState;

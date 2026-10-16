@@ -38,6 +38,9 @@ interface AppRoute {
   feature?: Feature;
 }
 
+/** A route as the router takes it. */
+export type RouteEntry = Pick<AppRoute, 'path' | 'element'>;
+
 const allRoutes: AppRoute[] = [
   {
     path: '/',
@@ -195,9 +198,7 @@ const allRoutes: AppRoute[] = [
  * The routes a profile offers, in their original order, so the catch-all
  * stays last. An address whose feature is off falls through to it.
  */
-export function routesFor(
-  profile: Profile,
-): { path: string; element: ReactNode }[] {
+export function routesFor(profile: Profile): RouteEntry[] {
   return allRoutes
     .filter(({ feature }) => !feature || isFeatureEnabled(feature, profile))
     .map(({ path, element }) => ({ path, element }));
