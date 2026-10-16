@@ -57,7 +57,7 @@ The installation packages under `deploy/` keep their own copy of five of these
 images, so a downloaded package shows its diagram without the website, and
 `developer/check/developer-docker.png` is a copy of `docker-check.png` for the
 README of the developer check stack. The export writes those copies from the
-exported images (see `DEPLOY_COPIES` in `settings.py`), so a copy is never
+exported images (see `DEPLOY_COPIES` in `config.py`), so a copy is never
 edited by hand.
 In the same way, each installation page under `docs/admin/dtaas/` and
 `docs/admin/workspace/` shows the logo from a copy beside it, as the packages
@@ -66,21 +66,21 @@ do, and the export writes those copies from `docs/assets/brand/png` (see
 
 ## Light and Dark Variants
 
-Every page under `docs/` is exported twice. `dark.py` turns each light
-fill, including the white drawio draws when a shape names none, into the slate
-page of the site with a fifth of its own colour, so tints keep their hue. Dark
-lines and dark stencil icons become light, text takes the light or the dark
-text colour by contrast with its new fill, and the DTaaS lockup and the GitLab
-logo become their white versions. Text drawn in the colour of its ground stays
-hidden, as it is in the light image. The pages show the pair with
+Every page under `docs/` is exported twice. `write_dark` in `design.py` turns
+each light fill, including the white drawio draws when a shape names none, into
+the slate page of the site with a fifth of its own colour, so tints keep their
+hue. Dark lines and dark stencil icons become light, text takes the light or the
+dark text colour by contrast with its new fill, and the DTaaS lockup and the
+GitLab logo become their white versions. Text drawn in the colour of its ground
+stays hidden, as it is in the light image. The pages show the pair with
 `#only-light` and `#only-dark`, and the PDF prints the light one.
 
 The export stops when a cell of a placed page has text below 4.5 to 1 or a
 line or border below 3 to 1 in the dark variant, unless the cell is listed in
-`CONTRAST_EXCEPTIONS` in `settings.py` with its reason. The list is
+`CONTRAST_EXCEPTIONS` in `config.py` with its reason. The list is
 empty: every dark image meets both minimums.
 
-A page listed in `LIGHT_ONLY` in `settings.py` gets no dark variant,
+A page listed in `LIGHT_ONLY` in `config.py` gets no dark variant,
 and the documentation shows its light image with the `{.on-white}` class, on a
 white backing in both schemes. `current-status-developer.png` is there because
 its product logos keep dark lettering that does not read on the slate page.
@@ -92,9 +92,9 @@ leave indistinguishable.
 
 Before it draws anything, the export checks every placed page as drawio
 draws it, from the SVG drawio exports for that page, and stops on a problem
-not listed in `LAYOUT_EXCEPTIONS` in `settings.py`. `diagrams.py check` runs
-the same checks without writing images. The rules, in `layout.py` and
-`labels.py`:
+not listed in `LAYOUT_EXCEPTIONS` in `config.py`. `diagrams.py check` runs
+the same checks without writing images. The rules, in the second half of
+`design.py`:
 
 - A connector runs in horizontal and vertical segments.
 - Two connectors do not meet a box at one point from different sides.
@@ -132,16 +132,16 @@ them and can be run again on its own output without changing anything.
 - Every label is at least 14 pixels when the image is shown 700 pixels wide,
   the narrowest content column of the site. A wide diagram therefore needs
   larger fonts in drawio units than a narrow one.
-- Labels are in Title Case: each word starts with a capital except the
-  short joining words inside a line (of, and, to, with and the like). A URL,
-  a path, a name with an underscore and a word already carrying an inner
-  capital keep their case. GitLab, WebApp and Node.js have one spelling, and
-  systemd keeps its own lower case. `wording.py` holds the rule, which the
+- Labels are in Title Case: each word starts with a capital except the short
+  joining words inside a line (of, and, to, with and the like). A URL, a path, a
+  name with an underscore and a word already carrying an inner capital keep
+  their case. GitLab, WebApp and Node.js have one spelling, and systemd keeps
+  its own lower case. `title_case` in `design.py` holds the rule, which the
   restyle applies.
-- A label background only masks a line, in the colour of what lies behind
-  it: the fill of the smallest box holding both ends of the connector, or
-  the page. A label inside its own shape has no background, so it never
-  shows as a white patch on a coloured box. `masks.py` holds the rule.
+- A label background only masks a line, in the colour of what lies behind it:
+  the fill of the smallest box holding both ends of the connector, or the page.
+  A label inside its own shape has no background, so it never shows as a white
+  patch on a coloured box. `label_ground` in `design.py` holds the rule.
 - One forward-auth box, one corner radius and one line width for every box,
   one style for every arrow, and one icon per idea:
 
@@ -232,7 +232,7 @@ The steps that take files on the command line accept only `.drawio` files
 under the current directory.
 
 `retheme` maps each colour to a colour of the theme, through the `COLOURS`
-table of `colours.py`, which reads the brand colours from
+table of `config.py`, which reads the brand colours from
 `client/src/theme/tokens.ts`, and replaces the old wordmark with the logo in
 `docs/assets/brand`. `split` gives each diagram its own page. `restyle`
 applies the design rules above. `shrink` scales every embedded raster logo down
@@ -289,7 +289,7 @@ figures of the canvas stay with Prasad, as they differ from the images in the
 documentation or are not used yet.
 
 Two steps changed for these pages. The retheme maps the colours the new
-figures use, added to `COLOURS` in `colours.py`, and replaces a wordmark that
+figures use, added to `COLOURS` in `config.py`, and replaces a wordmark that
 lies loose on the page instead of in a group. The restyle leaves
 the DTaaS mark off the pages listed in `NO_MARK`, which draw a concept and not
 the DTaaS system, so their largest box is not the DTaaS boundary.
