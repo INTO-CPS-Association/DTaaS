@@ -232,7 +232,8 @@ The hand edits, by page:
     the two segments that retrace it are in `LAYOUT_EXCEPTIONS`.
   - `dtaas-userview.png` has the user icon moved 5 units to the right.
   - `gitlab-runner-two-servers.png` reads `https://intocps.com/gitlab`
-    under Server 2.
+    under Server 2, the one place that keeps `intocps.com`. The maintainer
+    confirmed it on 16 October 2026.
 - `shm-dt-workflow.png` shows the wind turbines of
   `system-architecture.png` and `DTaaS-user-view.png`, in place of the three
   crops of the old picture, so the turbine is the same icon on every page.
