@@ -239,3 +239,6 @@ The hand edits, by page:
   Three vibration sensors sit on the tower as red dots outlined in white, and
   the sensor legend moved below the turbines, clear of the line that leaves
   the tower.
+- `federated-dtaas.png` draws every arrow as a thin grey line. Eleven of them
+  were thick and in primary, which gave some links a weight the figure does
+  not explain.
