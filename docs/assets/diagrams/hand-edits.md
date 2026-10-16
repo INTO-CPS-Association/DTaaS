@@ -219,3 +219,17 @@ The hand edits, by page:
     icon, with both arrows leaving from its side.
   - Page ids that read as drafts, such as `p1` and `redraw-4`, are the slug
     of the page name.
+- On 16 October 2026 the maintainer corrected seven pages by hand, and
+  they are kept as he sent them:
+  - `user-interaction-in-federated-DTaaS.png` is drawn compact, with the
+    two users closer together and smaller boxes.
+  - `implementation-status.png` has GitLab inside the DTaaS boundary,
+    with Reusable Assets, File System and their labels moved to make room.
+  - `gitlab-integrated-runner.png`, `gitlab-runner-two-servers.png` and
+    its release version have wider remote boxes, so each runner label
+    fits on one line, and the runner lines leave GitLab on one side.
+  - `gitlab-integrated-install.png` has a straight `/gitlab` route, so
+    the two segments that retrace it are in `LAYOUT_EXCEPTIONS`.
+  - `dtaas-userview.png` has the user icon moved 5 units to the right.
+  - `gitlab-runner-two-servers.png` reads `https://intocps.com/gitlab`
+    under Server 2.
