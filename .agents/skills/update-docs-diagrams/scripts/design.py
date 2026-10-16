@@ -690,9 +690,10 @@ def dark_ground(style, what):
         # A text box filled to mask a line on the page takes the dark page.
         style['fillColor'] = SLATE
         return SLATE, old_ground
-    if what == 'shape' and (is_icon(style) or style.get('strokeColor') == 'none'):
-        # An icon, or a bar with no border, is drawn in its fill, so a dark one
-        # turns light like a line.
+    borderless_dark = style.get('strokeColor') == 'none' and luminance(fill) < 0.3
+    if what == 'shape' and (is_icon(style) or borderless_dark):
+        # An icon, or a dark bar with no border, is drawn in its fill, so it
+        # turns light like a line. A light box with no border turns dark.
         if luminance(fill) < 0.3:
             style['fillColor'] = dark_line(fill)
         return ground, old_ground

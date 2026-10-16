@@ -108,6 +108,7 @@ PAGE = '''<mxfile><diagram name="docs/x.png"><mxGraphModel><root>
 <mxCell id="dark" value="Bus"
  style="text;fillColor=#002546;fontColor=#ffffff;" vertex="1" parent="1"/>
 <mxCell id="bar" style="rounded=0;fillColor=#333b4c;strokeColor=none;" vertex="1" parent="1"/>
+<mxCell id="pale" style="rounded=1;strokeColor=none;" vertex="1" parent="1"/>
 </root></mxGraphModel></diagram></mxfile>'''
 
 
@@ -165,6 +166,18 @@ class LowContrastTest(unittest.TestCase):
             written = target.read_text(encoding='utf-8')
         cell = written[written.index('id="bar"'):].split('/>')[0]
         self.assertIn(f'fillColor={config.LIGHT_LINE}', cell)
+
+    def test_a_light_box_with_no_border_turns_dark(self):
+        """A white box with no border takes a dark fill, like other boxes."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            source.write_text(PAGE, encoding='utf-8')
+            target = pathlib.Path(scratch) / 'out.drawio'
+            write_dark(source, target)
+            written = target.read_text(encoding='utf-8')
+        cell = written[written.index('id="pale"'):].split('/>')[0]
+        self.assertNotIn('fillColor=#ffffff', cell)
+        self.assertIn('fillColor=', cell)
 
     def test_white_text_on_a_dark_text_mask_stays_visible(self):
         """White text on a dark text mask stays visible."""
