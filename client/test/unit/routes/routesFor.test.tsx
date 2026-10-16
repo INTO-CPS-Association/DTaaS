@@ -60,4 +60,19 @@ describe('routesFor', () => {
       expect(Object.keys(route).sort()).toEqual(['element', 'path']);
     });
   });
+
+  // The router takes the list the bundle builds when it loads, so that list
+  // has to follow the configured profile.
+  it('builds the default route list for the configured profile', () => {
+    const original = globalThis.env.REACT_APP_PROFILE;
+    globalThis.env.REACT_APP_PROFILE = 'workbench';
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { default: routes } = require('routes');
+      expect(routes.map((r: { path: string }) => r.path)).toEqual(
+        paths('workbench'),
+      );
+    });
+    globalThis.env.REACT_APP_PROFILE = original;
+  });
 });

@@ -14,6 +14,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { useSignOut } from 'util/auth/Authentication';
 import MenuToolbar from 'page/MenuToolbar';
+import runWithProfile from 'test/profile.testUtil';
 
 // test/__mocks__/unit/page_mocks.tsx replaces the MUI Toolbar with an empty div
 // for every unit test, so nothing inside the bar renders. This file is about
@@ -86,40 +87,40 @@ describe('MenuToolbar Sign Out', () => {
 });
 
 describe('MenuToolbar account entry', () => {
-  const original = globalThis.env.REACT_APP_PROFILE;
-
   beforeEach(() => {
     (useSignOut as jest.Mock).mockReturnValue(signOut);
     (useAuth as jest.Mock).mockReturnValue(auth);
   });
 
-  afterEach(() => {
-    globalThis.env.REACT_APP_PROFILE = original;
+  describe('in the full profile', () => {
+    runWithProfile('full');
+
+    it('Offers Account and Logout', () => {
+      renderToolbar();
+
+      expect(
+        screen.getByRole('menuitem', { name: /Account/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('menuitem', { name: /Logout/ }),
+      ).toBeInTheDocument();
+    });
   });
 
-  it('Offers Account and Logout in the full profile', () => {
-    globalThis.env.REACT_APP_PROFILE = 'full';
-    renderToolbar();
+  describe('in the workbench profile', () => {
+    runWithProfile('workbench');
 
-    expect(
-      screen.getByRole('menuitem', { name: /Account/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('menuitem', { name: /Logout/ }),
-    ).toBeInTheDocument();
-  });
+    // The account settings configure logging and measurement, which belong
+    // to pages the workbench profile does not offer.
+    it('Offers Logout but not Account', () => {
+      renderToolbar();
 
-  it('Offers Logout but not Account in the workbench profile', () => {
-    // The account settings configure logging and measurement, which belong to
-    // pages the workbench profile does not offer.
-    globalThis.env.REACT_APP_PROFILE = 'workbench';
-    renderToolbar();
-
-    expect(
-      screen.queryByRole('menuitem', { name: /Account/ }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('menuitem', { name: /Logout/ }),
-    ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('menuitem', { name: /Account/ }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('menuitem', { name: /Logout/ }),
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -38,6 +38,11 @@ A single client is configured:
   web client opens after sign-in
 - `public: true` (no client secret required; suitable for browser SPA)
 
+A `config/dex-config.yaml` copied from an earlier release registers
+`http://localhost/Library` instead. Change that entry to
+`http://localhost/workbench`, or Dex refuses the sign-in with an
+unregistered redirect URI error.
+
 ## Local/passwordDB file (`dex-config.yaml`)
 
 ### `expiry.idTokens: "2h"`

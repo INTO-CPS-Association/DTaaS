@@ -14,6 +14,7 @@ import {
 } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
+import runWithProfile from 'test/profile.testUtil';
 
 jest.mock('routes', () => {
   const MockSignin = () => <div>Signin</div>;
@@ -207,15 +208,7 @@ describe('PrivateRoute', () => {
   });
 
   describe('in the workbench profile', () => {
-    const original = globalThis.env.REACT_APP_PROFILE;
-
-    beforeEach(() => {
-      globalThis.env.REACT_APP_PROFILE = 'workbench';
-    });
-
-    afterEach(() => {
-      globalThis.env.REACT_APP_PROFILE = original;
-    });
+    runWithProfile('workbench');
 
     // A workspace installation has no GitLab, so the execution history the
     // loader polls for does not exist, and dt-automation is never called.
@@ -228,14 +221,9 @@ describe('PrivateRoute', () => {
       ).not.toBeInTheDocument();
     });
 
+    // Set beforehand, so the test also shows that credentials left in the
+    // package are cleared, not only that none are added.
     test('Gives dt-automation no credentials', () => {
-      setupTest({ isLoading: false, error: null, isAuthenticated: true });
-
-      expect(getAccessToken()).toBe('');
-      expect(getUsername()).toBe('');
-    });
-
-    test('Clears credentials left in dt-automation', () => {
       setAccessToken('stale_token');
       setUsername('stale_user');
 

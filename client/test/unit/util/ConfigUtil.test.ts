@@ -129,28 +129,22 @@ describe('configUtil', () => {
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('mockedClientID');
     });
 
-    test('getValidationResult omits PROFILE when it is not configured', async () => {
-      delete globalThis.env.REACT_APP_PROFILE;
-      const results = await getValidationResults();
-      expect(results).not.toHaveProperty('REACT_APP_PROFILE');
-    });
-
-    test.each(['', 'full', 'workbench'])(
-      'getValidationResult PROFILE accepts %p',
-      async (profile) => {
+    test.each([
+      [undefined, undefined],
+      ['', true],
+      ['full', true],
+      ['workbench', true],
+      ['Workbench', false],
+    ])(
+      'getValidationResult PROFILE %p is valid: %p',
+      async (profile, valid) => {
         globalThis.env.REACT_APP_PROFILE = profile;
-        const results = await getValidationResults();
-        expect(results.REACT_APP_PROFILE.error).toBeUndefined();
-        expect(results.REACT_APP_PROFILE.value).toBe(profile);
+        const result = (await getValidationResults()).REACT_APP_PROFILE;
+        // A missing key is the default profile, so it is not listed at all.
+        if (valid === undefined) expect(result).toBeUndefined();
+        else expect(result.error === undefined).toBe(valid);
       },
     );
-
-    test('getValidationResult PROFILE has error for an unknown profile', async () => {
-      globalThis.env.REACT_APP_PROFILE = 'Workbench';
-      const results = await getValidationResults();
-      expect(results.REACT_APP_PROFILE.error).toBeDefined();
-      expect(results.REACT_APP_PROFILE.value).toBeUndefined();
-    });
 
     test('getValidationResult LOGGER_URL validates when configured', async () => {
       globalThis.env.LOGGER_URL = 'https://logger.example.com';

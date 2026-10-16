@@ -37,6 +37,10 @@ cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
+When upgrading from an earlier release, copy the Dex example again or
+update the redirect URI in an existing `config/dex-config.yaml`, as
+described in the [Dex configuration notes](config/DEX.md).
+
 Start the demo:
 
 ```bash
@@ -57,8 +61,12 @@ docker compose --env-file config/.env down
 
 ## Limitations
 
-1. All the functionality of DTaaS except DevOps features should be
-   available through the single page client now.
+1. The web client offers only the Workbench page, which opens the tools
+   running in the user's workspace. The other pages need a GitLab
+   instance, which this installation does not have. The page set is chosen
+   by `REACT_APP_PROFILE` in `config/env.local.js`; set it to `'full'` to
+   show every page. Web client images that predate the key ignore it and
+   show every page.
 1. The installation has default user credentials.
    See [instructions](CUSTOM_USER.md) for help with changing
    the user credentials.

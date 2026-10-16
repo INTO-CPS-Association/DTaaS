@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import MenuItems from 'page/MenuItems';
+import runWithProfile from 'test/profile.testUtil';
 
 const menuEntries = [
   { name: 'Library', link: '/library' },
@@ -68,15 +69,7 @@ describe('MenuItems', () => {
   });
 
   describe('in the workbench profile', () => {
-    const original = globalThis.env.REACT_APP_PROFILE;
-
-    beforeEach(() => {
-      globalThis.env.REACT_APP_PROFILE = 'workbench';
-    });
-
-    afterEach(() => {
-      globalThis.env.REACT_APP_PROFILE = original;
-    });
+    runWithProfile('workbench');
 
     it('lists only the Workbench', () => {
       renderMenu(true);

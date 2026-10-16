@@ -74,5 +74,7 @@ the configuration check requests `<LOGGER_URL>/health`.
 Workbench page, for installations that run user workspaces without a
 GitLab instance, such as the workspace installation packages. A signed-in
 user who opens any other page sees the page-not-found message, and the
-account settings are not offered. Any other value is treated as `full`,
-and the configuration check reports it as an error.
+account settings are not offered. An empty value is also `full`. Any
+other value is treated as `full`, and the configuration check reports it
+as an error; the check lists the key only when it is set. With
+`workbench`, `REACT_APP_REDIRECT_URI` must end in `/workbench`.

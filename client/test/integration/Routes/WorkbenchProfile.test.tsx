@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { setupIntegrationTest } from 'test/integration/integration.testUtil';
 import { mockAuthState } from 'test/__mocks__/global_mocks';
 import { routesFor } from 'routes';
+import runWithProfile from 'test/profile.testUtil';
 
 /**
  * The website as a workspace installation runs it, with
@@ -22,15 +23,7 @@ const openWorkbenchProfile = (path: string) =>
   setupIntegrationTest(path, mockAuthState, routesFor('workbench'));
 
 describe('Workbench profile', () => {
-  const original = globalThis.env.REACT_APP_PROFILE;
-
-  beforeEach(() => {
-    globalThis.env.REACT_APP_PROFILE = 'workbench';
-  });
-
-  afterEach(() => {
-    globalThis.env.REACT_APP_PROFILE = original;
-  });
+  runWithProfile('workbench');
 
   it('opens the Workbench with only its own drawer entry', async () => {
     await openWorkbenchProfile('/workbench');

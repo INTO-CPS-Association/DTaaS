@@ -13,14 +13,18 @@
 
 export type Profile = 'full' | 'workbench';
 
-export type Feature =
-  | 'library'
-  | 'digitaltwins'
-  | 'automation'
-  | 'bim'
-  | 'workbench'
-  | 'insights'
-  | 'account';
+/** Every feature, each a page or a group of pages behind one drawer entry. */
+export const FEATURES = [
+  'library',
+  'digitaltwins',
+  'automation',
+  'bim',
+  'workbench',
+  'insights',
+  'account',
+] as const;
+
+export type Feature = (typeof FEATURES)[number];
 
 interface ProfileDefinition {
   readonly features: readonly Feature[];
@@ -29,18 +33,7 @@ interface ProfileDefinition {
 }
 
 const PROFILES: Record<Profile, ProfileDefinition> = {
-  full: {
-    features: [
-      'library',
-      'digitaltwins',
-      'automation',
-      'bim',
-      'workbench',
-      'insights',
-      'account',
-    ],
-    dtAutomation: true,
-  },
+  full: { features: FEATURES, dtAutomation: true },
   workbench: { features: ['workbench'], dtAutomation: false },
 };
 

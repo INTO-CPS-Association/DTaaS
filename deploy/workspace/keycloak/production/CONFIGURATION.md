@@ -202,6 +202,9 @@ it now carries the Keycloak OIDC scopes.
 page, which is the only page a workspace installation serves. The other
 pages need a GitLab instance, which this installation does not have.
 Remove the line, or set it to `'full'`, to show every page.
+With the `workbench` profile, `REACT_APP_REDIRECT_URI` must end in
+`/workbench`; any other page shows the page-not-found message after
+sign-in.
 Web client images that predate the key ignore it and show every page.
 
 Replace `<DOMAIN_NAME>` with the value set in the

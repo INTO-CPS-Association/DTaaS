@@ -1,20 +1,10 @@
 import {
+  FEATURES,
   getProfile,
   isFeatureEnabled,
   resetProfileWarning,
   usesDtAutomation,
-  Feature,
 } from 'util/profile';
-
-const ALL_FEATURES: Feature[] = [
-  'library',
-  'digitaltwins',
-  'automation',
-  'bim',
-  'workbench',
-  'insights',
-  'account',
-];
 
 describe('profile', () => {
   const original = globalThis.env.REACT_APP_PROFILE;
@@ -60,13 +50,13 @@ describe('profile', () => {
   );
 
   it('enables every feature in the full profile', () => {
-    ALL_FEATURES.forEach((feature) => {
+    FEATURES.forEach((feature) => {
       expect(isFeatureEnabled(feature, 'full')).toBe(true);
     });
   });
 
   it('enables only the workbench in the workbench profile', () => {
-    ALL_FEATURES.forEach((feature) => {
+    FEATURES.forEach((feature) => {
       expect(isFeatureEnabled(feature, 'workbench')).toBe(
         feature === 'workbench',
       );
