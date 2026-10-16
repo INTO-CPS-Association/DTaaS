@@ -154,6 +154,10 @@ LAYOUT_EXCEPTIONS = {
     # arrows from one phase to the next cross them on purpose.
     **{('developer/system/research-overview/lifecycle-phases.png', edge):
        'an arrow crossing a phase boundary' for edge in ('c12', 'c13', 'c15', 'c16')},
+    # Two short segments retrace the /gitlab route where it reaches GitLab,
+    # so they share its attach point by construction.
+    **{('admin/gitlab/gitlab-integrated-install.png', f'2WJjZC69SbeaYorzOpKH-{cell}'):
+       'a segment retracing the /gitlab route' for cell in (34, 35)},
 }
 
 
