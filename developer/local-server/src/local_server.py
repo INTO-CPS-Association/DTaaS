@@ -81,9 +81,9 @@ def main(argv=None):
     command, settings = parse_args(argv)
     try:
         result = COMMANDS[command][1](settings)
-    # OSError includes urllib's URLError and a missing docker or mkcert.
-    except (subprocess.CalledProcessError, OSError,
-            RuntimeError, TimeoutError) as error:
+    # OSError includes urllib's URLError, TimeoutError and a missing
+    # docker or mkcert.
+    except (subprocess.CalledProcessError, OSError, RuntimeError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 1 if result is False else 0

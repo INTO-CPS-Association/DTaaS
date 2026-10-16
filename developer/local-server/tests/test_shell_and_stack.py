@@ -42,7 +42,8 @@ def test_start_runs_compose_and_waits(tmp_path, monkeypatch):
     monkeypatch.setattr(stack, "wait_for", lambda pairs, ca: checks.extend(pairs))
     stack.start(settings)
     args, cwd = calls[0]
-    assert args[-2:] == ["up", "-d"] and "compose.local.yml" in args
+    assert args[-2:] == ["up", "-d"]
+    assert "compose.local.yml" in args
     assert cwd == settings.package_dir
     assert checks == [("https://intocps.test/gitlab/users/sign_in", 200),
                       ("https://intocps.test:5051/v2/", 401)]

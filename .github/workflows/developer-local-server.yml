@@ -46,12 +46,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # The script uses only the standard library; requirements.txt pins
-      # the checking tools.
+      # The script uses only the standard library; requirements.txt locks
+      # the checking tools and their dependencies with hashes.
       - name: Install checking tools
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --require-hashes --only-binary :all: -r requirements.txt
 
       - name: Run flake8
         run: flake8 src tests --max-complexity=10 --max-line-length=127
@@ -85,12 +84,9 @@ jobs:
           REGISTRY_PORT: '6060'
         run: |
           docker compose --env-file config/.env.example config > rendered.yml
-          for expected in \
-            'entrypoints.registry.address=:6060' \
-            "registry_external_url 'https://localhost:6060'" \
-            "registry_nginx['listen_port'] = 6060" \
-            'published: "6060"' \
-            'gitlab-registry.loadbalancer.server.port: "6060"'; do
-            grep -qF -- "$expected" rendered.yml || {
-              echo "missing: $expected"; exit 1; }
-          done
+          # Each grep fails the step if the port did not reach that place.
+          grep -F 'entrypoints.registry.address=:6060' rendered.yml
+          grep -F "registry_external_url 'https://localhost:6060'" rendered.yml
+          grep -F "registry_nginx['listen_port'] = 6060" rendered.yml
+          grep -F 'published: "6060"' rendered.yml
+          grep -F 'gitlab-registry.loadbalancer.server.port: "6060"' rendered.yml

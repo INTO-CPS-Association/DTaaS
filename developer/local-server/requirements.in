@@ -1,0 +1,10 @@
+# Tools that check the local server script. The script itself uses only
+# the Python standard library and needs nothing installed.
+# requirements.txt locks these and their dependencies with hashes. After
+# a change, regenerate it with releases at least ten days old:
+#   uv pip compile requirements.in --universal --python-version 3.10 \
+#     --generate-hashes --exclude-newer <date ten days ago> \
+#     -o requirements.txt
+flake8==7.4.1
+pylint==4.1.2
+pytest==9.1.1

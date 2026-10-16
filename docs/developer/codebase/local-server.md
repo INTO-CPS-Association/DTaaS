@@ -28,7 +28,8 @@ The script:
   `docker-compose.yml`, copied from `deploy/` on every run, and adds only
   `compose.local.yml`. It never changes files in `deploy/`.
 - **Standard library only.** The script needs Python 3.10 or later and
-  no packages. `requirements.txt` lists only the checking tools.
+  no packages. `requirements.in` lists only the checking tools, and
+  `requirements.txt` locks them and their dependencies with hashes.
 - **Repeatable steps.** Every command can run again. Each step checks
   the current state first: an existing hosts entry, an existing
   certificate, existing users. Whether to register the OAuth 2.0
@@ -62,7 +63,8 @@ The script:
 | `registry-test.gitlab-ci.yml` | Pipeline that publishes an image and runs a job in it  |
 | `tests/`                      | Unit tests                                             |
 | `pytest.ini`                  | Puts `src/` and `tests/` on the import path            |
-| `requirements.txt`            | Pinned checking tools: flake8, pylint and pytest       |
+| `requirements.in`             | Checking tools: flake8, pylint and pytest              |
+| `requirements.txt`            | The same tools and dependencies, locked with hashes    |
 
 ## Control Flow
 
@@ -98,7 +100,7 @@ doubles, so they need neither Docker nor GitLab. From
 `developer/local-server`:
 
 ```bash
-pip install -r requirements.txt
+pip install --require-hashes -r requirements.txt
 flake8 src tests --max-complexity=10 --max-line-length=127
 pylint src tests --rcfile=../../.pylintrc --recursive=y
 python -m pytest

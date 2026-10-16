@@ -23,7 +23,7 @@ def http_status(url, ca_file):
             return response.status
     except urllib.error.HTTPError as error:
         return error.code
-    except (urllib.error.URLError, OSError):
+    except OSError:  # includes URLError: no answer or a TLS failure
         return 0
 
 

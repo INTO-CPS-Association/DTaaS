@@ -71,7 +71,8 @@ def test_create_certificates_skips_existing(tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(package, "run", calls.append)
     package.create_certificates(settings)
-    assert calls[0][0] == "mkcert" and "intocps.test" in calls[0]
+    assert calls[0][0] == "mkcert"
+    assert "intocps.test" in calls[0]
     Path(certs / "fullchain.pem").write_text("cert", encoding="utf-8")
     package.create_certificates(settings)
     assert len(calls) == 1

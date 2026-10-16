@@ -8,6 +8,7 @@ from settings import TOOL_DIR
 from shell import run, step
 
 RUNNER_FILES = TOOL_DIR / "runner"
+COMPOSE_FILE = "compose.yml"
 
 
 def runner_config(gitlab_url, token):
@@ -25,7 +26,7 @@ def start_runner(settings, gitlab):
     })
     directory = settings.runner_dir
     directory.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(RUNNER_FILES / "compose.yml", directory / "compose.yml")
+    shutil.copyfile(RUNNER_FILES / COMPOSE_FILE, directory / COMPOSE_FILE)
     write_private(directory / "config.toml",
                   runner_config(settings.gitlab_url, runner["token"]))
     shutil.copyfile(settings.ca_file, directory / "ca.crt")
@@ -34,6 +35,6 @@ def start_runner(settings, gitlab):
 
 def stop_runner(settings):
     """Stop the runner container if its compose project exists."""
-    if (settings.runner_dir / "compose.yml").exists():
+    if (settings.runner_dir / COMPOSE_FILE).exists():
         step("Stopping the GitLab runner")
         run(["docker", "compose", "down"], cwd=settings.runner_dir)

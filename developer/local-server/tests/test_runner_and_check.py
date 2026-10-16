@@ -82,8 +82,9 @@ def test_check_token_explains_expired_token():
 
         def request(self, method, path, data=None):
             raise urllib.error.HTTPError("url", 401, "msg", {}, None)
+    gitlab = Expired()
     with pytest.raises(RuntimeError, match="configure"):
-        registry_check.check_token(Expired())
+        registry_check.check_token(gitlab)
 
 
 def test_run_pipeline_passes_only_if_all_jobs_succeed(monkeypatch):

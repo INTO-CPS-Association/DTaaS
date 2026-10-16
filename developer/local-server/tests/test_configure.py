@@ -33,7 +33,8 @@ def test_configure_oauth_writes_ids(tmp_path):
                          {"application_id": "app1", "secret": "s1"}})
     configure.configure_oauth(settings, gitlab)
     env = (config / ".env").read_text(encoding="utf-8")
-    assert "OAUTH_CLIENT_ID=app1" in env and "OAUTH_CLIENT_SECRET=s1" in env
+    assert "OAUTH_CLIENT_ID=app1" in env
+    assert "OAUTH_CLIENT_SECRET=s1" in env
     assert "OAUTH_SECRET=" in env
     assert "REACT_APP_CLIENT_ID: 'app1'" in (config / "client.js").read_text(encoding="utf-8")
     redirects = [data["redirect_uri"] for _, _, data in gitlab.requests]
@@ -72,8 +73,9 @@ def test_create_users_stores_new_passwords(tmp_path):
 def test_create_users_stops_without_stored_password(tmp_path):
     """A known user without a stored password stops the step."""
     settings = Settings("intocps.test", 5050, tmp_path)
+    gitlab = Users({"user1"})
     with pytest.raises(RuntimeError, match="clean"):
-        configure.create_users(settings, Users({"user1"}))
+        configure.create_users(settings, gitlab)
 
 
 def test_needs_oauth_apps_checks_file_and_gitlab(tmp_path):

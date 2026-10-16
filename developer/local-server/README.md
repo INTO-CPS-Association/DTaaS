@@ -181,7 +181,8 @@ for macOS only; on Windows, add the CA to the certificate store too.
 | `runner/`                     | Compose file and configuration template of the runner  |
 | `registry-test.gitlab-ci.yml` | Pipeline that publishes an image and runs a job in it  |
 | `tests/`                      | Unit tests                                             |
-| `requirements.txt`            | Pinned checking tools: flake8, pylint and pytest       |
+| `requirements.in`             | Checking tools: flake8, pylint and pytest              |
+| `requirements.txt`            | The same tools and dependencies, locked with hashes    |
 
 ## Development
 
@@ -190,7 +191,7 @@ test doubles, so they need neither Docker nor GitLab. From this
 directory:
 
 ```bash
-pip install -r requirements.txt
+pip install --require-hashes -r requirements.txt
 flake8 src tests --max-complexity=10 --max-line-length=127
 pylint src tests --rcfile=../../.pylintrc --recursive=y
 python -m pytest

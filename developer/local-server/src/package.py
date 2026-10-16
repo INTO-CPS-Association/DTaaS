@@ -8,7 +8,8 @@ from shell import run, step
 
 EXAMPLE_HOST = "intocps.org"
 FORWARD_AUTH_IMAGE = "traefik-forward-auth-local:latest"
-CONFIG_FILES = (".env", "conf.server", "client.js")
+CLIENT_CONFIG = "client.js"
+CONFIG_FILES = (".env", "conf.server", CLIENT_CONFIG)
 
 
 def check_hostname(settings):
@@ -55,9 +56,9 @@ def configure_package(settings):
         "OAUTH_URL": settings.gitlab_url,
         "REGISTRY_PORT": str(settings.registry_port),
     })
-    client = (config / "client.js").read_text(encoding="utf-8")
+    client = (config / CLIENT_CONFIG).read_text(encoding="utf-8")
     client = client.replace(EXAMPLE_HOST, settings.hostname)
-    (config / "client.js").write_text(client, encoding="utf-8")
+    (config / CLIENT_CONFIG).write_text(client, encoding="utf-8")
 
 
 def create_directories(settings):
