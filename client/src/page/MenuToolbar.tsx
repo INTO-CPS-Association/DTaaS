@@ -25,6 +25,7 @@ import {
   resolveOAuthPictureUrl,
   resolveOAuthUsername,
 } from 'util/auth/oauthUserProfile';
+import { isFeatureEnabled } from 'util/profile';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -181,19 +182,24 @@ function MenuToolbar({
             onClose={handleCloseUserMenu}
             slotProps={{ list: { sx: { minWidth: 180 } } }}
           >
-            <MenuItem
-              component={Link}
-              to="/account"
-              onClick={handleCloseUserMenu}
-              data-logger-element="nav-link"
-              data-logger-label="Account"
-            >
-              <ListItemIcon>
-                <PersonRoundedIcon fontSize="small" />
-              </ListItemIcon>
-              Account
-            </MenuItem>
-            <Divider />
+            {/* An array and not a fragment: a menu does not accept a fragment
+                as a child. */}
+            {isFeatureEnabled('account') && [
+              <MenuItem
+                key="account"
+                component={Link}
+                to="/account"
+                onClick={handleCloseUserMenu}
+                data-logger-element="nav-link"
+                data-logger-label="Account"
+              >
+                <ListItemIcon>
+                  <PersonRoundedIcon fontSize="small" />
+                </ListItemIcon>
+                Account
+              </MenuItem>,
+              <Divider key="account-divider" />,
+            ]}
             <MenuItem
               component={Link}
               to="/"

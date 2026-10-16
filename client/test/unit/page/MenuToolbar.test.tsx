@@ -84,3 +84,42 @@ describe('MenuToolbar Sign Out', () => {
     expect(signOut).not.toHaveBeenCalled();
   });
 });
+
+describe('MenuToolbar account entry', () => {
+  const original = globalThis.env.REACT_APP_PROFILE;
+
+  beforeEach(() => {
+    (useSignOut as jest.Mock).mockReturnValue(signOut);
+    (useAuth as jest.Mock).mockReturnValue(auth);
+  });
+
+  afterEach(() => {
+    globalThis.env.REACT_APP_PROFILE = original;
+  });
+
+  it('Offers Account and Logout in the full profile', () => {
+    globalThis.env.REACT_APP_PROFILE = 'full';
+    renderToolbar();
+
+    expect(
+      screen.getByRole('menuitem', { name: /Account/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: /Logout/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('Offers Logout but not Account in the workbench profile', () => {
+    // The account settings configure logging and measurement, which belong to
+    // pages the workbench profile does not offer.
+    globalThis.env.REACT_APP_PROFILE = 'workbench';
+    renderToolbar();
+
+    expect(
+      screen.queryByRole('menuitem', { name: /Account/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: /Logout/ }),
+    ).toBeInTheDocument();
+  });
+});

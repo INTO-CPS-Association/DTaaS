@@ -67,6 +67,30 @@ describe('MenuItems', () => {
     });
   });
 
+  describe('in the workbench profile', () => {
+    const original = globalThis.env.REACT_APP_PROFILE;
+
+    beforeEach(() => {
+      globalThis.env.REACT_APP_PROFILE = 'workbench';
+    });
+
+    afterEach(() => {
+      globalThis.env.REACT_APP_PROFILE = original;
+    });
+
+    it('lists only the Workbench', () => {
+      renderMenu(true);
+
+      expect(
+        screen.getAllByRole('link').map((link) => link.textContent),
+      ).toEqual(['Workbench']);
+      expect(screen.getByRole('link', { name: 'Workbench' })).toHaveAttribute(
+        'href',
+        '/workbench',
+      );
+    });
+  });
+
   it('offers a tooltip when the drawer is collapsed', async () => {
     renderMenu(false);
 

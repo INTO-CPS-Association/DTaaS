@@ -79,14 +79,16 @@ export const previewStore = configureStore({
     }),
 });
 
-const renderWithAppProvider = (route: string) => {
+type AppRoutes = { path: string; element: React.ReactNode }[];
+
+const renderWithAppProvider = (route: string, routeList: AppRoutes) => {
   globalThis.history.pushState({}, 'Test page', route);
   return render(
     AppProvider({
       children: (
         <MemoryRouter initialEntries={[route]}>
           <Routes>
-            {routes.map((routeElement) => (
+            {routeList.map((routeElement) => (
               <Route
                 path={routeElement.path}
                 element={routeElement.element}
@@ -104,6 +106,7 @@ const renderWithAppProvider = (route: string) => {
 export async function setupIntegrationTest(
   route: string,
   authState?: mockAuthStateType,
+  routeList: AppRoutes = routes,
 ) {
   cleanup();
   const returnedAuthState = authState ?? mockAuthState;
@@ -120,7 +123,9 @@ export async function setupIntegrationTest(
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
   }
-  const container = await act(async () => renderWithAppProvider(route));
+  const container = await act(async () =>
+    renderWithAppProvider(route, routeList),
+  );
   return container;
 }
 

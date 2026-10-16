@@ -34,7 +34,8 @@ Permissive CORS setting for localhost development.
 A single client is configured:
 
 - `id: mock`
-- `redirectURIs: ['http://localhost/Library']`
+- `redirectURIs: ['http://localhost/workbench']`, the page the
+  web client opens after sign-in
 - `public: true` (no client secret required; suitable for browser SPA)
 
 ## Local/passwordDB file (`dex-config.yaml`)

@@ -183,9 +183,10 @@ Keycloak, then update `config/client.js`:
 ```js
 REACT_APP_CLIENT_ID: 'dtaas-client',          // Client ID set in Keycloak
 REACT_APP_AUTH_AUTHORITY: 'https://<DOMAIN_NAME>/auth/realms/dtaas',
-REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/Library',
+REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/workbench',
 REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
 REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
+REACT_APP_PROFILE: 'workbench',              // Show only the Workbench page
 ```
 
 `openid` and `profile` are standard OIDC scopes provided by Keycloak by default.
@@ -196,6 +197,12 @@ user attribute in Keycloak. The DTaaS web client extracts the username from
 the last path segment of this URL.
 The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
 it now carries the Keycloak OIDC scopes.
+
+`REACT_APP_PROFILE: 'workbench'` limits the web client to the Workbench
+page, which is the only page a workspace installation serves. The other
+pages need a GitLab instance, which this installation does not have.
+Remove the line, or set it to `'full'`, to show every page.
+Web client images that predate the key ignore it and show every page.
 
 Replace `<DOMAIN_NAME>` with the value set in the
 [Domain](#domain) section and `dtaas` with the Keycloak realm name

@@ -9,6 +9,8 @@ import {
   clearUsername,
   getAccessToken,
   getUsername,
+  setAccessToken,
+  setUsername,
 } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
@@ -202,5 +204,51 @@ describe('PrivateRoute', () => {
     setupTest({ isLoading: true, error: null, isAuthenticated: false });
 
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  describe('in the workbench profile', () => {
+    const original = globalThis.env.REACT_APP_PROFILE;
+
+    beforeEach(() => {
+      globalThis.env.REACT_APP_PROFILE = 'workbench';
+    });
+
+    afterEach(() => {
+      globalThis.env.REACT_APP_PROFILE = original;
+    });
+
+    // A workspace installation has no GitLab, so the execution history the
+    // loader polls for does not exist, and dt-automation is never called.
+    test('Renders the page without the execution history loader', () => {
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(screen.getByText('Test Component')).toBeInTheDocument();
+      expect(
+        screen.queryByText(/ExecutionHistoryLoader/i),
+      ).not.toBeInTheDocument();
+    });
+
+    test('Gives dt-automation no credentials', () => {
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(getAccessToken()).toBe('');
+      expect(getUsername()).toBe('');
+    });
+
+    test('Clears credentials left in dt-automation', () => {
+      setAccessToken('stale_token');
+      setUsername('stale_user');
+
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(getAccessToken()).toBe('');
+      expect(getUsername()).toBe('');
+    });
+
+    test('Still records the user name for the workspace addresses', () => {
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(dispatch).toHaveBeenCalledWith(setUserName('username'));
+    });
   });
 });
