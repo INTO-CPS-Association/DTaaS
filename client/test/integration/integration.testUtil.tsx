@@ -121,9 +121,10 @@ export async function setupIntegrationTest(
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
   }
-  const container = await act(async () =>
-    renderWithAppProvider(route, routeList),
-  );
+  const renderRoute = () => renderWithAppProvider(route, routeList);
+  // Async on purpose, with nothing to await: an async callback makes act also
+  // flush the updates the render schedules through promises.
+  const container = await act(async () => renderRoute()); // NOSONAR
   return container;
 }
 
