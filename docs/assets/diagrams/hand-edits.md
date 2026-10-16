@@ -242,3 +242,5 @@ The hand edits, by page:
 - `federated-dtaas.png` draws every arrow as a thin grey line. Eleven of them
   were thick and in primary, which gave some links a weight the figure does
   not explain.
+- The DevOps box of `DTaaS-user-view.png` and `system-architecture.png`
+  grew 35 units upward, so its three lines of text stay inside it.

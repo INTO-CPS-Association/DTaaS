@@ -178,7 +178,7 @@
           <mxGeometry height="466.13" width="1819" x="80" y="4390" as="geometry" />
         </mxCell>
         <mxCell id="j32rHh5SlOpBDfbG7lMq-1081" parent="j32rHh5SlOpBDfbG7lMq-1080" style="rounded=1;whiteSpace=wrap;html=1;fontSize=24;fillColor=none;strokeColor=#003d73;fontColor=#333b4c;strokeWidth=4;absoluteArcSize=1;arcSize=20.75;fontFamily=Inter;" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;DevOps&lt;br&gt;(Using GitLab Runners)&lt;/font&gt;" vertex="1">
-          <mxGeometry height="100.42" width="287" x="1529" y="309" as="geometry" />
+          <mxGeometry height="135.42" width="287" x="1529" y="274" as="geometry" />
         </mxCell>
         <mxCell id="j32rHh5SlOpBDfbG7lMq-1082" edge="1" parent="j32rHh5SlOpBDfbG7lMq-1080" source="j32rHh5SlOpBDfbG7lMq-1087" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=4;strokeColor=#333b4c;" target="j32rHh5SlOpBDfbG7lMq-1081" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -348,7 +348,7 @@
           <mxGeometry height="466.13" width="1819" x="80" y="4390" as="geometry" />
         </mxCell>
         <mxCell id="j32rHh5SlOpBDfbG7lMq-1081" parent="j32rHh5SlOpBDfbG7lMq-1080" style="rounded=1;whiteSpace=wrap;html=1;fontSize=24;fillColor=none;strokeColor=#003d73;fontColor=#333b4c;strokeWidth=4;absoluteArcSize=1;arcSize=20.75;fontFamily=Inter;" value="&lt;font style=&quot;font-size: 28px;&quot;&gt;DevOps&lt;br&gt;(Using GitLab Runners)&lt;/font&gt;" vertex="1">
-          <mxGeometry height="100.42" width="287" x="1529" y="309" as="geometry" />
+          <mxGeometry height="135.42" width="287" x="1529" y="274" as="geometry" />
         </mxCell>
         <mxCell id="j32rHh5SlOpBDfbG7lMq-1082" edge="1" parent="j32rHh5SlOpBDfbG7lMq-1080" source="j32rHh5SlOpBDfbG7lMq-1087" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=4;strokeColor=#333b4c;" target="j32rHh5SlOpBDfbG7lMq-1081" value="">
           <mxGeometry relative="1" as="geometry" />

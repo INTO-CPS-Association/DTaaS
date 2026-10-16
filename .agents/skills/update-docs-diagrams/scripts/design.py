@@ -693,10 +693,9 @@ def dark_ground(style, what):
     borderless_dark = style.get('strokeColor') == 'none' and luminance(fill) < 0.3
     if what == 'shape' and (is_icon(style) or borderless_dark):
         # An icon, or a dark bar with no border, is drawn in its fill, so it
-        # turns light like a line. A light box with no border turns dark.
-        if luminance(fill) < 0.3:
-            style['fillColor'] = dark_line(fill)
-        return ground, old_ground
+        # turns light like a line. The label of a bar sits on that fill.
+        style['fillColor'] = dark_line(fill)
+        return (ground if is_icon(style) else style['fillColor']), old_ground
     style['fillColor'] = ground = dark_fill(fill)
     return ground, old_ground
 
