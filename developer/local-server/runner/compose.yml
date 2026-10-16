@@ -1,0 +1,18 @@
+# GitLab runner on the integrated package's frontend network.
+# local_server.py copies it to the runner's working directory, next to
+# config.toml and ca.crt.
+services:
+  gitlab-runner:
+    container_name: gitlab-runner
+    image: gitlab/gitlab-runner:alpine
+    volumes:
+      - "./config.toml:/etc/gitlab-runner/config.toml:ro"
+      - "./ca.crt:/etc/gitlab-runner/certs/ca.crt:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    name: dtaas-frontend
+    external: true

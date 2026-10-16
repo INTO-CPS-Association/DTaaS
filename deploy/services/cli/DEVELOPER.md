@@ -353,6 +353,8 @@ Docker Compose variables are properly configured without additional setup.
 default: `https`)
 * **`GITLAB_PORT`**: Port the local GitLab container listens on (default: `8090`);
   must be set before any `gitlab/` module function is called
+* **`GITLAB_REGISTRY_PORT`**: Port of the GitLab container registry
+  (default: `5050`); used only by `compose.gitlab.yml`
 * **`GITLAB_ROOT_NEW_PASSWORD`**: Strong password to apply to the GitLab `root`
   admin account during post-install setup
 

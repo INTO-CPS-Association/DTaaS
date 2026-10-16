@@ -75,6 +75,62 @@ After adding the required Library assets:
 $git push origin
 ```
 
+## Container Registry
+
+The DTaaS GitLab has a private container registry. Each GitLab project
+can store container images, such as ready-to-use environments for its
+digital twins. The registry has its own port, `5050` unless the
+administrator has chosen another one.
+
+Log in with your GitLab username and a PAT that has the `api` or
+`write_registry` scope, then push and pull images under your project:
+
+```sh
+$docker login dtaas-digitaltwin.com:5050
+$docker tag my-dt-env:1.0 \
+  dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+$docker push dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+$docker pull dtaas-digitaltwin.com:5050/dtaas/user1/my-dt-env:1.0
+```
+
+The **Deploy > Container registry** page of the project lists the
+stored images.
+
+Images belong to the project they are pushed to. Only users with access
+to that project can pull them, and only project members with at least
+the Developer role can push. To share an image, give other users access
+to the project.
+
+A pipeline in the same project can run its jobs in a stored image.
+GitLab gives the job a token that can pull from the project's registry:
+
+```yaml
+simulate:
+  image: $CI_REGISTRY_IMAGE/my-dt-env:1.0
+  script:
+    - ./simulate.sh
+```
+
+GitLab sets `CI_REGISTRY`, `CI_REGISTRY_IMAGE`, `CI_REGISTRY_USER` and
+`CI_REGISTRY_PASSWORD` in every job, so a pipeline can also log in and
+publish images to the project's registry. This job copies a public image
+into the project's registry without needing a privileged runner:
+
+```yaml
+publish:
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" |
+      crane auth login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - crane copy alpine:3 "$CI_REGISTRY_IMAGE/my-dt-env:1.0"
+```
+
+Building an image from a `Dockerfile` in a pipeline needs a runner that
+supports image builds. Ask the administrator which builds the DTaaS
+runners allow.
+
 ## Next Steps
 
 A [GitLab runner](../../admin/gitlab/runner-linux.md) must be linked

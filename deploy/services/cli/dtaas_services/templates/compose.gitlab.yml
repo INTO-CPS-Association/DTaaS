@@ -13,8 +13,12 @@ services:
         nginx['ssl_certificate'] = "/certs/fullchain.pem"
         nginx['ssl_certificate_key'] = "/certs/privkey.pem"
         letsencrypt['enable'] = false
+        registry_external_url 'https://${HOSTNAME}:${GITLAB_REGISTRY_PORT:-5050}'
+        registry_nginx['ssl_certificate'] = "/certs/fullchain.pem"
+        registry_nginx['ssl_certificate_key'] = "/certs/privkey.pem"
     ports:
       - '${GITLAB_PORT}:443'
+      - '${GITLAB_REGISTRY_PORT:-5050}:${GITLAB_REGISTRY_PORT:-5050}'
       - '2424:22'
     volumes:
       - './config/gitlab:/etc/gitlab'

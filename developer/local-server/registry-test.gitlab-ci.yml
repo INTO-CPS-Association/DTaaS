@@ -1,0 +1,21 @@
+# Publishes an image to the project's registry without a privileged
+# runner, then runs a job inside it. The runner passes its CA to jobs in
+# CI_SERVER_TLS_CA_FILE.
+stages: [publish, reuse]
+
+publish:
+  stage: publish
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  script:
+    - export SSL_CERT_FILE="$CI_SERVER_TLS_CA_FILE"
+    - echo "$CI_REGISTRY_PASSWORD" |
+      crane auth login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - crane copy alpine:3 "$CI_REGISTRY_IMAGE/ci-env:1.0"
+
+reuse:
+  stage: reuse
+  image: $CI_REGISTRY_IMAGE/ci-env:1.0
+  script:
+    - cat /etc/os-release

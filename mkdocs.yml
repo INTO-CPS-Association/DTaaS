@@ -122,6 +122,7 @@ nav:
       - GitLab:
           - Server: admin/gitlab/index.md
           - Integration: admin/gitlab/integration.md
+          - Container Registry: admin/gitlab/registry.md
           - Runner:
               - Linux: admin/gitlab/runner-linux.md
               - Windows: admin/gitlab/runner-windows.md
@@ -173,11 +174,14 @@ nav:
           - Runner Microservice: developer/codebase/runner.md
           - DTaaS CLI: developer/codebase/cli.md
           - DTaaS Services: developer/codebase/dtaas-services.md
+          - Local Server Script: developer/codebase/local-server.md
           - Publish Packages: developer/codebase/publish-packages.md
       - Contributions:
           - Code of Conduct: developer/contributions/conduct.md
           - Coding Agents: developer/contributions/coding-agents.md
           - Local Testing: developer/contributions/local-testing.md
+          - Local Server Testing: developer/contributions/local-server-testing.md
+          - Local Registry Testing: developer/contributions/local-registry-testing.md
           - Docker Check: developer/contributions/docker.md
           - GitHub Actions: developer/contributions/github-actions.md
           - Publish NPM Packages: developer/contributions/npm-packages.md

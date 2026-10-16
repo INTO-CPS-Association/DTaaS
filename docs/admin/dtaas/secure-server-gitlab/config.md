@@ -24,6 +24,7 @@ cp config/.env.example config/.env
 | `SERVER_DNS`           | `intocps.org` | Domain name or IP address of the server. Do **not** include `https://`. |
 | `USERNAME1`            | `user1`       | Path prefix and workspace name for the first user                       |
 | `USERNAME2`            | `user2`       | Path prefix and workspace name for the second user                      |
+| `REGISTRY_PORT`        | `5050`        | Port of the GitLab container registry. Defaults to `5050` if unset.     |
 | `COMPOSE_PROJECT_NAME` | `dtaas`       | Docker Compose project name (rarely needs changing)                     |
 
 ### OAuth 2.0 Settings
@@ -45,6 +46,7 @@ applications exist (see
 | :---------------------------------------- | :------------------------------------------------------------------- |
 | `SERVER_DNS`                              | client, logger-ms, user1, user2, libms, traefik-forward-auth, gitlab |
 | `USERNAME1` / `USERNAME2`                 | user1, user2 (routing and workspace volumes)                         |
+| `REGISTRY_PORT`                           | traefik (registry entrypoint), gitlab (registry URL)                 |
 | `OAUTH_URL`                               | traefik-forward-auth (browser redirect URL)                          |
 | `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth                                                 |
 | `OAUTH_SECRET`                            | traefik-forward-auth                                                 |

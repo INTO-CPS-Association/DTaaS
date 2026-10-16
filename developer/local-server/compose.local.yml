@@ -1,0 +1,30 @@
+# Override for running the integrated GitLab package on one machine.
+# local_server.py copies it next to the package's docker-compose.yml;
+# SERVER_DNS comes from the package's config/.env.
+services:
+  traefik:
+    networks:
+      frontend:
+        aliases:
+          # Containers on the frontend network, such as runner jobs,
+          # reach Traefik under the server's hostname.
+          - ${SERVER_DNS}
+      users: {}
+  traefik-forward-auth:
+    # Built by local_server.py; trusts the mkcert root CA.
+    image: traefik-forward-auth-local:latest
+  gitlab:
+    # Docker publishes a container's hostname on its networks. The package
+    # sets it to SERVER_DNS, which would shadow the Traefik alias above.
+    hostname: gitlab
+    # Named volumes keep GitLab's data off bind mounts, which Rancher
+    # Desktop shares from the host over sshfs.
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:

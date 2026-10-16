@@ -74,6 +74,7 @@ declared in:
 - `cli/pyproject.toml`
 - `deploy/services/cli/pyproject.toml`
 - `script/docs/mkdocs-requirements.txt`
+- `developer/local-server/requirements.in`
 
 Upstream dependency licences should be consulted in those manifests when
 detailed licence auditing is required.

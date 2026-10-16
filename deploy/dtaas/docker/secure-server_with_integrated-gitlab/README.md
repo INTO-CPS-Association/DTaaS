@@ -151,6 +151,9 @@ Once the GitLab container shows as `healthy`:
 | `https://intocps.org/gitlab` | Integrated GitLab instance |
 | `https://intocps.org/user1` | User 1 workspace (after sign-in) |
 | `https://intocps.org/user2` | User 2 workspace (after sign-in) |
+| `https://intocps.org:<REGISTRY_PORT>/v2/` | Container registry: `401` with `UNAUTHORIZED` |
+
+`REGISTRY_PORT` is set in `config/.env` and defaults to `5050`.
 
 ## Stop
 

@@ -9,6 +9,10 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
       - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.registry.address=:${REGISTRY_PORT:-5050}"
+      # docker push sends each image layer as one request; Traefik's default
+      # 60 s read timeout would cut off large layers.
+      - "--entrypoints.registry.transport.respondingTimeouts.readTimeout=0"
       - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
@@ -17,6 +21,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "${REGISTRY_PORT:-5050}:${REGISTRY_PORT:-5050}"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./config/tls.yml:/etc/traefik/tls.yml"
@@ -158,6 +163,13 @@ services:
         nginx['listen_https'] = false
         nginx['redirect_http_to_https'] = false
         letsencrypt['enable'] = false
+        registry_external_url 'https://${SERVER_DNS}:${REGISTRY_PORT:-5050}'
+        registry_nginx['listen_port'] = ${REGISTRY_PORT:-5050}
+        registry_nginx['listen_https'] = false
+        registry_nginx['proxy_set_headers'] = {
+          "X-Forwarded-Proto" => "https",
+          "X-Forwarded-Ssl" => "on"
+        }
     volumes:
       - './config/gitlab:/etc/gitlab'
       - './logs:/var/log/gitlab'
@@ -172,6 +184,16 @@ services:
       - "traefik.http.routers.gitlab.service=gitlab"
       - "traefik.http.services.gitlab.loadbalancer.server.port=80"
       - "traefik.http.routers.gitlab.tls=true"
+      - "traefik.http.routers.gitlab-registry.entryPoints=registry"
+      - >-
+        traefik.http.routers.gitlab-registry.rule=Host(`${SERVER_DNS:-localhost}`)
+      - "traefik.http.routers.gitlab-registry.service=gitlab-registry"
+      - >-
+        traefik.http.services.gitlab-registry.loadbalancer.server.port=${REGISTRY_PORT:-5050}
+      - "traefik.http.routers.gitlab-registry.tls=true"
+      # Routers without entryPoints, such as client's catch-all rule, also
+      # match on the registry port; the registry router must win there.
+      - "traefik.http.routers.gitlab-registry.priority=1000"
     networks:
       - frontend
 
