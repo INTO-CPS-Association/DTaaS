@@ -44,9 +44,9 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 
 from config import (
-    ACCENT, ACCENT_DARK, COLOURS, DARK_TEXT, EXPORT_WIDTH, GREY_700, LIGHT_BLUE_LINE,
-    LIGHT_LINE, LIGHT_TEXT, LOCKUP, MARK, MARK_ACCENT, NO_MARK, PRIMARY, PRIMARY_DARK,
-    PRIMARY_TINT, RGB, SLATE, WHITE, WHITE_VERSIONS,
+    ACCENT, ACCENT_DARK, COLOURS, DARK_LETTERING, DARK_TEXT, EXPORT_WIDTH, GREY_700,
+    LIGHT_BLUE_LINE, LIGHT_LINE, LIGHT_TEXT, LOCKUP, MARK, MARK_ACCENT, NO_MARK, PRIMARY,
+    PRIMARY_DARK, PRIMARY_TINT, RGB, SEQUENCE_DIAGRAMS, SLATE, WHITE, WHITE_VERSIONS,
 )
 from diagrams import (
     Page, clean_label, dump_style, kind, parse_style, plain_text, size_text, svg_data, svg_image,
@@ -109,14 +109,15 @@ MINOR = {'a', 'an', 'and', 'as', 'at', 'by', 'for', 'in', 'into', 'of', 'on', 'o
 
 # Names written one way on every page, by their lower case form. systemd is
 # written in lower case by its project.
-SPELLING = {'gitlab': 'GitLab', 'webapp': 'WebApp', 'nodejs': 'Node.js', 'systemd': 'systemd'}
+SPELLING = {'gitlab': 'GitLab', 'webapp': 'WebApp', 'nodejs': 'Node.js', 'systemd': 'systemd',
+            'authcode': 'authcode'}
 
 
 LINE_BREAK = re.compile(r'<br|</?div|</?p[\s>]|\n', re.I)
 
 
 # A word with any of these is code, a URL or a path, and keeps its case.
-CODE = re.compile(r'[/:_@=.]\w|^\.')
+CODE = re.compile(r'[/:_@=.]\w|^\.|/$|[\'"]')
 
 
 def title_word(word, first, line_start=False):
@@ -125,8 +126,7 @@ def title_word(word, first, line_start=False):
     A joining word that opens a line after the first keeps the case it was
     written in: "and DTs" continues the line above it, while "On premise"
     starts a description.
-
-"""
+    """
     lead, core, tail = re.match(r'^([(\[]*)(.*?)([)\]\.,;:!?]*)$', word).groups()
     if core.lower() in SPELLING:
         return lead + SPELLING[core.lower()] + tail
@@ -146,7 +146,7 @@ def title_case(label):
     Only the text between tags changes. Each line is a title of its own, as
     a C4 box stacks a name, a type and a description, so the first word of
     every line is capitalised, except a joining word continuing the line
-    above and the rest of a word broken with a hyphen.
+    above and the rest of a word broken with a hyphen, which stays as written.
     """
     first, line_start, broken, text = True, False, False, ''
     pieces = re.split(r'(<[^>]*>|&\w+;|&#\d+;|\n)', label or '')
@@ -159,7 +159,6 @@ def title_case(label):
         words = re.split(r'(\s+)', piece)
         for at, word in enumerate(words):
             if word.strip():
-                # The rest of a word broken with a hyphen stays as written.
                 words[at] = word if broken else title_word(word, first, line_start)
                 first = line_start = broken = False
         pieces[index] = ''.join(words)
@@ -167,23 +166,44 @@ def title_case(label):
     return ''.join(pieces)
 
 
-def holds(outer, inner):
-    """Whether one box lies within another."""
-    return (outer[0] <= inner[0] and outer[1] <= inner[1]
-            and outer[2] >= inner[2] and outer[3] >= inner[3])
+def sentence_case(label):
+    """A label read as a sentence: the first letter capitalised, names spelt once.
+
+    Connector labels are relations ("defines", "may have") and a UML guard is
+    a condition, so neither is a title.
+    """
+    pieces = re.split(r'(<[^>]*>|&\w+;|&#\d+;)', label or '')
+    first = True
+    for index, piece in enumerate(pieces):
+        if not piece or piece.startswith(('<', '&')):
+            continue
+        words = re.split(r'(\s+)', piece)
+        for at, word in enumerate(words):
+            core = word.strip('()[].,;:!?').lower()
+            if core in SPELLING:
+                words[at] = word.replace(word.strip('()[].,;:!?'), SPELLING[core])
+            elif first and word.strip() and not CODE.search(word):
+                lead = len(word) - len(word.lstrip('(['))
+                words[at] = word[:lead] + word[lead:lead + 1].upper() + word[lead + 1:]
+            first = first and not word.strip()
+        pieces[index] = ''.join(words)
+    return ''.join(pieces)
+
+
+def area(box):
+    """The area of a (left, top, right, bottom) box."""
+    return (box[2] - box[0]) * (box[3] - box[1])
 
 
 def ground_fill(page, inner):
     """The fill behind a box: the smallest filled box around it, or the page."""
-    def area(box):
-        return (box[2] - box[0]) * (box[3] - box[1])
     around = []
     for other in page.root:
         style = parse_style(other.get('style'))
         box = page.absolute(other) if other.get('vertex') == '1' else None
         fill = style.get('fillColor', WHITE)
         filled_box = fill.startswith('#') and kind(style, other) == 'box'
-        if box and filled_box and box != inner and holds(box, inner):
+        if box and filled_box and box != inner and contains(box, inner, slack=0):
             around.append((area(box), fill.lower()))
     return min(around)[1] if around else 'default'
 
@@ -299,17 +319,28 @@ def loose_wordmark(group, members, titles):
     return pieces, group.get('id'), pieces[0].get('id'), x, y
 
 
+def remove_once(model, cells, gone):
+    """Remove cells from a model, skipping those an earlier wordmark took.
+
+    Two wordmarks can claim the same title cell, so each goes once.
+    """
+    for cell in cells:
+        if id(cell) not in gone:
+            gone.add(id(cell))
+            model.remove(cell)
+
+
 def replace_wordmarks(root):
     """Put the logo where each old wordmark was."""
     style = svg_image(LOCKUP)
     for model in root.iter('root'):
         # Collected first, because the loop removes cells from the model.
         found = list(old_wordmarks(model))
+        gone = set()
         for group, members, titles in found:
             place = grouped_wordmark if group.find('mxGeometry') is not None else loose_wordmark
             removed, parent, logo_id, x, y = place(group, members, titles)
-            for cell in removed:
-                model.remove(cell)
+            remove_once(model, removed, gone)
             logo = ET.SubElement(model, 'mxCell', {
                 'id': logo_id, 'value': '', 'style': style,
                 'vertex': '1', 'parent': parent,
@@ -324,7 +355,8 @@ def retheme(source, target):
     """Recolour a drawio file, write it, and return the colours left unmapped."""
     root = ET.fromstring(recolour(source.read_text()))
     replace_wordmarks(root)
-    target.write_text(ET.tostring(root, encoding='unicode'))
+    ET.indent(root, space='  ')
+    target.write_text(ET.tostring(root, encoding='unicode') + '\n')
     left = {c.lower() for c in HEX.findall(IMAGE.sub('', target.read_text()))}
     known = set(COLOURS.values()) | {'#000000', WHITE}
     return sorted(left - known)
@@ -394,7 +426,7 @@ def style_edge(style, page):
     style['strokeWidth'] = size_text(page.units(HEAVY_PX if heavy else LINE_PX))
     style.pop('opacity', None)
     for end in ('startArrow', 'endArrow'):
-        if style.get(end) not in (None, 'none'):
+        if style.get(end) not in (None, 'none', 'oval'):
             style[end] = 'classic'
 
 
@@ -409,8 +441,10 @@ def style_shape(style, what, page, boundary):
 
 
 def style_text(style, cell, page):
-    """Set the font, size, weight and colour of a label."""
+    """Set the font, size, weight, colour and wording of a label."""
     fill = flatten(style)
+    if connector_of(cell, page) is not None:
+        fill = style.get('labelBackgroundColor', fill)
     label = cell.get('value') or ''
     style.pop('fontStyle', None)
     if not label:
@@ -418,6 +452,8 @@ def style_text(style, cell, page):
     ground = fill if fill and fill.startswith('#') else WHITE
     dark = luminance(ground) < 0.2
     candidates = [WHITE] if dark else [GREY_700, PRIMARY_DARK]
+    sentence = (connector_of(cell, page) is not None or plain_text(label).startswith('[')
+                or (page.name in SEQUENCE_DIAGRAMS and kind(style, cell) == 'text'))
     style['fontColor'] = text_colour(ground, candidates)
     style['fontFamily'] = 'Inter'
     if plain_text(label).lower() in TITLES:
@@ -425,7 +461,8 @@ def style_text(style, cell, page):
     if page.min_font():
         size = max(int(float(style.get('fontSize', 12))), page.min_font())
         style['fontSize'] = str(size)
-    cell.set('value', title_case(clean_label(label, page.min_font())))
+    wording = sentence_case if sentence else title_case
+    cell.set('value', wording(clean_label(label, page.min_font())))
 
 
 def forward_auth(style, cell):
@@ -454,9 +491,10 @@ def restyle_cell(cell, page, boundary):
         style_edge(style, page)
     elif what in ('box', 'stencil'):
         style_shape(style, what, page, cell is boundary)
-    if what not in ('group', 'edge'):
-        style_text(style, cell, page)
+    # The ground goes first, so the text colour is chosen against it.
     label_ground(style, cell, page)
+    if what != 'group':
+        style_text(style, cell, page)
     cell.set('style', dump_style(style))
 
 
@@ -486,13 +524,10 @@ def remove_notes(page):
 
 def find_boundary(page):
     """Return the largest box on the page, the DTaaS system boundary."""
-    def area(cell):
-        x, y, right, bottom = page.absolute(cell)
-        return (right - x) * (bottom - y)
     boxes = [cell for cell in page.root if cell.get('vertex') == '1'
              and kind(parse_style(cell.get('style')), cell) == 'box'
              and page.absolute(cell)]
-    return max(boxes, key=area, default=None)
+    return max(boxes, key=lambda cell: area(page.absolute(cell)), default=None)
 
 
 def place_mark(page, boundary):
@@ -643,7 +678,9 @@ def role(style, cell):
 def dark_ground(style, what):
     """Darken the fill of a cell and return its new and its old ground."""
     ground = SLATE
-    old_ground = hex_of(style.get('fillColor'), WHITE) if what == 'shape' else WHITE
+    # Text is judged hidden against the ground it is drawn on: its own fill
+    # when it has one, or the white page.
+    old_ground = hex_of(style.get('fillColor'), WHITE) or WHITE
     # A text cell names no fill, except 'default', which drawio paints white.
     named = style.get('fillColor')
     fill = hex_of(named, WHITE if what == 'shape' or named == 'default' else None)
@@ -653,8 +690,9 @@ def dark_ground(style, what):
         # A text box filled to mask a line on the page takes the dark page.
         style['fillColor'] = SLATE
         return SLATE, old_ground
-    if what == 'shape' and is_icon(style):
-        # An icon is drawn in its fill, so a dark one turns light like a line.
+    if what == 'shape' and (is_icon(style) or style.get('strokeColor') == 'none'):
+        # An icon, or a bar with no border, is drawn in its fill, so a dark one
+        # turns light like a line.
         if luminance(fill) < 0.3:
             style['fillColor'] = dark_line(fill)
         return ground, old_ground
@@ -718,6 +756,9 @@ def dark_cell(cell, swaps):
         image = dump_style(style)
         for logo, white in swaps:
             image = image.replace(logo, white)
+        # A logo with dark lettering and no white version gets a light plate.
+        if any(mark in image for mark in DARK_LETTERING):
+            image += f'imageBackground={LIGHT_TEXT};'
         cell.set('style', image)
         return []
     old_text = hex_of(style.get('fontColor'), '#000000') or '#000000'
@@ -786,9 +827,9 @@ def touches(text, box):
     return width > margin and height > margin and not held
 
 
-def contains(outer, inner):
+def contains(outer, inner, slack=SLACK):
     """Whether one box holds another, give or take the slack."""
-    return all(inside(corner, outer, SLACK) for corner in (inner[:2], inner[2:]))
+    return all(inside(corner, outer, slack) for corner in (inner[:2], inner[2:]))
 
 
 def crosses(segment, box):
@@ -909,6 +950,11 @@ def outside(style):
             or style.get('labelPosition', 'center') != 'center')
 
 
+def css_pixels(css, key):
+    """A length in pixels from parsed CSS, or 0 when the property is missing."""
+    return float(css.get(key, '0px').removesuffix('px'))
+
+
 def anchors(svg_root):
     """Where drawio placed each HTML label, read from the SVG it exported.
 
@@ -924,8 +970,8 @@ def anchors(svg_root):
                      if 'padding-top' in (div.get('style') or '')), None)
         if cell and flex is not None and cell not in found:
             css = dict(re.findall(r'([\w-]+):\s*(?:unsafe\s+)?([^;]+);', flex.get('style')))
-            found[cell] = (float(css['margin-left'][:-2]), float(css['padding-top'][:-2]),
-                           float(css['width'][:-2]), css.get('justify-content', 'center'),
+            found[cell] = (css_pixels(css, 'margin-left'), css_pixels(css, 'padding-top'),
+                           css_pixels(css, 'width') or 1, css.get('justify-content', 'center'),
                            css.get('align-items', 'center'))
     return found
 
@@ -983,17 +1029,24 @@ def crossings(estimate, own, boxes, kinds):
     return found
 
 
+def on_lines(estimate, style, cell, lines):
+    """The connectors whose line runs through the letters of a label."""
+    letters = glyphs(widened(estimate), style, cell)
+    return [f'text sits on connector {edge}' for edge, segments in lines.items()
+            if any(crosses(segment, letters) for segment in segments)]
+
+
 def label_rules(cell, own, shapes, lines, estimate):
     """The ways one labelled vertex breaks the label rules.
 
     shapes is a pair: the boxes of the page and what each one draws, both by
-    cell id. A turned label is left out, since its
-    size along the page cannot be estimated from its characters.
+    cell id. A turned label is left out, since its size along the page
+    cannot be estimated from its characters.
     """
     style = parse_style(cell.get('style'))
     what = kind(style, cell)
-    turned = float(style.get('rotation', 0)) % 360 or style.get('horizontal') == '0'
-    if estimate is None or turned:
+    rotated = float(style.get('rotation', 0)) % 360 or style.get('horizontal') == '0'
+    if estimate is None or rotated:
         return []
     if what == 'box' and not outside(style):
         found = [] if contains(own, estimate) else ['label overflows its box']
@@ -1004,9 +1057,7 @@ def label_rules(cell, own, shapes, lines, estimate):
         return []
     found = crossings(widened(estimate), own, *shapes)
     if style.get('labelBackgroundColor', 'none') == 'none':
-        found += [f'text sits on connector {edge}' for edge, segments in lines.items()
-                  if any(crosses(segment, glyphs(widened(estimate), style, cell))
-                         for segment in segments)]
+        found += on_lines(estimate, style, cell, lines)
     return found
 
 
@@ -1016,9 +1067,6 @@ def connector_label_rules(estimate, shapes):
     It masks its own line, so only borders and pictures count.
     """
     return crossings(widened(estimate), None, *shapes) if estimate else []
-
-
-SVG = '{http://www.w3.org/2000/svg}'
 
 
 NUMBER = re.compile(r'-?\d+(?:\.\d+)?')
@@ -1057,6 +1105,8 @@ def segments(d):
     for command, values in re.findall(r'([MLQC])([^MLQC]*)', d):
         numbers = [float(n) for n in NUMBER.findall(values)]
         pairs = list(zip(numbers[::2], numbers[1::2]))
+        if not pairs:
+            continue
         if points and command in 'QC':
             curve = bezier([points[-1], *pairs])
             pieces += [(*piece, False) for piece in zip(curve, curve[1:])]
@@ -1096,7 +1146,11 @@ def svg_offset(svg_root, page):
         if box and abs(size[0] - (box[2] - box[0])) < 1 and abs(size[1] - (box[3] - box[1])) < 1:
             votes[(round(float(shape.get('x')) - box[0], 1),
                    round(float(shape.get('y')) - box[1], 1))] += 1
-    return votes.most_common(1)[0][0] if votes else (0.0, 0.0)
+    if not votes:
+        # Without a shared box the lines cannot be placed on the page, and a
+        # check against a guessed shift would report nonsense.
+        raise SystemExit(f'no box of page {page.name} was found in its SVG')
+    return votes.most_common(1)[0][0]
 
 
 def page_line(d, offset):
@@ -1117,12 +1171,30 @@ def loose(cell, page):
     return not on_edge and (geometry is None or geometry.get('relative') != '1')
 
 
+def turned(box, degrees):
+    """The upright box round a box turned about its centre."""
+    if not degrees % 180:
+        return box
+    angle = math.radians(degrees)
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    half_w, half_h = (box[2] - box[0]) / 2, (box[3] - box[1]) / 2
+    reach_x = abs(half_w * math.cos(angle)) + abs(half_h * math.sin(angle))
+    reach_y = abs(half_w * math.sin(angle)) + abs(half_h * math.cos(angle))
+    return cx - reach_x, cy - reach_y, cx + reach_x, cy + reach_y
+
+
 def page_shapes(page):
-    """The boxes, stencils and images of a page, and what each one draws."""
+    """The boxes, stencils and images of a page, and what each one draws.
+
+    A turned shape is judged by the upright box round it.
+    """
     found, kinds = {}, {}
     for cell in page.root:
+        style = parse_style(cell.get('style'))
         box = page.absolute(cell)
-        what = kind(parse_style(cell.get('style')), cell)
+        if box:
+            box = turned(box, float(style.get('rotation', 0)))
+        what = kind(style, cell)
         if cell.get('vertex') == '1' and box and loose(cell, page) \
                 and what in ('box', 'stencil', 'image'):
             found[cell.get('id')] = box

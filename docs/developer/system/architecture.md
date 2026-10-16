@@ -87,7 +87,7 @@ describes the system as implemented.
 
 The C4 diagram below shows the DTaaS architecture in more detail.
 
-![C4 architectural diagram](research-overview/system-architecture-c4.png){.on-white}
+![C4 architectural diagram](research-overview/system-architecture-c4.png)
 
 The table maps the architectural components to related pages in the
 documentation.

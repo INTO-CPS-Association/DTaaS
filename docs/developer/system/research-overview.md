@@ -69,7 +69,7 @@ The architecture divides the platform into four concern areas:
 - **Workspace isolation**: per-user JupyterLab containers with
   private file systems for authoring and running assets
 
-![System Architecture C4 Diagram](research-overview/system-architecture-c4.png){.on-white}
+![System Architecture C4 Diagram](research-overview/system-architecture-c4.png)
 
 The current codebase implements these areas as follows. The React
 client handles user interaction and itself triggers and monitors the
@@ -79,7 +79,7 @@ the DT runner executes commands inside a workspace. The
 [architecture review](review/architecture-review.md) describes this
 implemented architecture in detail.
 
-![Implementation Status](research-overview/implementation-status.png){.on-white}
+![Implementation Status](research-overview/implementation-status.png)
 
 ## 4. User View
 

@@ -10,7 +10,9 @@ import xml.etree.ElementTree as ET
 import config
 import design
 
-from design import label_ground, title_case, touches, write_dark
+from design import (
+    label_ground, restyle_page, retheme, sentence_case, title_case, touches, write_dark,
+)
 from diagrams import Page, parse_style
 
 
@@ -97,10 +99,15 @@ class ThemeColoursTest(unittest.TestCase):
 PAGE = '''<mxfile><diagram name="docs/x.png"><mxGraphModel><root>
 <mxCell id="0"/><mxCell id="1" parent="0"/>
 <mxCell id="mid" value="Label" style="rounded=0;fillColor=#808080;" vertex="1" parent="1"/>
-<mxCell id="box" value="Label" style="rounded=0;fillColor=#dae8fc;strokeColor=#1e2129;" vertex="1" parent="1"/>
+<mxCell id="box" value="Label"
+ style="rounded=0;fillColor=#dae8fc;strokeColor=#1e2129;" vertex="1" parent="1"/>
 <mxCell id="dim" style="endArrow=none;strokeColor=#3a3f4b;" edge="1" parent="1"/>
-<mxCell id="pkce" value="OAuth2" style="edgeLabel;labelBackgroundColor=default;" vertex="1" parent="1"/>
+<mxCell id="pkce" value="OAuth2"
+ style="edgeLabel;labelBackgroundColor=default;" vertex="1" parent="1"/>
 <mxCell id="note" value="PKCE" style="text;html=1;fillColor=default;" vertex="1" parent="1"/>
+<mxCell id="dark" value="Bus"
+ style="text;fillColor=#002546;fontColor=#ffffff;" vertex="1" parent="1"/>
+<mxCell id="bar" style="rounded=0;fillColor=#333b4c;strokeColor=none;" vertex="1" parent="1"/>
 </root></mxGraphModel></diagram></mxfile>'''
 
 
@@ -146,6 +153,29 @@ class LowContrastTest(unittest.TestCase):
             lines = target.read_text(encoding='utf-8').splitlines()
             note = [line for line in lines if 'id="note"' in line][0]
             self.assertNotIn('fillColor=default', note)
+            self.assertIn(f'fillColor={config.SLATE}', note)
+
+    def test_a_dark_bar_with_no_border_turns_light(self):
+        """A dark bar with no border turns light, like a line."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            source.write_text(PAGE, encoding='utf-8')
+            target = pathlib.Path(scratch) / 'out.drawio'
+            write_dark(source, target)
+            written = target.read_text(encoding='utf-8')
+        cell = written[written.index('id="bar"'):].split('/>')[0]
+        self.assertIn(f'fillColor={config.LIGHT_LINE}', cell)
+
+    def test_white_text_on_a_dark_text_mask_stays_visible(self):
+        """White text on a dark text mask stays visible."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            source.write_text(PAGE, encoding='utf-8')
+            target = pathlib.Path(scratch) / 'out.drawio'
+            write_dark(source, target)
+            written = target.read_text(encoding='utf-8')
+        dark = written[written.index('id="dark"'):].split('/>')[0]
+        self.assertIn(f'fontColor={config.LIGHT_TEXT}', dark)
 
     def test_failures_name_their_page(self):
         """Failures name their page."""
@@ -352,14 +382,14 @@ class LabelTest(unittest.TestCase):
 
     def test_a_label_that_fits_passes(self):
         """A label that fits passes."""
-        cells = box('t', (0, 0, 100, 50), value='Client')
-        self.assertEqual(problems(cells, svg_label('t', 0, 25, width=98)), [])
+        cells = BOXES + box('t', (0, 200, 100, 50), value='Client')
+        self.assertEqual(problems(cells, svg_label('t', 0, 225, width=98)), [])
 
     def test_a_label_wider_than_its_box_is_reported(self):
         """A label wider than its box is reported."""
-        cells = box('t', (0, 0, 100, 50), value='Authorisation Server',
-                    style='fontSize=20;')
-        found = problems(cells, svg_label('t', 0, 25, width=98))
+        cells = BOXES + box('t', (0, 200, 100, 50), value='Authorisation Server',
+                            style='fontSize=20;')
+        found = problems(cells, svg_label('t', 0, 225, width=98))
         self.assertIn(('t', 'label overflows its box'), found)
 
     def test_text_across_a_border_is_reported(self):
@@ -379,6 +409,19 @@ class LabelTest(unittest.TestCase):
         self.assertIn(('t', 'text sits on connector e'), found)
         self.assertEqual(problems(masked, path, svg_label('t', 200, 25)), [])
 
+    def test_text_over_a_picture_is_reported_and_text_beside_it_passes(self):
+        """Text over a picture is reported, and text beside it passes."""
+        logo = box('p', (150, 0, 100, 50), style='shape=image;image=x.svg;')
+        over = BOXES + logo + box('t', (170, 10, 60, 30), value='Gateway', style='text;')
+        beside = BOXES + logo + box('t', (150, 60, 100, 30), value='Gateway', style='text;')
+        self.assertIn(('t', 'text covers the image p'), problems(over, svg_label('t', 200, 25)))
+        self.assertEqual(problems(beside, svg_label('t', 200, 75)), [])
+
+    def test_a_line_beside_a_box_passes(self):
+        """A line beside a box passes."""
+        around = line('e', 'M 50 50 L 50 175 L 350 175 L 350 50')
+        self.assertEqual(problems(BOXES + edge('e', 'a', 'b'), around), [])
+
     def test_a_turned_label_is_left_out(self):
         """A turned label is left out."""
         cells = BOXES + box('t', (260, 10, 80, 30), value='Gateway',
@@ -393,6 +436,109 @@ class TouchesTest(unittest.TestCase):
         """Reaching and held."""
         self.assertTrue(touches((0, 0, 11, 10), (10, -20, 50, 30)))
         self.assertFalse(touches((12, 0, 20, 10), (10, -20, 50, 30)))
+
+
+RESTYLE_PAGE = """<diagram name="docs/r.png"><mxGraphModel><root>
+<mxCell id="0"/><mxCell id="1" parent="0"/>
+<mxCell id="frame" value="" style="rounded=1;fillColor=#002546;" vertex="1" parent="1">
+<mxGeometry x="0" y="0" width="700" height="300" as="geometry"/></mxCell>
+<mxCell id="mask" value="Label" style="text;strokeColor=none;fillColor=#ffffff;" vertex="1"
+ parent="1"><mxGeometry x="100" y="100" width="80" height="30" as="geometry"/></mxCell>
+<mxCell id="a" value="Client" style="rounded=1;fillColor=#ffffff;" vertex="1" parent="1">
+<mxGeometry x="20" y="200" width="80" height="40" as="geometry"/></mxCell>
+<mxCell id="b" value="Server" style="rounded=1;fillColor=#ffffff;" vertex="1" parent="1">
+<mxGeometry x="500" y="200" width="80" height="40" as="geometry"/></mxCell>
+<mxCell id="e" value="may have" style="endArrow=oval;fontFamily=Helvetica;fontColor=#000000;"
+ edge="1" parent="1" source="a" target="b"><mxGeometry relative="1" as="geometry"/></mxCell>
+</root></mxGraphModel></diagram>"""
+
+
+def restyled(times):
+    """The RESTYLE_PAGE page after the restyle ran the given number of times."""
+    diagram = ET.fromstring(RESTYLE_PAGE)
+    for _ in range(times):
+        restyle_page(diagram)
+    return diagram
+
+
+def cell_style(diagram, cell):
+    """The parsed style of a cell of a page."""
+    return parse_style(next(c for c in diagram.iter('mxCell') if c.get('id') == cell).get('style'))
+
+
+class RestyleTest(unittest.TestCase):
+    """The restyle reaches a fixed point and chooses text against its ground."""
+
+    def test_a_second_run_changes_nothing(self):
+        """A second run changes nothing."""
+        self.assertEqual(ET.tostring(restyled(1)), ET.tostring(restyled(2)))
+
+    def test_text_on_a_mask_over_a_dark_box_is_light(self):
+        """Text on a mask over a dark box is light."""
+        style = cell_style(restyled(1), 'mask')
+        self.assertEqual(style['fillColor'], '#002546')
+        self.assertEqual(style['fontColor'], config.WHITE)
+
+    def test_a_connector_label_takes_the_font_and_reads_as_a_sentence(self):
+        """A connector label takes the font and reads as a sentence."""
+        diagram = restyled(1)
+        style = cell_style(diagram, 'e')
+        self.assertEqual(style['fontFamily'], 'Inter')
+        self.assertEqual(style['endArrow'], 'oval')
+        connector = next(c for c in diagram.iter('mxCell') if c.get('id') == 'e')
+        self.assertEqual(connector.get('value'), 'May have')
+
+
+class SentenceCaseTest(unittest.TestCase):
+    """Connector labels and guards capitalise their first letter only."""
+
+    def test_only_the_first_letter_and_names_change(self):
+        """Only the first letter and names change."""
+        self.assertEqual(sentence_case('manage [gitlab runner]'), 'Manage [GitLab runner]')
+        self.assertEqual(sentence_case('[If identity is verified]'), '[If identity is verified]')
+        self.assertEqual(sentence_case('GET authcode (using OAUTH_CLIENT_ID)'),
+                         'GET authcode (using OAUTH_CLIENT_ID)')
+
+    def test_paths_and_quoted_words_keep_their_case(self):
+        """Paths and quoted words keep their case."""
+        self.assertEqual(title_case('copy src/ to "dist"'), 'Copy src/ to "dist"')
+
+
+WORDMARK_PAGE = """<mxfile><diagram name="docs/w.png"><mxGraphModel><root>
+<mxCell id="0"/><mxCell id="1" parent="0"/>
+<mxCell id="g1"
+ style="group;" vertex="1" parent="1">
+<mxGeometry x="0" y="0" width="100" height="40" as="geometry"/></mxCell>
+<mxCell id="g1a" value="&lt;span&gt;emoji&lt;/span&gt;&lt;b&gt;DTaaS&lt;/b&gt;"
+ vertex="1" parent="g1">
+<mxGeometry width="10" height="10" as="geometry"/></mxCell>
+<mxCell id="g2"
+ style="group;" vertex="1" parent="1">
+<mxGeometry x="0" y="100" width="100" height="40" as="geometry"/></mxCell>
+<mxCell id="g2a" value="&lt;span&gt;emoji&lt;/span&gt;&lt;b&gt;DTaaS&lt;/b&gt;"
+ vertex="1" parent="g2">
+<mxGeometry width="10" height="10" as="geometry"/></mxCell>
+<mxCell id="t" value="&lt;b&gt;Digital Twin as a Service&lt;/b&gt;"
+ vertex="1" parent="1">
+<mxGeometry x="0" y="50" width="100" height="20" as="geometry"/></mxCell>
+</root></mxGraphModel></diagram></mxfile>"""
+
+
+class RethemeTest(unittest.TestCase):
+    """The retheme maps colours and replaces every old wordmark once."""
+
+    def test_two_wordmarks_sharing_a_title_are_both_replaced(self):
+        """Two wordmarks sharing a title are both replaced."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            green = '&lt;/b&gt;" style="fillColor=#d5e8d4;" vertex="1" parent="g1"'
+            source.write_text(WORDMARK_PAGE.replace('&lt;/b&gt;" vertex="1" parent="g1"', green))
+            target = pathlib.Path(scratch) / 'out.drawio'
+            self.assertEqual(retheme(source, target), [])
+            text = target.read_text()
+        self.assertEqual(text.count('image=data:image/svg+xml'), 2)
+        self.assertNotIn('Digital Twin as a Service', text)
+        self.assertNotIn('#d5e8d4', text)
 
 
 if __name__ == '__main__':

@@ -66,12 +66,15 @@ do, and the export writes those copies from `docs/assets/brand/png` (see
 
 ## Light and Dark Variants
 
-Every page under `docs/` is exported twice. `write_dark` in `design.py` turns
+Every page under `docs/` is exported twice, except a page in `LIGHT_ONLY`.
+`write_dark` in `design.py` turns
 each light fill, including the white drawio draws when a shape names none, into
 the slate page of the site with a fifth of its own colour, so tints keep their
 hue. Dark lines and dark stencil icons become light, text takes the light or the
 dark text colour by contrast with its new fill, and the DTaaS lockup and the
-GitLab logo become their white versions. Text drawn in the colour of its ground
+GitLab logo become their white versions. The traefik and Docker logos have
+no white version, so they are drawn unchanged on a light plate, listed in
+`DARK_LETTERING`. Text drawn in the colour of its ground
 stays hidden, as it is in the light image. The pages show the pair with
 `#only-light` and `#only-dark`, and the PDF prints the light one.
 
@@ -80,13 +83,9 @@ line or border below 3 to 1 in the dark variant, unless the cell is listed in
 `CONTRAST_EXCEPTIONS` in `config.py` with its reason. The list is
 empty: every dark image meets both minimums.
 
-A page listed in `LIGHT_ONLY` in `config.py` gets no dark variant,
-and the documentation shows its light image with the `{.on-white}` class, on a
-white backing in both schemes. `current-status-developer.png` is there because
-its product logos keep dark lettering that does not read on the slate page.
-`system-architecture-c4.png` and `implementation-status.png` are there because
-their fills code the four layers of ISO 23247, which the slate page would
-leave indistinguishable.
+A page listed in `LIGHT_ONLY` in `config.py` gets no dark variant, and the
+reason for each is written beside it there. Its image is exported on an
+opaque white page, so the slate scheme shows it as it is, on white.
 
 ## Layout Check
 
@@ -152,6 +151,7 @@ them and can be run again on its own output without changing anything.
   | Docker | `img/lib/mscae/Docker.svg` |
   | GitLab | the official logo in the skill's `assets/` |
   | A physical or digital twin | `mxgraph.signs.transportation.car_3` and `mxgraph.ios7.icons.home` |
+  | A twin that is running | `mxgraph.signs.sports.running` |
 
   A UML diagram keeps its stick figure and a C4 diagram its person, since
   they belong to the notation. A product logo, such as Traefik or Keycloak,
@@ -240,176 +240,6 @@ to the pixels the export draws, turns a JPEG into a PNG with a transparent
 background, and stores each logo with a palette, which took the
 file from 3.5 MB to about 750 KB.
 
-These edits were made by hand in drawio, because each one concerns a single
-page and a script for it would be longer than the change:
-
-- The pages were renamed after the image each one replaces.
-- `/lib` instead of `/libms`, `/user1` on user workspace 1, and `intocps.org`
-  instead of `intocps.com`, as the compose files in `deploy/` have them.
-- The service at `/` is `Client` on every page, the name of the `client`
-  service in every compose file.
-- `admin/gitlab/gitlab-integrated-install.png`,
-  `admin/gitlab/gitlab-integrated-runner.png` and
-  `admin/gitlab/gitlab-independent-install.png` gained the Logger at
-  `/logger`, which the secure server packages route. On the independent page
-  Server 2 became narrower so the page stays under 600 units wide, where
-  12-unit text is still 14 pixels.
-- The WebApp picture, a bitmap with its label drawn in another typeface, is
-  the drawio globe icon with an Inter label.
-- Labels were moved clear of lines and frames after the switch to Inter, which
-  is wider than Helvetica. Route labels such as `/logger` and `/auth` sit
-  between two connector lines with space on both sides, and the server tags
-  moved left of the DTaaS mark with a clear gap.
-- `developer/system/multi-domain.png` was laid out again so its labels fit at
-  25 drawio units: the columns are wider, compose, configuration and execution
-  are rows instead of rotated columns, and the label of each stack of cards is
-  on the card in front.
-- A Storage box hidden under the Dashboard of the Generic column of the
-  multi-domain page was removed. It drew nothing.
-
-The pages the documentation does not show follow the same rules, but they were
-not checked label by label for overlaps.
-
-## The Pages Added in October 2026
-
-The drawio files received are kept as they arrived, in `originals/`, so every
-page can be traced back to its source: `2026-10-12_DTaaS-new-theme.drawio`
-for the installation and architecture pages, and
-`2026-10-13_DTaaS_new_theme_more_figures.drawio` with
-`2026-10-13_DTaaS-layers-on-devops.drawio` for the nine pages below. They are
-Git LFS objects and are not published with the site.
-
-Nine pages were added from two drawio files Prasad Talasila shared on 13
-October 2026: `DTaaS_new_theme_more_figures.drawio`, a working canvas with
-several versions of most figures, and `DTaaS-layers-on-devops.drawio`, the
-source of `devops.png`. Each page is the version that matches the image the
-documentation showed before, cut out of the canvas and passed through
-the retheme, restyle and shrink steps. The other
-figures of the canvas stay with Prasad, as they differ from the images in the
-documentation or are not used yet.
-
-Two steps changed for these pages. The retheme maps the colours the new
-figures use, added to `COLOURS` in `config.py`, and replaces a wordmark that
-lies loose on the page instead of in a group. The restyle leaves
-the DTaaS mark off the pages listed in `NO_MARK`, which draw a concept and not
-the DTaaS system, so their largest box is not the DTaaS boundary.
-
-The hand edits, by page:
-
-- `developer/system/architecture.png`: the running figures, the clipboard and
-  the DTs icon were emoji, two of them fetched from an external site. The
-  runners are gone, the clipboard is a note shape and the DTs icon is the
-  drawio users icon. The two boxes on the right are wider and several labels
-  moved off their icons.
-- `developer/system/research-overview/dt-assets-relationship.png` and
-  `dtaas-class-instance.png`: the title written into the picture is gone, as
-  the page text names the figure. In the first, every arrow joins its two
-  boxes and carries its own label, where the sketch split each arrow around a
-  label with loose ends.
-- `developer/system/research-overview/federated-dtaas.png` and
-  `user/digital-twins/asset-relationship.png`: labels moved off the lines.
-- `developer/system/research-overview/dtaas-userview.png`: redrawn in about
-  1000 units instead of 2000, with the data acquisition below the platform,
-  so its labels reach 14 pixels at the column width. Every element and arrow
-  of the sketch is kept.
-- `developer/system/research-overview/dt-assets-relationship.png`,
-  `dtaas-userview.png`, `federated-dtaas.png`,
-  `admin/dtaas/localhost/localhost.png` and three pages not placed yet:
-  Prasad Talasila corrected the line routing and bends in drawio on 13
-  October 2026 (`dtaas-diagrams-changes-diff.drawio`), and the pages are taken
-  from his file as they are. The thin arrows of `federated-dtaas.png` keep his
-  width of 1. The localhost diagram draws no logger, although the localhost
-  package still runs one, because the logger has no use on localhost (Prasad
-  Talasila, 14 October 2026).
-- Every page with GitLab: the cell shows the official logo from the GitLab
-  press kit (<https://about.gitlab.com/press/press-kit/>), the SVG unchanged,
-  in a box of its own proportions centred where the older logo was. The two
-  SVG files are in `.agents/skills/update-docs-diagrams/assets/`. On
-  `admin/gitlab/gitlab-integrated-runner.png` the two curves to the runners
-  start at the right edge of the wider logo.
-- `admin/servers/lib/file-system-layout.png`: redrawn. The sketch put five
-  labelled cards in each of seven folders, up to twelve labels in a row, which
-  no font size makes legible at the column width. Each folder shows the five
-  asset types as coloured squares, and one legend names them.
-- The eight figures added on 14 October 2026, from `lifecycle-phases.png` to
-  `library-assets.png` in the table above, had no drawio source. They are
-  redrawn from the images the documentation showed, keeping every box, arrow
-  and label, and then themed with the retheme, restyle and shrink steps.
-  Each page is at most 1000 units wide, so its text
-  reaches 14 pixels at the column width, and the concept pages are in
-  `NO_MARK`. Illustrations and third-party product logos, such as the wind
-  turbine of `shm-dt-workflow.png` and the service logos of
-  `current-status-developer.png`, are cropped from those images without
-  changing a pixel, apart from a white or pale background made transparent.
-  `user/digital-twins/devops/ui.md` now shows `lifecycle-phases.png`, which
-  was the same drawing as its own copy, `devops-lifecycle.png`.
-- `system-architecture-c4.png` and `implementation-status.png`: redrawn in
-  portrait, 1000 units wide, so their text reaches 14 pixels at the column
-  width. Every element, connection and legend of the original is kept, and
-  some edges enter their shapes from another side. Their fills code the four
-  layers of ISO 23247, and the theme palette has two tints and a grey scale,
-  so after the theme the layer fills are set by hand to a light tint of each
-  original colour: Services `#fdf1d3`, Digital Twin `#ddf0e2`, Data
-  `#fbe1df` and Physical Twin `#ebe3f3`. They are the only fills outside the
-  palette. `developer/system/current-status-developer-c4.png`, the same
-  drawing as `implementation-status.png`, is removed and `current-status.md`
-  shows the redrawn one.
-- `admin/gitlab/gitlab-runner-two-servers.png` and
-  `developer/contributions/docker-check.png` are the pages "Two servers with
-  runners" and "Developer docker setup", placed. On the first, the GitLab logo
-  moved left so the two lines to the runners start at its edge, the runner
-  labels are wider, and three lines that ended above the bus at the old
-  position of traefik end on the bus.
-- On 15 October 2026 the layout check found these, each fixed by hand:
-  - The lines from GitLab to the runners, on `gitlab-integrated-runner.png`
-    and `gitlab-runner-two-servers.png`, and the Evaluate arrow of
-    `asset-relationship.png` were curved or slanted, and run in right
-    angles. The Evaluate arrow ends inside the box above it.
-  - User 1 of `user-interaction-in-federated-DTaaS.png` sent two arrows
-    from one point, and the second leaves lower on its right side.
-  - Labels touched a border, a line or a logo and moved clear of it:
-    OAuth2 PKCE on `localhost.png` and `gitlab-runner-two-servers.png`,
-    OAuth2 Webserver, /user2 on `docker-check.png`, Instantiate, Feed, and
-    DT Execution Manager, User Workspaces and Data and Control on
-    `architecture.png`. Services and Reusable Assets of `architecture.png`
-    sit in a gap narrower than their 20 point text, and are set at 18.
-  - The cards of Graphical Digital Twins take the height of the
-    Heterogeneous Digital Twins ones, so two lines fit.
-  - A Common Services label on `multi-domain.png`, hidden behind the
-    Dashboard and Storage boxes since the original, is removed.
-  - Every arrow of `dtaas-class-instance.png` is grey 700 at the normal
-    width, as its Link arrows were.
-  - The icons follow the table under the design rules: the person on
-    `architecture.png` and `author.png`, the web app on `architecture.png`
-    and `current-status-developer.png`, and the cars and houses of
-    `current-status-developer.png`.
-  - Every label is in Title Case. A joining word that continues the line
-    above, such as "and DTs", keeps its lower case, and "Dashboards" is
-    broken with a hyphen where it does not fit beside its icon.
-- A side-by-side review of every changed image against the one before
-  found more, also fixed by hand:
-  - The runner lines of `gitlab-integrated-runner.png` and
-    `gitlab-runner-two-servers.png` turned on a dashed border. They turn in
-    the gap between the servers, and the remote servers on the second page
-    moved right to widen that gap.
-  - OAuth2 PKCE sat on the border on `localhost.png` and on its arrow on
-    `server.png`, and moved clear of both, with the GitLab URLs below it.
-  - The legend title of `file-system-layout.png` is on one line again.
-  - `architecture.png` shows several users with three copies of the one
-    user icon, as `current-status-developer.png` does.
-  - User 1 of `user-interaction-in-federated-DTaaS.png` sends both arrows
-    from its arm, as one trunk.
-  - Digital Twins in the narrow box of `devops.png` is set at 20.
-  - May Have of `dt-assets-relationship.png` is on two lines, in the gap
-    between Reusable Assets and the configuration box.
-  The layout check now also reports an icon under the label of its box and
-  a connector label that crosses a border or covers a picture.
-- A review of every placed image against the first images, from before the
-  theme work, found more, also fixed by hand:
-  - The red padlock of `dtaas-userview.png` is the outline padlock of the
-    icon set, in the colour of the person beside it.
-  - `secure-server-gitlab/server.png` shows two people, as the first image.
-  - The running figures of the twins on `architecture.png` are back.
-  - The Else line of `design-sequence.png` ends in a circle again.
-  - Mandatory of `asset-relationship.png` and User of
-    `current-status-developer.png` moved clear of the boxes and icons.
+Every edit made by hand after a step, page by page, is recorded in
+[hand-edits.md](hand-edits.md). A restyle run on a whole page undoes them,
+which is why the restyle runs on new or changed pages only.

@@ -20,8 +20,9 @@ The scripts are three files:
 - `scripts/diagrams.py`: reading and writing drawio files, the one command
   and the export.
 
-`docs/assets/diagrams/README.md` lists the pages, the rules and the edits
-made by hand. Run every command from the repository root.
+`docs/assets/diagrams/README.md` lists the pages and the rules, and
+`docs/assets/diagrams/hand-edits.md` the edits made by hand. Run every
+command from the repository root.
 
 ## Steps
 
@@ -71,7 +72,7 @@ made by hand. Run every command from the repository root.
    `config.py`, or it gets the DTaaS mark on its largest box.
 
    Several pages carry edits made by hand after the restyle, listed in
-   `docs/assets/diagrams/README.md`, and running the restyle on the whole
+   `docs/assets/diagrams/hand-edits.md`, and running the restyle on the whole
    file undoes them. Run it on a copy that holds only the new or changed
    page, and bring that page back into `dtaas-diagrams.drawio`. A page edited
    by hand in drawio, keeping the theme, needs no restyle.
@@ -88,7 +89,7 @@ made by hand. Run every command from the repository root.
    page by brightness, and the export writes it beside the light image with a
    `-dark` suffix. A page shows the pair with `#only-light` and `#only-dark`, so
    a new image needs both lines. A page in `LIGHT_ONLY` (in `config.py`) gets no
-   dark variant and is shown with `{.on-white}`.
+   dark variant, and its image keeps its white page.
 
    Before it draws anything, the export runs two checks, which
    `diagrams.py check` also runs on their own:
@@ -119,7 +120,7 @@ made by hand. Run every command from the repository root.
    arrows that kept old corner points, a label that reads as belonging to
    the wrong line, and emoji. The scripts set colours, fonts and sizes, and
    a larger font can need a box moved by hand. Fix the page in drawio,
-   export again, and add the hand edit to `docs/assets/diagrams/README.md`.
+   export again, and add the hand edit to `docs/assets/diagrams/hand-edits.md`.
 
 1. **Check the result.** Every exported PNG is a Git LFS pointer
    (`git lfs ls-files`), the images read on the light and the dark scheme of

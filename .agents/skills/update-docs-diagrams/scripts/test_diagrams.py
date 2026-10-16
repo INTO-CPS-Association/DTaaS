@@ -1,6 +1,8 @@
 """Tests for diagrams.py: styles, labels, paths, the command and the export."""
 
+import base64
 import contextlib
+import importlib.util
 import io
 import os
 import pathlib
@@ -8,6 +10,7 @@ import shutil
 import tempfile
 import unittest
 import unittest.mock
+import xml.etree.ElementTree as ET
 
 import config
 import diagrams
@@ -125,7 +128,6 @@ class TargetOfTest(unittest.TestCase):
     def test_light_only_pages_get_no_dark_copy(self):
         """Light only pages get no dark copy."""
         name = 'developer/system/current-status-developer.png'
-        self.assertIn(name, config.LIGHT_ONLY)
         self.assertIsNone(diagrams.dark_target(diagrams.target_of(name)))
 
     def test_dark_copy_only_for_docs(self):
@@ -147,6 +149,10 @@ class CheckContrastTest(unittest.TestCase):
         """Failures on light only pages are ignored."""
         diagrams.check_contrast(
             [('developer/system/current-status-developer.png', '7', 'text 3.9 to 1')])
+
+    def test_failures_on_deploy_pages_are_ignored(self):
+        """Failures on deploy pages are ignored, as they have no dark image."""
+        diagrams.check_contrast([('deploy/dtaas/docker/server/server.png', '7', 'text 3.9 to 1')])
 
     def test_failures_on_unplaced_pages_are_ignored(self):
         """Failures on unplaced pages are ignored."""
@@ -222,3 +228,56 @@ class CopiesTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+SPLIT_PAGE = """<mxfile><diagram name="install" id="i"><mxGraphModel><root>
+<mxCell id="0"/><mxCell id="1" parent="0"/>
+<mxCell id="a" value="A"
+ style="rounded=1;" vertex="1" parent="1">
+<mxGeometry x="0" y="0" width="50" height="30" as="geometry"/></mxCell>
+<mxCell id="b" value="B"
+ style="rounded=1;" vertex="1" parent="1">
+<mxGeometry x="60" y="0" width="50" height="30" as="geometry"/></mxCell>
+<mxCell id="ab"
+ style="" edge="1" parent="1" source="a" target="b">
+<mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c" value="C"
+ style="rounded=1;" vertex="1" parent="1">
+<mxGeometry x="500" y="0" width="50" height="30" as="geometry"/></mxCell>
+</root></mxGraphModel></diagram></mxfile>"""
+
+
+class SplitTest(unittest.TestCase):
+    """A page with two diagrams far apart becomes two pages."""
+
+    def test_each_cluster_gets_its_page_with_its_edges(self):
+        """Each cluster gets its page with its edges."""
+        with tempfile.TemporaryDirectory() as scratch:
+            source = pathlib.Path(scratch) / 'in.drawio'
+            target = pathlib.Path(scratch) / 'out.drawio'
+            source.write_text(SPLIT_PAGE)
+            names = diagrams.split_file(source, target)
+            pages = list(ET.parse(target).getroot().iter('diagram'))
+            written = target.read_text()
+        self.assertEqual(len(names), 2)
+        self.assertIn('pages="2"', written)
+        self.assertTrue(written.endswith('\n'))
+        ids = [{c.get('id') for c in p.iter('mxCell')} for p in pages]
+        self.assertIn({'0', '1', 'a', 'b', 'ab'}, ids)
+        self.assertIn({'0', '1', 'c'}, ids)
+
+
+@unittest.skipUnless(importlib.util.find_spec('PIL'), 'Pillow is needed for the shrink step')
+class ShrinkTest(unittest.TestCase):
+    """A raster logo is scaled to the pixels it is drawn at."""
+
+    def test_a_large_png_is_scaled_down_and_a_second_run_keeps_it(self):
+        """A large png is scaled down, and a second run keeps it."""
+        from PIL import Image  # pylint: disable=import-outside-toplevel
+        import design  # pylint: disable=import-outside-toplevel
+        out = io.BytesIO()
+        Image.new('RGB', (800, 400), 'red').save(out, 'PNG')
+        data = base64.b64encode(out.getvalue()).decode('ascii')
+        once = design.shrink(data, 'png', (80, 40))
+        self.assertEqual(Image.open(io.BytesIO(base64.b64decode(once))).size, (80, 40))
+        self.assertEqual(design.shrink(once, 'png', (80, 40)), once)

@@ -1,8 +1,10 @@
-"""Everything a maintainer edits: paths, page lists, sizes and the theme colours.
+"""The paths, page lists, sizes and theme colours a maintainer edits.
 
-Paths are resolved from this file, so the scripts run from any directory. The
-brand colours are read from `client/src/theme/tokens.ts`, the authoritative
-source, and test_design.py checks that the colours repeated here and in the
+The word lists of the wording rules (TITLES, MINOR and SPELLING) stay beside
+the rules in design.py, since they are read only there. Paths are resolved
+from this file, so the scripts run from any directory. The brand colours are
+read from `client/src/theme/tokens.ts`, the authoritative source, and
+test_design.py checks that the colours repeated here and in the
 site stylesheets still match it. COLOURS maps every colour the original
 drawio files use to a theme colour.
 """
@@ -47,6 +49,19 @@ WHITE_VERSIONS = [
     (ASSETS / 'gitlab-logo-100-rgb.svg', ASSETS / 'gitlab-logo-200-rgb.svg'),
 ]
 
+# Sequence diagrams, whose loose text annotates a message, as the label of an
+# arrow does, so it reads as a sentence and not as a title.
+SEQUENCE_DIAGRAMS = {
+    'developer/technical-concepts/oauth/design-sequence.png',
+    'developer/technical-concepts/oauth/oauth2-workflow.png',
+}
+
+# Logos drawn with dark lettering that have no white version to swap in. The
+# dark variant draws them on a light plate, unchanged. A cell matches when its
+# style holds one of these strings: the drawio library path of the Docker logo,
+# or the darkLettering key set on the cells that embed the traefik logo.
+DARK_LETTERING = ('img/lib/mscae/Docker.svg', 'darkLettering=1')
+
 
 # The narrowest content column of the documentation theme, in CSS pixels.
 # Text is sized so it reaches MIN_TEXT_PX when a page is shown this wide.
@@ -59,6 +74,9 @@ MIN_TEXT_PX = 14
 # Every image is drawn this many pixels wide: twice the widest content column
 # of the documentation, so it stays sharp on a high density screen.
 EXPORT_WIDTH = 1600
+
+# The empty margin, in pixels, the export leaves round each image.
+BORDER = 8
 
 
 # Pages that draw a concept and not the DTaaS system, so their largest box is
@@ -132,6 +150,10 @@ LAYOUT_EXCEPTIONS = {
        for cell in (1117, 1118, 1119, 1120)},
     **{('developer/system/research-overview/dtaas-userview.png', f'u-net-l{line}'):
        NETWORK_ICON for line in range(4)},
+    # The two bars mark the boundaries between the lifecycle phases, and the
+    # arrows from one phase to the next cross them on purpose.
+    **{('developer/system/research-overview/lifecycle-phases.png', edge):
+       'an arrow crossing a phase boundary' for edge in ('c12', 'c13', 'c15', 'c16')},
 }
 
 
@@ -205,6 +227,13 @@ ACCENT_DARK = '#00807a'
 
 
 ACCENT_TINT = '#d9f2f1'
+
+# Two more light fills, so a figure that codes kinds of things by colour has
+# one tint per kind: data in a light cyan, the tint of the data swatch of
+# file-system-layout.png, and an end or a failure in a light tint of the error
+# colour.
+DATA_TINT = '#cde7f2'
+ERROR_TINT = '#f4dedd'
 
 
 # The theme greys are hsl(220, ...) in tokens.ts. drawio wants hex.

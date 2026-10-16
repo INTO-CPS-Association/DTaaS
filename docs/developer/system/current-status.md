@@ -4,11 +4,11 @@ DTaaS is a monorepo under active development. It has deployment
 scenarios meant for production use, and work continues on execution
 automation, reusable assets and contributor tooling.
 
-![Current development status](current-status-developer.png){.on-white}
+![Current development status](current-status-developer.png)
 
 The C4 diagram shows the same status in more detail.
 
-![Implementation status, C4 diagram](research-overview/implementation-status.png){.on-white}
+![Implementation status, C4 diagram](research-overview/implementation-status.png)
 
 ## Platform Snapshot
 

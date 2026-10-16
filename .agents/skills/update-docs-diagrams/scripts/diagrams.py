@@ -45,7 +45,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 
 from config import (
-    CONTRAST_EXCEPTIONS, DEPLOY_COPIES, DISPLAY_WIDTH, DOCS, EXPORT_WIDTH, FREE_FORM,
+    BORDER, CONTRAST_EXCEPTIONS, DEPLOY_COPIES, DISPLAY_WIDTH, DOCS, EXPORT_WIDTH, FREE_FORM,
     LAYOUT_EXCEPTIONS, LIGHT_ONLY, LOGOS, LOGO_PAGES, MIN_TEXT_PX, REPO, SOURCE,
 )
 
@@ -169,7 +169,15 @@ def rewrite_pages(source, target, change):
     tree = ET.parse(source)
     for diagram in tree.getroot().iter('diagram'):
         change(diagram)
-    tree.write(target, encoding='unicode')
+    write_drawio(tree, target)
+
+
+def write_drawio(tree, target):
+    """Write a drawio file one element per line, with its page count and a last newline."""
+    root = tree.getroot()
+    root.set('pages', str(len(root.findall('diagram'))))
+    ET.indent(tree, space='  ')
+    pathlib.Path(target).write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
 
 
 class Page:
@@ -185,7 +193,9 @@ class Page:
         self.cells = {c.get('id'): c for c in self.root}
         boxes = [self.absolute(c) for c in self.root if c.get('vertex') == '1']
         boxes = [b for b in boxes if b]
-        self.width = max(b[2] for b in boxes) - min(b[0] for b in boxes)
+        # A page with no boxes is drawn at the column width.
+        width = max(b[2] for b in boxes) - min(b[0] for b in boxes) if boxes else 0
+        self.width = width or DISPLAY_WIDTH
         self.units_per_px = self.width / DISPLAY_WIDTH
         self.placed = self.name.endswith('.png')
 
@@ -341,7 +351,7 @@ def split_file(source, target):
     pages = [p for d in tree.getroot().iter('diagram') for p in split(d)]
     out = ET.Element('mxfile', {'host': 'drawio', 'pages': str(len(pages))})
     out.extend(pages)
-    target.write_text(ET.tostring(out, encoding='unicode'))
+    write_drawio(ET.ElementTree(out), target)
     return [page.get('name') for page in pages]
 
 
@@ -383,16 +393,30 @@ def dark_target(target):
     return target.with_name(f'{target.stem}-dark{target.suffix}')
 
 
-def check_contrast(failures):
-    """Stop the export when a placed page has an unlisted contrast failure."""
-    unlisted = [(page, cell, problem) for page, cell, problem in failures
-                if target_of(page) and dark_target(target_of(page))
-                and (page, cell) not in CONTRAST_EXCEPTIONS]
+def has_dark_image(page):
+    """Whether a page is exported with a dark variant: placed under docs/, not LIGHT_ONLY."""
+    target = target_of(page)
+    return bool(target and dark_target(target))
+
+
+def stop_on(problems, exceptions, what, hint):
+    """Print the problems not listed as exceptions, and stop when there are any."""
+    unlisted = [problem for problem in problems if problem[:2] not in exceptions]
     for page, cell, problem in unlisted:
-        print(f'low contrast on {page}, cell {cell}: {problem}')
+        print(f'{what} on {page}, cell {cell}: {problem}')
     if unlisted:
-        raise SystemExit(f'{len(unlisted)} cells below the contrast minimums, '
-                         'fix them in drawio or list them in CONTRAST_EXCEPTIONS')
+        raise SystemExit(f'{len(unlisted)} {what} problems, {hint}')
+
+
+def check_contrast(failures):
+    """Stop the export on an unlisted contrast failure of a page with a dark image.
+
+    Pages under deploy/ and LIGHT_ONLY pages have no dark image, so their
+    dark cells are not judged.
+    """
+    failures = [failure for failure in failures if has_dark_image(failure[0])]
+    stop_on(failures, CONTRAST_EXCEPTIONS, 'contrast',
+            'fix them in drawio or list them in CONTRAST_EXCEPTIONS')
     print('every dark variant meets the contrast minimums')
 
 
@@ -418,11 +442,13 @@ def draw(drawio, source, number, target, form='png'):
     The SVG keeps the scale of the drawio file, so the layout check can
     compare its lines with the cells.
     """
-    width = ['--width', str(EXPORT_WIDTH)] if form == 'png' else []
+    size = ['--width', str(EXPORT_WIDTH), '--border', str(BORDER)] if form == 'png' else []
     # drawio numbers pages from 1.
-    subprocess.run([drawio, '-x', '-f', form, '--theme', 'light', *width,
-                    '-p', str(number), '-o', str(target), str(source)],
-                   check=True, capture_output=True)
+    result = subprocess.run([drawio, '-x', '-f', form, '--theme', 'light', *size,
+                             '-p', str(number), '-o', str(target), str(source)],
+                            check=False, capture_output=True, text=True)
+    if result.returncode:
+        raise SystemExit(f'drawio could not export page {number}: {result.stderr.strip()}')
 
 
 def check_layout(drawio, scratch):
@@ -437,12 +463,8 @@ def check_layout(drawio, scratch):
             draw(drawio, SOURCE, number, svg, form='svg')
             problems += check_page(diagram, svg.read_text(encoding='utf-8'),
                                    connectors=name not in FREE_FORM)
-    unlisted = [problem for problem in problems if problem[:2] not in LAYOUT_EXCEPTIONS]
-    for page, cell, problem in unlisted:
-        print(f'layout on {page}, cell {cell}: {problem}')
-    if unlisted:
-        raise SystemExit(f'{len(unlisted)} layout problems, fix them in drawio '
-                         'or list them in LAYOUT_EXCEPTIONS')
+    stop_on(problems, LAYOUT_EXCEPTIONS, 'layout',
+            'fix them in drawio or list them in LAYOUT_EXCEPTIONS')
     print('every placed page meets the layout rules')
 
 
@@ -459,10 +481,9 @@ def check_all():
     """Run the contrast and the layout checks without drawing any image."""
     # design.py reads drawio files through this one, so it is imported here.
     from design import write_dark  # pylint: disable=import-outside-toplevel
-    drawio = located_drawio()
     with tempfile.TemporaryDirectory() as scratch:
         check_contrast(write_dark(SOURCE, pathlib.Path(scratch) / 'dark.drawio'))
-        check_layout(drawio, pathlib.Path(scratch))
+        check_layout(located_drawio(), pathlib.Path(scratch))
 
 
 def export_all():
