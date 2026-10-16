@@ -12,9 +12,11 @@ identity provider signs them in.
 
 ## Writes From the Client, and Jupyter XSRF Protection
 
-The Building Models page writes a converted model back into the user's library
-through the workspace's own Jupyter Contents API. This is the only place where
-the web client writes to a workspace.
+The workspace installation packages configure the web client to offer only
+the Workbench page. With the `full` profile, the Building Models page writes a
+converted model back into the user's library through the workspace's own
+Jupyter Contents API. This is the only place where the web client writes to a
+workspace.
 
 The Jupyter server can guard writes with a token that it sets as the `_xsrf`
 cookie and expects echoed in an `X-XSRFToken` header. **The workspace image

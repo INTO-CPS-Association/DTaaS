@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { ReactNode, Suspense, lazy } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
@@ -16,6 +16,7 @@ import NotFound from 'page/NotFound';
 import Automation from 'route/automation/Automation';
 import Insights from 'route/insights/Insights';
 import InsightsConfig from 'route/insights/InsightsConfig';
+import { Feature, Profile, getProfile, isFeatureEnabled } from 'util/profile';
 
 /**
  * The only route loaded on demand.
@@ -27,7 +28,20 @@ import InsightsConfig from 'route/insights/InsightsConfig';
  */
 const Bim = lazy(() => import('route/bim/Bim'));
 
-export const routes = [
+/**
+ * A route, and the feature it belongs to. Routes without a feature, the sign
+ * in page, the configuration check and the catch-all, are in every profile.
+ */
+interface AppRoute {
+  path: string;
+  element: ReactNode;
+  feature?: Feature;
+}
+
+/** A route as the router takes it. */
+export type RouteEntry = Pick<AppRoute, 'path' | 'element'>;
+
+const allRoutes: AppRoute[] = [
   {
     path: '/',
     element: (
@@ -54,6 +68,7 @@ export const routes = [
   },
   {
     path: 'library',
+    feature: 'library',
     element: (
       <PrivateRoute>
         <Library />
@@ -62,6 +77,7 @@ export const routes = [
   },
   {
     path: 'digitaltwins',
+    feature: 'digitaltwins',
     element: (
       <PrivateRoute>
         <DigitalTwins />
@@ -70,6 +86,7 @@ export const routes = [
   },
   {
     path: 'automation',
+    feature: 'automation',
     element: (
       <PrivateRoute>
         <Automation />
@@ -78,6 +95,7 @@ export const routes = [
   },
   {
     path: 'bim',
+    feature: 'bim',
     element: (
       <PrivateRoute>
         {/* The fallback is what a person sees while the renderer downloads. */}
@@ -89,6 +107,7 @@ export const routes = [
   },
   {
     path: 'account',
+    feature: 'account',
     element: (
       <PrivateRoute>
         <Account />
@@ -97,6 +116,7 @@ export const routes = [
   },
   {
     path: 'workbench',
+    feature: 'workbench',
     element: (
       <PrivateRoute>
         <WorkBench />
@@ -105,6 +125,7 @@ export const routes = [
   },
   {
     path: 'preview/digitaltwins',
+    feature: 'digitaltwins',
     element: (
       <PrivateRoute>
         <DigitalTwinsPreview />
@@ -113,6 +134,7 @@ export const routes = [
   },
   {
     path: 'preview/library',
+    feature: 'library',
     element: (
       <PrivateRoute>
         <LibraryPreview />
@@ -121,6 +143,7 @@ export const routes = [
   },
   {
     path: 'insights/measure',
+    feature: 'insights',
     element: (
       <PrivateRoute>
         <Measurement />
@@ -129,6 +152,7 @@ export const routes = [
   },
   {
     path: 'insights',
+    feature: 'insights',
     element: (
       <PrivateRoute>
         <Insights />
@@ -137,6 +161,7 @@ export const routes = [
   },
   {
     path: 'insights/config',
+    feature: 'insights',
     element: (
       <PrivateRoute>
         <InsightsConfig role="user" />
@@ -145,6 +170,7 @@ export const routes = [
   },
   {
     path: 'insights/developer',
+    feature: 'insights',
     element: (
       <PrivateRoute>
         <InsightsConfig role="developer" />
@@ -153,6 +179,7 @@ export const routes = [
   },
   {
     path: 'insights/log',
+    feature: 'insights',
     element: (
       <PrivateRoute>
         <LogViewer />
@@ -166,5 +193,17 @@ export const routes = [
     element: <NotFound />,
   },
 ];
+
+/**
+ * The routes a profile offers, in their original order, so the catch-all
+ * stays last. An address whose feature is off falls through to it.
+ */
+export function routesFor(profile: Profile): RouteEntry[] {
+  return allRoutes
+    .filter(({ feature }) => !feature || isFeatureEnabled(feature, profile))
+    .map(({ path, element }) => ({ path, element }));
+}
+
+export const routes = routesFor(getProfile());
 
 export default routes;

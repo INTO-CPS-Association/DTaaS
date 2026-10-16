@@ -14,6 +14,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { useSignOut } from 'util/auth/Authentication';
 import MenuToolbar from 'page/MenuToolbar';
+import runWithProfile from 'test/profile.testUtil';
 
 // test/__mocks__/unit/page_mocks.tsx replaces the MUI Toolbar with an empty div
 // for every unit test, so nothing inside the bar renders. This file is about
@@ -82,5 +83,44 @@ describe('MenuToolbar Sign Out', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /Logout/ }));
 
     expect(signOut).not.toHaveBeenCalled();
+  });
+});
+
+describe('MenuToolbar account entry', () => {
+  beforeEach(() => {
+    (useSignOut as jest.Mock).mockReturnValue(signOut);
+    (useAuth as jest.Mock).mockReturnValue(auth);
+  });
+
+  describe('in the full profile', () => {
+    runWithProfile('full');
+
+    it('Offers Account and Logout', () => {
+      renderToolbar();
+
+      expect(
+        screen.getByRole('menuitem', { name: /Account/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('menuitem', { name: /Logout/ }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('in the workbench profile', () => {
+    runWithProfile('workbench');
+
+    // The account settings configure logging and measurement, which belong
+    // to pages the workbench profile does not offer.
+    it('Offers Logout but not Account', () => {
+      renderToolbar();
+
+      expect(
+        screen.queryByRole('menuitem', { name: /Account/ }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('menuitem', { name: /Logout/ }),
+      ).toBeInTheDocument();
+    });
   });
 });

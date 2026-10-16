@@ -11,7 +11,7 @@ oauth2:
 staticClients:
   - id: mock
     redirectURIs:
-      - 'http://localhost/Library'
+      - 'http://localhost/workbench'
     name: 'DTaaS'
     public: true
 enablePasswordDB: true

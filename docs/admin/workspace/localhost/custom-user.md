@@ -52,8 +52,8 @@ Open <http://localhost> in a web browser.
 Sign in with the new user credentials from the Dex configuration file
 (`config/dex-config.yaml`).
 
-All DTaaS functionality except the DevOps features is available
-through the single page client.
+The Workbench page of the single page client opens the tools
+running in your workspace.
 
 ## Documentation
 

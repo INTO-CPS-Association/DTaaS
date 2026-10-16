@@ -12,6 +12,7 @@ import {
 } from '@into-cps-association/dt-automation';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
 import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
+import { usesDtAutomation } from 'util/profile';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -39,8 +40,10 @@ function storeCredentials(
   // Cleared and not simply left alone, so a session that ends, or a move to a
   // public route, does not leave the last credentials in the package for the
   // life of the document. A session with no user clears them too, and the
-  // route state above turns that into the sign-in redirect.
-  if (!isAuthenticated || !user) {
+  // route state above turns that into the sign-in redirect. A profile whose
+  // pages do not use dt-automation clears them too: the package never
+  // needs them there, so it is never handed them.
+  if (!isAuthenticated || !user || !usesDtAutomation()) {
     clearAccessToken();
     clearUsername();
     return;
@@ -66,7 +69,7 @@ function renderRouteState(
     authenticated: (
       <>
         {children}
-        <ExecutionHistoryLoader />
+        {usesDtAutomation() && <ExecutionHistoryLoader />}
       </>
     ),
   };

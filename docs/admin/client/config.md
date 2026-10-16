@@ -17,6 +17,7 @@ The options are set in `env.js`, which defines `window.env`.
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
       LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
+      REACT_APP_PROFILE: "full | workbench"(optional, defaults to full),
     };
   };
 
@@ -67,3 +68,13 @@ by default, and users turn them on in their account settings. When
 `LOGGER_URL` is empty or missing, enabled logging keeps events in the
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
+
+`REACT_APP_PROFILE` is optional and selects the pages the website offers.
+`full`, the default, offers every page. `workbench` offers only the
+Workbench page, for installations that run user workspaces without a
+GitLab instance, such as the workspace installation packages. A signed-in
+user who opens any other page sees the page-not-found message, and the
+account settings are not offered. An empty value is also `full`. Any
+other value is treated as `full`, and the configuration check reports it
+as an error; the check lists the key only when it is set. With
+`workbench`, `REACT_APP_REDIRECT_URI` must end in `/workbench`.

@@ -129,6 +129,23 @@ describe('configUtil', () => {
       expect(results.REACT_APP_CLIENT_ID.value).toEqual('mockedClientID');
     });
 
+    test.each([
+      [undefined, undefined],
+      ['', true],
+      ['full', true],
+      ['workbench', true],
+      ['Workbench', false],
+    ])(
+      'getValidationResult PROFILE %p is valid: %p',
+      async (profile, valid) => {
+        globalThis.env.REACT_APP_PROFILE = profile;
+        const result = (await getValidationResults()).REACT_APP_PROFILE;
+        // A missing key is the default profile, so it is not listed at all.
+        if (valid === undefined) expect(result).toBeUndefined();
+        else expect(result.error === undefined).toBe(valid);
+      },
+    );
+
     test('getValidationResult LOGGER_URL validates when configured', async () => {
       globalThis.env.LOGGER_URL = 'https://logger.example.com';
       enableRemoteLogging();

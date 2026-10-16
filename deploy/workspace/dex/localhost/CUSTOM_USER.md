@@ -51,8 +51,8 @@ The application will be accessible at:
 <http://localhost> from web browser.
 Sign in using the new user credentials in Dex configuration file (`config/dex-config.yaml`).
 
-All the functionality of DTaaS should be available to you
-through the single page client now.
+The Workbench page of the single page client opens the tools
+running in your workspace.
 
 ## Documentation
 

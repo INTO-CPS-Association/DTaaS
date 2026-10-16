@@ -12,7 +12,7 @@ import { ITabs } from 'route/IData';
 import store from 'store/store';
 import AppProvider from 'AppProvider';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import routes from 'routes';
+import routes, { RouteEntry } from 'routes';
 import { mockAuthState, mockAuthStateType } from 'test/__mocks__/global_mocks';
 import { configureStore } from '@reduxjs/toolkit';
 import {
@@ -79,14 +79,14 @@ export const previewStore = configureStore({
     }),
 });
 
-const renderWithAppProvider = (route: string) => {
+const renderWithAppProvider = (route: string, routeList: RouteEntry[]) => {
   globalThis.history.pushState({}, 'Test page', route);
   return render(
     AppProvider({
       children: (
         <MemoryRouter initialEntries={[route]}>
           <Routes>
-            {routes.map((routeElement) => (
+            {routeList.map((routeElement) => (
               <Route
                 path={routeElement.path}
                 element={routeElement.element}
@@ -104,6 +104,7 @@ const renderWithAppProvider = (route: string) => {
 export async function setupIntegrationTest(
   route: string,
   authState?: mockAuthStateType,
+  routeList: RouteEntry[] = routes,
 ) {
   cleanup();
   const returnedAuthState = authState ?? mockAuthState;
@@ -120,7 +121,10 @@ export async function setupIntegrationTest(
   } else {
     store.dispatch({ type: 'auth/setUserName', payload: undefined });
   }
-  const container = await act(async () => renderWithAppProvider(route));
+  const renderRoute = () => renderWithAppProvider(route, routeList);
+  // Async on purpose, with nothing to await: an async callback makes act also
+  // flush the updates the render schedules through promises.
+  const container = await act(async () => renderRoute()); // NOSONAR
   return container;
 }
 
