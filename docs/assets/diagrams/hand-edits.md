@@ -233,3 +233,9 @@ The hand edits, by page:
   - `dtaas-userview.png` has the user icon moved 5 units to the right.
   - `gitlab-runner-two-servers.png` reads `https://intocps.com/gitlab`
     under Server 2.
+- `shm-dt-workflow.png` shows the wind turbines of
+  `system-architecture.png` and `DTaaS-user-view.png`, in place of the three
+  crops of the old picture, so the turbine is the same icon on every page.
+  Three vibration sensors sit on the tower as red dots outlined in white, and
+  the sensor legend moved below the turbines, clear of the line that leaves
+  the tower.

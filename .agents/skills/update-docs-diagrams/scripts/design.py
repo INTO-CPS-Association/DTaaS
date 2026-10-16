@@ -747,6 +747,36 @@ def dark_details(style, what):
         style['labelBackgroundColor'] = dark_fill(hex_of(ground, None))
 
 
+SVG_IMAGE = re.compile(r'(image=data:image/svg\+xml,)([A-Za-z0-9+/=]+)')
+
+
+SVG_FILL = re.compile(r'(fill[=:]\s*"?)(#[0-9a-fA-F]{6})')
+
+
+def light_svg(image):
+    """An embedded SVG drawn only in dark colours, redrawn light like a line.
+
+    An icon whose every colour falls below the line minimum on the slate
+    page, such as the navy wind turbines, would vanish there. An SVG with any
+    colour that stands out, such as a brand blue, is left as it is.
+    """
+    def relight(match):
+        svg = base64.b64decode(match.group(2)).decode('utf-8')
+        fills = {colour.lower() for _, colour in SVG_FILL.findall(svg)}
+        if not fills or any(contrast(colour, SLATE) >= LINE_MINIMUM for colour in fills):
+            return match.group(0)
+        svg = SVG_FILL.sub(lambda m: m.group(1) + dark_line(m.group(2).lower()), svg)
+        return match.group(1) + base64.b64encode(svg.encode('utf-8')).decode('ascii')
+    return SVG_IMAGE.sub(relight, image)
+
+
+def light_image(image, swaps):
+    """An image style with its logos in their white versions and dark icons lit."""
+    for logo, white in swaps:
+        image = image.replace(logo, white)
+    return light_svg(image)
+
+
 def dark_cell(cell, swaps):
     """Turn one cell into its dark variant, and return its contrast failures."""
     style = parse_style(cell.get('style'))
@@ -754,9 +784,7 @@ def dark_cell(cell, swaps):
     if what == 'group':
         return []
     if what == 'image':
-        image = dump_style(style)
-        for logo, white in swaps:
-            image = image.replace(logo, white)
+        image = light_image(dump_style(style), swaps)
         # A logo with dark lettering and no white version gets a light plate.
         if any(mark in image for mark in DARK_LETTERING):
             image += f'imageBackground={LIGHT_TEXT};'

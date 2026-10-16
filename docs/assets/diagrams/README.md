@@ -74,7 +74,9 @@ hue. Dark lines and dark stencil icons become light, text takes the light or the
 dark text colour by contrast with its new fill, and the DTaaS lockup and the
 GitLab logo become their white versions. The traefik and Docker logos have
 no white version, so they are drawn unchanged on a light plate, listed in
-`DARK_LETTERING`. Text drawn in the colour of its ground
+`DARK_LETTERING`. An embedded SVG whose every colour falls below 3 to 1 on
+slate, such as the navy wind turbines, is redrawn in the light line colour.
+Text drawn in the colour of its ground
 stays hidden, as it is in the light image. The pages show the pair with
 `#only-light` and `#only-dark`, and the PDF prints the light one.
 

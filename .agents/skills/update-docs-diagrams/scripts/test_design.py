@@ -1,5 +1,6 @@
 """Tests for design.py, its layout check, and the theme colours in config.py."""
 
+import base64
 import colorsys
 import pathlib
 import re
@@ -11,7 +12,8 @@ import config
 import design
 
 from design import (
-    label_ground, restyle_page, retheme, sentence_case, title_case, touches, write_dark,
+    label_ground, light_svg, restyle_page, retheme, sentence_case, title_case, touches,
+    write_dark,
 )
 from diagrams import Page, parse_style
 
@@ -166,6 +168,20 @@ class LowContrastTest(unittest.TestCase):
             written = target.read_text(encoding='utf-8')
         cell = written[written.index('id="bar"'):].split('/>')[0]
         self.assertIn(f'fillColor={config.LIGHT_LINE}', cell)
+
+    def test_a_dark_single_colour_svg_turns_light(self):
+        """An SVG icon drawn only in navy is redrawn in the light line colour."""
+        icon = base64.b64encode(b'<svg><path fill="#002060" d="M0 0"/></svg>').decode('ascii')
+        logo = base64.b64encode(b'<svg><path fill="#002060"/><path fill="#fc6d26"/></svg>')
+        logo = logo.decode('ascii')
+        relit = base64.b64decode(light_svg(f'image=data:image/svg+xml,{icon};').split(',')[1]
+                                 .rstrip(';'))
+        self.assertIn(config.LIGHT_BLUE_LINE.encode(), relit)
+        kept = f'image=data:image/svg+xml,{logo};'
+        self.assertEqual(light_svg(kept), kept)
+        brand = base64.b64encode(b'<svg><path fill="#326ce5"/></svg>').decode('ascii')
+        kept = f'image=data:image/svg+xml,{brand};'
+        self.assertEqual(light_svg(kept), kept)
 
     def test_a_light_box_with_no_border_turns_dark(self):
         """A white box with no border takes a dark fill, like other boxes."""
