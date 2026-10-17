@@ -18,6 +18,7 @@ describe('Check Configuration Service', () => {
     expect(config.getPort()).toEqual(5000);
     expect(config.permitCommands()).toHaveLength(0);
     expect(config.getLocation()).toEqual('script');
+    expect(config.getMqtt()).toBeUndefined();
   });
 
   it('Should load correct configuration', async () => {
@@ -32,5 +33,29 @@ describe('Check Configuration Service', () => {
     expect(config.permitCommands()).toContain('create');
     expect(config.getLocation()).toEqual(resolveFile('script'));
     expect(spyOnCLIOptions).toHaveBeenCalled();
+    expect(config.getMqtt()).toBeUndefined();
+  });
+
+  it('Should load the MQTT configuration', async () => {
+    const CLIOptions = new Keyv();
+    await CLIOptions.set('configFile', 'test/data/config/runner.mqtt.yaml');
+
+    await config.loadConfig(CLIOptions);
+
+    expect(config.getMqtt()).toEqual({
+      url: 'mqtt://localhost:1883',
+      topic: 'dtaas/runner',
+      protocolVersion: 5,
+    });
+  });
+
+  it('Should reject an invalid MQTT configuration', async () => {
+    const CLIOptions = new Keyv();
+    await CLIOptions.set(
+      'configFile',
+      'test/data/config/runner.mqtt.invalid.yaml',
+    );
+
+    await expect(config.loadConfig(CLIOptions)).rejects.toThrow('wildcards');
   });
 });

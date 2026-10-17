@@ -10,7 +10,11 @@ import {
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
 import ExecaManager from './execa-manager.service.js';
-import { ExecuteCommandDto, executeCommandSchema } from './dto/command.dto.js';
+import {
+  ExecuteCommandDto,
+  executeCommandSchema,
+  executeResponse,
+} from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
 @Controller()
@@ -31,15 +35,9 @@ export default class AppController {
   ): Promise<void> {
     let success = false;
     [success] = await this.manager.newCommand(executeCommandDto.name);
-    if (success) {
-      res.status(HttpStatus.OK).send({
-        status: 'success',
-      });
-    } else {
-      res.status(HttpStatus.BAD_REQUEST).send({
-        status: 'invalid command',
-      });
-    }
+    res
+      .status(success ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+      .send(executeResponse(success));
   }
 
   @Get()

@@ -4,3 +4,8 @@ commands:  # list of permitted scripts
   - create
   - execute
   - terminate
+# mqtt:  # optional; serves the API over MQTT as well
+#   url: 'mqtt://localhost:1883'
+#   topic: 'dtaas/user1/runner'  # base topic, unique to this runner
+#   username: 'runner'
+#   password: 'secret'

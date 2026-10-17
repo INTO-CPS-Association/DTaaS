@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import Keyv from 'keyv';
 import { configDefault, ConfigValues } from './config.interface.js';
 import resolveFile from './util.js';
+import { MqttConfig, mqttConfigSchema } from '../mqtt/mqtt.config.js';
 
 @Injectable()
 export default class Config {
@@ -19,6 +20,9 @@ export default class Config {
     }
     const dir = path.dirname(resolveFile(configFile.toString()));
     this.configValues.location = path.join(dir, this.configValues.location);
+    if (this.configValues.mqtt !== undefined) {
+      this.configValues.mqtt = mqttConfigSchema.parse(this.configValues.mqtt);
+    }
   }
 
   permitCommands(): Array<string> {
@@ -31,5 +35,9 @@ export default class Config {
 
   getLocation(): string {
     return this.configValues.location;
+  }
+
+  getMqtt(): MqttConfig | undefined {
+    return this.configValues.mqtt;
   }
 }

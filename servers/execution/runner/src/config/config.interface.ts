@@ -1,3 +1,5 @@
+import { MqttConfig } from '../mqtt/mqtt.config.js';
+
 // unused type
 export type PermitCommand = {
   name: string;
@@ -11,6 +13,8 @@ export type ConfigValues = {
   // directory of the runner
   location: string;
   commands: Array<string>;
+  // optional; the runner serves its API over MQTT as well when it is set
+  mqtt?: MqttConfig;
 };
 
 export const configDefault: ConfigValues = {

@@ -99,4 +99,8 @@ curl -X POST http://localhost:5000 \
 curl http://localhost:5000
 ```
 
-The [README](./README.md) describes the API responses in detail.
+The runner serves the same API over MQTT when `config/runner.yaml`
+has an `mqtt` section. Inside the container, `localhost` refers to the
+container itself, so give the broker's hostname or IP address in its
+`url`. The [README](./README.md) describes the API responses and
+the MQTT topics in detail.

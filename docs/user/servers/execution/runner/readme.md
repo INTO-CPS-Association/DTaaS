@@ -5,9 +5,9 @@ The user launches it from the command line, and the utility
 manages the commands to be executed.
 
 The runner runs as a service and provides a
-REST API for executing remote commands safely.
+REST API, and optionally an MQTT API, for executing remote commands safely.
 Several runners can be active at the same time on one computer.
-Commands are sent through the REST API and executed on the computer
+Commands are sent through the API and executed on the computer
 running the runner.
 
 <!-- markdownlint-disable MD046 -->
@@ -76,6 +76,25 @@ but the `location` path is always relative to the configuration file.
 !!! note
     The commands must be executable. On Linux, make sure the commands
     have execute permission.
+
+### MQTT
+
+The runner serves the same API over MQTT when the configuration
+has an `mqtt` section. HTTP remains available on `port`.
+
+```yaml
+mqtt:
+  url: 'mqtt://localhost:1883'  # mqtt://, mqtts://, ws:// or wss://
+  topic: 'dtaas/user1/runner'   # base topic of this runner
+  username: 'runner'            # optional
+  password: 'secret'            # optional
+  protocolVersion: 5            # optional; 5 (default) or 4 for MQTT 3.1.1
+```
+
+The `topic` must be unique to each runner that shares a broker,
+and must not contain the `+` or `#` wildcards.
+The runner keeps reconnecting while the broker is unavailable,
+and serves HTTP in the meantime.
 
 ## Create Commands
 
@@ -266,3 +285,42 @@ Both valid and invalid commands are recorded in the history.
   }
 ]
 ```
+
+### MQTT API
+
+With MQTT enabled, the runner subscribes to one request topic
+for each REST API route. A request and its response carry the same
+JSON as the matching HTTP request and response.
+
+| Request Topic     | Matching HTTP Request | Request Payload              |
+| :---------------- | :-------------------- | :--------------------------- |
+| `<topic>/execute` | POST /                | `{"name": "<command name>"}` |
+| `<topic>/status`  | GET /                 | ignored                      |
+| `<topic>/history` | GET /history          | ignored                      |
+
+The runner publishes each response with QoS 1:
+
+- to the response topic of an MQTT 5 request, along with its
+  correlation data, when the request has a response topic;
+- otherwise to the request topic followed by `/response`,
+  for example `<topic>/execute/response`.
+
+MQTT has no status codes, so the response payload alone tells
+the outcome. For example, a request that is not valid JSON or has
+no `name` gets the validation error of the HTTP API.
+
+The commands below use the
+[Mosquitto clients](https://mosquitto.org/download/)
+to run the _create_ command and wait for its response.
+
+```bash
+mosquitto_sub -h localhost -t 'dtaas/user1/runner/+/response' &
+mosquitto_pub -h localhost -t 'dtaas/user1/runner/execute' \
+  -m '{"name": "create"}'
+```
+
+Anyone who can publish to the request topics can run the permitted
+commands. Use the access control of the broker to limit publishing
+on the request topics, and to limit the topics the runner may publish
+to. Use `mqtts://` or `wss://` with a username and password when the
+broker is not on the same computer.

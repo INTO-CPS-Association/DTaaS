@@ -1,8 +1,9 @@
 # Runner Microservice
 
 The Runner microservice executes scripts for digital twins in the DTaaS
-platform. It accepts HTTP requests to run pre-configured commands and
-returns the execution status and logs to the caller.
+platform. It accepts HTTP requests, and optionally MQTT requests, to run
+pre-configured commands and returns the execution status and logs to the
+caller.
 
 ## Package Structure
 
@@ -23,7 +24,11 @@ servers/execution/runner/
 │   │   ├── configuration.service.ts  # Configuration service
 │   │   └── util.ts                # Configuration utilities
 │   ├── dto/                       # Data transfer objects
-│   │   └── command.dto.ts         # Command request DTO
+│   │   └── command.dto.ts         # Command request and response DTOs
+│   ├── mqtt/                      # MQTT API
+│   │   ├── mqtt.config.ts         # MQTT settings and topics
+│   │   ├── mqtt-request.handler.ts  # Answers an MQTT request
+│   │   └── mqtt.service.ts        # MQTT client and subscriptions
 │   └── interfaces/                # Interface definitions
 │       ├── command.interface.ts   # Command types
 │       └── runner.interface.ts    # Runner interface
@@ -83,9 +88,24 @@ classDiagram
         +permitCommands(): string[]
         +getPort(): number
         +getLocation(): string
+        +getMqtt(): MqttConfig
+    }
+
+    class MqttService {
+        -client: MqttClient
+        +start(): void
+        +onApplicationShutdown(): void
+    }
+
+    class MqttRequestHandler {
+        -manager: ExecaManager
+        +handle(route, payload): unknown
     }
 
     AppController --> ExecaManager : uses
+    MqttService --> MqttRequestHandler : uses
+    MqttService --> Config : uses
+    MqttRequestHandler --> ExecaManager : uses
     ExecaManager --> Queue : uses
     ExecaManager --> Config : uses
     ExecaManager --> RunnerFactory : uses
@@ -103,6 +123,16 @@ The `AppController` exposes three endpoints:
 | `/`             | POST   | Submit a new command for execution      |
 | `/`             | GET    | Get status of the current command       |
 | `/history`      | GET    | Retrieve execution history              |
+
+### MQTT API
+
+The `MqttService` starts when the configuration has an `mqtt` section.
+It subscribes to the `execute`, `status` and `history` topics under the
+configured base topic. The `MqttRequestHandler` answers each request
+through the same `ExecaManager` as the REST API, so both protocols share
+one command queue and return the same JSON. The reply goes to the MQTT 5
+response topic of the request, or to the request topic followed by
+`/response`.
 
 ### Execution Manager
 
@@ -142,9 +172,12 @@ The service reads its configuration from a YAML file
 | `port`      | HTTP server port                             |
 | `location`  | Base directory for executable scripts        |
 | `commands`  | Allowlist of permitted command names         |
+| `mqtt`      | Optional MQTT broker `url`, base `topic`, credentials and `protocolVersion` |
 
 ## Security Considerations
 
 The runner only executes commands that are listed in the configuration
 file. A request for any other command is recorded as `invalid` and not
-run, which prevents arbitrary command execution.
+run, which prevents arbitrary command execution. The same allowlist
+applies to MQTT requests; the broker's access control decides who may
+publish to the request topics.
