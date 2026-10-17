@@ -34,7 +34,7 @@ run and delete them afterwards.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
-yarn format     #format .ts[x] and .js[x] files with prettier
+yarn format     # Format .ts, .tsx, .css and .scss files with prettier
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile TypeScript into the dist/ directory
 yarn test       # Run tests

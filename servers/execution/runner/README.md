@@ -146,7 +146,7 @@ for these two sources are:
 | :--------------------- | :---------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ |
 | localhost:port         | POST        | Returns the execution status of command                                 | Executes the command provided. All the commands sent in the right JSON format gets stored in _history_. |
 | localhost:port         | GET         | Returns the execution status of the last command sent via POST request. |                                                                                                         |
-| localhost:port/history | GET         | Returns the array of POST requests received so far.                     |                                                                                                         |
+| localhost:port/history | GET         | Returns the array of well-formed POST requests received so far.         |                                                                                                         |
 
 #### POST Request to /
 

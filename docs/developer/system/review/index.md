@@ -40,8 +40,9 @@ documents cites the file it was observed in.
 
 ## Changes Since the Review
 
-The findings are kept as written at commit `e7f9dd6`. These statements
-in them no longer describe the current branch:
+The findings describe commit `e7f9dd6`; only factual slips about that
+commit were corrected in place. These statements in them no longer
+describe the current branch:
 
 - *Packages.* Three packages added since then are not reviewed: the
   logger microservice (`servers/logger/`), the DT automation library

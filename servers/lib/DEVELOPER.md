@@ -19,7 +19,7 @@ file. Please see [README](./README.md) for this information.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
-yarn format     #format .ts[x] and .js[x] files with prettier
+yarn format     # Format .ts, .tsx, .css and .scss files with prettier
 yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile TypeScript into the dist/ directory
 yarn test:unit  # Run unit tests
@@ -31,7 +31,7 @@ yarn start -h   # List of all the CLI commands
 yarn start      # Start the application
 yarn start:pm2  # Start the application with process manager 2
 yarn stop:pm2   # Stop the application managed by process manager 2
-yarn clean      # Deletes "build", "coverage", "dist" and other temp files
+yarn clean      # Deletes "build", "node_modules", "coverage", "dist" and graph files
 ```
 
 **NOTE:** The integration, end-to-end and http tests require a valid

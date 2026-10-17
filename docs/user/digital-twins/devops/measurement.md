@@ -152,7 +152,7 @@ The exported JSON has the following structure:
           "Time Start": "ISO8601 timestamp",
           "Time End": "ISO8601 timestamp",
           "Status": "PENDING | RUNNING | SUCCESS | FAILURE | STOPPED",
-          "Error": string,
+          "Error": { "message": string, "error": object },
           "executions": [
             {
               "dtName": string,
