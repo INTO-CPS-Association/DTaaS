@@ -112,12 +112,11 @@ npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.
 
 The URL endpoint for this microservice is located at: `localhost:<port>`
 
-The API calls of this microservice are documented in **api/dev.api.http**.
-This file can be used with
-[REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
-of VS Code IDE. Launch the program using
-`yarn start --config config/runner.test.yaml` before using
-the **api/dev.api.http**.
+The `api` directory has request files for the HTTP API
+(`api/dev.api.http`) and the MQTT API (`api/dev.mqtt.http`).
+[api/README.md](api/README.md) lists the VS Code extensions they need,
+and explains how to start the runner and a broker and send the
+requests from VS Code or the command line.
 
 ## Use in Docker Environment
 
