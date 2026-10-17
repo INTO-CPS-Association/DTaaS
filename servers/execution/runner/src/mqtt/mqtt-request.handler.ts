@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import ExecaManager from '../execa-manager.service.js';
 import { executeCommandSchema, executeResponse } from '../dto/command.dto.js';
+import { validationFailed } from '../validation.pipe.js';
 import { MqttRoute } from './mqtt.config.js';
 
 function parseJson(payload: Buffer): unknown {
@@ -31,8 +32,7 @@ export default class MqttRequestHandler {
   private async execute(payload: Buffer): Promise<unknown> {
     const command = executeCommandSchema.safeParse(parseJson(payload));
     if (!command.success) {
-      // the same body that the HTTP validation pipe returns
-      return new BadRequestException('Validation Failed').getResponse();
+      return validationFailed().getResponse();
     }
     const [success] = await this.manager.newCommand(command.data.name);
     return executeResponse(success);

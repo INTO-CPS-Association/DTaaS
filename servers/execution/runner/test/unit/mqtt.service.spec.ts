@@ -17,7 +17,7 @@ class FakeClient extends EventEmitter {
 }
 
 const mqttConfig: MqttConfig = {
-  url: 'mqtt://localhost:1883',
+  url: 'mqtt://user:secret@localhost:1883',
   topic: 'dtaas/runner',
   username: 'user',
   password: 'secret',
@@ -58,7 +58,7 @@ describe('MQTT service', () => {
   it('Should connect with the configured options and subscribe', () => {
     const { client, connect, service } = setup(mqttConfig);
     service.start();
-    expect(connect).toHaveBeenCalledWith('mqtt://localhost:1883', {
+    expect(connect).toHaveBeenCalledWith('mqtt://user:secret@localhost:1883', {
       username: 'user',
       password: 'secret',
       protocolVersion: 5,
@@ -66,6 +66,26 @@ describe('MQTT service', () => {
     expect(client.subscribe).toHaveBeenCalledWith(
       ['dtaas/runner/execute', 'dtaas/runner/status', 'dtaas/runner/history'],
       { qos: 1 },
+      expect.any(Function),
+    );
+  });
+
+  it('Should log a refused subscription', () => {
+    const { client, service } = setup(mqttConfig);
+    service.start();
+    const error = jest
+      .spyOn(service['logger'], 'error')
+      .mockImplementation(() => undefined);
+    const callback = client.subscribe.mock.calls[0][2] as (
+      error: Error | null,
+    ) => void;
+
+    callback(null);
+    callback(new Error('Subscribe error: Not authorized'));
+
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith(
+      'MQTT subscription failed: Subscribe error: Not authorized',
     );
   });
 
@@ -140,7 +160,7 @@ describe('MQTT service', () => {
     client.emit('error', new Error('refused'));
 
     expect(log).toHaveBeenCalledWith(
-      'Connected to MQTT broker at mqtt://localhost:1883',
+      'Connected to MQTT broker at localhost:1883',
     );
     expect(error).toHaveBeenCalledWith('MQTT error: refused');
   });

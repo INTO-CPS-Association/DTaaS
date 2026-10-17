@@ -50,17 +50,30 @@ export default class MqttService implements OnApplicationShutdown {
     this.routes = new Map(
       mqttRoutes.map((route) => [requestTopic(options.topic, route), route]),
     );
-    this.client = this.connect(options.url, MqttService.clientOptions(options));
-    this.client.on('connect', () =>
-      this.logger.log(`Connected to MQTT broker at ${options.url}`),
+    const client = this.connect(
+      options.url,
+      MqttService.clientOptions(options),
     );
-    this.client.on('error', (error) =>
+    this.client = client;
+    // the url may hold credentials, so log only its host
+    this.listen(client, new URL(options.url).host);
+    client.subscribe([...this.routes.keys()], { qos: 1 }, (error) => {
+      if (error) {
+        this.logger.error(`MQTT subscription failed: ${error.message}`);
+      }
+    });
+  }
+
+  private listen(client: MqttClient, host: string): void {
+    client.on('connect', () =>
+      this.logger.log(`Connected to MQTT broker at ${host}`),
+    );
+    client.on('error', (error) =>
       this.logger.error(`MQTT error: ${error.message}`),
     );
-    this.client.on('message', (topic, payload, packet) =>
+    client.on('message', (topic, payload, packet) =>
       this.respond(topic, payload, packet),
     );
-    this.client.subscribe([...this.routes.keys()], { qos: 1 });
   }
 
   async onApplicationShutdown(): Promise<void> {
