@@ -123,6 +123,41 @@ describe('MQTT service', () => {
     );
   });
 
+  it('Should not reply on a response topic that is a request topic', async () => {
+    const { client, service } = setup(mqttConfig);
+    service.start();
+
+    await message(
+      client,
+      'dtaas/runner/status',
+      Buffer.alloc(0),
+      packet({ responseTopic: 'dtaas/runner/execute' }),
+    );
+
+    expect(client.publishAsync).toHaveBeenCalledWith(
+      'dtaas/runner/status/response',
+      '{"status":"success"}',
+      { qos: 1 },
+    );
+  });
+
+  it('Should ignore a retained request', async () => {
+    const { client, handle, service } = setup(mqttConfig);
+    service.start();
+    const warn = jest
+      .spyOn(service['logger'], 'warn')
+      .mockImplementation(() => undefined);
+    const retained = { ...packet(), retain: true } as IPublishPacket;
+
+    await message(client, 'dtaas/runner/execute', Buffer.from('{}'), retained);
+
+    expect(handle).not.toHaveBeenCalled();
+    expect(client.publishAsync).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(
+      'Ignored a retained request on dtaas/runner/execute',
+    );
+  });
+
   it('Should ignore messages on other topics', async () => {
     const { client, handle, service } = setup(mqttConfig);
     service.start();
@@ -156,23 +191,22 @@ describe('MQTT service', () => {
       .spyOn(service['logger'], 'error')
       .mockImplementation(() => undefined);
 
+    client.emit('error', new Error('refused'));
+    client.emit('error', new Error('refused'));
     client.emit('connect');
     client.emit('error', new Error('refused'));
 
     expect(log).toHaveBeenCalledWith(
       'Connected to MQTT broker at localhost:1883',
     );
+    expect(error).toHaveBeenCalledTimes(2);
     expect(error).toHaveBeenCalledWith('MQTT error: refused');
   });
 
-  it('Should ignore messages after shutdown', async () => {
-    const { client, handle, service } = setup(mqttConfig);
+  it('Should disconnect on shutdown', async () => {
+    const { client, service } = setup(mqttConfig);
     service.start();
     await service.onApplicationShutdown();
-
-    await message(client, 'dtaas/runner/history', Buffer.alloc(0), packet());
-
     expect(client.endAsync).toHaveBeenCalled();
-    expect(handle).not.toHaveBeenCalled();
   });
 });

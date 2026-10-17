@@ -101,7 +101,8 @@ mqtt:
 The `topic` must be unique to each runner that shares a broker,
 and must not contain the `+` or `#` wildcards.
 The runner keeps reconnecting while the broker is unavailable,
-and serves HTTP in the meantime.
+and serves HTTP in the meantime. The runner does not start
+if the `mqtt` section is invalid.
 
 ## Create Commands
 
@@ -275,8 +276,17 @@ The runner publishes each response with QoS 1:
   for example `<topic>/execute/response`.
 
 MQTT has no status codes, so the response payload alone tells
-the outcome. For example, a request that is not valid JSON or has
-no `name` gets the validation error of the HTTP API.
+the outcome. A request payload that is not a JSON object with a `name`
+gets the validation error of the HTTP API.
+
+The runner subscribes with QoS 1, so a request that the broker
+delivers twice runs twice. Requests published while the runner is
+disconnected are lost, and the runner ignores retained requests,
+so that a command does not run again each time the runner connects.
+
+Every client subscribed to `<topic>/<route>/response` receives every
+response on it. A client that must tell its own responses apart
+should connect with MQTT 5 and give a response topic of its own.
 
 The commands below use the
 [Mosquitto clients](https://mosquitto.org/download/)

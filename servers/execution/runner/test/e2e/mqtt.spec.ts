@@ -60,23 +60,35 @@ async function startRunner(url: string): Promise<INestApplication> {
   return app;
 }
 
-// Publishes one request and resolves with the parsed reply
+// Publishes one request and resolves with the topic and parsed body
+// of the reply
 async function request(
   client: MqttClient,
   route: MqttRoute,
   body: unknown = {},
-): Promise<unknown> {
-  const responseTopic = `${TOPIC}/${route}/response`;
-  const reply = new Promise((resolve) => {
+): Promise<{ topic: string; body: unknown }> {
+  const reply = new Promise<{ topic: string; body: unknown }>((resolve) => {
     client.once('message', (topic, payload) => {
-      expect(topic).toEqual(responseTopic);
-      resolve(JSON.parse(payload.toString()));
+      resolve({ topic, body: JSON.parse(payload.toString()) });
     });
   });
   await client.publishAsync(`${TOPIC}/${route}`, JSON.stringify(body), {
     qos: 1,
   });
   return reply;
+}
+
+// Expects the reply on the default response topic of the route
+async function expectReply(
+  client: MqttClient,
+  route: MqttRoute,
+  body: unknown,
+  expected: unknown,
+): Promise<void> {
+  expect(await request(client, route, body)).toEqual({
+    topic: `${TOPIC}/${route}/response`,
+    body: expected,
+  });
 }
 
 const queryTypes: (keyof typeof queriesJSON)[] = [
@@ -117,18 +129,16 @@ describe('Runner MQTT end-to-end tests', () => {
   queryTypes.forEach((key) => {
     const query = queriesJSON[key];
     it(`replies to execute and status for the ${key} command`, async () => {
-      expect(await request(client, 'execute', query.reqBody)).toEqual(
-        query.resBody.POST,
-      );
-      expect(await request(client, 'status')).toEqual(query.resBody.GET);
+      await expectReply(client, 'execute', query.reqBody, query.resBody.POST);
+      await expectReply(client, 'status', {}, query.resBody.GET);
     });
   });
 
   it('replies with the command history', async () => {
-    expect(await request(client, 'history')).toEqual([]);
+    await expectReply(client, 'history', {}, []);
     await request(client, 'execute', { name: 'create' });
     await request(client, 'execute', { name: 'configure' });
-    expect(await request(client, 'history')).toEqual([
+    await expectReply(client, 'history', {}, [
       { name: 'create' },
       { name: 'configure' },
     ]);

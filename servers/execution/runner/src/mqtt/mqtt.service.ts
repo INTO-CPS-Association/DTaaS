@@ -65,14 +65,21 @@ export default class MqttService implements OnApplicationShutdown {
   }
 
   private listen(client: MqttClient, host: string): void {
-    client.on('connect', () =>
-      this.logger.log(`Connected to MQTT broker at ${host}`),
-    );
-    client.on('error', (error) =>
-      this.logger.error(`MQTT error: ${error.message}`),
-    );
+    // The client retries every second while the broker is down, so log
+    // an error only when it differs from the previous one
+    let lastError: string | undefined;
+    client.on('connect', () => {
+      lastError = undefined;
+      this.logger.log(`Connected to MQTT broker at ${host}`);
+    });
+    client.on('error', ({ message }) => {
+      if (message !== lastError) {
+        this.logger.error(`MQTT error: ${message}`);
+      }
+      lastError = message;
+    });
     client.on('message', (topic, payload, packet) =>
-      this.respond(topic, payload, packet),
+      this.respond(client, topic, payload, packet),
     );
   }
 
@@ -90,26 +97,41 @@ export default class MqttService implements OnApplicationShutdown {
   }
 
   private async respond(
+    client: MqttClient,
     topic: string,
     payload: Buffer,
     packet: IPublishPacket,
   ): Promise<void> {
     const route = this.routes.get(topic);
-    if (route === undefined || this.client === undefined) {
+    if (route === undefined) {
       return;
     }
-    const client = this.client;
+    // the broker hands a retained request to every new subscription,
+    // which would run its command again on each start and reconnect
+    if (packet.retain) {
+      this.logger.warn(`Ignored a retained request on ${topic}`);
+      return;
+    }
     try {
       const body = await this.handler.handle(route, payload);
-      const { responseTopic, correlationData } = packet.properties ?? {};
       await client.publishAsync(
-        responseTopic ?? defaultResponseTopic(topic),
+        this.responseTopic(topic, packet),
         JSON.stringify(body),
-        MqttService.publishOptions(correlationData),
+        MqttService.publishOptions(packet.properties?.correlationData),
       );
     } catch (error) {
       this.logger.error(`MQTT request on ${topic} failed: ${error}`);
     }
+  }
+
+  // A response topic that is one of the request topics would turn the
+  // response into a new request, so such a topic is not used
+  private responseTopic(topic: string, packet: IPublishPacket): string {
+    const responseTopic = packet.properties?.responseTopic;
+    if (responseTopic === undefined || this.routes.has(responseTopic)) {
+      return defaultResponseTopic(topic);
+    }
+    return responseTopic;
   }
 
   private static publishOptions(

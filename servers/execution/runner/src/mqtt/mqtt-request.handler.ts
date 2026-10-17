@@ -19,14 +19,17 @@ export default class MqttRequestHandler {
   // eslint-disable-next-line no-useless-constructor
   constructor(private readonly manager: ExecaManager) {} // eslint-disable-line no-empty-function
 
+  private readonly routes: Record<
+    MqttRoute,
+    (payload: Buffer) => Promise<unknown> | unknown
+  > = {
+    execute: (payload) => this.execute(payload),
+    status: () => this.manager.checkStatus(),
+    history: () => this.manager.checkHistory(),
+  };
+
   async handle(route: MqttRoute, payload: Buffer): Promise<unknown> {
-    if (route === 'execute') {
-      return this.execute(payload);
-    }
-    if (route === 'status') {
-      return this.manager.checkStatus();
-    }
-    return this.manager.checkHistory();
+    return this.routes[route](payload);
   }
 
   private async execute(payload: Buffer): Promise<unknown> {

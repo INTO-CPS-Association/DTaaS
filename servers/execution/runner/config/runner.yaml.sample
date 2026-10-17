@@ -9,3 +9,4 @@ commands:  # list of permitted scripts
 #   topic: 'dtaas/user1/runner'  # base topic, unique to this runner
 #   username: 'runner'
 #   password: 'secret'
+#   protocolVersion: 5  # 4 for brokers that support only MQTT 3.1.1

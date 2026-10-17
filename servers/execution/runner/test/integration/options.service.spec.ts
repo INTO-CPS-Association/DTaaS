@@ -56,6 +56,8 @@ describe('Check Configuration Service', () => {
       'test/data/config/runner.mqtt.invalid.yaml',
     );
 
-    await expect(config.loadConfig(CLIOptions)).rejects.toThrow('wildcards');
+    await expect(config.loadConfig(CLIOptions)).rejects.toThrow(
+      /Invalid mqtt configuration:[\s\S]*wildcards[\s\S]*at topic/,
+    );
   });
 });
