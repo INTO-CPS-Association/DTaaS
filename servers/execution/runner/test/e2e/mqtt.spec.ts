@@ -8,18 +8,13 @@ import {
   it,
   jest,
 } from '@jest/globals';
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { Aedes } from 'aedes';
 import supertest from 'supertest';
 import { connectAsync, MqttClient } from 'mqtt';
-import Keyv from 'keyv';
-import AppModule from 'src/app.module';
-import Config from 'src/config/configuration.service';
-import MqttService from 'src/mqtt/mqtt.service';
 import { MqttRoute } from 'src/mqtt/mqtt.config';
-import { configFilename } from 'test/utils';
 import { queriesJSON } from './util';
+import { startRunner } from './mqtt.util';
 
 const TOPIC = 'dtaas/test/runner';
 
@@ -40,24 +35,6 @@ async function stopBroker({ aedes, server }: Broker): Promise<void> {
   });
   server.close();
   await once(server, 'close');
-}
-
-async function startRunner(url: string): Promise<INestApplication> {
-  const moduleFixture = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
-  const app = moduleFixture.createNestApplication({ logger: false });
-  const config = app.get<Config>(Config);
-  const options = new Keyv();
-  await options.set('configFile', configFilename);
-  await config.loadConfig(options);
-  // aedes supports MQTT 3.1.1 only
-  jest
-    .spyOn(config, 'getMqtt')
-    .mockReturnValue({ url, topic: TOPIC, protocolVersion: 4 });
-  await app.init();
-  app.get<MqttService>(MqttService).start();
-  return app;
 }
 
 // Publishes one request and resolves with the topic and parsed body
@@ -118,7 +95,12 @@ describe('Runner MQTT end-to-end tests', () => {
         }
       });
     });
-    app = await startRunner(broker.url);
+    // aedes supports MQTT 3.1.1 only
+    app = await startRunner({
+      url: broker.url,
+      topic: TOPIC,
+      protocolVersion: 4,
+    });
     cleanups.push(() => app.close());
     await runnerSubscribed;
   });

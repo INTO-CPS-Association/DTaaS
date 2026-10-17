@@ -11,6 +11,7 @@ import type {
   MqttClient,
 } from 'mqtt';
 import Config from '../config/configuration.service.js';
+import { REQUEST_KEY } from '../dto/command.dto.js';
 import MqttRequestHandler from './mqtt-request.handler.js';
 import {
   defaultResponseTopic,
@@ -117,7 +118,11 @@ export default class MqttService implements OnApplicationShutdown {
       return;
     }
     try {
-      const body = await this.handler.handle(route, payload);
+      const body = await this.handler.handle(
+        route,
+        payload,
+        MqttService.requestKey(packet),
+      );
       await client.publishAsync(
         this.responseTopic(topic, packet),
         JSON.stringify(body),
@@ -140,6 +145,12 @@ export default class MqttService implements OnApplicationShutdown {
       return defaultResponseTopic(topic);
     }
     return responseTopic;
+  }
+
+  // MQTT 5 user properties may repeat, so the first value counts
+  private static requestKey(packet: IPublishPacket): string | undefined {
+    const value = packet.properties?.userProperties?.[REQUEST_KEY];
+    return Array.isArray(value) ? value[0] : value;
   }
 
   private static publishOptions(

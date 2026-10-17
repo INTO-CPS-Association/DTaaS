@@ -10,7 +10,10 @@ const status = {
 
 function createHandler(success: boolean) {
   const manager = {
-    newCommand: jest.fn(async (_name: string) => [success, new Map()]),
+    newCommand: jest.fn(async (_name: string, _requestKey?: string) => [
+      success,
+      new Map(),
+    ]),
     checkStatus: jest.fn(() => status),
     checkHistory: jest.fn(() => [{ name: 'create' }]),
   };
@@ -26,8 +29,16 @@ describe('MQTT request handler', () => {
 
     const body = await handler.handle('execute', json({ name: 'create' }));
 
-    expect(manager.newCommand).toHaveBeenCalledWith('create');
+    expect(manager.newCommand).toHaveBeenCalledWith('create', undefined);
     expect(body).toEqual({ status: 'success' });
+  });
+
+  it('Should pass the request key on', async () => {
+    const { handler, manager } = createHandler(true);
+
+    await handler.handle('execute', json({ name: 'create' }), 'key-1');
+
+    expect(manager.newCommand).toHaveBeenCalledWith('create', 'key-1');
   });
 
   it('Should report an invalid command', async () => {

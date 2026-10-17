@@ -21,6 +21,9 @@ export default class Config {
     }
     const dir = path.dirname(resolveFile(configFile.toString()));
     this.configValues.location = path.join(dir, this.configValues.location);
+    if (this.configValues.database !== undefined) {
+      this.configValues.database = path.join(dir, this.configValues.database);
+    }
     if (this.configValues.mqtt !== undefined) {
       this.configValues.mqtt = Config.parseMqtt(this.configValues.mqtt);
     }
@@ -46,6 +49,10 @@ export default class Config {
 
   getLocation(): string {
     return this.configValues.location;
+  }
+
+  getDatabase(): string | undefined {
+    return this.configValues.database;
   }
 
   getMqtt(): MqttConfig | undefined {

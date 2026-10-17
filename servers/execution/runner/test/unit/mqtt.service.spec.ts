@@ -29,7 +29,11 @@ function setup(options: MqttConfig | undefined) {
   const connect = jest.fn<MqttConnect>(() => client as unknown as MqttClient);
   const config = { getMqtt: () => options } as unknown as Config;
   const handle = jest.fn(
-    async (_route: string, _payload: Buffer): Promise<unknown> => ({
+    async (
+      _route: string,
+      _payload: Buffer,
+      _requestKey?: string,
+    ): Promise<unknown> => ({
       status: 'success',
     }),
   );
@@ -97,7 +101,7 @@ describe('MQTT service', () => {
 
     await message(client, 'dtaas/runner/execute', payload, packet());
 
-    expect(handle).toHaveBeenCalledWith('execute', payload);
+    expect(handle).toHaveBeenCalledWith('execute', payload, undefined);
     expect(client.publishAsync).toHaveBeenCalledWith(
       'dtaas/runner/execute/response',
       '{"status":"success"}',
@@ -142,6 +146,24 @@ describe('MQTT service', () => {
         '{"status":"success"}',
         { qos: 1 },
       );
+    },
+  );
+
+  it.each([['key-1'], [['key-1', 'key-2']]])(
+    'Should pass the request key of the user property %p on',
+    async (value) => {
+      const { client, handle, service } = setup(mqttConfig);
+      service.start();
+      const payload = Buffer.from('{"name":"create"}');
+
+      await message(
+        client,
+        'dtaas/runner/execute',
+        payload,
+        packet({ userProperties: { 'idempotency-key': value } }),
+      );
+
+      expect(handle).toHaveBeenCalledWith('execute', payload, 'key-1');
     },
   );
 

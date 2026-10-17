@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import AppModule from 'src/app.module';
 import Keyv from 'keyv';
@@ -82,6 +83,24 @@ describe('Runner end-to-end tests', () => {
           logs: { stdout: '', stderr: '' },
         },
       }));
+  });
+
+  describe('POST / with an Idempotency-Key header', () => {
+    const post = (requestKey: string) =>
+      supertest(app.getHttpServer())
+        .post('/')
+        .set('Idempotency-Key', requestKey)
+        .send({ name: 'create' })
+        .expect(200, { status: 'success' });
+
+    it('runs a repeated request only once', async () => {
+      await post('key-1');
+      await post('key-1');
+      await post('key-2');
+      await supertest(app.getHttpServer())
+        .get('/history')
+        .expect(200, [{ name: 'create' }, { name: 'create' }]);
+    });
   });
 
   describe('GET /history', () => {

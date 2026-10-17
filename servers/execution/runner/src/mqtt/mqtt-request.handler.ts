@@ -24,17 +24,21 @@ export default class MqttRequestHandler {
 
   private readonly routes: Record<
     MqttRoute,
-    (payload: Buffer) => Promise<unknown> | unknown
+    (payload: Buffer, requestKey?: string) => Promise<unknown> | unknown
   > = {
-    execute: (payload) => this.execute(payload),
+    execute: (payload, requestKey) => this.execute(payload, requestKey),
     status: () => this.manager.checkStatus(),
     history: () => this.manager.checkHistory(),
   };
 
   // An unexpected error gets the same body as an HTTP 500 response
-  async handle(route: MqttRoute, payload: Buffer): Promise<unknown> {
+  async handle(
+    route: MqttRoute,
+    payload: Buffer,
+    requestKey?: string,
+  ): Promise<unknown> {
     try {
-      return await this.routes[route](payload);
+      return await this.routes[route](payload, requestKey);
     } catch (error) {
       this.logger.error(`MQTT ${route} request failed: ${error}`);
       return {
@@ -44,12 +48,18 @@ export default class MqttRequestHandler {
     }
   }
 
-  private async execute(payload: Buffer): Promise<unknown> {
+  private async execute(
+    payload: Buffer,
+    requestKey?: string,
+  ): Promise<unknown> {
     const command = executeCommandSchema.safeParse(parseJson(payload));
     if (!command.success) {
       return validationFailed().getResponse();
     }
-    const [success] = await this.manager.newCommand(command.data.name);
+    const [success] = await this.manager.newCommand(
+      command.data.name,
+      requestKey,
+    );
     return executeResponse(success);
   }
 }

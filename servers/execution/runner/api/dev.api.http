@@ -69,3 +69,13 @@ content-type: {{ContentType}}
 
 GET http://{{hostname}}:{{port}}/history HTTP/1.1
 content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+Idempotency-Key: 7d1e4a36-0b8a-4c51-9c0e-2b8f1e6f2a10
+
+{
+    "name": "create"
+}

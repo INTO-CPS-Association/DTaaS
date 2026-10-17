@@ -15,6 +15,7 @@ import {
 describe('Check execution manager based on execa library', () => {
   let dt: Manager;
   let config: Config;
+  let queue: Queue;
   const CLIOptions: Keyv = new Keyv();
 
   beforeAll(async () => {
@@ -28,6 +29,7 @@ describe('Check execution manager based on execa library', () => {
 
     dt = module.get<Manager>(ExecaManager);
     config = module.get<Config>(Config);
+    queue = module.get<Queue>(Queue);
     config.loadConfig(CLIOptions);
   });
 
@@ -106,5 +108,63 @@ describe('Check execution manager based on execa library', () => {
     );
 
     expect(commandStatus).toEqual([false, true]);
+  });
+
+  describe('repeated requests', () => {
+    it('Should run a command once for two concurrent requests', async () => {
+      const results = await Promise.all([
+        dt.newCommand('create'),
+        dt.newCommand('create'),
+      ]);
+
+      expect(results.map(([status]) => status)).toEqual([true, true]);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should not run a command again for a repeated request key', async () => {
+      const [, firstLogs] = await dt.newCommand('create', 'key-1');
+      const [status, logs] = await dt.newCommand('create', 'key-1');
+
+      expect(status).toBe(true);
+      expect(logs.get('stdout')).toEqual(firstLogs.get('stdout'));
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should return the first result for a request key used again', async () => {
+      await dt.newCommand('create', 'key-1');
+      const [status] = await dt.newCommand(nonExistingCommand, 'key-1');
+
+      expect(status).toBe(true);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should wait for the run of a repeated request key', async () => {
+      const [first, repeat] = await Promise.all([
+        dt.newCommand('create', 'key-1'),
+        dt.newCommand(nonExistingCommand, 'key-1'),
+      ]);
+
+      expect(repeat[0]).toBe(first[0]);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should return the stored result of a run that did not finish', async () => {
+      queue.enqueue('create', 'key-1');
+
+      const [status] = await dt.newCommand('create', 'key-1');
+
+      expect(status).toBe(false);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should run a command again for a new request key', async () => {
+      await dt.newCommand('create', 'key-1');
+      await dt.newCommand('create', 'key-2');
+
+      expect(dt.checkHistory()).toStrictEqual([
+        { name: 'create' },
+        { name: 'create' },
+      ]);
+    });
   });
 });

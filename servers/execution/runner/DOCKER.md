@@ -99,6 +99,12 @@ curl -X POST http://localhost:5000 \
 curl http://localhost:5000
 ```
 
+The runner keeps its command history in memory unless
+`config/runner.yaml` names a `database` file. To keep the history
+across container restarts, mount a directory for the database and
+name a file in it, for example `database: 'data/runner.db'` with the
+volume `./data:/dtaas/runner/data`.
+
 The runner serves the same API over MQTT when `config/runner.yaml`
 has an `mqtt` section. Inside the container, `localhost` refers to the
 container itself, so give the broker's hostname or IP address in its

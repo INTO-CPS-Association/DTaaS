@@ -2,10 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpStatus,
   Post,
   Res,
-  UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
@@ -14,6 +14,7 @@ import {
   ExecuteCommandDto,
   executeCommandSchema,
   executeResponse,
+  REQUEST_KEY,
 } from './dto/command.dto.js';
 import ZodValidationPipe from './validation.pipe.js';
 
@@ -28,13 +29,16 @@ export default class AppController {
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(executeCommandSchema))
   async newCommand(
-    @Body() executeCommandDto: ExecuteCommandDto,
+    @Body(new ZodValidationPipe(executeCommandSchema))
+    executeCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
+    @Headers(REQUEST_KEY) requestKey?: string,
   ): Promise<void> {
-    let success = false;
-    [success] = await this.manager.newCommand(executeCommandDto.name);
+    const [success] = await this.manager.newCommand(
+      executeCommandDto.name,
+      requestKey,
+    );
     res
       .status(success ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
       .send(executeResponse(success));

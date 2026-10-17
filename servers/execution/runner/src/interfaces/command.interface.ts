@@ -1,10 +1,15 @@
 import { ExecuteCommandDto } from 'src/dto/command.dto.js';
-import Runner from './runner.interface.js';
 
-type Command = {
+// Whether a command succeeded, and its stdout and stderr logs
+type CommandResult = [boolean, Map<string, string>];
+
+type CommandRecord = {
+  id: number;
   name: string;
   status: string;
-  task: Runner | undefined;
+  stdout: string;
+  stderr: string;
+  finished: boolean;
 };
 
 type CommandStatus = {
@@ -17,9 +22,9 @@ type CommandStatus = {
 };
 
 interface Manager {
-  newCommand(name: string): Promise<[boolean, Map<string, string>]>;
+  newCommand(name: string, requestKey?: string): Promise<CommandResult>;
   checkHistory(): Array<ExecuteCommandDto>;
   checkStatus(): CommandStatus;
 }
 
-export { Command, CommandStatus, Manager };
+export { CommandRecord, CommandResult, CommandStatus, Manager };

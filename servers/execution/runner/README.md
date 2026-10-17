@@ -22,6 +22,8 @@ the PowerShell version of each script (see [Create Commands](#create-commands)).
 
 ## Install
 
+The runner needs Node.js 24 or later.
+
 ### NPM Registry
 
 The package is available on
@@ -83,6 +85,20 @@ with respect to the path of _runner.yaml_ file.
 
 Warning: Ensure that the commands have execute permission
 on Linux platforms.
+
+### Command History
+
+The runner keeps the commands it receives, with their results, in an
+SQLite database. The database is in memory unless the configuration
+names a database file, relative to the configuration file:
+
+```yaml
+database: 'runner.db'
+```
+
+With a database file, the history, the status of the last command and
+the request keys of [repeated requests](#repeated-requests) survive a
+restart of the runner.
 
 ### MQTT
 
@@ -256,6 +272,27 @@ Both valid and invalid commands are recorded in the history.
 ]
 ```
 
+#### Repeated Requests
+
+The runner does not run a command again for a repeated request:
+
+- A request may carry an `Idempotency-Key` HTTP header, or an
+  `idempotency-key` user property over MQTT 5, with a value unique to
+  that request. A later request with the same key gets the response of
+  the first one, and the command does not run again.
+- A request for a command that is still running gets the result of
+  that run, and does not start the command a second time.
+
+A repeated request is not added to the history. The runner keeps the
+request keys in its [database](#command-history).
+
+```bash
+curl -X POST http://localhost:5000 \
+  -H 'Content-Type: application/json' \
+  -H 'Idempotency-Key: 7d1e4a36-0b8a-4c51-9c0e-2b8f1e6f2a10' \
+  -d '{"name": "create"}'
+```
+
 ### MQTT API
 
 With MQTT enabled, the runner subscribes to one request topic
@@ -284,8 +321,10 @@ the outcome. A request payload that is not a JSON object with a `name`
 gets the validation error of the HTTP API, and an unexpected failure
 gets the body of an HTTP 500 response.
 
-The runner subscribes with QoS 1, so a request that the broker
-delivers twice runs twice. Requests published while the runner is
+The runner subscribes with QoS 1, so the broker may deliver a request
+twice. An MQTT 5 request with an `idempotency-key` user property runs
+once, as described in [repeated requests](#repeated-requests); MQTT
+3.1.1 has no user properties. Requests published while the runner is
 disconnected are lost, and the runner ignores retained requests,
 so that a command does not run again each time the runner connects.
 
@@ -300,6 +339,10 @@ to run the _create_ command and wait for its response.
 ```bash
 mosquitto_sub -h localhost -t 'dtaas/user1/runner/+/response' &
 mosquitto_pub -h localhost -t 'dtaas/user1/runner/execute' \
+  -m '{"name": "create"}'
+# MQTT 5, with a request key
+mosquitto_pub -h localhost -V mqttv5 -t 'dtaas/user1/runner/execute' \
+  -D publish user-property idempotency-key 7d1e4a36 \
   -m '{"name": "create"}'
 ```
 

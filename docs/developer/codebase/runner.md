@@ -58,16 +58,20 @@ classDiagram
     class ExecaManager {
         -commandQueue: Queue
         -config: Config
-        +newCommand(name): [boolean, Map]
+        -running: Map
+        +newCommand(name, requestKey): [boolean, Map]
         +checkStatus(): CommandStatus
         +checkHistory(): ExecuteCommandDto[]
     }
 
     class Queue {
-        -queue: Command[]
-        +enqueue(command): void
+        -db: DatabaseSync
+        +open(file): void
+        +enqueue(name, requestKey): number
+        +complete(id, result): void
         +checkHistory(): ExecuteCommandDto[]
-        +activeCommand(): Command
+        +activeCommand(): CommandRecord
+        +findByKey(requestKey): CommandRecord
     }
 
     class RunnerFactory {
@@ -138,18 +142,24 @@ response topic of the request, or to the request topic followed by
 
 The `ExecaManager` service runs each command in these steps:
 
-1. Adds the command to the queue, marked `invalid`.
-2. Checks the command against the list of permitted commands.
-3. For a permitted command, creates a runner through the factory and
+1. Returns the result of an earlier request, without running anything,
+   when the request repeats it: the request has the request key of an
+   earlier request (the `Idempotency-Key` HTTP header or MQTT 5 user
+   property), or asks for a command that is still running.
+2. Adds the command to the queue, marked `invalid`.
+3. Checks the command against the list of permitted commands.
+4. For a permitted command, creates a runner through the factory and
    runs the script from the configured location.
-4. Marks the command `valid` if the script succeeds, and returns the
-   status and logs.
+5. Stores the status (`valid` if the script succeeds) and the logs in
+   the queue, and returns them.
 
 ### Command Queue
 
-The `Queue` service keeps the execution history and tracks the active
-command. Each command is stored with its execution status (`valid` or
-`invalid`).
+The `Queue` service keeps the execution history in an SQLite database,
+through the `node:sqlite` module of Node.js. Each command is stored with
+its execution status (`valid` or `invalid`), its logs, its optional
+request key, and the times it was received and finished. The database
+is in memory unless the `database` setting names a file.
 
 ### Runner Interface
 
@@ -172,6 +182,7 @@ The service reads its configuration from a YAML file
 | `port`      | HTTP server port                             |
 | `location`  | Base directory for executable scripts        |
 | `commands`  | Allowlist of permitted command names         |
+| `database`  | Optional SQLite file for the command history |
 | `mqtt`      | Optional MQTT broker `url`, base `topic`, credentials and `protocolVersion` |
 
 ## Security Considerations

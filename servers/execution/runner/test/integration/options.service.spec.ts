@@ -33,6 +33,7 @@ describe('Check Configuration Service', () => {
     expect(config.permitCommands()).toContain('create');
     expect(config.getLocation()).toEqual(resolveFile('script'));
     expect(spyOnCLIOptions).toHaveBeenCalled();
+    expect(config.getDatabase()).toBeUndefined();
     expect(config.getMqtt()).toBeUndefined();
   });
 
@@ -42,6 +43,9 @@ describe('Check Configuration Service', () => {
 
     await config.loadConfig(CLIOptions);
 
+    expect(config.getDatabase()).toEqual(
+      resolveFile('test/data/config/runner.db'),
+    );
     expect(config.getMqtt()).toEqual({
       url: 'mqtt://localhost:1883',
       topic: 'dtaas/runner',
