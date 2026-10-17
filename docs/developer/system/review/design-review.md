@@ -17,12 +17,13 @@ that lets one build serve many deployments.
 1. *The backend abstraction leaks.* `BackendInterface` and the
    builder/strategy design described in `ARCHITECTURE.md` promise
    swappable backends, but GitLab is the only implementation, and the
-   interfaces expose GitLab concepts directly: `getTriggerToken`,
-   `Pipeline`, pipeline refs and job artifacts
-   (`lib/dt-automation/src/interfaces/execution.ts`,
-   `lib/dt-automation/src/gitlab/instance.ts`). A
-   second backend (for example Gitea) could not be written against
-   these interfaces without changing them. Either commit to GitLab and
+   abstractions expose GitLab concepts directly: the `Pipeline` and
+   `TriggerToken` types (`lib/dt-automation/src/interfaces/execution.ts`)
+   and the `getTriggerToken` methods of `GitlabAPI`
+   (`lib/dt-automation/src/gitlab/backend.ts`) and `GitlabInstance`
+   (`lib/dt-automation/src/gitlab/instance.ts`), along with pipeline
+   refs. A second backend (for example Gitea) could not be written
+   against these interfaces without changing them. Either commit to GitLab and
    simplify, or lift the abstraction to lifecycle verbs
    (`start/stop/status/logs`) and push the pipeline vocabulary down
    into the GitLab adapter.
@@ -137,11 +138,11 @@ has its own test tree for each service.
 
 1. *Four docker scenarios, Vagrant and two CLIs* form the real
    installation matrix (localhost, server, secure-server,
-   secure-server with GitLab, and Vagrant single-machine and
-   two-machine setups). Each scenario has its own compose file and
-   CONFIG.md, and drift between them is already visible (see the next
-   point). Each new scenario adds to the testing and documentation
-   burden.
+   secure-server with GitLab, and a single Vagrant machine in
+   `deploy/vagrant/` with optional developer provisioning). Each
+   scenario has its own compose file and CONFIG.md, and drift between
+   them is already visible (see the next point). Each new scenario adds
+   to the testing and documentation burden.
 
 1. *Image version drift and unpinned images.* The docker compose files
    pin versions of the `intocps/dtaas-web` and `intocps/libms` images
@@ -166,5 +167,6 @@ publishing. CI runs per package (client, lib-ms, runner, Python CLIs,
 docs, workspace) with Codecov upload and SonarCloud badges. The gaps:
 no integration pipeline exercises a composed deployment end to end,
 and quality gates differ between packages. The client has extensive
-end-to-end tests, the runner and libms stop at the unit and integration
-level, and STATUS.md does not show coverage for the Python packages.
+end-to-end tests, the runner and libms have unit, integration and
+end-to-end Jest tests but no browser-level tests, and STATUS.md does
+not show coverage for the Python packages.

@@ -11,7 +11,7 @@ is to have a high degree of flexibility.
 
 The architecture applies interfaces, the builder pattern, and dependency
 injection to realise this abstraction — essentially implementing the Strategy
-pattern. Each `DigitalTwinAsset`, `DigitalTwin`, etc. has a core backend and
+pattern. Each `DTAssets`, `DigitalTwin`, etc. has a core backend and
 its associated backend APIs (e.g. REST execution with GitLab) that are chosen
 upon creation through a builder. This allows any backend or backend API to be
 used interchangeably and swapped at runtime, supporting CI. The following
@@ -67,8 +67,8 @@ library such as GitBeaker to manage communication with REST-API.
 
 #### What interfaces exist and their purpose
 
-1. **`Backend`**: Communicates with server
-1. **`Instance`**: Maintains data received from server
+1. **`BackendAPI`**: Communicates with server
+1. **`BackendInterface`**: Maintains data received from server
 
 Interfaces for contract and documentation only:
 
@@ -196,7 +196,7 @@ Below is a detailed guide:
 
 ### Adding a New Backend Provider
 
-1. Implement Backend (Instance) and BackendAPI (Backend) interfaces in 2 files
+1. Implement the `BackendInterface` and `BackendAPI` interfaces in 2 files
 1. Modify the backend builder to use the new backend.
 1. Add both unit and integration tests for these files.
 1. Create and place new backends inside

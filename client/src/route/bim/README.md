@@ -97,8 +97,11 @@ curl -s -o /dev/null -w '%{http_code} %{content_type}\n' \
 
 `200 application/json` is right. `200 text/html` means the name is wrong: the
 request is being served by the client instead of by the workspace. The name to
-use is the last segment of the profile URL the identity provider returns, which
-is what the client itself uses to build the address.
+use is the one the client resolves from the identity provider's claims, in the
+order given in
+[Username claim resolution](../../../../docs/admin/client/auth.md#username-claim-resolution-for-oidc-providers)
+(`preferred_username` first, the last segment of the profile URL only as a
+later fallback), lowercased. The client builds the address from that name.
 
 ## Against the Criteria in Issue 1762
 

@@ -40,7 +40,7 @@ in this guide, replace it with the domain name of the remote machine.
 Ensure that the remote machine has a domain name and that it is
 accessible from the internet.
 
-Go to the [Environment file](config/.env) and replace the current value of
+Go to the environment file `config/.env` and replace the current value of
 the `SERVER_DNS` variable with the appropriate domain name:
 
 ```bash
@@ -188,14 +188,19 @@ REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
 REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
 ```
 
-`openid` and `profile` are standard OIDC scopes provided by Keycloak by default.
-`openid` is required for OIDC authentication and issues the ID token.
-`profile` triggers the `profile` claim mapper configured on the Keycloak client,
-which returns a URL of the form `https://<DOMAIN_NAME>/<username>` set as a
-user attribute in Keycloak. The DTaaS web client extracts the username from
-the last path segment of this URL.
-The variable is named `REACT_APP_GITLAB_SCOPES` for legacy reasons;
-it now carries the Keycloak OIDC scopes.
+`openid` and `profile` are standard OIDC scopes that Keycloak provides by
+default. `openid` is required for OIDC authentication and issues the ID
+token. `profile` adds the profile claims, including `preferred_username`
+and the `profile` claim mapped from the `profile` user attribute that
+[Create Users](KEYCLOAK_SETUP.md#create-users) sets.
+
+The web client takes the username from the first of these claims that is
+present: `preferred_username`, `username`, `nickname`, `login`, the part of
+`email` before `@`, the part of `upn` before `@`, the last path segment of
+the `profile` URL, and `sub`. The `profile` URL is also shown as the
+user's profile link.
+The variable is named `REACT_APP_GITLAB_SCOPES` for historical reasons;
+it carries the Keycloak OIDC scopes.
 
 Replace `<DOMAIN_NAME>` with the value set in the
 [Domain](#domain) section and `dtaas` with the Keycloak realm name

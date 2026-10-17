@@ -89,8 +89,12 @@ as the value of `hash`.
 
 ## Username alignment with `config/.env`
 
-DTaaS routes and workspace paths use the `DEFAULT_USER` value from
+DTaaS user-scoped routes use the `DEFAULT_USER` value from
 `config/.env`.
+`DEFAULT_USER` sets only the workspace URL route (`/<DEFAULT_USER>`)
+and the `MAIN_USER` of the workspace container. The workspace files
+always come from `files/user`: `docker-compose.yml` mounts
+`./files/user` at `/workspace` whatever the value of `DEFAULT_USER`.
 
 In local password database mode, keep these aligned:
 

@@ -45,6 +45,10 @@ Keycloak-specific environment variables are:
 | `KEYCLOAK_CLIENT_SECRET` | OIDC client secret | `<from-Keycloak>` |
 | `KEYCLOAK_ISSUER_URL` | OIDC issuer URL | `https://intocps.org/auth/realms/dtaas` |
 
+`KEYCLOAK_REALM` is informational: `docker-compose.yml` does not use
+it. The realm that DTaaS uses is the one named at the end of
+`KEYCLOAK_ISSUER_URL` (`/realms/<realm>`).
+
 Edit Keycloak configuration in `config/.env`:
 
 ```bash
@@ -52,7 +56,7 @@ Edit Keycloak configuration in `config/.env`:
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=changeme
 
-# Keycloak Realm
+# Keycloak Realm (informational; the realm in KEYCLOAK_ISSUER_URL is used)
 KEYCLOAK_REALM=dtaas
 
 # Keycloak Client Configuration (will be created in post-install step)
@@ -74,8 +78,8 @@ The following instructions are part of post-install step.
 
 1. In the top-left dropdown (currently showing "Master"), click
    **Create Realm**  
-2. **Realm name**: `dtaas` (or match the `KEYCLOAK_REALM` in
-   `config/.env`)  
+2. **Realm name**: `dtaas` (or match the realm named in
+   `KEYCLOAK_ISSUER_URL` in `config/.env`)  
 3. Click **Create**
 4. Click on **Realm Settings** -> **User Profile**
 5. Click on **Create attribute** with
@@ -224,7 +228,7 @@ keycloak:
 
 - Verify `KEYCLOAK_ISSUER_URL` matches the realm name
 - Ensure redirect URIs in the Keycloak client include `/_oauth/*`
-- Confirm `COOKIE_DOMAIN` matches the domain
+- Confirm `SERVER_DNS` is correct (`COOKIE_DOMAIN` is derived from it)
 - Clear browser cookies and retry
 
 ### "Invalid Client" Error

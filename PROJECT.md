@@ -111,7 +111,8 @@ rather than reasoning about style.
 
 `pre-commit install` sets up both stages. The commit stage runs
 formatting, markdown and shell checks; the push stage runs the test
-suites for whichever projects you touched.
+suites of `client`, `servers/lib` and `servers/execution/runner` when
+you touched them.
 
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors

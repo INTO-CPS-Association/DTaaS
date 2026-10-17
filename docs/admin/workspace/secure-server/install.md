@@ -157,7 +157,7 @@ rule.user3_access.whitelist = user3@localhost
 
 - Verify that the OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check that the `SERVER_DNS` environment variable is set correctly
-- Ensure that `COOKIE_DOMAIN` matches the domain
+- Ensure that `SERVER_DNS` is correct (`COOKIE_DOMAIN` is derived from it)
 - Verify that the OAuth2 application is approved and active
 
 ### Service Access Issues

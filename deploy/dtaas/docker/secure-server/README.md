@@ -28,6 +28,7 @@ The `docker-compose.yml` starts the following services:
 | :--- | :--- |
 | **traefik** | Reverse proxy with TLS termination |
 | **client** | DTaaS React frontend |
+| **logger-ms** | Logger microservice |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware |

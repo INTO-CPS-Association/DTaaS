@@ -27,7 +27,7 @@ The following steps are required to build the client web application.
 ```bash
 git clone https://github.com/INTO-CPS-Association/DTaaS.git
 cd DTaaS/client
-yarn install --production   # install dependencies without Playwright and devDependencies
+yarn install    # install dependencies, including the build tools
 yarn build      #typecheck and build the React app into build/ directory
 ```
 
@@ -53,12 +53,14 @@ yarn clean       #clean the directory of temporary files
 The development environment does not have user workspaces and
 traefik gateway running in the background. As a consequence, the iframe
 links pointing to user workspace will not work correctly. Instead, you
-will see the following error.
+will see the application's not-found page with the following heading.
 
 ```txt
-Unexpected Application Error!
-404 Not Found
+This Page Does Not Exist
 ```
+
+The page also shows the unmatched path, so you can see which workspace
+address the gateway failed to route.
 
 This error appears on the **Library** and **Digital Twins** pages and is
 expected in a development environment.
