@@ -12,6 +12,8 @@ export type ExecuteCommandDto = z.infer<typeof executeCommandSchema>;
 // marks a request, so that the runner can recognise a repeat of it
 export const REQUEST_KEY = 'idempotency-key';
 
+export const requestKeySchema = z.string().max(255).optional();
+
 export type ExecuteResponseDto = {
   status: 'success' | 'invalid command';
 };

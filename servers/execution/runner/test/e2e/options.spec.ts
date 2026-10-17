@@ -93,6 +93,17 @@ describe('Runner end-to-end tests', () => {
         .send({ name: 'create' })
         .expect(200, { status: 'success' });
 
+    it('refuses a key that is too long', () =>
+      supertest(app.getHttpServer())
+        .post('/')
+        .set('Idempotency-Key', 'k'.repeat(256))
+        .send({ name: 'create' })
+        .expect(400, {
+          message: 'Validation Failed',
+          error: 'Bad Request',
+          statusCode: 400,
+        }));
+
     it('runs a repeated request only once', async () => {
       await post('key-1');
       await post('key-1');

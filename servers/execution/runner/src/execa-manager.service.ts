@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import {
   CommandRecord,
   CommandResult,
@@ -19,12 +19,15 @@ const storedResult = (command: CommandRecord): CommandResult => [
   ]),
 ];
 
+// A command run in progress, and its row in the queue
+type Run = { id: number; result: Promise<CommandResult> };
+
 @Injectable()
-export default class ExecaManager implements Manager {
+export default class ExecaManager implements Manager, OnApplicationShutdown {
   private readonly logger = new Logger(ExecaManager.name);
 
   // the runs in progress, by command name
-  private readonly running = new Map<string, Promise<CommandResult>>();
+  private readonly running = new Map<string, Run>();
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
@@ -37,41 +40,62 @@ export default class ExecaManager implements Manager {
   async newCommand(name: string, key?: string): Promise<CommandResult> {
     // an empty key marks no request
     const requestKey = key === '' ? undefined : key;
-    const repeated = this.repeatedRun(name, requestKey);
-    if (repeated !== undefined) {
-      this.logger.log(`Discarded a repeated request for ${name}`);
-      return repeated;
+    const earlier =
+      requestKey === undefined
+        ? undefined
+        : this.commandQueue.findByKey(requestKey);
+    if (earlier !== undefined) {
+      return this.repeat(name, earlier);
     }
-    const run = this.run(name, requestKey);
-    this.running.set(name, run);
+    const current = this.running.get(name);
+    if (current === undefined) {
+      return this.start(name, requestKey);
+    }
+    // keep the key, so that a retry of this request is a repeat too
+    if (requestKey !== undefined) {
+      this.commandQueue.addKey(requestKey, current.id);
+    }
+    this.logger.log(
+      `Joined a request for ${JSON.stringify(name)} to its running command`,
+    );
+    return current.result;
+  }
+
+  // The stored result, or the run in progress, of the request whose key
+  // the new request repeats; a key of another command is refused
+  private async repeat(
+    name: string,
+    earlier: CommandRecord,
+  ): Promise<CommandResult> {
+    if (earlier.name !== name) {
+      this.logger.warn(
+        `Refused ${JSON.stringify(name)}: its request key is of ${earlier.name}`,
+      );
+      return [false, new Map<string, string>()];
+    }
+    this.logger.log(`Discarded a repeated request for ${JSON.stringify(name)}`);
+    const current = this.running.get(name);
+    if (current?.id === earlier.id) {
+      return current.result;
+    }
+    return storedResult(earlier);
+  }
+
+  private async start(
+    name: string,
+    requestKey?: string,
+  ): Promise<CommandResult> {
+    const id = this.commandQueue.enqueue(name, requestKey);
+    const result = this.execute(id, name);
+    this.running.set(name, { id, result });
     try {
-      return await run;
+      return await result;
     } finally {
       this.running.delete(name);
     }
   }
 
-  // A request repeats an earlier one with the same request key, or else
-  // a run of the same command that has not finished yet
-  private repeatedRun(
-    name: string,
-    requestKey: string | undefined,
-  ): Promise<CommandResult> | undefined {
-    const earlier =
-      requestKey === undefined
-        ? undefined
-        : this.commandQueue.findByKey(requestKey);
-    if (earlier === undefined) {
-      return this.running.get(name);
-    }
-    const unfinished = earlier.finished
-      ? undefined
-      : this.running.get(earlier.name);
-    return unfinished ?? Promise.resolve(storedResult(earlier));
-  }
-
-  private async run(name: string, requestKey?: string): Promise<CommandResult> {
-    const id = this.commandQueue.enqueue(name, requestKey);
+  private async execute(id: number, name: string): Promise<CommandResult> {
     let result: CommandResult = [false, new Map<string, string>()];
     if (this.config.permitCommands().includes(name)) {
       const task = RunnerFactory.create(join(this.config.getLocation(), name));
@@ -79,6 +103,15 @@ export default class ExecaManager implements Manager {
     }
     this.commandQueue.complete(id, result);
     return result;
+  }
+
+  // Lets the runs in progress finish, as their results go to the
+  // database, which closes after them
+  async onApplicationShutdown(): Promise<void> {
+    await Promise.allSettled(
+      [...this.running.values()].map(({ result }) => result),
+    );
+    this.commandQueue.close();
   }
 
   private static createStatus(name: string, status: string) {

@@ -17,6 +17,8 @@ import { nextReply, Reply, startRunner } from './mqtt.util';
 const BROKER_URL = process.env.MQTT_BROKER_URL;
 const describeBroker = BROKER_URL === undefined ? describe.skip : describe;
 const url = BROKER_URL ?? '';
+// the url may hold credentials, so name only its host
+const host = BROKER_URL === undefined ? '' : new URL(BROKER_URL).host;
 
 // Unique topics keep runs apart on a shared public broker
 const BASE = `dtaas/test/${randomUUID()}`;
@@ -25,7 +27,7 @@ const REPLIES = `${BASE}/client`;
 
 jest.setTimeout(30000);
 
-describeBroker(`Runner MQTT 5 end-to-end tests on ${url}`, () => {
+describeBroker(`Runner MQTT 5 end-to-end tests on ${host}`, () => {
   let client: MqttClient;
   let app: INestApplication | undefined;
 
@@ -36,7 +38,11 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${url}`, () => {
     properties: IClientPublishOptions['properties'] = {},
   ): Promise<Reply> {
     const correlationData = Buffer.from(randomUUID());
-    const reply = nextReply(client, `${REPLIES}/${route}`);
+    const reply = nextReply(
+      client,
+      `${REPLIES}/${route}`,
+      correlationData.toString(),
+    );
     await client.publishAsync(`${TOPIC}/${route}`, JSON.stringify(body), {
       qos: 1,
       properties: {
@@ -84,6 +90,7 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${url}`, () => {
 
   afterEach(async () => {
     await app?.close();
+    app = undefined;
     await client.endAsync();
     jest.restoreAllMocks();
   });
@@ -141,7 +148,10 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${url}`, () => {
     );
     try {
       app = await startConnectedRunner();
-      await history().expect(200, []);
+      // the broker hands over the retained request on subscription, so
+      // before this request; only this one may run
+      await request('execute', { name: 'create' });
+      await history().expect(200, [{ name: 'create' }]);
     } finally {
       // an empty retained message deletes the retained request
       await client.publishAsync(`${TOPIC}/execute`, '', retained);

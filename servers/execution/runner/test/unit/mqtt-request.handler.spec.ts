@@ -41,6 +41,23 @@ describe('MQTT request handler', () => {
     expect(manager.newCommand).toHaveBeenCalledWith('create', 'key-1');
   });
 
+  it('Should refuse a request key that is too long', async () => {
+    const { handler, manager } = createHandler(true);
+
+    const body = await handler.handle(
+      'execute',
+      json({ name: 'create' }),
+      'k'.repeat(256),
+    );
+
+    expect(manager.newCommand).not.toHaveBeenCalled();
+    expect(body).toEqual({
+      message: 'Validation Failed',
+      error: 'Bad Request',
+      statusCode: 400,
+    });
+  });
+
   it('Should report an invalid command', async () => {
     const { handler } = createHandler(false);
 

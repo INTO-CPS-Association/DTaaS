@@ -91,7 +91,8 @@ database: 'runner.db'
 
 With a database file, the history, the status of the last command and
 the request keys of [repeated requests](#repeated-requests) survive a
-restart of the runner.
+restart of the runner. The runner creates the directory of the
+database file if needed. Give each runner a database file of its own.
 
 ### MQTT
 
@@ -308,14 +309,19 @@ Both valid and invalid commands are recorded in the history.
 The runner does not run a command again for a repeated request:
 
 - A request may carry an `Idempotency-Key` HTTP header, or an
-  `idempotency-key` user property over MQTT 5, with a value unique to
-  that request. A later request with the same key gets the response of
-  the first one, and the command does not run again.
+  `idempotency-key` user property over MQTT 5, with a value of up to
+  255 characters unique to that request. A later request with the same
+  key gets the response of the first one, and the command does not
+  run again. A request whose key belongs to another command is refused
+  as an invalid command.
 - A request for a command that is still running gets the result of
   that run, and does not start the command a second time.
 
 A repeated request is not added to the history. The runner keeps the
-request keys in its [database](#command-history).
+history, the logs and the request keys in its
+[database](#command-history) without a time limit. A command that was
+running when the runner stopped stays `invalid` in the history, and a
+repeat of its request gets that status.
 
 ```bash
 curl -X POST http://localhost:5000 \

@@ -15,8 +15,9 @@ import {
   executeCommandSchema,
   executeResponse,
   REQUEST_KEY,
+  requestKeySchema,
 } from './dto/command.dto.js';
-import ZodValidationPipe from './validation.pipe.js';
+import ZodValidationPipe, { validationFailed } from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
@@ -35,6 +36,9 @@ export default class AppController {
     @Res({ passthrough: true }) res: Response,
     @Headers(REQUEST_KEY) requestKey?: string,
   ): Promise<void> {
+    if (!requestKeySchema.safeParse(requestKey).success) {
+      throw validationFailed();
+    }
     const [success] = await this.manager.newCommand(
       executeCommandDto.name,
       requestKey,

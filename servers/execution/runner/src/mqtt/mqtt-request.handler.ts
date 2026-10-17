@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { MESSAGES } from '@nestjs/core/constants.js';
 import ExecaManager from '../execa-manager.service.js';
-import { executeCommandSchema, executeResponse } from '../dto/command.dto.js';
+import {
+  executeCommandSchema,
+  executeResponse,
+  requestKeySchema,
+} from '../dto/command.dto.js';
 import { validationFailed } from '../validation.pipe.js';
 import { MqttRoute } from './mqtt.config.js';
 
@@ -53,7 +57,7 @@ export default class MqttRequestHandler {
     requestKey?: string,
   ): Promise<unknown> {
     const command = executeCommandSchema.safeParse(parseJson(payload));
-    if (!command.success) {
+    if (!command.success || !requestKeySchema.safeParse(requestKey).success) {
       return validationFailed().getResponse();
     }
     const [success] = await this.manager.newCommand(

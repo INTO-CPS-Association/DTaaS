@@ -32,22 +32,28 @@ export type Reply = {
   correlationData?: string;
 };
 
-// Resolves with the next message on the topic, ignoring other topics
-export function nextReply(client: MqttClient, topic: string): Promise<Reply> {
+// Resolves with the next message on the topic, and with the correlation
+// data if one is given, ignoring other messages
+export function nextReply(
+  client: MqttClient,
+  topic: string,
+  correlationData?: string,
+): Promise<Reply> {
   return new Promise((resolve) => {
     const listener = (
       replyTopic: string,
       payload: Buffer,
       packet: IPublishPacket,
     ) => {
-      if (replyTopic !== topic) {
+      const received = packet.properties?.correlationData?.toString();
+      if (replyTopic !== topic || (correlationData ?? received) !== received) {
         return;
       }
       client.removeListener('message', listener);
       resolve({
         topic: replyTopic,
         body: JSON.parse(payload.toString()),
-        correlationData: packet.properties?.correlationData?.toString(),
+        correlationData: received,
       });
     };
     client.on('message', listener);

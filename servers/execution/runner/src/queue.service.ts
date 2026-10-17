@@ -1,12 +1,13 @@
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { Injectable, OnApplicationShutdown, Scope } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import {
   CommandRecord,
   CommandResult,
 } from './interfaces/command.interface.js';
 import { ExecuteCommandDto } from './dto/command.dto.js';
 
-// request_key is the optional key a client sends to mark repeated requests
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS commands (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -14,13 +15,21 @@ const SCHEMA = `
     status TEXT NOT NULL DEFAULT 'invalid',
     stdout TEXT NOT NULL DEFAULT '',
     stderr TEXT NOT NULL DEFAULT '',
-    request_key TEXT UNIQUE,
     received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     finished_at TEXT
+  );
+  -- the keys with which clients mark requests, and the command each
+  -- request ran or joined
+  CREATE TABLE IF NOT EXISTS request_keys (
+    request_key TEXT PRIMARY KEY,
+    command_id INTEGER NOT NULL REFERENCES commands (id)
   )`;
 
 const RECORD = `SELECT id, name, status, stdout, stderr,
   finished_at IS NOT NULL AS finished FROM commands`;
+
+const RECORD_BY_KEY = `${RECORD} WHERE id =
+  (SELECT command_id FROM request_keys WHERE request_key = ?)`;
 
 function toRecord(
   row: Record<string, unknown> | undefined,
@@ -41,29 +50,48 @@ function toRecord(
 // Keeps the received commands and their results in SQLite, in memory
 // unless open() names a database file
 @Injectable({ scope: Scope.DEFAULT })
-export default class Queue implements OnApplicationShutdown {
+export default class Queue {
   private db = Queue.connect(':memory:');
 
-  open(file: string): void {
-    this.db.close();
-    this.db = Queue.connect(file);
+  open(file: string | undefined): void {
+    if (file !== undefined) {
+      mkdirSync(dirname(file), { recursive: true });
+      this.db.close();
+      this.db = Queue.connect(file);
+    }
   }
 
-  onApplicationShutdown(): void {
-    this.db.close();
+  // a second close, as from a second shutdown, does nothing
+  close(): void {
+    if (this.db.isOpen) {
+      this.db.close();
+    }
   }
 
+  // waits up to five seconds for a database file that is locked
   private static connect(file: string): DatabaseSync {
-    const db = new DatabaseSync(file);
+    const db = new DatabaseSync(file, { timeout: 5000 });
     db.exec(SCHEMA);
     return db;
   }
 
   enqueue(name: string, requestKey?: string): number {
     const { lastInsertRowid } = this.db
-      .prepare('INSERT INTO commands (name, request_key) VALUES (?, ?)')
-      .run(name, requestKey ?? null);
-    return Number(lastInsertRowid);
+      .prepare('INSERT INTO commands (name) VALUES (?)')
+      .run(name);
+    const id = Number(lastInsertRowid);
+    if (requestKey !== undefined) {
+      this.addKey(requestKey, id);
+    }
+    return id;
+  }
+
+  addKey(requestKey: string, commandId: number): void {
+    this.db
+      .prepare(
+        'INSERT INTO request_keys (request_key, command_id) VALUES (?, ?)',
+      )
+      .run(requestKey, commandId);
   }
 
   complete(id: number, [success, logs]: CommandResult): void {
@@ -94,8 +122,6 @@ export default class Queue implements OnApplicationShutdown {
   }
 
   findByKey(requestKey: string): CommandRecord | undefined {
-    return toRecord(
-      this.db.prepare(`${RECORD} WHERE request_key = ?`).get(requestKey),
-    );
+    return toRecord(this.db.prepare(RECORD_BY_KEY).get(requestKey));
   }
 }

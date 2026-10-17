@@ -56,7 +56,7 @@ describe('MQTT service', () => {
     const { connect, service } = setup(undefined);
     service.start();
     expect(connect).not.toHaveBeenCalled();
-    await expect(service.onApplicationShutdown()).resolves.toBeUndefined();
+    await expect(service.beforeApplicationShutdown()).resolves.toBeUndefined();
   });
 
   it('Should connect with the configured options and subscribe', () => {
@@ -232,7 +232,7 @@ describe('MQTT service', () => {
   it('Should disconnect on shutdown', async () => {
     const { client, service } = setup(mqttConfig);
     service.start();
-    await service.onApplicationShutdown();
+    await service.beforeApplicationShutdown();
     expect(client.endAsync).toHaveBeenCalledWith(true);
   });
 });

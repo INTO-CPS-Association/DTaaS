@@ -22,7 +22,7 @@ describe('check Queue service', () => {
     queue = module.get<Queue>(Queue);
   });
 
-  afterEach(() => queue.onApplicationShutdown());
+  afterEach(() => queue.close());
 
   it('should return active command as undefined when queue is empty', async () => {
     expect(queue.activeCommand()).toBe(undefined);
@@ -92,6 +92,38 @@ describe('check Queue service', () => {
     expect(queue.findByKey('key-2')).toBeUndefined();
   });
 
+  it('should find a command by each of its request keys', async () => {
+    const id = queue.enqueue('world', 'key-1');
+    queue.addKey('key-2', id);
+
+    expect(queue.findByKey('key-2')).toMatchObject({ id, name: 'world' });
+    expect(queue.checkHistory()).toStrictEqual([{ name: 'world' }]);
+  });
+
+  it('should create the directory of the database file', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'runner-'));
+    try {
+      queue.open(join(dir, 'data', 'runner.db'));
+      queue.enqueue('hello');
+      expect(queue.checkHistory()).toStrictEqual([{ name: 'hello' }]);
+    } finally {
+      queue.close();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('should close only once', async () => {
+    queue.close();
+    expect(() => queue.close()).not.toThrow();
+  });
+
+  it('should stay in memory without a database file', async () => {
+    queue.enqueue('hello');
+    queue.open(undefined);
+
+    expect(queue.checkHistory()).toStrictEqual([{ name: 'hello' }]);
+  });
+
   it('should keep the commands in a database file across restarts', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'runner-'));
     const file = join(dir, 'runner.db');
@@ -99,13 +131,13 @@ describe('check Queue service', () => {
       queue.open(file);
       const id = queue.enqueue('hello', 'key-1');
       queue.complete(id, [true, logs('hello world')]);
-      queue.onApplicationShutdown();
+      queue.close();
 
       const restarted = new Queue();
       restarted.open(file);
       expect(restarted.checkHistory()).toStrictEqual([{ name: 'hello' }]);
       expect(restarted.findByKey('key-1')).toMatchObject({ finished: true });
-      restarted.onApplicationShutdown();
+      restarted.close();
       queue = new Queue();
     } finally {
       rmSync(dir, { recursive: true, force: true });

@@ -103,7 +103,9 @@ The runner keeps its command history in memory unless
 `config/runner.yaml` names a `database` file. To keep the history
 across container restarts, mount a directory for the database and
 name a file in it, for example `database: 'data/runner.db'` with the
-volume `./data:/dtaas/runner/data`.
+volume `./data:/dtaas/runner/data`. Create the `data` directory before
+starting the container, so that it belongs to you rather than root;
+the runner runs as uid 1000 and must be able to write to it.
 
 The runner serves the same API over MQTT when `config/runner.yaml`
 has an `mqtt` section. Inside the container, `localhost` refers to the

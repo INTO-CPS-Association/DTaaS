@@ -2,7 +2,7 @@ import {
   Inject,
   Injectable,
   Logger,
-  OnApplicationShutdown,
+  BeforeApplicationShutdown,
 } from '@nestjs/common';
 import type {
   IClientOptions,
@@ -30,7 +30,7 @@ export const MQTT_CONNECT = Symbol('MQTT_CONNECT');
 // and the reply goes to the MQTT 5 response topic of the request, or
 // else to the request topic with a "/response" suffix.
 @Injectable()
-export default class MqttService implements OnApplicationShutdown {
+export default class MqttService implements BeforeApplicationShutdown {
   private readonly logger = new Logger(MqttService.name);
 
   private client: MqttClient | undefined;
@@ -85,7 +85,9 @@ export default class MqttService implements OnApplicationShutdown {
     );
   }
 
-  async onApplicationShutdown(): Promise<void> {
+  // Disconnects before the shutdown hooks, so that no request starts a
+  // command while the runs in progress finish and the database closes
+  async beforeApplicationShutdown(): Promise<void> {
     // force, as a graceful end waits for unacknowledged replies forever
     await this.client?.endAsync(true);
     this.client = undefined;

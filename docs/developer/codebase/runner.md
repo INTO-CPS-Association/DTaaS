@@ -68,6 +68,7 @@ classDiagram
         -db: DatabaseSync
         +open(file): void
         +enqueue(name, requestKey): number
+        +addKey(requestKey, commandId): void
         +complete(id, result): void
         +checkHistory(): ExecuteCommandDto[]
         +activeCommand(): CommandRecord
@@ -98,7 +99,7 @@ classDiagram
     class MqttService {
         -client: MqttClient
         +start(): void
-        +onApplicationShutdown(): Promise~void~
+        +beforeApplicationShutdown(): Promise~void~
     }
 
     class MqttRequestHandler {
@@ -144,8 +145,9 @@ The `ExecaManager` service runs each command in these steps:
 
 1. Returns the result of an earlier request, without running anything,
    when the request repeats it: the request has the request key of an
-   earlier request (the `Idempotency-Key` HTTP header or MQTT 5 user
-   property), or asks for a command that is still running.
+   earlier request for the same command (the `Idempotency-Key` HTTP
+   header or MQTT 5 user property), or asks for a command that is still
+   running. A request key of another command is refused.
 2. Adds the command to the queue, marked `invalid`.
 3. Checks the command against the list of permitted commands.
 4. For a permitted command, creates a runner through the factory and
@@ -157,9 +159,12 @@ The `ExecaManager` service runs each command in these steps:
 
 The `Queue` service keeps the execution history in an SQLite database,
 through the `node:sqlite` module of Node.js. Each command is stored with
-its execution status (`valid` or `invalid`), its logs, its optional
-request key, and the times it was received and finished. The database
-is in memory unless the `database` setting names a file.
+its execution status (`valid` or `invalid`), its logs, and the times
+it was received and finished. A second table maps each request key to
+the command that the request ran or joined. The database is in memory
+unless the `database` setting names a file. At shutdown, the
+`MqttService` disconnects first, and the `ExecaManager` closes the
+database once the commands in progress have finished.
 
 ### Runner Interface
 
