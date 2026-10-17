@@ -94,12 +94,12 @@ classDiagram
     class MqttService {
         -client: MqttClient
         +start(): void
-        +onApplicationShutdown(): void
+        +onApplicationShutdown(): Promise~void~
     }
 
     class MqttRequestHandler {
         -manager: ExecaManager
-        +handle(route, payload): unknown
+        +handle(route, payload): Promise~unknown~
     }
 
     AppController --> ExecaManager : uses

@@ -100,8 +100,8 @@ mqtt:
 
 The `topic` must be unique to each runner that shares a broker,
 and must not contain the `+` or `#` wildcards.
-The runner keeps reconnecting while the broker is unavailable,
-and serves HTTP in the meantime. The runner does not start
+The runner keeps reconnecting while the broker is unavailable or
+refuses the connection, and serves HTTP in the meantime. The runner does not start
 if the `mqtt` section is invalid.
 
 ## Create Commands
@@ -275,9 +275,14 @@ The runner publishes each response with QoS 1:
 - otherwise to the request topic followed by `/response`,
   for example `<topic>/execute/response`.
 
+The runner uses the default response topic instead when the
+requested one is empty, holds a wildcard, starts with `$`,
+or is one of its request topics.
+
 MQTT has no status codes, so the response payload alone tells
 the outcome. A request payload that is not a JSON object with a `name`
-gets the validation error of the HTTP API.
+gets the validation error of the HTTP API, and an unexpected failure
+gets the body of an HTTP 500 response.
 
 The runner subscribes with QoS 1, so a request that the broker
 delivers twice runs twice. Requests published while the runner is

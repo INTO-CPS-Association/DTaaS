@@ -14,6 +14,7 @@ import Config from '../config/configuration.service.js';
 import MqttRequestHandler from './mqtt-request.handler.js';
 import {
   defaultResponseTopic,
+  isPublishableTopic,
   MqttConfig,
   MqttRoute,
   mqttRoutes,
@@ -84,7 +85,8 @@ export default class MqttService implements OnApplicationShutdown {
   }
 
   async onApplicationShutdown(): Promise<void> {
-    await this.client?.endAsync();
+    // force, as a graceful end waits for unacknowledged replies forever
+    await this.client?.endAsync(true);
     this.client = undefined;
   }
 
@@ -93,6 +95,8 @@ export default class MqttService implements OnApplicationShutdown {
       username: options.username,
       password: options.password,
       protocolVersion: options.protocolVersion,
+      // keep retrying after the broker refuses the connection too
+      reconnectOnConnackError: true,
     };
   }
 
@@ -120,15 +124,19 @@ export default class MqttService implements OnApplicationShutdown {
         MqttService.publishOptions(packet.properties?.correlationData),
       );
     } catch (error) {
-      this.logger.error(`MQTT request on ${topic} failed: ${error}`);
+      this.logger.error(`MQTT response on ${topic} failed: ${error}`);
     }
   }
 
-  // A response topic that is one of the request topics would turn the
-  // response into a new request, so such a topic is not used
+  // Fall back to the default response topic when the requested one can
+  // not be published to, or would turn the response into a new request
   private responseTopic(topic: string, packet: IPublishPacket): string {
     const responseTopic = packet.properties?.responseTopic;
-    if (responseTopic === undefined || this.routes.has(responseTopic)) {
+    if (
+      responseTopic === undefined ||
+      !isPublishableTopic(responseTopic) ||
+      this.routes.has(responseTopic)
+    ) {
       return defaultResponseTopic(topic);
     }
     return responseTopic;

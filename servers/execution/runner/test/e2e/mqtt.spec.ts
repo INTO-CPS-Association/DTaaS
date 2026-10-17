@@ -111,8 +111,12 @@ describe('Runner MQTT end-to-end tests', () => {
     client = await connectAsync(broker.url, { protocolVersion: 4 });
     cleanups.push(() => client.endAsync());
     await client.subscribeAsync(`${TOPIC}/+/response`, { qos: 1 });
-    const runnerSubscribed = new Promise((resolve) => {
-      broker.aedes.once('subscribe', resolve);
+    const runnerSubscribed = new Promise<void>((resolve) => {
+      broker.aedes.on('subscribe', (subscriptions) => {
+        if (subscriptions.some(({ topic }) => topic === `${TOPIC}/execute`)) {
+          resolve();
+        }
+      });
     });
     app = await startRunner(broker.url);
     cleanups.push(() => app.close());

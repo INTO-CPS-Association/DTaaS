@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
 // A base topic is a prefix for the request topics, so it can not hold
-// wildcards or end with a separator.
+// wildcards, start in the reserved $ space or end with a separator.
 const baseTopic = z
   .string()
-  .regex(/^[^#+]*[^#+/]$/, 'must not contain wildcards or end with /');
+  .regex(
+    /^[^$#+]([^#+]*[^#+/])?$/,
+    'must not contain wildcards, start with $ or end with /',
+  );
 
 export const mqttConfigSchema = z
   .object({
@@ -27,3 +30,8 @@ export const requestTopic = (base: string, route: MqttRoute): string =>
 
 export const defaultResponseTopic = (topic: string): string =>
   `${topic}/response`;
+
+// A broker drops a client that publishes to an empty, wildcard or $
+// topic, so a response topic of a request must be a plain topic name.
+export const isPublishableTopic = (topic: string): boolean =>
+  /^[^$#+][^#+]*$/.test(topic);

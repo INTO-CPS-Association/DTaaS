@@ -66,4 +66,17 @@ describe('MQTT request handler', () => {
       { name: 'create' },
     ]);
   });
+
+  it('Should return the HTTP 500 body when the request fails', async () => {
+    const { handler, manager } = createHandler(true);
+    manager.newCommand.mockRejectedValueOnce(new Error('spawn failed'));
+    jest.spyOn(handler['logger'], 'error').mockImplementation(() => undefined);
+
+    const body = await handler.handle('execute', json({ name: 'create' }));
+
+    expect(body).toEqual({
+      statusCode: 500,
+      message: 'Internal server error',
+    });
+  });
 });

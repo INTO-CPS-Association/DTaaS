@@ -13,7 +13,7 @@ class FakeClient extends EventEmitter {
     async (_topic: string, _message: string, _options: unknown) => undefined,
   );
 
-  endAsync = jest.fn(async () => undefined);
+  endAsync = jest.fn(async (_force?: boolean) => undefined);
 }
 
 const mqttConfig: MqttConfig = {
@@ -62,6 +62,7 @@ describe('MQTT service', () => {
       username: 'user',
       password: 'secret',
       protocolVersion: 5,
+      reconnectOnConnackError: true,
     });
     expect(client.subscribe).toHaveBeenCalledWith(
       ['dtaas/runner/execute', 'dtaas/runner/status', 'dtaas/runner/history'],
@@ -123,23 +124,26 @@ describe('MQTT service', () => {
     );
   });
 
-  it('Should not reply on a response topic that is a request topic', async () => {
-    const { client, service } = setup(mqttConfig);
-    service.start();
+  it.each(['dtaas/runner/execute', '', '#', 'client/+', '$SYS/replies'])(
+    'Should reply on the default topic instead of %p',
+    async (responseTopic) => {
+      const { client, service } = setup(mqttConfig);
+      service.start();
 
-    await message(
-      client,
-      'dtaas/runner/status',
-      Buffer.alloc(0),
-      packet({ responseTopic: 'dtaas/runner/execute' }),
-    );
+      await message(
+        client,
+        'dtaas/runner/status',
+        Buffer.alloc(0),
+        packet({ responseTopic }),
+      );
 
-    expect(client.publishAsync).toHaveBeenCalledWith(
-      'dtaas/runner/status/response',
-      '{"status":"success"}',
-      { qos: 1 },
-    );
-  });
+      expect(client.publishAsync).toHaveBeenCalledWith(
+        'dtaas/runner/status/response',
+        '{"status":"success"}',
+        { qos: 1 },
+      );
+    },
+  );
 
   it('Should ignore a retained request', async () => {
     const { client, handle, service } = setup(mqttConfig);
@@ -177,7 +181,7 @@ describe('MQTT service', () => {
     await message(client, 'dtaas/runner/history', Buffer.alloc(0), packet());
 
     expect(log).toHaveBeenCalledWith(
-      expect.stringContaining('dtaas/runner/history failed'),
+      expect.stringContaining('response on dtaas/runner/history failed'),
     );
   });
 
@@ -207,6 +211,6 @@ describe('MQTT service', () => {
     const { client, service } = setup(mqttConfig);
     service.start();
     await service.onApplicationShutdown();
-    expect(client.endAsync).toHaveBeenCalled();
+    expect(client.endAsync).toHaveBeenCalledWith(true);
   });
 });

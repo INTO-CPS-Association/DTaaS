@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import {
   defaultResponseTopic,
+  isPublishableTopic,
   mqttConfigSchema,
   requestTopic,
 } from 'src/mqtt/mqtt.config';
@@ -33,6 +34,7 @@ describe('MQTT configuration', () => {
     ['a multi-level wildcard', { ...valid, topic: 'dtaas/#' }],
     ['a trailing separator', { ...valid, topic: 'dtaas/runner/' }],
     ['an empty topic', { ...valid, topic: '' }],
+    ['a reserved topic', { ...valid, topic: '$SYS/runner' }],
     ['an unsupported version', { ...valid, protocolVersion: 3 }],
     ['an unknown key', { ...valid, port: 1883 }],
   ])('Should reject %s', (_, config) => {
@@ -45,5 +47,22 @@ describe('MQTT configuration', () => {
     expect(defaultResponseTopic(topic)).toEqual(
       'dtaas/runner/execute/response',
     );
+  });
+
+  it('Should accept a single-level base topic', () => {
+    expect(mqttConfigSchema.safeParse({ ...valid, topic: 'r' }).success).toBe(
+      true,
+    );
+  });
+
+  it.each([
+    ['client/replies', true],
+    ['replies', true],
+    ['', false],
+    ['#', false],
+    ['client/+/replies', false],
+    ['$SYS/replies', false],
+  ])('Should tell whether %p can be published to', (topic, expected) => {
+    expect(isPublishableTopic(topic)).toBe(expected);
   });
 });
