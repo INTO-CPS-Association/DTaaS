@@ -117,7 +117,9 @@ def check_layout(drawio, scratch):
 def located_drawio():
     """The drawio binary, or a stop with the reason when it is missing."""
     drawio = find_drawio()
-    if not pathlib.Path(drawio).exists():
+    # A file, since the drawio/ package beside this script is a folder with the
+    # same name as the bare `drawio` fallback.
+    if not pathlib.Path(drawio).is_file():
         raise SystemExit(f'drawio not found at {drawio}, set DRAWIO')
     print(f'using {drawio}')
     return drawio

@@ -2,7 +2,9 @@
 
 import contextlib
 import io
+import os
 import pathlib
+import tempfile
 import unittest
 import unittest.mock
 
@@ -11,7 +13,7 @@ import diagrams
 import export
 
 from drawio.files import dark_target, target_of
-from export import check_contrast, find_drawio
+from export import check_contrast, find_drawio, located_drawio
 
 
 class CommandTest(unittest.TestCase):
@@ -108,6 +110,24 @@ class CheckContrastTest(unittest.TestCase):
         listed = {('admin/x/server.png', '7'): 'a mid-tone legend swatch'}
         with unittest.mock.patch.dict(config.CONTRAST_EXCEPTIONS, listed):
             check_contrast([('admin/x/server.png', '7', 'text 3.9 to 1')])
+
+
+class LocatedDrawioTest(unittest.TestCase):
+    """A missing drawio stops with a message, even beside a drawio/ folder."""
+
+    def test_a_folder_named_drawio_is_not_the_program(self):
+        """A folder named drawio, such as the package here, is not the program."""
+        with tempfile.TemporaryDirectory() as scratch:
+            (pathlib.Path(scratch) / 'drawio').mkdir()
+            here = os.getcwd()
+            os.chdir(scratch)
+            try:
+                with unittest.mock.patch.dict(os.environ, {'DRAWIO': 'drawio'}), \
+                        self.assertRaises(SystemExit) as stop:
+                    located_drawio()
+            finally:
+                os.chdir(here)
+        self.assertIn('drawio not found at drawio, set DRAWIO', str(stop.exception))
 
 
 class FindDrawioTest(unittest.TestCase):
