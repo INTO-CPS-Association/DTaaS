@@ -122,7 +122,7 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${host}`, () => {
     const repeat = await request('execute', { name: 'create' }, key);
 
     expect(repeat.body).toEqual(first.body);
-    await history().expect(200, [{ name: 'create' }]);
+    expect((await history().expect(200)).body).toEqual([{ name: 'create' }]);
   });
 
   it('replies to an MQTT 3.1.1 client on the default response topic', async () => {
@@ -141,9 +141,10 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${host}`, () => {
     await app?.close();
     app = undefined;
     const retained = { qos: 1, retain: true } as const;
+    // a name of its own, so that the request below can not join its run
     await client.publishAsync(
       `${TOPIC}/execute`,
-      '{"name":"create"}',
+      '{"name":"retained"}',
       retained,
     );
     try {
@@ -151,7 +152,7 @@ describeBroker(`Runner MQTT 5 end-to-end tests on ${host}`, () => {
       // the broker hands over the retained request on subscription, so
       // before this request; only this one may run
       await request('execute', { name: 'create' });
-      await history().expect(200, [{ name: 'create' }]);
+      expect((await history().expect(200)).body).toEqual([{ name: 'create' }]);
     } finally {
       // an empty retained message deletes the retained request
       await client.publishAsync(`${TOPIC}/execute`, '', retained);

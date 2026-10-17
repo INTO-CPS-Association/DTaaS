@@ -28,7 +28,7 @@ export default class MqttRequestHandler {
 
   private readonly routes: Record<
     MqttRoute,
-    (payload: Buffer, requestKey?: string) => Promise<unknown> | unknown
+    (payload: Buffer, requestKey?: string) => unknown
   > = {
     execute: (payload, requestKey) => this.execute(payload, requestKey),
     status: () => this.manager.checkStatus(),

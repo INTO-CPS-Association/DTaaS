@@ -60,6 +60,7 @@ classDiagram
         -config: Config
         -running: Map
         +newCommand(name, requestKey): [boolean, Map]
+        +onApplicationShutdown(): Promise~void~
         +checkStatus(): CommandStatus
         +checkHistory(): ExecuteCommandDto[]
     }
