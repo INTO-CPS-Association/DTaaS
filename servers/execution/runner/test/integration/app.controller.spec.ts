@@ -45,7 +45,7 @@ describe('Test AppController', () => {
 
     await controller.newCommand(executeCommandDto, res);
 
-    expect(spyManager).toHaveBeenCalledWith(executeCommandDto.name);
+    expect(spyManager).toHaveBeenCalledWith(executeCommandDto.name, undefined);
     expect(resStatus).toHaveBeenCalledWith(httpStatus);
     expect(resSend).toHaveBeenCalledWith(resBody);
   }

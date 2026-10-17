@@ -1,0 +1,72 @@
+// MQTT requests for testing the runner during development, with the
+// httpYac extension of VS Code or the httpyac command line tool.
+// See README.md in this directory.
+//
+// The runner needs an mqtt section in its configuration with the broker
+// and base topic below. Each request subscribes to the response topic of
+// its route and publishes the request. The "=== wait-for-server" line
+// keeps the connection open until the response arrives, and the empty
+// {{ "" }} part after it sends nothing.
+
+@broker = mqtt://localhost:1883
+@topic = dtaas/user1/runner
+
+###
+
+# @name status
+MQTT {{broker}}
+Subscribe: {{topic}}/status/response
+Publish: {{topic}}/status
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name history
+MQTT {{broker}}
+Subscribe: {{topic}}/history/response
+Publish: {{topic}}/history
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name execute
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "create"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name invalidCommand
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "configure"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name validationError
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"command": "create"}
+=== wait-for-server
+{{ "" }}

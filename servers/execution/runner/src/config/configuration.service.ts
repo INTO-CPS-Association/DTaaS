@@ -3,8 +3,10 @@ import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { Injectable } from '@nestjs/common';
 import Keyv from 'keyv';
+import { z } from 'zod';
 import { configDefault, ConfigValues } from './config.interface.js';
 import resolveFile from './util.js';
+import { MqttConfig, mqttConfigSchema } from '../mqtt/mqtt.config.js';
 
 @Injectable()
 export default class Config {
@@ -19,6 +21,22 @@ export default class Config {
     }
     const dir = path.dirname(resolveFile(configFile.toString()));
     this.configValues.location = path.join(dir, this.configValues.location);
+    if (this.configValues.database !== undefined) {
+      this.configValues.database = path.join(dir, this.configValues.database);
+    }
+    if (this.configValues.mqtt !== undefined) {
+      this.configValues.mqtt = Config.parseMqtt(this.configValues.mqtt);
+    }
+  }
+
+  private static parseMqtt(mqtt: unknown): MqttConfig {
+    const result = mqttConfigSchema.safeParse(mqtt);
+    if (!result.success) {
+      throw new Error(
+        `Invalid mqtt configuration:\n${z.prettifyError(result.error)}`,
+      );
+    }
+    return result.data;
   }
 
   permitCommands(): Array<string> {
@@ -31,5 +49,13 @@ export default class Config {
 
   getLocation(): string {
     return this.configValues.location;
+  }
+
+  getDatabase(): string | undefined {
+    return this.configValues.database;
+  }
+
+  getMqtt(): MqttConfig | undefined {
+    return this.configValues.mqtt;
   }
 }

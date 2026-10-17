@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import Keyv from 'keyv';
 import resolveFile from './util.js';
 
-export const PACKAGE_VERSION: string = '0.3.9';
+export const PACKAGE_VERSION: string = '0.4.0';
 const DEFAULT_CONFIG_FILENAME = 'runner.yaml';
 
 export function createCommand(name: string): [Command, Keyv] {

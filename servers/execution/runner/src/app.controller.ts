@@ -2,16 +2,22 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpStatus,
   Post,
   Res,
-  UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandStatus } from './interfaces/command.interface.js';
 import ExecaManager from './execa-manager.service.js';
-import { ExecuteCommandDto, executeCommandSchema } from './dto/command.dto.js';
-import ZodValidationPipe from './validation.pipe.js';
+import {
+  ExecuteCommandDto,
+  executeCommandSchema,
+  executeResponse,
+  REQUEST_KEY,
+  requestKeySchema,
+} from './dto/command.dto.js';
+import ZodValidationPipe, { validationFailed } from './validation.pipe.js';
 
 @Controller()
 export default class AppController {
@@ -24,22 +30,22 @@ export default class AppController {
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(executeCommandSchema))
   async newCommand(
-    @Body() executeCommandDto: ExecuteCommandDto,
+    @Body(new ZodValidationPipe(executeCommandSchema))
+    executeCommandDto: ExecuteCommandDto,
     @Res({ passthrough: true }) res: Response,
+    @Headers(REQUEST_KEY) requestKey?: string,
   ): Promise<void> {
-    let success = false;
-    [success] = await this.manager.newCommand(executeCommandDto.name);
-    if (success) {
-      res.status(HttpStatus.OK).send({
-        status: 'success',
-      });
-    } else {
-      res.status(HttpStatus.BAD_REQUEST).send({
-        status: 'invalid command',
-      });
+    if (!requestKeySchema.safeParse(requestKey).success) {
+      throw validationFailed();
     }
+    const [success] = await this.manager.newCommand(
+      executeCommandDto.name,
+      requestKey,
+    );
+    res
+      .status(success ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+      .send(executeResponse(success));
   }
 
   @Get()

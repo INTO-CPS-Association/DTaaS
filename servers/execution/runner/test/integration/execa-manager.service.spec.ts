@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { describe, expect, it, beforeEach } from '@jest/globals';
+import { afterEach, describe, expect, it, beforeEach } from '@jest/globals';
 import ExecaManager from 'src/execa-manager.service';
 import { Manager, CommandStatus } from 'src/interfaces/command.interface';
 import { ExecuteCommandDto } from 'src/dto/command.dto';
@@ -15,6 +15,7 @@ import {
 describe('Check execution manager based on execa library', () => {
   let dt: Manager;
   let config: Config;
+  let queue: Queue;
   const CLIOptions: Keyv = new Keyv();
 
   beforeAll(async () => {
@@ -28,8 +29,11 @@ describe('Check execution manager based on execa library', () => {
 
     dt = module.get<Manager>(ExecaManager);
     config = module.get<Config>(Config);
+    queue = module.get<Queue>(Queue);
     config.loadConfig(CLIOptions);
   });
+
+  afterEach(() => queue.close());
 
   it('Should create object', async () => {
     try {
@@ -106,5 +110,92 @@ describe('Check execution manager based on execa library', () => {
     );
 
     expect(commandStatus).toEqual([false, true]);
+  });
+
+  describe('repeated requests', () => {
+    it('Should run a command once for two concurrent requests', async () => {
+      const results = await Promise.all([
+        dt.newCommand('create'),
+        dt.newCommand('create'),
+      ]);
+
+      expect(results.map(([status]) => status)).toEqual([true, true]);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should not run a command again for a repeated request key', async () => {
+      const [, firstLogs] = await dt.newCommand('create', 'key-1');
+      const [status, logs] = await dt.newCommand('create', 'key-1');
+
+      expect(status).toBe(true);
+      expect(logs.get('stdout')).toEqual(firstLogs.get('stdout'));
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should refuse a request key of another command', async () => {
+      await dt.newCommand('create', 'key-1');
+      const [status] = await dt.newCommand('execute', 'key-1');
+
+      expect(status).toBe(false);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should wait for the run of a repeated request key', async () => {
+      const [first, repeat] = await Promise.all([
+        dt.newCommand('create', 'key-1'),
+        dt.newCommand('create', 'key-1'),
+      ]);
+
+      expect(repeat).toEqual(first);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should keep the key of a request that joined a running command', async () => {
+      await Promise.all([
+        dt.newCommand('create'),
+        dt.newCommand('create', 'key-2'),
+      ]);
+      const [status] = await dt.newCommand('create', 'key-2');
+
+      expect(status).toBe(true);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should return the stored result of a run that did not finish', async () => {
+      queue.enqueue('create', 'key-1');
+
+      const [status] = await dt.newCommand('create', 'key-1');
+
+      expect(status).toBe(false);
+      expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
+    });
+
+    it('Should treat an empty request key as no key', async () => {
+      await dt.newCommand(nonExistingCommand, '');
+      await dt.newCommand('create', '');
+
+      expect(dt.checkHistory()).toStrictEqual([
+        { name: nonExistingCommand },
+        { name: 'create' },
+      ]);
+    });
+
+    it('Should run a command again for a new request key', async () => {
+      await dt.newCommand('create', 'key-1');
+      await dt.newCommand('create', 'key-2');
+
+      expect(dt.checkHistory()).toStrictEqual([
+        { name: 'create' },
+        { name: 'create' },
+      ]);
+    });
+  });
+
+  it('Should let a running command finish before the database closes', async () => {
+    const run = dt.newCommand('create');
+    await (dt as ExecaManager).onApplicationShutdown();
+
+    expect((await run)[0]).toBe(true);
+    expect(() => queue.checkHistory()).toThrow();
   });
 });

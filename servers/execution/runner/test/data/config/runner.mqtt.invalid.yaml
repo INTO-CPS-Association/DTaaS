@@ -1,0 +1,7 @@
+port: 5003
+location: 'script'
+commands:
+  - create
+mqtt:
+  url: 'mqtt://localhost:1883'
+  topic: 'dtaas/#'

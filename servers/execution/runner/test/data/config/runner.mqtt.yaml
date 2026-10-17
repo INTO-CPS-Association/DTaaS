@@ -1,0 +1,8 @@
+port: 5003
+location: 'script'
+commands:
+  - create
+database: 'runner.db'
+mqtt:
+  url: 'mqtt://localhost:1883'
+  topic: 'dtaas/runner'

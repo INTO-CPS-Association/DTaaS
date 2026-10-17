@@ -73,6 +73,27 @@ jobs:
           files: servers/execution/runner/coverage/clover.xml
           flags: dt-runner
 
+      - name: Run MQTT 5 tests against a Mosquitto broker
+        if: success() || failure()
+        run: |
+          container_id=$(docker run --detach --rm \
+            --publish 127.0.0.1:1883:1883 \
+            eclipse-mosquitto:2.1.2-alpine@sha256:38c0da4f2ef84284d47b3b3eeea1cb3bdeabe81ee10caf0cd5c5ff61ee3ea408 \
+            sh -c 'printf "listener 1883\nallow_anonymous true\n" > /tmp/m.conf
+              exec mosquitto -c /tmp/m.conf')
+          trap 'docker logs "$container_id"; docker stop "$container_id"' EXIT
+          for attempt in 1 2 3 4 5 6; do
+            if (exec 3<>/dev/tcp/127.0.0.1/1883) 2>/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then
+              echo "The MQTT broker did not start"
+              exit 1
+            fi
+            sleep 2
+          done
+          MQTT_BROKER_URL=mqtt://127.0.0.1:1883 yarn test:broker
+
   get-version:
     permissions:
       contents: read  # Required for checking out the code

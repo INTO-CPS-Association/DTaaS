@@ -39,11 +39,28 @@ yarn graph      # Generate dependency graphs in the code
 yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
 yarn test       # Run tests
 yarn test:e2e   # Run only end-to-end tests
+yarn test:broker # Run the MQTT 5 tests against the broker in MQTT_BROKER_URL
 yarn test:nocov # Run the tests but do not report coverage
 yarn test:watchAll # Watch changes in test/ and run the tests
 yarn start      # Start the application
 yarn clean      # Deletes directories "build", "coverage", and "dist"
 ```
+
+### MQTT Tests
+
+`yarn test` checks the MQTT API against an in-process
+[aedes](https://github.com/moscajs/aedes) broker, which supports
+MQTT 3.1.1 only. `yarn test:broker` checks the MQTT 5 features against
+a real broker, such as a public one:
+
+```bash
+MQTT_BROKER_URL=mqtt://test.mosquitto.org:1883 yarn test:broker
+MQTT_BROKER_URL=mqtt://broker.emqx.io:1883 yarn test:broker
+```
+
+The tests use topics with a random part, so runs do not interfere on a
+shared broker. The GitHub Actions workflow runs them against a
+Mosquitto container.
 
 ### On Filenames in Tests
 
@@ -95,12 +112,11 @@ npm unpublish  --registry http://localhost:4873/ @into-cps-association/runner@0.
 
 The URL endpoint for this microservice is located at: `localhost:<port>`
 
-The API calls of this microservice are documented in **api/dev.api.http**.
-This file can be used with
-[REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
-of VS Code IDE. Launch the program using
-`yarn start --config config/runner.test.yaml` before using
-the **api/dev.api.http**.
+The `api` directory has request files for the HTTP API
+(`api/dev.api.http`) and the MQTT API (`api/dev.mqtt.http`).
+[api/README.md](api/README.md) lists the VS Code extensions they need,
+and explains how to start the runner and a broker and send the
+requests from VS Code or the command line.
 
 ## Use in Docker Environment
 

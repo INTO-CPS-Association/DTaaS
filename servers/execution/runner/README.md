@@ -5,9 +5,9 @@ Users launch this from the command line and the utility manages
 command execution.
 
 The runner runs as a service and provides a
-REST API for safe remote command execution.
+REST API, and optionally an MQTT API, for safe remote command execution.
 Multiple runner instances can be active simultaneously on one machine.
-Commands are submitted via the REST API and executed on the host
+Commands are submitted via the API and executed on the host
 running the runner.
 
 Warning: Thanks for trying out this software.
@@ -21,6 +21,8 @@ The runner works on Linux and Windows. On Windows, it runs
 the PowerShell version of each script (see [Create Commands](#create-commands)).
 
 ## Install
+
+The runner needs Node.js 24 or later.
 
 ### NPM Registry
 
@@ -83,6 +85,41 @@ with respect to the path of _runner.yaml_ file.
 
 Warning: Ensure that the commands have execute permission
 on Linux platforms.
+
+### Command History
+
+The runner keeps the commands it receives, with their results, in an
+SQLite database. The database is in memory unless the configuration
+names a database file, relative to the configuration file:
+
+```yaml
+database: 'runner.db'
+```
+
+With a database file, the history, the status of the last command and
+the request keys of [repeated requests](#repeated-requests) survive a
+restart of the runner. The runner creates the directory of the
+database file if needed. Give each runner a database file of its own.
+
+### MQTT
+
+The runner serves the same API over MQTT when the configuration
+has an `mqtt` section. HTTP remains available on `port`.
+
+```yaml
+mqtt:
+  url: 'mqtt://localhost:1883'  # mqtt://, mqtts://, ws:// or wss://
+  topic: 'dtaas/user1/runner'   # base topic of this runner
+  username: 'runner'            # optional
+  password: 'secret'            # optional
+  protocolVersion: 5            # optional; 5 (default) or 4 for MQTT 3.1.1
+```
+
+The `topic` must be unique to each runner that shares a broker,
+and must not contain the `+` or `#` wildcards.
+The runner keeps reconnecting while the broker is unavailable or
+refuses the connection, and serves HTTP in the meantime. The runner does not start
+if the `mqtt` section is invalid.
 
 ## Create Commands
 
@@ -235,6 +272,91 @@ Both valid and invalid commands are recorded in the history.
   }
 ]
 ```
+
+#### Repeated Requests
+
+The runner does not run a command again for a repeated request:
+
+- A request may carry an `Idempotency-Key` HTTP header, or an
+  `idempotency-key` user property over MQTT 5, with a value of up to
+  255 characters unique to that request. A later request with the same
+  key gets the response of the first one, and the command does not
+  run again. A request whose key belongs to another command is refused
+  as an invalid command.
+- A request for a command that is still running gets the result of
+  that run, and does not start the command a second time.
+
+A repeated request is not added to the history. The runner keeps the
+history, the logs and the request keys in its
+[database](#command-history) without a time limit. A command that was
+running when the runner stopped stays `invalid` in the history, and a
+repeat of its request gets that status.
+
+```bash
+curl -X POST http://localhost:5000 \
+  -H 'Content-Type: application/json' \
+  -H 'Idempotency-Key: 7d1e4a36-0b8a-4c51-9c0e-2b8f1e6f2a10' \
+  -d '{"name": "create"}'
+```
+
+### MQTT API
+
+With MQTT enabled, the runner subscribes to one request topic
+for each REST API route. A request and its response carry the same
+JSON as the matching HTTP request and response.
+
+| Request Topic     | Matching HTTP Request | Request Payload              |
+| :---------------- | :-------------------- | :--------------------------- |
+| `<topic>/execute` | POST /                | `{"name": "<command name>"}` |
+| `<topic>/status`  | GET /                 | ignored                      |
+| `<topic>/history` | GET /history          | ignored                      |
+
+The runner publishes each response with QoS 1:
+
+- to the response topic of an MQTT 5 request, along with its
+  correlation data, when the request has a response topic;
+- otherwise to the request topic followed by `/response`,
+  for example `<topic>/execute/response`.
+
+The runner uses the default response topic instead when the
+requested one is empty, holds a wildcard, starts with `$`,
+or is one of its request topics.
+
+MQTT has no status codes, so the response payload alone tells
+the outcome. A request payload that is not a JSON object with a `name`
+gets the validation error of the HTTP API, and an unexpected failure
+gets the body of an HTTP 500 response.
+
+The runner subscribes with QoS 1, so the broker may deliver a request
+twice. An MQTT 5 request with an `idempotency-key` user property runs
+once, as described in [repeated requests](#repeated-requests); MQTT
+3.1.1 has no user properties. Requests published while the runner is
+disconnected are lost, and the runner ignores retained requests,
+so that a command does not run again each time the runner connects.
+
+Every client subscribed to `<topic>/<route>/response` receives every
+response on it. A client that must tell its own responses apart
+should connect with MQTT 5 and give a response topic of its own.
+
+The commands below use the
+[Mosquitto clients](https://mosquitto.org/download/)
+to run the _create_ command and wait for its response.
+
+```bash
+mosquitto_sub -h localhost -t 'dtaas/user1/runner/+/response' &
+mosquitto_pub -h localhost -t 'dtaas/user1/runner/execute' \
+  -m '{"name": "create"}'
+# MQTT 5, with a request key
+mosquitto_pub -h localhost -V mqttv5 -t 'dtaas/user1/runner/execute' \
+  -D publish user-property idempotency-key 7d1e4a36 \
+  -m '{"name": "create"}'
+```
+
+Anyone who can publish to the request topics can run the permitted
+commands. Use the access control of the broker to limit publishing
+on the request topics, and to limit the topics the runner may publish
+to. Use `mqtts://` or `wss://` with a username and password when the
+broker is not on the same computer.
 
 ## License
 

@@ -5,6 +5,8 @@ import Keyv from 'keyv';
 import AppModule from './app.module.js';
 import Config from './config/configuration.service.js';
 import CLI, { createCommand } from './config/commander.js';
+import MqttService from './mqtt/mqtt.service.js';
+import Queue from './queue.service.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -20,6 +22,9 @@ async function bootstrap(options: Keyv) {
   const app = await NestFactory.create(AppModule);
   const config = app.get<Config>(Config);
   await config.loadConfig(options);
+  app.get<Queue>(Queue).open(config.getDatabase());
+  app.enableShutdownHooks();
+  app.get<MqttService>(MqttService).start();
   await app.listen(config.getPort());
 }
 bootstrap(CLIOptions);
