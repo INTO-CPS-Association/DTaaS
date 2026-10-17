@@ -1,20 +1,16 @@
-"""Check that every copy of the theme colours matches its source.
-
-client/src/theme/tokens.ts is the source of the palette. The documentation
-stylesheets, the diagram scripts and the dark variant each repeat some of
-its colours, because CSS and drawio cannot read a TypeScript file, so this
-test fails as soon as one copy drifts.
-"""
+"""Tests that the theme colours in config match the site and the client tokens."""
 
 import colorsys
 import re
 import unittest
 
-import dark_variant as dv
-import palette as rd
+import config
 
-EXTRA_CSS = rd.REPO / 'docs/assets/css/extra.css'
-LANDING_CSS = rd.REPO / 'docs/assets/css/landing.css'
+
+EXTRA_CSS = config.REPO / 'docs/assets/css/extra.css'
+
+
+LANDING_CSS = config.REPO / 'docs/assets/css/landing.css'
 
 
 def hsl_to_hex(hue, saturation, lightness):
@@ -25,7 +21,8 @@ def hsl_to_hex(hue, saturation, lightness):
 
 def greys():
     """The grey scale of tokens.ts, as hex by step."""
-    found = re.findall(r"(\d+): 'hsl\((\d+), (\d+)%, (\d+)%\)'", rd.TOKENS.read_text())
+    tokens = config.TOKENS.read_text(encoding='utf-8')
+    found = re.findall(r"(\d+): 'hsl\((\d+), (\d+)%, (\d+)%\)'", tokens)
     return {int(step): hsl_to_hex(*map(int, hsl)) for step, *hsl in found}
 
 
@@ -37,7 +34,7 @@ def css_variables(css):
 
 def landing_schemes():
     """The light and the dark variables of the landing page stylesheet."""
-    css = LANDING_CSS.read_text()
+    css = LANDING_CSS.read_text(encoding='utf-8')
     dark_start = css.index('@media (prefers-color-scheme: dark)')
     return css_variables(css[:dark_start]), css_variables(css[dark_start:])
 
@@ -47,20 +44,20 @@ class ThemeColoursTest(unittest.TestCase):
 
     def test_site_stylesheet_uses_the_brand_colours(self):
         """Site stylesheet uses the brand colours."""
-        site = css_variables(EXTRA_CSS.read_text())
+        site = css_variables(EXTRA_CSS.read_text(encoding='utf-8'))
         for variable, token in (('dtaas-primary', 'primary'),
                                 ('dtaas-primary-dark', 'primaryDark'),
                                 ('dtaas-accent', 'accent'),
                                 ('dtaas-mark-accent', 'markAccent')):
             with self.subTest(variable=variable):
-                self.assertEqual(site[variable], rd.token(token))
+                self.assertEqual(site[variable], config.token(token))
 
     def test_landing_page_uses_the_brand_and_grey_colours(self):
         """Landing page uses the brand and grey colours."""
         light, _ = landing_schemes()
-        expected = {'primary': rd.token('primary'),
-                    'primary-dark': rd.token('primaryDark'),
-                    'primary-tint': rd.token('primaryTint'),
+        expected = {'primary': config.token('primary'),
+                    'primary-dark': config.token('primaryDark'),
+                    'primary-tint': config.token('primaryTint'),
                     'page': greys()[50],
                     'border': greys()[200],
                     'muted': greys()[600]}
@@ -72,25 +69,25 @@ class ThemeColoursTest(unittest.TestCase):
         """Diagram greys are the token greys."""
         for step in (50, 100, 400, 600, 700):
             with self.subTest(step=step):
-                self.assertEqual(getattr(rd, f'GREY_{step}'), greys()[step])
+                self.assertEqual(getattr(config, f'GREY_{step}'), greys()[step])
 
     def test_site_hue_is_the_grey_hue(self):
         """Site hue is the grey hue."""
-        hue = re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1)
-        self.assertIn(f"hsl({hue}, ", rd.TOKENS.read_text())
+        hue = re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text(encoding='utf-8')).group(1)
+        self.assertIn(f"hsl({hue}, ", config.TOKENS.read_text(encoding='utf-8'))
 
     def test_dark_ground_is_the_slate_page_of_the_site(self):
         # Material draws the slate page as hsl(var(--md-hue), 15%, 14%).
         """Dark ground is the slate page of the site."""
-        hue = int(re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text()).group(1))
-        self.assertEqual(dv.SLATE, hsl_to_hex(hue, 15, 14))
+        hue = int(re.search(r'--md-hue:\s*(\d+)', EXTRA_CSS.read_text(encoding='utf-8')).group(1))
+        self.assertEqual(config.SLATE, hsl_to_hex(hue, 15, 14))
 
     def test_dark_lines_and_text_are_the_landing_dark_colours(self):
         """Dark lines and text are the landing dark colours."""
         _, dark = landing_schemes()
-        self.assertEqual(dv.LIGHT_TEXT, dark['text'])
-        self.assertEqual(dv.LIGHT_LINE, dark['muted'])
-        self.assertEqual(dv.LIGHT_BLUE_LINE, dark['link'])
+        self.assertEqual(config.LIGHT_TEXT, dark['text'])
+        self.assertEqual(config.LIGHT_LINE, dark['muted'])
+        self.assertEqual(config.LIGHT_BLUE_LINE, dark['link'])
 
 
 if __name__ == '__main__':

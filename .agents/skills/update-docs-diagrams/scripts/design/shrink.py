@@ -1,22 +1,7 @@
-"""Shrink the raster logos embedded in the diagrams file.
+"""Scale the embedded raster logos down to the pixels they are drawn at.
 
-drawio cannot share an image between cells, so every cell carries its own
-copy as base64. The traefik logo alone was an 870 by 1200 PNG repeated in
-eleven cells. Each raster image is scaled down to the pixels the export
-actually draws, which is twice the size the documentation shows at its widest
-column, so nothing is lost in the PNG files.
-
-A JPEG has no transparency, so it is turned into a PNG and its white
-background into transparency. A logo whose owner forbids changes to it, such
-as GitLab's, is embedded as the owner's SVG and never passes through here,
-since only raster images are rewritten.
-
-Needs Pillow:
-
-    uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python \
-        .agents/skills/update-docs-diagrams/scripts/shrink_images.py in out
-
-Usage: python3 shrink_images.py <input.drawio> <output.drawio>
+It needs Pillow, which is imported only here, so every other step runs with the
+standard library.
 """
 
 import base64
@@ -24,11 +9,9 @@ import io
 import math
 import re
 
-from PIL import Image
+from config import EXPORT_WIDTH
+from drawio.files import Page
 
-from drawio_style import rewrite_file
-from export_diagrams import EXPORT_WIDTH
-from restyle_drawio import Page
 
 RASTER = re.compile(r'image=data:image/(png|jpg|jpeg),([A-Za-z0-9+/=]+)')
 
@@ -54,15 +37,16 @@ def clear_white(pixel):
     return (*colour, alpha)
 
 
-def shrink(data, kind, size):
+def shrink(data, form, size):
     """Return the image as base64 PNG data, no larger than the given size."""
+    from PIL import Image  # pylint: disable=import-outside-toplevel
     image = Image.open(io.BytesIO(base64.b64decode(data)))
     if image.mode == 'P' and image.width <= size[0] and image.height <= size[1]:
         return data  # already shrunk by an earlier run
     image = image.convert('RGBA')
     if image.width > size[0] or image.height > size[1]:
         image.thumbnail(size, Image.Resampling.LANCZOS)
-    if kind != 'png':
+    if form != 'png':
         image = white_to_alpha(image)
     # A logo has few colours, so a palette of 256 keeps it unchanged to the
     # eye at half the bytes.
@@ -92,13 +76,3 @@ def shrink_page(diagram):
     pixels_per_unit = EXPORT_WIDTH / page.width
     for cell in page.root:
         shrink_cell(cell, pixels_per_unit)
-
-
-def main():
-    """Shrink every raster image in the input file and write the result."""
-    target = rewrite_file(__doc__, shrink_page)
-    print(f'wrote {target}, {target.stat().st_size // 1024} KiB')
-
-
-if __name__ == '__main__':
-    main()

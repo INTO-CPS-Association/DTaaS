@@ -1,30 +1,25 @@
-"""Move the DTaaS diagrams from the drawio default palette to the theme.
-
-Every colour the diagrams use is mapped to a colour of the interface theme,
-read from `client/src/theme/tokens.ts`, so the pictures in the documentation
-look like the application they describe. The old wordmark, three emoji fetched
-from an external site beside the words "DTaaS" and "Digital Twin as a Service",
-is replaced by the logo in `docs/assets/brand`. Shapes, text and layout are
-left as they are.
-
-Usage: python3 retheme_drawio.py <input.drawio> <output.drawio>
+"""Map the drawio default colours to the theme, and put the logo in place of
+the old wordmark.
 """
 
-import base64
 import re
 import xml.etree.ElementTree as ET
 
-from drawio_style import drawio_arguments
-from palette import COLOURS, REPO, RGB
+from config import COLOURS, LOCKUP, RGB, WHITE
+from drawio.style import svg_image
 
-LOGO = REPO / 'docs/assets/brand/dtaas-logo-full.svg'
 
 HEX = re.compile(r'#[0-9a-fA-F]{6}\b')
+
+
 IMAGE = re.compile(r'data:image/[^;"]+[;,][^;"]*')
+
 
 # The logo is 232 by 24 units. Drawn at twice that, it spans what the old
 # wordmark spanned.
 LOGO_WIDTH = 464
+
+
 LOGO_HEIGHT = 48
 
 
@@ -46,12 +41,6 @@ def swap(chunk):
     for old, new in RGB.items():
         chunk = chunk.replace(old, new)
     return chunk
-
-
-def logo_style():
-    """Return the drawio style of an image cell that shows the logo."""
-    data = base64.b64encode(LOGO.read_bytes()).decode('ascii')
-    return f'shape=image;aspect=fixed;image=data:image/svg+xml,{data};'
 
 
 def old_wordmarks(model):
@@ -95,17 +84,28 @@ def loose_wordmark(group, members, titles):
     return pieces, group.get('id'), pieces[0].get('id'), x, y
 
 
+def remove_once(model, cells, gone):
+    """Remove cells from a model, skipping those an earlier wordmark took.
+
+    Two wordmarks can claim the same title cell, so each goes once.
+    """
+    for cell in cells:
+        if id(cell) not in gone:
+            gone.add(id(cell))
+            model.remove(cell)
+
+
 def replace_wordmarks(root):
     """Put the logo where each old wordmark was."""
-    style = logo_style()
+    style = svg_image(LOCKUP)
     for model in root.iter('root'):
         # Collected first, because the loop removes cells from the model.
         found = list(old_wordmarks(model))
+        gone = set()
         for group, members, titles in found:
             place = grouped_wordmark if group.find('mxGeometry') is not None else loose_wordmark
             removed, parent, logo_id, x, y = place(group, members, titles)
-            for cell in removed:
-                model.remove(cell)
+            remove_once(model, removed, gone)
             logo = ET.SubElement(model, 'mxCell', {
                 'id': logo_id, 'value': '', 'style': style,
                 'vertex': '1', 'parent': parent,
@@ -116,16 +116,13 @@ def replace_wordmarks(root):
             })
 
 
-def main():
-    """Recolour the input file and write the result."""
-    source, target = drawio_arguments(__doc__)
-    root = ET.fromstring(recolour(source.read_text()))
+def retheme(source, target):
+    """Recolour a drawio file, write it, and return the colours left unmapped."""
+    root = ET.fromstring(recolour(source.read_text(encoding='utf-8')))
     replace_wordmarks(root)
-    target.write_text(ET.tostring(root, encoding='unicode'))
-    left = {c.lower() for c in HEX.findall(IMAGE.sub('', target.read_text()))}
-    known = set(COLOURS.values()) | {'#000000', '#ffffff'}
-    print(f'wrote {target}, unmapped colours: {sorted(left - known) or "none"}')
-
-
-if __name__ == '__main__':
-    main()
+    ET.indent(root, space='  ')
+    target.write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
+    written = target.read_text(encoding='utf-8')
+    left = {c.lower() for c in HEX.findall(IMAGE.sub('', written))}
+    known = set(COLOURS.values()) | {'#000000', WHITE}
+    return sorted(left - known)

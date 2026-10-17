@@ -42,6 +42,12 @@ section + section {
 // card, then prints almost as wide as a whole page. At two image pixels per
 // CSS pixel every screenshot keeps the scale of the page it was taken from,
 // and the full pages and diagrams still fill the column.
+//
+// WeasyPrint drops the rest of the document without an error when an image
+// is taller than a page, as the portrait C4 diagrams are. Every image is
+// scaled down, keeping its proportions, to fit the height of one page.
 .md-typeset img {
   image-resolution: 2dppx;
+  max-height: 210mm;
+  max-width: 100%;
 }

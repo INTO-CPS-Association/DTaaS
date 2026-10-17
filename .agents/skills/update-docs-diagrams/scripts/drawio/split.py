@@ -1,27 +1,21 @@
-"""Split every drawio page that holds several diagrams into one page each.
-
-The installation page of the original file draws twelve diagrams side by side.
-The documentation needs each as its own image, so this script gives each
-diagram its own page. A diagram is a set of cells that sit within a small gap
-of each other. Titles and loose notes made only of text are left out, because
-each documentation page already carries its own heading.
-
-Usage: python3 split_pages.py <input.drawio> <output.drawio>
+"""Split a page that draws several diagrams into one page each.
 """
 
 import copy
 import xml.etree.ElementTree as ET
 
-from drawio_style import drawio_arguments
+from drawio.files import write_drawio
+
 
 # Cells closer than this, in drawio units, belong to the same diagram.
 GAP = 40
+
 
 # The section titles of the original are 16 pixel bold text.
 TITLE = 'font-size: 16px'
 
 
-def box(cell):
+def cell_box(cell):
     """Return the bounding box of a top level cell, or None if it has none."""
     geometry = cell.find('mxGeometry')
     if geometry is None:
@@ -109,7 +103,7 @@ def split(diagram):
     base = [c for c in root if c.get('parent') is None][0].get('id')
     layer = [c for c in root if c.get('parent') == base][0].get('id')
     top = [c for c in root if c.get('parent') == layer and not is_title(c)]
-    boxed = [(c, box(c)) for c in top]
+    boxed = [(c, cell_box(c)) for c in top]
     boxed = [(c, b) for c, b in boxed if b is not None]
     top_of = top_level_ids(root, layer)
     for index, members in enumerate(clusters([b for _, b in boxed])):
@@ -135,17 +129,11 @@ def keep_only(root, keep, top_of, structural):
         root.remove(cell)
 
 
-def main():
-    """Write a drawio file with one page per diagram."""
-    source, target = drawio_arguments(__doc__)
+def split_file(source, target):
+    """Write a drawio file with one page per diagram, and return the page names."""
     tree = ET.parse(source)
     pages = [p for d in tree.getroot().iter('diagram') for p in split(d)]
     out = ET.Element('mxfile', {'host': 'drawio', 'pages': str(len(pages))})
     out.extend(pages)
-    target.write_text(ET.tostring(out, encoding='unicode'))
-    for page in pages:
-        print(page.get('name'))
-
-
-if __name__ == '__main__':
-    main()
+    write_drawio(ET.ElementTree(out), target)
+    return [page.get('name') for page in pages]

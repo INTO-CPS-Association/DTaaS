@@ -8,7 +8,8 @@ reusability of assets is a fundamental feature of the platform[1].
 The DTaaS platform sorts all reusable library assets into
 five categories:
 
-![Categories of Library Assets](library-assets.png)
+![Categories of Library Assets](library-assets.png#only-light)
+![Categories of Library Assets](library-assets-dark.png#only-dark)
 
 ### Data
 
