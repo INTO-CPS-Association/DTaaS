@@ -69,15 +69,18 @@ jobs:
         run: |
           container_id=$(docker run --detach --rm \
             --publish 127.0.0.1:1883:1883 \
-            eclipse-mosquitto:2.1.2 \
+            eclipse-mosquitto:2.1.2-alpine \
             sh -c 'printf "listener 1883\nallow_anonymous true\n" \
               > /tmp/mosquitto.conf && exec mosquitto -c /tmp/mosquitto.conf')
           trap 'docker stop "$container_id"' EXIT
-          for attempt in 1 2 3 4 5; do
+          for attempt in 1 2 3 4 5 6; do
             if (exec 3<>/dev/tcp/127.0.0.1/1883) 2>/dev/null; then
               break
             fi
-            echo "Waiting for the broker, attempt $attempt"
+            if [ "$attempt" -eq 6 ]; then
+              echo "The MQTT broker did not start"
+              exit 1
+            fi
             sleep 2
           done
           MQTT_BROKER_URL=mqtt://127.0.0.1:1883 yarn test:broker
