@@ -10,15 +10,18 @@ compatibility: Requires Python 3.11 or later, uv for the image step, the drawio 
 `docs/assets/diagrams/dtaas-diagrams.drawio` holds one diagram per page. A
 page named after a path under `docs/` is exported to that path, and a page
 named after a path under `deploy/` to that path in the repository.
-The scripts are three files:
+The scripts are one command and four packages, each module under 250 lines:
 
-- `scripts/config.py`: every path, page list, exception and copy a
-  maintainer edits, and the theme colours with the colour map.
-- `scripts/design.py`: how a diagram looks (retheme, design rules, wording,
-  label backgrounds, dark variant, logo shrinking) and, in its second half,
-  the layout check.
-- `scripts/diagrams.py`: reading and writing drawio files, the one command
-  and the export.
+- `scripts/diagrams.py`: the one command, which runs each step.
+- `scripts/config/`: the paths (`paths.py`), the page lists and exceptions a
+  maintainer edits (`pages.py`), and the theme colours with the colour map
+  (`theme.py`).
+- `scripts/drawio/`: reading and writing drawio files and splitting a page.
+  It depends on no other package.
+- `scripts/design/`: how a diagram looks: retheme, restyle with its wording
+  and label backgrounds, logo shrinking and the dark variant.
+- `scripts/layout/`: the layout check.
+- `scripts/export.py`: the checks and the export of every placed page.
 
 `docs/assets/diagrams/README.md` lists the pages and the rules, and
 `docs/assets/diagrams/hand-edits.md` the edits made by hand. Run every
@@ -49,7 +52,7 @@ command from the repository root.
 
    `retheme` maps every colour to the theme and replaces the old emoji
    wordmark with the logo. It prints the colours it could not map. Add each
-   one to `COLOURS` in `scripts/config.py` before going on. `split` gives
+   one to `COLOURS` in `scripts/config/theme.py` before going on. `split` gives
    each diagram of a crowded page its own page. Copy
    the pages you need into `dtaas-diagrams.drawio` and name each after the
    image it replaces.
@@ -69,7 +72,7 @@ command from the repository root.
    holds only these three tools and installs on Windows, macOS and Linux. It
    is a different file from `script/docs/mkdocs-requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
-   `config.py`, or it gets the DTaaS mark on its largest box.
+   `config/pages.py`, or it gets the DTaaS mark on its largest box.
 
    Several pages carry edits made by hand after the restyle, listed in
    `docs/assets/diagrams/hand-edits.md`, and running the restyle on the whole
@@ -85,18 +88,19 @@ command from the repository root.
    python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py export
    ```
 
-   `write_dark` in `scripts/design.py` makes the dark variant from the light
-   page by brightness, and the export writes it beside the light image with a
-   `-dark` suffix. A page shows the pair with `#only-light` and `#only-dark`, so
-   a new image needs both lines. A page in `LIGHT_ONLY` (in `config.py`) gets no
-   dark variant, and its image keeps its white page.
+   `write_dark` in `scripts/design/dark.py` makes the dark variant from the
+   light page by brightness, and the export writes it beside the light image
+   with a `-dark` suffix. A page shows the pair with `#only-light` and
+   `#only-dark`, so a new image needs both lines. A page in `LIGHT_ONLY` (in
+   `config/pages.py`) gets no dark variant, and its image keeps its white
+   page.
 
    Before it draws anything, the export runs two checks, which
    `diagrams.py check` also runs on their own:
 
    - **Contrast.** Every cell of a placed page whose dark text falls below
      4.5 to 1, or whose line or border falls below 3 to 1.
-   - **Layout** (the second half of `scripts/design.py`), on the SVG drawio
+   - **Layout** (`scripts/layout/`), on the SVG drawio
      exports for each placed page: a connector on a slant, two connectors
      meeting a box at one point from different sides, a connector behind a box
      that is not one of its ends, a label wider than its box, and text that
@@ -106,7 +110,7 @@ command from the repository root.
 
    Either check lists what it found and stops. Fix the cell in drawio, or,
    when the drawing is intended, add it to `CONTRAST_EXCEPTIONS` or
-   `LAYOUT_EXCEPTIONS` in `config.py` with the reason. A page drawn free
+   `LAYOUT_EXCEPTIONS` in `config/pages.py` with the reason. A page drawn free
    hand, such as a sequence diagram, goes into `FREE_FORM`, where only the
    label rules apply. A page name that resolves outside `docs/` and
    `deploy/` also stops the export. The unit tests beside the scripts run with
@@ -134,10 +138,13 @@ command from the repository root.
 - Text is Inter, never italic, at least 4.5 to 1 on its fill, and at least
   14 pixels when the image is shown 700 pixels wide. A wide diagram needs
   larger fonts in drawio units, or a narrower layout.
-- Labels are in Title Case, and code, URLs and paths keep their own case
-  (`title_case` in `scripts/design.py`). A name such as GitLab has one spelling.
+- The label of a box is in Title Case. The label of a connector, a UML guard
+  and a note on a sequence diagram read as a sentence. Code, URLs and paths
+  keep their own case, and a name such as GitLab has one spelling
+  (`scripts/design/wording.py`).
 - A label background only masks a line, in the colour of what lies behind
-  it (`label_ground` in `scripts/design.py`). A label inside its own shape has none.
+  it (`label_ground` in `scripts/design/masks.py`). A label inside its own
+  shape has none.
 - One icon per idea on every page: the person, the web app, the physical
   and the digital twin, listed in `docs/assets/diagrams/README.md`. A UML or
   C4 diagram keeps the person of its notation.

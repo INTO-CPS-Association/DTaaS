@@ -62,9 +62,9 @@ The hand edits, by page:
 
 - `developer/system/architecture.png`: the running figures, the clipboard and
   the DTs icon were emoji, two of them fetched from an external site. The
-  runners are gone, the clipboard is a note shape and the DTs icon is the
-  drawio users icon. The two boxes on the right are wider and several labels
-  moved off their icons.
+  clipboard is a note shape. The running figures and the DTs icon were later
+  drawn with icons of the set (see the second review below). The two boxes
+  on the right are wider and several labels moved off their icons.
 - `developer/system/research-overview/dt-assets-relationship.png` and
   `dtaas-class-instance.png`: the title written into the picture is gone, as
   the page text names the figure. In the first, every arrow joins its two
@@ -96,15 +96,17 @@ The hand edits, by page:
   no font size makes legible at the column width. Each folder shows the five
   asset types as coloured squares, and one legend names them.
 - The ten figures added on 14 and 15 October 2026, from `lifecycle-phases.png` to
-  `library-assets.png` in the table above, had no drawio source. They are
+  `library-assets.png` in the table of [README.md](README.md), had no drawio
+  source. They are
   redrawn from the images the documentation showed, keeping every box, arrow
   and label, and then themed with the retheme, restyle and shrink steps.
   Each page is about 1000 units wide (1044 for `lifecycle-phases.png`), so its
   text reaches 14 pixels at the column width, and the concept pages are in
-  `NO_MARK`. Illustrations and third-party product logos, such as the wind
-  turbine of `shm-dt-workflow.png` and the service logos of
+  `NO_MARK`. Third-party product logos, such as the service logos of
   `current-status-developer.png`, are cropped from those images without
-  changing a pixel, apart from a white or pale background made transparent.
+  changing a pixel, apart from a white background made transparent. The wind
+  turbine of `shm-dt-workflow.png` was cropped too, and is now the shared
+  turbine icon (see the entry for that page below).
   `user/digital-twins/devops/ui.md` now shows `lifecycle-phases.png`, which
   was the same drawing as its own copy, `devops-lifecycle.png`.
 - `system-architecture-c4.png` and `implementation-status.png`: redrawn in
@@ -185,9 +187,12 @@ The hand edits, by page:
     `current-status-developer.png` are the running pictogram of the drawio
     signs library, in primary, and no longer emoji crops. The DTs asset icon
     of `architecture.png` is the twin car of the icon table.
-  - Every cropped logo and icon on `current-status-developer.png`,
-    `architecture.png` and `shm-dt-workflow.png` has a transparent
-    background, so none shows as a white tile in a dark image.
+  - The cropped logos and icons on `architecture.png` and
+    `shm-dt-workflow.png` have a transparent background, so none shows as a
+    white tile in a dark image. On `current-status-developer.png`, which has
+    no dark image, the ThingsBoard logo and the folder have a transparent
+    background, the terminal keeps the white of its window, and the VNC icon
+    keeps its pale hexagon, which is part of the icon.
   - The Single Page Web Application of `system-architecture-c4.png` is in the
     Services layer tint, as in the first image, and no fill or line on the
     two C4 pages is drawn see-through. The Services label keeps 18 units
@@ -234,14 +239,10 @@ The hand edits, by page:
   - `gitlab-runner-two-servers.png` reads `https://intocps.com/gitlab`
     under Server 2, the one place that keeps `intocps.com`. The maintainer
     confirmed it on 16 October 2026.
-- `shm-dt-workflow.png` shows the wind turbines of
-  `system-architecture.png` and `DTaaS-user-view.png`, in place of the three
-  crops of the old picture, so the turbine is the same icon on every page.
-  Three vibration sensors sit on the tower as red dots outlined in white, and
-  the sensor legend moved below the turbines, clear of the line that leaves
-  the tower.
-- `federated-dtaas.png` draws every arrow as a thin grey line. Eleven of them
-  were thick and in primary, which gave some links a weight the figure does
-  not explain.
+- `shm-dt-workflow.png` shows the turbine icon of `system-architecture.png`
+  in place of three crops of the old picture, with three vibration sensors on
+  the tower and the sensor legend clear of the line that leaves it.
+- `federated-dtaas.png` draws every arrow as a thin grey line. Eleven were
+  thick and in primary, a weight the figure did not explain.
 - The DevOps box of `DTaaS-user-view.png` and `system-architecture.png`
   grew 35 units upward, so its three lines of text stay inside it.

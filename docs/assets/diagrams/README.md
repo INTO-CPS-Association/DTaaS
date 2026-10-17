@@ -57,7 +57,7 @@ The installation packages under `deploy/` keep their own copy of five of these
 images, so a downloaded package shows its diagram without the website, and
 `developer/check/developer-docker.png` is a copy of `docker-check.png` for the
 README of the developer check stack. The export writes those copies from the
-exported images (see `DEPLOY_COPIES` in `config.py`), so a copy is never
+exported images (see `DEPLOY_COPIES` in `config/pages.py`), so a copy is never
 edited by hand.
 In the same way, each installation page under `docs/admin/dtaas/` and
 `docs/admin/workspace/` shows the logo from a copy beside it, as the packages
@@ -67,7 +67,7 @@ do, and the export writes those copies from `docs/assets/brand/png` (see
 ## Light and Dark Variants
 
 Every page under `docs/` is exported twice, except a page in `LIGHT_ONLY`.
-`write_dark` in `design.py` turns
+`write_dark` in `design/dark.py` turns
 each light fill, including the white drawio draws when a shape names none, into
 the slate page of the site with a fifth of its own colour, so tints keep their
 hue. Dark lines and dark stencil icons become light, text takes the light or the
@@ -82,20 +82,20 @@ stays hidden, as it is in the light image. The pages show the pair with
 
 The export stops when a cell of a placed page has text below 4.5 to 1 or a
 line or border below 3 to 1 in the dark variant, unless the cell is listed in
-`CONTRAST_EXCEPTIONS` in `config.py` with its reason. The list is
+`CONTRAST_EXCEPTIONS` in `config/pages.py` with its reason. The list is
 empty: every dark image meets both minimums.
 
-A page listed in `LIGHT_ONLY` in `config.py` gets no dark variant, and the
-reason for each is written beside it there. Its image is exported on an
+A page listed in `LIGHT_ONLY` in `config/pages.py` gets no dark variant, and
+the reason for each is written beside it there. Its image is exported on an
 opaque white page, so the slate scheme shows it as it is, on white.
 
 ## Layout Check
 
 Before it draws anything, the export checks every placed page as drawio
 draws it, from the SVG drawio exports for that page, and stops on a problem
-not listed in `LAYOUT_EXCEPTIONS` in `config.py`. `diagrams.py check` runs
-the same checks without writing images. The rules, in the second half of
-`design.py`:
+not listed in `LAYOUT_EXCEPTIONS` in `config/pages.py`. `diagrams.py check`
+runs the same checks without writing images. The rules, in the `layout/`
+package of the scripts:
 
 - A connector runs in horizontal and vertical segments.
 - Two connectors do not meet a box at one point from different sides.
@@ -133,16 +133,17 @@ them and can be run again on its own output without changing anything.
 - Every label is at least 14 pixels when the image is shown 700 pixels wide,
   the narrowest content column of the site. A wide diagram therefore needs
   larger fonts in drawio units than a narrow one.
-- Labels are in Title Case: each word starts with a capital except the short
-  joining words inside a line (of, and, to, with and the like). A URL, a path, a
-  name with an underscore and a word already carrying an inner capital keep
-  their case. GitLab, WebApp and Node.js have one spelling, and systemd keeps
-  its own lower case. `title_case` in `design.py` holds the rule, which the
-  restyle applies.
+- The label of a box is in Title Case, with the short joining words inside a
+  line (of, and, to, with) in lower case. The label of a connector, a UML guard
+  and a note on a sequence diagram state a relation or a condition, so they
+  read as a sentence ("May have", "User login verified"). A URL, a path, a
+  name with an underscore or an inner capital keeps its case. GitLab, WebApp
+  and Node.js have one spelling, and systemd and authcode stay lower case.
+  `title_case` and `sentence_case` in `design/wording.py` hold the rules.
 - A label background only masks a line, in the colour of what lies behind it:
   the fill of the smallest box holding both ends of the connector, or the page.
   A label inside its own shape has no background, so it never shows as a white
-  patch on a coloured box. `label_ground` in `design.py` holds the rule.
+  patch on a coloured box. `label_ground` in `design/masks.py` holds the rule.
 - One forward-auth box, one corner radius and one line width for every box,
   one style for every arrow, and one icon per idea:
 
@@ -167,8 +168,8 @@ them and can be run again on its own output without changing anything.
 
 1. Open `dtaas-diagrams.drawio` in drawio and edit the page.
 1. Apply the rules and shrink any new raster logo. The restyle undoes the
-   hand edits listed below, so run it on a copy that holds only the new or
-   changed page and bring that page back:
+   hand edits listed in [hand-edits.md](hand-edits.md), so run it on a copy
+   that holds only the new or changed page and bring that page back:
 
    ```bash
    python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle \
@@ -234,7 +235,7 @@ The steps that take files on the command line accept only `.drawio` files
 under the current directory.
 
 `retheme` maps each colour to a colour of the theme, through the `COLOURS`
-table of `config.py`, which reads the brand colours from
+table of `config/theme.py`, which reads the brand colours from
 `client/src/theme/tokens.ts`, and replaces the old wordmark with the logo in
 `docs/assets/brand`. `split` gives each diagram its own page. `restyle`
 applies the design rules above. `shrink` scales every embedded raster logo down
