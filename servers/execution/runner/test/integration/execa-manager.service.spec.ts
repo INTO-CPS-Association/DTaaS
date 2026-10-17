@@ -157,6 +157,16 @@ describe('Check execution manager based on execa library', () => {
       expect(dt.checkHistory()).toStrictEqual([{ name: 'create' }]);
     });
 
+    it('Should treat an empty request key as no key', async () => {
+      await dt.newCommand(nonExistingCommand, '');
+      await dt.newCommand('create', '');
+
+      expect(dt.checkHistory()).toStrictEqual([
+        { name: nonExistingCommand },
+        { name: 'create' },
+      ]);
+    });
+
     it('Should run a command again for a new request key', async () => {
       await dt.newCommand('create', 'key-1');
       await dt.newCommand('create', 'key-2');

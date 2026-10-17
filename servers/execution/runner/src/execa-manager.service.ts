@@ -34,7 +34,9 @@ export default class ExecaManager implements Manager {
 
   // A repeated request is not run again; it gets the result of the
   // request it repeats
-  async newCommand(name: string, requestKey?: string): Promise<CommandResult> {
+  async newCommand(name: string, key?: string): Promise<CommandResult> {
+    // an empty key marks no request
+    const requestKey = key === '' ? undefined : key;
     const repeated = this.repeatedRun(name, requestKey);
     if (repeated !== undefined) {
       this.logger.log(`Discarded a repeated request for ${name}`);
