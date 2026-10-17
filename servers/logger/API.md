@@ -52,7 +52,7 @@ Ingest a single log event.
 | ------------------------- | ----------------------------------------- |
 | 204 No Content            | Event accepted (no body)                  |
 | 400 Bad Request           | Malformed JSON or missing required fields |
-| 401 Unauthorized          | Bearer token missing or wrong             |
+| 401 Unauthorized          | Bearer token missing or wrong; only when `auth-token` is set |
 | 413 Payload Too Large     | Body exceeds configured max payload bytes |
 | 429 Too Many Requests     | Rate limit exceeded                       |
 | 500 Internal Server Error | Server failure                            |

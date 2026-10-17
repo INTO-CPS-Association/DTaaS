@@ -185,8 +185,8 @@ keycloak-issuer-url     = "https://keycloak.example.com/realms/dtaas"
 keycloak-client-id      = "workspace"
 keycloak-client-secret  = "s3cr3t"
 oauth-secret            = "random-signing-string"
-# Validated as URLs only; not written to config/client.js. Set
-# REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
+# Not written to config/client.js (auth-authority is only checked to be
+# a URL). Set REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
 client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
@@ -228,8 +228,9 @@ present. `config validate` checks every section in the file, while
 `platform update --config` checks only the section of the installed
 deployment type, plus `[frontend]`.
 
-For `workspace-secure-server`, `client-id` and `auth-authority` are
-only validated: no command writes them into `config/client.js`. Edit
+For `workspace-secure-server`, no command writes `client-id` or
+`auth-authority` into `config/client.js`; `auth-authority` is only
+checked to be a URL. Edit
 `REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in that file by
 hand.
 

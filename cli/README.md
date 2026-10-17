@@ -1232,8 +1232,8 @@ keycloak-issuer-url     = "https://keycloak.example.com/realms/dtaas"
 keycloak-client-id      = "workspace"
 keycloak-client-secret  = "s3cr3t"
 oauth-secret            = "random-signing-string"
-# Validated as URLs only; not written to config/client.js. Set
-# REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
+# Not written to config/client.js (auth-authority is only checked to be
+# a URL). Set REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
 client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
