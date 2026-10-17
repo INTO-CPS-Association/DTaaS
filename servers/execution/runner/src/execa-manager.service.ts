@@ -31,8 +31,8 @@ export default class ExecaManager implements Manager, OnApplicationShutdown {
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
-    private commandQueue: Queue,
-    private config: Config,
+    private readonly commandQueue: Queue,
+    private readonly config: Config,
   ) {} // eslint-disable-line no-empty-function
 
   // A repeated request is not run again; it gets the result of the
