@@ -35,6 +35,7 @@ The repository provides these skills:
 | :--- | :--- |
 | `upgrade-npm-packages` | Upgrade npm dependencies behind a ten-day release cooldown; see [Upgrade NPM Packages](npm-upgrade.md) |
 | `capture-docs-screenshots` | Retake the user documentation screenshots from a running installation |
+| `update-docs-diagrams` | Edit, restyle and export the documentation diagrams |
 | `review-pull-request` | Check that a pull request passes every quality gate before merge |
 | `check-code-quality` | Review the code quality of one component |
 | `plan-before-coding` | Analyse the codebase and requirements before implementing |

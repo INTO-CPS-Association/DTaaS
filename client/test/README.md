@@ -42,10 +42,10 @@ The correct callback URL must be added to the OAuth application.
 Depending on the location of the client website, register one of the
 following callback URLs.
 
-| Location of Client Application | URL                     |
-| :----------------------------- | :---------------------- |
-| Localhost                      | `http://localhost:4000` |
-| External / Integration server  | `https://intocps.org`   |
+| Location of Client Application | URL                             |
+| :----------------------------- | :------------------------------ |
+| Localhost                      | `http://localhost:4000/Library` |
+| External / Integration server  | `https://intocps.org/Library`   |
 
 GitLab still runs on a remote machine.
 Running both GitLab and the React client website on localhost is not supported.
@@ -109,7 +109,7 @@ window.env = {
   REACT_APP_AUTH_AUTHORITY: 'https://gitlab.intocps.org/',
   REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
   REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
-  REACT_APP_GitLab_SCOPES: 'openid profile read_user read_repository api',
+  REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
 };
 ```
 

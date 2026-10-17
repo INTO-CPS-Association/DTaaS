@@ -164,7 +164,8 @@ libms --http FILE-PATH
 {
   "name": "DTaaS Fileserver",
   "auth": false,
-  "editor": "edward",
+  "editor": "deepword",
+  "menu": "supermenu",
   "packer": "zip",
   "diff": true,
   "zip": true,
@@ -315,7 +316,7 @@ A sample query and response are given here.
 
 ```graphql
 query {
-  readFile(path: "user2/data/sample.txt") {
+  readFile(path: "user2/data/welcome.txt") {
     repository {
       blobs {
         nodes {
@@ -337,7 +338,7 @@ query {
         "blobs": {
           "nodes": [
             {
-              "name": "sample.txt",
+              "name": "welcome.txt",
               "rawBlob": "hello world",
               "rawTextBlob": "hello world"
             }
@@ -363,7 +364,7 @@ You can download the Ubuntu AppImage and run it. Select the following options:
 
 ```txt
 Method: POST
-URL: localhost:4001
+URL: localhost:4001/lib
 Body: <<copy the json code from examples below>>
 Content Type: text/json
 ```

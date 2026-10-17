@@ -28,6 +28,7 @@ servers/lib/
 │   ├── app.module.ts              # Root application module
 │   ├── schema.gql                 # Auto-generated GraphQL schema
 │   ├── types.ts                   # GraphQL type definitions
+│   ├── graphql-options.ts         # Apollo GraphQL module options
 │   ├── config/                    # Configuration module
 │   │   ├── config.module.ts       # Configuration DI module
 │   │   ├── config.service.ts      # Configuration service
@@ -49,6 +50,7 @@ servers/lib/
 │   ├── enums/                     # Enumeration definitions
 │   │   └── config-mode.enum.ts    # Backend mode enum
 │   └── cloudcmd/                  # CloudCmd file browser integration
+│       └── cloudcmd.ts
 ├── test/                          # Test suites
 └── dist/                          # Compiled output
 ```

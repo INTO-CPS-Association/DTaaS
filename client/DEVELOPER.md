@@ -17,7 +17,7 @@ The following steps are required to configure the environment and build the appl
 ```bash
 cd client
 yarn install    #install the nodejs dependencies
-yarn format     #format .ts[x] and .js[x] files with prettier.
+yarn format     #format .ts, .tsx, .css and .scss files with prettier
 yarn syntax     #perform linting and static analysis
 yarn typecheck  #run TypeScript type checking without building
 yarn graph      # generate dependency graphs in the code
@@ -43,7 +43,7 @@ yarn start       #preview the production build in the foreground
 yarn stop        #stop the application if running in the background
 
 yarn clean       #clean the directory of temporary files but keep node_modules
-yarn clean:all   #clean the directory of temporary files
+yarn clean:all   #clean the directory of temporary files and node_modules
 ```
 
 Different test suites can be executed with the following `yarn` commands:
@@ -110,8 +110,8 @@ The purpose of different configuration files are given in the table below.
 | Configuration File Name | Usage Scenario                                                                                                                                                        |
 | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dev.js`                | Check functionality of the client application without using any other parts of the DTaaS software                                                                     |
-| `local.js`              | Used by the `developer/check/docker-compose.yml` to set up and run the complete DTaaS application on the developer computer                                           |
-| `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. The `deploy/config/client/env.js` is used during installations. |
+| `local.js`              | Used with `yarn config:local`, or mounted as `env.js` into the `intocps/dtaas-web` container, to test the client on localhost (see `docs/developer/contributions/docker.md`) |
+| `prod.js`               | Used for running the client application on a production server. This file is kept here for reference. Installations use the `config/client.js` of each package in `deploy/dtaas/docker/`, created from `client.js.example`. |
 | `test.js`               | Used by all the tests                                                                                                                                                 |
 
 ## Example configuration for developers
@@ -130,17 +130,17 @@ if (typeof window !== 'undefined') {
     REACT_APP_URL_DTLINK: '/lab',
     REACT_APP_URL_LIBLINK: '',
 
-    REACT_APP_CLIENT_ID:
-      '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
-    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+    REACT_APP_CLIENT_ID: '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com',
     REACT_APP_REDIRECT_URI: 'http://localhost:4000/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+    LOGGER_URL: 'http://localhost:4003/logger', // NOSONAR
   };
 }
 ```
 
-In this example, the GitLab URL is `https://gitlab.com/` and the client ID is
+In this example, the GitLab URL is `https://gitlab.com` and the client ID is
 `1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c`.
 
 If a basename is required for the client application, the configuration file
@@ -158,10 +158,11 @@ if (typeof window !== 'undefined') {
 
     REACT_APP_CLIENT_ID:
       '1be55736756190b3ace4c2c4fb19bde386d1dcc748d20b47ea8cfb5935b8446c',
-    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com/',
+    REACT_APP_AUTH_AUTHORITY: 'https://gitlab.com',
     REACT_APP_REDIRECT_URI: 'http://localhost:4000/au/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost:4000/au',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+    LOGGER_URL: 'http://localhost:4003/logger', // NOSONAR
   };
 }
 ```
@@ -170,12 +171,15 @@ if (typeof window !== 'undefined') {
 
 The development environment does not include user workspaces or a Traefik
 gateway running in the background. As a result, iframe links pointing to
-user workspaces do not resolve correctly and the following error is displayed.
+user workspaces do not resolve correctly and the application's not-found
+page is displayed with the following heading.
 
 ```txt
-Unexpected Application Error!
-404 Not Found
+This Page Does Not Exist
 ```
+
+The page also shows the unmatched path, so you can see which workspace
+address the gateway failed to route.
 
 This error appears on the **Library** and **Digital Twins** pages.
 This error is expected.

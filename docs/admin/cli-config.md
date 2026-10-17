@@ -14,7 +14,7 @@ installation workflow is covered in
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 | --- | :---: | :---: | :---: | :---: |
 | `[common]` | Required | Required | Required | Required |
-| `[common.security]` | Not used | Not used | Required | Required |
+| `[common.security]` | Not used | Optional (`tls = false`) | Required | Required |
 | `[common.resources]` | Optional | Optional | Optional | Optional |
 | `[gitlab]` | Optional | Optional | Optional | Optional |
 | `[[users]]` | Optional | Required | Required | Required |
@@ -23,6 +23,11 @@ installation workflow is covered in
 | `[insecure-server]` | Not used | Required | Not used | Not used |
 | `[secure-server]` | Not used | Not used | Required | Not used |
 | `[secure-server-gitlab]` | Not used | Not used | Not used | Required |
+
+`dtaas user add` reads `[common.security].tls` for every deployment
+type to choose the per-user compose template. For `insecure-server`,
+leave the section out or set `tls = false`; `tls = true` gives the new
+users the HTTPS template, which the HTTP-only deployment does not serve.
 
 ### Workspace deployments
 
@@ -180,6 +185,8 @@ keycloak-issuer-url     = "https://keycloak.example.com/realms/dtaas"
 keycloak-client-id      = "workspace"
 keycloak-client-secret  = "s3cr3t"
 oauth-secret            = "random-signing-string"
+# Validated as URLs only; not written to config/client.js. Set
+# REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
 client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
@@ -220,6 +227,11 @@ Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 present. `config validate` checks every section in the file, while
 `platform update --config` checks only the section of the installed
 deployment type, plus `[frontend]`.
+
+For `workspace-secure-server`, `client-id` and `auth-authority` are
+only validated: no command writes them into `config/client.js`. Edit
+`REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in that file by
+hand.
 
 `path` and `certs-src` are checked against the local filesystem, so
 run `validate` on the deployment host. If a check fails with a

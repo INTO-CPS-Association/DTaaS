@@ -71,6 +71,7 @@ dtaas platform uninstall
     - [user add](#user-add)
     - [user delete](#user-delete)
     - [user pause / stop / resume](#user-pause--stop--resume)
+    - [user status](#user-status)
     - [config reconcile](#config-reconcile)
   - [User files](#user-files)
   - [Configuration Reference dtaas.toml](#configuration-reference-dtaastoml)
@@ -946,6 +947,28 @@ alice, bob paused successfully
 | `--all` | off | Target every additional (registry) user; mutually exclusive with `USERNAMES`/`--file` |
 
 ---
+
+### user status
+
+Reports the state of every additional user's container, or of one
+named user. It is the per-user part of `platform status`, using the
+same table and `--json` format.
+
+```bash
+dtaas user status
+dtaas user status alice
+dtaas user status --json
+```
+
+A username that is not in `dtaas.users.registry.json` is rejected, so
+a typo is not mistaken for a stopped user. A registered user without
+a container is reported as not provisioned. The command exits `0`
+whenever it can read the deployment.
+
+| Option | Default | Description |
+| :----- | :------ | :---------- |
+| `USERNAME` | — | Report only this user |
+| `--json` | off | Emit machine-readable JSON instead of the table |
 
 ### config reconcile
 

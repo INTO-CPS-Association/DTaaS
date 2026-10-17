@@ -108,10 +108,8 @@ poetry run pytest --cov=src --cov-report=xml --cov-report=term-missing
 
 ### Caveat
 
-Before running all tests, set the appropriate _path_ in _dtaas.toml_
-and the same path in the `test_import_toml` function in _test_utils.py_.
-The integration tests in _test_cli.py_ run CLI commands directly and will
-fail if the DTaaS path is not set correctly.
+The tests need no local _dtaas.toml_. The `test_import_toml` function in
+_test_utils.py_ reads the committed fixture _tests/dtaas.test.toml_.
 
 ## Security Check
 
@@ -216,6 +214,8 @@ one owner and one responsibility:
   different mechanisms, on purpose.** `starting` users are baked into the
   main `docker-compose.yml` at `deployment generate` time, in a fixed number
   of slots per deploy type. `additional` (registry) users get a dynamically
-  managed, separate `compose.users.yml`. This means `dtaas.users.registry.json`
-  and `.dtaas.state.json` only ever track `additional` users `starting`
-  users intentionally never appear in either file.
+  managed, separate `compose.users.yml`. This means `.dtaas.state.json`
+  only tracks `additional` users. `dtaas.users.registry.json` keeps them
+  under `users`; its separate `starting_users` section holds only the
+  GitLab markers (`gitlab_user_id`, `gitlab_pat_issued`) of `starting`
+  users that `user add` has provisioned on GitLab.

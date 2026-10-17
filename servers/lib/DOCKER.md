@@ -303,7 +303,7 @@ You can download the Ubuntu AppImage and run it. Select the following options:
 
 ```txt
 Method: POST
-URL: localhost:4001
+URL: localhost:4001/lib
 Body: <<copy the json code from examples below>>
 Content Type: text/json
 ```
