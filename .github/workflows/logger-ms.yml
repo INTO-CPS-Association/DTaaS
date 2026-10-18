@@ -13,6 +13,7 @@ name: Logger microservice
       - 'developer/check/logger.dockerfile'
       - 'developer/check/logger-entrypoint.sh'
       - '.github/workflows/logger-ms.yml'
+      - '.github/workflows/docker-build.yml'
   workflow_dispatch:
 
 concurrency:
@@ -119,6 +120,15 @@ jobs:
             sleep 3
           done
           exit 1
+
+  build-docker-image:
+    name: Build Docker image
+    permissions:
+      contents: read
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: logger-ms
+      dockerfile: logger.dockerfile
 
   get-version:
     permissions:
