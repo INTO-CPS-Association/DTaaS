@@ -47,7 +47,7 @@ form the mock physical twin. The specific assets used are:
 | :--------- | :-------------------------------------- | :--------- | :---------------------- |
 | Models     | distance_from_zero.fmu                  | Private    | No                      |
 |            | rmqfmu-vhost.fmu                        | Private    | Yes                     |
-| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool       | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 | Data       | drobotti_playback_data.csv              | Private    | No                      |
 | Mock PT    | rmq-publisher.py                        | Private    | No                      |
 |            | consume.py                              | Private    | No                      |
@@ -62,11 +62,11 @@ the appropriate credentials to both files.
 
 ## Lifecycle Phases
 
-| Lifecycle Phase | Completed Tasks                                                                    |
-| --------------- | ---------------------------------------------------------------------------------- |
-| Create          | Installs Java Development Kit for Maestro tool and pip packages for python scripts |
-| Execute         | Runs both DT and mock PT                                                           |
-| Clean           | Clears run logs and outputs                                                        |
+| Lifecycle Phase | Completed Tasks                                                                       |
+| --------------- | ------------------------------------------------------------------------------------- |
+| Create          | Installs Java Development Kit for Maestro tool and Python packages for python scripts |
+| Execute         | Runs both DT and mock PT                                                              |
+| Clean           | Clears run logs and outputs                                                           |
 
 ## Run the example
 
@@ -87,8 +87,10 @@ Now run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 17 in the workspace, along with the
-pip packages needed by the _rmq-publisher.py_ and _consume.py_ scripts.
+Installs Open Java Development Kit 21 in the workspace, along with the
+Python packages needed by the _rmq-publisher.py_ and _consume.py_ scripts
+and by the _distance\_from\_zero.fmu_ model (`python3-pika`,
+`python3-protobuf` and `python3-zmq`).
 
 ```bash
 lifecycle/create

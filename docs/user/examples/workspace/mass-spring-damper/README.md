@@ -28,7 +28,7 @@ This example uses two models and one tool:
 | :--------- | :-------------------------------------- | :--------- | :---------------------- |
 | Models     | MassSpringDamper1.fmu                   | Private    | Yes                     |
 |            | MassSpringDamper2.fmu                   | Private    | Yes                     |
-| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool       | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The DT is executed with two configuration files, `cosim.json` and
 `time.json`. Edit them to customise the DT.
@@ -59,7 +59,7 @@ Then run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 17 in the workspace.
+Installs Open Java Development Kit 21 in the workspace.
 
 ```bash
 lifecycle/create

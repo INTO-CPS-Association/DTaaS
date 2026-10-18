@@ -39,7 +39,7 @@ This example uses four models, one specification and one tool:
 |               | m2.fmu                                  | Private    | No                      |
 |               | RtI.fmu                                 | Private    | Yes                     |
 | Specification | m2.smv                                  | Private    | No                      |
-| Tool          | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool          | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The DT is executed with two configuration files, `cosim.json` and
 `time.json`. Edit them to customise the DT.
@@ -71,7 +71,7 @@ Then run the following scripts.
 
 ### Create
 
-- Installs Open Java Development Kit 17 and the pandas and matplotlib pip
+- Installs Open Java Development Kit 21 and the pandas and matplotlib Python
   packages in the workspace.
 - Generates and compiles the monitor FMU from the NuRV specification.
 

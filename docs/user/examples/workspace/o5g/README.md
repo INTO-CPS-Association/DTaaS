@@ -129,9 +129,10 @@ The example covers these lifecycle phases:
 
 ## Run the example
 
-Run the lifecycle scripts from the directory of the example. The
-_install_ script creates the Python virtual environment in the current
-directory, and the _execute_ script activates it from there.
+The _install_ script creates the Python virtual environment _o5g-venv_
+in the directory of the example, and the _execute_ script activates it
+from there. The lifecycle scripts can be run from any directory, for
+example from the directory of the example.
 
 ```bash
 cd /workspace/examples/digital_twins/o5g

@@ -67,7 +67,7 @@ The example covers these lifecycle phases:
 
 | Lifecycle Phase | Completed Tasks                                                                                     |
 | --------------- | --------------------------------------------------------------------------------------------------- |
-| Create          | Installs missing system packages and the Python dependencies                                        |
+| Create          | Installs missing system packages and the Python dependencies in a virtual environment               |
 | Execute         | Executes the Incubator digital twin and produces output in the terminal and in _incubator/log.log_. |
 | Clean           | Removes the log file.                                                                               |
 
@@ -89,8 +89,9 @@ Now, run the following scripts:
 
 ### Create
 
-Installs any missing system packages (Python 3, pip and venv) and the
-Python dependencies in a virtual environment.
+Installs any missing system packages (Python 3 and venv) and the
+Python dependencies in a virtual environment in
+_common/digital\_twins/incubator/.venv_.
 
 ```bash
 lifecycle/create
@@ -132,7 +133,7 @@ An InfluxDB dashboard can be set up from
 Once the dashboard is set up in InfluxDB, it shows the following
 visualisation:
 
-![Influx Dashboard](figures/visualisation.png)
+![Influx Dashboard](figures/visualization.png)
 
 ## References
 
