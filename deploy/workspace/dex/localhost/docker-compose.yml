@@ -21,7 +21,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   client:
-    image: intocps/dtaas-web:1.7.2
+    image: intocps/dtaas-web:1.7.1
     restart: unless-stopped
     volumes:
       - ./config/env.local.js:/dtaas/client/build/env.js
