@@ -179,9 +179,10 @@ instructions to create the public PKCE client in Keycloak, then update
 ```js
 REACT_APP_CLIENT_ID: 'dtaas-client',          // Client ID set in Keycloak
 REACT_APP_AUTH_AUTHORITY: 'https://<DOMAIN_NAME>/auth/realms/dtaas',
-REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/Library',
+REACT_APP_REDIRECT_URI: 'https://<DOMAIN_NAME>/workbench',
 REACT_APP_LOGOUT_REDIRECT_URI: 'https://<DOMAIN_NAME>/',
 REACT_APP_GITLAB_SCOPES: 'openid profile',    // OIDC scopes requested from Keycloak
+REACT_APP_PROFILE: 'workbench',              // Show only the Workbench page
 ```
 
 `openid` and `profile` are standard OIDC scopes that Keycloak provides by
@@ -197,6 +198,15 @@ the `profile` URL, and `sub`. The `profile` URL is also shown as the
 user's profile link.
 The variable is named `REACT_APP_GITLAB_SCOPES` for historical reasons;
 it carries the Keycloak OIDC scopes.
+
+`REACT_APP_PROFILE: 'workbench'` limits the web client to the Workbench
+page, which is the only page a workspace installation serves. The other
+pages need a GitLab instance, which this installation does not have.
+Remove the line, or set it to `'full'`, to show every page.
+With the `workbench` profile, `REACT_APP_REDIRECT_URI` must end in
+`/workbench`; any other page shows the page-not-found message after
+sign-in.
+Web client images that predate the key ignore it and show every page.
 
 Replace `<DOMAIN_NAME>` with the value set in the
 [Domain](#domain) section, and replace `dtaas` with the Keycloak realm name

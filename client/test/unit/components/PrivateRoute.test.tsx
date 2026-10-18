@@ -9,9 +9,12 @@ import {
   clearUsername,
   getAccessToken,
   getUsername,
+  setAccessToken,
+  setUsername,
 } from '@into-cps-association/dt-automation';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
+import runWithProfile from 'test/profile.testUtil';
 
 jest.mock('routes', () => {
   const MockSignin = () => <div>Signin</div>;
@@ -202,5 +205,38 @@ describe('PrivateRoute', () => {
     setupTest({ isLoading: true, error: null, isAuthenticated: false });
 
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  describe('in the workbench profile', () => {
+    runWithProfile('workbench');
+
+    // A workspace installation has no GitLab, so the execution history the
+    // loader polls for does not exist, and dt-automation is never called.
+    test('Renders the page without the execution history loader', () => {
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(screen.getByText('Test Component')).toBeInTheDocument();
+      expect(
+        screen.queryByText(/ExecutionHistoryLoader/i),
+      ).not.toBeInTheDocument();
+    });
+
+    // Set beforehand, so the test also shows that credentials left in the
+    // package are cleared, not only that none are added.
+    test('Gives dt-automation no credentials', () => {
+      setAccessToken('stale_token');
+      setUsername('stale_user');
+
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(getAccessToken()).toBe('');
+      expect(getUsername()).toBe('');
+    });
+
+    test('Still records the user name for the workspace addresses', () => {
+      setupTest({ isLoading: false, error: null, isAuthenticated: true });
+
+      expect(dispatch).toHaveBeenCalledWith(setUserName('username'));
+    });
   });
 });

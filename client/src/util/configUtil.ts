@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { getEffectiveRemoteLoggingEnabled } from 'store/settings.slice';
 import { wait } from 'util/auth/Authentication';
+import { PROFILE_NAMES } from 'util/profile';
 
 export interface ValidationType {
   value?: string;
@@ -13,6 +14,9 @@ const PathString: z.ZodString = z.string();
 const ScopesString: z.ZodLiteral<string> = z.literal(
   'openid profile read_user read_repository api',
 );
+
+// Empty is accepted because the website reads it as the default profile.
+const ProfileString = z.enum(['', ...PROFILE_NAMES] as [string, ...string[]]);
 
 const pathKeys = [
   'REACT_APP_URL_BASENAME',
@@ -54,6 +58,16 @@ async function loggerUrlIsReachable(url: string): Promise<ValidationType> {
   return result.error === undefined ? { ...result, value: url } : result;
 }
 
+// Checked only when set, like LOGGER_URL: a missing key is the default.
+function profileValidation(): Record<string, Promise<ValidationType>> {
+  const profile = globalThis.env.REACT_APP_PROFILE;
+  return profile === undefined
+    ? {}
+    : {
+        REACT_APP_PROFILE: Promise.resolve(parseField(ProfileString, profile)),
+      };
+}
+
 function getValidationPromises(): Record<string, Promise<ValidationType>> {
   return {
     REACT_APP_ENVIRONMENT: Promise.resolve(
@@ -62,6 +76,7 @@ function getValidationPromises(): Record<string, Promise<ValidationType>> {
     REACT_APP_GITLAB_SCOPES: Promise.resolve(
       parseField(ScopesString, globalThis.env.REACT_APP_GITLAB_SCOPES),
     ),
+    ...profileValidation(),
     ...Object.fromEntries(
       configuredKeys(pathKeys).map((key) => [
         key,

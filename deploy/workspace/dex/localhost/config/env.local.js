@@ -7,10 +7,11 @@ if (globalThis.window != undefined) {
 
     REACT_APP_CLIENT_ID: 'mock',
     REACT_APP_AUTH_AUTHORITY: 'http://localhost:5556/dex',
-    REACT_APP_REDIRECT_URI: 'http://localhost/Library',
+    REACT_APP_REDIRECT_URI: 'http://localhost/workbench',
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://localhost/',
     REACT_APP_GITLAB_SCOPES: 'openid profile',
     LOGGER_URL: '',
+    REACT_APP_PROFILE: 'workbench',
   };
 };
 

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import MenuItems from 'page/MenuItems';
+import runWithProfile from 'test/profile.testUtil';
 
 const menuEntries = [
   { name: 'Library', link: '/library' },
@@ -64,6 +65,22 @@ describe('MenuItems', () => {
       expect(
         screen.getByRole('link', { name: entry.name }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('in the workbench profile', () => {
+    runWithProfile('workbench');
+
+    it('lists only the Workbench', () => {
+      renderMenu(true);
+
+      expect(
+        screen.getAllByRole('link').map((link) => link.textContent),
+      ).toEqual(['Workbench']);
+      expect(screen.getByRole('link', { name: 'Workbench' })).toHaveAttribute(
+        'href',
+        '/workbench',
+      );
     });
   });
 
