@@ -14,7 +14,7 @@ DTaaS/
 ├── cli/                   # Python admin CLI package
 ├── client/                # React and TypeScript frontend
 ├── deploy/                # Scenario-based deployment packages and services CLI
-├── developer/             # Development container and Docker workflow
+├── developer/             # Development container, Docker workflow, local server
 ├── docs/                  # MkDocs source documentation
 ├── lib/                   # Shared libraries
 │   ├── dt-automation/     # Digital twin automation npm package
@@ -34,7 +34,7 @@ DTaaS/
 | `cli/` | Python package for administrative user and workspace operations. |
 | `client/` | Main DTaaS web application with route, store, model, and test layers. |
 | `deploy/` | Installable DTaaS, workspace, runner, and platform-services packages. |
-| `developer/` | The `devenv` development container and the `check` Docker workflow. |
+| `developer/` | The `devenv` development container, the `check` Docker workflow and the `local-server` test script. |
 | `docs/` | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`. |
 | `lib/` | The `dt-automation` npm package and the `gitlab_common` Python library. |
 | `script/` | Helper scripts for docs publishing, environment setup, and release tasks. |
@@ -50,6 +50,8 @@ The pages in this section follow the parts of the monorepo:
   for GitLab-backed digital twin lifecycle flows.
 - [DTaaS CLI](cli.md) for the Python admin CLI package.
 - [DTaaS Services](dtaas-services.md) for the platform-services provisioning CLI.
+- [Local Server Script](local-server.md) for the script that runs the
+  integrated GitLab package on one machine and tests its registry.
 - [Library Microservice](lib-ms.md) and [Runner Microservice](runner.md) for
   backend service implementation details.
 - [Publish Packages](publish-packages.md) for package-release workflows.

@@ -37,6 +37,7 @@ platform services, then continue with the
 ## Related
 
 - [Integration guide](integration.md)
+- [Container registry](registry.md)
 - [Runner setup (Linux)](runner-linux.md)
 - [Runner setup (Windows)](runner-windows.md)
 - [DTaaS integrated package config](../dtaas/secure-server-gitlab/config.md)

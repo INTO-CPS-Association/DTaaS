@@ -1,0 +1,92 @@
+name: Local Server Script
+
+'on':
+  push:
+    paths: &local_server_paths
+      - 'developer/local-server/**'
+      - 'deploy/dtaas/docker/secure-server_with_integrated-gitlab/**'
+      - '.pylintrc'
+      - '.github/workflows/developer-local-server.yml'
+  pull_request:
+    paths: *local_server_paths
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint and Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest and the newest Python the script supports
+        python-version: ['3.10', '3.14']
+    defaults:
+      run:
+        working-directory: developer/local-server
+    steps:
+      - name: Checkout code
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: false
+
+      - name: Set up Python
+        # v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # The script uses only the standard library; requirements.txt locks
+      # the checking tools and their dependencies with hashes.
+      - name: Install checking tools
+        run: |
+          pip install --require-hashes --only-binary :all: -r requirements.txt
+
+      - name: Run flake8
+        run: flake8 src tests --max-complexity=10 --max-line-length=127
+
+      - name: Run pylint
+        run: pylint src tests --rcfile=../../.pylintrc --recursive=y
+
+      - name: Run unit tests
+        run: python -m pytest
+
+  # The script runs this package's compose file; check that the registry
+  # port from the config file reaches every place that needs it.
+  registry-port:
+    name: Render Integrated Package with a Custom Registry Port
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: deploy/dtaas/docker/secure-server_with_integrated-gitlab
+    steps:
+      - name: Checkout code
+        # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: false
+
+      - name: Render docker-compose.yml with REGISTRY_PORT=6060
+        env:
+          REGISTRY_PORT: '6060'
+        run: |
+          docker compose --env-file config/.env.example config > rendered.yml
+          # Each grep fails the step if the port did not reach that place.
+          grep -F 'entrypoints.registry.address=:6060' rendered.yml
+          grep -F "registry_external_url 'https://localhost:6060'" rendered.yml
+          grep -F "registry_nginx['listen_port'] = 6060" rendered.yml
+          grep -F 'published: "6060"' rendered.yml
+          grep -F 'gitlab-registry.loadbalancer.server.port: "6060"' rendered.yml

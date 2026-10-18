@@ -137,6 +137,12 @@ On Linux, to validate the full docs build including the PDF export:
 python script/docs/docs.py build --pdf
 ```
 
+## Server Packages
+
+To run the server installation packages and the GitLab container
+registry on a development machine, see
+[Local Server Testing](local-server-testing.md).
+
 ## Practical Tip
 
 When changing several components, validate each package on its own
