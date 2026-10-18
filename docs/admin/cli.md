@@ -261,7 +261,8 @@ something that is running should be a deliberate action. Use
 Copies the project structure for one deployment scenario
 (`docker-compose.yml`, config examples and supporting files) into a
 target directory. It also writes the user-workspace templates and the
-`files/template/` skeleton.
+`files/template/` skeleton, and, for the types that run the logger,
+creates `logs/logger/` (see [`platform install`](#platform-install)).
 
 ```bash
 dtaas deployment generate --type <name>
@@ -323,6 +324,24 @@ The command runs `docker compose up -d` against the
 makes sure a workspace directory exists for every `[[users]]` record,
 creating any missing one from `files/template/`, and sets its
 ownership to `1000:100`.
+
+For the `localhost`, `insecure-server`, `secure-server` and
+`secure-server-gitlab` types, it also creates `logs/logger/`, where the
+logger microservice writes its events, and gives it to `1000:1000`, the
+user that runs the logger. This is the logger step of the manual
+installation guides, so an installation done with the CLI needs no
+extra step. Only `logs/logger/` changes owner: `secure-server-gitlab`
+also mounts `logs/` into GitLab, so `logs/` itself is left alone.
+
+Both ownership changes use `sudo` on Linux and macOS and are skipped
+on Windows. When one fails, for example because `sudo` is not
+available, the command prints a warning with the commands to run by
+hand and carries on:
+
+```text
+Warning: could not set the owner of logs/logger/
+  Run: sudo chown -R 1000:1000 logs/logger
+```
 
 **Options:**
 

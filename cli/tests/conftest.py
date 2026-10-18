@@ -4,6 +4,7 @@
 from contextlib import contextmanager
 from unittest.mock import patch, MagicMock
 import pytest
+from click.testing import CliRunner
 
 CONF_SERVER_CONTENT = (
     "rule.libms.action=auth\n"
@@ -17,6 +18,12 @@ CONF_SERVER_CONTENT = (
     "rule.onlyu2.rule=PathPrefix(`/user2`)\n"
     "rule.onlyu2.whitelist=user2@example.com\n"
 )
+
+
+@pytest.fixture
+def runner():
+    """CLI test runner"""
+    return CliRunner()
 
 
 @pytest.fixture

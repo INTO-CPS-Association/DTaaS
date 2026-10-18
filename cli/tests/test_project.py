@@ -9,8 +9,6 @@ from src.pkg.project import (
     generate_dtaas_toml,
     generate_user_templates,
     generate_deploy_project,
-    create_user_dirs,
-    set_files_permissions,
     warn_stale_root_env,
     _copy_config_file,
     _copy_example,
@@ -224,32 +222,6 @@ def test_generate_deploy_project_copies_required_files(tmp_path, deploy_type):
         ).is_file(), f"[{deploy_type}] required file missing after generation: {rel}"
 
 
-def test_create_user_dirs_copies_template(tmp_path):
-    """create_user_dirs copies files/template into files/<username> for each user."""
-    template = tmp_path / "files" / "template"
-    template.mkdir(parents=True)
-    (template / "readme.txt").write_text("hello")
-
-    create_user_dirs(str(tmp_path), ["alice", "bob"])
-
-    assert (tmp_path / "files" / "alice" / "readme.txt").read_text() == "hello"
-    assert (tmp_path / "files" / "bob" / "readme.txt").read_text() == "hello"
-
-
-def test_create_user_dirs_skips_when_no_template(tmp_path):
-    """create_user_dirs is a no-op when files/template does not exist."""
-    create_user_dirs(str(tmp_path), ["alice"])
-    assert not (tmp_path / "files" / "alice").exists()
-
-
-def test_set_files_permissions_skips_when_no_files_dir(tmp_path):
-    """set_files_permissions is a no-op when files/ does not exist."""
-    with patch("src.pkg.project.subprocess.run") as mock_run:
-        set_files_permissions(str(tmp_path))
-
-    mock_run.assert_not_called()
-
-
 def test_copy_example_files_skips_existing_without_force(tmp_path):
     """_copy_example_files does not overwrite existing files when force=False."""
     (tmp_path / "a.example").write_text("new")
@@ -275,46 +247,6 @@ def test_copy_example_files_raises_on_copy_failure(tmp_path):
     with patch("src.pkg.project.shutil.copy2", side_effect=OSError("disk full")):
         with pytest.raises(OSError, match="disk full"):
             _copy_example_files(tmp_path)
-
-
-def test_set_files_permissions_chowns_and_chmods_files_dir(tmp_path):
-    """set_files_permissions sets ownership to 1000:100 then grants rwX on files/."""
-    files_dir = tmp_path / "files"
-    files_dir.mkdir()
-
-    with patch("src.pkg.project.IS_POSIX", True), patch(
-        "src.pkg.project.subprocess.run"
-    ) as mock_run:
-        set_files_permissions(str(tmp_path))
-
-    commands = [call.args[0] for call in mock_run.call_args_list]
-    assert commands == [
-        ["sudo", "chown", "-R", "1000:100", str(files_dir)],
-        ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
-    ]
-
-
-def test_set_files_permissions_is_a_noop_off_posix(tmp_path):
-    """The uid:gid pair means nothing on Windows, where the call would only
-    print the host's own "sudo is disabled" notice."""
-    (tmp_path / "files").mkdir()
-
-    with patch("src.pkg.project.IS_POSIX", False), patch(
-        "src.pkg.project.subprocess.run"
-    ) as mock_run:
-        set_files_permissions(str(tmp_path))
-
-    mock_run.assert_not_called()
-
-
-def test_set_files_permissions_ignores_missing_sudo(tmp_path):
-    """set_files_permissions swallows FileNotFoundError when sudo is unavailable."""
-    (tmp_path / "files").mkdir()
-
-    with patch(
-        "src.pkg.project.subprocess.run", side_effect=FileNotFoundError("no sudo")
-    ):
-        set_files_permissions(str(tmp_path))  # must not raise
 
 
 def test_generate_deploy_project_warns_when_no_templates(tmp_path, capsys):

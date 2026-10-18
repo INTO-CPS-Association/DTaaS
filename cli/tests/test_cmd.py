@@ -1,16 +1,9 @@
-"""Tests for the config / deployment / platform CLI commands."""
+"""Tests for the config / platform CLI commands."""
 
 from unittest.mock import patch
 import pytest
-from click.testing import CliRunner
 from src.cmd import dtaas
 # pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def runner():
-    """CLI test runner"""
-    return CliRunner()
 
 
 def test_config_reconcile_invokes_run_reconcile(runner):
@@ -51,56 +44,6 @@ def test_config_reconcile_help_renders_examples_block(runner):
 
     assert "\x08" not in result.output
     assert "Examples:\n    dtaas config reconcile " in result.output
-
-
-def test_deployment_generate_without_config_prints_note(runner):
-    """deployment generate prints a note when dtaas.toml is absent"""
-    with patch("src.cmd_deployment.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_deployment.projectPkg.generate_user_templates"
-    ), patch("src.cmd_deployment.projectPkg.set_files_permissions"), patch(
-        "src.cmd_deploy_utils._find_toml", return_value=None
-    ):
-        result = runner.invoke(dtaas, ["deployment", "generate", "--type", "localhost"])
-
-    assert result.exit_code == 0
-    assert "Note:" in result.output
-
-
-def test_deployment_generate_copies_user_templates(runner):
-    """deployment generate also copies the user-management templates."""
-    with patch("src.cmd_deployment.projectPkg.generate_deploy_project"), patch(
-        "src.cmd_deployment.projectPkg.generate_user_templates"
-    ) as mock_templates, patch(
-        "src.cmd_deployment.projectPkg.set_files_permissions"
-    ), patch("src.cmd_deploy_utils._find_toml", return_value=None):
-        result = runner.invoke(
-            dtaas, ["deployment", "generate", "--type", "localhost", "--force"]
-        )
-
-    assert result.exit_code == 0
-    mock_templates.assert_called_once_with(".", True)
-
-
-def test_deployment_generate_error(runner):
-    """deployment generate converts known exceptions to ClickException"""
-    with patch(
-        "src.cmd_deployment.projectPkg.generate_deploy_project",
-        side_effect=RuntimeError("template missing"),
-    ):
-        result = runner.invoke(
-            dtaas, ["deployment", "generate", "--type", "insecure-server"]
-        )
-
-    assert result.exit_code != 0
-    assert "template missing" in result.output
-
-
-def test_deployment_generate_help_renders_examples_block(runner):
-    """The docstring's \\b example block is preformatted, not word-wrapped."""
-    result = runner.invoke(dtaas, ["deployment", "generate", "--help"])
-
-    assert "\x08" not in result.output
-    assert "Examples:\n    dtaas deployment generate " in result.output
 
 
 def test_config_generate_success(runner):
@@ -215,12 +158,17 @@ def mock_deploy_pkg():
         "src.cmd_utils.deployPkg.uninstall"
     ) as mock_uninstall, patch(
         "src.cmd_utils.deployPkg.installation_present", return_value=True
-    ) as mock_present, patch("src.cmd_platform.provision_user_files") as mock_provision:
+    ) as mock_present, patch(
+        "src.cmd_platform.provision_user_files"
+    ) as mock_provision, patch(
+        "src.cmd_platform.provision_logger_dir"
+    ) as mock_logger_dir:
         yield {
             "install": mock_install,
             "uninstall": mock_uninstall,
             "present": mock_present,
             "provision": mock_provision,
+            "logger_dir": mock_logger_dir,
         }
 
 
@@ -232,6 +180,7 @@ def test_platform_install_success(runner, mock_deploy_pkg):
     assert "Deployment installed successfully" in result.output
     mock_deploy_pkg["install"].assert_called_once_with(".")
     mock_deploy_pkg["provision"].assert_called_once_with(".")
+    mock_deploy_pkg["logger_dir"].assert_called_once_with(".")
 
 
 def test_platform_install_error(runner, mock_deploy_pkg):

@@ -297,6 +297,7 @@ src/
     users_delete.py      # user delete
     users_lifecycle.py   # user pause/stop/resume + desired_status writes
     project.py           # generate compose tree + user templates
+    host_dirs.py         # files/ and logs/logger/ creation and ownership
 ```
 
 Conventions to preserve across every noun:
