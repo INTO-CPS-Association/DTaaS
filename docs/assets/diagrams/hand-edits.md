@@ -246,3 +246,31 @@ The hand edits, by page:
   thick and in primary, a weight the figure did not explain.
 - The DevOps box of `DTaaS-user-view.png` and `system-architecture.png`
   grew 35 units upward, so its three lines of text stay inside it.
+
+## The Example Pages Added on 18 October 2026
+
+Two diagrams of the workspace examples came from DTaaS-examples at commit
+`baa3650`. Their sources are kept in `originals/` as they arrived:
+`2026-10-18_opc-ua-waterplant-dt-structure.drawio`, from
+`digital_twins/opc-ua-waterplant-complete/images/`, and
+`2026-10-18_TeSSLa-integration.png`, an image without a drawio source.
+The retheme maps two colours of the OPC UA figure, added to `COLOURS` in
+`config/theme.py`: `#00572b` and `#ff6666`, the title colours of the two
+twins.
+
+- `user/examples/workspace/incubator-TeSSLa-monitor-service/TeSSLa-integration.png`
+  is drawn in drawio from the image, with every box, label and arrow of it,
+  then passed through the retheme, restyle and shrink steps. The workspace
+  starts lower inside the platform, so the DTaaS mark has its own corner. The
+  TeSSLa active control example shows the same image.
+- `user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png`
+  is drawn again from the second page of the drawio file, about 960 units
+  wide so its labels reach 14 pixels. The photographs of the plant and the
+  SCADA screen, the OPC UA and FMI logos, the spreadsheet icon and the note
+  listing the configuration are left out: the page text shows the
+  photographs and describes the configuration. The six numbered steps, the
+  FMU build and the configuration file are kept, each arrow label on two
+  lines. The labels Configures and Builds sit nearer their source box, clear
+  of the border of the digital twin. It carries no mark, as it draws an
+  example and not the DTaaS system, and the complete version of the example
+  shows the same image.

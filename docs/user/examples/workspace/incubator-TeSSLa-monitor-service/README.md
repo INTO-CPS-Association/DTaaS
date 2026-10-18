@@ -39,7 +39,8 @@ The simulated scenario is as follows
 
 A diagram showing the logical software structure of the example is shown below.
 
-![DT structure](TeSSLa-integration.png)
+![DT structure](TeSSLa-integration.png#only-light)
+![DT structure](TeSSLa-integration-dark.png#only-dark)
 
 The _execute.py_ script is responsible for orchestrating and starting all
 relevant services in this example. This includes the incubator DT, the TeSSLa

@@ -49,6 +49,8 @@ placed later.
 | `developer/technical-concepts/oauth/oauth2-workflow.png` | `developer/technical-concepts/oauth/authms.md`, `developer/technical-concepts/oauth/oauth2.0.md` |
 | `admin/servers/traefik-oauth.png` | `admin/servers/auth.md` |
 | `user/servers/lib/library-assets.png` | `user/servers/lib/assets.md` |
+| `user/examples/workspace/incubator-TeSSLa-monitor-service/TeSSLa-integration.png` | `user/examples/workspace/incubator-TeSSLa-monitor-service/README.md`, `user/examples/workspace/incubator-TeSSLa-active-control/README.md`, redrawn from the PNG of DTaaS-examples, which has no drawio source |
+| `user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png` | `user/examples/workspace/opc-ua-waterplant/README.md`, `user/examples/workspace/opc-ua-waterplant-complete/README.md`, redrawn from `digital_twins/opc-ua-waterplant-complete/images/dt-structure.drawio` of DTaaS-examples without its photos, logos and note |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
 | Two servers with runners, release | Not placed, it shows the addresses of the release servers |

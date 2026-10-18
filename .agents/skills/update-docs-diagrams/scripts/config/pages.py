@@ -66,6 +66,7 @@ NO_MARK = {
     'developer/technical-concepts/oauth/design-sequence.png',
     'developer/technical-concepts/oauth/oauth2-workflow.png',
     'user/servers/lib/library-assets.png',
+    'user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png',
 }
 
 

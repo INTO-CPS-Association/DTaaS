@@ -51,7 +51,8 @@ results accurate. Its results are compared with those of the CFD model.
 An OpenModelica model uses the C solver, and OpenModelica exports it as
 an FMU so that the OPC UA client (_client-opcua.py_) can integrate it.
 
-![Structure of Python Script](images/dt-structure-uv_channel.png)
+![Structure of Python Script](images/dt-structure-uv_channel.png#only-light)
+![Structure of Python Script](images/dt-structure-uv_channel-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

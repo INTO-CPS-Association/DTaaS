@@ -60,7 +60,8 @@ The results are compared to the ones obtained by the CFD. C solver developed
 is used by the OpenModelica model. OpenModelica converts it into FMI standard,
 to be integrated in the main script execution (_client-opcua.py_).
 
-![Structure of Python Script](images/dt-structure-uv_channel.png)
+![Structure of Python Script](../opc-ua-waterplant/images/dt-structure-uv_channel.png#only-light)
+![Structure of Python Script](../opc-ua-waterplant/images/dt-structure-uv_channel-dark.png#only-dark)
 
 The main python script (_client-opcua.py_) does the following actions:
 
