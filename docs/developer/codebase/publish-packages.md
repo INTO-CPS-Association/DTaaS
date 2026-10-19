@@ -56,7 +56,9 @@ All Dockerfiles for the published images live in `developer/check/`.
 The reusable workflows `docker-build.yml`, `docker-ghcr.yml` and
 `docker-dockerhub.yml` build them. The `client.yml`, `lib-ms.yml` and
 `logger-ms.yml` workflows publish the `dtaas-web`, `libms` and
-`logger-ms` images.
+`logger-ms` images for `linux/amd64` and `linux/arm64`. Each platform
+is built on a native runner and pushed by digest; a final job tags one
+multi-platform manifest that points at both.
 Deployment-level compose definitions are under `deploy/`.
 
 When changing runtime dependencies, check that the images build and the

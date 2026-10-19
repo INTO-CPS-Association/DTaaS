@@ -1,5 +1,6 @@
 # Reusable workflow for building a Docker image without pushing.
-# Used to validate Dockerfiles on pull requests.
+# Used to validate Dockerfiles on pull requests. Each platform builds
+# natively on its own runner, so arm64 needs no QEMU emulation.
 
 name: Build Docker Image
 
@@ -18,9 +19,17 @@ permissions:
 
 jobs:
   build-docker-image:
-    name: Build Docker image
-    runs-on: ubuntu-latest
+    name: Build Docker image (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     permissions:
       contents: read
 
@@ -30,10 +39,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           lfs: false
+          persist-credentials: false
           sparse-checkout: |
             client
             developer
             servers/lib
+            servers/logger
 
       - name: Setup node
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
@@ -48,7 +59,7 @@ jobs:
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
         working-directory: client/
         run: |
-          yarn install --network-timeout 1000000
+          yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
 
       - name: Run the linting checks
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
@@ -63,6 +74,10 @@ jobs:
           yarn build
           yarn config:test
 
+      - name: Set up Docker Buildx
+        # v4.4.1
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+
       - name: Build Docker image
         # v7.4.0
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
@@ -70,4 +85,5 @@ jobs:
           context: .
           file: ./developer/check/${{ inputs.dockerfile }}
           push: false
+          platforms: linux/${{ matrix.arch }}
           tags: ${{ inputs.image-name }}:test

@@ -15,7 +15,8 @@ name: Library microservice
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded pull request runs, never a publish on push.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -215,7 +216,7 @@ jobs:
       github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (GHCR)
-    needs: [get-version, test-lib-ms]
+    needs: [get-version, test-lib-ms, build-docker-image]
     uses: ./.github/workflows/docker-ghcr.yml
     with:
       image-name: libms
@@ -231,7 +232,7 @@ jobs:
       github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (DockerHub)
-    needs: [get-version, test-lib-ms]
+    needs: [get-version, test-lib-ms, build-docker-image]
     uses: ./.github/workflows/docker-dockerhub.yml
     with:
       image-name: libms

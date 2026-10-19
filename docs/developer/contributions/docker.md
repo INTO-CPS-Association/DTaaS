@@ -26,16 +26,20 @@ behind Traefik, with forward-auth signing users in through GitLab.
 
 ## CI Dockerfile Validation
 
-A pull request that modifies `client/**`, `servers/lib/**` or the
-relevant Dockerfiles triggers a Docker build check. The check uses the
-reusable workflow `.github/workflows/docker-build.yml` and runs in
-parallel with the test jobs, so it does not lengthen the build.
+A pull request that modifies `client/**`, `servers/lib/**`,
+`servers/logger/**` or the relevant Dockerfiles triggers a Docker build
+check. The check uses the reusable workflow
+`.github/workflows/docker-build.yml` and runs in parallel with the test
+jobs. It builds each image for both `linux/amd64` and `linux/arm64`,
+each on a native runner (`ubuntu-latest` and `ubuntu-24.04-arm`), so an
+image that fails to build on either platform fails the check.
 
-| Workflow                       | Dockerfile validated                      | Notes                                  |
-| :----------------------------- | :---------------------------------------- | :------------------------------------- |
-| `.github/workflows/client.yml` | `developer/check/client.dockerfile`       | Full multi-stage build inside Docker   |
-| `.github/workflows/client.yml` | `developer/check/client.built.dockerfile` | Validates the publish image Dockerfile |
-| `.github/workflows/lib-ms.yml` | `developer/check/libms.dockerfile`        | Full multi-stage build inside Docker   |
+| Workflow                          | Dockerfile validated                      | Notes                                  |
+| :-------------------------------- | :---------------------------------------- | :------------------------------------- |
+| `.github/workflows/client.yml`    | `developer/check/client.dockerfile`       | Full multi-stage build inside Docker   |
+| `.github/workflows/client.yml`    | `developer/check/client.built.dockerfile` | Validates the publish image Dockerfile |
+| `.github/workflows/lib-ms.yml`    | `developer/check/libms.dockerfile`        | Full multi-stage build inside Docker   |
+| `.github/workflows/logger-ms.yml` | `developer/check/logger.dockerfile`       | Full multi-stage build inside Docker   |
 
 The Docker build checks also run on pushes. The push triggers of
 `.github/workflows/client.yml` and `.github/workflows/lib-ms.yml` cover
@@ -46,15 +50,33 @@ on, the `feature/distributed-demo` branch. Because the push trigger
 covers only the source code directories, a change to a Dockerfile alone
 does not re-publish an already published package version.
 
+In all three workflows, the Docker publish jobs wait for the Docker
+build check to pass on both platforms. A publish that has started is
+never cancelled by a newer push; only superseded pull request runs are.
+
 The logger microservice workflow (`.github/workflows/logger-ms.yml`)
-builds and checks the image from `developer/check/logger.dockerfile`. It
-publishes that image on pushes to `feature/*` and `release-v*` branches,
-and its push trigger includes that Dockerfile.
+also runs the image from `developer/check/logger.dockerfile` on amd64
+and checks its health endpoint. It publishes that image on pushes to
+`feature/*` and `release-v*` branches, and its push trigger includes
+that Dockerfile.
 
 ## Publish Docker Images
 
 Build and publish the Docker images. This step is needed only to
 publish images to Docker Hub.
+
+The CI workflows publish every image for both `linux/amd64` and
+`linux/arm64`. The `docker build` commands below build only for the
+platform of the machine they run on. To publish both platforms by hand,
+create a builder that supports multi-platform output once with
+`docker buildx create --use`, then run
+`docker buildx build --platform linux/amd64,linux/arm64 --push`
+with the same `-t` and `-f` arguments instead of `docker build` and
+`docker push`. The platform that differs from the host is built under
+QEMU emulation, which is several times slower. Docker Desktop and
+Rancher Desktop provide the emulation; on a plain Linux Docker Engine,
+register it first with
+`docker run --privileged --rm tonistiigi/binfmt --install arm64`.
 
 !!! warning
     Only project maintainers publish images. Other developers
