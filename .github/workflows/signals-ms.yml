@@ -87,7 +87,7 @@ jobs:
           node dist/src/main.js > signals-ms.log 2>&1 &
           signals_pid="$!"
           trap 'kill "$signals_pid" 2>/dev/null || true' EXIT
-          for attempt in 1 2 3 4; do
+          for _ in 1 2 3 4; do
             if curl -f -LI "http://localhost:${PORT}/signals/health"; then
               exit 0
             fi
@@ -111,7 +111,7 @@ jobs:
             --publish 127.0.0.1:4004:4004 \
             dtaas-signals-ms:ci)
           trap 'docker logs "$container_id"; docker stop "$container_id"' EXIT
-          for attempt in 1 2 3 4; do
+          for _ in 1 2 3 4; do
             if curl --fail --silent --show-error \
               http://127.0.0.1:4004/signals/health; then
               exit 0
@@ -136,8 +136,8 @@ jobs:
         id: get-version
         run: |
           version=$(jq -r '.version' ./servers/signals/package.json)
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "node-version=$NODE_VERSION" >> "$GITHUB_OUTPUT"
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       node-version: ${{ steps.get-version.outputs.node-version }}
