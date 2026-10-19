@@ -44,7 +44,7 @@ export function useTwins(contents: ContentsService, directory: string) {
   return { twins, error };
 }
 
-/** The visualisation of one twin, or why there is none, never a rejection. */
+/** The visualisation of one twin, or that it has none. */
 function loadTwin(
   viz: VizService,
   directory: string,
@@ -54,12 +54,14 @@ function loadTwin(
     .load({ name: twin, path: `${directory}/${twin}`, files: [] })
     .then((asset): Loaded =>
       asset ? { state: 'ready', asset } : { state: 'none' },
-    )
-    .catch((reason: Error): Loaded => ({
-      state: 'error',
-      message: logged('The visualisation could not be read.', reason),
-    }));
+    );
 }
+
+/** Why a twin's visualisation could not be read, for the screen. */
+const failed = (reason: Error): Loaded => ({
+  state: 'error',
+  message: logged('The visualisation could not be read.', reason),
+});
 
 /**
  * The visualisation.json of one twin, read through the core. The answer is
@@ -74,9 +76,9 @@ export function useVisualisation(
   const [answer, setAnswer] = useState<{ twin: string; loaded: Loaded }>();
   useEffect(() => {
     if (!twin) return;
-    loadTwin(viz, directory, twin).then((loaded) =>
-      setAnswer({ twin, loaded }),
-    );
+    loadTwin(viz, directory, twin)
+      .then((loaded) => setAnswer({ twin, loaded }))
+      .catch((reason: Error) => setAnswer({ twin, loaded: failed(reason) }));
   }, [viz, directory, twin]);
   return answer?.twin === twin ? answer.loaded : { state: 'loading' };
 }

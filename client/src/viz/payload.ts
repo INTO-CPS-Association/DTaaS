@@ -45,7 +45,7 @@ function timeOf(value: unknown): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-const QUALITIES: readonly unknown[] = ['good', 'stale', 'bad'];
+const QUALITIES: ReadonlySet<unknown> = new Set(['good', 'stale', 'bad']);
 
 /** A value of a type the SDK allows: a number, text, a flag or numbers. */
 function isSignalValue(value: unknown): value is SignalValue {
@@ -57,7 +57,7 @@ function isSignalValue(value: unknown): value is SignalValue {
 function fromObject(data: Record<string, unknown>): Decoded | undefined {
   if (!isSignalValue(data.value)) return undefined;
   // A quality the SDK does not name is dropped, and the reading still counts.
-  const quality = QUALITIES.includes(data.quality)
+  const quality = QUALITIES.has(data.quality)
     ? (data.quality as SignalQuality)
     : undefined;
   return { value: data.value, ts: timeOf(data.ts ?? data.timestamp), quality };
