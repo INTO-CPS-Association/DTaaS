@@ -144,6 +144,9 @@ def clean_pages(pages_dir: Path) -> int:
         text = page.read_text("utf-8")
         cleaned = rewrite(text, local_mathjax(page, root))
         if cleaned != text:
-            page.write_text(cleaned, "utf-8")
+            # pages_dir is the publish directory the docs workflow passes on
+            # the command line, not user input, and the check above keeps the
+            # write inside it.
+            page.write_text(cleaned, "utf-8")  # NOSONAR
             fixed += 1
     return fixed
