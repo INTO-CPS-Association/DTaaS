@@ -1,7 +1,8 @@
 {
   "name": "DTaaS Fileserver",
   "auth": false,
-  "editor": "edward",
+  "editor": "deepword",
+  "menu": "supermenu",
   "packer": "zip",
   "diff": true,
   "zip": true,

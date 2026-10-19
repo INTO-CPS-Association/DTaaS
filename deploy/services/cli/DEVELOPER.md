@@ -55,30 +55,6 @@ cli/
 ├── pyproject.toml          # Poetry configuration and dependencies
 ├── README.md               # User documentation
 ├── DEVELOPER.md            # This file
-├── templates/              # Template source files (mirrors dtaas_services/templates/)
-│   ├── compose.services.yml
-│   ├── compose.thingsboard.yml
-│   ├── compose.gitlab.yml
-│   ├── certs/
-│   ├── config/
-│   │   ├── services.env.template
-│   │   ├── credentials.csv.template
-│   │   ├── gitlab_oauth.json.template
-│   │   ├── mongod.conf.secure
-│   │   ├── influxdb/
-│   │   ├── rabbitmq/           # rabbitmq.conf + rabbitmq.enabled_plugins
-│   │   └── gitlab/
-│   ├── data/
-│   │   ├── grafana/
-│   │   ├── gitlab/
-│   │   ├── influxdb/
-│   │   ├── mongodb/
-│   │   ├── postgres/
-│   │   ├── rabbitmq/
-│   │   └── thingsboard/
-│   └── log/
-│       ├── gitlab/
-│       └── thingsboard/
 ├── dtaas_services/         # Main package directory
 │   ├── __init__.py
 │   ├── cmd.py              # CLI entry point (imports from commands/)
@@ -92,6 +68,29 @@ cli/
 │   │   ├── user_ops.py     # User management commands (user add, user reset-password)
 │   │   └── utility.py      # Command utilities
 │   ├── templates/          # Package-bundled templates used by project generate (committed)
+│   │   ├── compose.services.yml
+│   │   ├── compose.thingsboard.yml
+│   │   ├── compose.gitlab.yml
+│   │   ├── certs/
+│   │   ├── config/
+│   │   │   ├── services.env.template
+│   │   │   ├── credentials.csv.template
+│   │   │   ├── gitlab_oauth.json.template
+│   │   │   ├── mongod.conf.secure
+│   │   │   ├── influxdb/
+│   │   │   ├── rabbitmq/           # rabbitmq.conf + rabbitmq.enabled_plugins
+│   │   │   └── gitlab/
+│   │   ├── data/
+│   │   │   ├── grafana/
+│   │   │   ├── gitlab/
+│   │   │   ├── influxdb/
+│   │   │   ├── mongodb/
+│   │   │   ├── postgres/
+│   │   │   ├── rabbitmq/
+│   │   │   └── thingsboard/
+│   │   └── log/
+│   │       ├── gitlab/
+│   │       └── thingsboard/
 │   ├── gitlab_common/      # Vendored from lib/gitlab_common by pkg/build.py (gitignored)
 │   └── pkg/
 │       ├── __init__.py
@@ -99,7 +98,7 @@ cli/
 │       ├── config.py       # Configuration loader
 │       ├── cert.py         # TLS certificate operations
 │       ├── formatter.py    # Output formatting utilities
-│       ├── password_store.py # Tracks current service passwords in current.passwords.env
+│       ├── password_store.py # Tracks current service passwords in password.env.current
 │       ├── template.py     # Project structure and template file management
 │       ├── force_overwrite.py # --force overwrite policy and protected names
 │       ├── docker_utils.py # Docker command execution with retry logic
@@ -214,10 +213,10 @@ cli/
         └── test_services_commands.py  # Real CLI workflow tests
 ```
 
-**Note:** `dtaas_services/templates/` is generated during the build process by copying
-`cli/templates/` and is gitignored. Edit source files in `cli/templates/` instead.
+**Note:** `dtaas_services/templates/` is committed and is the source of the
+files that `project generate` copies. Edit the templates there.
 
-**Note:** `dtaas_services/gitlab_common/` is likewise generated and gitignored.
+**Note:** `dtaas_services/gitlab_common/` is generated and gitignored.
 Its single source of truth is `lib/gitlab_common/gitlab_common/`, a standalone
 Poetry package with its own tests. Edit and test it there, then re-run
 `poetry run python -m dtaas_services.pkg.build`. It is copied rather than
@@ -254,7 +253,7 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
  directory detection
 * **`cert.py`**: TLS certificate copying and normalization
 * **`formatter.py`**: Output formatting utilities
-* **`password_store.py`**: Read/write access to `config/current.passwords.env`;
+* **`password_store.py`**: Read/write access to `config/password.env.current`;
   tracks the last-known password for each service account so that
   `reset-password` can be run repeatedly
 * **`template.py`**: Project structure and template file management
@@ -505,12 +504,12 @@ Stops and removes Docker containers:
   auto-generated password and resets it to `GITLAB_ROOT_NEW_PASSWORD`.
   During `dtaas-services service install -s gitlab`, the root password is automatically
   changed to `GITLAB_ROOT_NEW_PASSWORD` and recorded in
-  `config/current.passwords.env`.
+  `config/password.env.current`.
 * **Password Reset**: The root password can be reset independently using
   `dtaas-services user reset-password -s gitlab`, which reads
   `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account
   via the `python-gitlab` library. The new password is saved to
-  `config/current.passwords.env` on success.
+  `config/password.env.current` on success.
 * **Token Storage**: The Personal Access Token created during install is written
   to `config/gitlab_tokens.json`. All user-management API calls load the PAT from
   this file at runtime.
@@ -533,7 +532,7 @@ Stops and removes Docker containers:
   resets both the sysadmin password (to `TB_SYSADMIN_NEW_PASSWORD`)
   and the tenant admin password (to `TB_TENANT_ADMIN_PASSWORD`).
   Passwords can be reset as many times as needed — the current password
-  is tracked in `config/current.passwords.env` so subsequent resets
+  is tracked in `config/password.env.current` so subsequent resets
   always know the correct current password.
   If sysadmin password change fails, the tenant admin change still proceeds.
 * **SSL Configuration**: ThingsBoard API calls use TLS verification controlled by
@@ -541,9 +540,9 @@ Stops and removes Docker containers:
   verification enabled by default. For self-signed certificates in non-production
   environments, set `SSL_VERIFY=false`.
 
-### Password Store (`config/current.passwords.env`)
+### Password Store (`config/password.env.current`)
 
-The file `config/current.passwords.env` tracks the current passwords for
+The file `config/password.env.current` tracks the current passwords for
 ThingsBoard sysadmin, ThingsBoard tenant admin, and GitLab root accounts.
 It is managed by `pkg/password_store.py`.
 

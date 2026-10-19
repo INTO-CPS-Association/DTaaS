@@ -8,10 +8,10 @@ pages.
 
 ## Packages Used by the Client
 
-| Package | Source | Role in the client |
-| :--- | :--- | :--- |
-| `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`). |
-| `@into-cps-association/bim-kit` | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.1.1`. |
+| Package                               | Source                                                         | Role in the client                                                                                                                                                    |
+| :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
+| `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.1.1`. |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)

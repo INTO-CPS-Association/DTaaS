@@ -14,44 +14,61 @@ A page named after a path under `docs/` is exported to that path. The other
 pages are diagrams the documentation does not show yet, kept so they can be
 placed later.
 
-| Page | Used by |
-| --- | --- |
-| `admin/dtaas/secure-server/server.png` | `admin/dtaas/secure-server/install.md` |
-| `admin/dtaas/secure-server-gitlab/server.png` | `admin/dtaas/secure-server-gitlab/install.md` |
-| `admin/dtaas/localhost/localhost.png` | `admin/dtaas/localhost/install.md` |
-| `admin/workspace/localhost/localhost.png` | `admin/workspace/localhost/install.md` |
-| `admin/workspace/secure-server/secure-server.png` | `admin/workspace/secure-server/install.md` |
-| `admin/gitlab/gitlab-integrated-install.png` | `admin/gitlab/index.md` |
-| `admin/gitlab/gitlab-independent-install.png` | `admin/gitlab/index.md` |
-| `admin/gitlab/gitlab-integrated-runner.png` | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md` |
-| `developer/system/multi-domain.png` | `developer/system/extensions.md` |
-| `user/DTaaS-user-view.png` | `user/features.md` |
-| `developer/system/research-overview/system-architecture.png` | `developer/system/research-overview.md` |
-| `deploy/dtaas/docker/server/server.png` | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL |
-| `developer/system/architecture.png` | `developer/system/architecture.md` |
-| `developer/system/research-overview/devops.png` | `developer/system/research-overview.md` |
-| `developer/system/research-overview/dt-assets-relationship.png` | `developer/system/research-overview.md` |
-| `developer/system/research-overview/dtaas-class-instance.png` | `developer/system/research-overview.md` |
-| `developer/system/research-overview/dtaas-userview.png` | `developer/system/research-overview.md` |
-| `developer/system/research-overview/federated-dtaas.png` | `developer/system/research-overview.md` |
-| `admin/servers/lib/file-system-layout.png` | `admin/servers/lib/docker.md`, `admin/servers/lib/npm.md` |
-| `user/digital-twins/asset-relationship.png` | `user/digital-twins/create.md` |
-| `user/servers/lib/author.png` | `FAQ.md` |
-| `developer/system/research-overview/lifecycle-phases.png` | `developer/system/research-overview.md`, `developer/technical-concepts/gitlab.md`, `user/digital-twins/devops/ui.md` |
-| `developer/system/research-overview/user-interaction-in-federated-DTaaS.png` | `developer/system/research-overview.md` |
-| `developer/system/research-overview/shm-dt-workflow.png` | `developer/system/research-overview.md` |
-| `developer/system/current-status-developer.png` | `developer/system/current-status.md`, light only |
-| `developer/system/research-overview/system-architecture-c4.png` | `developer/system/research-overview.md`, `developer/system/architecture.md`, light only |
-| `developer/system/research-overview/implementation-status.png` | `developer/system/research-overview.md`, `developer/system/current-status.md`, light only |
-| `developer/contributions/docker-check.png` | `developer/contributions/docker.md`, and its copy in `developer/check/README.md` |
-| `admin/gitlab/gitlab-runner-two-servers.png` | `admin/gitlab/runner-linux.md` |
-| `developer/technical-concepts/oauth/design-sequence.png` | `developer/technical-concepts/oauth/design.md` |
-| `developer/technical-concepts/oauth/oauth2-workflow.png` | `developer/technical-concepts/oauth/authms.md`, `developer/technical-concepts/oauth/oauth2.0.md` |
-| `admin/servers/traefik-oauth.png` | `admin/servers/auth.md` |
-| `user/servers/lib/library-assets.png` | `user/servers/lib/assets.md` |
-| Architecture with public and private cloud | Not placed, the source of the two architecture images above |
-| Workspace and assets | Not placed |
-| Two servers with runners, release | Not placed, it shows the addresses of the release servers |
+| Page                                                                                           | Used by                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin/dtaas/secure-server/server.png`                                                         | `admin/dtaas/secure-server/install.md`                                                                                                                                                                                                                         |
+| `admin/dtaas/secure-server-gitlab/server.png`                                                  | `admin/dtaas/secure-server-gitlab/install.md`                                                                                                                                                                                                                  |
+| `admin/dtaas/localhost/localhost.png`                                                          | `admin/dtaas/localhost/install.md`                                                                                                                                                                                                                             |
+| `admin/workspace/localhost/localhost.png`                                                      | `admin/workspace/localhost/install.md`                                                                                                                                                                                                                         |
+| `admin/workspace/secure-server/secure-server.png`                                              | `admin/workspace/secure-server/install.md`                                                                                                                                                                                                                     |
+| `admin/gitlab/gitlab-integrated-install.png`                                                   | `admin/gitlab/index.md`                                                                                                                                                                                                                                        |
+| `admin/gitlab/gitlab-independent-install.png`                                                  | `admin/gitlab/index.md`                                                                                                                                                                                                                                        |
+| `admin/gitlab/gitlab-integrated-runner.png`                                                    | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md`                                                                                                                                                                                               |
+| `developer/system/multi-domain.png`                                                            | `developer/system/extensions.md`                                                                                                                                                                                                                               |
+| `user/DTaaS-user-view.png`                                                                     | `user/features.md`                                                                                                                                                                                                                                             |
+| `developer/system/research-overview/system-architecture.png`                                   | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `deploy/dtaas/docker/server/server.png`                                                        | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL                                                                                                                                                                  |
+| `developer/system/architecture.png`                                                            | `developer/system/architecture.md`                                                                                                                                                                                                                             |
+| `developer/system/research-overview/devops.png`                                                | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/research-overview/dt-assets-relationship.png`                                | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/research-overview/dtaas-class-instance.png`                                  | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/research-overview/dtaas-userview.png`                                        | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/research-overview/federated-dtaas.png`                                       | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `admin/servers/lib/file-system-layout.png`                                                     | `admin/servers/lib/docker.md`, `admin/servers/lib/npm.md`                                                                                                                                                                                                      |
+| `user/digital-twins/asset-relationship.png`                                                    | `user/digital-twins/create.md`                                                                                                                                                                                                                                 |
+| `user/servers/lib/author.png`                                                                  | `FAQ.md`                                                                                                                                                                                                                                                       |
+| `developer/system/research-overview/lifecycle-phases.png`                                      | `developer/system/research-overview.md`, `developer/technical-concepts/gitlab.md`, `user/digital-twins/devops/ui.md`                                                                                                                                           |
+| `developer/system/research-overview/user-interaction-in-federated-DTaaS.png`                   | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/research-overview/shm-dt-workflow.png`                                       | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
+| `developer/system/current-status-developer.png`                                                | `developer/system/current-status.md`, light only                                                                                                                                                                                                               |
+| `developer/system/research-overview/system-architecture-c4.png`                                | `developer/system/research-overview.md`, `developer/system/architecture.md`, light only                                                                                                                                                                        |
+| `developer/system/research-overview/implementation-status.png`                                 | `developer/system/research-overview.md`, `developer/system/current-status.md`, light only                                                                                                                                                                      |
+| `developer/contributions/docker-check.png`                                                     | `developer/contributions/docker.md`, and its copy in `developer/check/README.md`                                                                                                                                                                               |
+| `admin/gitlab/gitlab-runner-two-servers.png`                                                   | `admin/gitlab/runner-linux.md`                                                                                                                                                                                                                                 |
+| `developer/technical-concepts/oauth/design-sequence.png`                                       | `developer/technical-concepts/oauth/design.md`                                                                                                                                                                                                                 |
+| `developer/technical-concepts/oauth/oauth2-workflow.png`                                       | `developer/technical-concepts/oauth/authms.md`, `developer/technical-concepts/oauth/oauth2.0.md`                                                                                                                                                               |
+| `admin/servers/traefik-oauth.png`                                                              | `admin/servers/auth.md`                                                                                                                                                                                                                                        |
+| `user/servers/lib/library-assets.png`                                                          | `user/servers/lib/assets.md`                                                                                                                                                                                                                                   |
+| `user/examples/workspace/incubator-TeSSLa-monitor-service/TeSSLa-integration.png`              | `user/examples/workspace/incubator-TeSSLa-monitor-service/README.md`, `user/examples/workspace/incubator-TeSSLa-active-control/README.md`, redrawn from the PNG of DTaaS-examples, which has no drawio source                                                  |
+| `user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png`                 | `user/examples/workspace/opc-ua-waterplant/README.md`, `user/examples/workspace/opc-ua-waterplant-complete/README.md`, redrawn from `digital_twins/opc-ua-waterplant-complete/images/dt-structure.drawio` of DTaaS-examples without its photos, logos and note |
+| `user/examples/workspace/drobotti-rmqfmu/dt-structure.png`                                     | `user/examples/workspace/drobotti-rmqfmu/README.md`                                                                                                                                                                                                            |
+| `user/examples/workspace/flex-cell/pt-dt-details.png`                                          | `user/examples/workspace/flex-cell/README.md`                                                                                                                                                                                                                  |
+| `user/examples/workspace/flex-cell/dt-structure.png`                                           | `user/examples/workspace/flex-cell/README.md`                                                                                                                                                                                                                  |
+| `user/examples/workspace/incubator/figures/dt-structure.png`                                   | `user/examples/workspace/incubator/README.md`                                                                                                                                                                                                                  |
+| `user/examples/workspace/mass-spring-damper/dt-structure.png`                                  | `user/examples/workspace/mass-spring-damper/README.md`, `user/examples/automation/mass-spring-damper/README.md`                                                                                                                                                |
+| `user/examples/workspace/mass-spring-damper-monitor/dt-structure.png`                          | `user/examples/workspace/mass-spring-damper-monitor/README.md`                                                                                                                                                                                                 |
+| `user/examples/workspace/incubator-NuRV-fmu-monitor-service/figures/dt-structure-nurv-fmu.png` | `user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md`                                                                                                                                                                                         |
+| `user/examples/workspace/incubator-NuRV-monitor-service/figures/dt-structure-nurv.png`         | `user/examples/workspace/incubator-NuRV-monitor-service/README.md`                                                                                                                                                                                             |
+| `user/examples/workspace/incubator-NuRV-monitor-validation/dt-structure.png`                   | `user/examples/workspace/incubator-NuRV-monitor-validation/README.md`                                                                                                                                                                                          |
+| `user/examples/workspace/o5g/img/o5g_digital_twin_architecture.png`                            | `user/examples/workspace/o5g/README.md`                                                                                                                                                                                                                        |
+| `user/examples/automation/shm/dt-workflow.png`                                                 | `user/examples/automation/shm/README.md`                                                                                                                                                                                                                       |
+| `user/examples/workspace/three-tank/dt-structure.png`                                          | `user/examples/workspace/three-tank/README.md`                                                                                                                                                                                                                 |
+| `user/examples/workspace/water_tank_FI/dt_structure.png`                                       | `user/examples/workspace/water_tank_FI/README.md`                                                                                                                                                                                                              |
+| `user/examples/workspace/water_tank_FI_monitor/dt-structure.png`                               | `user/examples/workspace/water_tank_FI_monitor/README.md`                                                                                                                                                                                                      |
+| `user/examples/workspace/water_tank_swap/dt-structure.png`                                     | `user/examples/workspace/water_tank_swap/README.md`                                                                                                                                                                                                            |
+| Architecture with public and private cloud                                                     | Not placed, the source of the two architecture images above                                                                                                                                                                                                    |
+| Workspace and assets                                                                           | Not placed                                                                                                                                                                                                                                                     |
+| Two servers with runners, release                                                              | Not placed, it shows the addresses of the release servers                                                                                                                                                                                                      |
 
 The installation packages under `deploy/` keep their own copy of five of these
 images, so a downloaded package shows its diagram without the website, and
@@ -147,22 +164,24 @@ them and can be run again on its own output without changing anything.
 - One forward-auth box, one corner radius and one line width for every box,
   one style for every arrow, and one icon per idea:
 
-  | Idea | Icon |
-  | --- | --- |
-  | A person | `mxgraph.ios7.icons.user` |
-  | The web application | `mxgraph.ios7.icons.globe` |
-  | Docker | `img/lib/mscae/Docker.svg` |
-  | GitLab | the official logo in the skill's `assets/` |
-  | A physical or digital twin | `mxgraph.signs.transportation.car_3` and `mxgraph.ios7.icons.home` |
-  | A twin that is running | `mxgraph.signs.sports.running` |
+| Idea                       | Icon                                                               |
+| -------------------------- | ------------------------------------------------------------------ |
+| A person                   | `mxgraph.ios7.icons.user`                                          |
+| The web application        | `mxgraph.ios7.icons.globe`                                         |
+| Docker                     | `img/lib/mscae/Docker.svg`                                         |
+| GitLab                     | the official logo in the skill's `assets/`                         |
+| A physical or digital twin | `mxgraph.signs.transportation.car_3` and `mxgraph.ios7.icons.home` |
+| A twin that is running     | `mxgraph.signs.sports.running`                                     |
 
   A UML diagram keeps its stick figure and a C4 diagram its person, since
   they belong to the notation. A product logo, such as Traefik or Keycloak,
   stays its owner's.
+
 - A note about the picture is page text and not part of the picture.
 - The DTaaS mark sits at the top right corner of the DTaaS boundary, the
-  largest box of the page. A page that already shows the full lockup as its
-  title gets no second mark.
+  largest box of the page, which also gets the thicker boundary line. A page
+  that already shows the full lockup as its title gets no second mark. A page
+  in `NO_MARK` gets neither: its largest box is drawn like every other box.
 
 ## Updating a Diagram
 

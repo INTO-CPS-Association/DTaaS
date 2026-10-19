@@ -180,7 +180,7 @@ container, so those commands cost one extra terminal tab.
 For the same reason, `deploy/services/cli`'s `tests/system_tests/` cannot
 run inside; they shell out to `docker`.
 
-One further test, `tests/test_commands/test_setup_ops.py::
+One further test, `tests/test_commands/test_service_install.py::
 test_install_invalid_service`, fails for any non-root user because
 `dtaas-services` checks for root before validating its arguments. CI sets
 `CI=true`, which the check skips. To reproduce CI locally:

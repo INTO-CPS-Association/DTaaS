@@ -29,8 +29,8 @@ To enable developer provisioning, modify the `Vagrantfile`.
 The relevant lines are:
 
 ```ruby
-    config.vm.provision "shell", path: "user.sh"
-    #config.vm.provision "shell", path: "developer.sh"
+  config.vm.provision 'shell', path: 'user.sh'
+  # config.vm.provision 'shell', path: 'developer.sh'
 ```
 
 Uncomment the second line to include developer software components.

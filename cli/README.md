@@ -71,6 +71,7 @@ dtaas platform uninstall
     - [user add](#user-add)
     - [user delete](#user-delete)
     - [user pause / stop / resume](#user-pause--stop--resume)
+    - [user status](#user-status)
     - [config reconcile](#config-reconcile)
   - [User files](#user-files)
   - [Configuration Reference dtaas.toml](#configuration-reference-dtaastoml)
@@ -964,6 +965,28 @@ alice, bob paused successfully
 
 ---
 
+### user status
+
+Reports the state of every additional user's container, or of one
+named user. It is the per-user part of `platform status`, using the
+same table and `--json` format.
+
+```bash
+dtaas user status
+dtaas user status alice
+dtaas user status --json
+```
+
+A username that is not in `dtaas.users.registry.json` is rejected, so
+a typo is not mistaken for a stopped user. A registered user without
+a container is reported as not provisioned. The command exits `0`
+whenever it can read the deployment.
+
+| Option | Default | Description |
+| :----- | :------ | :---------- |
+| `USERNAME` | — | Report only this user |
+| `--json` | off | Emit machine-readable JSON instead of the table |
+
 ### config reconcile
 
 Reports drift between `dtaas.users.registry.json` (which **should** be
@@ -1056,7 +1079,7 @@ it is valid with `dtaas config validate` before running any other command.
 | Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
 |---|:---:|:---:|:---:|:---:|
 | `[common]` | Required | Required | Required | Required |
-| `[common.security]` | Not used | Not used | Required | Required |
+| `[common.security]` | Not used | Optional (`tls = false`) | Required | Required |
 | `[common.resources]` | Optional | Optional | Optional | Optional |
 | `[gitlab]` | Optional | Optional | Optional | Optional |
 | `[[users]]` | Optional | Required | Required | Required |
@@ -1065,6 +1088,11 @@ it is valid with `dtaas config validate` before running any other command.
 | `[insecure-server]` | Not used | Required | Not used | Not used |
 | `[secure-server]` | Not used | Not used | Required | Not used |
 | `[secure-server-gitlab]` | Not used | Not used | Not used | Required |
+
+`dtaas user add` reads `[common.security].tls` for every deployment
+type to choose the per-user compose template. For `insecure-server`,
+leave the section out or set `tls = false`; `tls = true` gives the new
+users the HTTPS template, which the HTTP-only deployment does not serve.
 
 #### Workspace deployments
 
@@ -1221,6 +1249,8 @@ keycloak-issuer-url     = "https://keycloak.example.com/realms/dtaas"
 keycloak-client-id      = "workspace"
 keycloak-client-secret  = "s3cr3t"
 oauth-secret            = "random-signing-string"
+# Not written to config/client.js (auth-authority is only checked to be
+# a URL). Set REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
 client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```

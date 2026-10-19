@@ -31,11 +31,11 @@ relevant Dockerfiles triggers a Docker build check. The check uses the
 reusable workflow `.github/workflows/docker-build.yml` and runs in
 parallel with the test jobs, so it does not lengthen the build.
 
-| Workflow | Dockerfile validated | Notes |
-| :--- | :--- | :--- |
-| `.github/workflows/client.yml` | `developer/check/client.dockerfile` | Full multi-stage build inside Docker |
+| Workflow                       | Dockerfile validated                      | Notes                                  |
+| :----------------------------- | :---------------------------------------- | :------------------------------------- |
+| `.github/workflows/client.yml` | `developer/check/client.dockerfile`       | Full multi-stage build inside Docker   |
 | `.github/workflows/client.yml` | `developer/check/client.built.dockerfile` | Validates the publish image Dockerfile |
-| `.github/workflows/lib-ms.yml` | `developer/check/libms.dockerfile` | Full multi-stage build inside Docker |
+| `.github/workflows/lib-ms.yml` | `developer/check/libms.dockerfile`        | Full multi-stage build inside Docker   |
 
 The Docker build checks also run on pushes. The push triggers of
 `.github/workflows/client.yml` and `.github/workflows/lib-ms.yml` cover
@@ -78,14 +78,14 @@ Regular users should use the packages from npm and Docker Hub.
 
 The packages are:
 
-| Package Name  | Description                                    | Availability                                                                                                                                          |
-| :------------ | :--------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dtaas-web     | React web application                          | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web)         |
-| libms         | Library microservice                           | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms)         |
-|               |                                                | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms)                 |
-| logger-ms     | Logger microservice                            | [npmjs](https://www.npmjs.com/package/@into-cps-association/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/logger-ms) |
-|               |                                                | [docker hub](https://hub.docker.com/r/intocps/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/logger-ms)         |
-| runner        | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner)       |
+| Package Name  | Description                                    | Availability                                                                                                                                                  |
+| :------------ | :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dtaas-web     | React web application                          | [docker hub](https://hub.docker.com/r/intocps/dtaas-web) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/dtaas-web)                 |
+| libms         | Library microservice                           | [npmjs](https://www.npmjs.com/package/@into-cps-association/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/libms)                 |
+|               |                                                | [docker hub](https://hub.docker.com/r/intocps/libms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/libms)                         |
+| logger-ms     | Logger microservice                            | [npmjs](https://www.npmjs.com/package/@into-cps-association/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/logger-ms)         |
+|               |                                                | [docker hub](https://hub.docker.com/r/intocps/logger-ms) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/container/logger-ms)                 |
+| runner        | REST API wrapper for multiple scripts/programs | [npmjs](https://www.npmjs.com/package/@into-cps-association/runner) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/runner)               |
 | dt-automation | Data and business-logic layer of the client    | [npmjs](https://www.npmjs.com/package/@into-cps-association/dt-automation) and [github](https://github.com/INTO-CPS-Association/DTaaS/pkgs/npm/dt-automation) |
 
 ### React Website

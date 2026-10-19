@@ -12,7 +12,8 @@ The DT is built with the co-simulation methodology.
 
 ## Example Structure
 
-![FMI Swap Structure](dt-structure.png)
+![FMI Swap Structure](dt-structure.png#only-light)
+![FMI Swap Structure](dt-structure-dark.png#only-dark)
 
 ## Configuration of assets
 
@@ -24,7 +25,7 @@ This example uses four models and one tool:
 |            | singlewatertank-20sim.fmu               | Private    | Yes                     |
 |            | leak_detector.fmu                       | Private    | No                      |
 |            | leak_controller.fmu                     | Private    | No                      |
-| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool       | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The DT is executed in two stages, and each stage has its own configuration
 files. The following table lists the configuration files and their purpose.
@@ -63,8 +64,10 @@ Then run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 17 and the pandas and matplotlib pip
-packages.
+Installs Open Java Development Kit 21 and, from the Ubuntu repositories,
+the Python packages used by the plotting script and the Python FMUs
+(`python3-pandas`, `python3-matplotlib`, `python3-protobuf` and
+`python3-zmq`).
 
 ```bash
 lifecycle/create

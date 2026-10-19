@@ -11,16 +11,16 @@ two differ in important ways; see systemic issue
 The architecture page lists eight user requirements. Their
 implementation status, recovered from code, is:
 
-| Requirement | Status | Implemented by |
-| :---------- | :----- | :------------- |
-| Author | Implemented | User workspaces (containers), integrated GitLab |
-| Consolidate | Implemented | Library microservice, client library pages |
-| Configure | Partial | Client editors (`client/src/route/digitaltwins/editor`, Monaco) |
-| Execute | Partial | GitLab CI pipelines triggered from the browser; DT Runner |
-| Explore | Partial | Client DevOps pages, IndexedDB execution history |
-| Save | Not implemented | None |
-| Services | Implemented | dtaas-services CLI (MQTT, InfluxDB, Grafana, …) |
-| Share | Partial | GitLab group/project visibility; common library files |
+| Requirement | Status          | Implemented by                                                  |
+| :---------- | :-------------- | :-------------------------------------------------------------- |
+| Author      | Implemented     | User workspaces (containers), integrated GitLab                 |
+| Consolidate | Implemented     | Library microservice, client library pages                      |
+| Configure   | Partial         | Client editors (`client/src/route/digitaltwins/editor`, Monaco) |
+| Execute     | Partial         | GitLab CI pipelines triggered from the browser; DT Runner       |
+| Explore     | Partial         | Client DevOps pages, IndexedDB execution history                |
+| Save        | Not implemented | None                                                            |
+| Services    | Implemented     | dtaas-services CLI (MQTT, InfluxDB, Grafana, …)                 |
+| Share       | Partial         | GitLab group/project visibility; common library files           |
 
 Components named in the architecture but absent from the codebase are
 the DT Lifecycle Manager, DT Execution Manager, Accounting

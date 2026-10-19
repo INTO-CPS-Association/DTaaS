@@ -52,10 +52,11 @@ npm set registry http://localhost:4873/
 
 ## Docker Artifacts
 
-All Dockerfiles live in `developer/check/`. The reusable workflows
-`docker-build.yml`, `docker-ghcr.yml` and `docker-dockerhub.yml` build
-them. The `client.yml`, `lib-ms.yml` and `logger-ms.yml` workflows
-publish the `dtaas-web`, `libms` and `logger-ms` images.
+All Dockerfiles for the published images live in `developer/check/`.
+The reusable workflows `docker-build.yml`, `docker-ghcr.yml` and
+`docker-dockerhub.yml` build them. The `client.yml`, `lib-ms.yml` and
+`logger-ms.yml` workflows publish the `dtaas-web`, `libms` and
+`logger-ms` images.
 Deployment-level compose definitions are under `deploy/`.
 
 When changing runtime dependencies, check that the images build and the

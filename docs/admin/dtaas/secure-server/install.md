@@ -144,21 +144,21 @@ docker compose --env-file config/.env down
 
 ```text
 .
-|- certs/                 # TLS certificates (fullchain.pem, privkey.pem)
-|- config/
-|  |- .env                # Docker Compose environment variables
-|  |- conf.server         # Traefik forward-auth authorisation rules
-|  |- client.js           # DTaaS React client configuration
-|  |- .env.example
-|  |- conf.server.example
-|  |- client.js.example
-|  \- tls.yml            # Traefik TLS provider configuration
-|- files/
-|  |- common/             # Shared files across all workspaces
-|  \- template/           # sample user workspace files
-|- logs/
-|  \- logger/             # Logger microservice events
-|- docker-compose.yml     # Service definitions
-|- CONFIG.md              # Detailed configuration reference
+| - certs/                 # TLS certificates (fullchain.pem, privkey.pem) |
+| - config/                                                                |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+|                                                                          |
+| \- tls.yml            # Traefik TLS provider configuration               |
+| - files/                                                                 |
+|                                                                          |
+| \- template/           # sample user workspace files                     |
+| - logs/                                                                  |
+| \- logger/             # Logger microservice events                      |
+| - docker-compose.yml     # Service definitions                           |
+| - CONFIG.md              # Detailed configuration reference              |
 \- README.md              # This file
 ```

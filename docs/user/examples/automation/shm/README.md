@@ -6,7 +6,8 @@ This example applies digital twin methodology to structural
 health monitoring (SHM). The digital twin workflow shown below was developed
 for the SHM use cases.
 
-![DT workflow](dt-workflow.png)
+![DT workflow](dt-workflow.png#only-light)
+![DT workflow](dt-workflow-dark.png#only-dark)
 
 The complete source code for this example is [available
 online](https://github.com/INTO-CPS-Association/example-shm).

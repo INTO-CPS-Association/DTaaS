@@ -57,16 +57,16 @@ to the **Logs** page. Download them as
 
 Each line has the same fields:
 
-| Field | Meaning in the sample |
-| :--- | :--- |
-| `sessionId` | A random identifier for one browser session. All seven events share it |
-| `userHash` | The SHA-256 hash of the username, computed in the browser. The logger never receives the username itself |
-| `timestamp` | When the event happened, in UTC |
-| `event` | `navigation` for a page change and `click` for a tab or button. The other types are `change`, `notification` and `dismiss` |
-| `page` | The page on which the event happened |
-| `page_transition` | On navigation events only: the page the user came from (`src`) and went to (`target`) |
-| `element` and `label` | What was used, such as the `button` labelled `History` |
-| `context` | Details that depend on the page. On the Digital Twins Page, `dt` names the digital twin and the action |
+| Field                 | Meaning in the sample                                                                                                      |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| `sessionId`           | A random identifier for one browser session. All seven events share it                                                     |
+| `userHash`            | The SHA-256 hash of the username, computed in the browser. The logger never receives the username itself                   |
+| `timestamp`           | When the event happened, in UTC                                                                                            |
+| `event`               | `navigation` for a page change and `click` for a tab or button. The other types are `change`, `notification` and `dismiss` |
+| `page`                | The page on which the event happened                                                                                       |
+| `page_transition`     | On navigation events only: the page the user came from (`src`) and went to (`target`)                                      |
+| `element` and `label` | What was used, such as the `button` labelled `History`                                                                     |
+| `context`             | Details that depend on the page. On the Digital Twins Page, `dt` names the digital twin and the action                     |
 
 The hash is the same every time a user signs in, so events can still be
 grouped by user across sessions. It is a pseudonym, not anonymity.
@@ -91,7 +91,7 @@ Follow the path a user took through the website:
 
 ```bash
 jq -r 'select(.page_transition)
-  | "\(.timestamp) \(.page_transition.src) -> \(.page_transition.target)"' \
+| "\(.timestamp) \(.page_transition.src) -> \(.page_transition.target)"' \ |
   workflow-logs.jsonl
 ```
 

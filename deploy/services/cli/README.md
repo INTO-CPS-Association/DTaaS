@@ -97,6 +97,7 @@ structure:
    * `data/` directory for service data
    * `compose.services.yml` for main services
    * `compose.thingsboard.yml` for ThingsBoard and PostgreSQL
+   * `compose.gitlab.yml` for GitLab
 
 2. Update `config/services.env` with the environment values:
    * `HOSTNAME`: Public hostname of the DTaaS server (used for certificate paths)
@@ -104,9 +105,9 @@ structure:
    * `GITLAB_ROOT_NEW_PASSWORD`: Strong password to set for the GitLab root admin
    * `TB_SYSADMIN_NEW_PASSWORD`: New password for the ThingsBoard system admin
    * Port numbers for each service
-   * `TB_TENANT_NEW_PASSWORD`: New password for the tenant admin
-   * `SERVICES_UID`: User ID for service file ownership
-   * `SERVICES_GID`: Group ID for service file ownership
+   * `TB_TENANT_ADMIN_PASSWORD`: New password for the tenant admin
+   * `USERID`: User ID for service file ownership
+   * `GROUPID`: Group ID for service file ownership
    * **OAuth Configuration** (optional: customise GitLab OAuth app registrations):
         Edit `config/gitlab_oauth.json` to adjust app names, redirect URIs, scopes,
         or confidentiality settings before

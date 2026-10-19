@@ -104,11 +104,15 @@ can communicate. `deploy/services/runner/runner-config.toml` contains
 this template:
 
 ```toml
+concurrent = 20
+
 [[runners]]
   name = "dtaas-runner-1"
+  description = "dtaas-runner-1"
   url = "https://intocps.org/gitlab/" # Edit this
   token = "xxx" # Edit this
   executor = "docker"
+  request_concurrency = 10
   [runners.docker]
     tls_verify = false
     image = "ruby:2.7"
