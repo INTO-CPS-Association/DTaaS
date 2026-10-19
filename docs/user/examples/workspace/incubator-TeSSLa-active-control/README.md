@@ -55,12 +55,12 @@ your RabbitMQ credentials.
 
 The example uses the following assets:
 
-| Asset Type | Names of Assets | Visibility | Reuse in other Examples |
-|:---|:---|:---|:---|
-| DT | common/digital_twins/incubator | Common | Yes |
-| Specification | safe-operation.tessla | Private | No |
-| Configuration | telegraf.conf | Private | No |
-| Script | execute.py | Private | No |
+| Asset Type    | Names of Assets                | Visibility | Reuse in other Examples |
+| :------------ | :----------------------------- | :--------- | :---------------------- |
+| DT            | common/digital_twins/incubator | Common     | Yes                     |
+| Specification | safe-operation.tessla          | Private    | No                      |
+| Configuration | telegraf.conf                  | Private    | No                      |
+| Script        | execute.py                     | Private    | No                      |
 
 The *safe-operation.tessla* file contains the default monitored specification as
 described in the [Simulated scenario section](#simulated-scenario). These can be
@@ -70,11 +70,11 @@ configured as desired.
 
 The lifecycle phases for this example include
 
-| lifecycle phase | completed tasks |
-| ------ | ------- |
-| create | Downloads the required tools and creates a virtual Python environment with the required dependencies |
-| Execute | Runs a Python script that starts the required services and the incubator simulation. Various status messages are printed to the console, including the monitored system states and the monitor verdict. |
-| clean | Removes the created *data* directory and the incubator log files. |
+| lifecycle phase | completed tasks                                                                                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| create          | Downloads the required tools and creates a virtual Python environment with the required dependencies                                                                                                    |
+| Execute         | Runs a Python script that starts the required services and the incubator simulation. Various status messages are printed to the console, including the monitored system states and the monitor verdict. |
+| clean           | Removes the created *data* directory and the incubator log files.                                                                                                                                       |
 
 If necessary, change the execution privileges of any lifecycle scripts you need
 to run.

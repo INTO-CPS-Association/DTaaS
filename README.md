@@ -2,12 +2,10 @@
 
 ## Overview
 
-Digital Twin as a Service (DTaaS) is a software platform for creating,
-running and sharing digital twins (DTs).
-
-- **Build**: assemble DTs from reusable DT assets.
-- **Operate**: run DTs on the DTaaS platform.
-- **Share**: make DTs and the services they provide available to other users.
+Digital Twin as a Service (DTaaS) is a software platform for digital
+twins (DTs). Users build DTs from reusable DT assets, run them on the
+platform, and share the DTs and the services they provide with other
+users.
 
 ![DTaaS demonstration video showing the platform interface](docs/user/dtaas-user_4x.gif)
 
@@ -16,23 +14,14 @@ More demos are in the [playlist](docs/playlist.md).
 
 ## Installation and Use
 
-Install from the latest release on the
-[releases page](https://github.com/INTO-CPS-Association/DTaaS/releases).
+Start with the [dtaas](https://pypi.org/project/dtaas/) package, the CLI
+for administering DTaaS installations. The
+[dtaas-services](https://pypi.org/project/dtaas-services/) package is the
+CLI for administering the platform services (InfluxDB, Grafana, RabbitMQ,
+MongoDB, ThingsBoard and GitLab). Each CLI also works on its own.
+
 The [project documentation](https://into-cps-association.github.io/DTaaS/)
 explains how to install and operate the platform.
-
-## Independent Packages
-
-Some DTaaS components are published as packages that can be used on their
-own or combined into a complete DTaaS installation.
-
-- [npm packages](https://www.npmjs.com/org/into-cps-association)
-- [Docker images](https://hub.docker.com/u/intocps)
-- [dtaas-services (PyPI)](https://pypi.org/project/dtaas-services/)
-
-[dtaas-services](deploy/services/cli/README.md) installs and manages the
-platform services (InfluxDB, Grafana, RabbitMQ, MongoDB, ThingsBoard and
-GitLab), either alongside DTaaS or on their own.
 
 Feature requests and bug reports go to
 [GitHub issues](https://github.com/INTO-CPS-Association/DTaaS/issues/new/choose).
@@ -53,26 +42,48 @@ publisher = {SAGE Publications Sage UK: London, England}
 }
 ```
 
+## Independent Packages
+
+DTaaS components are also published as separate packages. You can use
+them in your own software or combine them into a complete DTaaS
+installation.
+
+| Package | Purpose | Published on |
+| :--- | :--- | :--- |
+| [Installation packages](deploy/README.md) | One zip file for each installation setup | [GitHub releases](https://github.com/INTO-CPS-Association/DTaaS/releases) |
+| [dtaas-web](client) | React web application for DTaaS, which on its own provides only the DevOps features | [Docker Hub](https://hub.docker.com/r/intocps/dtaas-web) |
+| [libms](servers/lib) | Library microservice that serves files from the local file system or public git repositories over HTTP and a GraphQL API | [npm](https://www.npmjs.com/package/@into-cps-association/libms), [Docker Hub](https://hub.docker.com/r/intocps/libms) |
+| [logger-ms](servers/logger) | Logger microservice for DT workflow logs | [npm](https://www.npmjs.com/package/@into-cps-association/logger-ms), [Docker Hub](https://hub.docker.com/r/intocps/logger-ms) |
+| [runner](servers/execution/runner) | REST API wrapper that runs scripts and programs, usually DTs | [npm](https://www.npmjs.com/package/@into-cps-association/runner) |
+| [dt-automation](lib/dt-automation) | Data, state and logic for creating, managing and running DTs | [npm](https://www.npmjs.com/package/@into-cps-association/dt-automation) |
+
+Development builds of the npm packages and Docker images are published
+more often to the
+[GitHub Packages registry](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
+They are not user tested.
+
 ## Development
 
-This repository is a monorepo. It holds the source code for:
+This repository is a monorepo.
 
-- [web client](client)
-- [library microservice](servers/lib)
-- [runner microservice](servers/execution/runner)
-- [logger microservice](servers/logger)
-- [dt-automation npm package](lib/dt-automation), the data, state and
-  logic for creating, managing and running DTs
-- [gitlab-common Python library](lib/gitlab_common), GitLab operations
-  shared by the two command-line tools
-- [DTaaS CLI](cli) for generating, configuring and administering
-  installations
-- [dtaas-services CLI](deploy/services/cli)
+| Directory | Contents | Language |
+| :--- | :--- | :--- |
+| [client](client) | Web client | TypeScript, React |
+| [servers/lib](servers/lib) | Library microservice | TypeScript, NestJS |
+| [servers/execution/runner](servers/execution/runner) | Runner microservice | TypeScript, NestJS |
+| [servers/logger](servers/logger) | Logger microservice | TypeScript, NestJS |
+| [lib/dt-automation](lib/dt-automation) | dt-automation npm package | TypeScript |
+| [lib/gitlab_common](lib/gitlab_common) | GitLab operations shared by the two CLIs | Python |
+| [cli](cli) | DTaaS CLI | Python |
+| [deploy/services/cli](deploy/services/cli) | dtaas-services CLI | Python |
+| [deploy](deploy/README.md) | Installation setups | Docker Compose, Vagrant |
+| [docs](docs) | Documentation website | MkDocs |
+| [developer/devenv](developer/devenv/README.md) | Container with every toolchain the repository needs | Docker |
+| [developer/check](developer/check/README.md) | Dockerfiles of the published images, and a Compose setup that runs them on a developer machine | Docker |
 
-Published packages are also available from the
-[GitHub Packages registry](https://github.com/orgs/INTO-CPS-Association/packages?repo_name=DTaaS).
-
-The
+[PROJECT.md](PROJECT.md) lists the build and test command for each
+project, and [CONTRIBUTING.md](CONTRIBUTING.md) describes the
+contribution process. The
 [developer documentation](https://into-cps-association.github.io/DTaaS/development/developer/index.html)
 covers development in detail.
 

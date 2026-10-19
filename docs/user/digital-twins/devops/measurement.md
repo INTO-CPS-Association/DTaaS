@@ -90,7 +90,7 @@ The measurement results table has the following columns:
 | Column           | Description                                                                                                     |
 | ---------------- | --------------------------------------------------------------------------------------------------------------- |
 | Task             | Task number, name, and description                                                                              |
-| Status           | Current execution status (PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED); a dash before the task is queued      |
+| Status           | Current execution status (PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED); a dash before the task is queued     |
 | Average Duration | Mean execution time across all completed trials, displayed in seconds                                           |
 | Trials           | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
 | Data             | Download button to export individual task results as JSON                                                       |

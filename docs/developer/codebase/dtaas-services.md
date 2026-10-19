@@ -150,7 +150,7 @@ tree instead of depending on it:
 
 ```text
 lib/gitlab_common/gitlab_common/     <-- edit and test here
-        |  copied by dtaas_services/pkg/build.py
+| copied by dtaas_services/pkg/build.py |
         v
 dtaas_services/gitlab_common/        <-- gitignored, never committed
 ```

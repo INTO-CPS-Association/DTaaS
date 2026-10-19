@@ -10,14 +10,14 @@ codebase at that commit.
 The review covers the five deliverable packages of the monorepo, and
 the deployment scenarios that bind them together (the last row):
 
-| Package | Path | Technology |
-| :------ | :--- | :--------- |
-| React client | `client/` | React 19, Redux Toolkit, oidc-client-ts |
-| Library microservice | `servers/lib/` | NestJS, GraphQL (Apollo), cloudcmd |
-| DT Runner | `servers/execution/runner/` | NestJS, REST, execa |
-| DTaaS CLI | `cli/` | Python, click, python-on-whales |
-| Services manager | `deploy/services/cli/` | Python, click (dtaas-services) |
-| Deployment scenarios | `deploy/dtaas/docker/`, `deploy/vagrant/` | Traefik, docker compose |
+| Package              | Path                                      | Technology                              |
+| :------------------- | :---------------------------------------- | :-------------------------------------- |
+| React client         | `client/`                                 | React 19, Redux Toolkit, oidc-client-ts |
+| Library microservice | `servers/lib/`                            | NestJS, GraphQL (Apollo), cloudcmd      |
+| DT Runner            | `servers/execution/runner/`               | NestJS, REST, execa                     |
+| DTaaS CLI            | `cli/`                                    | Python, click, python-on-whales         |
+| Services manager     | `deploy/services/cli/`                    | Python, click (dtaas-services)          |
+| Deployment scenarios | `deploy/dtaas/docker/`, `deploy/vagrant/` | Traefik, docker compose                 |
 
 The review followed a standard system design review framework:
 requirements traceability, recovery of the high-level architecture from

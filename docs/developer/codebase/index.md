@@ -28,18 +28,18 @@ DTaaS/
 
 ## Directory roles
 
-| Directory | Purpose |
-| :--- | :--- |
-| `.agents/` | Agent Skills; see [Coding Agents](../contributions/coding-agents.md). |
-| `cli/` | Python package for administrative user and workspace operations. |
-| `client/` | Main DTaaS web application with route, store, model, and test layers. |
-| `deploy/` | Installable DTaaS, workspace, runner, and platform-services packages. |
-| `developer/` | The `devenv` development container and the `check` Docker workflow. |
-| `docs/` | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`. |
-| `lib/` | The `dt-automation` npm package and the `gitlab_common` Python library. |
-| `script/` | Helper scripts for docs publishing, environment setup, and release tasks. |
-| `servers/` | NestJS services: the library, runner and logger microservices. |
-| `.github/` | CI workflows, repository templates and Dependabot configuration. |
+| Directory    | Purpose                                                                   |
+| :----------- | :------------------------------------------------------------------------ |
+| `.agents/`   | Agent Skills; see [Coding Agents](../contributions/coding-agents.md).     |
+| `cli/`       | Python package for administrative user and workspace operations.          |
+| `client/`    | Main DTaaS web application with route, store, model, and test layers.     |
+| `deploy/`    | Installable DTaaS, workspace, runner, and platform-services packages.     |
+| `developer/` | The `devenv` development container and the `check` Docker workflow.       |
+| `docs/`      | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`.        |
+| `lib/`       | The `dt-automation` npm package and the `gitlab_common` Python library.   |
+| `script/`    | Helper scripts for docs publishing, environment setup, and release tasks. |
+| `servers/`   | NestJS services: the library, runner and logger microservices.            |
+| `.github/`   | CI workflows, repository templates and Dependabot configuration.          |
 
 ## Codebase entry points
 
