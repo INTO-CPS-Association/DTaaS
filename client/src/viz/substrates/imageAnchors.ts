@@ -25,7 +25,7 @@ export function parsePoints(ref: string): Point[] {
     .map((pair) => {
       const [x, y] = pair.split(',').map(Number);
       if (!Number.isFinite(x) || !Number.isFinite(y)) {
-        throw new Error(`${ref} is not a list of x,y points`);
+        throw new TypeError(`${ref} is not a list of x,y points`);
       }
       return [x, y] as const;
     });

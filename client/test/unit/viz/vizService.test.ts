@@ -86,6 +86,11 @@ describe('the visualisation service', () => {
         presets: [{ id: 'pump.flow' }],
         substrates: [
           { id: 'pid', supports: [], load: async () => ({ default: factory }) },
+          {
+            id: 'embed',
+            supports: [],
+            load: async () => ({ default: factory }),
+          },
         ],
       },
     } as unknown as DtaasExtension;
@@ -97,6 +102,7 @@ describe('the visualisation service', () => {
       () => host as never,
     );
 
+    // The extension's own embed is not offered next to the core's.
     expect(viz.substrates.list()).toEqual(['image', 'embed', 'pid']);
     await expect(viz.substrates.get('pid')).resolves.toBe(adapter);
     expect(factory).toHaveBeenCalledWith(host);

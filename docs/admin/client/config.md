@@ -17,6 +17,9 @@ The options are set in `env.js`, which defines `window.env`.
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
       LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
+      // REACT_APP_VIZ_MQTT_URL: 'Web MQTT address of the broker'(optional),
+      // REACT_APP_VIZ_MQTT_USERNAME: 'Read-only broker user'(optional),
+      // REACT_APP_VIZ_MQTT_PASSWORD: 'Password of that user'(optional),
     };
   };
 
@@ -87,3 +90,21 @@ open pages need, such as the sensor topics of a building model, and colours
 the pages with the readings. The broker user and password are sent to every
 browser that opens the client, as every browser credential is, so they must
 belong to a user that may only read those topics.
+
+### Creating the Read-Only Broker User
+
+With the platform services, run these commands on the services host. The
+first one asks for the password, so it does not end up in the shell history.
+MQTT subscriptions are queues named `mqtt-subscription-<client id>qos<n>`
+bound to the `amq.topic` exchange, so the user may create and bind those
+queues and read from them and from `amq.topic`, and nothing else. The topic
+permission lets the user read every topic and publish to none.
+
+```bash
+docker exec -it rabbitmq rabbitmqctl add_user dtaas-viewer
+docker exec rabbitmq rabbitmqctl set_permissions -p / dtaas-viewer \
+  '^mqtt-subscription-.*' '^mqtt-subscription-.*' \
+  '^(amq\.topic|mqtt-subscription-.*)$'
+docker exec rabbitmq rabbitmqctl set_topic_permissions -p / dtaas-viewer \
+  amq.topic '^$' '.*'
+```

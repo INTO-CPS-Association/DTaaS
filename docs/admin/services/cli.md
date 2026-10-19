@@ -142,6 +142,22 @@ Review the refreshed files before starting the services, and re-run
 `dtaas-services host setup` if certificate or service file permissions were
 affected.
 
+#### Adding Web MQTT to an Existing Install
+
+`--force` keeps `services.env`, `rabbitmq.conf` and
+`rabbitmq.enabled_plugins`, so a project generated before the Web MQTT plugin
+was added does not get it from a refresh. Add it by hand:
+
+* `config/rabbitmq/rabbitmq.enabled_plugins`: add `rabbitmq_web_mqtt` to the
+  list.
+* `config/rabbitmq/rabbitmq.conf`: copy the `Web MQTT section` from the
+  packaged file.
+* `config/services.env`: add `RABBITMQ_WEB_MQTT_PORT=8091`, or another free
+  port. The compose file uses 8091 when the key is missing.
+
+Alternatively, move the three files aside, run the command again and carry
+your own settings over into the regenerated files.
+
 ## Usage
 
 ### Service Setup

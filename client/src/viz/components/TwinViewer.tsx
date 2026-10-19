@@ -59,7 +59,7 @@ function TwinViewer(props: TwinViewerProps) {
   return (
     <Box sx={gridOf(asset.layout.panes.length)}>
       {asset.layout.panes.map((pane) => (
-        <Box key={pane} aria-label={pane}>
+        <Box key={pane} component="section" aria-label={pane}>
           {problems.has(pane) && (
             <Alert severity="error">{problems.get(pane)}</Alert>
           )}

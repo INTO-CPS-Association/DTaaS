@@ -141,6 +141,19 @@ describe('createExtensionHost', () => {
     );
   });
 
+  it('refuses an extension that registers a substrate of the core', () => {
+    const substrates = [{ id: 'image', supports: [], load: async () => ({}) }];
+    const contribution = { detect: () => false, substrates } as never;
+    const own = kit('own', { visualisation: contribution });
+
+    const host = createExtensionHost([own], {});
+
+    expect(host.enabled).toEqual([]);
+    expect(host.problems).toEqual([
+      { id: 'own', reason: expect.stringMatching(/image/) },
+    ]);
+  });
+
   it('collects the reducers of the enabled extensions by id', () => {
     const reducer = (state: unknown) => state ?? 0;
 

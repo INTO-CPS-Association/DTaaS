@@ -90,6 +90,24 @@ function messagesOf(client: BrokerClient, channel: Channel) {
   };
 }
 
+/** Hand a sink the samples of some topics, and return how to stop. */
+function subscriber(
+  messages: ReturnType<typeof messagesOf>,
+  topics: ReturnType<typeof topicCounter>,
+): LiveTransport['subscribe'] {
+  return (paths, sink) => {
+    paths.forEach((path) => {
+      messages.add(path, sink);
+      topics.add(path);
+    });
+    return () =>
+      paths.forEach((path) => {
+        messages.remove(path, sink);
+        topics.remove(path);
+      });
+  };
+}
+
 export default function createMqttTransport(
   settings: MqttSettings,
   connect: Connect = (url, options) => lazyClient(url, options),
@@ -101,20 +119,9 @@ export default function createMqttTransport(
   });
   const connection = connectionOf(client);
   const messages = messagesOf(client, settings.channel ?? 'measured');
-  const topics = topicCounter(client);
   return {
     id: `mqtt ${settings.url}`,
-    subscribe(paths, sink) {
-      paths.forEach((path) => {
-        messages.add(path, sink);
-        topics.add(path);
-      });
-      return () =>
-        paths.forEach((path) => {
-          messages.remove(path, sink);
-          topics.remove(path);
-        });
-    },
+    subscribe: subscriber(messages, topicCounter(client)),
     ...connection,
     close: () => {
       client.end();

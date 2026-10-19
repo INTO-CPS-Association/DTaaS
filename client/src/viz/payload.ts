@@ -18,6 +18,7 @@
 
 import type {
   Channel,
+  SignalQuality,
   SignalSample,
   SignalValue,
 } from '@into-cps-association/dtaas-sdk';
@@ -26,7 +27,7 @@ export interface Decoded {
   readonly value: SignalValue;
   readonly ts?: number;
   readonly channel?: Channel;
-  readonly quality?: SignalSample['quality'];
+  readonly quality?: SignalQuality;
 }
 
 /** `20261013T10:00:00`, local time as the publisher wrote it. */
@@ -44,21 +45,36 @@ function timeOf(value: unknown): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+const QUALITIES: readonly unknown[] = ['good', 'stale', 'bad'];
+
+/** A value of a type the SDK allows: a number, text, a flag or numbers. */
+function isSignalValue(value: unknown): value is SignalValue {
+  if (Array.isArray(value)) return value.every((v) => typeof v === 'number');
+  return ['number', 'string', 'boolean'].includes(typeof value);
+}
+
+/** The fields of a JSON object payload, when its value is one the SDK allows. */
+function fromObject(data: Record<string, unknown>): Decoded | undefined {
+  if (!isSignalValue(data.value)) return undefined;
+  // A quality the SDK does not name is dropped, and the reading still counts.
+  const quality = QUALITIES.includes(data.quality)
+    ? (data.quality as SignalQuality)
+    : undefined;
+  return { value: data.value, ts: timeOf(data.ts ?? data.timestamp), quality };
+}
+
 function fromJson(text: string): Decoded | undefined {
+  let data: unknown;
   try {
-    const data = JSON.parse(text) as Record<string, unknown> | number;
-    if (typeof data === 'number') return { value: data };
-    if (data === null || typeof data !== 'object' || !('value' in data)) {
-      return undefined;
-    }
-    return {
-      value: data.value as SignalValue,
-      ts: timeOf(data.ts ?? data.timestamp),
-      quality: data.quality as Decoded['quality'],
-    };
+    data = JSON.parse(text);
   } catch {
     return undefined;
   }
+  if (typeof data === 'number') return { value: data };
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    return undefined;
+  }
+  return fromObject(data as Record<string, unknown>);
 }
 
 function fromLine(text: string): Decoded | undefined {

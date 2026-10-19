@@ -1,5 +1,6 @@
 import { fakeHostServices } from '@into-cps-association/dtaas-sdk/testing';
-import createImageSubstrate from 'viz/substrates/imageSubstrate';
+import { SCHEMES } from 'viz/schemes';
+import createImageSubstrate, { altText } from 'viz/substrates/imageSubstrate';
 
 const resolved = (properties: Record<string, unknown>) => ({
   encoding: { type: 'label' as const },
@@ -33,7 +34,9 @@ describe('the image substrate', () => {
 
     await adapter.mount(container, { adapter: 'image', source: 'photo.jpg' });
 
-    expect(container.querySelector('img')).not.toBeNull();
+    expect(container.querySelector('img')?.alt).toBe(
+      'Picture photo.jpg, with the signals of this twin drawn on it',
+    );
     expect(container.querySelector('svg')?.getAttribute('viewBox')).toBe(
       '0 0 800 600',
     );
@@ -62,6 +65,7 @@ describe('the image substrate', () => {
     expect(dot.getAttribute('fill')).toBe('#ff0000');
     expect(label.textContent).toBe('12 cars');
     expect(dot.getAttribute('stroke-width')).toBe('6');
+    expect(dot.getAttribute('stroke')).toBe(SCHEMES.heat[4]);
     expect(label.getAttribute('visibility')).toBe('hidden');
   });
 
@@ -81,6 +85,30 @@ describe('the image substrate', () => {
     expect(
       adapter.resolve({ signalPath: 'x', kind: 'ifc-guid', ref: 'abc' }),
     ).toBeNull();
+  });
+
+  it('names the picture by its file in the alternative text', () => {
+    expect(altText('lib://sites/j7/photo.jpg?v=2')).toBe(
+      'Picture photo.jpg, with the signals of this twin drawn on it',
+    );
+  });
+
+  it('scrolls an anchor into view, and has no picking or time of its own', async () => {
+    const adapter = createImageSubstrate(host);
+    await adapter.mount(container, { adapter: 'image', source: 'photo.jpg' });
+    const ref = adapter.resolve({
+      signalPath: 'j7/queue',
+      kind: 'image-point',
+      ref: '10,20',
+    })!;
+    const scroll = jest.fn();
+    container.querySelector('circle')!.scrollIntoView = scroll;
+
+    adapter.frame(ref);
+
+    expect(scroll).toHaveBeenCalledWith({ block: 'center' });
+    expect(adapter.pick(0, 0)).toBeNull();
+    expect(adapter.setTime(0)).toBeUndefined();
   });
 
   it('leaves nothing behind once disposed', async () => {

@@ -14,7 +14,7 @@ export const SCHEMES: Readonly<Record<string, readonly string[]>> = {
 };
 
 const channels = (hex: string) =>
-  [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16));
+  [1, 3, 5].map((index) => Number.parseInt(hex.slice(index, index + 2), 16));
 
 const hexOf = (values: number[]) =>
   `#${values.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;

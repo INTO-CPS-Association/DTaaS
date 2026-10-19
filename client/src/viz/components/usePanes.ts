@@ -42,6 +42,31 @@ async function mountPane(
 
 type Setter<T> = (update: (current: Map<string, T>) => Map<string, T>) => void;
 
+/** What a mount needs, and the adapters it has mounted so far. */
+interface Mounting {
+  readonly asset: VisualisationAsset;
+  readonly viz: VizService;
+  readonly setPanes: Setter<MountedPane>;
+  readonly setProblems: Setter<string>;
+  readonly mounted: SubstrateAdapter[];
+  gone: boolean;
+}
+
+/** Mount one pane, and record it, its problem, or dispose of it when late. */
+function mountInto(m: Mounting, pane: string, container: HTMLElement) {
+  mountPane(pane, m.asset, m.viz, container)
+    .then((result) => {
+      // A pane that finishes mounting after the twin was left is removed at
+      // once, since the cleanup has already run.
+      if (m.gone) return result.adapter.dispose();
+      m.mounted.push(result.adapter);
+      return m.setPanes((current) => new Map(current).set(pane, result));
+    })
+    .catch((error: Error) =>
+      m.setProblems((current) => new Map(current).set(pane, error.message)),
+    );
+}
+
 /** Mount every pane that has a container, and return the cleanup. */
 function mountAll(
   asset: VisualisationAsset,
@@ -50,26 +75,21 @@ function mountAll(
   setPanes: Setter<MountedPane>,
   setProblems: Setter<string>,
 ) {
-  const mounted: SubstrateAdapter[] = [];
-  let gone = false;
+  const m: Mounting = {
+    asset,
+    viz,
+    setPanes,
+    setProblems,
+    mounted: [],
+    gone: false,
+  };
   asset.layout.panes.forEach((pane) => {
     const container = containers.get(pane);
-    if (!container) return;
-    mountPane(pane, asset, viz, container)
-      .then((result) => {
-        // A pane that finishes mounting after the twin was left is removed at
-        // once, since the cleanup below has already run.
-        if (gone) return result.adapter.dispose();
-        mounted.push(result.adapter);
-        return setPanes((current) => new Map(current).set(pane, result));
-      })
-      .catch((error: Error) =>
-        setProblems((current) => new Map(current).set(pane, error.message)),
-      );
+    if (container) mountInto(m, pane, container);
   });
   return () => {
-    gone = true;
-    mounted.forEach((adapter) => adapter.dispose());
+    m.gone = true;
+    m.mounted.forEach((adapter) => adapter.dispose());
   };
 }
 

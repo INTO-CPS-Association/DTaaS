@@ -23,7 +23,10 @@ import {
   useURLforLIB,
   useUsername,
 } from 'util/envUtil';
-import createContentsService, { workspaceUrl } from 'extension/contentsClient';
+import createContentsService, {
+  assertWorkspacePath,
+  workspaceUrl,
+} from 'extension/contentsClient';
 import createGitService from 'extension/gitClient';
 
 /** The parts of the client store the services read and write. */
@@ -40,10 +43,10 @@ export type SharedServices = Omit<HostServices, 'config' | 'logger'>;
 /** The services the common core provides, which the host only passes on. */
 export type CoreServices = Pick<HostServices, 'signals' | 'viz'>;
 
-async function userName(store: HostStore): Promise<string> {
+function userName(store: HostStore): Promise<string> {
   const name = cleanUsername(store.getState().auth.userName);
-  if (!name) throw new Error('No user is signed in');
-  return name;
+  if (!name) return Promise.reject(new Error('No user is signed in'));
+  return Promise.resolve(name);
 }
 
 /**
@@ -64,7 +67,9 @@ const CONVENTIONS = {
 function resolver(baseUrl: () => Promise<string>) {
   return async (url: string) => {
     if (url.startsWith('lib://')) {
-      return workspaceUrl(await baseUrl(), 'files', url.slice(6));
+      const path = url.slice('lib://'.length);
+      assertWorkspacePath(path);
+      return workspaceUrl(await baseUrl(), 'files', path);
     }
     if (/^https?:\/\//.test(url)) return url;
     throw new Error(`${url} is not a lib:// or web address`);
@@ -110,11 +115,16 @@ export function createPlatformServices(
   };
 }
 
+/**
+ * Every shared service. The core reads and writes visualisations through the
+ * platform's workspace files, so it is built from them.
+ */
 export function createSharedServices(
   store: HostStore,
-  core: CoreServices,
+  createCore: (contents: SharedServices['contents']) => CoreServices,
 ): SharedServices {
-  return { ...createPlatformServices(store), ...core };
+  const platform = createPlatformServices(store);
+  return { ...platform, ...createCore(platform.contents) };
 }
 
 /**

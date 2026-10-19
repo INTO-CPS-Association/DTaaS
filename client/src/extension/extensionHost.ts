@@ -9,7 +9,7 @@ import store from 'store/store';
 import { showSnackbar } from 'store/snackbar.slice';
 import createExtensionHost from 'extension/createExtensionHost';
 import {
-  createPlatformServices,
+  createSharedServices,
   servicesFor,
   type SharedServices,
 } from 'extension/hostServices';
@@ -26,19 +26,19 @@ extensionHost.problems.forEach(({ id, reason }) =>
   console.warn(`Extension ${id} is not loaded: ${reason}`),
 );
 
-const platform = createPlatformServices({
-  getState: () => store.getState(),
-  notify: (message, severity) =>
-    store.dispatch(showSnackbar({ message, severity })),
-});
-
 // A substrate adapter an extension contributes is built with the services the
 // host shares, under the host's own name in the log.
-const core = createCore(env, platform.contents, extensionHost.enabled, () =>
-  servicesFor('host', sharedServices, env),
+export const sharedServices: SharedServices = createSharedServices(
+  {
+    getState: () => store.getState(),
+    notify: (message, severity) =>
+      store.dispatch(showSnackbar({ message, severity })),
+  },
+  (contents) =>
+    createCore(env, contents, extensionHost.enabled, () =>
+      servicesFor('host', sharedServices, env),
+    ),
 );
-
-export const sharedServices: SharedServices = { ...platform, ...core };
 
 export { env };
 export default extensionHost;

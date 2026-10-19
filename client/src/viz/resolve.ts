@@ -41,6 +41,33 @@ function encodingsOf(
   return presets.get(binding.preset ?? '')?.encodings.map((e) => e.encoding);
 }
 
+/** The visual properties one binding calls for at `t`, or why there are none. */
+function resolveBinding(
+  binding: Binding,
+  presets: ReadonlyMap<string, EncodingPreset>,
+  readAt: ReadAt,
+  t: number,
+): ResolvedBinding {
+  const encodings = encodingsOf(binding, presets);
+  const base = { target: binding.target, substrate: binding.substrate };
+  if (!encodings) {
+    return {
+      ...base,
+      resolved: [],
+      problem: `Unknown preset ${binding.preset}`,
+    };
+  }
+  const valueOn = (channel: Channel) =>
+    readAt(binding.target, channel, t)?.value;
+  const resolved = encodings.map((encoding) => ({
+    encoding,
+    t,
+    value: valueOn('measured'),
+    properties: evaluate(encoding, valueOn),
+  }));
+  return { ...base, resolved };
+}
+
 export default function resolveEncodings(
   asset: VisualisationAsset,
   registered: readonly EncodingPreset[],
@@ -50,24 +77,7 @@ export default function resolveEncodings(
   const presets = new Map(
     [...registered, ...(asset.presets ?? [])].map((p) => [p.id, p]),
   );
-  return asset.encodings.map((binding) => {
-    const encodings = encodingsOf(binding, presets);
-    const base = { target: binding.target, substrate: binding.substrate };
-    if (!encodings) {
-      return {
-        ...base,
-        resolved: [],
-        problem: `Unknown preset ${binding.preset}`,
-      };
-    }
-    const valueOn = (channel: Channel) =>
-      readAt(binding.target, channel, t)?.value;
-    const resolved = encodings.map((encoding) => ({
-      encoding,
-      t,
-      value: valueOn('measured'),
-      properties: evaluate(encoding, valueOn),
-    }));
-    return { ...base, resolved };
-  });
+  return asset.encodings.map((binding) =>
+    resolveBinding(binding, presets, readAt, t),
+  );
 }

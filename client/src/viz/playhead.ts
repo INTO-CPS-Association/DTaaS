@@ -1,5 +1,5 @@
 /**
- * The one clock every substrate, embedded panel and table reads (T10).
+ * The one clock every substrate, embedded panel and table reads.
  *
  * In live mode the playhead is now, and a page that shows it re-renders once
  * a second. Setting a time leaves live mode, which is how a person scrubs back
@@ -25,30 +25,39 @@ function ticking(listeners: Set<() => void>, tick: () => boolean) {
   };
 }
 
+/** Whether the playhead follows now, where it stands, and who is watching. */
+interface Clock {
+  live: boolean;
+  time: number;
+  /** Changes only when a watcher should re-render. */
+  snapshot: number;
+  readonly listeners: Set<() => void>;
+}
+
+function moveTo(clock: Clock, following: boolean, t: number): void {
+  clock.live = following;
+  clock.time = t;
+  clock.snapshot = t;
+  clock.listeners.forEach((listener) => listener());
+}
+
 export default function createPlayhead(now: () => number = Date.now): Playhead {
-  let live = true;
-  let time = now();
-  const listeners = new Set<() => void>();
-  const get = () => (live ? now() : time);
-
-  // A snapshot that changes only when a listener should re-render: each tick
-  // in live mode, each set when scrubbing.
-  let snapshot = get();
-  const subscribe = ticking(listeners, () => {
-    if (live) snapshot = now();
-    return live;
-  });
-  const moveTo = (following: boolean, t: number) => {
-    live = following;
-    time = t;
-    snapshot = t;
-    listeners.forEach((listener) => listener());
+  const start = now();
+  const clock: Clock = {
+    live: true,
+    time: start,
+    snapshot: start,
+    listeners: new Set(),
   };
-
+  // The snapshot moves each tick in live mode, and each set when scrubbing.
+  const subscribe = ticking(clock.listeners, () => {
+    if (clock.live) clock.snapshot = now();
+    return clock.live;
+  });
   return {
-    get,
-    set: (t) => moveTo(false, t),
-    follow: (follow) => moveTo(follow, now()),
-    use: () => useSyncExternalStore(subscribe, () => snapshot),
+    get: () => (clock.live ? now() : clock.time),
+    set: (t) => moveTo(clock, false, t),
+    follow: (follow) => moveTo(clock, follow, now()),
+    use: () => useSyncExternalStore(subscribe, () => clock.snapshot),
   };
 }

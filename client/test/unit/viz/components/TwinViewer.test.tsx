@@ -64,7 +64,7 @@ describe('the twin viewer', () => {
     });
 
     expect(
-      screen.getByLabelText('photo').querySelector('canvas'),
+      screen.getByRole('region', { name: 'photo' }).querySelector('canvas'),
     ).not.toBeNull();
     expect(adapter.apply).toHaveBeenCalledWith(
       { substrate: 'stub', id: 'j7/queue' },
@@ -85,5 +85,27 @@ describe('the twin viewer', () => {
     });
 
     expect(await screen.findByRole('alert')).toHaveTextContent('stub');
+  });
+
+  it('disposes of a pane that finishes mounting after the twin was left', async () => {
+    const adapter = stubAdapter();
+    let finish: () => void = () => undefined;
+    adapter.mount.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const viz = createFakeViz({ substrates: { stub: adapter } });
+    const { unmount } = render(
+      <TwinViewer asset={asset} signals={createFakeSignals()} viz={viz} />,
+    );
+    await act(async () => undefined);
+
+    unmount();
+    await act(async () => finish());
+
+    expect(adapter.dispose).toHaveBeenCalledTimes(1);
+    expect(adapter.apply).not.toHaveBeenCalled();
   });
 });

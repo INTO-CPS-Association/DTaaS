@@ -13,10 +13,14 @@ import type {
   SubstrateAdapter,
   SubstrateDescriptor,
 } from '@into-cps-association/dtaas-sdk';
+import { SCHEMES } from 'viz/schemes';
 import { anchorPixels } from 'viz/substrates/imageAnchors';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const POINT_RADIUS = 12;
+
+/** The hot end of the heat scheme, so attention reads as the alarm colour. */
+const ATTENTION_STROKE = SCHEMES.heat[4];
 
 interface Shape {
   readonly mark: SVGElement;
@@ -62,23 +66,24 @@ export function paint(
   }
   if (typeof properties.text === 'string') label.textContent = properties.text;
   if ('attention' in properties) {
-    mark.setAttribute('stroke', properties.attention ? '#d7191c' : 'none');
+    mark.setAttribute(
+      'stroke',
+      properties.attention ? ATTENTION_STROKE : 'none',
+    );
     mark.setAttribute('stroke-width', properties.attention ? '6' : '0');
   }
 }
 
-/**
- * Put the picture in the container with the SVG layer over it, and size the
- * layer to the picture's own pixels once it has loaded.
- */
-async function mountPicture(
-  container: HTMLElement,
-  frame: HTMLDivElement,
-  svg: SVGSVGElement,
-  src: string,
-): Promise<void> {
-  const img = document.createElement('img');
-  img.alt = '';
+/** A sentence naming the picture, for a person who cannot see it. */
+export function altText(source: string): string {
+  const [path] = source.split(/[?#]/);
+  const parts = path.split('/').filter(Boolean);
+  const name = parts[parts.length - 1] ?? source;
+  return `Picture ${name}, with the signals of this twin drawn on it`;
+}
+
+/** The frame holds the picture, and the SVG layer lies over it, as wide. */
+function layOut(frame: HTMLDivElement, img: HTMLImageElement, svg: SVGElement) {
   Object.assign(frame.style, {
     position: 'relative',
     display: 'inline-block',
@@ -91,9 +96,24 @@ async function mountPicture(
     width: '100%',
     height: '100%',
   });
+}
+
+/**
+ * Put the picture in the container with the SVG layer over it, and size the
+ * layer to the picture's own pixels once it has loaded.
+ */
+async function mountPicture(
+  container: HTMLElement,
+  frame: HTMLDivElement,
+  svg: SVGSVGElement,
+  picture: { readonly source: string; readonly src: string },
+): Promise<void> {
+  const img = document.createElement('img');
+  img.alt = altText(picture.source);
+  layOut(frame, img, svg);
   frame.append(img, svg);
   container.append(frame);
-  img.src = src;
+  img.src = picture.src;
   await img.decode();
   svg.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
 }
@@ -136,7 +156,7 @@ export default function createImageSubstrate(
       descriptor = given;
       if (!given.source) throw new Error('An image substrate needs a source');
       const src = await host.library.resolve(given.source);
-      await mountPicture(container, frame, svg, src);
+      await mountPicture(container, frame, svg, { source: given.source, src });
     },
     ...anchorLayer(svg, () => descriptor),
     pick: () => null,

@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import type { SignalSample, SignalSink } from '@into-cps-association/dtaas-sdk';
 import type { LiveTransport } from 'viz/mqttTransport';
+import createSampleStore from 'viz/sampleStore';
 import createSignals from 'viz/signals';
 
 function fakeTransport() {
@@ -59,11 +60,22 @@ describe('the signals service', () => {
   });
 
   it('reads at the playhead by default, and ranges from the store', async () => {
-    const signals = createSignals([]);
-    signals.ingest([
-      { twinId: '', signalPath: 'a', channel: 'measured', ts: 10, value: 1 },
-      { twinId: '', signalPath: 'a', channel: 'measured', ts: 20, value: 2 },
-    ]);
+    const store = createSampleStore();
+    store.insert({
+      twinId: '',
+      signalPath: 'a',
+      channel: 'measured',
+      ts: 10,
+      value: 1,
+    });
+    store.insert({
+      twinId: '',
+      signalPath: 'a',
+      channel: 'measured',
+      ts: 20,
+      value: 2,
+    });
+    const signals = createSignals([], store);
 
     signals.playhead.set(15);
 

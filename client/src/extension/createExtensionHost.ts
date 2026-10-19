@@ -13,8 +13,9 @@
  * - A deployment lists it in `REACT_APP_EXTENSIONS_DISABLED` in `env.js`.
  * - Its own `REACT_APP_EXT_<ID>_*` keys do not satisfy its config schema.
  * - It registers an anchor kind, a preset or a substrate another extension
- *   already registered. Rules that span extensions belong to the host, since
- *   `validateExtension` sees one extension at a time.
+ *   already registered, or a substrate the common core draws itself. Rules
+ *   that span extensions belong to the host, since `validateExtension` sees
+ *   one extension at a time.
  */
 
 import {
@@ -29,6 +30,7 @@ import {
   type ExtensionRoute,
   type NavigationItem,
 } from '@into-cps-association/dtaas-sdk';
+import STANDARD from 'viz/substrates';
 
 /**
  * Core routes of this client. The SDK's default list names every one, and a
@@ -154,7 +156,10 @@ export default function createExtensionHost(
   const enabled: DtaasExtension[] = [];
   const problems: ExtensionProblem[] = [];
   const seen = new Set<string>();
-  const claimed = new Map<string, string>();
+  // The core's own substrates are claimed first, so no extension replaces one.
+  const claimed = new Map<string, string>(
+    Object.keys(STANDARD).map((id) => [`substrate:${id}`, 'the common core']),
+  );
   for (const ext of extensions) {
     const reason = rejection(ext, env, seen, claimed);
     if (reason === undefined) {

@@ -25,8 +25,9 @@ const DIRECTORY = library.conventions.digitalTwinsDirectory;
 
 function Drawing({ loaded }: { readonly loaded: Loaded }) {
   if (loaded.state === 'loading') return <CircularProgress sx={{ m: 2 }} />;
-  if (loaded.state === 'error')
-    return <Alert severity="error">{loaded.message}</Alert>;
+  if (loaded.state === 'error') {
+    return <Alert severity="error">The visualisation could not be read.</Alert>;
+  }
   if (loaded.state === 'none') {
     return (
       <Alert severity="info">
@@ -73,7 +74,11 @@ function VisualiseTab() {
   const { twins, error } = useTwins(contents, DIRECTORY);
   const [twin, setTwin] = useState('');
   const loaded = useVisualisation(viz, DIRECTORY, twin);
-  if (error) return <Alert severity="error">{error}</Alert>;
+  if (error) {
+    return (
+      <Alert severity="error">The digital twins could not be listed.</Alert>
+    );
+  }
   return (
     <>
       <TwinPicker twins={twins} twin={twin} onChange={setTwin} />

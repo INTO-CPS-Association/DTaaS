@@ -12,5 +12,11 @@ if (typeof window !== 'undefined') {
     REACT_APP_LOGOUT_REDIRECT_URI: 'http://intocps.org/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
     LOGGER_URL: 'http://intocps.org/logger',
+    // Optional: live signals for the Visualise tab, from the platform
+    // services' RabbitMQ (Web MQTT on RABBITMQ_WEB_MQTT_PORT, path /ws).
+    // The user must be read-only, since every browser receives it.
+    // REACT_APP_VIZ_MQTT_URL: 'wss://services.example.com:8091/ws',
+    // REACT_APP_VIZ_MQTT_USERNAME: 'dtaas-viewer',
+    // REACT_APP_VIZ_MQTT_PASSWORD: 'change-me',
   };
 };

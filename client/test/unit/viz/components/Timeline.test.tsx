@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createFakeSignals } from '@into-cps-association/dtaas-sdk/testing';
-import Timeline from 'viz/components/Timeline';
+import Timeline, { localTime } from 'viz/components/Timeline';
 
 describe('the timeline', () => {
   it('shows whether the signals on screen are arriving', () => {
@@ -27,5 +27,17 @@ describe('the timeline', () => {
     expect(screen.getByRole('button', { name: 'Live' })).toHaveClass(
       'MuiButton-contained',
     );
+  });
+
+  it('reads the slider position aloud as the local time', () => {
+    const signals = createFakeSignals();
+    const t = Date.now() - 600_000;
+    render(<Timeline signals={signals} paths={[]} />);
+
+    act(() => signals.playhead.set(t));
+
+    const slider = screen.getByRole('slider', { name: 'Time' });
+    expect(slider).toHaveAttribute('aria-valuetext', localTime(t));
+    expect(slider).toHaveAttribute('step', '1000');
   });
 });

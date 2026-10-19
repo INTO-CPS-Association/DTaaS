@@ -67,9 +67,22 @@ export class UploadError extends Error {
   }
 }
 
-async function send(url: string, init: RequestInit): Promise<void> {
-  const response = await fetch(url, { credentials: 'include', ...init });
+/** A workspace request, with the session cookie every one of them needs. */
+export const credentialed = (url: string, init: RequestInit = {}) =>
+  fetch(url, { credentials: 'include', ...init });
+
+/** A workspace request that throws an `UploadError` unless it succeeded. */
+export async function checked(
+  url: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const response = await credentialed(url, init);
   if (!response.ok) throw new UploadError(url, response.status);
+  return response;
+}
+
+async function send(url: string, init: RequestInit): Promise<void> {
+  await checked(url, init);
 }
 
 /** One piece, or the whole file when `chunk` is left out. */
@@ -140,7 +153,7 @@ export const rename = (
 /** Delete a file, best effort: a `.part` that stays is truncated next time. */
 export async function discard(url: string, headers: HeadersInit) {
   try {
-    await fetch(url, { method: 'DELETE', credentials: 'include', headers });
+    await credentialed(url, { method: 'DELETE', headers });
   } catch {
     // Nothing more to do. The next write starts the file over.
   }
@@ -155,9 +168,7 @@ export async function discard(url: string, headers: HeadersInit) {
  */
 export async function isFree(url: string): Promise<boolean> {
   try {
-    const response = await fetch(`${url}?content=0`, {
-      credentials: 'include',
-    });
+    const response = await credentialed(`${url}?content=0`);
     return response.status === 404;
   } catch {
     return false;

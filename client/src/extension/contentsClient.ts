@@ -16,6 +16,8 @@ import type {
 } from '@into-cps-association/dtaas-sdk';
 import {
   PARTIAL_SUFFIX,
+  checked,
+  credentialed,
   discard,
   isFree,
   readXsrfToken,
@@ -70,12 +72,55 @@ function writeHeaders(): Record<string, string> {
   return headers;
 }
 
-async function request(url: string, init: RequestInit = {}) {
-  const response = await fetch(url, { credentials: 'include', ...init });
+/** A workspace address of a checked path, under one server prefix. */
+type UrlOf = (prefix: string, path: string) => Promise<string>;
+
+async function exists(url: UrlOf, path: string): Promise<boolean> {
+  const target = `${await url('api/contents', path)}?content=0`;
+  const response = await credentialed(target);
+  if (response.status === 404) return false;
   if (!response.ok) {
-    throw new Error(`${url} returned HTTP ${response.status}`);
+    throw new Error(`${target} returned HTTP ${response.status}`);
   }
-  return response;
+  return true;
+}
+
+async function list(url: UrlOf, path: string): Promise<ContentsEntry[]> {
+  const response = await checked(await url('api/contents', path));
+  const listing = (await response.json()) as { content?: JupyterEntry[] };
+  return (listing.content ?? []).map(toEntry);
+}
+
+async function get(url: UrlOf, path: string): Promise<Uint8Array> {
+  const response = await checked(await url('files', path));
+  return new Uint8Array(await response.arrayBuffer());
+}
+
+/** Write under a temporary name, then take the real one, or leave nothing. */
+async function put(
+  url: UrlOf,
+  path: string,
+  bytes: Uint8Array,
+  options: PutOptions,
+): Promise<void> {
+  const target = await url('api/contents', path);
+  const partial = await url('api/contents', `${path}${PARTIAL_SUFFIX}`);
+  const overwrite = options.overwrite ?? true;
+  if (!overwrite && !(await isFree(target))) {
+    throw new Error(`${path} already exists`);
+  }
+  const headers = writeHeaders();
+  try {
+    await writePartial(partial, headers, bytes);
+    // The rename refuses a taken name, so an overwrite clears it first.
+    if (overwrite && !(await isFree(target))) {
+      await checked(target, { method: 'DELETE', headers });
+    }
+    await rename(partial, headers, path);
+  } catch (error) {
+    await discard(partial, headers);
+    throw error;
+  }
 }
 
 /**
@@ -85,51 +130,14 @@ async function request(url: string, init: RequestInit = {}) {
 export default function createContentsService(
   baseUrl: () => Promise<string>,
 ): ContentsService {
-  const url = async (prefix: string, path: string) => {
+  const url: UrlOf = async (prefix, path) => {
     assertWorkspacePath(path);
     return workspaceUrl(await baseUrl(), prefix, path);
   };
-
-  const exists = async (path: string) => {
-    const target = `${await url('api/contents', path)}?content=0`;
-    const response = await fetch(target, { credentials: 'include' });
-    if (response.status === 404) return false;
-    if (!response.ok) {
-      throw new Error(`${target} returned HTTP ${response.status}`);
-    }
-    return true;
-  };
-
   return {
-    exists,
-    async list(path) {
-      const response = await request(await url('api/contents', path));
-      const listing = (await response.json()) as { content?: JupyterEntry[] };
-      return (listing.content ?? []).map(toEntry);
-    },
-    async get(path) {
-      const response = await request(await url('files', path));
-      return new Uint8Array(await response.arrayBuffer());
-    },
-    async put(path, bytes, options: PutOptions = {}) {
-      const target = await url('api/contents', path);
-      const partial = await url('api/contents', `${path}${PARTIAL_SUFFIX}`);
-      const overwrite = options.overwrite ?? true;
-      if (!overwrite && !(await isFree(target))) {
-        throw new Error(`${path} already exists`);
-      }
-      const headers = writeHeaders();
-      try {
-        await writePartial(partial, headers, bytes);
-        // The rename refuses a taken name, so an overwrite clears it first.
-        if (overwrite && !(await isFree(target))) {
-          await request(target, { method: 'DELETE', headers });
-        }
-        await rename(partial, headers, path);
-      } catch (error) {
-        await discard(partial, headers);
-        throw error;
-      }
-    },
+    exists: (path) => exists(url, path),
+    list: (path) => list(url, path),
+    get: (path) => get(url, path),
+    put: (path, bytes, options = {}) => put(url, path, bytes, options),
   };
 }

@@ -2,10 +2,13 @@
  * The common core of this deployment, built from `env.js`.
  *
  * `REACT_APP_VIZ_MQTT_URL` names the broker's MQTT-over-WebSocket address,
- * for RabbitMQ usually `wss://<host>/ws` behind the gateway, with
- * `REACT_APP_VIZ_MQTT_USERNAME` and `REACT_APP_VIZ_MQTT_PASSWORD` when the
- * broker asks for a login. Without a broker the core still runs: every
- * connection reads `down`, and visualisations are still read and saved.
+ * with `REACT_APP_VIZ_MQTT_USERNAME` and `REACT_APP_VIZ_MQTT_PASSWORD` when
+ * the broker asks for a login. The platform services publish RabbitMQ's Web
+ * MQTT on `RABBITMQ_WEB_MQTT_PORT`, 8091 by default, at the path `/ws`, so
+ * the address is `wss://<services host>:8091/ws`. The broker is connected on
+ * the first subscription, not when the client starts. Without a broker the
+ * core still runs: every connection reads `down`, and visualisations are
+ * still read and saved.
  */
 
 import type {

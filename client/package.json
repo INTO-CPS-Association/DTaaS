@@ -11,7 +11,7 @@
     "Enok Maj",
     "Jady Pamella Barbacena da Silva",
     "Marcus Neble Jensen",
-    "Mathias Br\u00e6ndgaard",
+    "Mathias Brændgaard",
     "Omar Suleiman",
     "Vanessa Scherma"
   ],
@@ -48,7 +48,8 @@
   },
   "resolutions": {
     "fast-uri": "^4.2.1",
-    "@babel/plugin-transform-modules-systemjs": "8.0.1"
+    "@babel/plugin-transform-modules-systemjs": "8.0.1",
+    "ip-address": "10.7.3"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

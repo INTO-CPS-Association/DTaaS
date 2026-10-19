@@ -1,5 +1,8 @@
 import { fakeHostServices } from '@into-cps-association/dtaas-sdk/testing';
-import createEmbedSubstrate, { embedUrl } from 'viz/substrates/embedSubstrate';
+import createEmbedSubstrate, {
+  embedUrl,
+  sandboxFor,
+} from 'viz/substrates/embedSubstrate';
 
 const BASE = 'https://grafana.example/d/abc?orgId=1';
 const grafana = {
@@ -40,12 +43,56 @@ describe('the embed substrate', () => {
     const frame = container.querySelector('iframe')!;
     adapter.setTime(NOW - 600_000);
 
-    expect(frame.title).toBe(BASE);
+    expect(frame.title).toBe('Embedded dashboard');
+    expect(frame.referrerPolicy).toBe('no-referrer');
+    expect(frame.getAttribute('sandbox')).toBe(sandboxFor(BASE));
     expect(new URL(frame.src).searchParams.get('to')).toBe(
       String(NOW - 600_000),
     );
     adapter.dispose();
     expect(container.childElementCount).toBe(0);
+  });
+
+  it('lets a page of another origin keep its origin', () => {
+    expect(sandboxFor(BASE)).toBe(
+      'allow-scripts allow-same-origin allow-forms allow-popups',
+    );
+  });
+
+  it('runs a library file of the DTaaS origin in an opaque origin', async () => {
+    const host = fakeHostServices();
+    const local = `${globalThis.location.origin}/user1/files/dash.html`;
+    jest.spyOn(host.library, 'resolve').mockResolvedValue(local);
+    const container = document.createElement('div');
+
+    await createEmbedSubstrate(host).mount(container, {
+      adapter: 'embed',
+      source: 'lib://dash.html',
+    });
+
+    expect(sandboxFor(local)).toBe('allow-scripts');
+    expect(container.querySelector('iframe')?.getAttribute('sandbox')).toBe(
+      'allow-scripts',
+    );
+  });
+
+  it('has no anchors to resolve, paint, frame or pick', () => {
+    const adapter = createEmbedSubstrate(fakeHostServices());
+    const ref = { substrate: 'embed', id: 'x' };
+
+    expect(
+      adapter.resolve({ signalPath: 'x', kind: 'geo', ref: '' }),
+    ).toBeNull();
+    expect(
+      adapter.apply(ref, {
+        encoding: { type: 'label' },
+        t: 0,
+        value: 1,
+        properties: {},
+      }),
+    ).toBeUndefined();
+    expect(adapter.frame(ref)).toBeUndefined();
+    expect(adapter.pick(0, 0)).toBeNull();
   });
 
   it('refuses a pane without an address', async () => {

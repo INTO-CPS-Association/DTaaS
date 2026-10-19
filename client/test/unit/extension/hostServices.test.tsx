@@ -67,6 +67,15 @@ describe('the shared host services', () => {
     await expect(library.resolve('ftp://x/a')).rejects.toThrow();
   });
 
+  it('refuses a lib:// path that leaves the library', async () => {
+    const { library } = createPlatformServices(hostStore());
+
+    await expect(library.resolve('lib://../x')).rejects.toThrow(
+      'not a path inside the workspace',
+    );
+    await expect(library.resolve('lib:///etc/passwd')).rejects.toThrow();
+  });
+
   it('shows a snackbar through the store and reads settings by name', () => {
     const store = hostStore();
     const services = createPlatformServices(store);
@@ -79,24 +88,23 @@ describe('the shared host services', () => {
   });
 
   it('passes on the signals and visualisations of the core', () => {
-    const platform = createPlatformServices(hostStore());
-    const core = createCore({}, platform.contents, [], () => {
-      throw new Error('no substrate is built here');
+    let core: ReturnType<typeof createCore> | undefined;
+    const services = createSharedServices(hostStore(), (contents) => {
+      core = createCore({}, contents, [], () => {
+        throw new Error('no substrate is built here');
+      });
+      return core;
     });
 
-    const services = createSharedServices(hostStore(), core);
-
-    expect(services.signals).toBe(core.signals);
-    expect(services.viz).toBe(core.viz);
+    expect(services.signals).toBe(core?.signals);
+    expect(services.viz).toBe(core?.viz);
     expect(services.signals.connection.get(['a/b'])).toBe('down');
   });
 });
 
 describe('the services of one extension', () => {
-  const platform = createPlatformServices(hostStore());
-  const shared = createSharedServices(
-    hostStore(),
-    createCore({}, platform.contents, [], () => {
+  const shared = createSharedServices(hostStore(), (contents) =>
+    createCore({}, contents, [], () => {
       throw new Error('no substrate is built here');
     }),
   );

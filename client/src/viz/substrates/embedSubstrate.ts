@@ -14,11 +14,7 @@ import type {
   SubstrateAdapter,
   SubstrateDescriptor,
 } from '@into-cps-association/dtaas-sdk';
-
-const HOUR_MS = 3_600_000;
-
-/** A playhead this close to now counts as live. */
-const LIVE_SLACK_MS = 2000;
+import { HOUR_MS, isLive } from 'viz/time';
 
 /** The frame address for the playhead at `t`. */
 export function embedUrl(
@@ -31,7 +27,7 @@ export function embedUrl(
   const [from, to] = descriptor.timeParams;
   const windowMs = Number(descriptor.options?.windowMs ?? HOUR_MS);
   const url = new URL(base);
-  const live = now - t <= LIVE_SLACK_MS;
+  const live = isLive(t, now);
   url.searchParams.set(
     from,
     live ? `now-${Math.round(windowMs / 1000)}s` : String(t - windowMs),
@@ -40,36 +36,78 @@ export function embedUrl(
   return url.toString();
 }
 
+/**
+ * What the framed page may do. A page of another origin, such as a dashboard,
+ * needs its scripts and its own origin to sign in and draw. A page of the
+ * DTaaS origin is a file of the user's library, which anyone with write
+ * access could have written, so it runs its scripts in an opaque origin and
+ * cannot read the DTaaS session or call the DTaaS APIs as the user.
+ */
+export function sandboxFor(url: string): string {
+  const sameOrigin = new URL(url).origin === globalThis.location.origin;
+  return sameOrigin
+    ? 'allow-scripts'
+    : 'allow-scripts allow-same-origin allow-forms allow-popups';
+}
+
+/** A frame that sends no referrer, so the DTaaS address does not leak. */
+function createFrame(): HTMLIFrameElement {
+  const frame = document.createElement('iframe');
+  frame.referrerPolicy = 'no-referrer';
+  frame.title = 'Embedded dashboard';
+  Object.assign(frame.style, {
+    border: '0',
+    width: '100%',
+    minHeight: '24rem',
+  });
+  return frame;
+}
+
+/** The frame of one pane, and the address and descriptor it shows. */
+interface Embed {
+  readonly frame: HTMLIFrameElement;
+  base: string;
+  descriptor: SubstrateDescriptor;
+}
+
+/** Point the frame at the playhead `t`, unless it already shows it. */
+function showAt(embed: Embed, t: number): void {
+  const url = embedUrl(embed.base, embed.descriptor, t, Date.now());
+  if (embed.frame.src !== url) embed.frame.src = url;
+}
+
+async function mountEmbed(
+  embed: Embed,
+  host: HostServices,
+  container: HTMLElement,
+  given: SubstrateDescriptor,
+): Promise<void> {
+  if (!given.source) throw new Error('An embed substrate needs a source');
+  embed.descriptor = given;
+  embed.base = await host.library.resolve(given.source);
+  // The sandbox only applies to pages loaded after it is set.
+  embed.frame.setAttribute('sandbox', sandboxFor(embed.base));
+  container.append(embed.frame);
+  showAt(embed, Date.now());
+}
+
 export default function createEmbedSubstrate(
   host: HostServices,
 ): SubstrateAdapter {
-  const frame = document.createElement('iframe');
-  let base = '';
-  let descriptor: SubstrateDescriptor = { adapter: 'embed' };
-  const show = (url: string) => {
-    if (frame.src !== url) frame.src = url;
+  const embed: Embed = {
+    frame: createFrame(),
+    base: '',
+    descriptor: { adapter: 'embed' },
   };
   return {
     id: 'embed',
     supports: [],
-    async mount(container, given) {
-      if (!given.source) throw new Error('An embed substrate needs a source');
-      descriptor = given;
-      base = await host.library.resolve(given.source);
-      Object.assign(frame.style, {
-        border: '0',
-        width: '100%',
-        minHeight: '24rem',
-      });
-      frame.title = given.source;
-      container.append(frame);
-      show(embedUrl(base, descriptor, Date.now(), Date.now()));
-    },
+    mount: (container, given) => mountEmbed(embed, host, container, given),
     resolve: () => null,
     apply: () => undefined,
     frame: () => undefined,
     pick: () => null,
-    setTime: (t) => show(embedUrl(base, descriptor, t, Date.now())),
-    dispose: () => frame.remove(),
+    setTime: (t) => showAt(embed, t),
+    dispose: () => embed.frame.remove(),
   };
 }

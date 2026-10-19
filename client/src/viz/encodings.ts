@@ -3,8 +3,7 @@
  * signal at the playhead to the visual properties a substrate applies.
  *
  * They are pure, so the whole chain from a recorded stream to the colours a
- * twin would show is tested without drawing anything, which is the exit test
- * of the first phase in the companion report.
+ * twin would show is tested without drawing anything.
  */
 
 import type {

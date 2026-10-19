@@ -32,6 +32,25 @@ describe('decoding a broker message', () => {
     expect(decodePayload('a,b,c,d,not-a-number')).toBeUndefined();
   });
 
+  it('takes only the value types the SDK allows', () => {
+    expect(decodePayload('{"value": "open"}')?.value).toBe('open');
+    expect(decodePayload('{"value": false}')?.value).toBe(false);
+    expect(decodePayload('{"value": [1, 2.5]}')?.value).toEqual([1, 2.5]);
+    expect(decodePayload('{"value": {"a": 1}}')).toBeUndefined();
+    expect(decodePayload('{"value": null}')).toBeUndefined();
+    expect(decodePayload('{"value": [1, "two"]}')).toBeUndefined();
+    expect(decodePayload('[1, 2]')).toBeUndefined();
+  });
+
+  it('keeps a known quality and drops any other', () => {
+    expect(decodePayload('{"value": 1, "quality": "stale"}')?.quality).toBe(
+      'stale',
+    );
+    expect(decodePayload('{"value": 1, "quality": "excellent"}')).toMatchObject(
+      { value: 1, quality: undefined },
+    );
+  });
+
   it('stamps a sample with its arrival time when it carries none', () => {
     const sample = sampleFrom('room/temp', '7', 'measured', 1234);
 

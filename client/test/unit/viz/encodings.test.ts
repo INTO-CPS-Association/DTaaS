@@ -72,6 +72,36 @@ describe('the encoding evaluators', () => {
     ).toEqual({ attention: null });
   });
 
+  it.each([
+    ['<', 3, true],
+    ['<', 5, false],
+    ['<=', 5, true],
+    ['<=', 6, false],
+    ['>=', 5, true],
+    ['>=', 4, false],
+    ['==', 5, true],
+    ['==', 4, false],
+    ['!=', 4, true],
+    ['!=', 5, false],
+  ] as const)('compares %s against 5 for %d as %s', (op, measured, shown) => {
+    const encoding: Encoding = { type: 'visibility', when: { op, value: 5 } };
+
+    expect(evaluate(encoding, values({ measured }))).toEqual({
+      visible: shown,
+    });
+  });
+
+  it('hides a target whose signal has no value, or a list of values', () => {
+    const when = { op: '!=' as const, value: 5 };
+
+    expect(evaluate({ type: 'visibility', when }, values({}))).toEqual({
+      visible: false,
+    });
+    expect(
+      evaluate({ type: 'visibility', when }, values({ measured: [1, 2] })),
+    ).toEqual({ visible: false });
+  });
+
   it('formats a label and maps a transform', () => {
     expect(
       evaluate(

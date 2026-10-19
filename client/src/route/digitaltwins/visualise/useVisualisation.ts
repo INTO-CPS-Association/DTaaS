@@ -9,6 +9,16 @@ import type {
   VizService,
 } from '@into-cps-association/dtaas-sdk';
 
+/**
+ * The detail of a failure goes to the console, where a developer looks, and
+ * the page shows a plain sentence, since the detail may name server paths.
+ */
+function logged(what: string, reason: Error): string {
+  // eslint-disable-next-line no-console
+  console.warn(what, reason);
+  return reason.message;
+}
+
 export type Loaded =
   | { readonly state: 'loading' }
   | { readonly state: 'none' }
@@ -27,9 +37,28 @@ export function useTwins(contents: ContentsService, directory: string) {
           entries.filter((e) => e.type === 'directory').map((e) => e.name),
         ),
       )
-      .catch((reason: Error) => setError(reason.message));
+      .catch((reason: Error) =>
+        setError(logged('The digital twins could not be listed.', reason)),
+      );
   }, [contents, directory]);
   return { twins, error };
+}
+
+/** The visualisation of one twin, or why there is none, never a rejection. */
+function loadTwin(
+  viz: VizService,
+  directory: string,
+  twin: string,
+): Promise<Loaded> {
+  return viz
+    .load({ name: twin, path: `${directory}/${twin}`, files: [] })
+    .then((asset): Loaded =>
+      asset ? { state: 'ready', asset } : { state: 'none' },
+    )
+    .catch((reason: Error): Loaded => ({
+      state: 'error',
+      message: logged('The visualisation could not be read.', reason),
+    }));
 }
 
 /**
@@ -45,20 +74,9 @@ export function useVisualisation(
   const [answer, setAnswer] = useState<{ twin: string; loaded: Loaded }>();
   useEffect(() => {
     if (!twin) return;
-    viz
-      .load({ name: twin, path: `${directory}/${twin}`, files: [] })
-      .then((asset) =>
-        setAnswer({
-          twin,
-          loaded: asset ? { state: 'ready', asset } : { state: 'none' },
-        }),
-      )
-      .catch((reason: Error) =>
-        setAnswer({
-          twin,
-          loaded: { state: 'error', message: reason.message },
-        }),
-      );
+    loadTwin(viz, directory, twin).then((loaded) =>
+      setAnswer({ twin, loaded }),
+    );
   }, [viz, directory, twin]);
   return answer?.twin === twin ? answer.loaded : { state: 'loading' };
 }

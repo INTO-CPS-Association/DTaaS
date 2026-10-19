@@ -10,9 +10,11 @@ architecture in `dtaas-sdk`.
 | File                         | Layer   | Role                                                               |
 | :--------------------------- | :------ | :----------------------------------------------------------------- |
 | `mqttTransport.ts`           | 1       | Live samples from the platform's RabbitMQ, over MQTT on WebSockets |
+| `brokerClient.ts`            | 1       | The MQTT client, loaded and connected on the first subscription    |
 | `payload.ts`                 | 1       | One broker message to one `SignalSample`                           |
 | `sampleStore.ts`             | 2       | Every recent sample of each signal, read by time                   |
 | `playhead.ts`                | 2       | The one clock every page reads, live or scrubbed                   |
+| `time.ts`                    | 2       | When a playhead counts as live, and the hour the timeline spans    |
 | `signals.ts`                 | 1 and 2 | The `signals` service: subscriptions, reads and connection state   |
 | `connection.ts`              | 1       | Whether the transports behind some signals are delivering          |
 | `encodings.ts`, `schemes.ts` | 4       | From a value to visual properties, such as a colour                |
@@ -39,7 +41,10 @@ squares maps them onto the picture.
 When the descriptor names `timeParams`, the frame asks for the hour before
 the playhead (`options.windowMs` changes the window), relative to `now` while
 the playhead is live, so the tool refreshes itself, and absolute once it is
-scrubbed.
+scrubbed. The frame sends no referrer and is sandboxed. A page of another
+origin keeps its own origin, so a dashboard can sign in and draw. A file of
+the library (`lib://`) runs in an opaque origin, so it cannot act as the DTaaS
+site on the user's behalf.
 
 ## The Visualise Tab
 
@@ -53,8 +58,10 @@ pane per substrate of the layout, every pane on the one playhead, which
 `REACT_APP_VIZ_MQTT_URL` names the broker's MQTT over WebSocket address, and
 `REACT_APP_VIZ_MQTT_USERNAME` and `REACT_APP_VIZ_MQTT_PASSWORD` its login when
 it asks for one. The platform services publish it on `RABBITMQ_WEB_MQTT_PORT`
-at the path `/ws`. Without an address the core still runs: every connection
-reads `down`, and visualisations are still read and saved.
+at the path `/ws`, 8091 by default. The library is loaded, and the broker
+connected, when a page first subscribes to a signal, not when the client
+starts. Without an address the core still runs: every connection reads
+`down`, and visualisations are still read and saved.
 
 A signal path is the MQTT topic. A message may be JSON with a `value`, a bare
 number, or the comma-separated line of the DTaaS examples, whose `simulation`
@@ -71,5 +78,5 @@ type is kept on the `simulated` channel.
 
 `test/unit/viz/resolve.test.ts` replays a recorded stream through a
 visualisation and checks the properties at each instant of a scrub, with no
-substrate mounted. That is the exit test of the first phase in the companion
-report.
+substrate mounted. That is the exit test of the first phase of the
+[modular architecture](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md).

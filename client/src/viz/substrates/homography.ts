@@ -9,15 +9,33 @@
 
 export type Point = readonly [number, number];
 
+/** The row from `col` down with the largest entry in column `col`. */
+function pivotRow(m: number[][], col: number): number {
+  let pivot = col;
+  for (let r = col + 1; r < m.length; r += 1) {
+    if (Math.abs(m[r][col]) > Math.abs(m[pivot][col])) pivot = r;
+  }
+  return pivot;
+}
+
+/** Solve an upper triangular augmented system from the last row up. */
+function backSubstitute(m: number[][]): number[] {
+  const n = m.length;
+  const x = new Array<number>(n).fill(0);
+  for (let r = n - 1; r >= 0; r -= 1) {
+    let sum = m[r][n];
+    for (let c = r + 1; c < n; c += 1) sum -= m[r][c] * x[c];
+    x[r] = sum / m[r][r];
+  }
+  return x;
+}
+
 /** Solve `a x = b` by Gaussian elimination with partial pivoting. */
 function solve(a: number[][], b: number[]): number[] {
   const n = b.length;
   const m = a.map((row, i) => [...row, b[i]]);
   for (let col = 0; col < n; col += 1) {
-    let pivot = col;
-    for (let r = col + 1; r < n; r += 1) {
-      if (Math.abs(m[r][col]) > Math.abs(m[pivot][col])) pivot = r;
-    }
+    const pivot = pivotRow(m, col);
     [m[col], m[pivot]] = [m[pivot], m[col]];
     if (Math.abs(m[col][col]) < 1e-12)
       throw new Error('Degenerate calibration');
@@ -26,13 +44,7 @@ function solve(a: number[][], b: number[]): number[] {
       for (let c = col; c <= n; c += 1) m[r][c] -= factor * m[col][c];
     }
   }
-  const x = new Array<number>(n).fill(0);
-  for (let r = n - 1; r >= 0; r -= 1) {
-    let sum = m[r][n];
-    for (let c = r + 1; c < n; c += 1) sum -= m[r][c] * x[c];
-    x[r] = sum / m[r][r];
-  }
-  return x;
+  return backSubstitute(m);
 }
 
 /** The two rows one point pair adds to the linear system, with h33 = 1. */

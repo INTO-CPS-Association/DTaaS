@@ -10,10 +10,11 @@ import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import type { SignalsService } from '@into-cps-association/dtaas-sdk';
+import { HOUR_MS, isLive } from 'viz/time';
 
-const WINDOW_MS = 3_600_000;
-
-const LIVE_SLACK_MS = 2000;
+/** The slider moves a second at a time, and a minute with Shift or Page keys. */
+const STEP_MS = 1000;
+const SHIFT_STEP_MS = 60_000;
 
 const CONNECTION_LABEL = {
   live: 'Live data',
@@ -38,6 +39,9 @@ function useNow(): number {
   return now;
 }
 
+/** A playhead time as a person reads it, in the browser's own time zone. */
+export const localTime = (t: number) => new Date(t).toLocaleTimeString();
+
 /** The time on show, and whether its signals are arriving. */
 function Clock({ signals, paths }: TimelineProps) {
   const t = signals.playhead.use();
@@ -45,7 +49,7 @@ function Clock({ signals, paths }: TimelineProps) {
   return (
     <>
       <Typography variant="body2" sx={{ minWidth: '8rem' }}>
-        {new Date(t).toLocaleTimeString()}
+        {localTime(t)}
       </Typography>
       <Chip
         label={CONNECTION_LABEL[connection]}
@@ -55,25 +59,48 @@ function Clock({ signals, paths }: TimelineProps) {
   );
 }
 
+interface TimeSliderProps {
+  readonly signals: SignalsService;
+  readonly t: number;
+  readonly now: number;
+}
+
+/** The last hour, a second a step, with the local time read aloud. */
+function TimeSlider({ signals, t, now }: TimeSliderProps) {
+  return (
+    <Slider
+      aria-label="Time"
+      min={now - HOUR_MS}
+      max={now}
+      step={STEP_MS}
+      shiftStep={SHIFT_STEP_MS}
+      value={Math.max(t, now - HOUR_MS)}
+      getAriaValueText={localTime}
+      valueLabelFormat={localTime}
+      valueLabelDisplay="auto"
+      onChange={(_, value) => signals.playhead.set(value)}
+    />
+  );
+}
+
 function Timeline({ signals, paths }: TimelineProps) {
   const t = signals.playhead.use();
   const now = useNow();
-  const live = now - t <= LIVE_SLACK_MS;
+  const live = isLive(t, now);
+  // On a phone the slider takes a row of its own, so it stays wide enough.
   return (
-    <Stack direction="row" spacing={2} sx={{ alignItems: 'center', my: 2 }}>
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      spacing={2}
+      sx={{ alignItems: { xs: 'stretch', sm: 'center' }, my: 2 }}
+    >
       <Button
         variant={live ? 'contained' : 'outlined'}
         onClick={() => signals.playhead.follow(true)}
       >
         Live
       </Button>
-      <Slider
-        aria-label="Time"
-        min={now - WINDOW_MS}
-        max={now}
-        value={Math.max(t, now - WINDOW_MS)}
-        onChange={(_, value) => signals.playhead.set(value)}
-      />
+      <TimeSlider signals={signals} t={t} now={now} />
       <Clock signals={signals} paths={paths} />
     </Stack>
   );

@@ -16,6 +16,8 @@ import type {
   DigitalTwinSummary,
   DtaasExtension,
   HostServices,
+  SaveOptions,
+  VisualisationAsset,
   VizService,
 } from '@into-cps-association/dtaas-sdk';
 import { parseVisualisationAsset } from '@into-cps-association/dtaas-sdk/schema';
@@ -41,7 +43,52 @@ function contributions(extensions: readonly DtaasExtension[]) {
   return {
     anchorKinds: viz.flatMap((v) => v.anchorKinds ?? []),
     presets: viz.flatMap((v) => v.presets ?? []),
-    substrates: viz.flatMap((v) => v.substrates ?? []),
+    // A standard substrate is the core's own, and an extension's copy of it
+    // is never drawn, so it is left out of the list too.
+    substrates: viz
+      .flatMap((v) => v.substrates ?? [])
+      .filter((spec) => !STANDARD[spec.id]),
+  };
+}
+
+async function load(contents: ContentsService, dt: DigitalTwinSummary) {
+  if (!(await contents.exists(fileOf(dt)))) return null;
+  const text = new TextDecoder().decode(await contents.get(fileOf(dt)));
+  return parsed(JSON.parse(text), fileOf(dt));
+}
+
+async function save(
+  contents: ContentsService,
+  dt: DigitalTwinSummary,
+  asset: VisualisationAsset,
+  options?: SaveOptions,
+) {
+  if (options?.viaMergeRequest) {
+    throw new Error(
+      'Saving a visualisation as a merge request is not available yet',
+    );
+  }
+  const checked = parsed(asset, fileOf(dt));
+  const bytes = new TextEncoder().encode(
+    `${JSON.stringify(checked, null, 2)}\n`,
+  );
+  await contents.put(fileOf(dt), bytes);
+}
+
+/** The standard substrates first, then those the extensions contribute. */
+function substrateRegistry(
+  substrates: ReturnType<typeof contributions>['substrates'],
+  host: () => HostServices,
+): VizService['substrates'] {
+  return {
+    list: () => [...Object.keys(STANDARD), ...substrates.map((s) => s.id)],
+    async get(id) {
+      if (STANDARD[id]) return STANDARD[id](host());
+      const spec = substrates.find((s) => s.id === id);
+      if (!spec) throw new Error(`No substrate ${id} is registered`);
+      const factory = (await spec.load()).default;
+      return factory(host());
+    },
   };
 }
 
@@ -52,33 +99,9 @@ export default function createVizService(
 ): VizService {
   const { anchorKinds, presets, substrates } = contributions(extensions);
   return {
-    async load(dt) {
-      if (!(await contents.exists(fileOf(dt)))) return null;
-      const text = new TextDecoder().decode(await contents.get(fileOf(dt)));
-      return parsed(JSON.parse(text), fileOf(dt));
-    },
-    async save(dt, asset, options) {
-      if (options?.viaMergeRequest) {
-        throw new Error(
-          'Saving a visualisation as a merge request is not available yet',
-        );
-      }
-      const checked = parsed(asset, fileOf(dt));
-      const bytes = new TextEncoder().encode(
-        `${JSON.stringify(checked, null, 2)}\n`,
-      );
-      await contents.put(fileOf(dt), bytes);
-    },
-    substrates: {
-      list: () => [...Object.keys(STANDARD), ...substrates.map((s) => s.id)],
-      async get(id) {
-        if (STANDARD[id]) return STANDARD[id](host());
-        const spec = substrates.find((s) => s.id === id);
-        if (!spec) throw new Error(`No substrate ${id} is registered`);
-        const factory = (await spec.load()).default;
-        return factory(host());
-      },
-    },
+    load: (dt) => load(contents, dt),
+    save: (dt, asset, options) => save(contents, dt, asset, options),
+    substrates: substrateRegistry(substrates, host),
     anchorKinds,
     presets,
   };

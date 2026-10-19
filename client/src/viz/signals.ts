@@ -23,11 +23,6 @@ interface Listener {
   readonly sink: SignalSink;
 }
 
-export interface CoreSignals extends SignalsService {
-  /** Store recorded samples, such as a replayed file or a history query. */
-  ingest(samples: readonly SignalSample[]): void;
-}
-
 /** Store a sample and hand it to the listeners of its path and channel. */
 function deliver(store: SampleStore, listeners: Map<string, Set<Listener>>) {
   return (sample: SignalSample) => {
@@ -61,10 +56,19 @@ function fanOut(store: SampleStore, transports: readonly LiveTransport[]) {
   return { add, remove };
 }
 
+// The device registry is ThingsBoard's, which this core does not read yet.
+const NO_REGISTRY: SignalsService['registry'] = {
+  search: () => Promise.resolve([]),
+  get: (id) =>
+    Promise.reject(
+      new Error(`Device ${id}: the device registry is not connected`),
+    ),
+};
+
 export default function createSignals(
   transports: readonly LiveTransport[],
   store: SampleStore = createSampleStore(),
-): CoreSignals {
+): SignalsService {
   const playhead = createPlayhead();
   const fan = fanOut(store, transports);
   return {
@@ -75,17 +79,12 @@ export default function createSignals(
     },
     valueAt: (path, channel, t = playhead.get()) =>
       store.valueAt(path, channel, t),
-    range: async (paths, channel, from, to) =>
-      paths.flatMap((path) => store.range(path, channel, from, to)),
-    ingest: (samples) => samples.forEach((sample) => store.insert(sample)),
+    range: (paths, channel, from, to) =>
+      Promise.resolve(
+        paths.flatMap((path) => store.range(path, channel, from, to)),
+      ),
     playhead,
-    // The device registry is ThingsBoard's, which this core does not read yet.
-    registry: {
-      search: async () => [],
-      get: async (id) => {
-        throw new Error(`Device ${id}: the device registry is not connected`);
-      },
-    },
+    registry: NO_REGISTRY,
     connection: connectionOf(transports),
   };
 }
