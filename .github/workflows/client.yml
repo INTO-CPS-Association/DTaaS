@@ -15,7 +15,8 @@ name: React website
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded pull request runs, never a publish on push.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -124,7 +125,7 @@ jobs:
       github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (GHCR)
-    needs: [client, get-version]
+    needs: [client, get-version, build-docker-image]
     uses: ./.github/workflows/docker-ghcr.yml
     with:
       image-name: dtaas-web
@@ -140,7 +141,7 @@ jobs:
       github.ref == 'refs/heads/feature/distributed-demo'
 
     name: Publish Docker image (DockerHub)
-    needs: [client, get-version]
+    needs: [client, get-version, build-docker-image]
     uses: ./.github/workflows/docker-dockerhub.yml
     with:
       image-name: dtaas-web

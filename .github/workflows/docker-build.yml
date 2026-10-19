@@ -23,6 +23,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
         include:
           - arch: amd64
@@ -38,6 +39,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           lfs: false
+          persist-credentials: false
           sparse-checkout: |
             client
             developer
@@ -57,7 +59,7 @@ jobs:
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}
         working-directory: client/
         run: |
-          yarn install --network-timeout 1000000
+          yarn install --frozen-lockfile --network-timeout 1000000
 
       - name: Run the linting checks
         if: ${{ inputs.dockerfile == 'client.built.dockerfile' }}

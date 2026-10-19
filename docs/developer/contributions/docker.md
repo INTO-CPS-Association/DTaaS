@@ -50,6 +50,10 @@ on, the `feature/distributed-demo` branch. Because the push trigger
 covers only the source code directories, a change to a Dockerfile alone
 does not re-publish an already published package version.
 
+In all three workflows, the Docker publish jobs wait for the Docker
+build check to pass on both platforms. A publish that has started is
+never cancelled by a newer push; only superseded pull request runs are.
+
 The logger microservice workflow (`.github/workflows/logger-ms.yml`)
 also runs the image from `developer/check/logger.dockerfile` on amd64
 and checks its health endpoint. It publishes that image on pushes to
@@ -69,7 +73,10 @@ create a builder that supports multi-platform output once with
 `docker buildx build --platform linux/amd64,linux/arm64 --push`
 with the same `-t` and `-f` arguments instead of `docker build` and
 `docker push`. The platform that differs from the host is built under
-QEMU emulation, which is several times slower.
+QEMU emulation, which is several times slower. Docker Desktop and
+Rancher Desktop provide the emulation; on a plain Linux Docker Engine,
+register it first with
+`docker run --privileged --rm tonistiigi/binfmt --install arm64`.
 
 !!! warning
     Only project maintainers publish images. Other developers

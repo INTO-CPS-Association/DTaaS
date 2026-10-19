@@ -18,7 +18,8 @@ name: Logger microservice
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded pull request runs, never a publish on push.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   NODE_VERSION: 26
@@ -208,7 +209,7 @@ jobs:
       )
 
     name: Publish Docker image (GHCR)
-    needs: [get-version, test-logger-ms]
+    needs: [get-version, test-logger-ms, build-docker-image]
     uses: ./.github/workflows/docker-ghcr.yml
     with:
       image-name: logger-ms
@@ -219,7 +220,6 @@ jobs:
   publish-docker-image-dockerhub:
     permissions:
       contents: read
-      packages: write
     if: |
       github.event_name == 'push' &&
       (
@@ -228,7 +228,7 @@ jobs:
       )
 
     name: Publish Docker image (DockerHub)
-    needs: [get-version, test-logger-ms]
+    needs: [get-version, test-logger-ms, build-docker-image]
     uses: ./.github/workflows/docker-dockerhub.yml
     with:
       image-name: logger-ms

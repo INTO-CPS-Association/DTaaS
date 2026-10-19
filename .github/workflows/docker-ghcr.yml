@@ -24,11 +24,11 @@ name: Build and Push Docker Image (GHCR)
 
 concurrency:
   group: ${{ github.workflow }}-docker-ghcr-${{ inputs.image-name }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a publish halfway: it would leave untagged digests.
+  cancel-in-progress: false
 
 env:
   registry: ghcr.io
-  password: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
   contents: read  # Each job sets the permissions it needs
@@ -72,18 +72,25 @@ jobs:
         with:
           registry: ${{ env.registry }}
           username: ${{ github.actor }}
-          password: ${{ env.password }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if version exists
         id: check_version
+        env:
+          IMAGE_TAG: ${{ steps.image_vars.outputs.image_tag }}
+          VERSION: ${{ inputs.version }}
         run: |
-          IMAGE_TAG="${{ steps.image_vars.outputs.image_tag }}"
-          if docker manifest inspect "$IMAGE_TAG" > /dev/null 2>&1; then
-            echo "Version ${{ inputs.version }} already exists."
+          # Fail closed: only "not found" means the version is new, so a registry
+          # error cannot overwrite a published tag. New repositories must exist.
+          if out=$(docker buildx imagetools inspect "$IMAGE_TAG" 2>&1); then
+            echo "Version ${VERSION} already exists."
             echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Version ${{ inputs.version }} does not exist."
+          elif grep -qiE 'not found|manifest unknown|repository does not exist' <<< "$out"; then
+            echo "Version ${VERSION} does not exist."
             echo "exists=false" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "$out" >&2
+            exit 1
           fi
 
   build-and-push-image:
@@ -113,6 +120,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           lfs: false
+          persist-credentials: false
 
       - name: Setup node for building the React client website
         if: ${{ inputs.image-name == 'dtaas-web' }}
@@ -120,14 +128,15 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: 26
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
+          # No dependency cache in a publish job, so a poisoned cache entry
+          # cannot reach a published image.
+          package-manager-cache: false
 
       - name: Build react client website
         if: ${{ inputs.image-name == 'dtaas-web' }}
         run: |
           cd client/
-          yarn install --network-timeout 1000000
+          yarn install --frozen-lockfile --network-timeout 1000000
           yarn build
 
       - name: Set up Docker Buildx
@@ -140,7 +149,7 @@ jobs:
         with:
           registry: ${{ env.registry }}
           username: ${{ github.actor }}
-          password: ${{ env.password }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image by digest
         id: build
@@ -197,7 +206,7 @@ jobs:
         with:
           registry: ${{ env.registry }}
           username: ${{ github.actor }}
-          password: ${{ env.password }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create and push the version and latest tags
         working-directory: ${{ runner.temp }}/digests
@@ -205,10 +214,15 @@ jobs:
           IMAGE_BASE: ${{ needs.check-version.outputs.image_base }}
           VERSION: ${{ inputs.version }}
         run: |
+          shopt -s nullglob
           sources=()
           for digest in *; do
             sources+=("${IMAGE_BASE}@sha256:${digest}")
           done
+          if [ "${#sources[@]}" -ne 2 ]; then
+            echo "Expected one digest for each of 2 platforms, found ${#sources[@]}." >&2
+            exit 1
+          fi
           docker buildx imagetools create \
             --tag "${IMAGE_BASE}:${VERSION}" \
             --tag "${IMAGE_BASE}:latest" \
