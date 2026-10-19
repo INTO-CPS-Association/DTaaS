@@ -24,7 +24,29 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.client.entryPoints=web"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
+      # Security headers of the website. The monaco-editor prefix is where
+      # the editor of the Digital Twins page loads itself from, and
+      # 'wasm-unsafe-eval' lets the Buildings page start its IFC parser.
+      - >-
+        traefik.http.middlewares.client-headers.headers.contentSecurityPolicy=default-src
+        'self';
+        script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        font-src 'self' data: https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        img-src 'self' data: blob: https:;
+        connect-src 'self' https: blob: data:;
+        worker-src 'self' blob:;
+        frame-src 'self'; frame-ancestors 'self';
+        object-src 'none'; base-uri 'self'
+      - "traefik.http.middlewares.client-headers.headers.contentTypeNosniff=true"
+      - >-
+        traefik.http.middlewares.client-headers.headers.referrerPolicy=strict-origin-when-cross-origin
+      - "traefik.http.middlewares.client-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.common-headers.headers.contentTypeNosniff=true"
+      - >-
+        traefik.http.middlewares.common-headers.headers.referrerPolicy=strict-origin-when-cross-origin
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.client.middlewares=client-headers"
 
   logger-ms:
     image: intocps/logger-ms:0.1.2
@@ -36,6 +58,7 @@ services:
       - "traefik.http.routers.logger-ms.entryPoints=web"
       - "traefik.http.services.logger-ms.loadbalancer.server.port=4003"
       - "traefik.http.routers.logger-ms.rule=PathPrefix(`/logger`)"
+      - "traefik.http.routers.logger-ms.middlewares=common-headers"
       - "traefik.http.routers.logger-ms.priority=100"
 
   user:
@@ -51,3 +74,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
       - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user1}`)"
+      - "traefik.http.routers.user.middlewares=common-headers"

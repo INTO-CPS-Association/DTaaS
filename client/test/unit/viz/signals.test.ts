@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import type { SignalSample, SignalSink } from '@into-cps-association/dtaas-sdk';
-import type { LiveTransport } from 'viz/mqttTransport';
+import type { LiveTransport } from 'viz/transport';
 import createSampleStore from 'viz/sampleStore';
 import createSignals from 'viz/signals';
 
@@ -82,6 +82,38 @@ describe('the signals service', () => {
     expect(signals.valueAt('a', 'measured')?.value).toBe(1);
     const range = await signals.range(['a'], 'measured', 0, 30);
     expect(range.map((s) => s.value)).toEqual([1, 2]);
+  });
+
+  it('merges a history into the store and ranges every instant once', async () => {
+    const store = createSampleStore();
+    const sample = (ts: number, value: number): SignalSample => ({
+      twinId: '',
+      signalPath: 'a',
+      channel: 'measured',
+      ts,
+      value,
+    });
+    store.insert(sample(20, 2));
+    store.insert(sample(30, 3));
+    const history = {
+      range: jest.fn(async () => [sample(10, 1), sample(20, 2)]),
+    };
+    const signals = createSignals([], store, history);
+
+    const first = await signals.range(['a'], 'measured', 0, 40);
+    const again = await signals.range(['a'], 'measured', 0, 40);
+
+    expect(history.range).toHaveBeenCalledWith(['a'], 'measured', 0, 40);
+    expect(first.map((s) => s.ts)).toEqual([10, 20, 30]);
+    expect(again.map((s) => s.ts)).toEqual([10, 20, 30]);
+    expect(signals.valueAt('a', 'measured', 15)?.value).toBe(1);
+  });
+
+  it('rejects a range the history cannot read', async () => {
+    const history = { range: jest.fn().mockRejectedValue(new Error('403')) };
+    const signals = createSignals([], createSampleStore(), history);
+
+    await expect(signals.range(['a'], 'measured', 0, 1)).rejects.toThrow('403');
   });
 
   it('has no device registry yet, and says so', async () => {

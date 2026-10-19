@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { InMemoryWebStorage, WebStorageStateStore } from 'oidc-client-ts';
 import {
   getClientID,
   getAuthority,
@@ -16,33 +17,42 @@ export interface OidcConfig {
   post_logout_redirect_uri: string;
   automaticSilentRenew: boolean;
   loadUserInfo: boolean;
+  userStore: WebStorageStateStore;
 }
 
-export const useOidcConfig = (): OidcConfig | null => {
-  const oidcConfig = useMemo<OidcConfig | null>(() => {
-    const CLIENT_ID = getClientID();
-    const AUTH_AUTHORITY = getAuthority();
+/**
+ * The signed-in user, with the access and id tokens, lives in the memory of
+ * the page and not in sessionStorage, so a script that runs in the page by
+ * mistake cannot read a token from storage, and a closed tab leaves nothing
+ * behind. A reload therefore starts signed out, and signing in again returns
+ * at once while the GitLab session is still open. Silent renewal stays off,
+ * since it needs GitLab inside a frame, which GitLab does not allow.
+ */
+const userStore = () =>
+  new WebStorageStateStore({ store: new InMemoryWebStorage() });
 
-    const hasRequiredConfig = CLIENT_ID && AUTH_AUTHORITY;
-    if (!hasRequiredConfig) {
-      return null;
-    }
+/** The configuration `env.js` describes, or null when it lacks the provider. */
+function oidcConfigFromEnv(): OidcConfig | null {
+  const CLIENT_ID = getClientID();
+  const AUTH_AUTHORITY = getAuthority();
 
-    const LOGOUT_URL = getLogoutRedirectURI() ?? '';
-    const GITLAB_SCOPES = getGitLabScopes() ?? '';
-    const REDIRECT_URI = getRedirectURI() ?? '';
+  const hasRequiredConfig = CLIENT_ID && AUTH_AUTHORITY;
+  if (!hasRequiredConfig) {
+    return null;
+  }
 
-    return {
-      authority: AUTH_AUTHORITY.toString(),
-      client_id: CLIENT_ID.toString(),
-      redirect_uri: REDIRECT_URI.toString(),
-      response_type: 'code',
-      scope: GITLAB_SCOPES.toString(),
-      post_logout_redirect_uri: LOGOUT_URL.toString(),
-      automaticSilentRenew: false,
-      loadUserInfo: true,
-    };
-  }, []);
+  return {
+    authority: AUTH_AUTHORITY.toString(),
+    client_id: CLIENT_ID.toString(),
+    redirect_uri: (getRedirectURI() ?? '').toString(),
+    response_type: 'code',
+    scope: (getGitLabScopes() ?? '').toString(),
+    post_logout_redirect_uri: (getLogoutRedirectURI() ?? '').toString(),
+    automaticSilentRenew: false,
+    loadUserInfo: true,
+    userStore: userStore(),
+  };
+}
 
-  return oidcConfig;
-};
+export const useOidcConfig = (): OidcConfig | null =>
+  useMemo<OidcConfig | null>(() => oidcConfigFromEnv(), []);

@@ -67,11 +67,12 @@ def test_build_needs_git_lfs(monkeypatch, capsys):
 
 
 def test_runs_with_only_the_files_the_release_job_copies(tmp_path):
-    # docs-publish.yml copies docs.py and pages.py into the checkout of an
-    # older tag, which has mkdocs_hooks.py but not the newer modules.
+    # docs-publish.yml copies docs.py, pages.py and page_cleanup.py into the
+    # checkout of an older tag, which has mkdocs_hooks.py but not the newer
+    # modules.
     """Runs with only the files the release job copies."""
     here = Path(docs.__file__).parent
-    for name in ("docs.py", "pages.py", "mkdocs_hooks.py"):
+    for name in ("docs.py", "pages.py", "page_cleanup.py", "mkdocs_hooks.py"):
         shutil.copy(here / name, tmp_path / name)
     result = subprocess.run(
         [sys.executable, str(tmp_path / "docs.py"), "--help"],

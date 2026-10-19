@@ -57,6 +57,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           lfs: false
+          persist-credentials: false
 
       - name: Checkout release
         # v7.0.1
@@ -65,6 +66,7 @@ jobs:
           ref: ${{ env.RELEASE_TAG }}
           path: release
           lfs: false
+          persist-credentials: false
 
       - &setup_python
         name: Set up Python
@@ -84,7 +86,8 @@ jobs:
         run: |
           pip install --only-binary :all: --require-hashes \
             -r script/docs/mkdocs-requirements.lock
-          cp script/docs/docs.py script/docs/pages.py release/script/docs/
+          cp script/docs/docs.py script/docs/pages.py script/docs/page_cleanup.py \
+            release/script/docs/
           version=$(python script/docs/docs.py version "$RELEASE_TAG")
           echo "VERSION=$version" >> "$GITHUB_ENV"
           python release/script/docs/docs.py build --pdf \
@@ -133,6 +136,7 @@ jobs:
         with:
           ref: ${{ env.DEVELOPMENT_REF }}
           lfs: false
+          persist-credentials: false
 
       - name: Create Git LFS asset manifest
         # The manifest hash keys the cache: it only changes when an
@@ -186,6 +190,7 @@ jobs:
         with:
           ref: ${{ env.DEVELOPMENT_REF }}
           lfs: false
+          persist-credentials: false
 
       - *setup_python
 
@@ -203,6 +208,7 @@ jobs:
           ref: webpage-docs
           path: pages
           lfs: false
+          persist-credentials: false
 
       - name: Assemble site
         run: |
@@ -213,7 +219,8 @@ jobs:
 
       - name: Check script hosts
         # Every page of every version, the released ones included, may load
-        # scripts only from the hosts in script/docs/script_hosts.py.
+        # scripts and fonts only from the site itself, or from the exact
+        # addresses in script/docs/script_hosts.py.
         run: python script/docs/docs.py check-scripts --site-dir pages
 
       - name: Upload site

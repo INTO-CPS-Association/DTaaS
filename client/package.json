@@ -48,8 +48,7 @@
   },
   "resolutions": {
     "fast-uri": "^4.2.1",
-    "@babel/plugin-transform-modules-systemjs": "8.0.1",
-    "ip-address": "10.7.3"
+    "@babel/plugin-transform-modules-systemjs": "8.0.1"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -74,7 +73,6 @@
     "http-status-codes": "2.3.0",
     "katex": "^0.18.9",
     "monaco-editor": "^0.57.0",
-    "mqtt": "5.16.0",
     "oidc-client-ts": "^3.5.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

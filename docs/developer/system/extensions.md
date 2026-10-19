@@ -12,7 +12,6 @@ extensions.
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`). |
 | `@into-cps-association/bim-kit` | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The Buildings extension: IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.2.0`. |
 | `@into-cps-association/dtaas-sdk` | [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) | The contract between the client and its extensions. The client pins version `0.1.0`. |
-| `mqtt` | [MQTT.js](https://github.com/mqttjs/MQTT.js) | The MQTT over WebSocket client of the visualisation core. |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -35,11 +34,12 @@ kinds, encoding presets and substrates, as one `DtaasExtension` object.
   the SDK's `HostServices`: the signed-in user, the library, the workspace
   files, GitLab, the snackbar, the page shell, settings, a logger and its
   configuration. An extension does not import client internals.
-- `client/src/viz/` is the common visualisation core. It reads live signals
-  from the platform's RabbitMQ over MQTT on WebSockets
-  (`REACT_APP_VIZ_MQTT_URL`), keeps every sample in a temporal store read by
-  time, holds one playhead for every page, evaluates the encodings of a
-  `visualisation.json`, and reads and saves that file in the twin's folder.
+- `client/src/viz/` is the common visualisation core. It reads live and
+  past signals from the DTaaS signals gateway (`REACT_APP_VIZ_SIGNALS_URL`),
+  which reads the broker on the server. The core keeps every sample in a
+  temporal store read by time, holds one playhead for every page, evaluates
+  the encodings of a `visualisation.json`, and reads and saves that file in
+  the twin's folder.
   It draws the `image` and `embed` substrates, and the Visualise tab of the
   Digital Twins page shows a twin from its `visualisation.json`.
 

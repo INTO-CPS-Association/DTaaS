@@ -28,6 +28,7 @@ import createContentsService, {
   workspaceUrl,
 } from 'extension/contentsClient';
 import createGitService from 'extension/gitClient';
+import { assertAllowedSource } from 'extension/allowedOrigins';
 
 /** The parts of the client store the services read and write. */
 export interface HostStore {
@@ -62,7 +63,8 @@ const CONVENTIONS = {
 
 /**
  * `lib://<path>` is a file of the user's library, and a web address passes
- * through. Anything else is refused instead of guessed.
+ * through when its origin is allowed. Anything else is refused instead of
+ * guessed.
  */
 function resolver(baseUrl: () => Promise<string>) {
   return async (url: string) => {
@@ -71,7 +73,10 @@ function resolver(baseUrl: () => Promise<string>) {
       assertWorkspacePath(path);
       return workspaceUrl(await baseUrl(), 'files', path);
     }
-    if (/^https?:\/\//.test(url)) return url;
+    if (/^https?:\/\//.test(url)) {
+      assertAllowedSource(url);
+      return url;
+    }
     throw new Error(`${url} is not a lib:// or web address`);
   };
 }

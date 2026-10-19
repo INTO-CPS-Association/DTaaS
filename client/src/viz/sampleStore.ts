@@ -44,11 +44,19 @@ export interface SampleStore {
 
 type Series = Map<string, SignalSample[]>;
 
-/** Put a sample at its place in time, and drop the oldest past `capacity`. */
+/**
+ * Put a sample at its place in time, and drop the oldest past `capacity`.
+ *
+ * A sample at an instant the series already holds replaces the one there, so
+ * a history read twice, or over samples that arrived live, keeps each instant
+ * once. The latest sample at an instant was already the one read there.
+ */
 function insertInto(series: Series, sample: SignalSample, capacity: number) {
   const key = keyOf(sample.signalPath, sample.channel);
   const samples = series.get(key) ?? [];
-  samples.splice(firstAfter(samples, sample.ts), 0, sample);
+  const at = firstAfter(samples, sample.ts);
+  const same = at > 0 && samples[at - 1].ts === sample.ts;
+  samples.splice(same ? at - 1 : at, same ? 1 : 0, sample);
   if (samples.length > capacity) samples.shift();
   series.set(key, samples);
 }

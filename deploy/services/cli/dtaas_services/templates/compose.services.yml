@@ -7,7 +7,6 @@ services:
       - "${RABBITMQ_PORT}:5671"              # RabbitMQ SSL port
       - '${RABBITMQ_MANAGEMENT_PORT}:15671'  # RabbitMQ management plugin port
       - '${RABBITMQ_MQTT_PORT}:8883'         # RabbitMQ MQTT plugin port
-      - '${RABBITMQ_WEB_MQTT_PORT:-8091}:15676'  # RabbitMQ Web MQTT port, for browsers
     environment:
       RABBITMQ_DEFAULT_USER: '${RABBITMQ_ADMIN_USERNAME}'
       RABBITMQ_DEFAULT_PASS: '${RABBITMQ_ADMIN_PASSWORD}'

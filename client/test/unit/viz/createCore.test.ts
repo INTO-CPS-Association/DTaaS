@@ -1,75 +1,86 @@
-import mqtt from 'mqtt';
-import createCore, { transportsFrom } from 'viz/createCore';
+import {
+  clearAccessToken,
+  setAccessToken,
+} from '@into-cps-association/dt-automation';
+import createCore, { historyFrom, transportsFrom } from 'viz/createCore';
 
-jest.mock('mqtt', () => ({
-  __esModule: true,
-  default: {
-    connect: jest.fn(() => ({ on: jest.fn(), subscribe: jest.fn() })),
-  },
-}));
+const contents = {
+  exists: jest.fn(),
+  get: jest.fn(),
+  put: jest.fn(),
+  list: jest.fn(),
+};
 
-const tick = () =>
-  new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
+const noHost = () => {
+  throw new Error('no host');
+};
+
+const GATEWAY = { REACT_APP_VIZ_SIGNALS_URL: 'https://signals.example' };
 
 describe('the core of a deployment', () => {
-  it('has no live transport when env.js names no broker', () => {
-    expect(transportsFrom({})).toEqual([]);
-    expect(transportsFrom({ REACT_APP_VIZ_MQTT_URL: '  ' })).toEqual([]);
+  beforeEach(() => {
+    globalThis.fetch = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ samples: [] }),
+    })) as unknown as typeof fetch;
   });
 
-  it('connects to the broker env.js names on the first subscription', async () => {
-    const transports = transportsFrom({
-      REACT_APP_VIZ_MQTT_URL: 'wss://dtaas.example/ws',
-      REACT_APP_VIZ_MQTT_USERNAME: 'reader',
-    });
+  afterEach(() => {
+    clearAccessToken();
+    jest.useRealTimers();
+  });
+
+  it('has no live transport and no history when env.js names no gateway', () => {
+    expect(transportsFrom({})).toEqual([]);
+    expect(transportsFrom({ REACT_APP_VIZ_SIGNALS_URL: '  ' })).toEqual([]);
+    expect(historyFrom({})).toBeUndefined();
+  });
+
+  it('reads the gateway env.js names, with the session token', async () => {
+    jest.useFakeTimers();
+    setAccessToken('session-token');
+    const transports = transportsFrom(GATEWAY);
 
     expect(transports).toHaveLength(1);
     transports[0].subscribe(['room/temp'], jest.fn());
-    // The library is loaded on first use, so the connection follows a tick.
-    await tick();
-    expect(mqtt.connect).toHaveBeenCalledWith(
-      'wss://dtaas.example/ws',
-      expect.objectContaining({ username: 'reader', password: undefined }),
+    await jest.advanceTimersByTimeAsync(100);
+    transports[0].close();
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://signals.example/stream',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer session-token',
+        }),
+      }),
     );
   });
 
   it('opens no connection until a page subscribes to a signal', async () => {
-    jest.mocked(mqtt.connect).mockClear();
-    const contents = {
-      exists: jest.fn(),
-      get: jest.fn(),
-      put: jest.fn(),
-      list: jest.fn(),
-    };
-    const core = createCore(
-      { REACT_APP_VIZ_MQTT_URL: 'wss://dtaas.example/ws' },
-      contents,
-      [],
-      () => {
-        throw new Error('no host');
-      },
-    );
+    jest.useFakeTimers();
+    const core = createCore(GATEWAY, contents, [], noHost);
 
-    await tick();
-    expect(mqtt.connect).not.toHaveBeenCalled();
+    await jest.advanceTimersByTimeAsync(1000);
+    expect(globalThis.fetch).not.toHaveBeenCalled();
     core.signals.subscribe(['room/temp'], 'measured', jest.fn());
-    await tick();
-    expect(mqtt.connect).toHaveBeenCalledTimes(1);
+    await jest.advanceTimersByTimeAsync(100);
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('reads ranges through the gateway history', async () => {
+    const core = createCore(GATEWAY, contents, [], noHost);
+
+    await core.signals.range(['a'], 'measured', 0, 10);
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://signals.example/range',
+      expect.objectContaining({ method: 'POST' }),
+    );
   });
 
   it('builds signals and visualisations together', () => {
-    const contents = {
-      exists: jest.fn(),
-      get: jest.fn(),
-      put: jest.fn(),
-      list: jest.fn(),
-    };
-
-    const core = createCore({}, contents, [], () => {
-      throw new Error('no host');
-    });
+    const core = createCore({}, contents, [], noHost);
 
     expect(core.signals.connection.get(['a'])).toBe('down');
     expect(core.viz.substrates.list()).toEqual(['image', 'embed']);

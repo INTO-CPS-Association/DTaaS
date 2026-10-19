@@ -11,9 +11,6 @@ The following services can be installed:
 * **RabbitMQ** AMQP broker and its management interface.
   The **MQTT plugin** of this broker is enabled,
   so it can also be used as an **MQTT** broker.
-  The **Web MQTT plugin** is enabled too, on `RABBITMQ_WEB_MQTT_PORT`,
-  so the web client can read live sensor values in the browser
-  (see `REACT_APP_VIZ_MQTT_URL` in the client configuration).
 * **MongoDB** database server
 * **ThingsBoard** IoT device management and data visualisation platform
   (with PostgreSQL backend)
@@ -141,22 +138,6 @@ it aside, delete it and run the command again.
 Review the refreshed files before starting the services, and re-run
 `dtaas-services host setup` if certificate or service file permissions were
 affected.
-
-#### Adding Web MQTT to an Existing Install
-
-`--force` keeps `services.env`, `rabbitmq.conf` and
-`rabbitmq.enabled_plugins`, so a project generated before the Web MQTT plugin
-was added does not get it from a refresh. Add it by hand:
-
-* `config/rabbitmq/rabbitmq.enabled_plugins`: add `rabbitmq_web_mqtt` to the
-  list.
-* `config/rabbitmq/rabbitmq.conf`: copy the `Web MQTT section` from the
-  packaged file.
-* `config/services.env`: add `RABBITMQ_WEB_MQTT_PORT=8091`, or another free
-  port. The compose file uses 8091 when the key is missing.
-
-Alternatively, move the three files aside, run the command again and carry
-your own settings over into the regenerated files.
 
 ## Usage
 

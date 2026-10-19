@@ -61,10 +61,20 @@ describe('the shared host services', () => {
     await expect(library.resolve('lib://common/a b.glb')).resolves.toBe(
       'https://dtaas.example/user1/tools/files/common/a%20b.glb',
     );
+    await expect(library.resolve('ftp://x/a')).rejects.toThrow();
+  });
+
+  it('passes a web address through only on an allowed origin', async () => {
+    const { library } = createPlatformServices(hostStore());
+    globalThis.env.REACT_APP_VIZ_ALLOWED_ORIGINS = 'https://x.example';
+
     await expect(library.resolve('https://x.example/a')).resolves.toBe(
       'https://x.example/a',
     );
-    await expect(library.resolve('ftp://x/a')).rejects.toThrow();
+    await expect(library.resolve('https://y.example/a')).rejects.toThrow(
+      'https://y.example is not an allowed source',
+    );
+    delete globalThis.env.REACT_APP_VIZ_ALLOWED_ORIGINS;
   });
 
   it('refuses a lib:// path that leaves the library', async () => {

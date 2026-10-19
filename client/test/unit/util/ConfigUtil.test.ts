@@ -159,6 +159,28 @@ describe('configUtil', () => {
       );
     });
 
+    test('getValidationResult checks the signals gateway at its health endpoint', async () => {
+      globalThis.env.REACT_APP_VIZ_SIGNALS_URL =
+        'https://dtaas.example/signals/';
+      const results = await getValidationResults();
+
+      expect(results.REACT_APP_VIZ_SIGNALS_URL.error).toBeUndefined();
+      expect(results.REACT_APP_VIZ_SIGNALS_URL.value).toEqual(
+        'https://dtaas.example/signals/',
+      );
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        'https://dtaas.example/signals/health',
+        expect.objectContaining({ method: 'GET' }),
+      );
+    });
+
+    test('getValidationResult omits the signals gateway when it is not set', async () => {
+      globalThis.env.REACT_APP_VIZ_SIGNALS_URL = ' ';
+      const results = await getValidationResults();
+
+      expect(results.REACT_APP_VIZ_SIGNALS_URL).toBeUndefined();
+    });
+
     test('getValidationResult omits LOGGER_URL when remote logging is disabled', async () => {
       globalThis.env.LOGGER_URL = 'https://logger.example.com';
       localStorage.setItem(

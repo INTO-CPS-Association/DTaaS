@@ -21,6 +21,14 @@ describe('the sample store', () => {
     expect(store.valueAt('room/temp', 'measured', 99)?.value).toBe(3);
   });
 
+  it('keeps one sample at an instant, the latest inserted', () => {
+    const store = createSampleStore();
+    [sample(10, 1), sample(20, 2), sample(10, 5)].forEach(store.insert);
+
+    expect(store.range('room/temp', 'measured', 0, 30)).toHaveLength(2);
+    expect(store.valueAt('room/temp', 'measured', 15)?.value).toBe(5);
+  });
+
   it('keeps channels and paths apart', () => {
     const store = createSampleStore();
     store.insert(sample(10, 1));

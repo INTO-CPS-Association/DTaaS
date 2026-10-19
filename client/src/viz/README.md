@@ -9,8 +9,12 @@ architecture in `dtaas-sdk`.
 
 | File                         | Layer   | Role                                                               |
 | :--------------------------- | :------ | :----------------------------------------------------------------- |
-| `mqttTransport.ts`           | 1       | Live samples from the platform's RabbitMQ, over MQTT on WebSockets |
-| `brokerClient.ts`            | 1       | The MQTT client, loaded and connected on the first subscription    |
+| `transport.ts`               | 1       | What a live transport offers the signals service                   |
+| `gatewayTransport.ts`        | 1       | Live samples from the signals gateway, one stream for every path   |
+| `gatewayEvents.ts`           | 1       | What each event of a gateway stream does                           |
+| `gatewayHistory.ts`          | 1       | Past samples of signals from the signals gateway                   |
+| `gateway.ts`                 | 1       | The gateway's address, and the token header of every request       |
+| `sseStream.ts`               | 1       | Server-sent events read through fetch, so a request has a header   |
 | `payload.ts`                 | 1       | One broker message to one `SignalSample`                           |
 | `sampleStore.ts`             | 2       | Every recent sample of each signal, read by time                   |
 | `playhead.ts`                | 2       | The one clock every page reads, live or scrubbed                   |
@@ -55,22 +59,34 @@ pane per substrate of the layout, every pane on the one playhead, which
 
 ## Configuration
 
-`REACT_APP_VIZ_MQTT_URL` names the broker's MQTT over WebSocket address, and
-`REACT_APP_VIZ_MQTT_USERNAME` and `REACT_APP_VIZ_MQTT_PASSWORD` its login when
-it asks for one. The platform services publish it on `RABBITMQ_WEB_MQTT_PORT`
-at the path `/ws`, 8091 by default. The library is loaded, and the broker
-connected, when a page first subscribes to a signal, not when the client
-starts. Without an address the core still runs: every connection reads
-`down`, and visualisations are still read and saved.
+`REACT_APP_VIZ_SIGNALS_URL` names the DTaaS signals gateway. The gateway
+reads the broker and the time-series database on the server, so no broker
+login reaches the browser. The client sends the signed-in user's GitLab
+access token in the `Authorization` header of every request, never in an
+address. `EventSource` cannot send that header, so the live stream is a POST
+read through fetch and cut into events in `sseStream.ts`.
 
-A signal path is the MQTT topic. A message may be JSON with a `value`, a bare
+One stream carries every path the open pages use. When the set changes, the
+stream is opened again with the new set, 100 ms later, so a page that
+subscribes to many sensors as it renders opens one stream. A stream that
+fails or ends reads `down`, and the next one opens 5 s later, or after the
+wait the gateway names with `retry:`. A path the gateway refuses is not asked
+for again until no page uses it. A `range` reads the gateway's history into
+the sample store first, so past samples and samples that arrived live come
+back as one series. Nothing connects until a page subscribes. Without an
+address the core still runs: every connection reads `down`, a range holds
+what the client has seen, and visualisations are still read and saved.
+
+A signal path is the broker topic. A message may be JSON with a `value`, a bare
 number, or the comma-separated line of the DTaaS examples, whose `simulation`
 type is kept on the `simulated` channel.
 
 ## Not Built Yet
 
-- History from InfluxDB, ThingsBoard as a device registry, and the STOMP,
-  HTTP and file transports the schema allows.
+- The signals gateway itself, `servers/signals`, which this client is
+  written against.
+- ThingsBoard as a device registry, and the STOMP, HTTP and file transports
+  the schema allows.
 - The 3D substrate. The Buildings extension still draws its own viewer.
 - The flow, glyph, field overlay and trajectory encodings, which resolve to
   no properties until a substrate draws them.

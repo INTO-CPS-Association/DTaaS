@@ -17,9 +17,8 @@ The options are set in `env.js`, which defines `window.env`.
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
       LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
-      // REACT_APP_VIZ_MQTT_URL: 'Web MQTT address of the broker'(optional),
-      // REACT_APP_VIZ_MQTT_USERNAME: 'Read-only broker user'(optional),
-      // REACT_APP_VIZ_MQTT_PASSWORD: 'Password of that user'(optional),
+      // REACT_APP_VIZ_SIGNALS_URL: 'Address of the signals gateway'(optional),
+      // REACT_APP_VIZ_ALLOWED_ORIGINS: 'Origins for images and embeds'(optional),
     };
   };
 
@@ -81,30 +80,58 @@ built with, and shows no live readings.
 | `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
 | `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
 | `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
-| `REACT_APP_VIZ_MQTT_URL` | The broker's MQTT over WebSocket address, for example `wss://services.foo.com:8091/ws` with the platform services |
-| `REACT_APP_VIZ_MQTT_USERNAME` | The broker user, when the broker asks for a login |
-| `REACT_APP_VIZ_MQTT_PASSWORD` | That user's password |
+| `REACT_APP_VIZ_SIGNALS_URL` | The address of the DTaaS signals gateway, for example `https://foo.com/signals` |
+| `REACT_APP_VIZ_ALLOWED_ORIGINS` | Origins besides this site that a `visualisation.json` may load images and embedded pages from, separated by commas, for example `'https://grafana.foo.com'` |
 
-With `REACT_APP_VIZ_MQTT_URL` set, the client subscribes to the topics the
-open pages need, such as the sensor topics of a building model, and colours
-the pages with the readings. The broker user and password are sent to every
-browser that opens the client, as every browser credential is, so they must
-belong to a user that may only read those topics.
+With `REACT_APP_VIZ_SIGNALS_URL` set, the client asks the signals gateway
+for the signals the open pages need, such as the sensor topics of a
+building model, and colours the pages with the readings. The gateway reads
+the broker and the time-series database on the server, and the client
+proves who the user is with the user's GitLab access token, sent in the
+`Authorization` header. No broker login reaches the browser. When the key
+is set, the configuration check requests `<REACT_APP_VIZ_SIGNALS_URL>/health`.
 
-### Creating the Read-Only Broker User
+A `visualisation.json` names the sources of its images and embedded pages.
+A `lib://` source from the library and a source on the client's own origin
+are always allowed. An `http` or `https` source on another origin is shown
+only when its origin, such as `https://grafana.foo.com`, is listed in
+`REACT_APP_VIZ_ALLOWED_ORIGINS`. The key is empty by default, so another
+site's page is not framed unless an administrator allows it. A refused
+source shows an error that names its origin.
 
-With the platform services, run these commands on the services host. The
-first one asks for the password, so it does not end up in the shell history.
-MQTT subscriptions are queues named `mqtt-subscription-<client id>qos<n>`
-bound to the `amq.topic` exchange, so the user may create and bind those
-queues and read from them and from `amq.topic`, and nothing else. The topic
-permission lets the user read every topic and publish to none.
+## Security Headers
 
-```bash
-docker exec -it rabbitmq rabbitmqctl add_user dtaas-viewer
-docker exec rabbitmq rabbitmqctl set_permissions -p / dtaas-viewer \
-  '^mqtt-subscription-.*' '^mqtt-subscription-.*' \
-  '^(amq\.topic|mqtt-subscription-.*)$'
-docker exec rabbitmq rabbitmqctl set_topic_permissions -p / dtaas-viewer \
-  amq.topic '^$' '.*'
-```
+The Docker Compose packages in `deploy/dtaas/docker/` give the website a
+Traefik `headers` middleware, `client-headers`. It sends a
+Content-Security-Policy, `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin` and
+`X-Frame-Options: SAMEORIGIN`. The other routers of the package (logger,
+library and workspaces) get `common-headers`, with the same two headers and
+no policy, since a policy written for the website would break JupyterLab.
+The TLS packages add `Strict-Transport-Security` with a one-year
+`max-age` to both.
+
+The policy allows only the website's own origin, with these exceptions:
+
+| Directive | Allows | Why |
+| :--- | :--- | :--- |
+| `script-src`, `style-src`, `font-src` | `https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/` | The file editor of the Digital Twins page loads itself from there |
+| `script-src` | `'wasm-unsafe-eval'` | The Buildings page compiles its IFC parser, which is WebAssembly |
+| `style-src` | `'unsafe-inline'` | The component library writes its styles at run time |
+| `img-src` | `data:`, `blob:`, `https:` | Avatars from the identity provider and images of a `visualisation.json` |
+| `connect-src` | `${OAUTH_URL}/`, `blob:`, `data:` | Sign-in and the GitLab API, and the parser the Buildings page carries |
+| `worker-src` | `blob:` | The workers of the editor |
+
+`connect-src` names `OAUTH_URL` of the package's `.env`, so it assumes that
+`REACT_APP_AUTH_AUTHORITY` in `env.js` is the same GitLab, and
+`OAUTH_URL` must not end in a slash. The `localhost` package has no
+`OAUTH_URL`, and its GitLab is named only in `env.js`, which Docker Compose
+cannot read, so there `connect-src` allows every `https:` origin.
+
+Edit the `contentSecurityPolicy` label of the client service when the
+deployment needs more:
+
+- A signals gateway on another origin than the website: add its origin to
+  `connect-src`.
+- An origin in `REACT_APP_VIZ_ALLOWED_ORIGINS` whose pages are embedded: add
+  it to `frame-src`. Images from it are already allowed.

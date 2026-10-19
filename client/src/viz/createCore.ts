@@ -1,13 +1,11 @@
 /**
  * The common core of this deployment, built from `env.js`.
  *
- * `REACT_APP_VIZ_MQTT_URL` names the broker's MQTT-over-WebSocket address,
- * with `REACT_APP_VIZ_MQTT_USERNAME` and `REACT_APP_VIZ_MQTT_PASSWORD` when
- * the broker asks for a login. The platform services publish RabbitMQ's Web
- * MQTT on `RABBITMQ_WEB_MQTT_PORT`, 8091 by default, at the path `/ws`, so
- * the address is `wss://<services host>:8091/ws`. The broker is connected on
- * the first subscription, not when the client starts. Without a broker the
- * core still runs: every connection reads `down`, and visualisations are
+ * `REACT_APP_VIZ_SIGNALS_URL` names the signals gateway, which streams live
+ * samples and reads past ones for the signed-in user, who proves who they are
+ * with their GitLab access token. Nothing connects until a page subscribes to
+ * a signal. Without a gateway the core still runs: every connection reads
+ * `down`, a range holds only what the client has seen, and visualisations are
  * still read and saved.
  */
 
@@ -19,7 +17,10 @@ import type {
   SignalsService,
   VizService,
 } from '@into-cps-association/dtaas-sdk';
-import createMqttTransport, { type LiveTransport } from 'viz/mqttTransport';
+import { getAccessToken } from '@into-cps-association/dt-automation';
+import type { LiveTransport } from 'viz/transport';
+import createGatewayTransport from 'viz/gatewayTransport';
+import createGatewayHistory, { type SignalHistory } from 'viz/gatewayHistory';
 import createSignals from 'viz/signals';
 import createVizService from 'viz/vizService';
 
@@ -31,17 +32,21 @@ export interface Core {
 const text = (value: unknown) =>
   typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined;
 
-/** The live transports `env.js` asks for: one broker, or none. */
+const gatewayOf = (env: EnvRecord) => {
+  const url = text(env.REACT_APP_VIZ_SIGNALS_URL);
+  return url ? { url, token: getAccessToken } : undefined;
+};
+
+/** The live transports `env.js` asks for: the signals gateway, or none. */
 export function transportsFrom(env: EnvRecord): LiveTransport[] {
-  const url = text(env.REACT_APP_VIZ_MQTT_URL);
-  if (!url) return [];
-  return [
-    createMqttTransport({
-      url,
-      username: text(env.REACT_APP_VIZ_MQTT_USERNAME),
-      password: text(env.REACT_APP_VIZ_MQTT_PASSWORD),
-    }),
-  ];
+  const gateway = gatewayOf(env);
+  return gateway ? [createGatewayTransport(gateway)] : [];
+}
+
+/** Where past samples come from, when `env.js` names a gateway. */
+export function historyFrom(env: EnvRecord): SignalHistory | undefined {
+  const gateway = gatewayOf(env);
+  return gateway && createGatewayHistory(gateway);
 }
 
 export default function createCore(
@@ -51,7 +56,7 @@ export default function createCore(
   host: () => HostServices,
 ): Core {
   return {
-    signals: createSignals(transportsFrom(env)),
+    signals: createSignals(transportsFrom(env), undefined, historyFrom(env)),
     viz: createVizService(contents, extensions, host),
   };
 }

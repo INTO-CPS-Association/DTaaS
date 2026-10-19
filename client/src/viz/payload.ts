@@ -47,8 +47,13 @@ function timeOf(value: unknown): number | undefined {
 
 const QUALITIES: ReadonlySet<unknown> = new Set(['good', 'stale', 'bad']);
 
+/** A quality the SDK names, or undefined for any other value. */
+export function qualityOf(value: unknown): SignalQuality | undefined {
+  return QUALITIES.has(value) ? (value as SignalQuality) : undefined;
+}
+
 /** A value of a type the SDK allows: a number, text, a flag or numbers. */
-function isSignalValue(value: unknown): value is SignalValue {
+export function isSignalValue(value: unknown): value is SignalValue {
   if (Array.isArray(value)) return value.every((v) => typeof v === 'number');
   return ['number', 'string', 'boolean'].includes(typeof value);
 }
@@ -57,10 +62,11 @@ function isSignalValue(value: unknown): value is SignalValue {
 function fromObject(data: Record<string, unknown>): Decoded | undefined {
   if (!isSignalValue(data.value)) return undefined;
   // A quality the SDK does not name is dropped, and the reading still counts.
-  const quality = QUALITIES.has(data.quality)
-    ? (data.quality as SignalQuality)
-    : undefined;
-  return { value: data.value, ts: timeOf(data.ts ?? data.timestamp), quality };
+  return {
+    value: data.value,
+    ts: timeOf(data.ts ?? data.timestamp),
+    quality: qualityOf(data.quality),
+  };
 }
 
 function fromJson(text: string): Decoded | undefined {
