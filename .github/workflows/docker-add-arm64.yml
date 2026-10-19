@@ -75,7 +75,8 @@ jobs:
           ACCEPT="application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json"
           ACCEPT="$ACCEPT,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.manifest.v1+json"
           fetch() {  # <registry> <repository> <token> <path> [curl options]
-            curl -sSfL -H "Authorization: Bearer $3" -H "Accept: $ACCEPT" "${@:5}" "https://$1/v2/$2/$4"
+            curl -sSfL --proto =https --proto-redir =https -H "Authorization: Bearer $3" \
+              -H "Accept: $ACCEPT" "${@:5}" "https://$1/v2/$2/$4"
           }
           digest_of() {  # <registry> <repository> <token> <tag>
             fetch "$1" "$2" "$3" "manifests/$4" -I | tr -d '\r' |
