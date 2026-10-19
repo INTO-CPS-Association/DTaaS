@@ -132,14 +132,15 @@ def rewrite(text: str, replacement: list[str]) -> str:
 
 def clean_pages(pages_dir: Path) -> int:
     """Rewrite every page of the site that loads from a CDN, and count them."""
-    root = pages_dir.resolve()
+    root = os.path.realpath(pages_dir)
     fixed = 0
-    for found in root.rglob("*.html"):
+    for found in Path(root).rglob("*.html"):
         # A symbolic link in the checkout could lead out of the site, and
         # nothing outside it is rewritten.
-        page = found.resolve()
-        if not page.is_relative_to(root):
+        real = os.path.realpath(found)
+        if os.path.commonpath([root, real]) != root:
             continue
+        page = Path(real)
         text = page.read_text("utf-8")
         cleaned = rewrite(text, local_mathjax(page, root))
         if cleaned != text:

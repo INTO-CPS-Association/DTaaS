@@ -17,8 +17,8 @@ describe('the OIDC configuration', () => {
     await store?.set('user:https://gitlab.example.com/:client', 'tokens');
 
     await expect(store?.getAllKeys()).resolves.toHaveLength(1);
-    expect(sessionStorage.length).toBe(0);
-    expect(localStorage.length).toBe(0);
+    expect(sessionStorage).toHaveLength(0);
+    expect(localStorage).toHaveLength(0);
   });
 
   it('leaves silent renewal off, since GitLab cannot be framed', () => {

@@ -49,7 +49,7 @@ function readYaml(configPath: string): RawValues {
   const loaded = yaml.load(readFileSync(resolvedPath, 'utf8'));
   if (loaded === undefined || loaded === null) return {};
   if (typeof loaded !== 'object' || Array.isArray(loaded)) {
-    throw new Error(`${resolvedPath} must hold a mapping of keys`);
+    throw new TypeError(`${resolvedPath} must hold a mapping of keys`);
   }
   refuseInlineSecrets(loaded as RawValues, resolvedPath);
   return resolveFileKeys(loaded as RawValues, path.dirname(resolvedPath));

@@ -22,6 +22,7 @@ export class InvalidTokenError extends Error {
 const tokenInfoSchema = z.object({
   resource_owner_id: z.number().int(),
   expires_in_seconds: z.number().nullable().optional(),
+  application: z.object({ uid: z.string() }).nullable().optional(),
 });
 
 const userSchema = z.object({
@@ -69,6 +70,11 @@ export default class IdentityService {
       const tokenInfo = tokenInfoSchema.parse(info);
       const owner = userSchema.parse(user);
       if (tokenInfo.resource_owner_id !== owner.id)
+        throw new InvalidTokenError();
+      // A token GitLab issued to another OAuth application of the same user
+      // is not a DTaaS sign-in, so it reads nothing.
+      const clientId = this.config.get('gitlab-client-id');
+      if (clientId !== '' && tokenInfo.application?.uid !== clientId)
         throw new InvalidTokenError();
       const seconds = tokenInfo.expires_in_seconds;
       if (typeof seconds === 'number' && seconds <= 0)

@@ -23,14 +23,15 @@ The keys a deployment sets are:
 | `gitlab-url` | The GitLab that signs users in. The gateway sends the user's token to this address and to no other |
 | `gitlab-group` | The group whose projects hold the users' twins, `DTaaS` by default |
 | `gitlab-branch` | The branch whose committed `visualisation.json` files declare the signals, `master` by default |
+| `gitlab-client-id` | The Application ID of the DTaaS client, `REACT_APP_CLIENT_ID` in `client.js`. When set, a token GitLab issued to another OAuth application is refused |
 | `forwarded-user-header` | A header that must carry the e-mail of the token's user, such as `x-forwarded-user` behind traefik-forward-auth. Empty skips the check |
 | `rabbitmq-url` | The broker, `amqp://` or `amqps://`, with no credentials in the address |
 | `rabbitmq-user` | The read-only service user, `dtaas-signals` by default |
 | `rabbitmq-password-file` | The file that holds the password of that user |
-| `vhost-template` | The vhost of a twin's owner, `{owner}` by default, since the DTaaS services CLI creates one vhost for each user |
+| `vhost-template` | The vhost of a twin's owner, `{owner}` by default, since the DTaaS services CLI creates one vhost for each user. It must contain `{owner}` |
 | `influx-url` | InfluxDB 2, for the history of a signal |
 | `influx-tokens-file` | The JSON file that maps each InfluxDB org to a read-only token |
-| `influx-org-template`, `influx-bucket-template` | The org and bucket a twin may name, `{owner}` by default |
+| `influx-org-template`, `influx-bucket-template` | The org and bucket a twin may name, `{owner}` by default. Both must contain `{owner}` |
 
 The other keys set the limits of a request and of a user, such as
 `max-streams-per-user` and `range-max-span`, and their defaults suit most

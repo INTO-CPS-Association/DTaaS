@@ -18,7 +18,7 @@ export default class BindingTable<L> {
   /** Remove a listener of a key. True when the key has no listener left. */
   remove(key: string, listener: L): boolean {
     const set = this.listeners.get(key);
-    if (set === undefined || !set.delete(listener)) return false;
+    if (!set?.delete(listener)) return false;
     if (set.size > 0) return false;
     this.listeners.delete(key);
     return true;

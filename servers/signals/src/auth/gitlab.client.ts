@@ -56,7 +56,8 @@ export default class GitLabClient {
   // Every resource is a path the gateway builds under gitlab-url, so the
   // request never leaves the configured host.
   private urlOf(resource: string): URL {
-    const base = this.config.get('gitlab-url').replace(/\/+$/, '');
+    let base = this.config.get('gitlab-url');
+    while (base.endsWith('/')) base = base.slice(0, -1);
     return new URL(`${base}/${resource}`);
   }
 

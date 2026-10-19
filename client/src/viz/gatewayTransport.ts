@@ -30,12 +30,16 @@ export const RECONNECT_DELAY_MS = 5000;
 /** The sinks of each path, and whether a change altered the set of paths. */
 function pathBook() {
   const sinks = new Map<string, Set<SignalSink>>();
-  const add = (paths: readonly string[], sink: SignalSink) =>
-    paths.filter((path) => {
+  // Every path gets the sink, so the loop must not stop at the first new one.
+  const add = (paths: readonly string[], sink: SignalSink) => {
+    let changed = false;
+    paths.forEach((path) => {
       const set = sinks.get(path) ?? new Set<SignalSink>();
       sinks.set(path, set.add(sink));
-      return set.size === 1;
-    }).length > 0;
+      if (set.size === 1) changed = true;
+    });
+    return changed;
+  };
   const remove = (paths: readonly string[], sink: SignalSink) =>
     paths.filter((path) => {
       const set = sinks.get(path);
@@ -145,7 +149,10 @@ function streamRunner(
     current = paths.length > 0 ? new AbortController() : undefined;
     if (!current) return;
     state.set('connecting');
-    connect(paths, current.signal).then(afterEnd(current, state, schedule));
+    const ended = afterEnd(current, state, schedule);
+    // openStream already turns a failure into a delay. A rejection that still
+    // got through is read the same way, so the stream is never left closed.
+    connect(paths, current.signal).then(ended, () => ended(RECONNECT_DELAY_MS));
   }
   const stop = () => {
     later.stop();

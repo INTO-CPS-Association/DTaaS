@@ -6,19 +6,27 @@ import FakeGitLabClient from 'test/helpers/fake-gitlab-client';
 
 const ALICE = { id: 7, username: 'alice', email: 'alice@example.org' };
 
-function gitlabWith(expiresIn: number | null, owner = ALICE.id) {
+function gitlabWith(
+  expiresIn: number | null,
+  owner = ALICE.id,
+  application = 'dtaas-client',
+) {
   return new FakeGitLabClient([
     [
       /^oauth\/token\/info$/,
-      () => ({ resource_owner_id: owner, expires_in_seconds: expiresIn }),
+      () => ({
+        resource_owner_id: owner,
+        expires_in_seconds: expiresIn,
+        application: { uid: application },
+      }),
     ],
     [/^api\/v4\/user$/, () => ALICE],
   ]);
 }
 
-function serviceWith(gitlab: FakeGitLabClient, ttl = 60_000) {
+function serviceWith(gitlab: FakeGitLabClient, ttl = 60_000, clientId = '') {
   return new IdentityService(
-    testConfig({ 'identity-cache-ttl': ttl }),
+    testConfig({ 'identity-cache-ttl': ttl, 'gitlab-client-id': clientId }),
     gitlab.asClient(),
   );
 }
@@ -69,6 +77,22 @@ describe('IdentityService', () => {
     ).rejects.toBeInstanceOf(InvalidTokenError);
     await expect(
       serviceWith(gitlabWith(60, 99)).resolve('t'),
+    ).rejects.toBeInstanceOf(InvalidTokenError);
+  });
+
+  it('accepts only tokens of the configured OAuth application', async () => {
+    const own = await serviceWith(
+      gitlabWith(60),
+      60_000,
+      'dtaas-client',
+    ).resolve('t');
+    expect(own.username).toBe('alice');
+    await expect(
+      serviceWith(
+        gitlabWith(60, ALICE.id, 'other-app'),
+        60_000,
+        'dtaas-client',
+      ).resolve('t'),
     ).rejects.toBeInstanceOf(InvalidTokenError);
   });
 });

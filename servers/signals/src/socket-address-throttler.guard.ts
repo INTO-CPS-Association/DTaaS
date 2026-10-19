@@ -12,7 +12,7 @@ export function getSocketTracker(req: SocketAddressRequest): string {
 }
 
 export default class SocketAddressThrottlerGuard extends ThrottlerGuard {
-  protected async getTracker(req: Record<string, any>): Promise<string> {
-    return getSocketTracker(req);
+  protected getTracker(req: Record<string, any>): Promise<string> {
+    return Promise.resolve(getSocketTracker(req));
   }
 }

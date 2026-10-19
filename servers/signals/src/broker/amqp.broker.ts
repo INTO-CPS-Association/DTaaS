@@ -22,10 +22,11 @@ export function amqpConnector(config: Config): Connector {
       config.get('rabbitmq-password-file'),
       'rabbitmq-password-file',
     );
+    const defaultPort = tls ? AMQPS_PORT : AMQP_PORT;
     const options = {
       protocol: tls ? 'amqps' : 'amqp',
       hostname: url.hostname,
-      port: url.port === '' ? (tls ? AMQPS_PORT : AMQP_PORT) : Number(url.port),
+      port: url.port === '' ? defaultPort : Number(url.port),
       username: config.get('rabbitmq-user'),
       password,
       vhost,

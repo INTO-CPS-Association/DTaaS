@@ -11,6 +11,9 @@ gitlab-url: https://gitlab.com
 # committed visualisation.json files declare the signals.
 gitlab-group: DTaaS
 gitlab-branch: master
+# The Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js,
+# so a token issued to another OAuth application is refused.
+gitlab-client-id: ''
 
 # RabbitMQ and InfluxDB of the platform services (deploy/services), read
 # with the read-only service user and the read-only tokens.

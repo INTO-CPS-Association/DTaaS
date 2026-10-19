@@ -98,6 +98,13 @@ describe('Config', () => {
     );
   });
 
+  it('refuses a vhost or bucket template without the owner', async () => {
+    const shared = await yamlFile("vhost-template: '/'\n");
+    expect(() => new Config().loadConfig(shared)).toThrow(/\{owner\}/);
+    const bucket = await yamlFile("influx-bucket-template: 'signals'\n");
+    expect(() => new Config().loadConfig(bucket)).toThrow(/\{owner\}/);
+  });
+
   it('refuses unknown keys and a URL of the wrong scheme', async () => {
     expect(() => new Config().loadConfig(`${tempDir}/missing.yaml`)).toThrow();
     const unknown = await yamlFile('no-such-key: 1\n');

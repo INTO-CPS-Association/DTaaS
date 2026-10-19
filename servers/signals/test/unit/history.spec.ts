@@ -180,4 +180,15 @@ describe('HistoryService', () => {
     ).resolves.toEqual({ samples: [], truncated: false });
     expect(queries).toHaveLength(0);
   });
+
+  it('reads nothing for a channel the twin does not declare', async () => {
+    const queries: FluxQuery[] = [];
+    const answer = await serviceAnswering([rows(3)], queries).range([target], {
+      channel: 'simulated',
+      from: 0,
+      to: 100,
+    });
+    expect(answer).toEqual({ samples: [], truncated: false });
+    expect(queries).toHaveLength(0);
+  });
 });

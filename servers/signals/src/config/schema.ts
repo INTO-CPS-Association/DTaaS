@@ -16,6 +16,11 @@ const positiveInt = z.coerce.number().int().positive();
 const text = z.string().trim();
 const httpUrl = z.url({ protocol: /^https?$/ });
 const amqpUrl = z.url({ protocol: /^amqps?$/ });
+// A template without the owner would put every user's twins in one vhost or
+// bucket, where one user's declaration could name another user's topic.
+const ownerTemplate = text.refine((value) => value.includes('{owner}'), {
+  message: 'must contain {owner}, so each owner has their own vhost or bucket',
+});
 
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
@@ -37,16 +42,17 @@ export const configSchema = z
     'gitlab-min-access-level': positiveInt.default(20),
     'gitlab-timeout': positiveInt.default(5000),
     'forwarded-user-header': text.toLowerCase().default(''),
+    'gitlab-client-id': text.default(''),
     'identity-cache-ttl': positiveInt.default(MINUTE),
     'projects-cache-ttl': positiveInt.default(MINUTE),
     'rabbitmq-url': amqpUrl.default('amqp://localhost:5672'),
     'rabbitmq-user': text.min(1).default('dtaas-signals'),
     'rabbitmq-password-file': text.default(''),
-    'vhost-template': text.min(1).default('{owner}'),
+    'vhost-template': ownerTemplate.default('{owner}'),
     'influx-url': httpUrl.default('http://localhost:8086'),
     'influx-tokens-file': text.default(''),
-    'influx-org-template': text.min(1).default('{owner}'),
-    'influx-bucket-template': text.min(1).default('{owner}'),
+    'influx-org-template': ownerTemplate.default('{owner}'),
+    'influx-bucket-template': ownerTemplate.default('{owner}'),
     'influx-timeout': positiveInt.default(10_000),
     'max-paths-per-stream': positiveInt.default(200),
     'max-path-length': positiveInt.default(256),
@@ -81,5 +87,5 @@ export const INLINE_SECRET_KEYS: Readonly<Record<string, ConfigKey>> = {
 export const CONFIG_KEYS = Object.keys(configSchema.shape) as ConfigKey[];
 
 export function envNameOf(key: string): string {
-  return `SIGNALS_${key.toUpperCase().replace(/-/g, '_')}`;
+  return `SIGNALS_${key.toUpperCase().replaceAll('-', '_')}`;
 }

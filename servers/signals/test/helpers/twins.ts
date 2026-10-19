@@ -6,7 +6,7 @@ export function visualisationOf(
 ): Record<string, unknown> {
   const mqtt = {
     adapter: 'mqtt',
-    url: 'ws://broker/ws',
+    url: 'wss://broker/ws',
     topics,
     ...(channel ? { channel } : {}),
   };

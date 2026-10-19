@@ -49,7 +49,12 @@ export default class HistoryService {
     targets: readonly SignalTarget[],
     span: Span,
   ): Promise<HistoryAnswer> {
-    const withHistory = targets.filter((target) => target.influx !== undefined);
+    // A signal answers only for the channel its twin declares, so a stored
+    // measurement is never handed back labelled as another channel.
+    const withHistory = targets.filter(
+      (target) =>
+        target.influx !== undefined && target.channel === span.channel,
+    );
     if (withHistory.length === 0) return { samples: [], truncated: false };
     const tokens = await readInfluxTokens(
       this.config.get('influx-tokens-file'),
