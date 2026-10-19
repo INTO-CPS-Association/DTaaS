@@ -214,7 +214,8 @@ architectural models declare none.
 
 A reading published as `timestamp,measurement,type,unit,value` with the type
 `simulation`, as the BIM example of the DTaaS examples publishes, is kept as a
-simulated value and is not shown as a measured one.
+simulated value. The page shows it for an object that has no measured value,
+and a measured value always takes its place.
 
 ## When the Page Says the Library Returned a Web Page
 
