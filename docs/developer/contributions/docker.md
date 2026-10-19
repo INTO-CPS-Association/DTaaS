@@ -191,3 +191,20 @@ docker run -d -v ${PWD}/logs:/dtaas/logger/logs \
 ```
 
 The captured events are written to `logs/workflow-logs.jsonl`.
+
+### Add arm64 to an Older Version
+
+Versions published before the workflows built both platforms carry only
+a `linux/amd64` image. The manual workflow
+`.github/workflows/docker-add-arm64.yml` adds a `linux/arm64` image to
+such a version on both Docker Hub and GHCR. It keeps the published amd64
+image, builds arm64 natively from the commit the version was published
+from, and points the version tag, and `latest` if it pointed at the same
+image, at both. It refuses a version that is missing or already
+multi-platform.
+
+Run it from the Actions tab with the image name, the version, the
+source commit and the Dockerfile path at that commit. Dockerfiles moved
+from `developer/` to `developer/check/`, so older commits need the old
+path. Keep `dry-run` on for a first run: it builds and pushes the arm64
+image by digest without moving any tag.
