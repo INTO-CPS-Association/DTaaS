@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 import click
 from .messages import echo_hint
-from .project import DEPLOY_TYPES, WORKSPACE_DEPLOY_TYPES
+from .constants import DEPLOY_TYPES, WORKSPACE_DEPLOY_TYPES
 
 IS_POSIX = os.name == "posix"
 LOGGER_LOGS_DIR = Path("logs") / "logger"

@@ -16,6 +16,20 @@ GITLAB_USER_TOKENS_FILE = "gitlab_user_tokens.json"
 # For utils.py
 LOCALHOST_SERVER = "localhost"
 
+# The deploy types ('deployment generate --type'), each also the name of its
+# dtaas.toml section. Maps keyed by type (build._SOURCES, the _deploy_data
+# specs) must name exactly these; tests/test_constants.py checks that.
+WORKSPACE_DEPLOY_TYPES = frozenset({"workspace-localhost", "workspace-secure-server"})
+DEPLOY_TYPES = frozenset(
+    {
+        "localhost",
+        "insecure-server",
+        "secure-server",
+        "secure-server-gitlab",
+        *WORKSPACE_DEPLOY_TYPES,
+    }
+)
+
 # A safe username: alphanumeric plus . _ - only, so it never carries shell
 # metacharacters, whitespace, or path separators into container commands.
 USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")

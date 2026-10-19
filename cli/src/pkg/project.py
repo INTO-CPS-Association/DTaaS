@@ -3,7 +3,7 @@
 import shutil
 from pathlib import Path
 import click
-from .constants import SECRET_FILENAMES
+from .constants import DEPLOY_TYPES, SECRET_FILENAMES
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
@@ -15,14 +15,6 @@ TEMPLATE_FILES = [
     "users.resources.yml",
 ]
 USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != CONFIG_TOML]
-WORKSPACE_DEPLOY_TYPES = {"workspace-localhost", "workspace-secure-server"}
-DEPLOY_TYPES = {
-    "localhost",
-    "insecure-server",
-    "secure-server",
-    "secure-server-gitlab",
-    *WORKSPACE_DEPLOY_TYPES,
-}
 
 
 def _copy_template(template_name, dest_dir, force=False):

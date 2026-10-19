@@ -8,7 +8,7 @@ skeleton substituting values from dtaas.toml (see DTaaS-CLI-Design.md).
 import click
 from .pkg import project as projectPkg
 from .pkg import host_dirs as hostDirsPkg
-from .pkg.project import DEPLOY_TYPES
+from .pkg.constants import DEPLOY_TYPES
 from .cmd_deploy_utils import VerticalChoicesCommand, apply_deploy_config
 from .cmd_options import target_dir_option, force_option
 
