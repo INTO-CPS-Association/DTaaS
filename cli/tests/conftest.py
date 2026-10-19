@@ -116,3 +116,18 @@ def mock_user_operations():
     ) as ma, patch("src.pkg.users.finalize_compose") as mf:
         mc.return_value = ma.return_value = mf.return_value = None
         yield {"create": mc, "add": ma, "finalize": mf}
+
+
+@pytest.fixture(
+    params=[
+        ("services:\n  a: [\n", "Cannot read docker-compose.yml"),
+        ("services:\n", "Invalid docker-compose.yml"),
+        ("services: [a, b]\n", "Invalid docker-compose.yml"),
+    ],
+    ids=["not-yaml", "services-empty", "services-list"],
+)
+def broken_compose(tmp_path, request):
+    """A dir with an unreadable docker-compose.yml, and the error's first line."""
+    content, summary = request.param
+    (tmp_path / "docker-compose.yml").write_text(content, encoding="utf-8")
+    return tmp_path, summary

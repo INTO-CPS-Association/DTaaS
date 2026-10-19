@@ -229,3 +229,11 @@ def test_compose_services_requires_compose_file(tmp_path):
     """compose_services refuses to act without a generated deployment."""
     with pytest.raises(OSError, match="docker-compose.yml"):
         deploy.compose_services(str(tmp_path))
+
+
+def test_compose_services_rejects_a_broken_compose_file(broken_compose):
+    """Bad YAML or a 'services' that is not a mapping raises OSError, which
+    every caller turns into a clean error."""
+    directory, summary = broken_compose
+    with pytest.raises(OSError, match=summary):
+        deploy.compose_services(str(directory))

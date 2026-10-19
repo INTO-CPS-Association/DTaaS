@@ -15,13 +15,13 @@ TEMPLATE_FILES = [
     "users.resources.yml",
 ]
 USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != CONFIG_TOML]
+WORKSPACE_DEPLOY_TYPES = {"workspace-localhost", "workspace-secure-server"}
 DEPLOY_TYPES = {
     "localhost",
     "insecure-server",
     "secure-server",
     "secure-server-gitlab",
-    "workspace-localhost",
-    "workspace-secure-server",
+    *WORKSPACE_DEPLOY_TYPES,
 }
 
 
