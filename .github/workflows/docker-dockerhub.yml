@@ -131,7 +131,7 @@ jobs:
         if: ${{ inputs.image-name == 'dtaas-web' }}
         run: |
           cd client/
-          yarn install --frozen-lockfile --network-timeout 1000000
+          yarn install --frozen-lockfile --ignore-scripts --network-timeout 1000000
           yarn build
 
       - name: Set up Docker Buildx
