@@ -41,11 +41,13 @@ export function embedUrl(
  * needs its scripts and its own origin to sign in and draw. A page of the
  * DTaaS origin is a file of the user's library, which anyone with write
  * access could have written, so it runs its scripts in an opaque origin and
- * cannot read the DTaaS session or call the DTaaS APIs as the user.
+ * cannot read the DTaaS session or call the DTaaS APIs as the user. A lib://
+ * source is such a file even where a deployment serves the workspace on an
+ * origin of its own, so it is decided by where it came from as well.
  */
-export function sandboxFor(url: string): string {
+export function sandboxFor(url: string, fromLibrary = false): string {
   const sameOrigin = new URL(url).origin === globalThis.location.origin;
-  return sameOrigin
+  return sameOrigin || fromLibrary
     ? 'allow-scripts'
     : 'allow-scripts allow-same-origin allow-forms allow-popups';
 }
@@ -86,7 +88,10 @@ async function mountEmbed(
   embed.descriptor = given;
   embed.base = await host.library.resolve(given.source);
   // The sandbox only applies to pages loaded after it is set.
-  embed.frame.setAttribute('sandbox', sandboxFor(embed.base));
+  embed.frame.setAttribute(
+    'sandbox',
+    sandboxFor(embed.base, given.source.startsWith('lib://')),
+  );
   container.append(embed.frame);
   showAt(embed, Date.now());
 }

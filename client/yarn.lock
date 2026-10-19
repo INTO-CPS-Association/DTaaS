@@ -762,7 +762,7 @@
     rate-limiter-flexible "^8.0.1"
     xcase "^2.0.1"
 
-"@gitbeaker/rest@^43.8.0":
+"@gitbeaker/rest@43.8.0":
   version "43.8.0"
   resolved "https://registry.npmjs.org/@gitbeaker/rest/-/rest-43.8.0.tgz"
   integrity sha512-xxqsNsUXaFang9b2e/NTIgqUeuUlifA2Opy1mOVqTDuJZZNIOTgUNyziwBJoleBhMC0XuvY3JNVMWthufcVjRw==

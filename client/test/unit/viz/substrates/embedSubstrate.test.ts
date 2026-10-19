@@ -76,6 +76,22 @@ describe('the embed substrate', () => {
     );
   });
 
+  it('runs a library file in an opaque origin even on another origin', async () => {
+    const host = fakeHostServices();
+    const elsewhere = 'https://workspace.example/user1/files/dash.html';
+    jest.spyOn(host.library, 'resolve').mockResolvedValue(elsewhere);
+    const container = document.createElement('div');
+
+    await createEmbedSubstrate(host).mount(container, {
+      adapter: 'embed',
+      source: 'lib://dash.html',
+    });
+
+    expect(container.querySelector('iframe')?.getAttribute('sandbox')).toBe(
+      'allow-scripts',
+    );
+  });
+
   it('has no anchors to resolve, paint, frame or pick', () => {
     const adapter = createEmbedSubstrate(fakeHostServices());
     const ref = { substrate: 'embed', id: 'x' };
