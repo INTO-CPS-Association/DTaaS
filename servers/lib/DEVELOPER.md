@@ -19,9 +19,9 @@ file. Please see [README](./README.md) for this information.
 ```bash
 yarn install    # Install dependencies for the microservice
 yarn syntax     # Analyze code for errors and style issues
-yarn format     #format .ts[x] and .js[x] files with prettier
+yarn format     # Format .ts, .tsx, .css and .scss files with prettier
 yarn graph      # Generate dependency graphs in the code
-yarn build      # Compile ES6 to ES5 and copy JS files to build/ directory
+yarn build      # Compile TypeScript into the dist/ directory
 yarn test:unit  # Run unit tests
 yarn test:int   # Run integration tests
 yarn test:e2e   # Run end-to-end tests
@@ -31,7 +31,7 @@ yarn start -h   # List of all the CLI commands
 yarn start      # Start the application
 yarn start:pm2  # Start the application with process manager 2
 yarn stop:pm2   # Stop the application managed by process manager 2
-yarn clean      # Deletes "build", "coverage", "dist" and other temp files
+yarn clean      # Deletes "build", "node_modules", "coverage", "dist" and graph files
 ```
 
 **NOTE:** The integration, end-to-end and http tests require a valid
@@ -56,9 +56,10 @@ As of now, some features require manual testing or attention.
 ### CloudCMD (a npm package dependency)
 
 Due to how CloudCMD works,
-it is required to manually run `yarn test:http` with `LOCAL_PATH` both as an
-absolute path and local path. For example, the manual tests
-need to be done with the following `LOCAL_PATH` values.
+it is required to manually run `yarn test:http` with the `local-path`
+setting of the libms config file both as an absolute path and a relative
+path. For example, the manual tests need to be done with the following
+`local-path` values.
 
 | OS      | Absolute Path                   | Relative Path |
 | ------- | ------------------------------- | ------------- |

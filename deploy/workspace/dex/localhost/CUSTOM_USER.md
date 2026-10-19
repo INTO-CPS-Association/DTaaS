@@ -31,6 +31,12 @@ Warning: Important alignment for local/passwordDB mode:
 
 This keeps DTaaS user-scoped routes aligned with OIDC identity claims.
 
+Changing `DEFAULT_USER` changes only the workspace URL route
+(`/<DEFAULT_USER>`) and the `MAIN_USER` of the workspace container.
+The workspace files still come from `files/user`, because
+`docker-compose.yml` mounts `./files/user` at `/workspace`; do not
+rename that directory.
+
 ## Run
 
 Start the application:

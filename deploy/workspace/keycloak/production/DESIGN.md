@@ -28,7 +28,9 @@ The `docker-compose.yml` file provides a production-ready setup with:
 
 - **Traefik** reverse proxy with TLS termination (ports 80, 443)
 - **Automatic HTTP to HTTPS redirect**
+- **Keycloak** identity provider, served under `/auth`
 - **OAuth2 authentication** via traefik-forward-auth
+- the **DTaaS web client**
 - **Multiple workspace instances** (user1, user2) behind authentication
 - **Secure communication** with TLS certificates
 - **Workspace containers** (for each user) using the
@@ -69,8 +71,9 @@ This will:
 
 1. Start Traefik reverse proxy with TLS on ports 80 (HTTP → HTTPS redirect)
    and 443 (HTTPS)
-2. Start traefik-forward-auth service for OAuth2 authentication
-3. Start workspace instances for user1 and user2, protected by
+2. Start Keycloak and the DTaaS web client
+3. Start traefik-forward-auth service for OAuth2 authentication
+4. Start workspace instances for user1 and user2, protected by
    authentication
 
 ## Accessing Workspaces
@@ -175,7 +178,7 @@ To add additional workspace instances, add a new service in `docker-compose.yml`
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`config/.env`](config/.env):
+Add the desired `USERNAME3` variable in `config/.env`:
 
 ```bash
 # Username Configuration
@@ -186,7 +189,7 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`forward-auth-conf`](./config/forward-auth-conf):
+Add Forward Auth config for user3 in `config/forward-auth-conf`:
 
 ```txt
 
@@ -231,7 +234,7 @@ docker compose --env-file config/.env up -d --force-recreate user3
 
 - Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
-- Ensure `COOKIE_DOMAIN` matches the domain
+- Ensure `SERVER_DNS` is correct (`COOKIE_DOMAIN` is derived from it)
 - Verify OAuth2 application is approved and active
 
 ### Port Conflicts

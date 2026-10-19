@@ -7,17 +7,17 @@ codebase at that commit.
 
 ## Scope and Method
 
-The review covers the five deliverable packages of the monorepo and the
-deployment scenarios that bind them together:
+The review covers the five deliverable packages of the monorepo, and
+the deployment scenarios that bind them together (the last row):
 
-| Package | Path | Technology |
-| :------ | :--- | :--------- |
-| React client | `client/` | React 19, Redux Toolkit, oidc-client-ts |
-| Library microservice | `servers/lib/` | NestJS, GraphQL (Apollo), cloudcmd |
-| DT Runner | `servers/execution/runner/` | NestJS, REST, execa |
-| DTaaS CLI | `cli/` | Python, click, python-on-whales |
-| Services manager | `deploy/services/cli/` | Python, click (dtaas-services) |
-| Deployment scenarios | `deploy/dtaas/docker/`, `deploy/vagrant/` | Traefik, docker compose |
+| Package              | Path                                      | Technology                              |
+| :------------------- | :---------------------------------------- | :-------------------------------------- |
+| React client         | `client/`                                 | React 19, Redux Toolkit, oidc-client-ts |
+| Library microservice | `servers/lib/`                            | NestJS, GraphQL (Apollo), cloudcmd      |
+| DT Runner            | `servers/execution/runner/`               | NestJS, REST, execa                     |
+| DTaaS CLI            | `cli/`                                    | Python, click, python-on-whales         |
+| Services manager     | `deploy/services/cli/`                    | Python, click (dtaas-services)          |
+| Deployment scenarios | `deploy/dtaas/docker/`, `deploy/vagrant/` | Traefik, docker compose                 |
 
 The review followed a standard system design review framework:
 requirements traceability, recovery of the high-level architecture from
@@ -37,6 +37,34 @@ documents cites the file it was observed in.
    components and releases, with evidence.
 1. [Improvement Proposals](improvements.md): prioritised, incremental
    recommendations with migration paths and explicit trade-offs.
+
+## Changes Since the Review
+
+The findings describe commit `e7f9dd6`; only factual slips about that
+commit were corrected in place. These statements in them no longer
+describe the current branch:
+
+- *Packages.* Three packages added since then are not reviewed: the
+  logger microservice (`servers/logger/`), the DT automation library
+  (`lib/dt-automation/`) and the shared GitLab Python library
+  (`lib/gitlab_common/`).
+- *Services.* The platform now runs three backend services: the
+  library microservice, the DT Runner and the logger microservice.
+- *Image pins.* The docker compose files now pin
+  `intocps/dtaas-web:1.7.2` and `intocps/libms:0.5.13` (at the review:
+  `1.0.2` and `0.5.9`), and add `intocps/logger-ms`.
+- *Observability.* The logger microservice exposes `GET /logger/health`
+  and writes workflow events as JSON Lines
+  (`logs/workflow-logs.jsonl` by default). The library microservice and
+  the runner still have no health endpoint.
+- *CI.* The `workspace.yml` workflow is gone, and `logger-ms.yml`,
+  `dt-automation.yml`, `gitlab-common.yml`, `docs-publish.yml` and
+  `qlty.yml` have been added.
+- *Resource limits.* Users added through the DTaaS CLI get CPU, memory
+  and process limits from the `[common.resources]` section of
+  `dtaas.toml` (`cli/src/templates/users.resources.yml`). The finding
+  on missing limits applies to the users defined directly in the base
+  compose files.
 
 ## Summary Verdict
 

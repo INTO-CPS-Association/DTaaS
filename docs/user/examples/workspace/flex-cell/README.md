@@ -67,9 +67,11 @@ physical twin, including the two robotic arms and the controller. The
 Flex-cell Simulation is the mock-up of the real system, implemented by
 FMU blocks and their connections.
 
-![Flex-cell system architecture with the TwinManager](dt-structure.png)
+![Flex-cell system architecture with the TwinManager](dt-structure.png#only-light)
+![Flex-cell system architecture with the TwinManager](dt-structure-dark.png#only-dark)
 
-![Internals of PT and DT](pt-dt-details.png)
+![Internals of PT and DT](pt-dt-details.png#only-light)
+![Internals of PT and DT](pt-dt-details-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
@@ -85,7 +87,7 @@ and one script. The specific assets used are:
 |            | ur5e_gripper_2fg7.urdf                  | Private    | No                      |
 |            | ur5e.aasx                               | Private    | No                      |
 |            | rmqfmu-vhost.fmu                        | Private    | Yes                     |
-| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool       | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 |            | TwinManagerFramework-0.0.2.jar          | Private    | Yes                     |
 |            | urinterface (installed with pip)        | Private    | No                      |
 |            | kukalbrinterface                        | Private    | No                      |
@@ -115,7 +117,7 @@ The example covers these lifecycle phases:
 
 | Lifecycle Phase | Completed Tasks                                                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Create          | Installs Java Runtime Environment and Maven, compiles the source code of TwinManager to create a usable jar package (used as tool) |
+| Create          | Installs Java Development Kit 21 and Maven, compiles the source code of TwinManager to create a usable jar package (used as tool) |
 | Prepare         | Takes the RabbitMQ and MQTT credentials in connections.conf file and configures different assets of DT.                           |
 | Execute         | The TwinManager executes the flex-cell DT and produces output in `data/flex-cell/output` directory                                |
 | Save            | Save the experimental results                                                                                                     |
@@ -138,10 +140,10 @@ for example:
 chmod +x lifecycle/create
 ```
 
-This example requires Java 11 or newer. The **create** script installs
-the default Java runtime of the workspace operating system. If other Java
-versions are already installed, the default *java* may point to another
-version. Check and change the default version with these commands.
+This example requires Java 21 because Maestro 4.1.0 needs it. The
+**create** script installs Java 21. If other Java versions are already
+installed, the default *java* may point to another version. Check and
+change the default version with these commands.
 
 ```bash
 java -version
@@ -152,8 +154,8 @@ Now run the following scripts.
 
 ### Create
 
-Installs the default Java Runtime Environment, Maven, and a Python
-virtual environment with pip dependencies. It also builds the
+Installs Open Java Development Kit 21, Maven, and a Python virtual
+environment with pip dependencies. It also builds the
 ```TwinManager``` tool (TwinManagerFramework-0.0.2.jar) from source code.
 
 ```bash

@@ -208,12 +208,14 @@ def restyle_page(diagram):
     page = Page(diagram)
     remove_notes(page)
     replace_people(page)
-    boundary = find_boundary(page)
+    # A NO_MARK page has no DTaaS boundary, so its largest box keeps the
+    # line of every other box.
+    marked = diagram.get('name') not in NO_MARK
+    boundary = find_boundary(page) if marked else None
     styled = [cell for cell in page.root if cell.get('style') is not None]
     for cell in styled:
         restyle_cell(cell, page, boundary)
     # A page that already carries the full lockup as its title needs no mark.
     lockup = svg_image(LOCKUP).split(',', 1)[1]
-    marked = diagram.get('name') not in NO_MARK
-    if marked and boundary is not None and lockup not in ET.tostring(page.root, 'unicode'):
+    if boundary is not None and lockup not in ET.tostring(page.root, 'unicode'):
         place_mark(page, boundary)

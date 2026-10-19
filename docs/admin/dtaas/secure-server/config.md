@@ -124,7 +124,7 @@ Place these TLS certificate files in `certs/`:
 
 ```text
 certs/
-|- fullchain.pem   # Public certificate or certificate chain
+| - fullchain.pem   # Public certificate or certificate chain |
 \- privkey.pem     # Private key
 ```
 
@@ -137,8 +137,8 @@ its `/workspace` volume. All workspaces share `files/common/`.
 
 ```text
 files/
-|- common/    # Shared files (mounted to /workspace/common)
-|- user1/     # User 1 workspace files
+| - common/    # Shared files (mounted to /workspace/common) |
+| - user1/     # User 1 workspace files                      |
 \- user2/     # User 2 workspace files
 ```
 

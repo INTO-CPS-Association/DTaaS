@@ -11,30 +11,35 @@ installation workflow is covered in
 
 ### Server deployments
 
-| Section | `localhost` | `insecure-server` | `secure-server` | `secure-server-gitlab` |
-| --- | :---: | :---: | :---: | :---: |
-| `[common]` | Required | Required | Required | Required |
-| `[common.security]` | Not used | Not used | Required | Required |
-| `[common.resources]` | Optional | Optional | Optional | Optional |
-| `[gitlab]` | Optional | Optional | Optional | Optional |
-| `[[users]]` | Optional | Required | Required | Required |
-| `[frontend]` | Not used | Required | Required | Required |
-| `[localhost]` | Required | Not used | Not used | Not used |
-| `[insecure-server]` | Not used | Required | Not used | Not used |
-| `[secure-server]` | Not used | Not used | Required | Not used |
-| `[secure-server-gitlab]` | Not used | Not used | Not used | Required |
+| Section                  | `localhost` | `insecure-server`        | `secure-server` | `secure-server-gitlab` |
+| ------------------------ | :---------: | :----------------------: | :-------------: | :--------------------: |
+| `[common]`               | Required    | Required                 | Required        | Required               |
+| `[common.security]`      | Not used    | Optional (`tls = false`) | Required        | Required               |
+| `[common.resources]`     | Optional    | Optional                 | Optional        | Optional               |
+| `[gitlab]`               | Optional    | Optional                 | Optional        | Optional               |
+| `[[users]]`              | Optional    | Required                 | Required        | Required               |
+| `[frontend]`             | Not used    | Required                 | Required        | Required               |
+| `[localhost]`            | Required    | Not used                 | Not used        | Not used               |
+| `[insecure-server]`      | Not used    | Required                 | Not used        | Not used               |
+| `[secure-server]`        | Not used    | Not used                 | Required        | Not used               |
+| `[secure-server-gitlab]` | Not used    | Not used                 | Not used        | Required               |
+
+`dtaas user add` reads `[common.security].tls` for every deployment
+type to choose the per-user compose template. For `insecure-server`,
+leave the section out or set `tls = false`; `tls = true` gives the new
+users the HTTPS template, which the HTTP-only deployment does not serve.
 
 ### Workspace deployments
 
-| Section | `workspace-localhost` | `workspace-secure-server` |
-| --- | :---: | :---: |
-| `[common]` | Required | Required |
-| `[common.security]` | Not used | Required |
-| `[common.resources]` | Optional | Optional |
-| `[gitlab]` | Optional | Optional |
-| `[[users]]` | Optional | Required |
-| `[workspace-localhost]` | Required | Not used |
-| `[workspace-secure-server]` | Not used | Required |
+| Section                     | `workspace-localhost` | `workspace-secure-server` |
+| --------------------------- | :-------------------: | :-----------------------: |
+| `[common]`                  | Required              | Required                  |
+| `[common.security]`         | Not used              | Required                  |
+| `[common.resources]`        | Optional              | Optional                  |
+| `[gitlab]`                  | Optional              | Optional                  |
+| `[[users]]`                 | Optional              | Required                  |
+| `[workspace-localhost]`     | Required              | Not used                  |
+| `[workspace-secure-server]` | Not used              | Required                  |
 
 ## Annotated `dtaas.toml`
 
@@ -180,6 +185,8 @@ keycloak-issuer-url     = "https://keycloak.example.com/realms/dtaas"
 keycloak-client-id      = "workspace"
 keycloak-client-secret  = "s3cr3t"
 oauth-secret            = "random-signing-string"
+# Not written to config/client.js (auth-authority is only checked to be
+# a URL). Set REACT_APP_CLIENT_ID and REACT_APP_AUTH_AUTHORITY there by hand.
 client-id               = "dtaas-frontend"
 auth-authority          = "https://keycloak.example.com/realms/dtaas"
 ```
@@ -189,28 +196,28 @@ auth-authority          = "https://keycloak.example.com/realms/dtaas"
 `dtaas config validate` reads `dtaas.toml` (from `--output-dir`
 first, then the current directory) and reports all problems at once:
 
-| Field | Rule |
-| --- | --- |
-| `git-repo` | Must be an `http(s)` URL |
-| `[common].server-dns` | Must be `localhost`, an IP, or a fully qualified hostname |
-| `[common].path` | Must be an absolute path to an existing directory |
-| `[common.security].certs-src` | When present, must be an absolute path to an existing directory |
-| `[common.resources].set_limits` | `false` turns the limits off; any other value, or no key, keeps them on |
-| `[common.resources].cpus` | Positive number (e.g. `4` or `0.5`) |
-| `[common.resources].pids_limit` | Integer |
-| `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`) |
-| `[[users]]` | When present, must be an array of tables; usernames must be unique |
-| `[[users]].username` | Required, valid username |
-| `[[users]].email` | Required, valid RFC 5321/5322 address (no DNS lookup) |
-| `[[users]].groups` | When present, must be a list of strings |
-| `[[users]].load_balance` | When present, must be `true` or `false` |
-| `[[users]].password` | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
-| `[gitlab].provision` | When present, `true` or `false` (default `false`) |
-| `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise |
-| `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
-| `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
-| Deployment-section URLs | When present, must be `http(s)` URLs |
-| Deployment-section `default-user` | When present, must be a valid username |
+| Field                                      | Rule                                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `git-repo`                                 | Must be an `http(s)` URL                                                                                      |
+| `[common].server-dns`                      | Must be `localhost`, an IP, or a fully qualified hostname                                                     |
+| `[common].path`                            | Must be an absolute path to an existing directory                                                             |
+| `[common.security].certs-src`              | When present, must be an absolute path to an existing directory                                               |
+| `[common.resources].set_limits`            | `false` turns the limits off; any other value, or no key, keeps them on                                       |
+| `[common.resources].cpus`                  | Positive number (e.g. `4` or `0.5`)                                                                           |
+| `[common.resources].pids_limit`            | Integer                                                                                                       |
+| `[common.resources].mem_limit`, `shm_size` | Byte size with required unit (e.g. `4G`, `512m`)                                                              |
+| `[[users]]`                                | When present, must be an array of tables; usernames must be unique                                            |
+| `[[users]].username`                       | Required, valid username                                                                                      |
+| `[[users]].email`                          | Required, valid RFC 5321/5322 address (no DNS lookup)                                                         |
+| `[[users]].groups`                         | When present, must be a list of strings                                                                       |
+| `[[users]].load_balance`                   | When present, must be `true` or `false`                                                                       |
+| `[[users]].password`                       | When present, must be a string (the starting user's initial GitLab password, used when `user add` names them) |
+| `[gitlab].provision`                       | When present, `true` or `false` (default `false`)                                                             |
+| `[gitlab].api_url`                         | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise                         |
+| `[gitlab].pat`                             | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`)                                    |
+| `[gitlab].ssl_verify`                      | When present, `true`, `false`, or a CA-bundle path string                                                     |
+| Deployment-section URLs                    | When present, must be `http(s)` URLs                                                                          |
+| Deployment-section `default-user`          | When present, must be a valid username                                                                        |
 
 Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 `auth-authority` and `keycloak-issuer-url` in `[frontend]`,
@@ -220,6 +227,12 @@ Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 present. `config validate` checks every section in the file, while
 `platform update --config` checks only the section of the installed
 deployment type, plus `[frontend]`.
+
+For `workspace-secure-server`, no command writes `client-id` or
+`auth-authority` into `config/client.js`; `auth-authority` is only
+checked to be a URL. Edit
+`REACT_APP_CLIENT_ID` and `REACT_APP_AUTH_AUTHORITY` in that file by
+hand.
 
 `path` and `certs-src` are checked against the local filesystem, so
 run `validate` on the deployment host. If a check fails with a
@@ -268,11 +281,11 @@ User management spans three files, each with a single owner. The
 split follows the one Terraform makes between `.tf` and
 `terraform.tfstate` files:
 
-| File | Owner | Contents | Git |
-| --- | --- | --- | --- |
-| `dtaas.toml` `[[users]]` | Human, at install time | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`, optional `password`) | Hand-edited; keep out of Git, as it can hold credentials |
-| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for starting users that `user add` has provisioned on GitLab | Tracked, CLI-written, never hand-edited |
-| `.dtaas.state.json` | CLI, at provisioning time | Observed runtime facts: container id, status, provisioned-at, config hash | Ignored, runtime cache |
+| File                        | Owner                                                     | Contents                                                                                                                                                                                                                                                    | Git                                                      |
+| --------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `dtaas.toml` `[[users]]`    | Human, at install time                                    | **Starting** users: one self-contained record per user (`username`, `email`, `groups`, `load_balance`, optional `password`)                                                                                                                                 | Hand-edited; keep out of Git, as it can hold credentials |
+| `dtaas.users.registry.json` | CLI (`user add` / `delete` / `pause` / `stop` / `resume`) | **Additional** users under `users`: the same fields, plus `desired_status` (`running`/`paused`/`stopped`) and any GitLab markers. Its `starting_users` section holds the GitLab markers alone, for starting users that `user add` has provisioned on GitLab | Tracked, CLI-written, never hand-edited                  |
+| `.dtaas.state.json`         | CLI, at provisioning time                                 | Observed runtime facts: container id, status, provisioned-at, config hash                                                                                                                                                                                   | Ignored, runtime cache                                   |
 
 - **`dtaas.toml`** is written by a person and never rewritten by the
   CLI, so its comments and reviewed values stay as they are.
@@ -322,12 +335,12 @@ api_url    = "https://gitlab.example.com"
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 ```
 
-| Key | Default | Meaning |
-| --- | --- | --- |
-| `provision` | `false` | `true` makes `user add` create each user's GitLab account and token |
-| `api_url` | none | The GitLab instance; required when `provision` is `true` |
-| `pat` | none | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty |
-| `ssl_verify` | `true` | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off |
+| Key          | Default | Meaning                                                                                        |
+| ------------ | ------- | ---------------------------------------------------------------------------------------------- |
+| `provision`  | `false` | `true` makes `user add` create each user's GitLab account and token                            |
+| `api_url`    | none    | The GitLab instance; required when `provision` is `true`                                       |
+| `pat`        | none    | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty                           |
+| `ssl_verify` | `true`  | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off |
 
 ### Admin token
 

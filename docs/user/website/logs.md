@@ -32,14 +32,14 @@ icon next to the title shows a short description of the page.
 
 The toolbar above the log list has these controls:
 
-| Control                     | Description                                                                             |
-| :--------------------------- | :---------------------------------------------------------------------------------------- |
-| Filter logs                 | Shows only the entries that match the search text (see [Filtering](#filtering-logs)).   |
-| :material-refresh: Refresh  | Reloads the log entries from local storage.                                             |
-| Raw view :material-code-braces: | Switches between the card view and the raw JSON Lines view.                        |
-| :material-delete-outline: Clear logs | Permanently deletes all stored log entries, after confirmation.                |
-| Download All JSONL          | Exports the displayed entries as a `.jsonl` file.                                       |
-| Live update                 | Streams new events into the view as they are recorded.                                  |
+| Control                              | Description                                                                               |
+| :----------------------------------- | :---------------------------------------------------------------------------------------- |
+| Filter logs                          | Shows only the entries that match the search text (see [Filtering](#filtering-logs)).     |
+| :material-refresh: Refresh           | Reloads the log entries from local storage.                                               |
+| Raw view :material-code-braces:      | Switches between the card view and the raw JSON Lines view.                               |
+| :material-delete-outline: Clear logs | Permanently deletes all stored log entries, after confirmation.                           |
+| Download All JSONL                   | Exports the displayed entries as a `.jsonl` file.                                         |
+| Live update                          | Streams new events into the view as they are recorded.                                    |
 
 ## Log Entries (Card View)
 
@@ -113,16 +113,16 @@ it causes appears as:
 
 ### Log Event Fields
 
-| Field             | Description                                                                          |
-| :----------------- | :------------------------------------------------------------------------------------- |
-| `timestamp`        | UTC time the event was recorded, in ISO 8601 format.                                 |
-| `event`            | The event type: `click`, `change`, `navigation`, `notification` or `dismiss`.        |
-| `label`            | A human-readable label for the element involved.                                     |
-| `element`          | The type of UI element involved, e.g. `nav-link`, `button`, `link`, `page`.          |
-| `page`             | The URL path of the page on which the event occurred.                                |
-| `page_transition`  | Present on `navigation` events after the first; records the source and target page.  |
-| `context`          | Extra metadata specific to the event, e.g. a link's target URL.                      |
-| `sessionId`        | A random identifier generated for the current browser session.                       |
+| Field              | Description                                                                                |
+| :----------------- | :----------------------------------------------------------------------------------------- |
+| `timestamp`        | UTC time the event was recorded, in ISO 8601 format.                                       |
+| `event`            | The event type: `click`, `change`, `navigation`, `notification` or `dismiss`.              |
+| `label`            | A human-readable label for the element involved.                                           |
+| `element`          | The type of UI element involved, e.g. `nav-link`, `button`, `link`, `page`.                |
+| `page`             | The URL path of the page on which the event occurred.                                      |
+| `page_transition`  | Present on `navigation` events after the first; records the source and target page.        |
+| `context`          | Extra metadata specific to the event, e.g. a link's target URL.                            |
+| `sessionId`        | A random identifier generated for the current browser session.                             |
 | `userHash`         | A SHA-256 hash of the username, which links events without storing the name in plain text. |
 
 ## Live Updates

@@ -90,7 +90,7 @@ The measurement results table has the following columns:
 | Column           | Description                                                                                                     |
 | ---------------- | --------------------------------------------------------------------------------------------------------------- |
 | Task             | Task number, name, and description                                                                              |
-| Status           | Current execution status (PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED); a dash before the task is queued      |
+| Status           | Current execution status (PENDING, RUNNING, SUCCESS, FAILURE, or STOPPED); a dash before the task is queued     |
 | Average Duration | Mean execution time across all completed trials, displayed in seconds                                           |
 | Trials           | Visual cards showing each trial's execution details and status. Each trial represents one iteration of the task |
 | Data             | Download button to export individual task results as JSON                                                       |
@@ -128,7 +128,9 @@ The figure below shows both options after a completed measurement run.
 The exported JSON describes each task and its trials. Each trial is one
 iteration of a task and contains an `executions` array with the
 pipeline execution details. The configuration is shared at the task
-level, and each execution includes its runner tag.
+level, and each execution includes its runner tag. The task records its
+own start and end times. A trial carries an `Error` field only when it
+records an error.
 
 The exported JSON has the following structure:
 
@@ -150,6 +152,7 @@ The exported JSON has the following structure:
           "Time Start": "ISO8601 timestamp",
           "Time End": "ISO8601 timestamp",
           "Status": "PENDING | RUNNING | SUCCESS | FAILURE | STOPPED",
+          "Error": { "message": string, "error": object },
           "executions": [
             {
               "dtName": string,
@@ -160,6 +163,8 @@ The exported JSON has the following structure:
           ]
         }
       ],
+      "Time Start": "ISO8601 timestamp",
+      "Time End": "ISO8601 timestamp",
       "Average Time (s)": number,
       "Status": string
     }

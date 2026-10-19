@@ -103,8 +103,8 @@ provider did not expose a profile URL." instead of a broken link:
 {profileUrl ? profileSettingsText : profileNotAvailableText}
 ```
 
-`MenuToolbar.tsx` and `util/envUtil.ts` also call
-`resolveOAuthUsername`, and `MenuToolbar.tsx` calls
+`MenuToolbar.tsx`, `route/auth/PrivateRoute.tsx` and `util/envUtil.ts`
+also call `resolveOAuthUsername`, and `MenuToolbar.tsx` calls
 `resolveOAuthPictureUrl` for the avatar.
 
 ## Internal module structure

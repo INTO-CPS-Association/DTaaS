@@ -40,7 +40,8 @@ to estimate:
 The remaining mission time is monitored, and the firefighters receive
 a warning if it drops below a threshold.
 
-![Digital Twin Structure](img/o5g_digital_twin_architecture.png)
+![Digital Twin Structure](img/o5g_digital_twin_architecture.png#only-light)
+![Digital Twin Structure](img/o5g_digital_twin_architecture-dark.png#only-dark)
 
 This example implements the paper
 [_Digital Twin for Rescue Missions--a Case Study_](https://ceur-ws.org/Vol-3507/paper4.pdf)
@@ -129,9 +130,10 @@ The example covers these lifecycle phases:
 
 ## Run the example
 
-Run the lifecycle scripts from the directory of the example. The
-_install_ script creates the Python virtual environment in the current
-directory, and the _execute_ script activates it from there.
+The _install_ script creates the Python virtual environment _o5g-venv_
+in the directory of the example, and the _execute_ script activates it
+from there. The lifecycle scripts can be run from any directory, for
+example from the directory of the example.
 
 ```bash
 cd /workspace/examples/digital_twins/o5g

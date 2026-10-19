@@ -40,11 +40,11 @@ The script takes the path to one `package.json` and performs these steps:
 The range follows npm's meaning of the prefix, and an exact version is
 treated like `^`:
 
-| Spec | Stays below |
-| :--- | :--- |
-| `^6.0.3` or `6.0.3` | `7.0.0` |
-| `^0.18.9` | `0.19.0` |
-| `~30.4.2` | `30.5.0` |
+| Spec                | Stays below |
+| :------------------ | :---------- |
+| `^6.0.3` or `6.0.3` | `7.0.0`     |
+| `^0.18.9`           | `0.19.0`    |
+| `~30.4.2`           | `30.5.0`    |
 
 The output lists every changed package as `upgrade` or `DOWNGRADE`, and
 every package left alone as `skip`, with the reason. A line starting with

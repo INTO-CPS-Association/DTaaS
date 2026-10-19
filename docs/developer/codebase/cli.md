@@ -126,19 +126,19 @@ poetry run python src/pkg/build.py && poetry run pytest
 
 ### Main Modules
 
-| Module               | Purpose                                        |
-| :------------------- | :--------------------------------------------- |
-| `cmd.py`             | Root group; attaches the four noun groups      |
-| `cmd_user.py`        | User add/delete/status command definitions     |
-| `pkg/config*.py`     | TOML parsing, validation, in-place updates     |
+| Module               | Purpose                                                     |
+| :------------------- | :---------------------------------------------------------- |
+| `cmd.py`             | Root group; attaches the four noun groups                   |
+| `cmd_user.py`        | User add/delete/status command definitions                  |
+| `pkg/config*.py`     | TOML parsing, validation, in-place updates                  |
 | `pkg/project.py`     | Template copying (`config generate`, `deployment generate`) |
-| `pkg/deploy.py`      | Install/uninstall orchestration                |
-| `pkg/lifecycle.py`   | Platform status, stop, start, pause, resume    |
-| `pkg/cert_*.py`      | Certificate validation and rotation            |
-| `pkg/users*.py`      | User workspace lifecycle                       |
-| `pkg/registry.py`    | Registry of additional users                   |
-| `pkg/state.py`       | Runtime state of user containers               |
-| `pkg/utils.py`       | YAML/TOML I/O, template substitution           |
+| `pkg/deploy.py`      | Install/uninstall orchestration                             |
+| `pkg/lifecycle.py`   | Platform status, stop, start, pause, resume                 |
+| `pkg/cert_*.py`      | Certificate validation and rotation                         |
+| `pkg/users*.py`      | User workspace lifecycle                                    |
+| `pkg/registry.py`    | Registry of additional users                                |
+| `pkg/state.py`       | Runtime state of user containers                            |
+| `pkg/utils.py`       | YAML/TOML I/O, template substitution                        |
 
 ## Sequence Diagram
 

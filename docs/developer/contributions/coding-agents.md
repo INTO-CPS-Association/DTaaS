@@ -5,12 +5,12 @@ agent reads the same files, so the rules are written once.
 
 ## Instruction files
 
-| File | Holds | Read by |
-| :--- | :--- | :--- |
-| `AGENTS.md` | General coding guidelines | Codex, OpenCode, GitHub Copilot and most other agents |
-| `PROJECT.md` | Build and test commands, verification, shipping, pull request checks, code standards and per-project conventions | Every agent, through `AGENTS.md` |
-| `CLAUDE.md` | Imports `AGENTS.md` and `PROJECT.md` | Claude Code |
-| `.github/copilot-instructions.md` | A pointer to `AGENTS.md` and `PROJECT.md` | GitHub Copilot |
+| File                              | Holds                                                                                                            | Read by                                               |
+| :-------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
+| `AGENTS.md`                       | General coding guidelines                                                                                        | Codex, OpenCode, GitHub Copilot and most other agents |
+| `PROJECT.md`                      | Build and test commands, verification, shipping, pull request checks, code standards and per-project conventions | Every agent, through `AGENTS.md`                      |
+| `CLAUDE.md`                       | Imports `AGENTS.md` and `PROJECT.md`                                                                             | Claude Code                                           |
+| `.github/copilot-instructions.md` | A pointer to `AGENTS.md` and `PROJECT.md`                                                                        | GitHub Copilot                                        |
 
 Change the rules in `AGENTS.md` or `PROJECT.md`; the other files only
 point to them.
@@ -31,19 +31,20 @@ stub's frontmatter differs from its canonical skill.
 
 The repository provides these skills:
 
-| Skill | Use it to |
-| :--- | :--- |
-| `upgrade-npm-packages` | Upgrade npm dependencies behind a ten-day release cooldown; see [Upgrade NPM Packages](npm-upgrade.md) |
-| `capture-docs-screenshots` | Retake the user documentation screenshots from a running installation |
-| `review-pull-request` | Check that a pull request passes every quality gate before merge |
-| `check-code-quality` | Review the code quality of one component |
-| `plan-before-coding` | Analyse the codebase and requirements before implementing |
-| `architecture-design` | Design an architecture and its diagrams and documentation |
-| `react-frontend-engineer` | Work on the React client |
-| `playwright-tester` | Explore the website and write Playwright tests |
-| `technical-debt-remediation-plan` | Plan the remediation of technical debt |
-| `critical-thinking` | Challenge assumptions behind a proposed solution |
-| `mentor` | Guide an engineer rather than writing the code for them |
+| Skill                             | Use it to                                                                                              |
+| :-------------------------------- | :----------------------------------------------------------------------------------------------------- |
+| `upgrade-npm-packages`            | Upgrade npm dependencies behind a ten-day release cooldown; see [Upgrade NPM Packages](npm-upgrade.md) |
+| `capture-docs-screenshots`        | Retake the user documentation screenshots from a running installation                                  |
+| `update-docs-diagrams`            | Edit, restyle and export the documentation diagrams                                                    |
+| `review-pull-request`             | Check that a pull request passes every quality gate before merge                                       |
+| `check-code-quality`              | Review the code quality of one component                                                               |
+| `plan-before-coding`              | Analyse the codebase and requirements before implementing                                              |
+| `architecture-design`             | Design an architecture and its diagrams and documentation                                              |
+| `react-frontend-engineer`         | Work on the React client                                                                               |
+| `playwright-tester`               | Explore the website and write Playwright tests                                                         |
+| `technical-debt-remediation-plan` | Plan the remediation of technical debt                                                                 |
+| `critical-thinking`               | Challenge assumptions behind a proposed solution                                                       |
+| `mentor`                          | Guide an engineer rather than writing the code for them                                                |
 
 Seven of these skills are adapted from
 [awesome-copilot](https://github.com/github/awesome-copilot) under the MIT

@@ -26,8 +26,9 @@ The Dockerfiles for building the containers are:
   microservice container from source code.
 - **libms.npm.dockerfile**: Dockerfile for building the library
   microservice container from published npm package at npmjs.com.
-  This Dockerfile is only used during publishing. It is used neither
-  in the development builds nor in Github actions.
+  This Dockerfile is only for a manual build. It is used neither
+  in the development builds nor in Github actions, which publish
+  the library microservice image from **libms.dockerfile**.
 - **logger.dockerfile**: Dockerfile for building the logger
   microservice container from source code. It is used in the
   development builds and for publishing. Its entrypoint,
@@ -167,13 +168,16 @@ To test the react website container on localhost, please use
 
 ```bash
 docker run -d \
-  -v ${PWD}/client/config/client.js:/dtaas/client/build/env.js \
+  -v ${PWD}/developer/check/config/client.js:/dtaas/client/build/env.js \
   -p 4000:4000 intocps/dtaas-web:latest
 ```
 
 ### Library Microservice
 
-The Dockerfile of library microservice has `VERSION` argument.
+The Github actions publish the library microservice image built from
+**libms.dockerfile**. The commands below build it manually from the
+npm package instead.
+The **libms.npm.dockerfile** has `VERSION` argument.
 This argument helps pick the right package version from <http://npmjs.com>.
 
 ```sh
@@ -195,7 +199,7 @@ docker build --build-arg="VERSION=0.3.1" \
 To test the library microservice on localhost, please use
 
 ```bash
-docker run -d -v ${PWD}/files:/dtaas/libms/files \
+docker run -d -v ${PWD}/developer/check/files:/dtaas/libms/files \
   -p 4001:4001 intocps/libms:latest
 ```
 

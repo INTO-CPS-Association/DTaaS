@@ -28,8 +28,9 @@ The `docker-compose.yml` starts the following services:
 
 | Service | Purpose |
 | :--- | :--- |
-| **traefik** | Reverse proxy with TLS termination |
+| **traefik** | Reverse proxy over HTTP (port 80) |
 | **client** | DTaaS React frontend |
+| **logger-ms** | Logger microservice |
 | **user1 / user2** | JupyterLab user workspaces |
 | **libms** | Library management microservice |
 | **traefik-forward-auth** | OAuth 2.0 authorisation middleware |
@@ -111,10 +112,10 @@ docker compose --env-file config/.env up -d --force-recreate client traefik-forw
 
 | URL | Expected result |
 | :--- | :--- |
-| `https://<SERVER_DNS>` | DTaaS web interface |
-| `https://<SERVER_DNS>/user1` | User 1 workspace after sign-in |
-| `https://<SERVER_DNS>/user2` | User 2 workspace after sign-in |
-| `https://<SERVER_DNS>/lib` | Library service |
+| `http://<SERVER_DNS>` | DTaaS web interface |
+| `http://<SERVER_DNS>/user1` | User 1 workspace after sign-in |
+| `http://<SERVER_DNS>/user2` | User 2 workspace after sign-in |
+| `http://<SERVER_DNS>/lib` | Library service |
 
 ## Stop
 
@@ -126,15 +127,13 @@ docker compose --env-file config/.env down
 
 ```text
 .
-|- certs/                 # TLS certificates (fullchain.pem, privkey.pem)
 |- config/
 |  |- .env                # Docker Compose environment variables
 |  |- conf.server         # Traefik forward-auth authorisation rules
 |  |- client.js           # DTaaS React client configuration
 |  |- .env.example
 |  |- conf.server.example
-|  |- client.js.example
-|  \- tls.yml            # Traefik TLS provider configuration
+|  \- client.js.example
 |- files/
 |  |- common/             # Shared files across all workspaces
 |  \- template/           # sample user workspace files

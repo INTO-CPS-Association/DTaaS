@@ -126,7 +126,7 @@ It overwrites the three `compose.*.yml` files and the packaged files under
 overwrites these files, which are reported as kept:
 
 * `services.env`, `credentials.csv`, `gitlab_oauth.json`
-* `gitlab_tokens.json`, `gitlab_user_tokens.json`, `current.passwords.env`
+* `gitlab_tokens.json`, `gitlab_user_tokens.json`, `password.env.current`
 * `mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`
 
 The first six hold your settings and live credentials; the last three are

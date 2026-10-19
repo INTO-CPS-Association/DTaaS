@@ -19,7 +19,6 @@ For the quick-start installation guide, see [README.md](README.md).
     - [Format](#format)
     - [Default Rules](#default-rules)
     - [Important Rules](#important-rules)
-  - [certs - TLS Certificates](#certs---tls-certificates)
   - [files - User Workspace Directories](#files---user-workspace-directories)
   - [logs - Logger Microservice Events](#logs---logger-microservice-events)
   - [config/signals.yaml - Signals Gateway](#configsignalsyaml---signals-gateway)
@@ -44,7 +43,7 @@ cp config/.env.example config/.env
 
 | Variable | Example | Description |
 | :--- | :--- | :--- |
-| `SERVER_DNS` | `intocps.org` | Domain name or IP address of the server. Do not include `https://`. |
+| `SERVER_DNS` | `intocps.org` | Domain name or IP address of the server. Do not include `http://`. |
 | `USERNAME1` | `user1` | Path prefix and workspace name for the first user |
 | `USERNAME2` | `user2` | Path prefix and workspace name for the second user |
 | `COMPOSE_PROJECT_NAME` | `dtaas` | Docker Compose project name |
@@ -64,11 +63,15 @@ These are set from the external GitLab OAuth 2.0 applications.
 
 | Variable | Used by |
 | :--- | :--- |
-| `SERVER_DNS` | traefik, client, user1, user2, libms, traefik-forward-auth |
+| `SERVER_DNS` | client, logger-ms, user1, user2, libms, traefik-forward-auth |
 | `USERNAME1` / `USERNAME2` | user1, user2 (routing and workspace volumes) |
 | `OAUTH_URL` | traefik-forward-auth (authorize, token, userinfo endpoints) |
 | `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth |
 | `OAUTH_SECRET` | traefik-forward-auth |
+
+This package serves DTaaS over plain HTTP on port 80. For that reason
+`docker-compose.yml` sets `INSECURE_COOKIE=true` for
+traefik-forward-auth, so that its session cookie works without HTTPS.
 
 ## config/client.js - DTaaS Web Client
 
@@ -86,15 +89,16 @@ cp config/client.js.example config/client.js
 | Variable | Example | Description |
 | :--- | :--- | :--- |
 | `REACT_APP_ENVIRONMENT` | `prod` | Environment name |
-| `REACT_APP_URL` | `https://intocps.org` | Base URL of the DTaaS web application |
+| `REACT_APP_URL` | `http://intocps.org` | Base URL of the DTaaS web application |
 | `REACT_APP_URL_BASENAME` | `''` | Optional URL base path |
 | `REACT_APP_URL_DTLINK` | `/lab` | URL path for the Digital Twin workbench |
 | `REACT_APP_URL_LIBLINK` | `''` | URL path for the Library |
 | `REACT_APP_CLIENT_ID` | _(from GitLab)_ | Application ID from **DTaaS Client Authorization** OAuth app |
 | `REACT_APP_AUTH_AUTHORITY` | `https://gitlab.com` | OAuth issuer URL |
-| `REACT_APP_REDIRECT_URI` | `https://intocps.org/Library` | Redirect URI after sign-in |
-| `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Redirect URI after sign-out |
+| `REACT_APP_REDIRECT_URI` | `http://intocps.org/Library` | Redirect URI after sign-in |
+| `REACT_APP_LOGOUT_REDIRECT_URI` | `http://intocps.org/` | Redirect URI after sign-out |
 | `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | Requested OAuth scopes |
+| `LOGGER_URL` | `http://intocps.org/logger` | URL of the logger service |
 
 ## config/conf.server - Traefik Forward-Auth Rules
 
@@ -143,18 +147,6 @@ Replace usernames and email addresses to match the actual users.
   `config/conf.server`, the default behaviour allows any signed-in user.
 - If a rule exists in `config/conf.server` but no router serves that path,
   the URL returns 404.
-
-## certs - TLS Certificates
-
-Place these TLS certificate files in `certs/`:
-
-```text
-certs/
-|- fullchain.pem   # Public certificate or certificate chain
-\- privkey.pem     # Private key
-```
-
-Certificates must be valid for `SERVER_DNS`.
 
 ## files - User Workspace Directories
 
@@ -227,7 +219,7 @@ Two OAuth 2.0 applications are needed in the external GitLab instance.
 1. In GitLab, open **Applications**.
 2. Create an application:
    - **Name**: DTaaS Client Authorization
-   - **Redirect URI**: `https://<SERVER_DNS>/Library`
+   - **Redirect URI**: `http://<SERVER_DNS>/Library`
    - **Confidential**: unticked (public SPA client)
    - **Scopes**: `openid`, `profile`, `read_user`, `read_repository`, `api`
 3. Save the **Application ID** and set `REACT_APP_CLIENT_ID` in `config/client.js`.
@@ -237,7 +229,7 @@ Two OAuth 2.0 applications are needed in the external GitLab instance.
 
 1. In GitLab, create another application:
    - **Name**: DTaaS Server Authorization
-   - **Redirect URI**: `https://<SERVER_DNS>/_oauth`
+   - **Redirect URI**: `http://<SERVER_DNS>/_oauth`
    - **Confidential**: ticked
    - **Scopes**: `read_user`
 2. Save **Application ID** and **Secret**.
@@ -283,7 +275,3 @@ docker compose --env-file config/.env logs traefik-forward-auth
   - `config/.env`
   - `config/conf.server`
   - `docker-compose.yml`
-
-### TLS warning in browser
-
-- Replace `certs/fullchain.pem` and `certs/privkey.pem` with valid certificates.

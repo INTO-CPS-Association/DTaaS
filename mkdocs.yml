@@ -74,8 +74,10 @@ nav:
               - Mass Spring Damper: user/examples/workspace/mass-spring-damper/README.md
               - Water Tank Fault Injection: user/examples/workspace/water_tank_FI/README.md
               - Water Tank Model Swap: user/examples/workspace/water_tank_swap/README.md
+              - Heart Digital Twin: user/examples/workspace/heart_dt/README.md
               - Desktop Robotti and RabbitMQ: user/examples/workspace/drobotti-rmqfmu/README.md
               - Water Plant and OPC-UA: user/examples/workspace/opc-ua-waterplant/README.md
+              - Water Plant and OPC-UA (Complete): user/examples/workspace/opc-ua-waterplant-complete/README.md
               - Three Water Tanks: user/examples/workspace/three-tank/README.md
               - Flex Cell: user/examples/workspace/flex-cell/README.md
               - Incubator: user/examples/workspace/incubator/README.md
@@ -85,6 +87,8 @@ nav:
               - Incubator Co-Sim with NuRV: user/examples/workspace/incubator-NuRV-monitor-validation/README.md
               - Incubator with NuRV Service: user/examples/workspace/incubator-NuRV-monitor-service/README.md
               - Incubator with NuRV FMU Service: user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
+              - Incubator with TeSSLa Service: user/examples/workspace/incubator-TeSSLa-monitor-service/README.md
+              - Incubator with TeSSLa Active Control: user/examples/workspace/incubator-TeSSLa-active-control/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
           - Automation:
               - Overview: user/examples/automation/index.md

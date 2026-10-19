@@ -17,9 +17,11 @@ execute digital twins from the Digital Twins Preview Page.
 ## Prerequisites
 
 A GitLab Runner picks up CI/CD jobs by communicating with a GitLab instance.
-For an explanation of how to set up a GitLab instance that integrates with a
-DTaaS application, refer to the [GitLab instance document](../gitlab/README.md)
-and the [GitLab integration guide](../gitlab/INTEGRATION.md).
+To set up a GitLab instance that integrates with a DTaaS application,
+see the
+[GitLab instance document](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/index.html)
+and the
+[GitLab integration guide](https://into-cps-association.github.io/DTaaS/development/admin/gitlab/integration.html).
 
 The rest of this document assumes a running DTaaS application with a
 GitLab instance is in place.
@@ -66,25 +68,35 @@ Be sure to save the generated runner authentication token.
 
 ## Configuring the Runner
 
-Depending on the installation scenario, the runner setup reads certain
-configuration settings:
+The runner compose files are in `deploy/services/runner`:
 
-1. __Localhost Installation__ - uses `deploy/docker/.env.local`
-1. __Server Installation__ - uses `deploy/docker/.env.server`
+| Scenario  | Compose file                | Variables it reads        |
+| :-------- | :-------------------------- | :------------------------ |
+| Localhost | `compose.runner.local.yml`  | `DTAAS_DIR`               |
+| Server    | `compose.runner.server.yml` | `DTAAS_DIR`, `SERVER_DNS` |
 
-These files are integral to running the DTaaS application, so it is
-assumed that they have already been configured.
+Both files mount the TLS certificate of the GitLab host from
+`${DTAAS_DIR}/deploy/docker/certs/...`. That directory no longer exists
+in the repository, so edit the certificate volume in the compose file to
+point to the certificate in use, for example
+`deploy/dtaas/docker/secure-server_with_integrated-gitlab/certs/fullchain.pem`
+for the integrated package. In the server scenario, remove the
+certificate volume if GitLab does not use a self-signed certificate.
 
-The runner must be registered with the GitLab instance so that they may
-communicate with each other. `deploy/services/runner/runner-config.toml`
-has the following template:
+The runner must be registered with the GitLab instance before the two
+can communicate. `deploy/services/runner/runner-config.toml` contains
+this template:
 
 ```toml
+concurrent = 20
+
 [[runners]]
   name = "dtaas-runner-1"
+  description = "dtaas-runner-1"
   url = "https://intocps.org/gitlab/" # Edit this
   token = "xxx" # Edit this
   executor = "docker"
+  request_concurrency = 10
   [runners.docker]
     tls_verify = false
     image = "ruby:2.7"
@@ -95,36 +107,40 @@ has the following template:
     network_mode = "host" # Disable this in secure contexts
 ```
 
-1. Set the `url` variable to the URL of the GitLab instance.
-1. Set the `token` variable to the runner registration token obtained earlier.
-1. If following the server installation scenario, remove the line
+1. Set `url` to the URL of the GitLab instance.
+1. Set `token` to the runner authentication token obtained earlier.
+1. In the server installation scenario, remove the line
    `network_mode = "host"`.
 
-A list of advanced configuration options is provided on the
-[GitLab documentation page](https://docs.gitlab.com/runner/configuration/advanced-configuration.html).
+The
+[GitLab documentation](https://docs.gitlab.com/runner/configuration/advanced-configuration.html)
+lists the advanced configuration options.
 
 ## Start the GitLab Runner
 
-The following commands may be used to start and stop the `gitlab-runner`
-container respectively, depending on the installation scenario:
+Run these commands from the DTaaS repository directory. Each pair starts
+and then stops the `gitlab-runner` container.
 
 1. Localhost Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local up -d
-    docker compose -f deploy/services/runner/compose.runner.local.yml --env-file deploy/docker/.env.local down
+    export DTAAS_DIR=$(pwd)
+    docker compose -f deploy/services/runner/compose.runner.local.yml up -d
+    docker compose -f deploy/services/runner/compose.runner.local.yml down
     ```
 
 1. Server Installation
 
     ```bash
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server up -d
-    docker compose -f deploy/services/runner/compose.runner.server.yml --env-file deploy/docker/.env.server down
+    export DTAAS_DIR=$(pwd)
+    export SERVER_DNS=intocps.org
+    docker compose -f deploy/services/runner/compose.runner.server.yml up -d
+    docker compose -f deploy/services/runner/compose.runner.server.yml down
     ```
 
-Once the container starts, the runner within it will run automatically. Whether
-the runner is up and running can be verified by navigating to the page where
-the runner was created. For example, an Instance Runner would look like this:
+The runner inside the container starts automatically. To check that it
+works, open the page where the runner was created. An Instance Runner,
+for example, looks like this:
 
 ![Status indicator under Admin Area > Runners](./runner-activation.png)
 
@@ -136,7 +152,8 @@ The term `runner` could refer to one of two things:
 
 1. The `gitlab-runner` Container
    This is the Docker container that is created when the commands
-   given above are executed. It is based on the `gitlab/gitlab-runner:alpine`
+   given above are executed. It is based on the
+   `gitlab/gitlab-runner:alpine-v17.5.3`
    image, and is used to spawn one or more _executors_ that actually execute
    the CI/CD jobs.
 
