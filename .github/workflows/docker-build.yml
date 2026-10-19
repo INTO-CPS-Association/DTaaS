@@ -84,6 +84,4 @@ jobs:
           file: ./developer/check/${{ inputs.dockerfile }}
           push: false
           platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
           tags: ${{ inputs.image-name }}:test

@@ -65,6 +65,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    permissions: {}  # Uses only the Docker Hub token, not GITHUB_TOKEN
+
     outputs:
       exists: ${{ steps.check_version.outputs.exists }}
 
@@ -147,8 +149,6 @@ jobs:
           context: .
           file: ./developer/check/${{ inputs.dockerfile }}
           platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
           outputs: type=image,name=${{ env.IMAGE_BASE }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export image digest
@@ -166,12 +166,15 @@ jobs:
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
+          overwrite: true
 
   merge-manifest:
     name: Push multi-platform manifest
     needs: [check-version, build-and-push-image]
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    permissions: {}  # Uses only the Docker Hub token, not GITHUB_TOKEN
 
     steps:
       - name: Download image digests

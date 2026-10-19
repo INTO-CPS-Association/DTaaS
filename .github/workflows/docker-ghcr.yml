@@ -31,8 +31,7 @@ env:
   password: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
-  contents: read  # Required for checking out the code
-  packages: write  # Push to github package registry
+  contents: read  # Each job sets the permissions it needs
 
 jobs:
   check-version:
@@ -151,8 +150,6 @@ jobs:
           context: .
           file: ./developer/check/${{ inputs.dockerfile }}
           platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.dockerfile }}-${{ matrix.arch }}
           outputs: type=image,name=${{ env.IMAGE_BASE }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export image digest
@@ -170,6 +167,7 @@ jobs:
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
+          overwrite: true
 
   merge-manifest:
     name: Push multi-platform manifest

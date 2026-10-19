@@ -64,9 +64,12 @@ publish images to Docker Hub.
 The CI workflows publish every image for both `linux/amd64` and
 `linux/arm64`. The `docker build` commands below build only for the
 platform of the machine they run on. To publish both platforms by hand,
-use `docker buildx build --platform linux/amd64,linux/arm64 --push`
+create a builder that supports multi-platform output once with
+`docker buildx create --use`, then run
+`docker buildx build --platform linux/amd64,linux/arm64 --push`
 with the same `-t` and `-f` arguments instead of `docker build` and
-`docker push`.
+`docker push`. The platform that differs from the host is built under
+QEMU emulation, which is several times slower.
 
 !!! warning
     Only project maintainers publish images. Other developers
