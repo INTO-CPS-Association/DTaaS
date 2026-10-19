@@ -40,7 +40,8 @@ to estimate:
 The remaining mission time is monitored, and the firefighters receive
 a warning if it drops below a threshold.
 
-![Digital Twin Structure](img/o5g_digital_twin_architecture.png)
+![Digital Twin Structure](img/o5g_digital_twin_architecture.png#only-light)
+![Digital Twin Structure](img/o5g_digital_twin_architecture-dark.png#only-dark)
 
 This example implements the paper
 [_Digital Twin for Rescue Missions--a Case Study_](https://ceur-ws.org/Vol-3507/paper4.pdf)

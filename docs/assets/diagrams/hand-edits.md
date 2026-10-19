@@ -274,3 +274,91 @@ twins.
   of the border of the digital twin. It carries no mark, as it draws an
   example and not the DTaaS system, and the complete version of the example
   shows the same image.
+
+## The Other Example Pages, 18 October 2026
+
+Fifteen more pages bring every diagram of the examples to the theme. Their
+sources are in `originals/` with the prefix `2026-10-18_`: the drawio files
+of DTaaS-examples at `baa3650`, the former `docs/user/examples/examples.drawio`
+(`2026-10-18_docs-user-examples.drawio`), and, for the five figures without a
+drawio source, the image the documentation showed. Each page was drawn in
+drawio, about 460 to 960 units wide so its text reaches 14 pixels, and passed
+through the retheme, restyle and shrink steps. All of them are in `NO_MARK`
+except `dt-structure-nurv-fmu.png`, which draws the DTaaS platform.
+
+Three changes to the scripts came with them:
+
+- The restyle draws the largest box of a page with the boundary line only
+  when the page carries the mark. On a `NO_MARK` page the largest box is a
+  box like any other; before, the first of several equal FMU boxes got the
+  thicker line.
+- `SPELLING` keeps `rabbitmq-fmpy`, `iiwa`, `urinterface` and
+  `kukalbrinterface` in lower case, as their projects write them.
+- `NO_MARK` lists the example pages.
+
+What every page shares:
+
+- A subscript prints at full size after its name, so FMU<sub>1</sub> reads
+  FMU 1, as the restyle does on every page.
+- Titles written above or beside a figure are the label of its frame, or are
+  left out when the page text names the figure. Bold and italic are gone.
+- The restyle draws every arrowhead as the one classic arrow, so the UML
+  composition diamonds and generalisation triangles of `three-tank`,
+  `flex-cell/dt-structure.png` and `flex-cell/pt-dt-details.png` cannot stay.
+  A composition is an arrow from the whole to each part, and a
+  generalisation an arrow to Endpoint labelled "Is an". The role labels put
+  the multiplicity first ("[*] availableTwins"), so the code names keep their
+  case.
+- The lollipop interfaces of the incubator and NuRV service component
+  diagrams are arrows from the component that requires an interface to the
+  one that provides it. Their legend, which explained the lollipops, is left
+  out, and so are the UML component icons. Labels the old SVGs cut short are
+  written out from the source.
+- The fault flash of the water tank pages keeps the error red in the light
+  image and turns light grey in the dark one, like every icon there.
+
+By page, under `user/examples/`:
+
+- `workspace/mass-spring-damper/dt-structure.png`,
+  `workspace/mass-spring-damper-monitor/dt-structure.png`,
+  `workspace/water_tank_FI/dt_structure.png` and
+  `workspace/water_tank_FI_monitor/dt-structure.png`: the FMU boxes in one
+  row above Maestro, joined over a shared bus without arrowheads. The water
+  tank picture and the red titles on the drawio pages, which the images did
+  not show, are left out. The automation Mass Spring Damper page shows the
+  workspace image instead of its own copy.
+- `workspace/water_tank_swap/dt-structure.png`: the red titles Stage-1 and
+  Stage-2 are two frames. The swapped-out controller takes the accent tint
+  and the leak controller the primary tint, as light blue would map to the
+  grey of the frame. Swap is a text beside its arrow.
+- `workspace/drobotti-rmqfmu/dt-structure.png`: the RabbitMQ wordmark is a box
+  labelled RabbitMQ, as on the TeSSLa page, and the twin titles are the labels
+  of their frames. The CSV file sits above the mock physical twin.
+- `workspace/three-tank/dt-structure.png`: laid out vertically. The DT tanks,
+  the tanks of the system and those of the simulation each form a column, the
+  three configuration documents no longer overlap, and the port labels are
+  on the connectors as "From o1 to i2" and "From o2 to i3".
+- `workspace/flex-cell/dt-structure.png` and `pt-dt-details.png`: the two
+  halves of the page "separate", laid out vertically. In the details, the
+  twins are stacked under Endpoint, "Move commands" is on each of the four
+  arrows, and the arrow that looked like a branch from UR5e to the Kuka robot
+  is the composition from the flex-cell system it stood for. The robot is
+  written "Kuka LBR iiwa 7", as the page text does.
+- `workspace/incubator/figures/dt-structure.png` and
+  `workspace/incubator-NuRV-monitor-service/figures/dt-structure-nurv.png`
+  replace the SVGs of the same name. InfluxDB, the digital twin and RabbitMQ
+  form a column, with the physical twin (and monitoring) below. In the NuRV
+  page the unattached line of the source from the monitor connector to the
+  omniNames socket is read as the connector requiring omniNames.
+- `workspace/incubator-NuRV-monitor-validation/dt-structure.png`: three rows
+  to stay narrow, and the forked lid_open line is two arrows. The connector
+  rule capitalises the signals sensor and enabled.
+- `workspace/incubator-NuRV-fmu-monitor-service/figures/dt-structure-nurv-fmu.png`:
+  laid out as `TeSSLa-integration.png`, with the mark in the platform corner.
+- `workspace/o5g/img/o5g_digital_twin_architecture.png`: stacked, the reusable
+  assets across the bottom with the legend beside them. The two protocols
+  are told apart by dotted and dashed lines, since every arrow is grey. The
+  rendering of the IFC model is left out; the IFC File box stands for it.
+- `automation/shm/dt-workflow.png`: the turbine, data icon, box styles and
+  legend of `developer/system/research-overview/shm-dt-workflow.png`, with
+  the methods of Automatic Modal Analysis stacked in one box.

@@ -31,7 +31,8 @@ The ```TwinManager``` reads the values from the co-simulation output.
 
 ## Example Structure
 
-![Three-tank system architecture with DT Manager](./dt-structure.png)
+![Three-tank system architecture with DT Manager](dt-structure.png#only-light)
+![Three-tank system architecture with DT Manager](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

@@ -26,7 +26,8 @@ masses evolve.
 A monitor added to the simulation checks at runtime whether the
 displacement of the two masses stays below a maximum threshold.
 
-![Mass Spring Damper Structure](dt-structure.png)
+![Mass Spring Damper Structure](dt-structure.png#only-light)
+![Mass Spring Damper Structure](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

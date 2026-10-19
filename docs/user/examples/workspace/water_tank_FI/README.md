@@ -20,7 +20,8 @@ rises above the desired level (```Level-2```).
 
 ## Example Structure
 
-![Water Tank Structure](dt_structure.png)
+![Water Tank Structure](dt_structure.png#only-light)
+![Water Tank Structure](dt_structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

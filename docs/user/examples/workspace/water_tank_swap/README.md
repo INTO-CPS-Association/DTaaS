@@ -12,7 +12,8 @@ The DT is built with the co-simulation methodology.
 
 ## Example Structure
 
-![FMI Swap Structure](dt-structure.png)
+![FMI Swap Structure](dt-structure.png#only-light)
+![FMI Swap Structure](dt-structure-dark.png#only-dark)
 
 ## Configuration of assets
 

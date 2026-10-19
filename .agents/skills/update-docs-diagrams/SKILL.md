@@ -72,7 +72,8 @@ command from the repository root.
    holds only these three tools and installs on Windows, macOS and Linux. It
    is a different file from `script/docs/mkdocs-requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
-   `config/pages.py`, or it gets the DTaaS mark on its largest box.
+   `config/pages.py`, or it gets the DTaaS mark and the boundary line on its
+   largest box.
 
    Several pages carry edits made by hand after the restyle, listed in
    `docs/assets/diagrams/hand-edits.md`, and running the restyle on the whole

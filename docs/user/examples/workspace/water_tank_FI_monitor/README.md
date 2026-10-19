@@ -25,7 +25,8 @@ stays below a maximum threshold.
 
 ## Example Structure
 
-![Water Tank Structure](dt-structure.png)
+![Water Tank Structure](dt-structure.png#only-light)
+![Water Tank Structure](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

@@ -39,7 +39,8 @@ a physical twin or a 3D visualisation of the incubator.
 
 ## Digital Twin Structure
 
-![System overview of the incubator](figures/dt-structure.svg)
+![System overview of the incubator](figures/dt-structure.png#only-light)
+![System overview of the incubator](figures/dt-structure-dark.png#only-dark)
 
 This diagram shows the main components and the interfaces they use to
 communicate. All components communicate through the RabbitMQ message

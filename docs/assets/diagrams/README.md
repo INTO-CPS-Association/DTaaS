@@ -51,6 +51,21 @@ placed later.
 | `user/servers/lib/library-assets.png` | `user/servers/lib/assets.md` |
 | `user/examples/workspace/incubator-TeSSLa-monitor-service/TeSSLa-integration.png` | `user/examples/workspace/incubator-TeSSLa-monitor-service/README.md`, `user/examples/workspace/incubator-TeSSLa-active-control/README.md`, redrawn from the PNG of DTaaS-examples, which has no drawio source |
 | `user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png` | `user/examples/workspace/opc-ua-waterplant/README.md`, `user/examples/workspace/opc-ua-waterplant-complete/README.md`, redrawn from `digital_twins/opc-ua-waterplant-complete/images/dt-structure.drawio` of DTaaS-examples without its photos, logos and note |
+| `user/examples/workspace/drobotti-rmqfmu/dt-structure.png` | `user/examples/workspace/drobotti-rmqfmu/README.md` |
+| `user/examples/workspace/flex-cell/pt-dt-details.png` | `user/examples/workspace/flex-cell/README.md` |
+| `user/examples/workspace/flex-cell/dt-structure.png` | `user/examples/workspace/flex-cell/README.md` |
+| `user/examples/workspace/incubator/figures/dt-structure.png` | `user/examples/workspace/incubator/README.md` |
+| `user/examples/workspace/mass-spring-damper/dt-structure.png` | `user/examples/workspace/mass-spring-damper/README.md`, `user/examples/automation/mass-spring-damper/README.md` |
+| `user/examples/workspace/mass-spring-damper-monitor/dt-structure.png` | `user/examples/workspace/mass-spring-damper-monitor/README.md` |
+| `user/examples/workspace/incubator-NuRV-fmu-monitor-service/figures/dt-structure-nurv-fmu.png` | `user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md` |
+| `user/examples/workspace/incubator-NuRV-monitor-service/figures/dt-structure-nurv.png` | `user/examples/workspace/incubator-NuRV-monitor-service/README.md` |
+| `user/examples/workspace/incubator-NuRV-monitor-validation/dt-structure.png` | `user/examples/workspace/incubator-NuRV-monitor-validation/README.md` |
+| `user/examples/workspace/o5g/img/o5g_digital_twin_architecture.png` | `user/examples/workspace/o5g/README.md` |
+| `user/examples/automation/shm/dt-workflow.png` | `user/examples/automation/shm/README.md` |
+| `user/examples/workspace/three-tank/dt-structure.png` | `user/examples/workspace/three-tank/README.md` |
+| `user/examples/workspace/water_tank_FI/dt_structure.png` | `user/examples/workspace/water_tank_FI/README.md` |
+| `user/examples/workspace/water_tank_FI_monitor/dt-structure.png` | `user/examples/workspace/water_tank_FI_monitor/README.md` |
+| `user/examples/workspace/water_tank_swap/dt-structure.png` | `user/examples/workspace/water_tank_swap/README.md` |
 | Architecture with public and private cloud | Not placed, the source of the two architecture images above |
 | Workspace and assets | Not placed |
 | Two servers with runners, release | Not placed, it shows the addresses of the release servers |
@@ -163,8 +178,9 @@ them and can be run again on its own output without changing anything.
   stays its owner's.
 - A note about the picture is page text and not part of the picture.
 - The DTaaS mark sits at the top right corner of the DTaaS boundary, the
-  largest box of the page. A page that already shows the full lockup as its
-  title gets no second mark.
+  largest box of the page, which also gets the thicker boundary line. A page
+  that already shows the full lockup as its title gets no second mark. A page
+  in `NO_MARK` gets neither: its largest box is drawn like every other box.
 
 ## Updating a Diagram
 

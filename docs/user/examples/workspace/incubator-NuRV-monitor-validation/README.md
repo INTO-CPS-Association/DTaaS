@@ -29,7 +29,8 @@ anomaly.
 
 The diagram below shows the logical software structure of the example.
 
-![DT structure](dt-structure.png)
+![DT structure](dt-structure.png#only-light)
+![DT structure](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

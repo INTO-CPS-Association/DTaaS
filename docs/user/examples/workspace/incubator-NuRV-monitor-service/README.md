@@ -38,7 +38,8 @@ The simulated scenario progresses as follows:
 
 The diagram below shows the logical software structure of the example.
 
-![DT structure](./figures/dt-structure-nurv.svg)
+![DT structure](figures/dt-structure-nurv.png#only-light)
+![DT structure](figures/dt-structure-nurv-dark.png#only-dark)
 
 The *execute.py* script orchestrates and starts all the services in this
 example: the Incubator DT, the CORBA naming service (omniNames) and the

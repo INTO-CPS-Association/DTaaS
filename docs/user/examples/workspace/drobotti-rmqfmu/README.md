@@ -19,7 +19,8 @@ The mock physical twin sends its location as _(x,y)_ coordinates and
 expects the digital twin to return the Cartesian distance
 $\sqrt(x^2 + y^2)$.
 
-![Desktop Robotti DT structure](dt-structure.png)
+![Desktop Robotti DT structure](dt-structure.png#only-light)
+![Desktop Robotti DT structure](dt-structure-dark.png#only-dark)
 
 The _rmq-publisher.py_ script reads the recorded _(x,y)_ coordinates of
 the mobile robot from a data file and publishes them to the RabbitMQ

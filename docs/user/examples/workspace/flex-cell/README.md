@@ -67,9 +67,11 @@ physical twin, including the two robotic arms and the controller. The
 Flex-cell Simulation is the mock-up of the real system, implemented by
 FMU blocks and their connections.
 
-![Flex-cell system architecture with the TwinManager](dt-structure.png)
+![Flex-cell system architecture with the TwinManager](dt-structure.png#only-light)
+![Flex-cell system architecture with the TwinManager](dt-structure-dark.png#only-dark)
 
-![Internals of PT and DT](pt-dt-details.png)
+![Internals of PT and DT](pt-dt-details.png#only-light)
+![Internals of PT and DT](pt-dt-details-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
