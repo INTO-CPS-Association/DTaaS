@@ -2,75 +2,74 @@
 
 The web client uses npm packages for parts of its behaviour, and some of
 these packages are maintained outside this repository. This page lists
-them, describes how the Building Models page is wired into the client,
-and summarises the modular architecture proposed for domain-specific
-pages.
+them and describes how domain-specific pages are added to the client as
+extensions.
 
 ## Packages Used by the Client
 
 | Package | Source | Role in the client |
 | :--- | :--- | :--- |
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`). |
-| `@into-cps-association/bim-kit` | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.1.1`. |
+| `@into-cps-association/bim-kit` | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The Buildings extension: IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.2.0`. |
+| `@into-cps-association/dtaas-sdk` | [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) | The contract between the client and its extensions. The client pins version `0.1.0`. |
+| `mqtt` | [MQTT.js](https://github.com/mqttjs/MQTT.js) | The MQTT over WebSocket client of the visualisation core. |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
 describes how it is released.
 
-## The Building Models Page
+## The Extension Host
 
-The domain logic of the Building Models page lives in `bim-kit`. The
-client holds three wiring files in `client/src/route/bim/`:
+The client is a host for domain extensions built on
+[`@into-cps-association/dtaas-sdk`](https://github.com/INTO-CPS-Association/dtaas-sdk),
+the contract between the two. A domain extension is an npm package that
+declares what it adds, such as pages, menu items, digital twin tabs, anchor
+kinds, encoding presets and substrates, as one `DtaasExtension` object.
 
-- `Bim.tsx` places the page in the DTaaS layout and hands the viewer the
-  library URL of the signed-in user.
-- `library.ts` names the folder that holds the models, `common/models`.
-- `persistGeometry.ts` writes a model converted in the browser back to
-  the library, so that each model is converted once.
+- `client/src/extensions.ts` lists the extensions compiled into a build.
+  Adding one is `yarn add` and one line there. A deployment hides a
+  compiled-in extension with `REACT_APP_EXTENSIONS_DISABLED` in `env.js`,
+  and each extension reads its own `REACT_APP_EXT_<ID>_*` keys.
+- `client/src/extension/` decides which extensions run, mounts their pages
+  under `/<id>` and their menu items after the core ones, and gives each one
+  the SDK's `HostServices`: the signed-in user, the library, the workspace
+  files, GitLab, the snackbar, the page shell, settings, a logger and its
+  configuration. An extension does not import client internals.
+- `client/src/viz/` is the common visualisation core. It reads live signals
+  from the platform's RabbitMQ over MQTT on WebSockets
+  (`REACT_APP_VIZ_MQTT_URL`), keeps every sample in a temporal store read by
+  time, holds one playhead for every page, evaluates the encodings of a
+  `visualisation.json`, and reads and saves that file in the twin's folder.
+  It draws the `image` and `embed` substrates, and the Visualise tab of the
+  Digital Twins page shows a twin from its `visualisation.json`.
 
-A change to how a model is drawn reaches DTaaS as a new version of
-`bim-kit`. The page is still wired into the client by hand, in the route
-table (`src/routes.tsx`), the menu (`src/page/MenuItems.tsx`), the icon
-registry (`src/components/appIcons.tsx`) and `package.json`. A page for
-another domain would have to edit the same files.
+The Buildings page is the first extension. It comes from the `./dtaas`
+entry of `bim-kit`, so a change to it reaches DTaaS as a new version of
+`bim-kit` and not as a pull request against this repository. Its live
+readings come from the core, through the topics its binding manifest names.
 
-## Proposed Modular Architecture
+The README files in `client/src/extension/` and `client/src/viz/` describe
+the code. The SDK declares a contract revision (`sdk: 1`) that is separate
+from its npm version, and the host refuses an extension built for another
+revision.
 
-The modular architecture described here is a proposal. It is not merged
-into the client, and `client/package.json` does not depend on the SDK.
+## What Is Not Built Yet
 
-The [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk)
-repository holds `@into-cps-association/dtaas-sdk`, which defines a
-contract between the web client (the host) and domain extensions. In the
-proposal:
+The [modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md)
+plans further steps:
 
-- A domain extension is an npm package. It declares what it contributes,
-  such as pages, navigation entries, digital twin tabs, asset previews,
-  anchor kinds, converters, encoding presets and substrates, as one
-  `DtaasExtension` object.
-- The host passes platform services to each extension through a `HostServices`
-  object: authentication, the library, the workspace contents API, GitLab, live
-  signals, the visualisation service, user interface helpers, logging, settings
-  and configuration. An extension does not import client internals.
-- The client lists the extensions compiled into a build in one file,
-  `src/extensions.ts`. A deployment can disable a compiled-in extension
-  in `env.js` with `REACT_APP_EXTENSIONS_DISABLED`.
-- A common visualisation core, `dtaas-visualisation`, holds the parts
-  that do not depend on the domain: live data transport, the temporal
-  store, anchor resolution, encoding rules and the standard substrates.
-- `bim-kit` is moved onto the contract, and the wiring files in
-  `client/src/route/bim/` move into it.
-
-The SDK declares a contract revision (`sdk: 1`) that is separate from its npm
-version, and a host built on the SDK refuses an extension built for another
-revision. The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1
-onto the contract as a private package.
+- History from InfluxDB, so the temporal store reaches back before the page
+  was opened.
+- The 3D substrate in the common core, so a building is drawn by the same
+  core as any other twin.
+- Tabs, Library previews and Redux slices contributed by extensions, which
+  the registry collects but the client does not show yet.
 
 The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are
 grouped into a generic set and a set for each domain, such as IFC for
 construction and buildings. Of the two extensions drawn, the Buildings
-page exists in the client today, as a hand-wired route.
+page is in the client today.
 
 ![Multi-domain digital twins](multi-domain.png#only-light)
 ![Multi-domain digital twins](multi-domain-dark.png#only-dark)

@@ -12,13 +12,24 @@
           "allowJs": true,
           "noUnusedLocals": false,
           "types": ["jest", "node", "react"],
-          "esModuleInterop": true
+          "esModuleInterop": true,
+          "baseUrl": ".",
+          "paths": {
+            "*": ["./src/*"],
+            "test/*": ["./test/*"],
+            "@into-cps-association/dtaas-sdk/schema": [
+              "node_modules/@into-cps-association/dtaas-sdk/dist/schema/index.d.ts"
+            ],
+            "@into-cps-association/dtaas-sdk/testing": [
+              "node_modules/@into-cps-association/dtaas-sdk/dist/testing/index.d.ts"
+            ]
+          }
         }
       }
     ]
   },
   "transformIgnorePatterns": [
-    "/node_modules/(?!(d3-shape|recharts|uuid|@into-cps-association/dt-automation)/).+\\.js$"
+    "/node_modules/(?!(d3-shape|recharts|uuid|@into-cps-association/dt-automation|@into-cps-association/dtaas-sdk)/).+\\.js$"
   ],
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
@@ -45,7 +56,8 @@
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts",
-    "^@into-cps-association/bim-kit/react$": "<rootDir>/test/__mocks__/bimViewerMock.tsx"
+    "^@into-cps-association/bim-kit/dtaas$": "<rootDir>/test/__mocks__/bimExtensionMock.tsx",
+    "^@into-cps-association/dtaas-sdk/(schema|testing)$": "<rootDir>/node_modules/@into-cps-association/dtaas-sdk/dist/$1/index.js"
   },
   "maxWorkers": 3,
   "setupFiles": ["<rootDir>/test/setupTests.ts"]

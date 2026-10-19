@@ -43,13 +43,14 @@ client/
 └── package.json
 ```
 
-The `route/` directory holds one folder per page, including `bim/` for
-the Building Models page. The Material UI theme and design tokens live
-in `theme/`.
+The `route/` directory holds one folder per page. `extension/` loads the
+domain extensions listed in `extensions.ts`, such as the Building Models
+page, and `viz/` is the common visualisation core they read live signals
+from. The Material UI theme and design tokens live in `theme/`.
 
 The shared backend package lives under `lib/dt-automation/` and the
 client consumes it from npm as `@into-cps-association/dt-automation`.
-The Building Models page comes from `@into-cps-association/bim-kit`,
+The Building Models page is the extension of `@into-cps-association/bim-kit`,
 which is maintained in the
 [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils)
 repository. [Client Extensions](../system/extensions.md) describes both

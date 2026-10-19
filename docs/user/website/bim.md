@@ -8,9 +8,10 @@ Open it from **Buildings** in the menu.
 ![Building Models page](images/buildings.png)
 
 This page describes the asset layout, the binding manifest and the conversion
-workflow. It is the user documentation for DTaaS issue 1762. The developer
-documentation, covering what the route contains and what it leaves out, is in
-`client/src/route/bim/README.md`.
+workflow. It is the user documentation for DTaaS issue 1762. The page is a
+client extension that comes from the `bim-kit` package, and
+[Client Extensions](../../developer/system/extensions.md) describes how the
+client loads it.
 
 ## What the Page Needs
 
@@ -200,24 +201,46 @@ names the tool that generated it and says nothing about the source.
 
 ## Live Readings
 
-The viewer draws whatever readings it is given and does not subscribe to
-anything. It knows neither the broker nor the topic scheme, so the same
-component can serve a demonstration fed by a local publisher and a deployment
-fed by the platform.
+The viewer draws whatever readings it is given and opens no connection of its
+own. The client reads them from the platform's RabbitMQ, over MQTT on
+WebSockets through the `rabbitmq_web_mqtt` plugin, and hands each binding the
+latest reading of the topic its manifest names. The administrator sets the
+broker address in `REACT_APP_VIZ_MQTT_URL`, as the
+[client configuration](../../admin/client/config.md) describes.
 
-How readings reach the client is not decided yet. There are two options, and
-they are not equivalent:
+Without that address the page still opens every model, with no readings. That
+is also the behaviour for a model that declares no sensors, and most
+architectural models declare none.
 
-- The client subscribes to MQTT over WebSocket against the platform's RabbitMQ,
-  through the `rabbitmq_web_mqtt` plugin, and passes the latest value to the
-  viewer.
-- A platform service, the MQTT Agent described in the DTaaS material,
-  subscribes, validates, stores, and serves the latest value to the client.
+A reading published as `timestamp,measurement,type,unit,value` with the type
+`simulation`, as the BIM example of the DTaaS examples publishes, is kept as a
+simulated value and is not shown as a measured one.
 
-The second option separates concerns better, but it depends on that service
-existing and running, which has not been confirmed. Until this is settled the
-route shows models without readings. That is already the correct behaviour for
-a model that declares no sensors, and most architectural models declare none.
+## When the Page Says the Library Returned a Web Page
+
+`DEFAULT_USER` in the deployment's `.env` decides which workspace container
+is started and which path Traefik routes to it. The name the page asks for
+comes from the identity provider, through the OIDC profile. When the two
+differ, nothing reports an error. The request for the library stops matching
+the workspace route, falls through to the client's `PathPrefix(/)`, and the
+client answers with its own page and HTTP 200. Library shows a 404 inside its
+frame, and Building Models says the library returned a web page. Both come
+from one line of configuration.
+
+To check a deployment with one command, with the stack up:
+
+```sh
+curl -s -o /dev/null -w '%{http_code} %{content_type}\n' \
+  "http://localhost/$(grep DEFAULT_USER .env | cut -d= -f2)/api/contents/common"
+```
+
+`200 application/json` is right. `200 text/html` means the name is wrong:
+the request is served by the client instead of by the workspace. The name to
+use is the one the client resolves from the identity provider's claims, in
+the order given in
+[Username claim resolution](../../admin/client/auth.md#username-claim-resolution-for-oidc-providers)
+(`preferred_username` first, the last segment of the profile URL only as a
+later fallback), lowercased. The client builds the address from that name.
 
 ## What Is Not Built Yet
 

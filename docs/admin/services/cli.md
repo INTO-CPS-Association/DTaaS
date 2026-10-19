@@ -11,6 +11,9 @@ The following services can be installed:
 * **RabbitMQ** AMQP broker and its management interface.
   The **MQTT plugin** of this broker is enabled,
   so it can also be used as an **MQTT** broker.
+  The **Web MQTT plugin** is enabled too, on `RABBITMQ_WEB_MQTT_PORT`,
+  so the web client can read live sensor values in the browser
+  (see `REACT_APP_VIZ_MQTT_URL` in the client configuration).
 * **MongoDB** database server
 * **ThingsBoard** IoT device management and data visualisation platform
   (with PostgreSQL backend)

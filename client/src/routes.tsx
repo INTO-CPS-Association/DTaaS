@@ -1,5 +1,3 @@
-import { Suspense, lazy } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
 import WorkBench from 'route/workbench/Workbench';
 import LayoutPublic from 'page/LayoutPublic';
 import PrivateRoute from 'route/auth/PrivateRoute';
@@ -16,16 +14,25 @@ import NotFound from 'page/NotFound';
 import Automation from 'route/automation/Automation';
 import Insights from 'route/insights/Insights';
 import InsightsConfig from 'route/insights/InsightsConfig';
+import extensionHost from 'extension/extensionHost';
+import ExtensionPage from 'extension/ExtensionPage';
 
 /**
- * The only route loaded on demand.
- *
- * Building Models pulls in a renderer and a WebAssembly geometry kernel, which
- * together are larger than the rest of the application. Loading it lazily is
- * stated here, at the route, instead of being left to whatever the package does
- * internally, where it would regress silently on a version bump.
+ * The pages of the domain extensions in `src/extensions.ts`, mounted under
+ * each extension's id. They are private pages like the core ones, and each is
+ * loaded on demand, so a renderer or a WebAssembly kernel an extension needs
+ * stays out of the entry chunk.
  */
-const Bim = lazy(() => import('route/bim/Bim'));
+const extensionRoutes = extensionHost.routes.map(
+  ({ extension, path, element }) => ({
+    path,
+    element: (
+      <PrivateRoute>
+        <ExtensionPage extension={extension} page={element} />
+      </PrivateRoute>
+    ),
+  }),
+);
 
 export const routes = [
   {
@@ -73,17 +80,6 @@ export const routes = [
     element: (
       <PrivateRoute>
         <Automation />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: 'bim',
-    element: (
-      <PrivateRoute>
-        {/* The fallback is what a person sees while the renderer downloads. */}
-        <Suspense fallback={<CircularProgress sx={{ m: 4 }} />}>
-          <Bim />
-        </Suspense>
       </PrivateRoute>
     ),
   },
@@ -159,6 +155,7 @@ export const routes = [
       </PrivateRoute>
     ),
   },
+  ...extensionRoutes,
   // Anything the list above does not match. Without it the router falls back
   // to its own developer-facing error screen.
   {

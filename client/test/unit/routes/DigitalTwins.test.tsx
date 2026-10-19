@@ -1,3 +1,4 @@
+import { screen } from '@testing-library/react';
 import DigitalTwins from 'route/digitaltwins/DigitalTwins';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import {
@@ -17,4 +18,9 @@ describe('Digital Twins', () => {
   itDisplaysContentOfTabs(tabs);
 
   itHasCorrectTabNameinDTIframe(tabLabels);
+
+  it('offers a Visualise tab after the workspace tabs', () => {
+    const labels = screen.getAllByRole('tab').map((tab) => tab.textContent);
+    expect(labels).toEqual([...tabLabels, 'Visualise']);
+  });
 });

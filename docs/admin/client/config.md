@@ -67,3 +67,23 @@ by default, and users turn them on in their account settings. When
 `LOGGER_URL` is empty or missing, enabled logging keeps events in the
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
+
+## Domain Extensions and Live Signals
+
+These keys are optional. A client without them runs every extension it was
+built with, and shows no live readings.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
+| `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
+| `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
+| `REACT_APP_VIZ_MQTT_URL` | The broker's MQTT over WebSocket address, for example `wss://services.foo.com:8091/ws` with the platform services |
+| `REACT_APP_VIZ_MQTT_USERNAME` | The broker user, when the broker asks for a login |
+| `REACT_APP_VIZ_MQTT_PASSWORD` | That user's password |
+
+With `REACT_APP_VIZ_MQTT_URL` set, the client subscribes to the topics the
+open pages need, such as the sensor topics of a building model, and colours
+the pages with the readings. The broker user and password are sent to every
+browser that opens the client, as every browser credential is, so they must
+belong to a user that may only read those topics.
