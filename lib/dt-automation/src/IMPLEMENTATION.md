@@ -6,16 +6,16 @@ The implementation provides an all-in-one backend complete with functionality fo
 getting pipelines, job traces, execution logs (and their maintenance), private
 and common project IDs. It further provides access to an API instance.
 
-It depends on @gitbeaker/rest and acts as a concrete implementation of the `Backend`
-and `BackendAPI` interfaces.
+It depends on @gitbeaker/rest and acts as a concrete implementation of the
+`BackendInterface` and `BackendAPI` interfaces.
 
 ## Architecture Components
 
 ### Instance Class
 
-This class implements the Backend interface. Its primary responsibility is to
-create the backend API instance, and to obtain the private and common project IDs
-from the username and the group name defined in
+This class implements the `BackendInterface` interface. Its primary
+responsibility is to create the backend API instance, and to obtain the
+private and common project IDs from the username and the group name defined in
 [constants.ts](./gitlab/digitalTwinConfig/constants.ts) as well as in the
 settings.
 After this, it keeps track of execution log entries and gives high-level access
@@ -29,12 +29,17 @@ Initialization of Gitlab can be done with the `new` operator or by using the
 GitlabFactory as in this example:
 
 ```typescript
-const gitlabInstance = createGitlabInstance();
+const gitlabInstance = createGitlabInstance(
+  getUsername(),
+  getAccessToken(),
+  authority,
+);
 await gitlabInstance.init();
 ```
 
-This will create both the GitlabInstance and the GitlabAPI based on session
-storage (username and access token) as well as the OAuth2 authority from the
+This will create both the GitlabInstance and the GitlabAPI from its
+arguments: the username and access token held in memory (set with
+`setUsername` and `setAccessToken`) and the OAuth2 authority from the
 consuming application's environment store. If the `triggerToken` does not
 exist, it will throw a suitable error.
 

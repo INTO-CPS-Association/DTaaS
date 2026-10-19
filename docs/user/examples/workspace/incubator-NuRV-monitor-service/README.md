@@ -38,7 +38,8 @@ The simulated scenario progresses as follows:
 
 The diagram below shows the logical software structure of the example.
 
-![DT structure](./figures/dt-structure-nurv.svg)
+![DT structure](figures/dt-structure-nurv.png#only-light)
+![DT structure](figures/dt-structure-nurv-dark.png#only-dark)
 
 The *execute.py* script orchestrates and starts all the services in this
 example: the Incubator DT, the CORBA naming service (omniNames) and the
@@ -80,11 +81,11 @@ It can be changed as needed.
 
 The lifecycle phases for this example are:
 
-| Lifecycle phase | Completed tasks                                                                                                                                                                                                |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| create          | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies                                                                                                         |
-| execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict. |
-| clean           | Removes created *data* directory and incubator log files.                                                                                                                                                      |
+| Lifecycle phase | Completed tasks                                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| create          | Downloads the necessary tools and creates a virtual python environment with the necessary dependencies. The omniORBpy CORBA library is compiled from source because there are no packages of it for Python 3.12 |
+| execute         | Runs a python script that starts up the necessary services as well as the Incubator simulation. Various status messages are printed to the console, including the monitored system states and monitor verdict.  |
+| clean           | Removes created *data* directory and incubator log files.                                                                                                                                                       |
 
 If required, make the lifecycle scripts executable with the following
 command

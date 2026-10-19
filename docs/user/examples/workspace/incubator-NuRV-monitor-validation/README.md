@@ -29,7 +29,8 @@ anomaly.
 
 The diagram below shows the logical software structure of the example.
 
-![DT structure](dt-structure.png)
+![DT structure](dt-structure.png#only-light)
+![DT structure](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
@@ -42,7 +43,7 @@ The example uses the following assets:
 |               | Source.fmu                              | Private    | No                      |
 |               | Watcher.fmu                             | Private    | No                      |
 | Specification | safe-operation.smv                      | Private    | No                      |
-| Tool          | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool          | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The _safe-operation.smv_ file contains the default monitored specification
 described in the [Simulated scenario section](#simulated-scenario).
@@ -85,7 +86,10 @@ Now, run the following scripts:
 
 ### Create
 
-- Installs Open Java Development Kit 17 in the workspace.
+- Installs Open Java Development Kit 21 and, from the Ubuntu repositories,
+  the Python packages used by the plotting script and the Python FMUs
+  (`python3-pandas`, `python3-matplotlib`, `python3-protobuf` and
+  `python3-zmq`).
 - Generates and compiles the monitor FMU from the NuRV specification.
 
 ```bash

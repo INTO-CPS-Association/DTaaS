@@ -79,7 +79,7 @@ OAuth 2.0 applications have been created (see
 
 | Variable | Used by |
 | :--- | :--- |
-| `SERVER_DNS` | traefik, client, user1, user2, libms, traefik-forward-auth, gitlab |
+| `SERVER_DNS` | client, logger-ms, user1, user2, libms, traefik-forward-auth, gitlab |
 | `USERNAME1` / `USERNAME2` | user1, user2 (routing and workspace volumes) |
 | `OAUTH_URL` | traefik-forward-auth (browser redirect URL) |
 | `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth |
@@ -112,6 +112,7 @@ cp config/client.js.example config/client.js
 | `REACT_APP_REDIRECT_URI` | `https://intocps.org/Library` | Where GitLab sends users after sign-in |
 | `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Where users land after sign-out |
 | `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | OAuth 2.0 scopes requested during sign-in |
+| `LOGGER_URL` | `https://intocps.org/logger` | URL of the logger service |
 
 ### Example
 
@@ -128,6 +129,7 @@ if (typeof window !== 'undefined') {
     REACT_APP_REDIRECT_URI: 'https://intocps.org/Library',
     REACT_APP_LOGOUT_REDIRECT_URI: 'https://intocps.org/',
     REACT_APP_GITLAB_SCOPES: 'openid profile read_user read_repository api',
+    LOGGER_URL: 'https://intocps.org/logger',
   };
 };
 ```
@@ -340,7 +342,7 @@ To add a third user:
 1. **Create workspace directory:**
 
    ```bash
-   cp -R files/user1 files/alice
+   cp -R files/template files/alice
    sudo chown -R 1000:100 files/alice
    ```
 

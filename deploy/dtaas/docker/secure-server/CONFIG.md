@@ -63,7 +63,7 @@ These are set from the external GitLab OAuth 2.0 applications.
 
 | Variable | Used by |
 | :--- | :--- |
-| `SERVER_DNS` | traefik, client, user1, user2, libms, traefik-forward-auth |
+| `SERVER_DNS` | client, logger-ms, user1, user2, libms, traefik-forward-auth |
 | `USERNAME1` / `USERNAME2` | user1, user2 (routing and workspace volumes) |
 | `OAUTH_URL` | traefik-forward-auth (authorize, token, userinfo endpoints) |
 | `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET` | traefik-forward-auth |
@@ -94,6 +94,7 @@ cp config/client.js.example config/client.js
 | `REACT_APP_REDIRECT_URI` | `https://intocps.org/Library` | Redirect URI after sign-in |
 | `REACT_APP_LOGOUT_REDIRECT_URI` | `https://intocps.org/` | Redirect URI after sign-out |
 | `REACT_APP_GITLAB_SCOPES` | `openid profile read_user read_repository api` | Requested OAuth scopes |
+| `LOGGER_URL` | `https://intocps.org/logger` | URL of the logger service |
 
 ## config/conf.server - Traefik Forward-Auth Rules
 

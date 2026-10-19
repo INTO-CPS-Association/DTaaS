@@ -11,10 +11,12 @@ MINOR = {'a', 'an', 'and', 'as', 'at', 'by', 'for', 'in', 'into', 'of', 'on', 'o
          'per', 'the', 'to', 'via', 'with'}
 
 
-# Names written one way on every page, by their lower case form. systemd is
-# written in lower case by its project.
+# Names written one way on every page, by their lower case form. systemd, the
+# rabbitmq-fmpy package, the KUKA LBR iiwa robot and the robot interface
+# modules of the flex-cell example are written in lower case by their projects.
 SPELLING = {'gitlab': 'GitLab', 'webapp': 'WebApp', 'nodejs': 'Node.js', 'systemd': 'systemd',
-            'authcode': 'authcode'}
+            'authcode': 'authcode', 'rabbitmq-fmpy': 'rabbitmq-fmpy', 'iiwa': 'iiwa',
+            'urinterface': 'urinterface', 'kukalbrinterface': 'kukalbrinterface'}
 
 
 LINE_BREAK = re.compile(r'<br|</?div|</?p[\s>]|\n', re.I)

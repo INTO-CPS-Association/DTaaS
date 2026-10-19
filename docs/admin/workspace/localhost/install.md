@@ -38,6 +38,13 @@ cp config/.env.example config/.env
 cp config/dex-config.yaml.example config/dex-config.yaml
 ```
 
+The workspace container runs as uid 1000 and gid 100. Give it ownership
+of the user files it mounts:
+
+```bash
+sudo chown -R 1000:100 files
+```
+
 Start the demo:
 
 ```bash

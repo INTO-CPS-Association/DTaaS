@@ -66,6 +66,17 @@ class RestyleTest(unittest.TestCase):
         connector = next(c for c in diagram.iter('mxCell') if c.get('id') == 'e')
         self.assertEqual(connector.get('value'), 'May have')
 
+    def test_only_a_marked_page_draws_its_largest_box_as_the_boundary(self):
+        """Only a marked page draws its largest box as the boundary."""
+        marked = cell_style(restyled(1), 'frame')['strokeWidth']
+        diagram = ET.fromstring(RESTYLE_PAGE)
+        name = next(iter(config.NO_MARK))
+        diagram.set('name', name)
+        restyle_page(diagram)
+        self.assertNotEqual(cell_style(diagram, 'frame')['strokeWidth'], marked)
+        self.assertEqual(cell_style(diagram, 'frame')['strokeWidth'],
+                         cell_style(diagram, 'a')['strokeWidth'])
+
 
 WORDMARK_PAGE = """<mxfile><diagram name="docs/w.png"><mxGraphModel><root>
 <mxCell id="0"/><mxCell id="1" parent="0"/>

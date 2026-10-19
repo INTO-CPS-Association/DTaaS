@@ -51,7 +51,8 @@ results accurate. Its results are compared with those of the CFD model.
 An OpenModelica model uses the C solver, and OpenModelica exports it as
 an FMU so that the OPC UA client (_client-opcua.py_) can integrate it.
 
-![Structure of Python Script](images/dt-structure-uv_channel.png)
+![Structure of Python Script](images/dt-structure-uv_channel.png#only-light)
+![Structure of Python Script](images/dt-structure-uv_channel-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
@@ -125,12 +126,12 @@ These optional parameters can be modified:
 
 The example covers these lifecycle phases:
 
-| Lifecycle Phase | Completed Tasks                                                       |
-| --------------- | --------------------------------------------------------------------- |
-| Install         | Installs Open Modelica, Python 3.10 and the required pip dependencies |
-| Create          | Create FMU from Open Modelica file                                    |
-| Execute         | Run OPC UA mock server and normal OPC-UA client                       |
-| Clean           | Delete the temporary files                                            |
+| Lifecycle Phase | Completed Tasks                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| Install         | Installs Open Modelica and a Python virtual environment with the required pip dependencies |
+| Create          | Create FMU from Open Modelica file                                                         |
+| Execute         | Run OPC UA mock server and normal OPC-UA client                                            |
+| Clean           | Delete the temporary files                                                                 |
 
 ## Run the example
 
@@ -150,7 +151,8 @@ Now run the following scripts.
 
 ### Install
 
-Installs OpenModelica, Python 3.10 and the required pip dependencies.
+Installs OpenModelica and a Python virtual environment (`.venv`) with the
+required pip dependencies.
 
 ```bash
 lifecycle/install

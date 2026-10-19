@@ -54,14 +54,14 @@ the prompt.
 
 ### Deployment types {#deployment-types}
 
-| `--type` | When to use | Support level |
-| :------- | :---------- | :------------- |
-| `localhost` | Local development or demo, single user | dev/demo only |
-| `insecure-server` | Multi-user HTTP demo | insecure/demo only |
-| `secure-server` | Multi-user HTTPS | **production-supported** |
-| `secure-server-gitlab` | HTTPS with bundled GitLab | **production-supported** |
-| `workspace-localhost` | Workspace with Dex on localhost | dev/demo only |
-| `workspace-secure-server` | Workspace with Keycloak | **production-supported** |
+| `--type`                  | When to use                            | Support level            |
+| :------------------------ | :------------------------------------- | :----------------------- |
+| `localhost`               | Local development or demo, single user | dev/demo only            |
+| `insecure-server`         | Multi-user HTTP demo                   | insecure/demo only       |
+| `secure-server`           | Multi-user HTTPS                       | **production-supported** |
+| `secure-server-gitlab`    | HTTPS with bundled GitLab              | **production-supported** |
+| `workspace-localhost`     | Workspace with Dex on localhost        | dev/demo only            |
+| `workspace-secure-server` | Workspace with Keycloak                | **production-supported** |
 
 !!! warning
     Types marked *dev/demo only* or *insecure/demo only* run over
@@ -169,12 +169,12 @@ react-app-oauth-url="https://gitlab.com"
 Every command follows a `dtaas <noun> <verb>` grammar with four nouns,
 listed in workflow order:
 
-| Noun | Acts on |
-| :--- | :------ |
-| `config` | `dtaas.toml` and the user registry |
-| `deployment` | The generated deployment files |
-| `platform` | The installed core services, as one unit |
-| `user` | Additional users, one at a time |
+| Noun         | Acts on                                  |
+| :----------- | :--------------------------------------- |
+| `config`     | `dtaas.toml` and the user registry       |
+| `deployment` | The generated deployment files           |
+| `platform`   | The installed core services, as one unit |
+| `user`       | Additional users, one at a time          |
 
 The `config`, `deployment` and `platform` commands accept
 `--output-dir` (default `.`). The `user` commands always act on the
@@ -198,10 +198,10 @@ once; see [Validation Rules](cli-config.md#validation-rules).
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | For `generate`: target directory (created if missing). For `validate`: search location |
-| `--force` | off | (`generate` only) Overwrite an existing `dtaas.toml` |
+| Option              | Default | Description                                                                            |
+| :------------------ | :------ | :------------------------------------------------------------------------------------- |
+| `--output-dir PATH` | `.`     | For `generate`: target directory (created if missing). For `validate`: search location |
+| `--force`           | off     | (`generate` only) Overwrite an existing `dtaas.toml`                                   |
 
 ### `config reconcile`
 
@@ -251,10 +251,10 @@ something that is running should be a deliberate action. Use
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory to inspect |
-| `--fix` | off | Reprovision missing/drifted registry users, and enforce desired status, after reporting |
+| Option              | Default | Description                                                                             |
+| :------------------ | :------ | :-------------------------------------------------------------------------------------- |
+| `--output-dir PATH` | `.`     | Installation directory to inspect                                                       |
+| `--fix`             | off     | Reprovision missing/drifted registry users, and enforce desired status, after reporting |
 
 ### `deployment generate`
 
@@ -269,11 +269,11 @@ dtaas deployment generate --type <name>
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--type NAME` | *(required)* | Deployment scenario (see [Deployment Types](#deployment-types)) |
-| `--output-dir PATH` | `.` | Target directory (created if missing) |
-| `--force` | off | Overwrite files that already exist |
+| Option              | Default      | Description                                                     |
+| :------------------ | :----------- | :-------------------------------------------------------------- |
+| `--type NAME`       | *(required)* | Deployment scenario (see [Deployment Types](#deployment-types)) |
+| `--output-dir PATH` | `.`          | Target directory (created if missing)                           |
+| `--force`           | off          | Overwrite files that already exist                              |
 
 **Examples:**
 
@@ -290,12 +290,12 @@ dtaas deployment generate --type insecure-server --output-dir ./demo --force
 
 **Generated files** besides the scenario's compose tree:
 
-| Item | Purpose |
-| :--- | :------ |
-| `users.server.yml` | Docker Compose template for HTTP deployments |
-| `users.server.secure.yml` | Docker Compose template for HTTPS/TLS deployments |
-| `users.resources.yml` | Per-user resource-limit overlay, merged in when `set_limits` is true |
-| `files/template/` | Skeleton copied into each new user workspace |
+| Item                      | Purpose                                                              |
+| :------------------------ | :------------------------------------------------------------------- |
+| `users.server.yml`        | Docker Compose template for HTTP deployments                         |
+| `users.server.secure.yml` | Docker Compose template for HTTPS/TLS deployments                    |
+| `users.resources.yml`     | Per-user resource-limit overlay, merged in when `set_limits` is true |
+| `files/template/`         | Skeleton copied into each new user workspace                         |
 
 When `dtaas.toml` is present, its values are substituted into the
 generated files (dotenv files, the client config and, for TLS types,
@@ -326,9 +326,9 @@ ownership to `1000:100`.
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory containing the generated deployment |
+| Option              | Default | Description                                                |
+| :------------------ | :------ | :--------------------------------------------------------- |
+| `--output-dir PATH` | `.`     | Installation directory containing the generated deployment |
 
 Because the CLI looks for `dtaas.toml` in `--output-dir` first and
 then in the current working directory, a single top-level
@@ -371,11 +371,11 @@ dtaas platform uninstall --remove-user-files --yes
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory |
-| `--remove-user-files` | off | Also delete per-user workspace dirs + registry/state files |
-| `--yes` / `-y` | off | Skip the confirmation prompt for `--remove-user-files` |
+| Option                | Default | Description                                                |
+| :-------------------- | :------ | :--------------------------------------------------------- |
+| `--output-dir PATH`   | `.`     | Installation directory                                     |
+| `--remove-user-files` | off     | Also delete per-user workspace dirs + registry/state files |
+| `--yes` / `-y`        | off     | Skip the confirmation prompt for `--remove-user-files`     |
 
 !!! note
     `--remove-user-files` removes only the per-user directories inside
@@ -401,15 +401,15 @@ resume additional users with
 
 **Lifecycle command matrix:**
 
-| Command | `docker compose` verb | Effect | Containers kept? | Reverse with |
-| :------ | :---------------------- | :----- | :----------------: | :----------- |
-| `platform install` | `up -d` | Create and start every service | n/a | `platform stop` / `platform uninstall` |
-| `platform status` | `ps` (read-only) | Report per-service state; no change | n/a | n/a |
-| `platform stop` | `stop` | Terminate the processes, keep the containers | yes | `platform start` |
-| `platform start` | `start` | Start previously stopped containers | yes | `platform stop` |
-| `platform pause` | `pause` | Freeze the processes (memory preserved) | yes | `platform resume` |
-| `platform resume` | `unpause` | Thaw previously paused processes | yes | n/a |
-| `platform uninstall` | `down` | Stop **and remove** containers and networks | no | `platform install` |
+| Command              | `docker compose` verb   | Effect                                       | Containers kept?   | Reverse with                           |
+| :------------------- | :---------------------- | :------------------------------------------- | :----------------: | :------------------------------------- |
+| `platform install`   | `up -d`                 | Create and start every service               | n/a                | `platform stop` / `platform uninstall` |
+| `platform status`    | `ps` (read-only)        | Report per-service state; no change          | n/a                | n/a                                    |
+| `platform stop`      | `stop`                  | Terminate the processes, keep the containers | yes                | `platform start`                       |
+| `platform start`     | `start`                 | Start previously stopped containers          | yes                | `platform stop`                        |
+| `platform pause`     | `pause`                 | Freeze the processes (memory preserved)      | yes                | `platform resume`                      |
+| `platform resume`    | `unpause`               | Thaw previously paused processes             | yes                | n/a                                    |
+| `platform uninstall` | `down`                  | Stop **and remove** containers and networks  | no                 | `platform install`                     |
 
 !!! note "`stop` vs `pause`"
     `stop` sends `SIGTERM`/`SIGKILL`: the processes end, and a restart
@@ -459,10 +459,10 @@ For the user containers alone, use [`dtaas user status`](#user-status).
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory |
-| `--json` | off | Emit machine-readable JSON instead of the table |
+| Option              | Default | Description                                     |
+| :------------------ | :------ | :---------------------------------------------- |
+| `--output-dir PATH` | `.`     | Installation directory                          |
+| `--json`            | off     | Emit machine-readable JSON instead of the table |
 
 #### `platform stop` / `platform start`
 
@@ -483,9 +483,9 @@ are safe to call repeatedly.
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory |
+| Option              | Default | Description            |
+| :------------------ | :------ | :--------------------- |
+| `--output-dir PATH` | `.`     | Installation directory |
 
 #### `platform pause` / `platform resume`
 
@@ -505,9 +505,9 @@ nothing is installed (no containers in any state).
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--output-dir PATH` | `.` | Installation directory |
+| Option              | Default | Description            |
+| :------------------ | :------ | :--------------------- |
+| `--output-dir PATH` | `.`     | Installation directory |
 
 ### `platform update --certs`
 
@@ -535,10 +535,10 @@ command is safe to run repeatedly.
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--certs` | *(required)* | Refresh the deployment's TLS certificates |
-| `--output-dir PATH` | `.` | Installation directory |
+| Option              | Default      | Description                               |
+| :------------------ | :----------- | :---------------------------------------- |
+| `--certs`           | *(required)* | Refresh the deployment's TLS certificates |
+| `--output-dir PATH` | `.`          | Installation directory                    |
 
 ### `platform update --config`
 
@@ -573,11 +573,11 @@ lists them.
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `--config` | *(required)* | Re-apply `dtaas.toml` to installed service config files |
-| `--dry-run` | off | Report what would change without writing or restarting |
-| `--output-dir PATH` | `.` | Installation directory |
+| Option              | Default      | Description                                             |
+| :------------------ | :----------- | :------------------------------------------------------ |
+| `--config`          | *(required)* | Re-apply `dtaas.toml` to installed service config files |
+| `--dry-run`         | off          | Report what would change without writing or restarting  |
+| `--output-dir PATH` | `.`          | Installation directory                                  |
 
 `--certs` and `--config` can be combined in one invocation; at least
 one of them is required.
@@ -654,14 +654,14 @@ To reprovision **every** registry user at once (for example after
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `USERNAME` | — | Add one user (requires `--email`, except for a `dtaas.toml` starting user) |
-| `--file PATH` / `-f` | — | Bulk-add users from a CSV |
-| `--email TEXT` | — | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user, and another address given for one is reported and not applied |
-| `--group TEXT` | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups |
-| `--load-balance` / `--no-load-balance` | on | Mark `USERNAME` for load balancing |
-| `--password TEXT` | — | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password`. Prefer the `users.csv` `password` column or the interactive prompt, because a command-line value is visible in shell history and the process list |
+| Option                                 | Default      | Description                                                                                                                                                                                                                                                                             |
+| :------------------------------------- | :----------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `USERNAME`                             | —            | Add one user (requires `--email`, except for a `dtaas.toml` starting user)                                                                                                                                                                                                              |
+| `--file PATH` / `-f`                   | —            | Bulk-add users from a CSV                                                                                                                                                                                                                                                               |
+| `--email TEXT`                         | —            | Email for `USERNAME` (enables forward-auth routing); read from `[[users]]` for a starting user, and another address given for one is reported and not applied                                                                                                                           |
+| `--group TEXT`                         | `additional` | Group tag for `USERNAME`; repeat the flag for multiple groups                                                                                                                                                                                                                           |
+| `--load-balance` / `--no-load-balance` | on           | Mark `USERNAME` for load balancing                                                                                                                                                                                                                                                      |
+| `--password TEXT`                      | —            | Initial GitLab password for `USERNAME`; only used when GitLab provisioning is enabled (see below). It wins over `[[users]].password`. Prefer the `users.csv` `password` column or the interactive prompt, because a command-line value is visible in shell history and the process list |
 
 For each registry user, the command copies `files/template/` into
 `files/<username>`, creating the directory when it is missing, and
@@ -1021,11 +1021,11 @@ Error: Error while deleting users
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `USERNAMES` | — | One or more usernames to remove |
-| `--file PATH` / `-f` | — | Bulk-delete users listed in a CSV (only the `username` column is used) |
-| `--dry-run` | off | Preview the removal without making any changes |
+| Option               | Default | Description                                                            |
+| :------------------- | :------ | :--------------------------------------------------------------------- |
+| `USERNAMES`          | —       | One or more usernames to remove                                        |
+| `--file PATH` / `-f` | —       | Bulk-delete users listed in a CSV (only the `username` column is used) |
+| `--dry-run`          | off     | Preview the removal without making any changes                         |
 
 ### `user pause` / `stop` / `resume` {#user-pause-stop-resume}
 
@@ -1042,11 +1042,11 @@ dtaas user pause --file users.csv
 dtaas user stop --all
 ```
 
-| Command | `docker compose` verb | Effect | Reverse with |
-| :------ | :----------------------- | :----- | :----------- |
-| `user pause` | `pause` | Freeze the named users' containers (memory preserved) | `user resume` |
-| `user stop` | `stop` | Terminate the named users' containers, keep them | `user resume` |
-| `user resume` | `unpause` or `start`, as needed | Thaw a paused user, or restart a stopped one | — |
+| Command       | `docker compose` verb           | Effect                                                | Reverse with  |
+| :------------ | :------------------------------ | :---------------------------------------------------- | :------------ |
+| `user pause`  | `pause`                         | Freeze the named users' containers (memory preserved) | `user resume` |
+| `user stop`   | `stop`                          | Terminate the named users' containers, keep them      | `user resume` |
+| `user resume` | `unpause` or `start`, as needed | Thaw a paused user, or restart a stopped one          | —             |
 
 Each command also records a `desired_status`
 (`"paused"`/`"stopped"`/`"running"`) in `dtaas.users.registry.json`
@@ -1073,11 +1073,11 @@ alice, bob paused successfully
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `USERNAMES` | — | One or more usernames to target |
-| `--file PATH` / `-f` | — | Bulk-target users listed in a CSV (only the `username` column is used) |
-| `--all` | off | Target every additional user; cannot be combined with `USERNAMES` or `--file` |
+| Option               | Default | Description                                                                   |
+| :------------------- | :------ | :---------------------------------------------------------------------------- |
+| `USERNAMES`          | —       | One or more usernames to target                                               |
+| `--file PATH` / `-f` | —       | Bulk-target users listed in a CSV (only the `username` column is used)        |
+| `--all`              | off     | Target every additional user; cannot be combined with `USERNAMES` or `--file` |
 
 ### `user status` {#user-status}
 
@@ -1098,10 +1098,10 @@ whenever it can read the deployment.
 
 **Options:**
 
-| Option | Default | Description |
-| :----- | :------ | :----------- |
-| `USERNAME` | — | Report only this user |
-| `--json` | off | Emit machine-readable JSON instead of the table |
+| Option     | Default | Description                                     |
+| :--------- | :------ | :---------------------------------------------- |
+| `USERNAME` | —       | Report only this user                           |
+| `--json`   | off     | Emit machine-readable JSON instead of the table |
 
 ### Additional points to remember
 

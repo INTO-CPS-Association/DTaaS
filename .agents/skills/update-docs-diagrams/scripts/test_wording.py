@@ -32,6 +32,9 @@ class TitleCaseTest(unittest.TestCase):
         """Names take their one spelling."""
         self.assertEqual(title_case('Gitlab backend'), 'GitLab Backend')
         self.assertEqual(title_case('wrap DT [systemd, nodejs]'), 'Wrap DT [systemd, Node.js]')
+        self.assertEqual(title_case('Python rabbitmq-fmpy'), 'Python rabbitmq-fmpy')
+        self.assertEqual(title_case('Kuka LBR iiwa 7 kukalbrinterface urinterface'),
+                         'Kuka LBR iiwa 7 kukalbrinterface urinterface')
 
     def test_hyphenated_words_capitalise_each_part(self):
         """Hyphenated words capitalise each part."""

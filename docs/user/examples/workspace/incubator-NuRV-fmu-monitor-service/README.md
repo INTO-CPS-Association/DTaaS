@@ -42,7 +42,8 @@ The simulated scenario progresses as follows:
 
 The diagram below shows the logical software structure of the example.
 
-![DT structure](./figures/dt-structure-nurv-fmu.png)
+![DT structure](figures/dt-structure-nurv-fmu.png#only-light)
+![DT structure](figures/dt-structure-nurv-fmu-dark.png#only-dark)
 
 The _execute_ script starts the NuRV service and then runs the Python
 script that controls the scenario (_execute.py_).

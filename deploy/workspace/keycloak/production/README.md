@@ -114,7 +114,7 @@ Add a new service in `docker-compose.yml`:
       - users
 ```
 
-Add the desired `USERNAME3` variable in [`config/.env`](config/.env):
+Add the desired `USERNAME3` variable in `config/.env`:
 
 ```bash
 # Username Configuration
@@ -125,7 +125,7 @@ USERNAME2=user2
 USERNAME3=user3 # <--- replace "user3" with your desired username
 ```
 
-Add Forward Auth config for user3 in [`forward-auth-conf`](config/forward-auth-conf):
+Add Forward Auth config for user3 in `config/forward-auth-conf`:
 
 ```txt
 
@@ -154,7 +154,7 @@ rule.user3_access.whitelist = user3@localhost
 
 - Verify OAuth2 callback URL matches `https://intocps.org/_oauth`
 - Check `SERVER_DNS` environment variable is set correctly
-- Ensure `COOKIE_DOMAIN` matches the domain
+- Ensure `SERVER_DNS` is correct (`COOKIE_DOMAIN` is derived from it)
 - Verify OAuth2 application is approved and active
 
 ### Service Access Issues

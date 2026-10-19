@@ -31,7 +31,8 @@ The ```TwinManager``` reads the values from the co-simulation output.
 
 ## Example Structure
 
-![Three-tank system architecture with DT Manager](./dt-structure.png)
+![Three-tank system architecture with DT Manager](dt-structure.png#only-light)
+![Three-tank system architecture with DT Manager](dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
@@ -43,7 +44,7 @@ The specific assets used are:
 | Model      | Linear.fmu                                                    | Private    | No                      |
 |            | TankSystem.aasx                                               | Private    | No                      |
 | Tool       | TwinManagerFramework-0.0.2.jar (wraps Maestro)                | Common     | Yes                     |
-|            | maestro-2.3.0-jar-with-dependencies.jar (used by TwinManager) | Common     | Yes                     |
+|            | maestro-4.1.0-jar-with-dependencies.jar (used by TwinManager) | Common     | Yes                     |
 |            | TankMainDTaaS.java (main script)                              | Private    | No                      |
 | Data       | outputs.csv                                                   | Private    | No                      |
 
@@ -57,7 +58,7 @@ The example covers these lifecycle phases:
 
 | Lifecycle Phase | Completed Tasks                                                                                                    |
 | --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Create          | Installs Java Runtime Environment and Maven, and builds the TwinManager                                            |
+| Create          | Installs Java Development Kit 21 and Maven, and builds the TwinManager                                             |
 | Execute         | The TwinManager executes the three-tank digital twin and produces output in ```data/three-tank/output``` directory |
 | Terminate       | Stops the background processes                                                                                     |
 | Clean           | Removes the output                                                                                                 |
@@ -77,11 +78,21 @@ for example:
 chmod +x lifecycle/create
 ```
 
-Now run the following scripts.
+Maestro 4.1.0 needs Java 21 or newer. The **create** script installs
+Java 21. If other Java versions are already installed, the default _java_
+may point to another version. Check and change the default version with
+these commands.
+
+```bash
+java -version
+update-alternatives --config java
+```
+
+Then run the following scripts.
 
 ### Create
 
-Installs the default Java Runtime Environment and Maven, then builds the
+Installs Open Java Development Kit 21 and Maven, then builds the
 ```TwinManager``` tool (TwinManagerFramework-0.0.2.jar) from source code.
 
 ```bash

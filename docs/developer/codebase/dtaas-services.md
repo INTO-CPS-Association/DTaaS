@@ -85,6 +85,8 @@ deploy/services/cli/
 │   │       └── gitlab/
 │   ├── gitlab_common/      # vendored from lib/gitlab_common (gitignored)
 │   │   ├── client.py
+│   │   ├── errors.py
+│   │   ├── messages.py
 │   │   ├── users.py
 │   │   └── validators.py
 │   └── templates/
@@ -138,8 +140,9 @@ The files in `dtaas_services/pkg/` hold reusable logic:
 
 `gitlab_common` holds GitLab operations that do not depend on the
 deployment (`get_gitlab_client`, `validate_user_row`, `create_user`,
-`create_user_pat`). Every function takes explicit arguments and changes
-no environment, filesystem, console or process-global state.
+`create_user_pat`, `revoke_user_pats`, `with_hint`). Every function takes
+explicit arguments and changes no environment, filesystem, console or
+process-global state.
 
 Its single source of truth is `lib/gitlab_common/`, a standalone Poetry
 package with its own tests. Each consumer **copies** it into its own
@@ -147,7 +150,7 @@ tree instead of depending on it:
 
 ```text
 lib/gitlab_common/gitlab_common/     <-- edit and test here
-        |  copied by dtaas_services/pkg/build.py
+| copied by dtaas_services/pkg/build.py |
         v
 dtaas_services/gitlab_common/        <-- gitignored, never committed
 ```

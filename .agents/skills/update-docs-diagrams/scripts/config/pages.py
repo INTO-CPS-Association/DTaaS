@@ -66,6 +66,21 @@ NO_MARK = {
     'developer/technical-concepts/oauth/design-sequence.png',
     'developer/technical-concepts/oauth/oauth2-workflow.png',
     'user/servers/lib/library-assets.png',
+    'user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png',
+    'user/examples/automation/shm/dt-workflow.png',
+    'user/examples/workspace/drobotti-rmqfmu/dt-structure.png',
+    'user/examples/workspace/flex-cell/dt-structure.png',
+    'user/examples/workspace/flex-cell/pt-dt-details.png',
+    'user/examples/workspace/incubator-NuRV-monitor-service/figures/dt-structure-nurv.png',
+    'user/examples/workspace/incubator-NuRV-monitor-validation/dt-structure.png',
+    'user/examples/workspace/incubator/figures/dt-structure.png',
+    'user/examples/workspace/mass-spring-damper-monitor/dt-structure.png',
+    'user/examples/workspace/mass-spring-damper/dt-structure.png',
+    'user/examples/workspace/o5g/img/o5g_digital_twin_architecture.png',
+    'user/examples/workspace/three-tank/dt-structure.png',
+    'user/examples/workspace/water_tank_FI/dt_structure.png',
+    'user/examples/workspace/water_tank_FI_monitor/dt-structure.png',
+    'user/examples/workspace/water_tank_swap/dt-structure.png',
 }
 
 

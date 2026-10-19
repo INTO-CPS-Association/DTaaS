@@ -17,12 +17,12 @@ documentation, covering what the route contains and what it leaves out, is in
 The page reads up to four files per model, all in the user's library under
 `common/models`. The page links to that folder above the viewer.
 
-| File | Required | What it holds |
-| --- | --- | --- |
-| `model.ifc` | yes | The building, as the authoring tool exported it |
-| `model.glb` | no | The geometry converted from the IFC file. The page writes it the first time the model is converted |
-| `model.json` | no | The property tree: every object, its IFC class, its storey, its property sets |
-| `model.manifest.json` | no | The binding manifest, mapping each sensor to the object it measures |
+| File                  | Required | What it holds                                                                                      |
+| --------------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `model.ifc`           | yes      | The building, as the authoring tool exported it                                                    |
+| `model.glb`           | no       | The geometry converted from the IFC file. The page writes it the first time the model is converted |
+| `model.json`          | no       | The property tree: every object, its IFC class, its storey, its property sets                      |
+| `model.manifest.json` | no       | The binding manifest, mapping each sensor to the object it measures                                |
 
 An IFC file on its own is enough to see the building. With the geometry file,
 the next visit loads the model instead of converting it again. The property

@@ -18,7 +18,8 @@ The second simulator calculates force $F_k$ given a displacement and speed of
 mass $m_1$. By coupling these simulators, the evolution of the position of
 the two masses is computed.
 
-![Mass Spring Damper Structure](dt-structure.png)
+![Mass Spring Damper Structure](../../workspace/mass-spring-damper/dt-structure.png#only-light)
+![Mass Spring Damper Structure](../../workspace/mass-spring-damper/dt-structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 

@@ -61,12 +61,15 @@ The website is available at <http://localhost:4000>.
 
 Docker Compose in this setup starts only the client application.
 This development environment does not include user workspaces or a Traefik
-gateway running in the background. As a result, the following error appears.
+gateway running in the background. As a result, the application's
+not-found page appears with the following heading.
 
 ```txt
-Unexpected Application Error!
-404 Not Found
+This Page Does Not Exist
 ```
+
+The page also shows the unmatched path, so you can see which workspace
+address the gateway failed to route.
 
 This error appears on the **Library** and **Digital Twins** pages.
 The error is expected.

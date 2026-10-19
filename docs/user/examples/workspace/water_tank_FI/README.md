@@ -20,7 +20,8 @@ rises above the desired level (```Level-2```).
 
 ## Example Structure
 
-![Water Tank Structure](dt_structure.png)
+![Water Tank Structure](dt_structure.png#only-light)
+![Water Tank Structure](dt_structure-dark.png#only-dark)
 
 ## Digital Twin Configuration
 
@@ -30,7 +31,7 @@ This example uses two models and one tool:
 | :--------- | :-------------------------------------- | :--------- | :---------------------- |
 | Models     | watertankcontroller-c.fmu               | Private    | Yes                     |
 |            | singlewatertank-20sim.fmu               | Private    | Yes                     |
-| Tool       | maestro-2.3.0-jar-with-dependencies.jar | Common     | Yes                     |
+| Tool       | maestro-4.1.0-jar-with-dependencies.jar | Common     | Yes                     |
 
 The DT is executed with two configuration files, `multimodelFI.json` and
 `simulation-config.json`. Edit them to customise the DT.
@@ -65,8 +66,9 @@ Then run the following scripts.
 
 ### Create
 
-Installs Open Java Development Kit 17 and the pandas and matplotlib pip
-packages.
+Installs Open Java Development Kit 21 and the pandas and matplotlib Python
+packages from the Ubuntu repositories (`python3-pandas` and
+`python3-matplotlib`).
 
 ```bash
 lifecycle/create
