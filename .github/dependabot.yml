@@ -52,6 +52,21 @@ updates:
       default-days: 3
 
   - package-ecosystem: "npm"
+    directory: "/servers/signals"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "prasadtalasila"
+    commit-message:
+      prefix: "signals-npm: "
+    target-branch: "dependabot-merge"
+    pull-request-branch-name:
+      separator: "-"
+    cooldown:
+      default-days: 10
+
+  - package-ecosystem: "npm"
     directory: "/servers/execution/runner"
     schedule:
       interval: "weekly"
