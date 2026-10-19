@@ -126,6 +126,9 @@ rule.<NAME>.whitelist=<email>
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/lib`)
 
+rule.signals.action=auth
+rule.signals.rule=PathPrefix(`/signals`)
+
 rule.onlyu1.action=auth
 rule.onlyu1.rule=PathPrefix(`/user1`)
 rule.onlyu1.whitelist=user1@emailservice.com
@@ -211,6 +214,38 @@ sudo chown -R 1000:1000 logs/logger
 
 `logs/` itself holds the GitLab logs, so change the owner of
 `logs/logger` only.
+
+## config/signals.yaml - Signals Gateway
+
+Source: `config/signals.yaml.example`
+
+The signals gateway serves the live and past signals of digital twins to the
+client at `/signals`. It starts only with the `signals` profile, so a
+deployment without it starts as before.
+
+1. Copy the configuration and set the addresses of GitLab, RabbitMQ and
+   InfluxDB:
+
+   ```bash
+   cp config/signals.yaml.example config/signals.yaml
+   ```
+
+1. Write the password of the read-only RabbitMQ user to
+   `config/secrets/rabbitmq-password`, and a JSON object that maps each
+   InfluxDB org to a read-only token to `config/secrets/influx-tokens.json`.
+   The gateway runs as uid 1000, so give it both files:
+
+   ```bash
+   chmod 600 config/secrets/*
+   sudo chown 1000:1000 config/secrets/*
+   ```
+
+1. Uncomment `COMPOSE_PROFILES=signals` in `config/.env`, and set
+   `REACT_APP_VIZ_SIGNALS_URL` in `config/client.js` to the `/signals`
+   address of this server.
+
+[Service Users](../../servers/signals/service-users.md) describes the
+read-only service user and the InfluxDB tokens.
 
 ## OAuth 2.0 Application Setup
 

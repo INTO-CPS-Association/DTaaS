@@ -36,10 +36,10 @@ kinds, encoding presets and substrates, as one `DtaasExtension` object.
   configuration. An extension does not import client internals.
 - `client/src/viz/` is the common visualisation core. It reads live and
   past signals from the DTaaS signals gateway (`REACT_APP_VIZ_SIGNALS_URL`),
-  which reads the broker on the server. The core keeps every sample in a
-  temporal store read by time, holds one playhead for every page, evaluates
-  the encodings of a `visualisation.json`, and reads and saves that file in
-  the twin's folder.
+  which reads the broker and InfluxDB on the server. The core keeps every
+  sample in a temporal store read by time, holds one playhead for every page,
+  evaluates the encodings of a `visualisation.json`, and reads and saves that
+  file in the twin's folder.
   It draws the `image` and `embed` substrates, and the Visualise tab of the
   Digital Twins page shows a twin from its `visualisation.json`.
 
@@ -53,13 +53,33 @@ the code. The SDK declares a contract revision (`sdk: 1`) that is separate
 from its npm version, and the host refuses an extension built for another
 revision.
 
+## Live Signals
+
+The common core reads every signal from the signals gateway at `/signals`,
+the address in `REACT_APP_VIZ_SIGNALS_URL`. `client/src/viz/gatewayTransport.ts`
+opens `POST /signals/stream` for the live samples, as server-sent events, and
+`client/src/viz/gatewayHistory.ts` asks `POST /signals/range` for the past
+ones. Both send the signed-in user's GitLab access token in the
+`Authorization` header and never in an address.
+
+![Data path of live signals](signals-path.png#only-light)
+![Data path of live signals](signals-path-dark.png#only-dark)
+
+Traefik routes `/signals` to the gateway after traefik-forward-auth has
+checked the session. The gateway asks GitLab who the token belongs to, which
+projects the user can read, and which topics the committed
+`visualisation.json` files of those twins declare. It then reads those topics
+from RabbitMQ over AMQP as the read-only service user `dtaas-signals`, and
+their history from InfluxDB with a read-only token. The digital twins publish
+to RabbitMQ. The browser opens no connection to the broker or to InfluxDB. The
+[codebase page](../codebase/signals-ms.md) describes the gateway, and the
+[admin pages](../../admin/servers/signals/config.md) its deployment.
+
 ## What Is Not Built Yet
 
 The [modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md)
 plans further steps:
 
-- History from InfluxDB, so the temporal store reaches back before the page
-  was opened.
 - The 3D substrate in the common core, so a building is drawn by the same
   core as any other twin.
 - Tabs, Library previews and Redux slices contributed by extensions, which

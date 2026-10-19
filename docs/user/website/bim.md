@@ -205,8 +205,12 @@ The viewer draws whatever readings it is given and opens no connection of its
 own. The client reads them through the DTaaS signals gateway, which subscribes
 to the platform's RabbitMQ on the server, and hands each binding the latest
 reading of the topic its manifest names. The browser holds no broker login:
-it sends the gateway the user's GitLab access token instead. The
-administrator sets the gateway address in `REACT_APP_VIZ_SIGNALS_URL`, as the
+it sends the gateway the user's GitLab access token instead. The gateway
+serves a topic only when a twin in a GitLab project the user can read declares
+it in its committed `visualisation.json`, so a user sees the readings of the
+twins they can read in GitLab and of no others. The administrator starts the
+gateway as the [signals gateway pages](../../admin/servers/signals/docker.md)
+describe, and sets its address in `REACT_APP_VIZ_SIGNALS_URL`, as the
 [client configuration](../../admin/client/config.md) describes.
 
 Without that address the page still opens every model, with no readings. That

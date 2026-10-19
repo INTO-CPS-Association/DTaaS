@@ -91,6 +91,12 @@ proves who the user is with the user's GitLab access token, sent in the
 `Authorization` header. No broker login reaches the browser. When the key
 is set, the configuration check requests `<REACT_APP_VIZ_SIGNALS_URL>/health`.
 
+The Docker Compose packages in `deploy/dtaas/docker/` serve the gateway at
+`/signals` on the same server as the website, so the key is the `/signals`
+address of that server, such as `https://foo.com/signals`. The
+[signals gateway pages](../servers/signals/docker.md) describe how to start
+it.
+
 A `visualisation.json` names the sources of its images and embedded pages.
 A `lib://` source from the library and a source on the client's own origin
 are always allowed. An `http` or `https` source on another origin is shown
@@ -106,8 +112,9 @@ Traefik `headers` middleware, `client-headers`. It sends a
 Content-Security-Policy, `X-Content-Type-Options: nosniff`,
 `Referrer-Policy: strict-origin-when-cross-origin` and
 `X-Frame-Options: SAMEORIGIN`. The other routers of the package (logger,
-library and workspaces) get `common-headers`, with the same two headers and
-no policy, since a policy written for the website would break JupyterLab.
+signals gateway, library and workspaces) get `common-headers`, with the same
+two headers and no policy, since a policy written for the website would break
+JupyterLab.
 The TLS packages add `Strict-Transport-Security` with a one-year
 `max-age` to both.
 

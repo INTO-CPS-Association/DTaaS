@@ -25,6 +25,7 @@ placed later.
 | `admin/gitlab/gitlab-independent-install.png` | `admin/gitlab/index.md` |
 | `admin/gitlab/gitlab-integrated-runner.png` | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md` |
 | `developer/system/multi-domain.png` | `developer/system/extensions.md` |
+| `developer/system/signals-path.png` | `developer/system/extensions.md` |
 | `user/DTaaS-user-view.png` | `user/features.md` |
 | `developer/system/research-overview/system-architecture.png` | `developer/system/research-overview.md` |
 | `deploy/dtaas/docker/server/server.png` | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL |

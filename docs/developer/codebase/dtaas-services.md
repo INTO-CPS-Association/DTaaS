@@ -32,6 +32,8 @@ install order:
   `service clean`
 - `user add`
 - `user reset-password`
+- `user add-signals`, in `commands/signals_ops.py`, which creates the
+  read-only RabbitMQ user of the signals gateway
 
 The old top-level spellings (`generate-project`, `setup`, `start` and so
 on) are registered by `commands/aliases.py`. They print a deprecation

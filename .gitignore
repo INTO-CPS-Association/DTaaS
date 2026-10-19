@@ -238,6 +238,10 @@ deploy/dtaas/docker/secure-server/config/conf.server
 deploy/dtaas/docker/secure-server/certs/fullchain.pem
 deploy/dtaas/docker/secure-server/certs/privkey.pem
 
+# signals gateway configuration and secrets of every dtaas docker package
+deploy/dtaas/docker/*/config/signals.yaml
+deploy/dtaas/docker/*/config/secrets/
+
 # CLI deploy templates (generated at build/test time by src/pkg/build.py;
 cli/src/templates/deploy/
 cli/src/gitlab_common/

@@ -82,6 +82,31 @@ services:
     networks:
       - frontend
 
+  # The signals gateway, started only with the "signals" profile because it
+  # needs its configuration and two secret files, described in CONFIG.md.
+  signals:
+    image: intocps/signals-ms:0.1.0
+    restart: unless-stopped
+    profiles:
+      - signals
+    volumes:
+      - "./config/signals.yaml:/dtaas/signals/signals.yaml:ro"
+    secrets:
+      - signals-rabbitmq-password
+      - signals-influx-tokens
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.signals.entryPoints=web-secure"
+      - "traefik.http.services.signals.loadbalancer.server.port=4004"
+      - >-
+        traefik.http.routers.signals.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/signals`)
+      - "traefik.http.routers.signals.tls=true"
+      - "traefik.http.routers.signals.middlewares=traefik-forward-auth,common-headers"
+      - "traefik.http.routers.signals.priority=100"
+    networks:
+      - frontend
+
   user1:
     image: intocps/workspace:main-56c6f68
     restart: unless-stopped
@@ -198,6 +223,11 @@ services:
     networks:
       - frontend
 
+secrets:
+  signals-rabbitmq-password:
+    file: ./config/secrets/rabbitmq-password
+  signals-influx-tokens:
+    file: ./config/secrets/influx-tokens.json
 
 networks:
   frontend:

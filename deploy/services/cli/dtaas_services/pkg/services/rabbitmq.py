@@ -10,6 +10,7 @@ from ..utils import (
 from ..docker_utils import execute_docker_command, DockerRunOptions
 from ..config import Config
 from ..cert import set_service_cert_permissions, CertPermissionContext
+from .rabbitmq_signals import grant_signals_on_new_vhost
 
 ALREADY_EXISTS_MSG = "already exists"
 
@@ -142,8 +143,11 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     if not success:
         return False, error_msg
 
-    # Set permissions
-    return _set_rabbitmq_permissions(username, vhost)
+    # Set permissions, then let the signals gateway read the new vhost
+    success, error_msg = _set_rabbitmq_permissions(username, vhost)
+    if not success:
+        return False, error_msg
+    return grant_signals_on_new_vhost(vhost)
 
 
 def setup_rabbitmq_users() -> tuple[bool, str]:

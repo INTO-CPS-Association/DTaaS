@@ -23,7 +23,8 @@ DTaaS/
 └── servers/               # Backend services
     ├── execution/runner/  # Runner microservice
     ├── lib/               # Library microservice
-    └── logger/            # Logger microservice
+    ├── logger/            # Logger microservice
+    └── signals/           # Signals gateway microservice
 ```
 
 ## Directory roles
@@ -38,7 +39,7 @@ DTaaS/
 | `docs/` | Documentation source used by `mkdocs.yml` and `mkdocs-github.yml`. |
 | `lib/` | The `dt-automation` npm package and the `gitlab_common` Python library. |
 | `script/` | Helper scripts for docs publishing, environment setup, and release tasks. |
-| `servers/` | NestJS services: the library, runner and logger microservices. |
+| `servers/` | NestJS services: the library, runner, logger and signals gateway microservices. |
 | `.github/` | CI workflows, repository templates and Dependabot configuration. |
 
 ## Codebase entry points
@@ -50,8 +51,8 @@ The pages in this section follow the parts of the monorepo:
   for GitLab-backed digital twin lifecycle flows.
 - [DTaaS CLI](cli.md) for the Python admin CLI package.
 - [DTaaS Services](dtaas-services.md) for the platform-services provisioning CLI.
-- [Library Microservice](lib-ms.md) and [Runner Microservice](runner.md) for
-  backend service implementation details.
+- [Library Microservice](lib-ms.md), [Runner Microservice](runner.md) and
+  [Signals Gateway](signals-ms.md) for backend service implementation details.
 - [Publish Packages](publish-packages.md) for package-release workflows.
 
 The logger microservice (`servers/logger/`) has no page in this section

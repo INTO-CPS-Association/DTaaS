@@ -19,20 +19,24 @@ The package roots are:
 - `servers/lib` -> `@into-cps-association/libms`
 - `servers/execution/runner` -> `@into-cps-association/runner`
 - `servers/logger` -> `@into-cps-association/logger-ms`
+- `servers/signals` -> `@into-cps-association/signals-ms`
 - `lib/dt-automation` -> `@into-cps-association/dt-automation`
 - `client` -> `@into-cps-association/dtaas-web`, which is published as a
   Docker image rather than an npm package
 
 The workflow of each package (`lib-ms.yml`, `runner.yml`,
-`logger-ms.yml` and `dt-automation.yml`) first runs the lint, build and
-test jobs. It then calls the reusable `publish-npm.yml` workflow once
-for GitHub Packages and once for the npm registry. `publish-npm.yml`
+`logger-ms.yml`, `signals-ms.yml` and `dt-automation.yml`) first runs
+the lint, build and test jobs. It then calls the reusable
+`publish-npm.yml` workflow once for GitHub Packages and once for the npm
+registry. `publish-npm.yml`
 runs `yarn install`, `yarn build` and `yarn publish --access public`
 with the registry token passed in as the `NPM_TOKEN` secret.
 
 Publishing happens on a push or manual run on the
 `feature/distributed-demo` branch. The logger workflow also publishes
-from any `feature/*` or `release-v*` branch.
+from any `feature/*` or `release-v*` branch. The signals gateway
+workflow publishes only on a push to a `feature/*` or `release-v*`
+branch.
 
 The `dt-automation` workflow also checks the tarball contents and
 installs the packed tarball into an empty project before publishing.
@@ -54,8 +58,11 @@ npm set registry http://localhost:4873/
 
 All Dockerfiles live in `developer/check/`. The reusable workflows
 `docker-build.yml`, `docker-ghcr.yml` and `docker-dockerhub.yml` build
-them. The `client.yml`, `lib-ms.yml` and `logger-ms.yml` workflows
-publish the `dtaas-web`, `libms` and `logger-ms` images.
+them. The `client.yml`, `lib-ms.yml`, `logger-ms.yml` and
+`signals-ms.yml` workflows publish the `dtaas-web`, `libms`, `logger-ms`
+and `signals-ms` images. The `signals-ms` image is built from
+`developer/check/signals.dockerfile`, takes its tag from the version in
+`servers/signals/package.json`, and runs as the `node` user.
 Deployment-level compose definitions are under `deploy/`.
 
 When changing runtime dependencies, check that the images build and the

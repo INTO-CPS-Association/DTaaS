@@ -231,6 +231,18 @@ Failures are reported as text on stderr, so a script reads stdout only.
    dtaas-services user add -s rabbitmq
    ```
 
+4. For the DTaaS signals gateway, set `SIGNALS_RABBITMQ_USER` in
+   `config/services.env`, for example to `dtaas-signals`, and create its
+   read-only RabbitMQ user:
+
+   ```bash
+   dtaas-services user add-signals --password-file signals-password
+   ```
+
+   Without `--password-file` the command prompts for the password. It
+   grants the user read-only permissions on every existing vhost, and
+   `user add` grants it on each new user vhost.
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard
