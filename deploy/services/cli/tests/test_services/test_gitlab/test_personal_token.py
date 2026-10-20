@@ -1,242 +1,58 @@
 """Tests for GitLab Personal Access Token creation (personal_token.py)."""
 
 import json
-from unittest.mock import MagicMock, Mock
 
-import httpx
-from gitlab.exceptions import GitlabError
+import pytest
 
 from dtaas_services.pkg.services.gitlab import personal_token as pt
 
-# pylint: disable=W0212
+# pylint: disable=W0212,W0621
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-BASE_URL = "https://example.com:8090/gitlab"
 
 
-def test_get_oauth_token_success(mocker):
-    """Test successful OAuth ROPC token retrieval."""
-    mock_resp = Mock()
-    mock_resp.status_code = 200
-    mock_resp.json.return_value = {"access_token": "oauth-abc123"}
-
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.httpx.post",
-        return_value=mock_resp,
+@pytest.fixture
+def mock_docker_exec(mocker):
+    """Mock the docker exec call that runs gitlab-rails"""
+    return mocker.patch(
+        "dtaas_services.pkg.services.gitlab.personal_token.execute_docker_command"
     )
 
-    success, token = pt._get_oauth_token(BASE_URL, "rootpassword", True)
 
-    assert success is True
-    assert token == "oauth-abc123"
+def test_pat_script_revokes_old_tokens_before_creating():
+    """The script revokes root's active dtaas-services PATs, then creates one"""
+    revoke = pt.PAT_SCRIPT.index(".each(&:revoke!)")
+    create = pt.PAT_SCRIPT.index("create!(")
+    assert "User.find(1)" in pt.PAT_SCRIPT
+    assert f"active.where(name: '{pt.PAT_NAME}')" in pt.PAT_SCRIPT
+    assert revoke < create
+    assert "scopes: ['api']" in pt.PAT_SCRIPT
 
 
-def test_get_oauth_token_non_200(mocker):
-    """Test OAuth failure when GitLab returns a non-200 status."""
-    mock_resp = Mock()
-    mock_resp.status_code = 401
-    mock_resp.text = "Unauthorized"
+def test_create_pat_runs_rails_without_printing(mock_docker_exec):
+    """The token comes from gitlab-rails stdout; nothing is echoed"""
+    mock_docker_exec.return_value = (True, f"warning: x\n{pt.PAT_MARKER}{TEST_TOKEN}\n")
+    assert pt.create_pat() == (True, TEST_TOKEN)
+    container, cmd, options = mock_docker_exec.call_args.args
+    assert container == "gitlab"
+    assert cmd == ["gitlab-rails", "runner", pt.PAT_SCRIPT]
+    assert options.verbose is False
 
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.httpx.post",
-        return_value=mock_resp,
-    )
 
-    success, msg = pt._get_oauth_token(BASE_URL, "wrongpassword", True)
-
+def test_create_pat_docker_failure(mock_docker_exec):
+    """A failed gitlab-rails call is reported with its error"""
+    mock_docker_exec.return_value = (False, "Docker error: ActiveRecord::RecordInvalid")
+    success, msg = pt.create_pat()
     assert success is False
-    assert "401" in msg
+    assert "gitlab-rails runner" in msg
+    assert "RecordInvalid" in msg
 
 
-def test_get_oauth_token_missing_field(mocker):
-    """Test OAuth failure when response body lacks access_token."""
-    mock_resp = Mock()
-    mock_resp.status_code = 200
-    mock_resp.json.return_value = {}
-
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.httpx.post",
-        return_value=mock_resp,
-    )
-
-    success, msg = pt._get_oauth_token(BASE_URL, "rootpassword", True)
-
-    assert success is False
-    assert "No access_token" in msg
-
-
-def test_get_oauth_token_network_error(mocker):
-    """Test OAuth failure on a network error."""
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.httpx.post",
-        side_effect=httpx.RequestError("connection refused"),
-    )
-
-    success, msg = pt._get_oauth_token(BASE_URL, "rootpassword", True)
-
-    assert success is False
-    assert "OAuth request failed" in msg
-
-
-def test_revoke_existing_pats_revokes_matching():
-    """Test that only PATs with the matching name are deleted."""
-    keep_pat = Mock()
-    keep_pat.name = "other-token"
-
-    revoke_pat = Mock()
-    revoke_pat.name = "dtaas-services"
-
-    mock_gl = MagicMock()
-    mock_gl.personal_access_tokens.list.return_value = [keep_pat, revoke_pat]
-
-    pt._revoke_existing_pats(mock_gl, "dtaas-services")
-
-    revoke_pat.delete.assert_called_once()
-    keep_pat.delete.assert_not_called()
-
-
-def test_revoke_existing_pats_no_match():
-    """Test that no PATs are deleted when none match the name."""
-    pat = Mock()
-    pat.name = "unrelated"
-
-    mock_gl = MagicMock()
-    mock_gl.personal_access_tokens.list.return_value = [pat]
-
-    pt._revoke_existing_pats(mock_gl, "dtaas-services")
-
-
-def test_create_pat_via_api_success(mocker):
-    """Test PAT creation via API succeeds."""
-    mock_pat = Mock()
-    mock_pat.token = TEST_TOKEN
-
-    mock_user = Mock()
-    mock_user.personal_access_tokens.create.return_value = mock_pat
-
-    mock_gl = MagicMock()
-    mock_gl.personal_access_tokens.list.return_value = []
-    mock_gl.users.get.return_value = mock_user
-
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
-        return_value=BASE_URL,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.get_ssl_verify",
-        return_value=True,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.gitlab.Gitlab",
-        return_value=mock_gl,
-    )
-
-    success, token = pt._create_pat_via_api("oauth-token")
-
-    assert success is True
-    assert token == TEST_TOKEN
-
-
-def test_create_pat_via_api_empty_token(mocker):
-    """Test PAT creation fails when API returns an empty token."""
-    mock_pat = Mock()
-    mock_pat.token = ""
-
-    mock_user = Mock()
-    mock_user.personal_access_tokens.create.return_value = mock_pat
-
-    mock_gl = MagicMock()
-    mock_gl.personal_access_tokens.list.return_value = []
-    mock_gl.users.get.return_value = mock_user
-
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
-        return_value=BASE_URL,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.get_ssl_verify",
-        return_value=True,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.gitlab.Gitlab",
-        return_value=mock_gl,
-    )
-
-    success, msg = pt._create_pat_via_api("oauth-token")
-
-    assert success is False
-    assert "Empty token" in msg
-
-
-def test_create_pat_via_api_gitlab_error(mocker):
-    """Test PAT creation fails on GitlabError."""
-    mock_gl = MagicMock()
-    mock_gl.personal_access_tokens.list.return_value = []
-    mock_gl.users.get.side_effect = GitlabError("forbidden")
-
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
-        return_value=BASE_URL,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.get_ssl_verify",
-        return_value=True,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.gitlab.Gitlab",
-        return_value=mock_gl,
-    )
-
-    success, msg = pt._create_pat_via_api("oauth-token")
-
-    assert success is False
-    assert "Failed to create PAT via API" in msg
-
-
-def test_create_pat_success(mocker):
-    """Test full PAT creation flow succeeds end-to-end."""
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
-        return_value=BASE_URL,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.get_ssl_verify",
-        return_value=True,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token._get_oauth_token",
-        return_value=(True, "oauth-abc"),
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token._create_pat_via_api",
-        return_value=(True, TEST_TOKEN),
-    )
-
-    success, token = pt.create_pat("rootpassword")
-
-    assert success is True
-    assert token == TEST_TOKEN
-
-
-def test_create_pat_oauth_failure(mocker):
-    """Test PAT creation fails when OAuth token request fails."""
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.build_base_url",
-        return_value=BASE_URL,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token.get_ssl_verify",
-        return_value=True,
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.personal_token._get_oauth_token",
-        return_value=(False, "connection refused"),
-    )
-
-    success, msg = pt.create_pat("rootpassword")
-
-    assert success is False
-    assert "Failed to obtain OAuth token" in msg
+@pytest.mark.parametrize("output", ["", "done\n", f"{pt.PAT_MARKER}\n"])
+def test_create_pat_without_token_in_output(mock_docker_exec, output):
+    """Output without a marked, non empty token is a failure"""
+    mock_docker_exec.return_value = (True, output)
+    assert pt.create_pat() == (False, "No token in the gitlab-rails runner output")
 
 
 def test_read_tokens_file_empty_pat(tmp_path):

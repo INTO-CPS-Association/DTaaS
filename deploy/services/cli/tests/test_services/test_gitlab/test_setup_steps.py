@@ -55,7 +55,7 @@ def test_step_create_pat_success(mock_console, mocker):
         "dtaas_services.pkg.services.gitlab.setup.create_pat",
         return_value=(True, TEST_TOKEN),
     )
-    success, token = setup._step_create_pat(mock_console, TEST_PASSWORD)
+    success, token = setup._step_create_pat(mock_console)
     assert success is True
     assert token == TEST_TOKEN
 
@@ -66,7 +66,7 @@ def test_step_create_pat_failure(mock_console, mocker):
         "dtaas_services.pkg.services.gitlab.setup.create_pat",
         return_value=(False, "api error"),
     )
-    success, msg = setup._step_create_pat(mock_console, TEST_PASSWORD)
+    success, msg = setup._step_create_pat(mock_console)
     assert success is False
     assert "api error" in msg
 

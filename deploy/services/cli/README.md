@@ -359,7 +359,8 @@ automatically:
 2. Checks if GitLab is healthy (non-blocking — exits immediately if not ready)
 3. Reads the auto-generated root password from the container
    (`/etc/gitlab/initial_root_password`)
-4. Creates an initial Personal Access Token and saves it to
+4. Creates an initial Personal Access Token with `gitlab-rails runner`
+   inside the container (about a minute) and saves it to
    `config/gitlab_tokens.json`
 5. Creates Server and Client OAuth application tokens.
 
