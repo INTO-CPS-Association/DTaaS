@@ -348,7 +348,8 @@ The `dtaas-services service install -s gitlab` command performs these
 steps:
 
 1. Starts the GitLab Docker container.
-2. Checks whether GitLab is healthy.
+2. Checks whether GitLab is healthy and its `/-/readiness` check passes
+   inside the container.
 3. Reads the auto-generated root password from the container
    (`/etc/gitlab/initial_root_password`).
 4. Creates an initial Personal Access Token with `gitlab-rails runner`

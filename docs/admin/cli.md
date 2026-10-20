@@ -726,9 +726,11 @@ GitLab administrator:
 ![Administrator user type](root-edit.png)
 
 **2. Create its token**, signed in as that account, under
-**User settings > Access > Personal access tokens** (**Add new token**).
-Tick the `api` scope, and `admin_mode` too if the instance has Admin
-Mode enabled, then export the token where you run `dtaas`:
+**User settings > Access > Personal access tokens**
+(**Generate token > Legacy token**; older GitLab versions call it
+**Add new token**). Tick the `api` scope, and `admin_mode` too if the
+instance has Admin Mode enabled, then export the token where you run
+`dtaas`:
 
 ![Create a personal access token](create-PAT.png)
 
