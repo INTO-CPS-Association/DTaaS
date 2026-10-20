@@ -132,7 +132,7 @@ def test_install_rejects_blank_selector(runner, mock_service_setup, selector):
 
 
 def test_install_rejects_removed_service_option(runner, mock_service_setup):
-    """The --service spelling removed in 2.0.0 is an unknown option"""
+    """The --service spelling removed in 1.1.0 is an unknown option"""
     result = runner.invoke(services, INSTALL + ["--service", "gitlab"])
     assert result.exit_code == 2
     assert "No such option '--service'" in result.output

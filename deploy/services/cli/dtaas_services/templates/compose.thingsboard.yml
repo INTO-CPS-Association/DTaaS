@@ -1,6 +1,6 @@
 services:
   thingsboard-ce:
-    image: 'thingsboard/tb-node:4.2.1'
+    image: 'thingsboard/tb-node:4.4.0'
     container_name: thingsboard
     restart: always
     user: root
