@@ -14,74 +14,37 @@ dtaas-services <noun> <verb> [target] [flags]
 ```
 
 Every command names **what it acts on** (the noun) and then **what to do**
-(the verb). The aims are to remove the mixed command styles the tool has
-accumulated, to give service lifecycle operations a predictable shape, and to
-align with the conventions in [clig.dev](https://clig.dev/#subcommands) and in
-`git`/`docker`.
+(the verb). The aims are to give service lifecycle operations a predictable
+shape and to align with the conventions in
+[clig.dev](https://clig.dev/#subcommands) and in `git`/`docker`.
 
 This is a companion to the deployment-CLI design and uses the same rules, so the
 two CLIs feel like one family.
 
 ---
 
-## 1. The problem: three grammars in one CLI
+## 1. Why one grammar
 
-Like the deployment CLI, `dtaas-services` currently mixes three shapes.
-
-### 1a. Top-level hyphenated verb-noun
-
-```text
-dtaas-services generate-project [--path <dir>]
-```
-
-Verb first, noun glued on with a hyphen.
-
-### 1b. Flat top-level verbs
-
-```text
-dtaas-services setup
-dtaas-services install   [-s <service>]
-dtaas-services start     [-s <services>]
-dtaas-services stop      [-s <services>]
-dtaas-services restart   [-s <services>]
-dtaas-services status    [-s <services>]
-dtaas-services remove    [-s <services>] [-v]
-dtaas-services clean     [-s <services>] [--certs]
-```
-
-Eight bare verbs on the root group. The object acted on (the services) is
-implicit; `setup` and `install` are different *kinds* of action (host
-provisioning vs. per-service schema init) but read as peers of `start`/`stop`.
-
-### 1c. Noun-grouped verbs
-
-```text
-dtaas-services user add            [-s <services>]
-dtaas-services user reset-password [-s <services>]
-```
-
-`user` is a noun; the verb follows. This is the shape wanted everywhere — but
-only one group uses it today.
-
-### Why this matters
+A CLI whose commands come in several shapes (bare top level verbs,
+hyphenated verb noun names, noun groups) has to be learned command by command.
+One grammar for every command fixes that.
 
 - **Discoverability / guessability.** clig.dev: *"a CLI should follow patterns
   that already exist… that's what makes CLIs guessable."* A user who learns
-  `user add` reasonably expects `service start`, but the real command is the
-  top-level `start`. The mental model does not transfer between the two halves
-  of the tool.
-- **Scope and kind are invisible.** `start`, `stop`, `restart`, `status`,
-  `remove`, `clean` all act on service *containers*; `setup` acts on the *host*
-  (certs, permissions, needs root); `install` acts on a service's *database
-  schema*. Flattened together, nothing signals these three very different blast
-  radii.
-- **Similarly-named commands.** clig.dev: *"Don't have ambiguous or
-  similarly-named commands."* `setup` vs. `install` vs. `generate-project` are
-  three setup-flavored verbs at the top level whose differences only become
-  clear after reading each help text.
-- **Split target conventions.** Every operational command already shares one
-  target flag — `--services/-s` with a comma-separated list — which is a good,
-  consistent base to build the noun on.
+  `user add` expects `service start`, and finds it. The mental model transfers
+  across the whole tool.
+- **Scope and kind are visible.** `service start`, `stop`, `restart`,
+  `status`, `remove` and `clean` act on service *containers*; `host setup`
+  acts on the *host* (certs, permissions, needs root); `service install` acts
+  on a service's *database schema*. The noun signals these very different
+  blast radii.
+- **No similarly named commands.** clig.dev: *"Don't have ambiguous or
+  similarly-named commands."* The three setup flavoured actions
+  (`project generate`, `host setup`, `service install`) are told apart by
+  their noun, not by reading each help text.
+- **One target convention.** Every operational command shares one target
+  flag, `--services/-s` with a comma separated list, which is a consistent
+  base for the `service` noun.
 
 ---
 
@@ -97,11 +60,11 @@ adopts it too, so the two are learnable as one.
 
 Corollaries:
 
-1. **No top-level bare verbs.** `start`/`stop`/`status`/… move under the resource
-   they act on.
-2. **No hyphenated verb-nouns.** `generate-project` becomes `<noun> generate`.
-3. **`setup`/`install` are grouped by the resource they target,** which makes
-   their different scope explicit instead of implied.
+1. **No top-level bare verbs.** The root group holds only nouns; every verb
+   lives under the resource it acts on.
+2. **No hyphenated verb-nouns.** Generation is `project generate`.
+3. **`host setup` and `service install` are grouped by the resource they
+   target,** which makes their different scope explicit instead of implied.
 
 ---
 
@@ -119,57 +82,57 @@ lifecycle.
 
 ### Notes on the noun choices
 
-- **`project`** keeps the existing `generate-project` intent but as a resource:
+- **`project`** names the generated scaffold as a resource:
   `project generate`. (This CLI has no `dtaas.toml`-style config command, so —
   unlike the deployment CLI — there is no `config` noun to fold generation into;
   `project` stands on its own here.)
-- **`host`** is the missing noun that makes `setup` legible. `setup` prepares the
-  host (copies certs, fixes permissions, requires root); it is not a service
+- **`host`** is the noun that makes `host setup` legible. `host setup` prepares
+  the host (copies certs, fixes permissions, requires root); it is not a service
   operation. Naming the resource `host` states that scope up front, and cleanly
   separates it from `service` operations. Candidate names `system` or `machine`
   work too; `host` is chosen to match the platform's own "DTaaS host" vocabulary.
 - **`service`** is the natural home for the six operational verbs plus per-service
   schema initialization. It pairs with the already-universal `--services/-s`
   target flag.
-- **`user`** already exists as a noun group and is kept.
+- **`user`** groups the account verbs.
 
 All four satisfy clig.dev's naming guidance (*"simple, memorable… lowercase"*).
 
 ---
 
-## 4. Full command surface (current → proposed)
+## 4. Full command surface
 
-### 4a. `project` (from the hyphenated verb-noun)
+### 4a. `project`
 
-| Current | Proposed |
-|---|---|
-| `dtaas-services generate-project [--path <dir>]` | `dtaas-services project generate [--path <dir>] [--force]` |
+```text
+dtaas-services project generate [--path <dir>] [--force]
+```
 
-`--force` is added for parity with the deployment CLI: overwrite existing
-scaffold files instead of skipping them (see §6).
+`--force` gives parity with the deployment CLI: overwrite existing scaffold
+files instead of skipping them (see §6).
 
-### 4b. `host` (from flat `setup`)
+### 4b. `host`
 
-| Current | Proposed |
-|---|---|
-| `dtaas-services setup` | `dtaas-services host setup` |
+```text
+dtaas-services host setup
+```
 
 `host setup` copies TLS certificates and sets service file permissions; it
 requires root and is a prerequisite for starting services. Grouping it under
 `host` makes its machine-level scope explicit and stops it reading as a peer of
 `service start`.
 
-### 4c. `service` (from six flat verbs + per-service `install`)
+### 4c. `service`
 
-| Current | Proposed | Scope |
-|---|---|---|
-| `dtaas-services start [-s ...]` | `dtaas-services service start [-s ...]` | all or listed services |
-| `dtaas-services stop [-s ...]` | `dtaas-services service stop [-s ...]` | all or listed services |
-| `dtaas-services restart [-s ...]` | `dtaas-services service restart [-s ...]` | all or listed services |
-| `dtaas-services status [-s ...]` | `dtaas-services service status [-s ...]` | all or listed services |
-| `dtaas-services remove [-s ...] [-v]` | `dtaas-services service remove [-s ...] [--volumes]` | all or listed services |
-| `dtaas-services clean [-s ...] [--certs]` | `dtaas-services service clean [-s ...] [--certs]` | all or listed services |
-| `dtaas-services install [-s <svc>]` | `dtaas-services service install [-s <svc>]` | one service's schema / post-install |
+| Command | Scope |
+|---|---|
+| `dtaas-services service start [-s ...]` | all or listed services |
+| `dtaas-services service stop [-s ...]` | all or listed services |
+| `dtaas-services service restart [-s ...]` | all or listed services |
+| `dtaas-services service status [-s ...] [--json]` | all or listed services |
+| `dtaas-services service remove [-s ...] [--volumes]` | all or listed services |
+| `dtaas-services service clean [-s ...] [--certs]` | all or listed services |
+| `dtaas-services service install [-s <svc>]` | one service's schema / post-install |
 
 `service install` keeps its distinct meaning — initialize a service's database
 schema or run its post-install flow (ThingsBoard schema + sysadmin; GitLab
@@ -177,14 +140,12 @@ readiness + token/OAuth setup). It stays a `service` verb because it acts on a
 named service, and its help text continues to carry the "run once" and
 "specify -s explicitly" warnings.
 
-### 4d. `user` (unchanged verbs)
+### 4d. `user`
 
-| Current | Proposed |
-|---|---|
-| `dtaas-services user add [-s ...]` | `dtaas-services user add [-s ...]` |
-| `dtaas-services user reset-password [-s ...]` | `dtaas-services user reset-password [-s ...]` |
-
-Already `noun verb`; kept as-is.
+```text
+dtaas-services user add            [-s ...]
+dtaas-services user reset-password [-s ...]
+```
 
 ---
 
@@ -206,8 +167,8 @@ dtaas-services user reset-password -s gitlab
 ```
 
 clig.dev: *"Suggest commands the user should run… helps them learn the
-workflow."* The existing "next steps" hints (printed by `setup` and by the
-GitLab-not-ready path) update to the new spellings, e.g.
+workflow."* The "next steps" hints (printed by `host setup` and by the
+GitLab not ready path) use these spellings, for example
 `dtaas-services service status -s gitlab` and
 `dtaas-services service install -s gitlab`.
 
@@ -238,12 +199,11 @@ check.
 
 ### `--volumes` long form
 
-`remove` currently exposes `-v` for "also remove volumes." clig.dev reserves
-`-v` by convention for *verbose/version*, and warns against spending one-letter
-flags on non-standard meanings. The redesign keeps `-v` working (backward
-compatibility) but documents `--volumes` as the primary spelling. If a verbose
-flag is ever added, `-v` should map to it, so new scripts should prefer
-`--volumes`.
+`service remove` takes `--volumes` (short form `-v`) for "also remove
+volumes." clig.dev reserves `-v` by convention for *verbose/version*, and warns
+against spending one-letter flags on non-standard meanings, so `--volumes` is
+the documented spelling. If a verbose flag is ever added, `-v` should map to
+it, so scripts should prefer `--volumes`.
 
 ### Destructive actions confirm
 
@@ -275,15 +235,14 @@ continue to exit `0`.
 |---|---|
 | **`noun verb` two-level subcommands** (`docker container create`) | Adopted as the single rule across the whole tool. Met. |
 | **Be consistent across subcommands** | One target convention (`--services/-s`), shared error/exit handling, shared confirmation pattern. Met. |
-| **Don't have ambiguous or similarly-named commands** | `setup` vs `install` vs `generate-project` are separated by noun: `host setup`, `service install`, `project generate`. Met. |
+| **Don't have ambiguous or similarly-named commands** | The setup flavoured actions are separated by noun: `host setup`, `service install`, `project generate`. Met. |
 | **Use consistent verbs across object types** | `status`, `install`, and generation verbs mean the same thing here as in the deployment CLI. Met. |
 | **Make it easy to see current state** (`git status`) | `service status`, table by default, `--json` for scripts (§6). Met. |
 | **Display machine-readable output with `--json`** | Added to `service status`. Met (new). |
 | **Prefer flags to args** | Targets are flags (`--services/-s`), never positional. Met. |
 | **Use standard flag names** | `--force` for overwrite; `--volumes` promoted over non-standard `-v`. Met (corrected). |
 | **Confirm before anything dangerous** | `clean` prompts already; add confirm/`--yes` to `remove --volumes`. Partially met (follow-up). |
-| **Keep changes additive; warn before non-additive changes** | Old spellings kept as deprecated aliases for one release (§8). Met. |
-| **Don't allow arbitrary abbreviations** | Full noun+verb spellings; aliases explicit and stable. Met. |
+| **Don't allow arbitrary abbreviations** | Full noun+verb spellings only; no abbreviations or command aliases. Met. |
 | **Don't have a catch-all subcommand** | `dtaas-services <noun>` with no verb prints that noun's help. Met. |
 
 **Where git informs the design.** `git` groups its top-level help by workflow
@@ -293,24 +252,7 @@ install order, not just an alphabetical command list.
 
 ---
 
-## 8. Migration, compatibility, and implementation shape
-
-### Backward compatibility
-
-Renaming breaks existing scripts and the documented Quick Start. Following
-clig.dev's future-proofing guidance (*"warn before you make a non-additive
-change"*), use a **one-release deprecation window**:
-
-- Keep every old spelling (`generate-project`, `setup`, `install`, `start`,
-  `stop`, `restart`, `status`, `remove`, `clean`) as an **explicit, hidden
-  alias** that forwards to the new command and prints a one-line deprecation
-  notice to `stderr` naming the replacement. These are named aliases, never
-  prefix-abbreviations.
-- Update `README.md`, `DEVELOPER.md`, `GITLAB_INTEGRATION.md`, and the printed
-  "next steps" hints to the new spellings.
-- Remove the aliases at the next major version bump; announce in the changelog.
-
-### Implementation shape
+## 8. Implementation shape
 
 The current layout already maps cleanly onto the noun set — the command modules
 are grouped almost exactly along these lines, so the change is mostly wiring
@@ -325,7 +267,6 @@ dtaas_services/
     service_ops.py          # service start|stop|restart|status|remove|clean|install
                             #   (install moves in from setup_ops)
     user_ops.py             # user add | reset-password
-    aliases.py              # deprecated old spellings → new commands (temporary)
     utility.py              # shared helpers (parse_service_list, runners, result handling)
   pkg/                      # unchanged service/domain logic
 ```
@@ -351,22 +292,8 @@ Conventions to preserve across every noun:
 
 ## 9. Summary
 
-| Before (three grammars) | After (`dtaas-services <noun> <verb>`) |
-|---|---|
-| `dtaas-services generate-project` | `dtaas-services project generate [--force]` |
-| `dtaas-services setup` | `dtaas-services host setup` |
-| `dtaas-services install -s <svc>` | `dtaas-services service install -s <svc>` |
-| `dtaas-services start [-s ...]` | `dtaas-services service start [-s ...]` |
-| `dtaas-services stop [-s ...]` | `dtaas-services service stop [-s ...]` |
-| `dtaas-services restart [-s ...]` | `dtaas-services service restart [-s ...]` |
-| `dtaas-services status [-s ...]` | `dtaas-services service status [-s ...] [--json]` |
-| `dtaas-services remove [-s ...] [-v]` | `dtaas-services service remove [-s ...] [--volumes]` |
-| `dtaas-services clean [-s ...] [--certs]` | `dtaas-services service clean [-s ...] [--certs]` |
-| `dtaas-services user add [-s ...]` | `dtaas-services user add [-s ...]` |
-| `dtaas-services user reset-password [-s ...]` | `dtaas-services user reset-password [-s ...]` |
-
-The single rule — **`dtaas-services <noun> <verb>`** — removes the three
-competing styles, separates the three kinds of setup action by resource
+The single rule, **`dtaas-services <noun> <verb>`**, gives every command one
+shape, separates the three kinds of setup action by resource
 (`project generate`, `host setup`, `service install`), gives the six operational
 verbs a `service` home next to the already-consistent `--services/-s` selector,
 and keeps the tool aligned with clig.dev's `noun verb` guidance, the

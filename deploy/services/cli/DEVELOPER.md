@@ -60,7 +60,6 @@ cli/
 │   ├── cmd.py              # CLI entry point (imports from commands/)
 │   ├── commands/           # CLI command modules
 │   │   ├── __init__.py
-│   │   ├── aliases.py      # Deprecated old spellings forwarding to new commands
 │   │   ├── host_ops.py     # host setup
 │   │   ├── install_helpers.py # ThingsBoard and GitLab install flows
 │   │   ├── project_ops.py  # project generate
@@ -241,9 +240,6 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
  `status`, `remove`, `clean`
 * **`install_helpers.py`**: ThingsBoard and GitLab install flows used by
  `service install`
-* **`aliases.py`**: hidden deprecated top level spellings (for example
- `start`) that warn on stderr and forward to the new command; remove at
- the next major version
 * **`user_ops.py`**: User management commands (`user add`, `user reset-password`)
 * **`utility.py`**: Shared command utilities
 

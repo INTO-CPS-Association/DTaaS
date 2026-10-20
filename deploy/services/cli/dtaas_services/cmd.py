@@ -1,7 +1,7 @@
 """DTaaS Services CLI main entry point."""
 
 import click
-from .commands import aliases, host_ops, project_ops, service_ops, user_ops
+from .commands import host_ops, project_ops, service_ops, user_ops
 
 
 class WorkflowGroup(click.Group):
@@ -61,8 +61,6 @@ def user():
 
 user.add_command(user_ops.add)
 user.add_command(user_ops.reset_password)
-
-aliases.register_deprecated_aliases(services)
 
 
 if __name__ == "__main__":

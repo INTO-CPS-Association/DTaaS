@@ -10,7 +10,6 @@ from ..pkg.password_store import remove_service_passwords
 from ..pkg.utils import check_root_unix
 from .install_helpers import (
     install_services,
-    resolve_install_selection,
     resolve_install_targets,
 )
 from .utility import (
@@ -34,13 +33,7 @@ from .utility import (
         "Installs both if not specified."
     ),
 )
-@click.option(
-    "--service",
-    "legacy_service",
-    hidden=True,
-    help="Deprecated spelling of --services.",
-)
-def install(service_names, legacy_service):
+def install(service_names):
     """
     Install service database schema or run post-install setup.
 
@@ -60,8 +53,7 @@ def install(service_names, legacy_service):
     """
     try:
         check_root_unix()
-        selection = resolve_install_selection(service_names, legacy_service)
-        targets = resolve_install_targets(selection)
+        targets = resolve_install_targets(parse_service_list(service_names))
         install_services(Console(), Service(), targets)
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e

@@ -83,9 +83,9 @@ def test_install_service_init_errors(runner, mocker, error, expected):
 
 
 @pytest.mark.usefixtures("gitlab_started")
-@pytest.mark.parametrize("selector", [["-s", "gitlab"], ["--service", "gitlab"]])
+@pytest.mark.parametrize("selector", [["-s", "gitlab"], ["--services", "gitlab"]])
 def test_install_gitlab_success(runner, mock_setup_gitlab, selector):
-    """Test successful GitLab install with the new and the legacy selector"""
+    """Test successful GitLab install with the short and the long selector"""
     mock_setup_gitlab.return_value = (True, "GitLab setup completed")
     result = runner.invoke(services, INSTALL + selector)
     assert result.exit_code == 0
@@ -131,25 +131,12 @@ def test_install_rejects_blank_selector(runner, mock_service_setup, selector):
     mock_service_setup["service_instance"].manage_services.assert_not_called()
 
 
-def test_install_rejects_both_selector_spellings(runner, mock_service_setup):
-    """Passing --services and the deprecated --service together is an error"""
-    result = runner.invoke(
-        services, INSTALL + ["-s", "gitlab", "--service", "thingsboard"]
-    )
-    assert result.exit_code != 0
-    assert "Pass only --services" in result.output
+def test_install_rejects_removed_service_option(runner, mock_service_setup):
+    """The --service spelling removed in 2.0.0 is an unknown option"""
+    result = runner.invoke(services, INSTALL + ["--service", "gitlab"])
+    assert result.exit_code == 2
+    assert "No such option '--service'" in result.output
     mock_service_setup["service_instance"].manage_services.assert_not_called()
-
-
-@pytest.mark.usefixtures("gitlab_started")
-def test_install_legacy_selector_warns(runner, mock_setup_gitlab):
-    """The deprecated --service spelling warns on stderr before forwarding"""
-    mock_setup_gitlab.return_value = (True, "GitLab setup completed")
-    result = runner.invoke(
-        services, INSTALL + ["--service", "gitlab"], catch_exceptions=False
-    )
-    assert result.exit_code == 0
-    assert "'--service' is deprecated; use '--services'" in result.stderr
 
 
 def test_install_drops_blank_selector_elements(runner, mocker, mock_service_setup):
