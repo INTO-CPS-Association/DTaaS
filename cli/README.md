@@ -188,7 +188,8 @@ Copies the full project structure for a specific deployment scenario
 directory ready to be customised. It also writes the user workspace
 templates that `user add` builds new workspaces from: `users.server.yml`,
 `users.server.secure.yml`, `users.resources.yml`, and the `files/template/`
-skeleton.
+skeleton. For the types that run the logger it also creates `logs/logger/`
+(see [platform install](#platform-install)).
 
 ```bash
 dtaas deployment generate --type <name>
@@ -280,6 +281,29 @@ Internally runs `docker compose up -d` against the `docker-compose.yml` in
 the installation directory. Before starting, it ensures per-user workspace
 directories for every `[[users]]` record exist, recreating each from
 `files/template/` if missing and sets ownership to `1000:100`.
+
+For the `localhost`, `insecure-server`, `secure-server` and
+`secure-server-gitlab` types it also creates `logs/logger/`, where the logger
+microservice writes its events, and gives it to `1000:1000`, the user that
+runs the logger. This replaces the logger step of the manual installation
+guides. Only `logs/logger/` changes owner, never `logs/` itself, which
+`secure-server-gitlab` also mounts into GitLab.
+
+Both ownership changes use `sudo` on Linux and macOS and are skipped on
+Windows. Before `sudo` runs, the command says what it is for, since `sudo`
+may ask for your password. `logs/logger/` is left alone when it already
+belongs to `1000:1000`, for example when you are that user. When a change
+fails, for example because `sudo` is not available, the command prints a
+warning with the commands to run by hand and carries on:
+
+```text
+Setting the owner of logs/logger/ to 1000:1000 with sudo (it may ask for your password)
+Warning: could not set the owner of logs/logger/
+  Run: sudo chown -R 1000:1000 -- /home/admin/dtaas/logs/logger
+```
+
+When `logs/` or `logs/logger/` is a symbolic link, the command does not
+change its owner and prints a warning instead.
 
 **Options:**
 
@@ -1099,7 +1123,7 @@ type (see matrix above).
 # ── Metadata (top level) ──────────────────────────────────────────────────────
 # Describes the instance. Only git-repo is checked by validate (an http(s) URL).
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.2.0"
+version  = "2.2.1"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 

@@ -1,13 +1,10 @@
 """Template-copy functions behind 'dtaas config generate' and 'deployment generate'."""
 
-import os
 import shutil
-import subprocess
 from pathlib import Path
 import click
-from .constants import SECRET_FILENAMES
+from .constants import DEPLOY_TYPES, SECRET_FILENAMES
 
-IS_POSIX = os.name == "posix"
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
 CONFIG_TOML = "dtaas.toml"
@@ -18,14 +15,6 @@ TEMPLATE_FILES = [
     "users.resources.yml",
 ]
 USER_TEMPLATE_FILES = [name for name in TEMPLATE_FILES if name != CONFIG_TOML]
-DEPLOY_TYPES = {
-    "localhost",
-    "insecure-server",
-    "secure-server",
-    "secure-server-gitlab",
-    "workspace-localhost",
-    "workspace-secure-server",
-}
 
 
 def _copy_template(template_name, dest_dir, force=False):
@@ -189,35 +178,6 @@ def _copy_example_files(dest_dir, force=False):
     )
     if errors:
         raise OSError("\n".join(errors))
-
-
-def create_user_dirs(dest_dir, usernames):
-    """Create files/<username>/ dirs from files/template/."""
-    template = Path(dest_dir) / "files" / "template"
-    if not template.is_dir():
-        return
-    for username in usernames:
-        user_dir = Path(dest_dir) / "files" / username
-        if not user_dir.exists():
-            shutil.copytree(template, user_dir)
-
-
-def set_files_permissions(dest_dir):
-    """Set ownership/permissions on files/ dir (requires sudo, POSIX only)."""
-    files_dir = Path(dest_dir) / "files"
-    if not IS_POSIX or not files_dir.is_dir():
-        return
-    try:
-        subprocess.run(
-            ["sudo", "chown", "-R", "1000:100", str(files_dir)],
-            check=True,
-        )
-        subprocess.run(
-            ["sudo", "chmod", "-R", "u+rwX,go+rwX", str(files_dir)],
-            check=True,
-        )
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        pass
 
 
 def _has_template_files(src):

@@ -65,7 +65,7 @@ cp config/conf.dev.example config/conf.dev
 cp config/libms.dev.yaml.example config/libms.dev.yaml
 sudo chown -R 1000:100 files/*
 mkdir -p logs/logger
-sudo chown -R 1000:1000 logs
+sudo chown -R 1000:1000 logs/logger
 docker compose --env-file config/.env build
 ```
 

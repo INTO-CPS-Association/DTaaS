@@ -2,15 +2,8 @@
 
 from unittest.mock import patch
 import pytest
-from click.testing import CliRunner
 from src.cmd import dtaas
 # pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def runner():
-    """CLI test runner"""
-    return CliRunner()
 
 
 @pytest.fixture

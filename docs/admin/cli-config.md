@@ -52,7 +52,7 @@ not use (see the tables above).
 # Describes the instance. git-repo, the URL of the DTaaS repository, is
 # required for all deployment types; validate checks no other key here.
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.2.0"
+version  = "2.2.1"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 

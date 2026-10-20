@@ -297,6 +297,7 @@ src/
     users_delete.py      # user delete
     users_lifecycle.py   # user pause/stop/resume + desired_status writes
     project.py           # generate compose tree + user templates
+    host_dirs.py         # files/ and logs/logger/ creation and ownership
 ```
 
 Conventions to preserve across every noun:
@@ -307,6 +308,13 @@ Conventions to preserve across every noun:
 * `--file` (dest `csv_file`) for bulk targets; positional `<username>` /
   `<usernames>...` for explicit targets.
 * `except (OSError, DockerException) → click.ClickException(str(exc))`.
+* One exception to "modules under `src/pkg/` raise": the ownership helpers in
+  `pkg/host_dirs.py` are best-effort. A failed `sudo chown` or `chmod`
+  (`CalledProcessError`, or `FileNotFoundError` when `sudo` is missing), a
+  failed `mkdir` of `logs/logger/` (`OSError`) or a symlinked `logs/` prints
+  a warning naming the commands to run by hand (`messages.echo_hint`), and
+  the command carries on with exit code 0. The containers can still start,
+  and the admin can fix the owner later. `create_user_dirs` still raises.
 * `"<Thing> <verbed> successfully"` success messages; idempotent absent case via
   a shared "no installation" message and presence check.
 * Dual output for `status` verbs: aligned table by default, `--json` for

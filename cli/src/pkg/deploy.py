@@ -5,6 +5,7 @@ import yaml
 from python_on_whales import DockerClient
 from python_on_whales.utils import ValidPath
 from .constants import COMPOSE_USERS_YML
+from .messages import with_hint
 from .user_files import delete_user_files
 from .project import warn_stale_root_env
 
@@ -165,12 +166,29 @@ def service_running(directory, service):
     return any(container.state.running for container in containers)
 
 
+def _read_compose(directory):
+    """Parse the deployment's compose file, raising OSError when it is not YAML."""
+    path = Path(directory) / COMPOSE_FILE
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (yaml.YAMLError, UnicodeDecodeError) as exc:
+        raise OSError(with_hint(f"Cannot read {COMPOSE_FILE}", f"{path}: {exc}")) from exc
+
+
 def compose_services(directory):
     """Return the set of service names defined in the deployment's compose file.
 
-    Raises OSError when the compose file is missing.
+    Raises OSError when the compose file is missing, is not valid YAML, or
+    has a 'services' entry that is not a mapping.
     """
     require_compose_file(directory)
-    data = yaml.safe_load((Path(directory) / COMPOSE_FILE).read_text(encoding="utf-8"))
+    data = _read_compose(directory)
     services = data.get("services", {}) if isinstance(data, dict) else {}
+    if not isinstance(services, dict):
+        raise OSError(
+            with_hint(
+                f"Invalid {COMPOSE_FILE}",
+                f"'services' in {Path(directory) / COMPOSE_FILE} must be a mapping.",
+            )
+        )
     return set(services)
