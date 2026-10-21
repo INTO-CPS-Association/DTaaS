@@ -269,6 +269,8 @@ looks like.
 
 ![Workbench Tools](images/workbench_tools.png)
 
+![Workbench page animation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/user/20261020_workspace.gif)
+
 ## Automation
 
 > **URL**: `https://intocps.org/automation`

@@ -57,5 +57,6 @@ long runs at 16x, and everything else at 4x.
 | 16  | [Incubator with NuRV Runtime Monitor FMU as Service](./incubator-NuRV-fmu-monitor-service/README.md)                     | RabbitMQ, InfluxDB                    | [demo](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/digital_twins/incubator-NuRV-fmu-monitor-service/demo.mp4) |
 | 17  | [Incubator with TeSSLa Runtime Monitor as Service](./incubator-TeSSLa-monitor-service/README.md)                         | RabbitMQ, InfluxDB                    | [demo](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/digital_twins/incubator-TeSSLa-monitor-service/demo.mp4)   |
 | 18  | [Incubator with TeSSLa Runtime Monitor for Active Control](./incubator-TeSSLa-active-control/README.md)                  | RabbitMQ, InfluxDB                    | [demo](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/digital_twins/incubator-TeSSLa-active-control/demo.mp4)    |
+| 19  | [BIM - Building Information Modeling](./fzk_haus/README.md)                                                              | MQTT                                  | [demo](https://raw.githubusercontent.com/INTO-CPS-Association/DTaaS-examples/main/digital_twins/fzk_haus/demo.mp4)                           |
 
 [DTaaS examples](https://github.com/INTO-CPS-Association/DTaaS-examples)
