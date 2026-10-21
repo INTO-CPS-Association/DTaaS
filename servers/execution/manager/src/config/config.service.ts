@@ -5,12 +5,25 @@ import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import { CONFIG_PATH_VARIABLE } from './cli.js';
 import { IConfig } from './config.interface.js';
-import { nonBlank, parsePositiveIntegerEnv, trimSlashes } from './parsers.js';
+import {
+  GITLAB_ENV_VARIABLES,
+  type GitlabSection,
+  type GitlabSettings,
+  gitlabSettingsSchema,
+  requireGitlabSettings,
+} from './gitlab-settings.js';
+import {
+  envSettings,
+  nonBlank,
+  parsePositiveIntegerEnv,
+  trimSlashes,
+} from './parsers.js';
 
 type ConfigValues = {
   hostname: string;
   port: number;
   'route-prefix': string;
+  gitlab: GitlabSection;
 };
 
 const DEFAULT_HOSTNAME = '127.0.0.1';
@@ -23,6 +36,7 @@ const managerConfigSchema = z
     port: z.coerce.number().int().positive().optional(),
     // Empty is rejected like every other key; / serves the routes at the root.
     'route-prefix': z.string().trim().min(1).optional(),
+    gitlab: gitlabSettingsSchema.optional(),
   })
   .strict();
 
@@ -31,6 +45,7 @@ function defaultConfigValues(): ConfigValues {
     hostname: DEFAULT_HOSTNAME,
     port: DEFAULT_PORT,
     'route-prefix': DEFAULT_ROUTE_PREFIX,
+    gitlab: {},
   };
 }
 
@@ -63,6 +78,10 @@ export default class Config implements IConfig {
 
   getRoutePrefix(): string {
     return this.configValues['route-prefix'];
+  }
+
+  getGitlab(): GitlabSettings {
+    return requireGitlabSettings(this.configValues.gitlab);
   }
 
   private loadYamlConfig(configPath: string): void {
@@ -100,5 +119,10 @@ export default class Config implements IConfig {
     if (routePrefix !== undefined) {
       this.configValues['route-prefix'] = trimSlashes(routePrefix);
     }
+
+    this.configValues.gitlab = gitlabSettingsSchema.parse({
+      ...this.configValues.gitlab,
+      ...envSettings(GITLAB_ENV_VARIABLES, process.env),
+    });
   }
 }

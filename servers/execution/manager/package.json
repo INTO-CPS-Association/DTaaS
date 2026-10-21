@@ -23,9 +23,11 @@
     "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/unit"
   },
   "dependencies": {
+    "@into-cps-association/dt-automation": "^0.2.0",
     "@nestjs/common": "^11.2.7",
     "@nestjs/core": "^11.2.7",
     "@nestjs/platform-express": "^11.2.7",
+    "@reduxjs/toolkit": "^2.13.0",
     "cross-env": "^10.1.0",
     "js-yaml": "^5.4.3",
     "reflect-metadata": "^0.2.2",

@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 import supertest from 'supertest';
+import AppModule from 'src/app.module.js';
 import Config from 'src/config/config.service.js';
 import { useConfigFile } from '../support/config-file.js';
 import { createTestApp } from '../support/test-app.js';
@@ -9,6 +11,9 @@ const managedEnvVariables = [
   'EXECUTION_MANAGER_HOSTNAME',
   'EXECUTION_MANAGER_PORT',
   'EXECUTION_MANAGER_ROUTE_PREFIX',
+  'EXECUTION_MANAGER_GITLAB_URL',
+  'EXECUTION_MANAGER_GITLAB_USERNAME',
+  'EXECUTION_MANAGER_GITLAB_TOKEN',
 ];
 
 describe('Execution Manager e2e', () => {
@@ -49,6 +54,12 @@ describe('Execution Manager configuration pipeline', () => {
     expect(config.getPort()).toBe(4700);
 
     await app.close();
+  });
+
+  it('does not start without the GitLab settings', async () => {
+    await expect(
+      Test.createTestingModule({ imports: [AppModule] }).compile(),
+    ).rejects.toThrow('gitlab.url is not set');
   });
 
   it('moves every route with the route prefix', async () => {

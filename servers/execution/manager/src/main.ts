@@ -39,6 +39,7 @@ async function bootstrap(): Promise<void> {
 
   const startupConfig = new Config();
   const app = await createExecutionManagerApp(startupConfig);
+  app.enableShutdownHooks();
   await app.listen(startupConfig.getPort(), startupConfig.getHostname());
 }
 

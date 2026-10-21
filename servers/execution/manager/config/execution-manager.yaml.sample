@@ -2,3 +2,13 @@ hostname: 127.0.0.1
 port: 4004
 # Set it to / to serve the routes at the root.
 route-prefix: execution-manager
+# Set the token with EXECUTION_MANAGER_GITLAB_TOKEN.
+gitlab:
+  url: https://gitlab.example.org
+  username: user1
+  # token: <personal access token with the api scope>
+  group: DTaaS
+  dt-directory: digital_twins
+  common-library-project: common
+  branch: master
+  runner-tag: linux

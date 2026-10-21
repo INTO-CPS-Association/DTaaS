@@ -20,3 +20,15 @@ export function parsePositiveIntegerEnv(
   }
   return parsed;
 }
+
+export function envSettings<Setting extends string>(
+  variables: Record<Setting, string>,
+  env: NodeJS.ProcessEnv,
+): Partial<Record<Setting, string>> {
+  const settings: Partial<Record<Setting, string>> = {};
+  for (const setting of Object.keys(variables) as Setting[]) {
+    const value = env[variables[setting]];
+    if (nonBlank(value) !== undefined) settings[setting] = value;
+  }
+  return settings;
+}

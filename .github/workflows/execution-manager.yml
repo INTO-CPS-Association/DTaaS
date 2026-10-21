@@ -78,9 +78,12 @@ jobs:
             --es-module-specifier-resolution=node
             --experimental-specifier-resolution=node
           PORT: ${{ env.EXECUTION_MANAGER_PORT }}
+          # Start-up requires a token but does not contact GitLab.
+          EXECUTION_MANAGER_GITLAB_TOKEN: not-a-token
         run: |
           yarn build
-          node dist/src/main.js > execution-manager.log 2>&1 &
+          node dist/src/main.js --config config/execution-manager.yaml.sample \
+            > execution-manager.log 2>&1 &
           manager_pid="$!"
           trap 'kill "$manager_pid" 2>/dev/null || true' EXIT
           for _ in 1 2 3 4; do
@@ -105,6 +108,9 @@ jobs:
             .
           container_id=$(docker run --detach --rm \
             --publish 127.0.0.1:4004:4004 \
+            --env EXECUTION_MANAGER_GITLAB_URL=https://gitlab.example.org \
+            --env EXECUTION_MANAGER_GITLAB_USERNAME=user1 \
+            --env EXECUTION_MANAGER_GITLAB_TOKEN=not-a-token \
             dtaas-execution-manager:ci)
           trap 'docker logs "$container_id"; docker stop "$container_id"' EXIT
           for _ in 1 2 3 4; do
