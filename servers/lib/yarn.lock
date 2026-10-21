@@ -4592,9 +4592,9 @@ clone@^1.0.2:
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
 cloudcmd@^19.21.0:
-  version "19.21.0"
-  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.21.0.tgz#c99f7e412f027f308dc563d4a56613a57082e24e"
-  integrity sha512-TH10Otl+bZ77eiUhKPvT9xczCpJLmbRgIqXKSRD8e547AwLOObdGpT2dhdmg1vOVUuTQRMjnvflhD0/xe4VmnA==
+  version "19.21.1"
+  resolved "https://registry.yarnpkg.com/cloudcmd/-/cloudcmd-19.21.1.tgz#79e59496bd56a589c1c83b662685a65723e949cb"
+  integrity sha512-m35ClwjHXg3196LYgjCmky3RZAXNdBjWBzyMc0ifafK6HmUbI0f1X/RfaPYVNRhV8Qq/qHb9xB1YQ4skxS3rUA==
   dependencies:
     "@cloudcmd/dropbox" "^5.0.1"
     "@cloudcmd/fileop" "^9.0.8"
