@@ -8,12 +8,11 @@ The simplest option is the
 [workspace localhost](../admin/workspace/localhost/install.md)
 installation scenario.
 
-These user-specific
-[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20250605-Users.pdf)
-and this
-[conceptual presentation](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/20250605-Users-recorded_web.mp4)
-explain the concepts behind composable digital twins in the
-DTaaS platform.
+These
+[Slides](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/20261020_DTaaS-introduction.pdf)
+and
+[Video](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/user/20261020_DTaaS-introduction.mp4)
+explain the concepts behind the DTaaS platform.
 
 ## Motivation
 

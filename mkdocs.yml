@@ -89,6 +89,7 @@ nav:
               - Incubator with NuRV FMU Service: user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
               - Incubator with TeSSLa Service: user/examples/workspace/incubator-TeSSLa-monitor-service/README.md
               - Incubator with TeSSLa Active Control: user/examples/workspace/incubator-TeSSLa-active-control/README.md
+              - BIM Building Model: user/examples/workspace/fzk_haus/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
           - Automation:
               - Overview: user/examples/automation/index.md

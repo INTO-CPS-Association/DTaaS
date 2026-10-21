@@ -108,33 +108,19 @@ These walkthroughs help when selecting or validating an installation
 scenario. Where a `4x` recording exists, the preview and MP4 link below
 use it.
 
-### DTaaS localhost
+### DTaaS CLI
 
 <!-- markdownlint-disable MD013 -->
-![DTaaS localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_dtaas-localhost_4x.gif)
+![DTaaS CLI python package demo](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/admin_and_user/20261020_dtaas-cli-demo.gif)
 
-[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_dtaas-localhost_4x.mp4)
+[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/admin_and_user/20261020_dtaas-cli-demo-full.mp4)
 
-### Multi-user DTaaS on secure server
-
-<!-- markdownlint-disable MD013 -->
-![Multi-user DTaaS on secure server walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_multi-user-dtaas-on-secure-server_4x.gif)
-
-[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260419_dtaas/20260419_multi-user-dtaas-on-secure-server_4x.mp4)
-
-### Workspace on localhost
+### DTaaS Platform Services CLI
 
 <!-- markdownlint-disable MD013 -->
-![Workspace on localhost walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Workspace_on_Localhost_web.gif)
+![DTaaS platform services CLI python package demo](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/admin_and_user/20261020_platform-services-demo.gif)
 
-[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Workspace_on_Localhost_web.mp4)
-
-### Multi-user workspace
-
-<!-- markdownlint-disable MD013 -->
-![Multi-user workspace walkthrough](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.gif)
-
-[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.0/admin_and_user/20260413_workspace/20260413__Multi-User_Workspace_web.mp4)
+[Open MP4](https://odin.cps.digit.au.dk/into-cps/dtaas/assets/videos/v1.1/admin_and_user/20261020_platform_services_4x.mp4)
 
 ## Administration
 
