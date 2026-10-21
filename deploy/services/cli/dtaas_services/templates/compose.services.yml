@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: rabbitmq:4.2.2-management
+    image: rabbitmq:4.4.0-management
     container_name: rabbitmq
     restart: always
     ports:
@@ -19,7 +19,7 @@ services:
       - platform-services
 
   mongodb:
-    image: 'mongo:8.2.3'
+    image: 'mongo:9.0.4'
     container_name: mongodb
     restart: always
     command: mongod --config /etc/mongod.conf
@@ -37,7 +37,7 @@ services:
       - platform-services
 
   grafana:
-    image: 'grafana/grafana:12.3.1-ubuntu'
+    image: 'grafana/grafana:13.2.4-ubuntu'
     container_name: grafana
     restart: always
     user: '${USERID}:${GROUPID}'
@@ -70,7 +70,7 @@ services:
       - platform-services
 
   influxdb:
-    image: 'influxdb:2.8.0'
+    image: 'influxdb:2.9.1'
     container_name: influxdb
     restart: always
     # user: '${USERID}:${GROUPID}'
@@ -92,7 +92,7 @@ services:
       - platform-services
 
   postgres:
-    image: 'postgres:16.11'
+    image: 'postgres:18.6'
     container_name: postgres
     restart: always
     ports:
