@@ -203,8 +203,22 @@ from, and points the version tag, and `latest` if it pointed at the same
 image, at both. It refuses a version that is missing or already
 multi-platform.
 
-Run it from the Actions tab with the image name, the version, the
-source commit and the Dockerfile path at that commit. Dockerfiles moved
-from `developer/` to `developer/check/`, so older commits need the old
-path. Keep `dry-run` on for a first run: it builds and pushes the arm64
-image by digest without moving any tag.
+Run it from the Actions tab with:
+
+- the image name and the version, for example `1.7.2`
+- the full 40-character SHA of the commit the version was published
+  from
+- the Dockerfile path at that commit; Dockerfiles moved from
+  `developer/` to `developer/check/`, so older commits need the old path
+- for `dtaas-web`, the Node.js version its publish workflow used at that
+  commit, for example `24` for 1.7.1
+
+The workflow refuses a commit whose `package.json` version or Dockerfile
+does not match the image and version. Keep `dry-run` on for a first run:
+it builds and pushes the arm64 image by digest without moving any tag.
+Then run it again with `dry-run` switched off; that run builds arm64
+again and leaves the dry-run image untagged.
+
+If the last job fails after it has updated GHCR but not Docker Hub, use
+"Re-run failed jobs" on that run. A new run would refuse the version,
+because GHCR already lists both platforms.

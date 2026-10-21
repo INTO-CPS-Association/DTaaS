@@ -1,13 +1,7 @@
 # Adds a linux/arm64 image to a Docker image version that was published
-# for linux/amd64 only, on both Docker Hub and GHCR.
-#
-# The published amd64 image is kept as it is. The version tag is pointed
-# at a new manifest list made of that image and an arm64 image built
-# natively from the commit the version was published from. The latest
-# tag moves only if it already pointed at the same image.
-#
-# Run it with dry-run first: that builds and pushes the arm64 image by
-# digest without moving any tag.
+# for linux/amd64 only, on both Docker Hub and GHCR, and keeps the
+# published amd64 image as it is. See "Add arm64 to an Older Version" in
+# docs/developer/contributions/docker.md for how to run and recover it.
 
 name: Add arm64 to a published Docker image
 
@@ -33,12 +27,10 @@ name: Add arm64 to a published Docker image
         type: string
       node-version:
         description: Node.js version that built the dtaas-web website
-        required: false
         type: string
         default: '26'
       dry-run:
         description: Build and push by digest, but do not move any tag
-        required: false
         type: boolean
         default: true
 
@@ -71,7 +63,12 @@ jobs:
         id: check
         env:
           GHCR_REPOSITORY: ${{ github.repository_owner }}/${{ inputs.image-name }}
+          SOURCE_REF: ${{ inputs.source-ref }}
         run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ && "$SOURCE_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "version must be X.Y.Z and source-ref a full 40-character commit SHA." >&2
+            exit 1
+          fi
           ACCEPT="application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json"
           ACCEPT="$ACCEPT,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.manifest.v1+json"
           fetch() {  # <registry> <repository> <token> <path> [curl options]
@@ -95,17 +92,23 @@ jobs:
               exit 1
             fi
             amd64=$(digest_of "$2" "$3" "$4" "$VERSION")
-            latest=$(digest_of "$2" "$3" "$4" latest || true)
+            # Fail closed: only a 404 means there is no latest tag.
+            code=$(fetch "$2" "$3" "$4" manifests/latest -I -o /dev/null -w '%{http_code}' || true)
+            case "$code" in
+              200) latest=$(digest_of "$2" "$3" "$4" latest) ;;
+              404) latest="" ;;
+              *) echo "Looking up $2/$3:latest returned HTTP $code." >&2; exit 1 ;;
+            esac
             echo "$2/$3:$VERSION is linux/amd64 $amd64; latest is ${latest:-absent}."
             echo "${1}_amd64=$amd64" >> "$GITHUB_OUTPUT"
             echo "${1}_latest=$([ "$latest" = "$amd64" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           }
           ghcr_repo="${GHCR_REPOSITORY,,}"
-          token=$(curl -sSf "https://ghcr.io/token?scope=repository:$ghcr_repo:pull" | jq -r .token)
+          token=$(curl -sSf --proto =https "https://ghcr.io/token?scope=repository:$ghcr_repo:pull" | jq -r .token)
           check_registry ghcr ghcr.io "$ghcr_repo" "$token"
           echo "ghcr_image=ghcr.io/$ghcr_repo" >> "$GITHUB_OUTPUT"
           hub_auth="https://auth.docker.io/token?service=registry.docker.io"
-          token=$(curl -sSf "$hub_auth&scope=repository:$HUB_REPOSITORY:pull" | jq -r .token)
+          token=$(curl -sSf --proto =https "$hub_auth&scope=repository:$HUB_REPOSITORY:pull" | jq -r .token)
           check_registry hub registry-1.docker.io "$HUB_REPOSITORY" "$token"
 
   build-arm64:
@@ -129,6 +132,22 @@ jobs:
           ref: ${{ inputs.source-ref }}
           lfs: false
           persist-credentials: false
+
+      - name: Check that the commit and Dockerfile belong to the version
+        env:
+          IMAGE_NAME: ${{ inputs.image-name }}
+          DOCKERFILE: ${{ inputs.dockerfile }}
+        run: |
+          case "$IMAGE_NAME" in
+            dtaas-web) package=client expected=client.built.dockerfile ;;
+            libms) package=servers/lib expected=libms.dockerfile ;;
+            logger-ms) package=servers/logger expected=logger.dockerfile ;;
+          esac
+          found=$(jq -r .version "$package/package.json")
+          if [ "$found" != "$VERSION" ] || [ "${DOCKERFILE##*/}" != "$expected" ] || [ ! -f "$DOCKERFILE" ]; then
+            echo "Expected version $VERSION and a $expected; found $found and $DOCKERFILE." >&2
+            exit 1
+          fi
 
       - name: Setup node for building the React client website
         if: ${{ inputs.image-name == 'dtaas-web' }}
@@ -224,7 +243,6 @@ jobs:
             docker buildx imagetools create "${tags[@]}" "$1@$2" "$1@$ARM64"
             docker buildx imagetools inspect --raw "$1:$VERSION" |
               jq -e '[.manifests[].platform.architecture] | (index("amd64") != null and index("arm64") != null)'
-            docker buildx imagetools inspect "$1:$VERSION"
           }
           merge "$GHCR_IMAGE" "$GHCR_AMD64" "$GHCR_LATEST"
           merge "docker.io/$HUB_REPOSITORY" "$HUB_AMD64" "$HUB_LATEST"
