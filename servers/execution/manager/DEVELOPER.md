@@ -25,6 +25,7 @@ yarn graph         # Generate dependency graphs of src and test
 yarn build         # Compile TypeScript into the dist/ directory
 yarn test          # Run all tests with coverage
 yarn test:unit     # Run unit tests
+yarn test:integration # Run the MQTT service against an in-process broker
 yarn test:e2e      # Run end-to-end tests
 yarn test:nocov    # Run all tests without coverage
 yarn check:final   # Run syntax, format, graph, build and test together
@@ -44,9 +45,10 @@ yarn start --config config/execution-manager.yaml
   starts the HTTP server.
 - `src/app.controller.ts` serves the health endpoint.
 - `src/config/` loads the configuration from the YAML file and the environment
-  (`config.service.ts`, with the `gitlab` section in `gitlab-settings.ts`) and
-  resolves the `--config` option (`cli.ts`). It checks that the required GitLab
-  settings are set.
+  (`config.service.ts`, with the `gitlab` and `mqtt` sections in
+  `gitlab-settings.ts` and `mqtt-settings.ts`) and resolves the `--config`
+  option (`cli.ts`). It checks that the required GitLab settings are set and
+  fills in the MQTT defaults.
 - `src/digital-twins/` holds the digital twin operations and their REST API.
   - `digital-twins.controller.ts` has the REST routes, `validation.pipe.ts`
     validates their parameters and bodies, and
@@ -70,12 +72,21 @@ yarn start --config config/execution-manager.yaml
       a timer and publishes every execution that changed.
     - `mappers.ts` maps the package's types to the types that the operations
       return. Only `dt-automation-facade.ts` calls the mappers.
-- `test/unit/` holds unit tests per module; `test/e2e/` starts the whole
-  application with supertest.
+- `src/mqtt/` serves the same operations over MQTT: `topics.ts` builds and
+  parses the topics and holds the rule for a topic name, `requests.ts` handles
+  one request, with the schema and the service call of every operation, and
+  `mqtt.service.ts` owns the broker connection and publishes the execution
+  events. `settings.ts` builds the base topic of the configured user.
+- `test/unit/` holds unit tests per module; `test/integration/` runs the MQTT
+  service against an in-process aedes broker; `test/e2e/` starts the whole
+  application with supertest. The MQTT end-to-end test uses the public broker
+  `mqtt://broker.emqx.io:1883`; `EXECUTION_MANAGER_E2E_MQTT_URL` points it at
+  another broker.
 - `test/support/` holds what several tests share.
   `fake-dt-automation-facade.ts` stands in for the package and
   `fake-digital-twins-service.ts` for the operations, since CI has no GitLab.
-  `test-app.ts` starts the application.
+  `test-app.ts` starts the application; it connects to a broker only for the
+  tests that test MQTT, and `mqtt.ts` has their broker and client helpers.
 
 ## Dependencies
 

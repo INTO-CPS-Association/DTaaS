@@ -8,8 +8,8 @@ list the digital twins of a GitLab user, read one, start and stop an
 execution, and read an execution with the logs of its pipeline jobs. The
 service keeps the status of every running execution current by asking GitLab
 on a timer, so no client has to poll. This version acts for one GitLab user,
-named in the configuration, and offers the operations through a REST API; the
-MQTT API follows in the next release.
+named in the configuration, and offers the operations through a REST API and
+an MQTT API.
 
 ## Install
 
@@ -97,6 +97,22 @@ The defaults are the ones dt-automation uses. The execution history is held
 in memory, so the service forgets past executions when it restarts; a running
 pipeline on GitLab is not affected.
 
+### MQTT
+
+The `mqtt` section names the broker for the MQTT API. The service connects at
+start-up and reconnects on its own, also after the broker has refused its
+login. While the broker is unreachable the REST API keeps working; requests
+published in the meantime are not answered. The service does not start when
+`topic-prefix` and `gitlab.username` do not form an MQTT topic name, for
+example when one of them holds a wildcard.
+
+| Setting             | Default                   | Environment variable                 |
+| :------------------ | :------------------------ | :----------------------------------- |
+| `mqtt.url`          | `mqtt://localhost:1883`   | `EXECUTION_MANAGER_MQTT_URL`         |
+| `mqtt.username`     | not set                   | `EXECUTION_MANAGER_MQTT_USERNAME`    |
+| `mqtt.password`     | not set                   | `EXECUTION_MANAGER_MQTT_PASSWORD`    |
+| `mqtt.topic-prefix` | `dtaas/execution-manager` | `EXECUTION_MANAGER_MQTT_TOPIC_PREFIX` |
+
 A sample configuration:
 
 ```yaml
@@ -112,6 +128,11 @@ gitlab:
   common-library-project: common
   branch: master
   runner-tag: linux
+mqtt:
+  url: mqtt://localhost:1883
+  # username: manager
+  # password: set EXECUTION_MANAGER_MQTT_PASSWORD instead
+  topic-prefix: dtaas/execution-manager
 ```
 
 The same sample can be downloaded:
@@ -179,6 +200,86 @@ curl -X POST http://localhost:4004/execution-manager/digital-twins/mass-spring-d
 This version has no authentication: anyone who reaches the port acts as the
 configured user. Keep the default bind address `127.0.0.1` unless a reverse
 proxy in front of the service authenticates its callers.
+
+## MQTT API
+
+The same operations are offered over the broker named in the `mqtt` section.
+Every topic starts with the base topic `<topic-prefix>/<gitlab.username>`,
+for example `dtaas/execution-manager/user1`.
+
+As over REST, this version has no authentication. Anyone who can publish to
+`<base>/requests/+` acts as the configured user, and anyone who can subscribe
+to `<base>/digital-twins/#` reads the execution records and their job logs.
+Restrict both with the broker's access rules.
+
+### Requests
+
+Publish a JSON payload to `<base>/requests/<operation>`:
+
+| Operation            | Fields                                      | Answers with                    |
+| :------------------- | :------------------------------------------ | :------------------------------ |
+| `list-digital-twins` |                                             | the digital twins               |
+| `get-digital-twin`   | `dtName`                                    | one digital twin                |
+| `start-execution`    | `dtName`, optional `runnerTag` and `branch` | the new execution record        |
+| `stop-execution`     | `dtName`, `executionId`                     | the stopped execution record    |
+| `list-executions`    | `dtName`                                    | the digital twin's executions   |
+| `get-execution`      | `dtName`, `executionId`                     | one execution with its job logs |
+
+Every payload carries a `correlationId` of your choice and may name a
+`responseTopic`:
+
+```json
+{ "correlationId": "42", "responseTopic": "dtaas/execution-manager/user1/responses/clients/7", "dtName": "mass-spring-damper" }
+```
+
+A request takes the fields of its operation only; any other field is answered
+with `bad-request`.
+
+The service subscribes to the request topics at QoS 1 and keeps no session on
+the broker. A request is therefore delivered at least once while the service
+is connected, and a request published while it is disconnected is lost. A
+request that is delivered twice is performed twice, so a repeated
+`start-execution` starts a second execution: after a start that was not
+answered, check `list-executions` before starting again.
+
+### Responses
+
+The response goes to `responseTopic`, or to `<base>/responses/<operation>`
+when the request names none. It is published at QoS 0 and repeats the
+correlation ID:
+
+```json
+{ "correlationId": "42", "ok": true, "data": {} }
+{ "correlationId": "42", "ok": false, "error": { "code": "not-found", "message": "..." } }
+```
+
+`responseTopic` must be an MQTT topic name under `<base>/responses/`, so the
+service publishes nowhere else on a request's behalf: at most 65535 bytes,
+without the wildcards `+` and `#` and without control characters. A request
+that names any other topic is answered with `bad-request` on the default
+response topic. A broker can refuse a topic for reasons of its own, such as
+more levels than it allows, and then closes the connection: that response is
+lost, and the service reconnects within about a second.
+
+| Code                | Meaning                                              |
+| :------------------ | :--------------------------------------------------- |
+| `bad-request`       | The payload is not JSON, or a field is missing or invalid |
+| `unknown-operation` | The request topic names no known operation           |
+| `not-found`         | The digital twin or the execution does not exist     |
+| `bad-gateway`       | GitLab reported a failure; `message` carries its reason |
+| `internal`          | The request could not be handled                     |
+
+A payload that is not JSON is answered with `"correlationId": null`.
+
+### Events
+
+Whenever an execution's status or logs change, its record is published to
+`<base>/digital-twins/<dtName>/executions/<executionId>` at QoS 1, not
+retained. Subscribe to `<base>/digital-twins/+/executions/+` to follow every
+execution of the user.
+
+The reply address travels in the payload rather than in MQTT 5 properties, so
+the API works with MQTT 3.1.1 brokers.
 
 ## License
 

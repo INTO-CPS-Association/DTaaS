@@ -13,5 +13,6 @@ import { DIGITAL_TWINS_SERVICE } from './interfaces/digital-twins.service.interf
     DigitalTwinsService,
     { provide: DIGITAL_TWINS_SERVICE, useExisting: DigitalTwinsService },
   ],
+  exports: [DIGITAL_TWINS_SERVICE],
 })
 export default class DigitalTwinsModule {}

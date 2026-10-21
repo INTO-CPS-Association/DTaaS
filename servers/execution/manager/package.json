@@ -19,6 +19,7 @@
     "syntax:check": "npx eslint .",
     "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
     "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/e2e",
+    "test:integration": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/integration",
     "test:nocov": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false",
     "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/unit"
   },
@@ -30,6 +31,7 @@
     "@reduxjs/toolkit": "^2.13.0",
     "cross-env": "^10.1.0",
     "js-yaml": "^5.4.3",
+    "mqtt": "^5.16.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.6.6"
@@ -44,6 +46,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.71.1",
     "@typescript-eslint/parser": "^8.71.1",
+    "aedes": "^1.2.0",
     "concurrently": "^9.2.5",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",

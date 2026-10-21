@@ -13,6 +13,13 @@ import {
   requireGitlabSettings,
 } from './gitlab-settings.js';
 import {
+  MQTT_ENV_VARIABLES,
+  type MqttSection,
+  type MqttSettings,
+  mqttSettingsSchema,
+  withMqttDefaults,
+} from './mqtt-settings.js';
+import {
   envSettings,
   nonBlank,
   parsePositiveIntegerEnv,
@@ -24,6 +31,7 @@ type ConfigValues = {
   port: number;
   'route-prefix': string;
   gitlab: GitlabSection;
+  mqtt: MqttSection;
 };
 
 const DEFAULT_HOSTNAME = '127.0.0.1';
@@ -37,6 +45,7 @@ const managerConfigSchema = z
     // Empty is rejected like every other key; / serves the routes at the root.
     'route-prefix': z.string().trim().min(1).optional(),
     gitlab: gitlabSettingsSchema.optional(),
+    mqtt: mqttSettingsSchema.optional(),
   })
   .strict();
 
@@ -46,6 +55,7 @@ function defaultConfigValues(): ConfigValues {
     port: DEFAULT_PORT,
     'route-prefix': DEFAULT_ROUTE_PREFIX,
     gitlab: {},
+    mqtt: {},
   };
 }
 
@@ -82,6 +92,10 @@ export default class Config implements IConfig {
 
   getGitlab(): GitlabSettings {
     return requireGitlabSettings(this.configValues.gitlab);
+  }
+
+  getMqtt(): MqttSettings {
+    return withMqttDefaults(this.configValues.mqtt);
   }
 
   private loadYamlConfig(configPath: string): void {
@@ -123,6 +137,10 @@ export default class Config implements IConfig {
     this.configValues.gitlab = gitlabSettingsSchema.parse({
       ...this.configValues.gitlab,
       ...envSettings(GITLAB_ENV_VARIABLES, process.env),
+    });
+    this.configValues.mqtt = mqttSettingsSchema.parse({
+      ...this.configValues.mqtt,
+      ...envSettings(MQTT_ENV_VARIABLES, process.env),
     });
   }
 }

@@ -12,3 +12,9 @@ gitlab:
   common-library-project: common
   branch: master
   runner-tag: linux
+# Set the password with EXECUTION_MANAGER_MQTT_PASSWORD.
+mqtt:
+  url: mqtt://localhost:1883
+  # username: manager
+  # password: <broker password>
+  topic-prefix: dtaas/execution-manager
