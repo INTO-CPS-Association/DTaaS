@@ -33,7 +33,7 @@ Some examples need external services, such as RabbitMQ, MQTT or InfluxDB,
 to be running and reachable from the workspace. Configure the access
 details of these services as described in the README of each example.
 The demo video of each example shows it running in a terminal of the
-workspace desktop of DTaaS v1.0 (`workspace-dex-localhost` installation).
+workspace desktop of DTaaS (`workspace-dex-localhost` installation).
 The videos are sped up: results play at normal speed, installations and
 long runs at 16x, and everything else at 4x.
 
