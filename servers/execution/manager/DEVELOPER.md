@@ -47,13 +47,18 @@ yarn start --config config/execution-manager.yaml
   (`config.service.ts`, with the `gitlab` section in `gitlab-settings.ts`) and
   resolves the `--config` option (`cli.ts`). It checks that the required GitLab
   settings are set.
-- `src/digital-twins/` holds the digital twin operations.
+- `src/digital-twins/` holds the digital twin operations and their REST API.
+  - `digital-twins.controller.ts` has the REST routes, `validation.pipe.ts`
+    validates their parameters and bodies, and
+    `digital-twins-errors.filter.ts` answers each error code of the
+    operations with its HTTP status.
   - `digital-twins.service.ts` offers the operations with JSON inputs and
     outputs and reports failures as the errors of `digital-twins.errors.ts`.
     Other modules inject it through the `IDigitalTwinsService` interface and
     its token (`interfaces/digital-twins.service.interface.ts`).
   - `interfaces/` also holds the shapes that the operations return. `dto/`
-    holds the zod schema of the options that a caller may pass to a start.
+    holds the zod schemas of what a caller may pass to the operations. Every
+    API validates its input with them.
   - `dt-automation/` is the only folder that imports
     `@into-cps-association/dt-automation`.
     - `dt-automation-facade.ts` sets the package up and offers it to
@@ -68,8 +73,9 @@ yarn start --config config/execution-manager.yaml
 - `test/unit/` holds unit tests per module; `test/e2e/` starts the whole
   application with supertest.
 - `test/support/` holds what several tests share.
-  `fake-dt-automation-facade.ts` stands in for the package, since CI has no
-  GitLab. `test-app.ts` starts the application.
+  `fake-dt-automation-facade.ts` stands in for the package and
+  `fake-digital-twins-service.ts` for the operations, since CI has no GitLab.
+  `test-app.ts` starts the application.
 
 ## Dependencies
 

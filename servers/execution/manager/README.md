@@ -8,8 +8,8 @@ list the digital twins of a GitLab user, read one, start and stop an
 execution, and read an execution with the logs of its pipeline jobs. The
 service keeps the status of every running execution current by asking GitLab
 on a timer, so no client has to poll. This version acts for one GitLab user,
-named in the configuration, and serves a health endpoint; the REST and MQTT
-interfaces to the operations are added in the following releases.
+named in the configuration, and offers the operations through a REST API; the
+MQTT API follows in the next release.
 
 ## Install
 
@@ -123,15 +123,62 @@ curl -o execution-manager.yaml \
 
 ## API
 
-| Route                         | Purpose                                 |
-| :---------------------------- | :-------------------------------------- |
-| `GET /<route-prefix>/health`  | Returns `{"status": "ok"}` when serving |
+Every route is served under the route prefix; the paths below assume the
+default `execution-manager`.
 
-With the default prefix:
+| Route                                                        | Purpose                                                                        |
+| :----------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| `GET /execution-manager/health`                              | Returns `{"status": "ok"}` when serving                                        |
+| `GET /execution-manager/digital-twins`                       | The user's digital twins: names and short descriptions                        |
+| `GET /execution-manager/digital-twins/:name`                 | One digital twin: descriptions and the names of its files                      |
+| `POST /execution-manager/digital-twins/:name/executions`     | Starts an execution; optional `runnerTag` and `branch`; `202` with the record  |
+| `GET /execution-manager/digital-twins/:name/executions`      | The digital twin's executions, newest first                                    |
+| `GET /execution-manager/digital-twins/:name/executions/:id`  | One execution with its status and job logs                                     |
+| `POST /execution-manager/digital-twins/:name/executions/:id/stop` | Stops an execution that has not finished; `200` with the record           |
+
+`:name` is the name of the digital twin's directory under the DT directory of
+the user's project. A request with an invalid body or name is answered with
+`400`, an unknown digital twin or execution with `404`, and a failure that
+dt-automation reports from GitLab with `502` and GitLab's reason in `message`.
+dt-automation reports no failure while it reads the descriptions and file names
+of a digital twin. Such a failure gives `200` with a placeholder description or
+empty file lists.
+
+An execution record:
+
+```json
+{
+  "id": "6f1c2d6e-9d7a-4a2e-9f9d-3f2b1c0a5e71",
+  "dtName": "mass-spring-damper",
+  "pipelineId": 1234,
+  "timestamp": 1760000000000,
+  "status": "running",
+  "jobLogs": [{ "jobName": "execute", "log": "..." }]
+}
+```
+
+`status` is one of `running`, `completed`, `failed`, `canceled` and `error`, as
+dt-automation reports them. The service sets no time limit on an execution.
+dt-automation starts a digital twin through a parent pipeline, which triggers
+the digital twin's own pipeline. `jobLogs` holds the logs of the jobs of that
+pipeline once it has finished, whether it completed or failed. `jobLogs` stays
+empty when the execution is stopped through the service, and when the parent
+pipeline fails or is canceled in GitLab. Stopping an
+execution that has completed, failed or been canceled changes nothing and
+returns its record. An execution in `error` has lost its status check, so
+stopping it still cancels its pipeline.
 
 ```bash
-curl http://localhost:4004/execution-manager/health
+curl -X POST http://localhost:4004/execution-manager/digital-twins/mass-spring-damper/executions \
+  -H 'Content-Type: application/json' \
+  -d '{"runnerTag": "linux"}'
+curl http://localhost:4004/execution-manager/digital-twins/mass-spring-damper/executions
+curl -X POST http://localhost:4004/execution-manager/digital-twins/mass-spring-damper/executions/<id>/stop
 ```
+
+This version has no authentication: anyone who reaches the port acts as the
+configured user. Keep the default bind address `127.0.0.1` unless a reverse
+proxy in front of the service authenticates its callers.
 
 ## License
 
