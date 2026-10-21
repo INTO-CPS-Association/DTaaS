@@ -1,0 +1,4927 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../brand/dtaas-mark.svg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Hand Edits to the Diagrams - Digital Twin as a Service (DTaaS)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hand-edits-to-the-diagrams" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="Digital Twin as a Service (DTaaS)" class="md-header__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
+      
+  <img src="../brand/dtaas-mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Digital Twin as a Service (DTaaS)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Hand Edits to the Diagrams
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/into-cps-association/DTaaS" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DTaaS
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../index.html" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../playlist.html" class="md-tabs__link">
+        
+  
+    
+  
+  Playlist
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../user/motivation.html" class="md-tabs__link">
+          
+  
+  User
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../admin/overview.html" class="md-tabs__link">
+          
+  
+  Admin
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../FAQ.html" class="md-tabs__link">
+        
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer/index.html" class="md-tabs__link">
+          
+  
+  Developer
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../bugs.html" class="md-tabs__link">
+        
+  
+    
+  
+  Bugs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../thanks.html" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../LICENSE.html" class="md-tabs__link">
+          
+  
+  License
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="Digital Twin as a Service (DTaaS)" class="md-nav__button md-logo" aria-label="Digital Twin as a Service (DTaaS)" data-md-component="logo">
+      
+  <img src="../brand/dtaas-mark-white.svg" alt="logo">
+
+    </a>
+    Digital Twin as a Service (DTaaS)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/into-cps-association/DTaaS" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DTaaS
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playlist.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Playlist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/motivation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Motivation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/features.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Website
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Website
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/website/dtaas.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/website/workspace.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/website/settings.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/website/logs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/website/bim.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reusable Assets
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reusable Assets
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/servers/lib/assets.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concept
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/servers/lib/LIB-MS.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/library/devops/ui.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Workflow Logging
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Workflow Logging
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/servers/logger/LOGGER-MS.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logger Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Digital Twins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            Digital Twins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/create.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/lifecycle.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lifecycle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6_3" id="__nav_3_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            DevOps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/file-structure.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Digital Twin Structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/ui.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/execution-settings.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/capabilities.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Capabilities
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/concurrent-execution.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Concurrent Execution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/digital-twins/devops/measurement.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Performance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/gitlab/tutorial.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gitlab Tutorial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/servers/execution/runner/readme.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runner
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9_2" id="__nav_3_9_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Workspace
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workspace
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/mass-spring-damper/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mass Spring Damper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/water_tank_FI/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Tank Fault Injection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/water_tank_swap/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Tank Model Swap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/heart_dt/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Heart Digital Twin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/drobotti-rmqfmu/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Desktop Robotti and RabbitMQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/opc-ua-waterplant/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Plant and OPC-UA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/opc-ua-waterplant-complete/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Plant and OPC-UA (Complete)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/three-tank/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Three Water Tanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/flex-cell/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Flex Cell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/o5g/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Firefighters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/mass-spring-damper-monitor/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mass Spring Damper with NuRV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/water_tank_FI_monitor/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Water Tank Fault Injection with NuRV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator-NuRV-monitor-validation/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator Co-Sim with NuRV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator-NuRV-monitor-service/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator with NuRV Service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator-NuRV-fmu-monitor-service/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator with NuRV FMU Service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator-TeSSLa-monitor-service/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator with TeSSLa Service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/incubator-TeSSLa-active-control/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incubator with TeSSLa Active Control
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/workspace/fzk_haus/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BIM Building Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/INTO-CPS-Association/DTaaS-examples" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Codebase
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9_4" id="__nav_3_9_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Automation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9_4">
+            <span class="md-nav__icon md-icon"></span>
+            Automation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/automation/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/automation/mass-spring-damper/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mass Spring Damper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/automation/shm/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Structural Health Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/automation/heart-dt/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Heart Digital Twin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/examples/automation/heart-dt-paas/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Heart Digital Twin (PaaS)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Admin
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Admin
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/overview.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Auto Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Auto Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/cli.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install with CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/cli-config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Manual Installation (Advanced)
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Manual Installation (Advanced)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1" id="__nav_4_3_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    DTaaS
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            DTaaS
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_1" id="__nav_4_3_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Localhost
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Localhost
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/localhost/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/localhost/config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_2" id="__nav_4_3_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Secure Server
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Secure Server
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/secure-server/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/secure-server/config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3" id="__nav_4_3_1_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Secure Server and GitLab
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            Secure Server and GitLab
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/secure-server-gitlab/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/dtaas/secure-server-gitlab/config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_2" id="__nav_4_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Workspace
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workspace
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_2_1" id="__nav_4_3_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Localhost
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Localhost
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/localhost/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/localhost/dex.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dex
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/localhost/custom-user.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom User
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_2_2" id="__nav_4_3_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Secure Server
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Secure Server
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/secure-server/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/secure-server/configuration.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/secure-server/keycloak-setup.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Keycloak Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/secure-server/design.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/services/cli.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Platform Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    GitLab
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            GitLab
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/gitlab/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/gitlab/integration.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5_3" id="__nav_4_5_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Runner
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            Runner
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/gitlab/runner-linux.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/gitlab/runner-windows.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Independent Packages
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Independent Packages
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/packages.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Listing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/workspace/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace Packages
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6_3" id="__nav_4_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Library Microservice
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Library Microservice
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/lib/npm.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/lib/docker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6_4" id="__nav_4_6_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Logger Microservice
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Logger Microservice
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/logger/npm.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/servers/logger/docker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/guides/localhost-on-portainer/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Localhost on Portainer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/guides/check_config.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Check Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/guides/common_workspace_readonly.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Common Assets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/guides/renew_certs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Renew Certificates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../admin/guides/self-signed-certs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self-Signed Certificates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FAQ.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Developer
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Developer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    System
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            System
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/architecture.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/current-status.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Current Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/extensions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Client Extensions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/research-overview.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Research Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2_5" id="__nav_6_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Review
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Code Review
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/review/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/review/architecture-review.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Review
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/review/design-review.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Review
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/review/systemic-issues.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Systemic Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/system/review/improvements.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Improvements
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Technical Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Technical Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/oauth-keycloak.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OAuth 2.0 and Keycloak
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/oauth/oauth2.0.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OAuth 2.0 Concepts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/oauth/design.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Auth System Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/oauth/authms.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Auth Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/gitlab.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/technical-concepts/testing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Codebase
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            Codebase
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/client.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/devops.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DevOps Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/client-devops.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Client DevOps Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/lib-ms.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Library Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/runner.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Runner Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/cli.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DTaaS CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/dtaas-services.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DTaaS Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/codebase/publish-packages.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Publish Packages
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributions
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            Contributions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/conduct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/coding-agents.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coding Agents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/local-testing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Local Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/docker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker Check
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/github-actions.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/npm-packages.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Publish NPM Packages
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributions/npm-upgrade.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade NPM Packages
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/vagrant.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vagrant
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bugs.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bugs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thanks.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            License
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DTaaS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../third-party.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Third Party
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-pages-added-in-october-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Pages Added in October 2026
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-example-pages-added-on-18-october-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Example Pages Added on 18 October 2026
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-other-example-pages-18-october-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Other Example Pages, 18 October 2026
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="hand-edits-to-the-diagrams">Hand Edits to the Diagrams</h1>
+<p>The edits made by hand in drawio after a step of the
+<code>.agents/skills/update-docs-diagrams</code> skill, page by page. The rules and the
+steps are in <a href="index.html">README.md</a>.</p>
+<p>These edits were made by hand in drawio, because each one concerns a single
+page and a script for it would be longer than the change:</p>
+<ul>
+<li>The pages were renamed after the image each one replaces.</li>
+<li><code>/lib</code> instead of <code>/libms</code>, <code>/user1</code> on user workspace 1, and <code>intocps.org</code>
+  instead of <code>intocps.com</code>, as the compose files in <code>deploy/</code> have them.</li>
+<li>The service at <code>/</code> is <code>Client</code> on every page, the name of the <code>client</code>
+  service in every compose file.</li>
+<li><code>admin/gitlab/gitlab-integrated-install.png</code>,
+  <code>admin/gitlab/gitlab-integrated-runner.png</code> and
+  <code>admin/gitlab/gitlab-independent-install.png</code> gained the Logger at
+  <code>/logger</code>, which the secure server packages route. On the independent page
+  Server 2 became narrower so the page stays under 600 units wide, where
+  12-unit text is still 14 pixels.</li>
+<li>The WebApp picture, a bitmap with its label drawn in another typeface, is
+  the drawio globe icon with an Inter label.</li>
+<li>Labels were moved clear of lines and frames after the switch to Inter, which
+  is wider than Helvetica. Route labels such as <code>/logger</code> and <code>/auth</code> sit
+  between two connector lines with space on both sides, and the server tags
+  moved left of the DTaaS mark with a clear gap.</li>
+<li><code>developer/system/multi-domain.png</code> was laid out again so its labels fit at
+  25 drawio units: the columns are wider, compose, configuration and execution
+  are rows instead of rotated columns, and the label of each stack of cards is
+  on the card in front.</li>
+<li>A Storage box hidden under the Dashboard of the Generic column of the
+  multi-domain page was removed. It drew nothing.</li>
+</ul>
+<p>The pages the documentation does not show follow the same rules, but they were
+not checked label by label for overlaps.</p>
+<h2 id="the-pages-added-in-october-2026">The Pages Added in October 2026</h2>
+<p>The drawio files received are kept as they arrived, in <code>originals/</code>, so every
+page can be traced back to its source: <code>2026-10-12_DTaaS-new-theme.drawio</code>
+for the installation and architecture pages, and
+<code>2026-10-13_DTaaS_new_theme_more_figures.drawio</code> with
+<code>2026-10-13_DTaaS-layers-on-devops.drawio</code> for the nine pages below. They are
+Git LFS objects and are not published with the site.</p>
+<p>Nine pages were added from two drawio files Prasad Talasila shared on 13
+October 2026: <code>DTaaS_new_theme_more_figures.drawio</code>, a working canvas with
+several versions of most figures, and <code>DTaaS-layers-on-devops.drawio</code>, the
+source of <code>devops.png</code>. Each page is the version that matches the image the
+documentation showed before, cut out of the canvas and passed through
+the retheme, restyle and shrink steps. The other
+figures of the canvas stay with Prasad, as they differ from the images in the
+documentation or are not used yet.</p>
+<p>Two steps changed for these pages. The retheme maps the colours the new
+figures use, added to <code>COLOURS</code> in <code>config.py</code>, and replaces a wordmark that
+lies loose on the page instead of in a group. The restyle leaves
+the DTaaS mark off the pages listed in <code>NO_MARK</code>, which draw a concept and not
+the DTaaS system, so their largest box is not the DTaaS boundary.</p>
+<p>The hand edits, by page:</p>
+<ul>
+<li><code>developer/system/architecture.png</code>: the running figures, the clipboard and
+  the DTs icon were emoji, two of them fetched from an external site. The
+  clipboard is a note shape. The running figures and the DTs icon were later
+  drawn with icons of the set (see the second review below). The two boxes
+  on the right are wider and several labels moved off their icons.</li>
+<li><code>developer/system/research-overview/dt-assets-relationship.png</code> and
+  <code>dtaas-class-instance.png</code>: the title written into the picture is gone, as
+  the page text names the figure. In the first, every arrow joins its two
+  boxes and carries its own label, where the sketch split each arrow around a
+  label with loose ends.</li>
+<li><code>developer/system/research-overview/federated-dtaas.png</code> and
+  <code>user/digital-twins/asset-relationship.png</code>: labels moved off the lines.</li>
+<li><code>developer/system/research-overview/dtaas-userview.png</code>: redrawn in about
+  1000 units instead of 2000, with the data acquisition below the platform,
+  so its labels reach 14 pixels at the column width. Every element and arrow
+  of the sketch is kept.</li>
+<li><code>developer/system/research-overview/dt-assets-relationship.png</code>,
+  <code>dtaas-userview.png</code>, <code>federated-dtaas.png</code>,
+  <code>admin/dtaas/localhost/localhost.png</code> and three pages not placed yet:
+  Prasad Talasila corrected the line routing and bends in drawio on 13
+  October 2026 (<code>dtaas-diagrams-changes-diff.drawio</code>), and the pages are taken
+  from his file as they are. The thin arrows of <code>federated-dtaas.png</code> keep his
+  width of 1. The localhost diagram draws no logger, although the localhost
+  package still runs one, because the logger has no use on localhost (Prasad
+  Talasila, 14 October 2026).</li>
+<li>Every page with GitLab: the cell shows the official logo from the GitLab
+  press kit (<a href="https://about.gitlab.com/press/press-kit/">https://about.gitlab.com/press/press-kit/</a>), the SVG unchanged,
+  in a box of its own proportions centred where the older logo was. The two
+  SVG files are in <code>.agents/skills/update-docs-diagrams/assets/</code>. On
+  <code>admin/gitlab/gitlab-integrated-runner.png</code> the two curves to the runners
+  start at the right edge of the wider logo.</li>
+<li><code>admin/servers/lib/file-system-layout.png</code>: redrawn. The sketch put five
+  labelled cards in each of seven folders, up to twelve labels in a row, which
+  no font size makes legible at the column width. Each folder shows the five
+  asset types as coloured squares, and one legend names them.</li>
+<li>The ten figures added on 14 and 15 October 2026, from <code>lifecycle-phases.png</code> to
+  <code>library-assets.png</code> in the table of <a href="index.html">README.md</a>, had no drawio
+  source. They are
+  redrawn from the images the documentation showed, keeping every box, arrow
+  and label, and then themed with the retheme, restyle and shrink steps.
+  Each page is about 1000 units wide (1044 for <code>lifecycle-phases.png</code>), so its
+  text reaches 14 pixels at the column width, and the concept pages are in
+  <code>NO_MARK</code>. Third-party product logos, such as the service logos of
+  <code>current-status-developer.png</code>, are cropped from those images without
+  changing a pixel, apart from a white background made transparent. The wind
+  turbine of <code>shm-dt-workflow.png</code> was cropped too, and is now the shared
+  turbine icon (see the entry for that page below).
+  <code>user/digital-twins/devops/ui.md</code> now shows <code>lifecycle-phases.png</code>, which
+  was the same drawing as its own copy, <code>devops-lifecycle.png</code>.</li>
+<li><code>system-architecture-c4.png</code> and <code>implementation-status.png</code>: redrawn in
+  portrait, 1000 units wide, so their text reaches 14 pixels at the column
+  width. Every element, connection and legend of the original is kept, and
+  some edges enter their shapes from another side. Their fills code the four
+  layers of ISO 23247, and the theme palette has two tints and a grey scale,
+  so after the theme the layer fills are set by hand to a light tint of each
+  original colour: Services <code>#fdf1d3</code>, Digital Twin <code>#ddf0e2</code>, Data
+  <code>#fbe1df</code> and Physical Twin <code>#ebe3f3</code>. They are the only fills outside the
+  palette. <code>developer/system/current-status-developer-c4.png</code>, the same
+  drawing as <code>implementation-status.png</code>, is removed and <code>current-status.md</code>
+  shows the redrawn one.</li>
+<li><code>admin/gitlab/gitlab-runner-two-servers.png</code> and
+  <code>developer/contributions/docker-check.png</code> are the pages "Two servers with
+  runners" and "Developer docker setup", placed. On the first, the GitLab logo
+  moved left so the two lines to the runners start at its edge, the runner
+  labels are wider, and three lines that ended above the bus at the old
+  position of traefik end on the bus.</li>
+<li>On 15 October 2026 the layout check found these, each fixed by hand:</li>
+<li>The lines from GitLab to the runners, on <code>gitlab-integrated-runner.png</code>
+    and <code>gitlab-runner-two-servers.png</code>, and the Evaluate arrow of
+    <code>asset-relationship.png</code> were curved or slanted, and run in right
+    angles. The Evaluate arrow ends inside the box above it.</li>
+<li>User 1 of <code>user-interaction-in-federated-DTaaS.png</code> sent two arrows
+    from one point, and the second leaves lower on its right side.</li>
+<li>Labels touched a border, a line or a logo and moved clear of it:
+    OAuth2 PKCE on <code>localhost.png</code> and <code>gitlab-runner-two-servers.png</code>,
+    OAuth2 Webserver, /user2 on <code>docker-check.png</code>, Instantiate, Feed, and
+    DT Execution Manager, User Workspaces and Data and Control on
+    <code>architecture.png</code>. Services and Reusable Assets of <code>architecture.png</code>
+    sit in a gap narrower than their 20 point text, and are set at 18.</li>
+<li>The cards of Graphical Digital Twins take the height of the
+    Heterogeneous Digital Twins ones, so two lines fit.</li>
+<li>A Common Services label on <code>multi-domain.png</code>, hidden behind the
+    Dashboard and Storage boxes since the original, is removed.</li>
+<li>Every arrow of <code>dtaas-class-instance.png</code> is grey 700 at the normal
+    width, as its Link arrows were.</li>
+<li>The icons follow the table under the design rules: the person on
+    <code>architecture.png</code> and <code>author.png</code>, the web app on <code>architecture.png</code>
+    and <code>current-status-developer.png</code>, and the cars and houses of
+    <code>current-status-developer.png</code>.</li>
+<li>Every label is in Title Case. A joining word that continues the line
+    above, such as "and DTs", keeps its lower case, and "Dashboards" is
+    broken with a hyphen where it does not fit beside its icon.</li>
+<li>A side-by-side review of every changed image against the one before
+  found more, also fixed by hand:</li>
+<li>The runner lines of <code>gitlab-integrated-runner.png</code> and
+    <code>gitlab-runner-two-servers.png</code> turned on a dashed border. They turn in
+    the gap between the servers, and the remote servers on the second page
+    moved right to widen that gap.</li>
+<li>OAuth2 PKCE sat on the border on <code>localhost.png</code> and on its arrow on
+    <code>server.png</code>, and moved clear of both, with the GitLab URLs below it.</li>
+<li>The legend title of <code>file-system-layout.png</code> is on one line again.</li>
+<li><code>architecture.png</code> shows several users with three copies of the one
+    user icon, as <code>current-status-developer.png</code> does.</li>
+<li>User 1 of <code>user-interaction-in-federated-DTaaS.png</code> sends both arrows
+    from its arm, as one trunk.</li>
+<li>Digital Twins in the narrow box of <code>devops.png</code> is set at 20.</li>
+<li>May Have of <code>dt-assets-relationship.png</code> is on two lines, in the gap
+    between Reusable Assets and the configuration box.
+  The layout check now also reports an icon under the label of its box and
+  a connector label that crosses a border or covers a picture.</li>
+<li>A review of every placed image against the first images, from before the
+  theme work, found more, also fixed by hand:</li>
+<li>The red padlock of <code>dtaas-userview.png</code> is the outline padlock of the
+    icon set, in the colour of the person beside it.</li>
+<li><code>secure-server-gitlab/server.png</code> shows two people, as the first image.</li>
+<li>The running figures of the twins on <code>architecture.png</code> are back, drawn
+    with the running pictogram of the drawio signs library.</li>
+<li>The Else line of <code>design-sequence.png</code> ends in a circle again.</li>
+<li>Mandatory of <code>asset-relationship.png</code> and User of
+    <code>current-status-developer.png</code> moved clear of the boxes and icons.</li>
+<li>The second review of #1853 on 16 October 2026 found more, fixed as follows:</li>
+<li>Subscripts, such as the 1 of DT Instance 1, are written at full size
+    after the name: a restyle rule, stated here because the figures show it.</li>
+<li>The running figures on <code>architecture.png</code> and
+    <code>current-status-developer.png</code> are the running pictogram of the drawio
+    signs library, in primary, and no longer emoji crops. The DTs asset icon
+    of <code>architecture.png</code> is the twin car of the icon table.</li>
+<li>The cropped logos and icons on <code>architecture.png</code> and
+    <code>shm-dt-workflow.png</code> have a transparent background, so none shows as a
+    white tile in a dark image. On <code>current-status-developer.png</code>, which has
+    no dark image, the ThingsBoard logo and the folder have a transparent
+    background, the terminal keeps the white of its window, and the VNC icon
+    keeps its pale hexagon, which is part of the icon.</li>
+<li>The Single Page Web Application of <code>system-architecture-c4.png</code> is in the
+    Services layer tint, as in the first image, and no fill or line on the
+    two C4 pages is drawn see-through. The Services label keeps 18 units
+    from the hexagon outline. The missing parenthesis of Cloud Services on
+    <code>implementation-status.png</code> is back.</li>
+<li><code>gitlab-runner-two-servers.png</code> and <code>docker-check.png</code> went through the
+    restyle, so their text reaches 14 pixels. <code>docker-check.png</code> shows two
+    people, as the image it replaces, and its route labels end clear of the
+    lines they name.</li>
+<li>The connector labels of the two OAuth pages are Inter in grey 700, and
+    connector labels everywhere read as sentences: "May have", "Run inside",
+    "GET authcode (using OAUTH_CLIENT_ID)". A UML guard reads as a sentence
+    too.</li>
+<li>The two bars of <code>lifecycle-phases.png</code> are narrow filled boxes, so the
+    restyle no longer resets their width. The arrows that cross them are
+    listed in <code>LAYOUT_EXCEPTIONS</code>. Terminate has its own tint.</li>
+<li>The asset types share one colour code on <code>library-assets.png</code> and
+    <code>asset-relationship.png</code>, in the order of the swatches of
+    <code>file-system-layout.png</code>: Functions white, Tools grey, Models turquoise,
+    Data cyan and Digital Twins blue. <code>library-assets.png</code> is 100 units
+    shorter.</li>
+<li><code>current-status-developer.png</code>: one cloud round the workspaces, the
+    terminal clear of VNC, the labels of the mesh lines apart, the Direct
+    arrow reaching its cloud and the arrow to the twins leaving from the top
+    of the workspace cloud.</li>
+<li>The trunk of <code>traefik-oauth.png</code> meets the bus on the riser of Service 2,
+    and its two people are grey like every other person.</li>
+<li>The users of <code>user-interaction-in-federated-DTaaS.png</code> use the one user
+    icon, with both arrows leaving from its side.</li>
+<li>Page ids that read as drafts, such as <code>p1</code> and <code>redraw-4</code>, are the slug
+    of the page name.</li>
+<li>On 16 October 2026 the maintainer corrected seven pages by hand, and
+  they are kept as he sent them:</li>
+<li><code>user-interaction-in-federated-DTaaS.png</code> is drawn compact, with the
+    two users closer together and smaller boxes.</li>
+<li><code>implementation-status.png</code> has GitLab inside the DTaaS boundary,
+    with Reusable Assets, File System and their labels moved to make room.</li>
+<li><code>gitlab-integrated-runner.png</code>, <code>gitlab-runner-two-servers.png</code> and
+    its release version have wider remote boxes, so each runner label
+    fits on one line, and the runner lines leave GitLab on one side.</li>
+<li><code>gitlab-integrated-install.png</code> has a straight <code>/gitlab</code> route, so
+    the two segments that retrace it are in <code>LAYOUT_EXCEPTIONS</code>.</li>
+<li><code>dtaas-userview.png</code> has the user icon moved 5 units to the right.</li>
+<li><code>gitlab-runner-two-servers.png</code> reads <code>https://intocps.com/gitlab</code>
+    under Server 2, the one place that keeps <code>intocps.com</code>. The maintainer
+    confirmed it on 16 October 2026.</li>
+<li><code>shm-dt-workflow.png</code> shows the turbine icon of <code>system-architecture.png</code>
+  in place of three crops of the old picture, with three vibration sensors on
+  the tower and the sensor legend clear of the line that leaves it.</li>
+<li><code>federated-dtaas.png</code> draws every arrow as a thin grey line. Eleven were
+  thick and in primary, a weight the figure did not explain.</li>
+<li>The DevOps box of <code>DTaaS-user-view.png</code> and <code>system-architecture.png</code>
+  grew 35 units upward, so its three lines of text stay inside it.</li>
+</ul>
+<h2 id="the-example-pages-added-on-18-october-2026">The Example Pages Added on 18 October 2026</h2>
+<p>Two diagrams of the workspace examples came from DTaaS-examples at commit
+<code>baa3650</code>. Their sources are kept in <code>originals/</code> as they arrived:
+<code>2026-10-18_opc-ua-waterplant-dt-structure.drawio</code>, from
+<code>digital_twins/opc-ua-waterplant-complete/images/</code>, and
+<code>2026-10-18_TeSSLa-integration.png</code>, an image without a drawio source.
+The retheme maps two colours of the OPC UA figure, added to <code>COLOURS</code> in
+<code>config/theme.py</code>: <code>#00572b</code> and <code>#ff6666</code>, the title colours of the two
+twins.</p>
+<ul>
+<li><code>user/examples/workspace/incubator-TeSSLa-monitor-service/TeSSLa-integration.png</code>
+  is drawn in drawio from the image, with every box, label and arrow of it,
+  then passed through the retheme, restyle and shrink steps. The workspace
+  starts lower inside the platform, so the DTaaS mark has its own corner. The
+  TeSSLa active control example shows the same image.</li>
+<li><code>user/examples/workspace/opc-ua-waterplant/images/dt-structure-uv_channel.png</code>
+  is drawn again from the second page of the drawio file, about 960 units
+  wide so its labels reach 14 pixels. The photographs of the plant and the
+  SCADA screen, the OPC UA and FMI logos, the spreadsheet icon and the note
+  listing the configuration are left out: the page text shows the
+  photographs and describes the configuration. The six numbered steps, the
+  FMU build and the configuration file are kept, each arrow label on two
+  lines. The labels Configures and Builds sit nearer their source box, clear
+  of the border of the digital twin. It carries no mark, as it draws an
+  example and not the DTaaS system, and the complete version of the example
+  shows the same image.</li>
+</ul>
+<h2 id="the-other-example-pages-18-october-2026">The Other Example Pages, 18 October 2026</h2>
+<p>Fifteen more pages bring every diagram of the examples to the theme. Their
+sources are in <code>originals/</code> with the prefix <code>2026-10-18_</code>: the drawio files
+of DTaaS-examples at <code>baa3650</code>, the former <code>docs/user/examples/examples.drawio</code>
+(<code>2026-10-18_docs-user-examples.drawio</code>), and, for the five figures without a
+drawio source, the image the documentation showed. Each page was drawn in
+drawio, about 460 to 960 units wide so its text reaches 14 pixels, and passed
+through the retheme, restyle and shrink steps. All of them are in <code>NO_MARK</code>
+except <code>dt-structure-nurv-fmu.png</code>, which draws the DTaaS platform.</p>
+<p>Three changes to the scripts came with them:</p>
+<ul>
+<li>The restyle draws the largest box of a page with the boundary line only
+  when the page carries the mark. On a <code>NO_MARK</code> page the largest box is a
+  box like any other; before, the first of several equal FMU boxes got the
+  thicker line.</li>
+<li><code>SPELLING</code> keeps <code>rabbitmq-fmpy</code>, <code>iiwa</code>, <code>urinterface</code> and
+  <code>kukalbrinterface</code> in lower case, as their projects write them.</li>
+<li><code>NO_MARK</code> lists the example pages.</li>
+</ul>
+<p>What every page shares:</p>
+<ul>
+<li>A subscript prints at full size after its name, so FMU<sub>1</sub> reads
+  FMU 1, as the restyle does on every page.</li>
+<li>Titles written above or beside a figure are the label of its frame, or are
+  left out when the page text names the figure. Bold and italic are gone.</li>
+<li>The restyle draws every arrowhead as the one classic arrow, so the UML
+  composition diamonds and generalisation triangles of <code>three-tank</code>,
+  <code>flex-cell/dt-structure.png</code> and <code>flex-cell/pt-dt-details.png</code> cannot stay.
+  A composition is an arrow from the whole to each part, and a
+  generalisation an arrow to Endpoint labelled "Is an". The role labels put
+  the multiplicity first ("[*] availableTwins"), so the code names keep their
+  case.</li>
+<li>The lollipop interfaces of the incubator and NuRV service component
+  diagrams are arrows from the component that requires an interface to the
+  one that provides it. Their legend, which explained the lollipops, is left
+  out, and so are the UML component icons. Labels the old SVGs cut short are
+  written out from the source.</li>
+<li>The fault flash of the water tank pages keeps the error red in the light
+  image and turns light grey in the dark one, like every icon there.</li>
+</ul>
+<p>By page, under <code>user/examples/</code>:</p>
+<ul>
+<li><code>workspace/mass-spring-damper/dt-structure.png</code>,
+  <code>workspace/mass-spring-damper-monitor/dt-structure.png</code>,
+  <code>workspace/water_tank_FI/dt_structure.png</code> and
+  <code>workspace/water_tank_FI_monitor/dt-structure.png</code>: the FMU boxes in one
+  row above Maestro, joined over a shared bus without arrowheads. The water
+  tank picture and the red titles on the drawio pages, which the images did
+  not show, are left out. The automation Mass Spring Damper page shows the
+  workspace image instead of its own copy.</li>
+<li><code>workspace/water_tank_swap/dt-structure.png</code>: the red titles Stage-1 and
+  Stage-2 are two frames. The swapped-out controller takes the accent tint
+  and the leak controller the primary tint, as light blue would map to the
+  grey of the frame. Swap is a text beside its arrow.</li>
+<li><code>workspace/drobotti-rmqfmu/dt-structure.png</code>: the RabbitMQ wordmark is a box
+  labelled RabbitMQ, as on the TeSSLa page, and the twin titles are the labels
+  of their frames. The CSV file sits above the mock physical twin.</li>
+<li><code>workspace/three-tank/dt-structure.png</code>: laid out vertically. The DT tanks,
+  the tanks of the system and those of the simulation each form a column, the
+  three configuration documents no longer overlap, and the port labels are
+  on the connectors as "From o1 to i2" and "From o2 to i3".</li>
+<li><code>workspace/flex-cell/dt-structure.png</code> and <code>pt-dt-details.png</code>: the two
+  halves of the page "separate", laid out vertically. In the details, the
+  twins are stacked under Endpoint, "Move commands" is on each of the four
+  arrows, and the arrow that looked like a branch from UR5e to the Kuka robot
+  is the composition from the flex-cell system it stood for. The robot is
+  written "Kuka LBR iiwa 7", as the page text does.</li>
+<li><code>workspace/incubator/figures/dt-structure.png</code> and
+  <code>workspace/incubator-NuRV-monitor-service/figures/dt-structure-nurv.png</code>
+  replace the SVGs of the same name. InfluxDB, the digital twin and RabbitMQ
+  form a column, with the physical twin (and monitoring) below. In the NuRV
+  page the unattached line of the source from the monitor connector to the
+  omniNames socket is read as the connector requiring omniNames.</li>
+<li><code>workspace/incubator-NuRV-monitor-validation/dt-structure.png</code>: three rows
+  to stay narrow, and the forked lid_open line is two arrows. The connector
+  rule capitalises the signals sensor and enabled.</li>
+<li><code>workspace/incubator-NuRV-fmu-monitor-service/figures/dt-structure-nurv-fmu.png</code>:
+  laid out as <code>TeSSLa-integration.png</code>, with the mark in the platform corner.</li>
+<li><code>workspace/o5g/img/o5g_digital_twin_architecture.png</code>: stacked, the reusable
+  assets across the bottom with the legend beside them. The two protocols
+  are told apart by dotted and dashed lines, since every arrow is grey. The
+  rendering of the IFC model is left out; the IFC File box stands for it.</li>
+<li><code>automation/shm/dt-workflow.png</code>: the turbine, data icon, box styles and
+  legend of <code>developer/system/research-overview/shm-dt-workflow.png</code>, with
+  the methods of Automatic Modal Analysis stacked in one box.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - 2026 The INTO-CPS Association
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tracking", "navigation.footer"], "search": "../javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../js/mathjax-config.js"></script>
+      
+        <script src="../js/mathjax-3.2.2/tex-svg.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>
