@@ -51,7 +51,8 @@ the authority on its trigger paths.
 | Platform Services CLI | `deploy/services/cli/**`, `lib/**` |
 | gitlab-common library | `lib/gitlab_common/**` |
 | DT automation npm package | `lib/dt-automation/**` |
-| Digital twin runner | `servers/execution/**` |
+| Digital twin runner | `servers/execution/runner/**` |
+| Execution manager | `servers/execution/manager/**` |
 | Library microservice | `servers/lib/**` |
 | Logger microservice | `servers/logger/**` |
 | Release Packages | `deploy/dtaas/**`, `deploy/workspace/**` |

@@ -1,0 +1,4 @@
+hostname: 127.0.0.1
+port: 4004
+# Set it to / to serve the routes at the root.
+route-prefix: execution-manager

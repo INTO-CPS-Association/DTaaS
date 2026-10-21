@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+dist/
+src.svg
+test.svg
+config/execution-manager.yaml
