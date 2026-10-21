@@ -2,17 +2,9 @@
 
 import json
 from unittest.mock import patch
-import pytest
-from click.testing import CliRunner
 from python_on_whales.exceptions import DockerException
 from src.cmd import dtaas
 # pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def runner():
-    """CLI test runner."""
-    return CliRunner()
 
 
 _ROWS = [

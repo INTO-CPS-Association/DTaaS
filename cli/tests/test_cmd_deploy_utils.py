@@ -10,6 +10,7 @@ from src.cmd_deploy_utils import (
     _create_user_dirs,
     _substitute_config,
     apply_deploy_config,
+    provision_logger_dir,
     provision_user_files,
 )
 
@@ -63,9 +64,9 @@ def test_provision_user_files_noop_when_users_not_a_list(tmp_path):
         '[users]\nadd=["alice"]\n[users.alice]\nemail="a@intocps.org"\n'
     )
     with patch(
-        "src.cmd_deploy_utils.projectPkg.create_user_dirs"
+        "src.cmd_deploy_utils.hostDirsPkg.create_user_dirs"
     ) as mock_create, patch(
-        "src.cmd_deploy_utils.projectPkg.set_files_permissions"
+        "src.cmd_deploy_utils.hostDirsPkg.set_files_permissions"
     ) as mock_perms:
         provision_user_files(str(tmp_path))
 
@@ -77,14 +78,38 @@ def test_provision_user_files_noop_without_toml(tmp_path, monkeypatch):
     """provision_user_files does nothing when no dtaas.toml is present."""
     monkeypatch.chdir(tmp_path)  # no dtaas.toml in output dir or cwd
     with patch(
-        "src.cmd_deploy_utils.projectPkg.create_user_dirs"
+        "src.cmd_deploy_utils.hostDirsPkg.create_user_dirs"
     ) as mock_create, patch(
-        "src.cmd_deploy_utils.projectPkg.set_files_permissions"
+        "src.cmd_deploy_utils.hostDirsPkg.set_files_permissions"
     ) as mock_perms:
         provision_user_files(str(tmp_path))
 
     mock_create.assert_not_called()
     mock_perms.assert_not_called()
+
+
+def test_provision_logger_dir_uses_installed_deploy_type(tmp_path):
+    """The logger step is driven by the compose file, not by dtaas.toml."""
+    (tmp_path / "docker-compose.yml").write_text(
+        "services:\n  traefik: {}\n  logger-ms: {}\n  gitlab: {}\n"
+    )
+    with patch(
+        "src.cmd_deploy_utils.hostDirsPkg.set_logs_permissions"
+    ) as mock_logs:
+        provision_logger_dir(str(tmp_path))
+
+    mock_logs.assert_called_once_with(str(tmp_path), "secure-server-gitlab")
+
+
+def test_provision_logger_dir_requires_compose_file(tmp_path):
+    """Without a compose file the step fails before touching any directory."""
+    with patch(
+        "src.cmd_deploy_utils.hostDirsPkg.set_logs_permissions"
+    ) as mock_logs, pytest.raises(OSError):
+        provision_logger_dir(str(tmp_path))
+
+    mock_logs.assert_not_called()
+    assert not (tmp_path / "logs").exists()
 
 
 @pytest.fixture
@@ -105,7 +130,7 @@ def test_create_user_dirs_maps_oserror():
     """_create_user_dirs wraps a directory-creation failure as a ClickException."""
     toml_data = {"users": [{"username": "alice"}]}
     with patch(
-        "src.cmd_deploy_utils.projectPkg.create_user_dirs",
+        "src.cmd_deploy_utils.hostDirsPkg.create_user_dirs",
         side_effect=OSError("no space left"),
     ):
         with pytest.raises(click.ClickException, match="no space left"):
@@ -123,7 +148,7 @@ def test_create_user_dirs_filters_unsafe_usernames():
             {"username": "bob.smith"},  # dots are allowed mid-name
         ]
     }
-    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create:
+    with patch("src.cmd_deploy_utils.hostDirsPkg.create_user_dirs") as mock_create:
         _create_user_dirs("/out", toml_data)
 
     mock_create.assert_called_once_with("/out", ["alice", "bob.smith"])
@@ -132,7 +157,7 @@ def test_create_user_dirs_filters_unsafe_usernames():
 def test_create_user_dirs_noop_when_all_usernames_unsafe():
     """When every username is unsafe, create_user_dirs is never called."""
     toml_data = {"users": [{"username": ".."}, {"username": "a/b"}]}
-    with patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create:
+    with patch("src.cmd_deploy_utils.hostDirsPkg.create_user_dirs") as mock_create:
         _create_user_dirs("/out", toml_data)
 
     mock_create.assert_not_called()
@@ -203,7 +228,7 @@ def test_apply_deploy_config_runs_full_pipeline(tmp_path):
         "src.cmd_deploy_utils.deployConfigPkg.build_file_specs", return_value=[]
     ), patch("src.cmd_deploy_utils.deployConfigPkg.apply_config") as mock_apply, patch(
         "src.cmd_deploy_utils.deployConfigPkg.check_placeholders", return_value=[]
-    ), patch("src.cmd_deploy_utils.projectPkg.create_user_dirs") as mock_create, patch(
+    ), patch("src.cmd_deploy_utils.hostDirsPkg.create_user_dirs") as mock_create, patch(
         "src.cmd_deploy_utils.certsPkg.copy_certs", return_value=""
     ) as mock_copy:
         apply_deploy_config("secure-server", str(tmp_path))

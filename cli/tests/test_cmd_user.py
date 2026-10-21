@@ -2,17 +2,10 @@
 
 from unittest.mock import patch, MagicMock
 import pytest
-from click.testing import CliRunner
 from src.cmd import dtaas
 from src.cmd_user_utils import StagedUsers
 from src.pkg.registry import register_new_users
 # pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def runner():
-    """CLI test runner"""
-    return CliRunner()
 
 
 @pytest.fixture

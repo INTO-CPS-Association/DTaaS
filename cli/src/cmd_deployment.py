@@ -7,7 +7,8 @@ skeleton substituting values from dtaas.toml (see DTaaS-CLI-Design.md).
 
 import click
 from .pkg import project as projectPkg
-from .pkg.project import DEPLOY_TYPES
+from .pkg import host_dirs as hostDirsPkg
+from .pkg.constants import DEPLOY_TYPES
 from .cmd_deploy_utils import VerticalChoicesCommand, apply_deploy_config
 from .cmd_options import target_dir_option, force_option
 
@@ -54,5 +55,6 @@ def generate(deploy_type, output_dir, force):
     except (ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
     apply_deploy_config(deploy_type, output_dir, force)
-    projectPkg.set_files_permissions(output_dir)
+    hostDirsPkg.set_files_permissions(output_dir)
+    hostDirsPkg.set_logs_permissions(output_dir, deploy_type)
     click.echo(f"Project files for '{deploy_type}' generated successfully")

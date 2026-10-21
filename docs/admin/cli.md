@@ -112,7 +112,7 @@ An abridged `dtaas.toml`:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.2.0"
+version="2.2.1"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -261,7 +261,8 @@ something that is running should be a deliberate action. Use
 Copies the project structure for one deployment scenario
 (`docker-compose.yml`, config examples and supporting files) into a
 target directory. It also writes the user-workspace templates and the
-`files/template/` skeleton.
+`files/template/` skeleton, and, for the types that run the logger,
+creates `logs/logger/` (see [`platform install`](#platform-install)).
 
 ```bash
 dtaas deployment generate --type <name>
@@ -323,6 +324,30 @@ The command runs `docker compose up -d` against the
 makes sure a workspace directory exists for every `[[users]]` record,
 creating any missing one from `files/template/`, and sets its
 ownership to `1000:100`.
+
+For the `localhost`, `insecure-server`, `secure-server` and
+`secure-server-gitlab` types, it also creates `logs/logger/`, where the
+logger microservice writes its events, and gives it to `1000:1000`, the
+user that runs the logger. This is the logger step of the manual
+installation guides, so an installation done with the CLI needs no
+extra step. Only `logs/logger/` changes owner: `secure-server-gitlab`
+also mounts `logs/` into GitLab, so `logs/` itself is left alone.
+
+Both ownership changes use `sudo` on Linux and macOS and are skipped on
+Windows. Before `sudo` runs, the command says what it is for, since `sudo`
+may ask for your password. `logs/logger/` is left alone when it already
+belongs to `1000:1000`, for example when you are that user. When a change
+fails, for example because `sudo` is not available, the command prints a
+warning with the commands to run by hand and carries on:
+
+```text
+Setting the owner of logs/logger/ to 1000:1000 with sudo (it may ask for your password)
+Warning: could not set the owner of logs/logger/
+  Run: sudo chown -R 1000:1000 -- /home/admin/dtaas/logs/logger
+```
+
+When `logs/` or `logs/logger/` is a symbolic link, the command does not
+change its owner and prints a warning instead.
 
 **Options:**
 

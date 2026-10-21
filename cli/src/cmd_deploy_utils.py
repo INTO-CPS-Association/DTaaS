@@ -7,8 +7,9 @@ user workspace files ahead of 'platform install'.
 
 import inspect as _inspect
 import click
-from .pkg import project as projectPkg
+from .pkg import host_dirs as hostDirsPkg
 from .pkg import certs as certsPkg
+from .pkg import config_update as configUpdatePkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import utils as utilsPkg
 from .pkg.users_utils import is_valid_username
@@ -110,7 +111,7 @@ def _create_user_dirs(output_dir, toml_data):
     if not usernames:
         return
     try:
-        projectPkg.create_user_dirs(output_dir, usernames)
+        hostDirsPkg.create_user_dirs(output_dir, usernames)
     except OSError as exc:
         raise click.ClickException(f"Error creating user directories: {exc}") from exc
 
@@ -124,4 +125,14 @@ def provision_user_files(output_dir):
     if err is not None:
         raise click.ClickException(f"Error reading dtaas.toml: {err}")
     _create_user_dirs(output_dir, toml_data)
-    projectPkg.set_files_permissions(output_dir)
+    hostDirsPkg.set_files_permissions(output_dir)
+
+
+def provision_logger_dir(output_dir):
+    """Ensure logs/logger exists and is owned by the logger's uid 1000.
+
+    The deploy type comes from the compose file, so this works without
+    dtaas.toml; it raises OSError when no compose file is present.
+    """
+    deploy_type = configUpdatePkg.detect_deploy_type(output_dir)
+    hostDirsPkg.set_logs_permissions(output_dir, deploy_type)

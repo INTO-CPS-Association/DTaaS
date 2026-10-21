@@ -51,7 +51,7 @@ describe the current branch:
 - *Services.* The platform now runs three backend services: the
   library microservice, the DT Runner and the logger microservice.
 - *Image pins.* The docker compose files now pin
-  `intocps/dtaas-web:1.7.2` and `intocps/libms:0.5.13` (at the review:
+  `intocps/dtaas-web:1.7.1` and `intocps/libms:0.5.13` (at the review:
   `1.0.2` and `0.5.9`), and add `intocps/logger-ms`.
 - *Observability.* The logger microservice exposes `GET /logger/health`
   and writes workflow events as JSON Lines

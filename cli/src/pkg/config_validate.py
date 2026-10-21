@@ -7,6 +7,7 @@ check builds on.
 """
 
 from . import utils
+from .constants import DEPLOY_TYPES
 from .config_validate_gitlab import check_gitlab
 from .validators import (
     get_nested,
@@ -143,16 +144,7 @@ _DEPLOY_FIELDS = (
 
 # Top-level sections that are specific to one deployment type. The shared
 # '[frontend]' section is not listed, so it is always checked.
-DEPLOYMENT_SECTIONS = frozenset(
-    {
-        "localhost",
-        "insecure-server",
-        "secure-server",
-        "secure-server-gitlab",
-        "workspace-localhost",
-        "workspace-secure-server",
-    }
-)
+DEPLOYMENT_SECTIONS = DEPLOY_TYPES
 
 
 def _field_applies(section, deploy_type):
