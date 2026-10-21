@@ -1,0 +1,29 @@
+# Signals gateway configuration of this package. Copy it to signals.yaml.
+# servers/signals/config/signals.yaml.sample in the DTaaS repository
+# documents every key, and the gateway refuses a key it does not know.
+# Secrets are never written here: Docker Compose mounts the two files of
+# config/secrets/ under /run/secrets/.
+
+# The integrated GitLab, reached inside the Docker network as
+# traefik-forward-auth reaches it. It is the GitLab of
+# REACT_APP_AUTH_AUTHORITY in client.js, and the gateway sends the user's
+# token to this address only.
+gitlab-url: http://gitlab/gitlab
+# The group whose projects hold the users' twins, and the branch whose
+# committed visualisation.json files declare the signals.
+gitlab-group: DTaaS
+gitlab-branch: master
+# The Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js,
+# so a token issued to another OAuth application is refused.
+gitlab-client-id: ''
+# traefik-forward-auth sets this header to the e-mail of the signed-in
+# user, so the gateway refuses a token that belongs to another user.
+forwarded-user-header: x-forwarded-user
+
+# RabbitMQ and InfluxDB of the platform services (deploy/services), read
+# with the read-only service user and the read-only tokens.
+rabbitmq-url: amqps://services.foo.com:8083
+rabbitmq-user: dtaas-signals
+rabbitmq-password-file: /run/secrets/signals-rabbitmq-password
+influx-url: https://services.foo.com:8086
+influx-tokens-file: /run/secrets/signals-influx-tokens

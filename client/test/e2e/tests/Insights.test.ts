@@ -5,8 +5,8 @@ import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
 /**
  * The Insights page and the measurement card on the Automation page.
  *
- * Every card follows its route in this tab, because a new tab starts with an
- * empty sessionStorage, where the session is kept.
+ * Every card follows its route in this tab, because a new tab starts without
+ * the session, which lives in the memory of the page.
  */
 test.describe('Insights and the Measurement Card', () => {
   test.beforeEach(async ({ page }) => {

@@ -12,8 +12,8 @@ import {
  *
  * Its two cards are the only way into the Library Page and the Digital Twins
  * Page since they left the workbench. Each has to open its page in this tab,
- * because a new tab starts with an empty sessionStorage, where the session is
- * kept, and would send the person to sign in again.
+ * because a new tab starts without the session, which lives in the memory of
+ * the page, and would send the person to sign in again.
  */
 test.describe('Automation', () => {
   test.beforeEach(async ({ page }) => {

@@ -27,11 +27,11 @@ describe('Digital Twins', () => {
 
     const mainTablist = tablists[0];
     const mainTabs = within(mainTablist).getAllByRole('tab');
-    expect(mainTabs).toHaveLength(3);
-
-    mainTabs.forEach((tab, tabIndex) => {
-      expect(tab).toHaveTextContent(tabs[tabIndex].label);
-    });
+    // The three workspace tabs, then the Visualise tab of the common core.
+    expect(mainTabs.map((tab) => tab.textContent)).toEqual([
+      ...tabs.map((tab) => tab.label),
+      'Visualise',
+    ]);
 
     const mainParagraph = screen.getByText(tabs[0].body, { normalizer });
     expect(mainParagraph).toBeInTheDocument();

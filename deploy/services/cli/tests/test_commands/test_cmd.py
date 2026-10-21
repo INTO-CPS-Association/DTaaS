@@ -31,7 +31,7 @@ def test_services_help_lists_nouns_in_workflow_order(runner):
         ("project", ["generate"]),
         ("host", ["setup"]),
         ("service", ["clean", "install", "remove", "restart", "start", "status", "stop"]),
-        ("user", ["add", "reset-password"]),
+        ("user", ["add", "add-signals", "reset-password"]),
     ],
 )
 def test_noun_help_lists_verbs(runner, noun, verbs):

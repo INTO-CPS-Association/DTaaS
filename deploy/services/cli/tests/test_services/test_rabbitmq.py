@@ -25,6 +25,15 @@ def mock_config(mocker):
     return mock
 
 
+@pytest.fixture(autouse=True)
+def no_signals_user(mocker):
+    """No signals gateway user, unless a test names one"""
+    return mocker.patch(
+        "dtaas_services.pkg.services.rabbitmq_signals.get_signals_user",
+        return_value="",
+    )
+
+
 @pytest.fixture
 def mock_process_credentials(mocker):
     """Mock process credentials file utility"""
@@ -42,6 +51,26 @@ def test_add_rabbitmq_user_success(mocker):
     assert error == ""
     # 1 add_user + 1 add_vhost + 1 set_permissions = 3 calls
     assert mock_exec.call_count == 3
+
+
+def test_add_rabbitmq_user_grants_signals_user(mocker, no_signals_user):
+    """A new user vhost is granted to the signals user of services.env"""
+    no_signals_user.return_value = "dtaas-signals"
+    mock_exec = mocker.patch(
+        "dtaas_services.pkg.services.rabbitmq.execute_docker_command",
+        return_value=(True, "success"),
+    )
+    mock_grant_exec = mocker.patch(
+        "dtaas_services.pkg.services.rabbitmq_signals.execute_docker_command",
+        return_value=(True, ""),
+    )
+    success, error = _add_rabbitmq_user("testuser", "testpass")
+    assert (success, error) == (True, "")
+    assert mock_exec.call_count == 3
+    granted = [call.args[1] for call in mock_grant_exec.call_args_list]
+    assert granted[0][:5] == ["rabbitmqctl", "set_permissions", "-p", "testuser",
+                              "dtaas-signals"]
+    assert granted[1][1] == "set_topic_permissions"
 
 
 def test_add_rabbitmq_user_add_user_fails(mocker):

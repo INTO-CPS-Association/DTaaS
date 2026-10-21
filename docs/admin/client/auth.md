@@ -67,6 +67,17 @@ installation. The server deployment packages use two default usernames,
 _user1_ and _user2_. Create GitLab accounts for whichever usernames
 your installation uses.
 
+## Where the Session Is Kept
+
+The client keeps the signed-in user, with the access and ID tokens, in the
+memory of the page and not in the browser's `sessionStorage`. A script that
+runs in the page cannot read a token from storage, and closing the tab
+leaves no token behind. A reload, a bookmark or a new tab therefore starts
+signed out and shows the start page. Signing in again returns at once while
+the GitLab session is still open, without asking for the password. The
+client does not renew the session silently, because silent renewal needs
+GitLab inside a frame, and GitLab refuses to be framed.
+
 ## Username claim resolution for OIDC providers
 
 DTaaS resolves the logged-in username from common OIDC claims, so it

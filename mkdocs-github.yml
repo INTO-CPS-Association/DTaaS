@@ -156,6 +156,10 @@ nav:
           - Logger Microservice:
               - NPM: admin/servers/logger/npm.md
               - Docker: admin/servers/logger/docker.md
+          - Signals Gateway:
+              - Configuration: admin/servers/signals/config.md
+              - Docker: admin/servers/signals/docker.md
+              - Service Users: admin/servers/signals/service-users.md
       - Guides:
           - Localhost on Portainer:
               admin/guides/localhost-on-portainer/install.md
@@ -196,6 +200,7 @@ nav:
           - Client DevOps Integration: developer/codebase/client-devops.md
           - Library Microservice: developer/codebase/lib-ms.md
           - Runner Microservice: developer/codebase/runner.md
+          - Signals Gateway: developer/codebase/signals-ms.md
           - DTaaS CLI: developer/codebase/cli.md
           - DTaaS Services: developer/codebase/dtaas-services.md
           - Publish Packages: developer/codebase/publish-packages.md

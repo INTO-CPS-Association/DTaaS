@@ -1,0 +1,81 @@
+# Signals gateway configuration. Copy to signals.yaml and adjust.
+# Every key may also be set with an environment variable: SIGNALS_ and the
+# key in upper case with '_' for '-', for example SIGNALS_GITLAB_URL.
+# Secrets are never written here. Each one is read from a file named by a
+# *-file key, and a plain rabbitmq-password or influx-token key is refused.
+
+# Where the service listens.
+hostname: 127.0.0.1
+port: 4004
+
+# Off by default: behind Traefik the client is served from the same origin.
+# Set an origin only when the client runs elsewhere.
+cors-allow-origin: ''
+cors-allow-credentials: false
+
+# Largest JSON request body, in bytes.
+max-payload-bytes: 65536
+# Requests per TCP peer per window (milliseconds). Behind a reverse proxy
+# this is a budget shared by every user.
+throttle-ttl: 60000
+throttle-limit: 120
+
+# The one GitLab that validates tokens and answers what a user may read.
+# The user's token is sent to this host and to no other.
+gitlab-url: https://foo.com/gitlab
+# The group whose projects hold the users' twins, one project per user.
+gitlab-group: DTaaS
+# The branch whose committed visualisation.json files declare the signals.
+gitlab-branch: master
+# Lowest GitLab access level that counts as reading a project (20 = Reporter).
+gitlab-min-access-level: 20
+# Timeout of one GitLab call, in milliseconds.
+gitlab-timeout: 5000
+# When set, the request must carry this header with the email of the token's
+# user, as traefik-forward-auth sets it. Leave empty to skip the check.
+forwarded-user-header: ''
+# When set, only tokens GitLab issued to this OAuth application are accepted:
+# the Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js.
+gitlab-client-id: ''
+# How long an identity and a user's project list are cached (milliseconds).
+identity-cache-ttl: 60000
+projects-cache-ttl: 60000
+
+# RabbitMQ, read over AMQP 0-9-1 with a read-only service user.
+# amqps:// verifies the broker certificate. No credentials in the URL.
+rabbitmq-url: amqp://localhost:5672
+rabbitmq-user: dtaas-signals
+# File holding the service user's password, and nothing else.
+rabbitmq-password-file: ./secrets/rabbitmq-password
+# The vhost of a twin's owner. The DTaaS services CLI creates one per user.
+# It must contain {owner}: one shared vhost would let a user read the topics
+# of another.
+vhost-template: '{owner}'
+
+# InfluxDB 2, read for the history of a signal.
+influx-url: http://localhost:8086
+# JSON file mapping each org to a read-only token: {"alice": "..."}
+influx-tokens-file: ./secrets/influx-tokens.json
+# A twin's influx transport is used only when its org and bucket equal these,
+# filled with the owner. Anything else is ignored and logged.
+influx-org-template: '{owner}'
+influx-bucket-template: '{owner}'
+# Timeout of one InfluxDB query, in milliseconds.
+influx-timeout: 10000
+
+# Limits of one request and one user.
+max-paths-per-stream: 200
+max-path-length: 256
+max-streams-per-user: 4
+# Broker messages larger than this many bytes are dropped.
+max-message-bytes: 65536
+# A stream closes after this many milliseconds, or when the token expires.
+stream-max-age: 600000
+# Milliseconds between ': keep-alive' comments on a stream.
+keep-alive-interval: 15000
+# The reconnect wait sent to the client as 'retry:', in milliseconds.
+retry-interval: 5000
+# Longest history range (milliseconds) and most points in one answer. A
+# longer series is downsampled with aggregateWindow.
+range-max-span: 604800000
+range-max-points: 10000
