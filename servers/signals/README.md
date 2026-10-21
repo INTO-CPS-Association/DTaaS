@@ -12,7 +12,9 @@ the platform credentials.
 1. The client sends the user's GitLab OAuth access token as a bearer token.
    The gateway sends it only to the configured `gitlab-url`, asks
    `/oauth/token/info` for its expiry and `/api/v4/user` for the user, and
-   caches the answer for 60 s under the SHA-256 of the token.
+   caches the answer for 60 s under the SHA-256 of the token. With
+   `gitlab-client-id` set, a token issued to another OAuth application is
+   refused.
 1. With the user's own token, the gateway lists the projects of the
    `gitlab-group` group that the user can read. In DTaaS the twins of user
    `alice` live in the project `DTaaS/alice` under `digital_twins/<twin>`.
@@ -102,7 +104,7 @@ A range is at most `range-max-span` (7 days). An answer holds at most
 | Code | When |
 | :--- | :--- |
 | `400` | A malformed body, an empty or over-long path, or a wildcard (`+`, `#`, `*`) |
-| `401` | No token, a token GitLab rejects, or a forwarded user who is not the token's user |
+| `401` | No token, a token GitLab rejects or issued to another application, or a forwarded user who is not the token's user |
 | `403` | None of the requested paths may be read. Nothing is bound on the broker |
 | `413` | More than `max-paths-per-stream` (200) paths |
 | `429` | More than `max-streams-per-user` (4) open streams, or the request rate limit |

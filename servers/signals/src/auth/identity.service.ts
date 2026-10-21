@@ -71,11 +71,7 @@ export default class IdentityService {
       const owner = userSchema.parse(user);
       if (tokenInfo.resource_owner_id !== owner.id)
         throw new InvalidTokenError();
-      // A token GitLab issued to another OAuth application of the same user
-      // is not a DTaaS sign-in, so it reads nothing.
-      const clientId = this.config.get('gitlab-client-id');
-      if (clientId !== '' && tokenInfo.application?.uid !== clientId)
-        throw new InvalidTokenError();
+      this.assertApplication(tokenInfo);
       const seconds = tokenInfo.expires_in_seconds;
       if (typeof seconds === 'number' && seconds <= 0)
         throw new InvalidTokenError();
@@ -87,5 +83,13 @@ export default class IdentityService {
       // invalid token: the gateway fails closed.
       throw new InvalidTokenError();
     }
+  }
+
+  // A token GitLab issued to another OAuth application of the same user is
+  // not a DTaaS sign-in, so it reads nothing.
+  private assertApplication(tokenInfo: z.infer<typeof tokenInfoSchema>): void {
+    const clientId = this.config.get('gitlab-client-id');
+    if (clientId !== '' && tokenInfo.application?.uid !== clientId)
+      throw new InvalidTokenError();
   }
 }

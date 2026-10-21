@@ -83,8 +83,6 @@ type is kept on the `simulated` channel.
 
 ## Not Built Yet
 
-- The signals gateway itself, `servers/signals`, which this client is
-  written against.
 - ThingsBoard as a device registry, and the STOMP, HTTP and file transports
   the schema allows.
 - The 3D substrate. The Buildings extension still draws its own viewer.

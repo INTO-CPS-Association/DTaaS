@@ -13,6 +13,18 @@ const HEARTBEAT_SECONDS = 30;
 const AMQP_PORT = 5672;
 const AMQPS_PORT = 5671;
 
+/** The port in the URL, or the standard one of its scheme. */
+function portOf(url: URL, tls: boolean): number {
+  if (url.port !== '') return Number(url.port);
+  return tls ? AMQPS_PORT : AMQP_PORT;
+}
+
+// Node verifies the broker's certificate by default. Saying so here keeps it
+// from being switched off by an environment default.
+function socketOf(url: URL, tls: boolean): object {
+  return tls ? { servername: url.hostname, rejectUnauthorized: true } : {};
+}
+
 /** Connect to one vhost as the read-only service user. */
 export function amqpConnector(config: Config): Connector {
   return async (vhost: string): Promise<ChannelModel> => {
@@ -22,22 +34,16 @@ export function amqpConnector(config: Config): Connector {
       config.get('rabbitmq-password-file'),
       'rabbitmq-password-file',
     );
-    const defaultPort = tls ? AMQPS_PORT : AMQP_PORT;
     const options = {
       protocol: tls ? 'amqps' : 'amqp',
       hostname: url.hostname,
-      port: url.port === '' ? defaultPort : Number(url.port),
+      port: portOf(url, tls),
       username: config.get('rabbitmq-user'),
       password,
       vhost,
       heartbeat: HEARTBEAT_SECONDS,
     };
-    // Node verifies the broker's certificate by default. Saying so here keeps
-    // it from being switched off by an environment default.
-    const socket = tls
-      ? { servername: url.hostname, rejectUnauthorized: true }
-      : {};
-    return amqp.connect(options, socket);
+    return amqp.connect(options, socketOf(url, tls));
   };
 }
 

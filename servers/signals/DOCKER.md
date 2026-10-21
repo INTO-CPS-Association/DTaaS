@@ -9,14 +9,14 @@ exposes the API on port `4004` and runs as the unprivileged `node` user.
 ## Use in Docker Environment
 
 Create `signals.yaml` from
-[the sample](https://github.com/INTO-CPS-Association/DTaaS/blob/master/servers/signals/config/signals.yaml.sample),
+[the sample](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/config/signals.yaml.sample),
 put the RabbitMQ password and the InfluxDB tokens in a `secrets` directory,
 and mount both:
 
 ```yml
 services:
   signals-ms:
-    image: intocps/signals-ms:latest
+    image: intocps/signals-ms:0.1.0
     restart: unless-stopped
     volumes:
       - ./signals.yaml:/dtaas/signals/signals.yaml:ro
@@ -27,6 +27,6 @@ services:
 
 The configuration fields, the API and the commands that create the read-only
 service users are described in the
-[README](https://github.com/INTO-CPS-Association/DTaaS/blob/master/servers/signals/README.md)
+[README](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/README.md)
 and the
-[developer notes](https://github.com/INTO-CPS-Association/DTaaS/blob/master/servers/signals/DEVELOPER.md).
+[developer notes](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/DEVELOPER.md).

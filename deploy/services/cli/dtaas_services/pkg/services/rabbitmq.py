@@ -137,13 +137,15 @@ def _add_rabbitmq_user(username: str, password: str) -> tuple[bool, str]:
     )
     if not success:
         return False, error_msg
+    return _grant_vhost(username, vhost)
 
-    # Add vhost
+
+def _grant_vhost(username: str, vhost: str) -> tuple[bool, str]:
+    """Create the user's vhost, give the user full rights on it, and let the
+    signals gateway read it."""
     success, error_msg = _setup_rabbitmq_vhost(vhost)
     if not success:
         return False, error_msg
-
-    # Set permissions, then let the signals gateway read the new vhost
     success, error_msg = _set_rabbitmq_permissions(username, vhost)
     if not success:
         return False, error_msg

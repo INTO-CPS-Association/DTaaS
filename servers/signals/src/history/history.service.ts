@@ -3,7 +3,7 @@ import type { Channel, InfluxSource, SignalTarget } from '../authz/policy.js';
 import Config from '../config/config.service.js';
 import { readInfluxTokens } from '../config/secrets.js';
 import type { CsvRow } from './annotated-csv.js';
-import { buildRangeQuery } from './flux.js';
+import { buildRangeQuery, type RangeWindow } from './flux.js';
 import InfluxClient from './influx.client.js';
 
 export type HistorySample = {
@@ -19,6 +19,17 @@ export type HistoryAnswer = { samples: HistorySample[]; truncated: boolean };
 type Span = { channel: Channel; from: number; to: number };
 
 const QUALITIES = new Set(['good', 'stale', 'bad']);
+
+// A signal answers only for the channel its twin declares, so a stored
+// measurement is never handed back labelled as another channel.
+function withHistoryOn(
+  targets: readonly SignalTarget[],
+  channel: Channel,
+): SignalTarget[] {
+  return targets.filter(
+    (target) => target.influx !== undefined && target.channel === channel,
+  );
+}
 
 function sampleOf(
   row: CsvRow,
@@ -49,12 +60,7 @@ export default class HistoryService {
     targets: readonly SignalTarget[],
     span: Span,
   ): Promise<HistoryAnswer> {
-    // A signal answers only for the channel its twin declares, so a stored
-    // measurement is never handed back labelled as another channel.
-    const withHistory = targets.filter(
-      (target) =>
-        target.influx !== undefined && target.channel === span.channel,
-    );
+    const withHistory = withHistoryOn(targets, span.channel);
     if (withHistory.length === 0) return { samples: [], truncated: false };
     const tokens = await readInfluxTokens(
       this.config.get('influx-tokens-file'),
@@ -65,13 +71,7 @@ export default class HistoryService {
     );
     const answer: HistoryAnswer = { samples: [], truncated: false };
     for (const target of withHistory) {
-      const part = await this.rangeOf(
-        target,
-        target.influx as InfluxSource,
-        tokens,
-        span,
-        budget,
-      );
+      const part = await this.rangeOf(target, tokens, span, budget);
       answer.samples.push(...part.samples);
       answer.truncated ||= part.truncated;
     }
@@ -82,34 +82,45 @@ export default class HistoryService {
   // holds too many points, and it is asked again downsampled to the budget.
   private async rangeOf(
     target: SignalTarget,
-    source: InfluxSource,
     tokens: Record<string, string>,
     span: Span,
     budget: number,
   ): Promise<HistoryAnswer> {
+    const source = target.influx as InfluxSource;
     const token = tokens[source.org];
     if (token === undefined) {
       this.logger.warn(`No InfluxDB token for the org of ${target.owner}`);
       return { samples: [], truncated: false };
     }
     const window = { topic: target.path, from: span.from, to: span.to };
-    const rows = await this.influx.query(
-      source.org,
-      token,
-      buildRangeQuery(source, { ...window, limit: budget + 1 }),
-    );
+    const rows = await this.queryRange(source, token, {
+      ...window,
+      limit: budget + 1,
+    });
     if (rows.length <= budget)
       return { samples: this.samplesOf(rows, target, span), truncated: false };
     const everyMs = (span.to - span.from) / budget;
-    const downsampled = await this.influx.query(
-      source.org,
-      token,
-      buildRangeQuery(source, { ...window, limit: budget, everyMs }),
-    );
+    const downsampled = await this.queryRange(source, token, {
+      ...window,
+      limit: budget,
+      everyMs,
+    });
     return {
       samples: this.samplesOf(downsampled, target, span),
       truncated: true,
     };
+  }
+
+  private queryRange(
+    source: InfluxSource,
+    token: string,
+    window: RangeWindow,
+  ): Promise<CsvRow[]> {
+    return this.influx.query(
+      source.org,
+      token,
+      buildRangeQuery(source, window),
+    );
   }
 
   private samplesOf(

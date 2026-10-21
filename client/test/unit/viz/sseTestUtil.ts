@@ -26,6 +26,18 @@ export function answerOf(chunks: readonly Chunk[], status = 200): Response {
   } as unknown as Response;
 }
 
+/** Promises a reader waits on, all resolved by the next wake. */
+function wakeups() {
+  const waiters: (() => void)[] = [];
+  return {
+    wake: () => waiters.splice(0).forEach((resolve) => resolve()),
+    arrival: () =>
+      new Promise<void>((resolve) => {
+        waiters.push(resolve);
+      }),
+  };
+}
+
 /**
  * A body that stays open until the test ends it or the request is aborted,
  * and hands out what the test sends meanwhile.
@@ -33,13 +45,8 @@ export function answerOf(chunks: readonly Chunk[], status = 200): Response {
 export function openBody(signal: AbortSignal) {
   const queue: Uint8Array[] = [];
   let ended = false;
-  const waiters: (() => void)[] = [];
-  const wake = () => waiters.splice(0).forEach((resolve) => resolve());
+  const { wake, arrival } = wakeups();
   signal.addEventListener('abort', wake);
-  const arrival = () =>
-    new Promise<void>((resolve) => {
-      waiters.push(resolve);
-    });
   const next = async (): Promise<ReadableStreamReadResult<Uint8Array>> => {
     if (queue.length === 0 && !ended && !signal.aborted) await arrival();
     if (signal.aborted) throw new Error('aborted');
