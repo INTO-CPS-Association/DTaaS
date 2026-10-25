@@ -1,5 +1,5 @@
 # Tools for the image and font steps of the update-docs-diagrams skill. The
 # scripts themselves use the standard library only.
 pillow==12.3.0
-fonttools==4.66.1
+fonttools==4.67.0
 brotli==1.2.0
