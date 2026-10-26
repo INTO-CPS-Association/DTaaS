@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 840 984" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dtaas-services-admin-onboarding-title dtaas-services-admin-onboarding-desc" id="dtaas-services-admin-onboarding-root">
+        <title id="dtaas-services-admin-onboarding-title">Stand up platform services with dtaas-services</title>
+        <desc id="dtaas-services-admin-onboarding-desc">Onboarding flow for an administrator: install the dtaas-services CLI, generate a project, edit its configuration and certificates, prepare the host and start the services, install ThingsBoard or GitLab when needed, then add users and check status. Host setup and service install need root.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #dtaas-services-admin-onboarding-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #dtaas-services-admin-onboarding-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #dtaas-services-admin-onboarding-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#dtaas-services-admin-onboarding-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="dtaas-services-admin-onboarding-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="dtaas-services-admin-onboarding-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="dtaas-services-admin-onboarding-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <path d="M 230,104 L 230,144" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,208 L 230,248" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,312 L 230,352" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,416 L 230,456" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,520 L 230,560" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,672 L 230,712" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 230,776 L 230,816" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 370,616 L 500,616" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <path d="M 640,648 L 640,736 Q 640,744 632,744 L 400,744" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <rect x="238" y="683" width="28" height="18" rx="2" fill="#ffffff"/>
+        <text x="252" y="696" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+        <rect x="417" y="592" width="36" height="18" rx="2" fill="#ffffff"/>
+        <text x="435" y="605" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+        <rect x="60" y="40" width="340" height="64" rx="28" fill="#ffffff"/>
+        <rect x="60" y="40" width="340" height="64" rx="28" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="230" y="67" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Install the CLI</text>
+        <text x="230" y="87" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">pip install dtaas-services</text>
+        <rect x="60" y="144" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="144" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="171" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Generate the project</text>
+        <text x="230" y="191" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">project generate</text>
+        <rect x="60" y="248" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="248" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="275" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Edit config and certs</text>
+        <text x="230" y="295" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">services.env · credentials.csv · CERTS_SRC</text>
+        <rect x="60" y="352" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="352" width="340" height="64" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="230" y="379" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Prepare the host</text>
+        <text x="230" y="399" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">sudo -E dtaas-services host setup</text>
+        <rect x="60" y="456" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="456" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="483" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Start the services</text>
+        <text x="230" y="503" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">service start</text>
+        <polygon points="230,560 370,616 230,672 90,616" fill="#ffffff"/>
+        <polygon points="230,560 370,616 230,672 90,616" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="611" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">ThingsBoard</text>
+        <text x="230" y="631" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">or GitLab?</text>
+        <rect x="60" y="712" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="712" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="739" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Add users</text>
+        <text x="230" y="759" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">user add</text>
+        <rect x="60" y="816" width="340" height="64" rx="28" fill="#ffffff"/>
+        <rect x="60" y="816" width="340" height="64" rx="28" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="230" y="843" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Check the services</text>
+        <text x="230" y="863" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">service status</text>
+        <rect x="500" y="584" width="280" height="64" rx="6" fill="#ffffff"/>
+        <rect x="500" y="584" width="280" height="64" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="640" y="611" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Install, then start</text>
+        <text x="640" y="631" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">sudo -E … service install -s &lt;svc&gt;</text>
+        <line x1="40" y1="912" x2="800" y2="912" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="932" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="948" width="28" height="14" rx="7" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="78" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Start or end</text>
+        <rect x="194" y="948" width="28" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="232" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Step</text>
+        <polygon points="292,955 306,948 320,955 306,962" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="330" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Decision</text>
+        <rect x="418" y="948" width="28" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="456" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Needs root (sudo -E)</text>
+        <line x1="632" y1="956" x2="664" y2="956" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-services-admin-onboarding-arrow)"/>
+        <text x="674" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Next step</text>
+      </svg>

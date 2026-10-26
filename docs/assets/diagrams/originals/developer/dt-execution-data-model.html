@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DT execution data model</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1040px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">dt-automation · DTaaS developer docs</p>
+    <h1>DT execution data model</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1040 748" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dt-execution-data-model-title dt-execution-data-model-desc">
+        <title id="dt-execution-data-model-title">DT execution data model</title>
+        <desc id="dt-execution-data-model-desc">Data model of the dt-automation DevOps workflow: a DigitalTwin, rebuilt from its Redux record, talks to GitLab through a backend, owns description, configuration and lifecycle files, is created from library assets in the cart, and has many execution records in IndexedDB, each holding the job logs of its child pipeline.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <path d="M 320,108 L 344,108 Q 352,108 352,116 L 352,292 Q 352,300 360,300 L 384,300" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 384,396 L 360,396 Q 352,396 352,404 L 352,560 Q 352,568 344,568 L 320,568" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 180,176 L 180,260" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 524,196 L 524,260" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 524,436 L 524,500" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 664,348 L 712,348" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <path d="M 852,436 L 852,500" fill="none" stroke="#47536b" stroke-width="1.4"/>
+        <rect x="326" y="84" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="336" y="97" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="358" y="276" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="368" y="289" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="268" y="219" width="76" height="18" rx="2" fill="#ffffff"/>
+        <text x="306" y="232" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">VIA CART</text>
+        <rect x="358" y="372" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="368" y="385" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="326" y="544" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="336" y="557" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="188" y="187" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="198" y="200" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="188" y="235" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="198" y="248" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="532" y="201" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="542" y="214" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="532" y="237" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="542" y="250" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="532" y="441" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="542" y="454" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="532" y="477" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="542" y="490" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="666" y="324" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="676" y="337" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="690" y="324" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="700" y="337" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="860" y="441" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="870" y="454" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="860" y="477" width="20" height="18" rx="2" fill="#ffffff"/>
+        <text x="870" y="490" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="40" y="40" width="280" height="136" rx="6" fill="#ffffff"/>
+        <rect x="40" y="40" width="280" height="136" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="48" y="48" width="52" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="60" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="62" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">LibraryAsset</text>
+        <line x1="40" y1="74" x2="320" y2="74" stroke="rgb(0,37,70)" stroke-width="1"/>
+        <text x="54" y="98" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># path + isPrivate</text>
+        <text x="54" y="118" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">name · type</text>
+        <text x="54" y="138" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">description</text>
+        <text x="54" y="158" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">configFiles</text>
+        <rect x="384" y="40" width="280" height="156" rx="6" fill="#ffffff"/>
+        <rect x="384" y="40" width="280" height="156" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="392" y="48" width="52" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="418" y="60" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="454" y="62" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">DigitalTwinData</text>
+        <line x1="384" y1="74" x2="664" y2="74" stroke="rgb(0,37,70)" stroke-width="1"/>
+        <text x="398" y="98" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># DTName (Redux digitalTwin)</text>
+        <text x="398" y="118" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">pipelineLoading/Completed</text>
+        <text x="398" y="138" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">jobLogs: JobLog[]</text>
+        <text x="398" y="158" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">lastExecutionStatus?</text>
+        <text x="398" y="178" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">gitlabProjectId?</text>
+        <rect x="40" y="260" width="280" height="116" rx="6" fill="#ffffff"/>
+        <rect x="40" y="260" width="280" height="116" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="48" y="268" width="52" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="280" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="282" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">LibraryConfigFile</text>
+        <line x1="40" y1="294" x2="320" y2="294" stroke="rgb(0,37,70)" stroke-width="1"/>
+        <text x="54" y="318" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">assetPath · fileName</text>
+        <text x="54" y="338" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">fileContent</text>
+        <text x="54" y="358" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">isPrivate · isNew</text>
+        <rect x="384" y="260" width="280" height="176" rx="6" fill="#ffffff"/>
+        <rect x="384" y="260" width="280" height="176" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <rect x="392" y="268" width="52" height="16" rx="2" fill="none" stroke="#00807a" stroke-width="1" opacity="0.6"/>
+        <text x="418" y="280" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="454" y="282" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">DigitalTwin</text>
+        <line x1="384" y1="294" x2="664" y2="294" stroke="#00807a" stroke-width="1"/>
+        <text x="398" y="318" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># DTName: digital_twins/&lt;name&gt;</text>
+        <text x="398" y="338" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">description · fullDescription</text>
+        <text x="398" y="358" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">lastExecutionStatus</text>
+        <text x="398" y="378" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">pipelineId · activePipelineIds</text>
+        <text x="398" y="398" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">currentExecutionId</text>
+        <text x="398" y="418" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">backend: BackendInterface</text>
+        <rect x="712" y="260" width="280" height="176" rx="6" fill="#ffffff"/>
+        <rect x="712" y="260" width="280" height="176" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="720" y="268" width="52" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="746" y="280" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="782" y="282" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">DTExecutionResult</text>
+        <line x1="712" y1="294" x2="992" y2="294" stroke="#47536b" stroke-width="1"/>
+        <text x="726" y="318" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># id: uuid (IndexedDB key)</text>
+        <text x="726" y="338" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">dtName (index)</text>
+        <text x="726" y="358" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">pipelineId: parent pipeline</text>
+        <text x="726" y="378" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">timestamp (index)</text>
+        <text x="726" y="398" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">status: ExecutionStatus</text>
+        <text x="726" y="418" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">jobLogs: JobLog[]</text>
+        <rect x="40" y="500" width="280" height="136" rx="6" fill="#ffffff"/>
+        <rect x="40" y="500" width="280" height="136" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="48" y="508" width="52" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="520" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="522" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">FileState</text>
+        <line x1="40" y1="534" x2="320" y2="534" stroke="rgb(0,37,70)" stroke-width="1"/>
+        <text x="54" y="558" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">name · type</text>
+        <text x="54" y="578" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">content: string</text>
+        <text x="54" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">isNew · isModified</text>
+        <text x="54" y="618" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">isFromCommonLibrary?</text>
+        <rect x="384" y="500" width="280" height="136" rx="6" fill="#ffffff"/>
+        <rect x="384" y="500" width="280" height="136" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="392" y="508" width="52" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="418" y="520" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="454" y="522" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">BackendInterface</text>
+        <line x1="384" y1="534" x2="664" y2="534" stroke="#5f6b85" stroke-width="1"/>
+        <text x="398" y="558" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">GitlabInstance: projectId</text>
+        <text x="398" y="578" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">triggerToken (private)</text>
+        <text x="398" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">startPipeline · getPipelineStatus</text>
+        <text x="398" y="618" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">getChildPipelineId · getJobTrace</text>
+        <rect x="712" y="500" width="280" height="96" rx="6" fill="#ffffff"/>
+        <rect x="712" y="500" width="280" height="96" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="720" y="508" width="52" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="746" y="520" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="782" y="522" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">JobLog</text>
+        <line x1="712" y1="534" x2="992" y2="534" stroke="#47536b" stroke-width="1"/>
+        <text x="726" y="558" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">jobName: string</text>
+        <text x="726" y="578" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">log: string</text>
+        <line x1="40" y1="676" x2="1000" y2="676" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="696" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="712" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="724" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Aggregate root</text>
+        <rect x="200" y="712" width="20" height="14" rx="2" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <text x="228" y="724" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Stored in IndexedDB</text>
+        <rect x="396" y="712" width="20" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="424" y="724" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">In memory or Redux</text>
+        <rect x="584" y="712" width="20" height="14" rx="2" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="612" y="724" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">GitLab boundary</text>
+        <line x1="752" y1="720" x2="784" y2="720" stroke="#47536b" stroke-width="1.4"/>
+        <text x="794" y="724" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Relationship, cardinality</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

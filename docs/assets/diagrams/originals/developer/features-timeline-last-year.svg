@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 476" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="features-timeline-last-year-title features-timeline-last-year-desc" id="features-timeline-last-year-root">
+        <title id="features-timeline-last-year-title">DTaaS features in the last year</title>
+        <desc id="features-timeline-last-year-desc">Timeline of the DTaaS features merged between 25 October 2025 and 25 October 2026, from concurrent digital twin executions and the platform services CLI through release v1.0 with the new user workspace to release v1.1 with the Material UI redesign.</desc>
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #features-timeline-last-year-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #features-timeline-last-year-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #features-timeline-last-year-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#features-timeline-last-year-root .diagram-container { overflow-x: visible; }
+}</style>
+  </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <line x1="60" y1="196" x2="1000" y2="196" stroke="#a6b3be" stroke-width="1.4"/>
+        <line x1="78" y1="188" x2="78" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="116.7" y1="188" x2="116.7" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="116.7" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">NOV &#x27;25</text>
+        <line x1="155.3" y1="188" x2="155.3" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="195.2" y1="188" x2="195.2" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="195.2" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DEC</text>
+        <line x1="235.1" y1="188" x2="235.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="275.1" y1="188" x2="275.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="275.1" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">JAN &#x27;26</text>
+        <line x1="315" y1="188" x2="315" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="351.1" y1="188" x2="351.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="351.1" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">FEB</text>
+        <line x1="387.1" y1="188" x2="387.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="427" y1="188" x2="427" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="427" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">MAR</text>
+        <line x1="466.9" y1="188" x2="466.9" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="505.6" y1="188" x2="505.6" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="505.6" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">APR</text>
+        <line x1="544.2" y1="188" x2="544.2" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="584.1" y1="188" x2="584.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="584.1" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">MAY</text>
+        <line x1="624" y1="188" x2="624" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="680.3" y1="188" x2="680.3" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="680.3" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">JUN</text>
+        <line x1="701.3" y1="188" x2="701.3" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="741.2" y1="188" x2="741.2" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="741.2" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">JUL</text>
+        <line x1="781.1" y1="188" x2="781.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="821" y1="188" x2="821" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="821" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AUG</text>
+        <line x1="860.9" y1="188" x2="860.9" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="899.5" y1="188" x2="899.5" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="899.5" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">SEP</text>
+        <line x1="938.2" y1="188" x2="938.2" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <line x1="969.1" y1="188" x2="969.1" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="969.1" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">OCT</text>
+        <line x1="108.9" y1="188" x2="108.9" y2="154" stroke="#8c9dac" stroke-width="1"/>
+        <text x="59.9" y="104" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="start" letter-spacing="0.06em">13 NOV 2025</text>
+        <text x="59.9" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="start">Concurrent executions</text>
+        <text x="59.9" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="start">history in IndexedDB</text>
+        <line x1="157.9" y1="204" x2="157.9" y2="230" stroke="#8c9dac" stroke-width="1"/>
+        <text x="59.9" y="246" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="start" letter-spacing="0.06em">2 DEC 2025</text>
+        <text x="59.9" y="268" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="start">Platform services install</text>
+        <text x="59.9" y="288" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="start">ThingsBoard · PostgreSQL</text>
+        <line x1="273.8" y1="188" x2="273.8" y2="82" stroke="#8c9dac" stroke-width="1"/>
+        <text x="273.8" y="32" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">16 JAN 2026</text>
+        <text x="273.8" y="54" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">v0.8 release</text>
+        <text x="273.8" y="74" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">platform services CLI</text>
+        <line x1="418" y1="188" x2="418" y2="154" stroke="#8c9dac" stroke-width="1"/>
+        <text x="418" y="104" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">13 MAR 2026</text>
+        <text x="418" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">New user workspace</text>
+        <text x="418" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Dex and Keycloak installs</text>
+        <line x1="660.1" y1="206" x2="660.1" y2="230" stroke="#00807a" stroke-width="1.4"/>
+        <text x="660.1" y="246" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">15 JUN 2026</text>
+        <text x="660.1" y="268" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">v1.0 release</text>
+        <text x="660.1" y="288" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">release packages</text>
+        <line x1="696.1" y1="188" x2="696.1" y2="82" stroke="#8c9dac" stroke-width="1"/>
+        <text x="696.1" y="32" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">29 JUN 2026</text>
+        <text x="696.1" y="54" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">CLI config management</text>
+        <text x="696.1" y="74" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">lifecycle · noun-verb</text>
+        <line x1="765.6" y1="204" x2="765.6" y2="302" stroke="#8c9dac" stroke-width="1"/>
+        <text x="765.6" y="318" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">26 JUL 2026</text>
+        <text x="765.6" y="340" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Logger microservice</text>
+        <text x="765.6" y="360" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Vite build tooling</text>
+        <line x1="897" y1="188" x2="897" y2="154" stroke="#8c9dac" stroke-width="1"/>
+        <text x="897" y="104" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">15 SEP 2026</text>
+        <text x="897" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Material UI redesign</text>
+        <text x="897" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">BIM page for IFC models</text>
+        <line x1="989.7" y1="206" x2="989.7" y2="230" stroke="#00807a" stroke-width="1.4"/>
+        <text x="1019.7" y="246" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end" letter-spacing="0.06em">21 OCT 2026</text>
+        <text x="1019.7" y="268" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="end">v1.1 release</text>
+        <text x="1019.7" y="288" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">GitLab accounts · arm64</text>
+        <circle cx="108.9" cy="196" r="6" fill="#002546"/>
+        <circle cx="157.9" cy="196" r="6" fill="#002546"/>
+        <circle cx="273.8" cy="196" r="6" fill="#002546"/>
+        <circle cx="418" cy="196" r="6" fill="#002546"/>
+        <circle cx="660.1" cy="196" r="9" fill="#00807a"/>
+        <circle cx="696.1" cy="196" r="6" fill="#002546"/>
+        <circle cx="765.6" cy="196" r="6" fill="#002546"/>
+        <circle cx="897" cy="196" r="6" fill="#002546"/>
+        <circle cx="989.7" cy="196" r="9" fill="#00807a"/>
+        <line x1="40" y1="404" x2="1000" y2="404" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="424" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <circle cx="46" cy="447" r="6" fill="#002546"/>
+        <text x="64" y="452" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Feature (merge date) or release (tag date)</text>
+        <circle cx="409" cy="447" r="8" fill="#00807a"/>
+        <text x="425" y="452" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Milestone release</text>
+        <text x="580" y="452" fill="#47536b" font-size="13" font-style="italic" font-family="'Inter', system-ui, sans-serif">Spacing is proportional to elapsed time.</text>
+      </svg>

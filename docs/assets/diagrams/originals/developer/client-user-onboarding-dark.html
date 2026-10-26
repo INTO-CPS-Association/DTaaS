@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First steps in the DTaaS web client</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #1e2229;
+      --color-ink:     rgb(232,236,243);
+      --color-muted:   #a9b3c6;
+      --color-accent:  #00aba4;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 940px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 940px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Onboarding · DTaaS developer docs</p>
+    <h1>First steps in the DTaaS web client</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 940 808" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="client-user-onboarding-dark-title client-user-onboarding-dark-desc">
+        <title id="client-user-onboarding-dark-title">First steps in the DTaaS web client</title>
+        <desc id="client-user-onboarding-dark-desc">Onboarding journey of a new user: open the DTaaS address and pass the gateway login, sign in to the app with GitLab, land on the Library, then author digital twins in Jupyter Lab, automate them through GitLab pipelines, or open workspace tools from the Workbench, and finally sign out.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#a9b3c6"/></marker>
+          <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00aba4"/></marker>
+          <marker id="arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#8cc8e6"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#1e2229"/>
+        <path d="M 470,104 L 470,144" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 470,208 L 470,248" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 470,312 L 470,352" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 330,408 L 178,408 Q 170,408 170,416 L 170,520" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 470,464 L 470,520" fill="none" stroke="#00aba4" stroke-width="1.8" marker-end="url(#arrow-accent)"/>
+        <path d="M 610,408 L 762,408 Q 770,408 770,416 L 770,520" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 170,584 L 170,664 Q 170,672 178,672 L 300,672" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 470,584 L 470,640" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 770,584 L 770,664 Q 770,672 762,672 L 640,672" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <rect x="220" y="384" width="60" height="18" rx="2" fill="#1e2229"/>
+        <text x="250" y="397" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AUTHOR</text>
+        <rect x="478" y="483" width="76" height="18" rx="2" fill="#1e2229"/>
+        <text x="516" y="496" fill="#00aba4" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AUTOMATE</text>
+        <rect x="648" y="384" width="84" height="18" rx="2" fill="#1e2229"/>
+        <text x="690" y="397" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">USE TOOLS</text>
+        <rect x="300" y="40" width="340" height="64" rx="28" fill="#1e2229"/>
+        <rect x="300" y="40" width="340" height="64" rx="28" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <text x="470" y="67" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Open the DTaaS URL</text>
+        <text x="470" y="87" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">gateway login with GitLab</text>
+        <rect x="300" y="144" width="340" height="64" rx="6" fill="#1e2229"/>
+        <rect x="300" y="144" width="340" height="64" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="470" y="171" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Sign in to the app</text>
+        <text x="470" y="191" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">OIDC + PKCE · Authorize</text>
+        <rect x="300" y="248" width="340" height="64" rx="6" fill="#1e2229"/>
+        <rect x="300" y="248" width="340" height="64" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="470" y="275" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Land on the Library</text>
+        <text x="470" y="295" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">/library · Jupyter tree iframes</text>
+        <polygon points="470,352 610,408 470,464 330,408" fill="#1e2229"/>
+        <polygon points="470,352 610,408 470,464 330,408" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="470" y="413" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">What next?</text>
+        <rect x="40" y="520" width="260" height="64" rx="6" fill="#1e2229"/>
+        <rect x="40" y="520" width="260" height="64" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="170" y="547" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Digital Twins</text>
+        <text x="170" y="567" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Jupyter Lab · /lab</text>
+        <rect x="340" y="520" width="260" height="64" rx="6" fill="#1e2229"/>
+        <rect x="340" y="520" width="260" height="64" rx="6" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="470" y="547" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Automation</text>
+        <text x="470" y="567" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">create · execute · logs</text>
+        <rect x="640" y="520" width="260" height="64" rx="6" fill="#1e2229"/>
+        <rect x="640" y="520" width="260" height="64" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="770" y="547" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Workbench</text>
+        <text x="770" y="567" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">VS Code · JupyterLab · VNC</text>
+        <rect x="300" y="640" width="340" height="64" rx="28" fill="#1e2229"/>
+        <rect x="300" y="640" width="340" height="64" rx="28" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <text x="470" y="667" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Sign out</text>
+        <text x="470" y="687" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">avatar menu · Logout</text>
+        <line x1="40" y1="736" x2="900" y2="736" stroke="#3a3e45" stroke-width="1"/>
+        <text x="40" y="756" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="772" width="28" height="14" rx="7" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <text x="78" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Start or end</text>
+        <rect x="194" y="772" width="28" height="14" rx="2" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="232" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Page</text>
+        <polygon points="292,779 306,772 320,779 306,786" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="330" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Choice</text>
+        <rect x="402" y="772" width="28" height="14" rx="2" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="440" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">DT automation</text>
+        <line x1="564" y1="780" x2="596" y2="780" stroke="#00aba4" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <text x="606" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Main path</text>
+        <line x1="702" y1="780" x2="734" y2="780" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text x="744" y="784" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Next step</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

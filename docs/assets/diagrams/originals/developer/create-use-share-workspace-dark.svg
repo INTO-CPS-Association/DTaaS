@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="create-use-share-workspace-dark-title create-use-share-workspace-dark-desc" id="create-use-share-workspace-dark-root">
+        <title id="create-use-share-workspace-dark-title">Create, use and share in workspaces</title>
+        <desc id="create-use-share-workspace-dark-desc">Create-use-share process in user workspaces: asset authors and DT creators first create and use assets and twins privately in their own workspace folders, the DT manager reconfigures a twin and the user runs its lifecycle scripts and explores the results, and work is shared only when copied into the common folder that every workspace and the library service see.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #create-use-share-workspace-dark-root { --color-paper:   #1e2229;
+      --color-ink:     rgb(232,236,243);
+      --color-muted:   #a9b3c6;
+      --color-accent:  #00aba4;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #create-use-share-workspace-dark-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #create-use-share-workspace-dark-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#create-use-share-workspace-dark-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="create-use-share-workspace-dark-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#a9b3c6"/></marker>
+          <marker id="create-use-share-workspace-dark-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00aba4"/></marker>
+          <marker id="create-use-share-workspace-dark-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#8cc8e6"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#1e2229"/>
+        <text x="276" y="50" fill="rgb(232,236,243)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Create</text>
+        <text x="572" y="50" fill="rgb(232,236,243)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Use</text>
+        <line x1="416" y1="28" x2="416" y2="576" stroke="#656970" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="876" y="50" fill="rgb(232,236,243)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Share</text>
+        <line x1="728" y1="28" x2="728" y2="576" stroke="#656970" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="40" y1="64" x2="1024" y2="64" stroke="#464a51" stroke-width="1"/>
+        <text x="48" y="124" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Asset</text>
+        <text x="48" y="144" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Author</text>
+        <line x1="40" y1="192" x2="1024" y2="192" stroke="#464a51" stroke-width="1"/>
+        <text x="48" y="252" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">DT</text>
+        <text x="48" y="272" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Creator</text>
+        <line x1="40" y1="320" x2="1024" y2="320" stroke="#464a51" stroke-width="1"/>
+        <text x="48" y="380" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">DT</text>
+        <text x="48" y="400" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Manager</text>
+        <line x1="40" y1="448" x2="1024" y2="448" stroke="#464a51" stroke-width="1"/>
+        <text x="48" y="518" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">User</text>
+        <line x1="40" y1="576" x2="1024" y2="576" stroke="#464a51" stroke-width="1"/>
+        <path d="M 260,164 L 260,220" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 300,292 L 300,376 Q 300,384 308,384 L 464,384" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 572,420 L 572,476" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 368,128 L 464,128" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 680,128 L 776,128" fill="none" stroke="#a9b3c6" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 368,256 L 464,256" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 680,256 L 776,256" fill="none" stroke="#a9b3c6" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 992,128 L 1004,128 Q 1012,128 1012,136 L 1012,504 Q 1012,512 1004,512 L 992,512" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 884,292 L 884,476" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <path d="M 884,548 L 884,592 Q 884,600 876,600 L 204,600 Q 196,600 196,592 L 196,292" fill="none" stroke="#00aba4" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#create-use-share-workspace-dark-arrow-accent)"/>
+        <rect x="268" y="183" width="100" height="18" rx="2" fill="#1e2229"/>
+        <text x="318" y="196" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">LINK ASSETS</text>
+        <rect x="340" y="360" width="84" height="18" rx="2" fill="#1e2229"/>
+        <text x="382" y="373" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DT FOLDER</text>
+        <rect x="580" y="439" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="626" y="452" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CONFIGURED</text>
+        <rect x="382" y="104" width="68" height="18" rx="2" fill="#1e2229"/>
+        <text x="416" y="117" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PRIVATE</text>
+        <rect x="706" y="104" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="728" y="117" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">COPY</text>
+        <rect x="382" y="232" width="68" height="18" rx="2" fill="#1e2229"/>
+        <text x="416" y="245" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PRIVATE</text>
+        <rect x="706" y="232" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="728" y="245" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">COPY</text>
+        <rect x="904" y="391" width="100" height="18" rx="2" fill="#1e2229"/>
+        <text x="954" y="404" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">VIA LIBRARY</text>
+        <rect x="892" y="343" width="84" height="18" rx="2" fill="#1e2229"/>
+        <text x="934" y="356" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">COMMON DT</text>
+        <rect x="480" y="606" width="120" height="18" rx="2" fill="#1e2229"/>
+        <text x="540" y="619" fill="#00aba4" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">REUSE IN A DT</text>
+        <rect x="152" y="92" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="152" y="92" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="260" y="123" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Author assets</text>
+        <text x="260" y="143" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">VS Code · Jupyter</text>
+        <rect x="464" y="92" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="464" y="92" width="216" height="72" rx="6" fill="#2c3039" stroke="#94a0b8" stroke-width="1.2"/>
+        <text x="572" y="123" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Use private assets</text>
+        <text x="572" y="143" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">workspace/&lt;kind&gt;</text>
+        <rect x="776" y="92" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="776" y="92" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="884" y="123" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Publish assets</text>
+        <text x="884" y="143" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">workspace/common/&lt;kind&gt;</text>
+        <rect x="152" y="220" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="152" y="220" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="260" y="251" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Compose a DT</text>
+        <text x="260" y="271" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">digital_twins/&lt;dt&gt;</text>
+        <rect x="464" y="220" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="464" y="220" width="216" height="72" rx="6" fill="#2c3039" stroke="#94a0b8" stroke-width="1.2"/>
+        <text x="572" y="251" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Test a private DT</text>
+        <text x="572" y="271" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">own digital_twins/ folder</text>
+        <rect x="776" y="220" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="776" y="220" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="884" y="251" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Publish the DT</text>
+        <text x="884" y="271" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">common/digital_twins/&lt;dt&gt;</text>
+        <rect x="464" y="348" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="464" y="348" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="572" y="379" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Reconfigure the DT</text>
+        <text x="572" y="399" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">edit config files only</text>
+        <rect x="464" y="476" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="464" y="476" width="216" height="72" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="572" y="507" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Run and explore</text>
+        <text x="572" y="527" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">lifecycle/ scripts</text>
+        <rect x="776" y="476" width="216" height="72" rx="6" fill="#1e2229"/>
+        <rect x="776" y="476" width="216" height="72" rx="6" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="884" y="507" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Reuse from common</text>
+        <text x="884" y="527" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Library page · copy in</text>
+        <line x1="40" y1="648" x2="1000" y2="648" stroke="#3a3e45" stroke-width="1"/>
+        <text x="40" y="668" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="684" width="28" height="14" rx="2" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="78" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Step</text>
+        <rect x="138" y="684" width="28" height="14" rx="2" fill="#2c3039" stroke="#94a0b8" stroke-width="1.2"/>
+        <text x="176" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Private use</text>
+        <rect x="288" y="684" width="28" height="14" rx="2" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="326" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Shared and reused</text>
+        <line x1="478" y1="692" x2="510" y2="692" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <text x="520" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Handoff</text>
+        <line x1="600" y1="692" x2="632" y2="692" stroke="#a9b3c6" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#create-use-share-workspace-dark-arrow)"/>
+        <text x="642" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Optional share</text>
+        <line x1="774" y1="692" x2="806" y2="692" stroke="#00aba4" stroke-width="1.4" marker-end="url(#create-use-share-workspace-dark-arrow-accent)"/>
+        <text x="816" y="696" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Reuse loop</text>
+      </svg>

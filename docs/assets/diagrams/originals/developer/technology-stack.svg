@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1088 940" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="technology-stack-title technology-stack-desc" id="technology-stack-root">
+        <title id="technology-stack-title">DTaaS technology stack</title>
+        <desc id="technology-stack-desc">Technology stack of the DTaaS components, from runtime to delivery: the two Python CLIs built on Click, the React and TypeScript web client, the platform services and deployment packages built from Docker images behind Traefik, and the NestJS microservices, each with its test tooling and the way it ships.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #technology-stack-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #technology-stack-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #technology-stack-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#technology-stack-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="technology-stack-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="technology-stack-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="technology-stack-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <text x="238" y="50" fill="rgb(0,37,70)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">dtaas CLI</text>
+        <text x="238" y="70" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">cli/</text>
+        <text x="418" y="50" fill="rgb(0,37,70)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Web client</text>
+        <text x="418" y="70" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">client/</text>
+        <text x="598" y="50" fill="rgb(0,37,70)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Services</text>
+        <text x="598" y="70" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">deploy/services/</text>
+        <text x="778" y="50" fill="rgb(0,37,70)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Deploy packages</text>
+        <text x="778" y="70" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">deploy/dtaas, workspace</text>
+        <text x="958" y="50" fill="rgb(0,37,70)" font-size="18" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Microservices</text>
+        <text x="958" y="70" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">servers/</text>
+        <rect x="40" y="80" width="1008" height="126" fill="#e6f7f6"/>
+        <text x="52" y="133" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">L5 · SHIP</text>
+        <text x="52" y="157" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Delivery</text>
+        <rect x="156" y="92" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="112" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">PyPI dtaas</text>
+        <text x="310" y="112" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">2.2</text>
+        <rect x="156" y="128" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="148" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">poetry-core</text>
+        <text x="310" y="148" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.0+</text>
+        <rect x="336" y="92" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="112" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Docker image</text>
+        <text x="490" y="112" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.7</text>
+        <rect x="336" y="128" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="148" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">serve</text>
+        <text x="490" y="148" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">14.2</text>
+        <rect x="336" y="164" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="184" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">npm dtaas-web</text>
+        <text x="490" y="184" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.7</text>
+        <rect x="516" y="92" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="112" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">PyPI package</text>
+        <text x="670" y="112" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.0</text>
+        <rect x="516" y="128" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="148" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">poetry-core</text>
+        <text x="670" y="148" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.0+</text>
+        <rect x="696" y="92" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="112" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Hub · GHCR</text>
+        <text x="850" y="112" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">images</text>
+        <rect x="696" y="128" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="148" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Templates</text>
+        <text x="850" y="148" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">in CLI</text>
+        <rect x="876" y="92" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="112" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">npm packages</text>
+        <text x="1030" y="112" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">3</text>
+        <rect x="876" y="128" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="148" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Docker</text>
+        <text x="1030" y="148" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">node 26</text>
+        <rect x="876" y="164" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="184" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Nest CLI</text>
+        <text x="1030" y="184" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">11.0</text>
+        <rect x="40" y="206" width="1008" height="126" fill="#f7f8f9"/>
+        <text x="52" y="259" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">L4 · CHECK</text>
+        <text x="52" y="283" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Quality</text>
+        <rect x="156" y="218" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="238" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pytest</text>
+        <text x="310" y="238" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">9.1</text>
+        <rect x="156" y="254" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="274" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pylint</text>
+        <text x="310" y="274" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">4.1</text>
+        <rect x="156" y="290" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="310" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pyright</text>
+        <text x="310" y="310" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.1</text>
+        <rect x="336" y="218" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="238" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Jest + RTL</text>
+        <text x="490" y="238" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">30.5</text>
+        <rect x="336" y="254" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="274" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Playwright</text>
+        <text x="490" y="274" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.63</text>
+        <rect x="336" y="290" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="310" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">ESLint</text>
+        <text x="490" y="310" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">10.11</text>
+        <rect x="516" y="218" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="238" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pytest</text>
+        <text x="670" y="238" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">9.1</text>
+        <rect x="516" y="254" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="274" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pylint</text>
+        <text x="670" y="274" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">4.0</text>
+        <rect x="516" y="290" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="310" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">pyright</text>
+        <text x="670" y="310" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.1</text>
+        <rect x="696" y="218" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="238" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">yamllint</text>
+        <text x="850" y="238" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">CI</text>
+        <rect x="696" y="254" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="274" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">docker-build</text>
+        <text x="850" y="274" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">CI</text>
+        <rect x="876" y="218" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="238" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Jest</text>
+        <text x="1030" y="238" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">30</text>
+        <rect x="876" y="254" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="274" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">supertest</text>
+        <text x="1030" y="274" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">7.3</text>
+        <rect x="876" y="290" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="310" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">ESLint</text>
+        <text x="1030" y="310" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">10.11</text>
+        <rect x="40" y="332" width="1008" height="198" fill="#ffffff"/>
+        <text x="52" y="421" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">L3 · USE</text>
+        <text x="52" y="445" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Libraries</text>
+        <rect x="156" y="344" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="364" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">py-on-whales</text>
+        <text x="310" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">0.81</text>
+        <rect x="156" y="380" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="400" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">python-gitlab</text>
+        <text x="310" y="400" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">8.6</text>
+        <rect x="156" y="416" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="436" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">tomlkit</text>
+        <text x="310" y="436" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">0.15</text>
+        <rect x="336" y="344" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="364" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">MUI</text>
+        <text x="490" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">9.4</text>
+        <rect x="336" y="380" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="400" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Redux TK</text>
+        <text x="490" y="400" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">2.13</text>
+        <rect x="336" y="416" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="436" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">dt-automation</text>
+        <text x="490" y="436" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">0.2</text>
+        <rect x="336" y="452" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="472" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">oidc-client</text>
+        <text x="490" y="472" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">3.5</text>
+        <rect x="516" y="344" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="364" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">RabbitMQ</text>
+        <text x="670" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">4.2</text>
+        <rect x="516" y="380" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="400" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">MongoDB</text>
+        <text x="670" y="400" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">8.2</text>
+        <rect x="516" y="416" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="436" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">InfluxDB</text>
+        <text x="670" y="436" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">2.8</text>
+        <rect x="516" y="452" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="472" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Grafana</text>
+        <text x="670" y="472" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">12.3</text>
+        <rect x="516" y="488" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="508" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">PostgreSQL</text>
+        <text x="670" y="508" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">16.11</text>
+        <rect x="696" y="344" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="364" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">workspace</text>
+        <text x="850" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">56c6f68</text>
+        <rect x="696" y="380" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="400" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Dex</text>
+        <text x="850" y="400" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">2.45</text>
+        <rect x="696" y="416" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="436" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Keycloak</text>
+        <text x="850" y="436" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">26.7</text>
+        <rect x="696" y="452" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="472" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">GitLab CE</text>
+        <text x="850" y="472" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">19.2</text>
+        <rect x="876" y="344" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="364" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Apollo Server</text>
+        <text x="1030" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">5.5</text>
+        <rect x="876" y="380" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="400" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">iso-git</text>
+        <text x="1030" y="400" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.42</text>
+        <rect x="876" y="416" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="436" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">execa</text>
+        <text x="1030" y="436" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">9.6</text>
+        <rect x="876" y="452" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="472" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">cloudcmd</text>
+        <text x="1030" y="472" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">19.21</text>
+        <rect x="40" y="530" width="1008" height="126" fill="#f7f8f9"/>
+        <text x="52" y="583" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">L2 · BASE</text>
+        <text x="52" y="607" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Framework</text>
+        <rect x="156" y="542" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="562" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Click</text>
+        <text x="310" y="562" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">8.5</text>
+        <rect x="336" y="542" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="562" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">React</text>
+        <text x="490" y="562" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">19.3</text>
+        <rect x="336" y="578" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="598" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Vite</text>
+        <text x="490" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">8.3</text>
+        <rect x="336" y="614" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="634" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">React Router</text>
+        <text x="490" y="634" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">7.18</text>
+        <rect x="516" y="542" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="562" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Click</text>
+        <text x="670" y="562" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">8.4</text>
+        <rect x="516" y="578" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="598" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">rich</text>
+        <text x="670" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">15.0</text>
+        <rect x="516" y="614" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="634" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Compose</text>
+        <text x="670" y="634" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">v2</text>
+        <rect x="696" y="542" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="562" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Compose</text>
+        <text x="850" y="562" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">v2</text>
+        <rect x="696" y="578" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="598" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Traefik</text>
+        <text x="850" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">3.7</text>
+        <rect x="696" y="614" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="634" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">fwd-auth</text>
+        <text x="850" y="634" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">latest</text>
+        <rect x="876" y="542" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="562" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">NestJS</text>
+        <text x="1030" y="562" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">11.2</text>
+        <rect x="876" y="578" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="598" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Express</text>
+        <text x="1030" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">5.2</text>
+        <rect x="40" y="656" width="1008" height="126" fill="#ffffff"/>
+        <text x="52" y="709" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">L1 · RUN</text>
+        <text x="52" y="733" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Runtime</text>
+        <rect x="156" y="668" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="166" y="688" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Python</text>
+        <text x="310" y="688" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">3.10+</text>
+        <rect x="336" y="668" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="688" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">TypeScript</text>
+        <text x="490" y="688" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">6.0</text>
+        <rect x="336" y="704" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="724" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Node.js</text>
+        <text x="490" y="724" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">26</text>
+        <rect x="336" y="740" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="346" y="760" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Yarn classic</text>
+        <text x="490" y="760" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.22</text>
+        <rect x="516" y="668" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="688" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Python</text>
+        <text x="670" y="688" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">3.10+</text>
+        <rect x="516" y="704" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="526" y="724" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Docker</text>
+        <text x="670" y="724" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">engine</text>
+        <rect x="696" y="668" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="688" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Docker</text>
+        <text x="850" y="688" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">engine</text>
+        <rect x="696" y="704" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="706" y="724" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">TLS certs</text>
+        <text x="850" y="724" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">PEM</text>
+        <rect x="876" y="668" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="688" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">TypeScript</text>
+        <text x="1030" y="688" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">6.0</text>
+        <rect x="876" y="704" width="164" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="886" y="724" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">Node.js</text>
+        <text x="1030" y="724" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">26</text>
+        <line x1="40" y1="80" x2="1048" y2="80" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="40" y1="206" x2="1048" y2="206" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="40" y1="332" x2="1048" y2="332" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="40" y1="530" x2="1048" y2="530" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="40" y1="656" x2="1048" y2="656" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="40" y1="782" x2="1048" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="148" y1="80" x2="148" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="328" y1="80" x2="328" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="508" y1="80" x2="508" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="688" y1="80" x2="688" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="868" y1="80" x2="868" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <line x1="1048" y1="80" x2="1048" y2="782" stroke="#ccd3da" stroke-width="1"/>
+        <rect x="40" y="80" width="1008" height="126" fill="none" stroke="#00807a" stroke-width="1.2"/>
+        <text x="52" y="818" fill="#47536b" font-size="18" font-style="italic" font-family="'Instrument Serif', serif">Services also install ThingsBoard 4.2 and GitLab CE 18.10 on request.</text>
+        <text x="52" y="846" fill="#47536b" font-size="18" font-style="italic" font-family="'Instrument Serif', serif">Deploy packages pin dtaas-web 1.7.1 (source 1.7.2) and GitLab CE 19.2 (services 18.10).</text>
+        <line x1="40" y1="868" x2="1048" y2="868" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="888" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="904" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="916" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Where the components meet</text>
+        <rect x="280" y="904" width="20" height="14" rx="2" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <text x="308" y="916" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Technology and version</text>
+      </svg>

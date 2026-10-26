@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 880" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="runner-architecture-title runner-architecture-desc" id="runner-architecture-root">
+        <title id="runner-architecture-title">DT runner architecture</title>
+        <desc id="runner-architecture-desc">Internal architecture of the runner microservice: an HTTP request passes a Zod validation pipe to the AppController, and ExecaManager checks the command against the runner.yaml allowlist, records it in an in-memory queue and runs the matching script through execa.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #runner-architecture-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #runner-architecture-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #runner-architecture-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#runner-architecture-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="runner-architecture-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="runner-architecture-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="runner-architecture-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <rect x="20" y="160" width="1000" height="504" rx="8" fill="#fafbfb" stroke="#dbe0e5" stroke-width="1"/>
+        <rect x="36" y="152" width="140" height="16" rx="2" fill="#ffffff"/>
+        <text x="106" y="164" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">NESTJS APPMODULE</text>
+        <path d="M 500,120 L 500,192" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#runner-architecture-arrow-link)"/>
+        <path d="M 500,272 L 500,312" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 500,392 L 500,432" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 500,512 L 500,552" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 500,632 L 500,704" fill="none" stroke="#00807a" stroke-width="1.8" marker-end="url(#runner-architecture-arrow-accent)"/>
+        <path d="M 640,456 L 852,456 Q 860,456 860,448 L 860,272" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 360,472 L 280,472" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 860,120 L 860,192" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <path d="M 360,352 L 328,352 Q 320,352 320,344 L 320,88 Q 320,80 328,80 L 360,80" fill="none" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#runner-architecture-arrow)"/>
+        <rect x="508" y="147" width="44" height="18" rx="2" fill="#ffffff"/>
+        <text x="530" y="160" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTP</text>
+        <rect x="508" y="403" width="36" height="18" rx="2" fill="#ffffff"/>
+        <text x="526" y="416" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">RUN</text>
+        <rect x="508" y="523" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="538" y="536" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CREATE</text>
+        <rect x="508" y="659" width="52" height="18" rx="2" fill="#ffffff"/>
+        <text x="534" y="672" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">EXECA</text>
+        <rect x="868" y="355" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="910" y="368" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ALLOWLIST</text>
+        <rect x="286" y="448" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="320" y="461" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HISTORY</text>
+        <rect x="868" y="147" width="108" height="18" rx="2" fill="#ffffff"/>
+        <text x="922" y="160" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">LOADS CONFIG</text>
+        <rect x="212" y="223" width="100" height="18" rx="2" fill="#ffffff"/>
+        <text x="262" y="236" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">STATUS JSON</text>
+        <rect x="360" y="40" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="40" width="280" height="80" rx="6" fill="#edeef0" stroke="#5f6b85" stroke-width="1.2"/>
+        <rect x="368" y="48" width="24" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="380" y="60" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">IN</text>
+        <text x="500" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">HTTP caller</text>
+        <text x="500" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">curl · workspace proxy</text>
+        <rect x="720" y="40" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="720" y="40" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="728" y="48" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="744" y="60" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">BIN</text>
+        <text x="860" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">main.ts</text>
+        <text x="860" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">commander · NestFactory</text>
+        <rect x="720" y="192" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="720" y="192" width="280" height="80" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="728" y="200" width="32" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="744" y="212" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CFG</text>
+        <text x="860" y="237" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Config</text>
+        <text x="860" y="257" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">runner.yaml · commands</text>
+        <rect x="360" y="192" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="192" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="368" y="200" width="40" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="388" y="212" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PIPE</text>
+        <text x="500" y="237" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Validation pipe</text>
+        <text x="500" y="257" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">zod · { name }</text>
+        <rect x="360" y="312" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="312" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="368" y="320" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="384" y="332" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+        <text x="500" y="357" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">AppController</text>
+        <text x="500" y="377" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">POST / · GET / · /history</text>
+        <rect x="360" y="432" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="432" width="280" height="80" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <rect x="368" y="440" width="32" height="16" rx="2" fill="none" stroke="#00807a" stroke-width="1" opacity="0.6"/>
+        <text x="384" y="452" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SVC</text>
+        <text x="500" y="477" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">ExecaManager</text>
+        <text x="500" y="497" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">allowlist · status</text>
+        <rect x="40" y="432" width="240" height="80" rx="6" fill="#ffffff"/>
+        <rect x="40" y="432" width="240" height="80" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="48" y="440" width="32" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="64" y="452" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">MEM</text>
+        <text x="160" y="477" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Queue</text>
+        <text x="160" y="497" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">in-memory Command[]</text>
+        <rect x="360" y="552" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="552" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="368" y="560" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="384" y="572" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SVC</text>
+        <text x="500" y="597" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">RunnerFactory</text>
+        <text x="500" y="617" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">execa · .ps1 on win32</text>
+        <rect x="360" y="704" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="360" y="704" width="280" height="80" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="368" y="712" width="24" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="380" y="724" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">FS</text>
+        <text x="500" y="749" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Scripts</text>
+        <text x="500" y="769" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">&lt;location&gt;/&lt;name&gt;</text>
+        <line x1="40" y1="808" x2="1000" y2="808" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="828" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="844" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Manager</text>
+        <rect x="148" y="844" width="20" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="176" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Component</text>
+        <rect x="272" y="844" width="20" height="14" rx="2" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <text x="300" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">State</text>
+        <rect x="368" y="844" width="20" height="14" rx="2" fill="#edeef0" stroke="#5f6b85" stroke-width="1.2"/>
+        <text x="396" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Caller</text>
+        <rect x="468" y="844" width="20" height="14" rx="2" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="496" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Host files</text>
+        <line x1="600" y1="852" x2="632" y2="852" stroke="#00807a" stroke-width="1.4" marker-end="url(#runner-architecture-arrow-accent)"/>
+        <text x="642" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Runs</text>
+        <line x1="702" y1="852" x2="734" y2="852" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#runner-architecture-arrow-link)"/>
+        <text x="744" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">HTTP</text>
+        <line x1="804" y1="852" x2="836" y2="852" stroke="#47536b" stroke-width="1.4" marker-end="url(#runner-architecture-arrow)"/>
+        <text x="846" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Call</text>
+        <line x1="906" y1="852" x2="938" y2="852" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#runner-architecture-arrow)"/>
+        <text x="948" y="856" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Response</text>
+      </svg>

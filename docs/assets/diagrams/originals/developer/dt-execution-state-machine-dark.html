@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DT execution state machine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #1e2229;
+      --color-ink:     rgb(232,236,243);
+      --color-muted:   #a9b3c6;
+      --color-accent:  #00aba4;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1040px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">dt-automation · DTaaS developer docs</p>
+    <h1>DT execution state machine</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1040 752" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dt-execution-state-machine-dark-title dt-execution-state-machine-dark-desc">
+        <title id="dt-execution-state-machine-dark-title">DT execution state machine</title>
+        <desc id="dt-execution-state-machine-dark-desc">State machine of one digital twin execution record: a start with a valid trigger token creates a RUNNING record, polling follows the parent and then the child GitLab pipeline until it completes or fails, a user stop cancels it, ten minutes without a result times it out, an exception ends it in error, and a stale poll can overwrite a cancel with a timeout.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#a9b3c6"/></marker>
+          <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00aba4"/></marker>
+          <marker id="arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#8cc8e6"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#1e2229"/>
+        <rect x="144" y="96" width="560" height="192" rx="8" fill="#22262d" stroke="#3a3e45" stroke-width="1"/>
+        <rect x="160" y="88" width="216" height="16" rx="2" fill="#1e2229"/>
+        <text x="268" y="100" fill="#94a0b8" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">COMPOSITE · STATUS RUNNING</text>
+        <path d="M 48,208 L 176,208" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 240,168 L 240,144 Q 240,136 248,136 L 296,136 Q 304,136 304,144 L 304,168" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 544,168 L 544,144 Q 544,136 552,136 L 600,136 Q 608,136 608,144 L 608,168" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 368,208 L 480,208" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 672,208 L 808,208" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 656,248 L 656,328 Q 656,336 664,336 L 808,336" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 232,288 L 232,432" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 432,288 L 432,432" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 632,288 L 632,432" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 432,512 L 432,544 Q 432,552 440,552 L 624,552 Q 632,552 632,544 L 632,512" fill="none" stroke="#00aba4" stroke-width="1.8" marker-end="url(#arrow-accent)"/>
+        <rect x="52" y="184" width="120" height="18" rx="2" fill="#1e2229"/>
+        <text x="112" y="197" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">START [TOKEN]</text>
+        <rect x="226" y="112" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="272" y="125" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">POLL · 5 S</text>
+        <rect x="530" y="112" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="576" y="125" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">POLL · 5 S</text>
+        <rect x="374" y="184" width="100" height="18" rx="2" fill="#1e2229"/>
+        <text x="424" y="197" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PARENT DONE</text>
+        <rect x="680" y="184" width="120" height="18" rx="2" fill="#1e2229"/>
+        <text x="740" y="197" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CHILD SUCCESS</text>
+        <rect x="678" y="312" width="108" height="18" rx="2" fill="#1e2229"/>
+        <text x="732" y="325" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CHILD FAILED</text>
+        <rect x="240" y="351" width="84" height="18" rx="2" fill="#1e2229"/>
+        <text x="282" y="364" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">EXCEPTION</text>
+        <rect x="440" y="351" width="84" height="18" rx="2" fill="#1e2229"/>
+        <text x="482" y="364" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">USER STOP</text>
+        <rect x="640" y="351" width="76" height="18" rx="2" fill="#1e2229"/>
+        <text x="678" y="364" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">&gt; 10 MIN</text>
+        <rect x="486" y="558" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="532" y="571" fill="#00aba4" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">STALE POLL</text>
+        <circle cx="40" cy="208" r="8" fill="rgb(232,236,243)"/>
+        <rect x="176" y="168" width="192" height="80" rx="8" fill="#1e2229"/>
+        <rect x="176" y="168" width="192" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="272" y="203" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Parent pipeline</text>
+        <text x="272" y="223" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">getPipelineStatus</text>
+        <rect x="480" y="168" width="192" height="80" rx="8" fill="#1e2229"/>
+        <rect x="480" y="168" width="192" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="576" y="203" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Child pipeline</text>
+        <text x="576" y="223" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">getChildPipelineId</text>
+        <rect x="808" y="168" width="192" height="80" rx="8" fill="#1e2229"/>
+        <rect x="808" y="168" width="192" height="80" rx="8" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="904" y="203" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Completed</text>
+        <text x="904" y="223" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">child success</text>
+        <rect x="808" y="296" width="192" height="80" rx="8" fill="#1e2229"/>
+        <rect x="808" y="296" width="192" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="904" y="331" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Failed</text>
+        <text x="904" y="351" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">failed or skipped</text>
+        <rect x="144" y="432" width="176" height="80" rx="8" fill="#1e2229"/>
+        <rect x="144" y="432" width="176" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="232" y="467" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Error</text>
+        <text x="232" y="487" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">on exception</text>
+        <rect x="344" y="432" width="176" height="80" rx="8" fill="#1e2229"/>
+        <rect x="344" y="432" width="176" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="432" y="467" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Canceled</text>
+        <text x="432" y="487" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">stopDT · user</text>
+        <rect x="544" y="432" width="176" height="80" rx="8" fill="#1e2229"/>
+        <rect x="544" y="432" width="176" height="80" rx="8" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="632" y="467" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Timed out</text>
+        <text x="632" y="487" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">client only</text>
+        <text x="40" y="624" fill="#a9b3c6" font-size="18" font-style="italic" font-family="'Instrument Serif', serif">A 10 s background check also settles RUNNING records; it never times out.</text>
+        <text x="40" y="652" fill="#a9b3c6" font-size="18" font-style="italic" font-family="'Instrument Serif', serif">A start without a trigger token creates no record; the twin is marked error.</text>
+        <line x1="40" y1="680" x2="1000" y2="680" stroke="#3a3e45" stroke-width="1"/>
+        <text x="40" y="700" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="716" width="28" height="14" rx="4" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="78" y="728" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Happy completion</text>
+        <rect x="226" y="716" width="28" height="14" rx="4" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="264" y="728" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Record status</text>
+        <line x1="388" y1="724" x2="420" y2="724" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text x="430" y="728" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Transition</text>
+        <line x1="534" y1="724" x2="566" y2="724" stroke="#00aba4" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <text x="576" y="728" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Timeout overwrites a cancel</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
