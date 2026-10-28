@@ -356,31 +356,14 @@ The `dtaas-services service install -s gitlab` command performs the following st
 automatically:
 
 1. Starts the GitLab Docker container
-2. Checks if GitLab is healthy (non-blocking — exits immediately if not ready)
+2. Checks if GitLab is healthy and its `/-/readiness` check passes inside
+   the container (non-blocking — exits immediately if not ready)
 3. Reads the auto-generated root password from the container
    (`/etc/gitlab/initial_root_password`)
-4. Creates an initial Personal Access Token and saves it to
+4. Creates an initial Personal Access Token with `gitlab-rails runner`
+   inside the container (about a minute) and saves it to
    `config/gitlab_tokens.json`
 5. Creates Server and Client OAuth application tokens.
-
-## Upgrading from 0.x
-
-Version 1.0.0 groups every command as `dtaas-services <noun> <verb>`.
-The old spellings still work for this release; they print a deprecation
-notice and will be removed in the next major version.
-
-| Before | After |
-| :--- | :--- |
-| `dtaas-services generate-project` | `dtaas-services project generate [--force]` |
-| `dtaas-services setup` | `dtaas-services host setup` |
-| `dtaas-services install -s <svc>` | `dtaas-services service install -s <svc>` |
-| `dtaas-services start/stop/restart/clean` | `dtaas-services service start/stop/restart/clean` |
-| `dtaas-services status` | `dtaas-services service status [--json]` |
-| `dtaas-services remove -v` | `dtaas-services service remove --volumes` |
-| `dtaas-services user add/reset-password` | unchanged |
-
-`service install -s` now accepts a comma separated list, like the other
-`service` commands.
 
 ## Troubleshooting
 

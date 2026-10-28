@@ -77,10 +77,13 @@ def _step_get_password(console: Console) -> Tuple[bool, str]:
     return True, password
 
 
-def _step_create_pat(console: Console, root_password: str) -> Tuple[bool, str]:
+def _step_create_pat(console: Console) -> Tuple[bool, str]:
     """Create a Personal Access Token (PAT)."""
-    console.print("[cyan]Creating Personal Access Token...[/cyan]")
-    success, token = create_pat(root_password)
+    console.print(
+        "[cyan]Creating Personal Access Token (gitlab-rails runner, "
+        "about a minute)...[/cyan]"
+    )
+    success, token = create_pat()
     if not success:
         return False, token
     console.print("[green]✅ Personal Access Token created.[/green]")
@@ -122,7 +125,7 @@ def _run_prereq_steps(console: Console, docker) -> Tuple[bool, str, str, str]:
     if not success:
         return False, "", "", root_password
 
-    success, pat = _step_create_pat(console, root_password)
+    success, pat = _step_create_pat(console)
     error = "" if success else pat
     return success, root_password, pat, error
 

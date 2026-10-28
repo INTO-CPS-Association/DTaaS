@@ -33,10 +33,6 @@ install order:
 - `user add`
 - `user reset-password`
 
-The old top-level spellings (`generate-project`, `setup`, `start` and so
-on) are registered by `commands/aliases.py`. They print a deprecation
-warning and forward to the `<noun> <verb>` command.
-
 Poetry script mapping (`pyproject.toml`):
 
 ```toml
@@ -56,7 +52,6 @@ deploy/services/cli/
 │   │   ├── service_ops.py
 │   │   ├── install_helpers.py
 │   │   ├── user_ops.py
-│   │   ├── aliases.py
 │   │   └── utility.py
 │   ├── pkg/
 │   │   ├── build.py
@@ -109,8 +104,6 @@ the high-level flows:
 - `install_helpers.py`: selector validation and the ThingsBoard and
   GitLab install flows used by `service install`.
 - `user_ops.py`: user provisioning and password reset.
-- `aliases.py`: deprecated top-level spellings that warn and forward to
-  their `<noun> <verb>` replacement.
 
 ### Core Library Layer
 

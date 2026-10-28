@@ -40,7 +40,8 @@ Consequently these are run from a host terminal, not from inside:
 - `servers/lib/compose.lib.dev.yml`;
 - `dtaas platform ...` and `dtaas user ...`, which drive Docker through
   `python_on_whales`;
-- `dtaas-services install|setup|start|stop|status`;
+- `dtaas-services host setup` and `dtaas-services service
+  install|start|stop|status`;
 - local builds of the publishable images.
 
 Everything else runs inside, including all test suites. The three Poetry

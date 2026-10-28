@@ -1,156 +1,65 @@
-"""Create GitLab Personal Access Tokens via the admin API."""
+"""Create GitLab Personal Access Tokens with gitlab-rails runner."""
 
 import json
-import logging
-import os
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
 
-import gitlab
-import gitlab.exceptions
-import httpx
-
 from ...config import Config
-from ._api import build_base_url, get_ssl_verify
-
-logger = logging.getLogger(__name__)
+from ...docker_utils import execute_docker_command, DockerRunOptions
 
 PAT_NAME = "dtaas-services"
 TOKENS_FILENAME = "gitlab_tokens.json"
 ROOT_USER_ID = 1
+GITLAB_CONTAINER_NAME = "gitlab"
+PAT_MARKER = "DTAAS_PAT="
+
+# Revokes root's active PATs named PAT_NAME, then creates a new one.
+# GitLab generates the token and the script prints it, so no secret is
+# passed on the docker command line, which other host users can read.
+PAT_SCRIPT = (
+    f"user = User.find({ROOT_USER_ID}); "
+    f"user.personal_access_tokens.active.where(name: '{PAT_NAME}')"
+    ".each(&:revoke!); "
+    f"token = user.personal_access_tokens.create!(name: '{PAT_NAME}', "
+    "scopes: ['api'], expires_at: 365.days.from_now); "
+    f'puts "{PAT_MARKER}#{{token.token}}"'
+)
 
 
-def _get_oauth_token(base_url: str, password: str, verify: bool) -> tuple[bool, str]:
-    """Get an OAuth access token using root credentials via ROPC grant.
-
-    Args:
-        base_url: GitLab instance base URL
-        password: Root user password
-        verify: Whether to verify SSL certificates
-
-    Returns:
-        Tuple of (success, access_token_or_error)
-    """
-    try:
-        resp = httpx.post(
-            f"{base_url}/oauth/token",
-            data={
-                "grant_type": "password",
-                "username": "root",
-                "password": password,
-            },
-            verify=verify,
-            timeout=30,
-        )
-    except httpx.RequestError as exc:
-        return False, f"OAuth request failed: {exc}"
-
-    if resp.status_code != 200:
-        return False, (
-            f"OAuth token request failed ({resp.status_code}): {resp.text[:200]}"
-        )
-
-    try:
-        payload = resp.json()
-    except ValueError as exc:
-        return False, f"Invalid JSON in OAuth response: {exc}"
-
-    token = payload.get("access_token", "")
-
-    if not token:
-        return False, "No access_token in OAuth response"
-    return True, token
-
-
-def _revoke_existing_pats(gl: gitlab.Gitlab, token_name: str) -> None:
-    """Revoke all active PATs with the given name for the root user.
-
-    Uses the admin-level personal_access_tokens manager which supports
-    listing, unlike the user-scoped manager.
+def _parse_pat(output: str) -> tuple[bool, str]:
+    """Extract the token printed by PAT_SCRIPT from gitlab-rails output.
 
     Args:
-        gl: Authenticated gitlab.Gitlab client
-        token_name: Name of tokens to revoke
-    """
-    for pat in gl.personal_access_tokens.list(
-        user_id=ROOT_USER_ID, state="active", all=True
-    ):
-        if pat.name == token_name:
-            pat.delete()
-            logger.info("Revoked existing PAT: %s", token_name)
-
-
-def _create_pat_via_api(oauth_token: str) -> tuple[bool, str]:
-    """Create a root admin PAT using a temporary OAuth access token.
-
-    Args:
-        oauth_token: OAuth access token for the root user
+        output: Standard output of the gitlab-rails runner call
 
     Returns:
         Tuple of (success, token_or_error)
     """
-    expires_at = (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d")
-    try:
-        url = build_base_url()
-        verify = get_ssl_verify()
-        gl = gitlab.Gitlab(url, oauth_token=oauth_token, ssl_verify=verify)
-        _revoke_existing_pats(gl, PAT_NAME)
-        user = gl.users.get(ROOT_USER_ID)
-        pat = user.personal_access_tokens.create(
-            {"name": PAT_NAME, "scopes": ["api"], "expires_at": expires_at}
-        )
-        token = pat.token
-        if not token:
-            return False, "Empty token in PAT API response"
-        logger.info("Personal Access Token created successfully.")
-        return True, token
-    except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to create PAT via API: {exc}"
-    except RuntimeError as exc:
-        return False, str(exc)
+    for line in output.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(PAT_MARKER) and stripped != PAT_MARKER:
+            return True, stripped.removeprefix(PAT_MARKER)
+    return False, "No token in the gitlab-rails runner output"
 
 
-def _get_oauth_token_with_retry(
-    base_url: str, password: str, verify: bool
-) -> tuple[bool, str]:
-    """Get OAuth token, retrying with new password if initial fails.
+def create_pat() -> tuple[bool, str]:
+    """Create a root admin Personal Access Token inside the GitLab container.
 
-    Args:
-        base_url: GitLab instance base URL
-        password: Initial password to try
-        verify: Whether to verify SSL certificates
+    Runs PAT_SCRIPT with ``gitlab-rails runner``, which needs no password
+    and works on every GitLab version (GitLab 19 removed the OAuth password
+    grant). Rails starts slowly, so this takes about a minute.
 
     Returns:
-        Tuple of (success, access_token_or_error)
+        Tuple of (success, token_or_error)
     """
-    success, oauth_token = _get_oauth_token(base_url, password, verify)
-    if success:
-        return success, oauth_token
-
-    new_password = os.getenv("GITLAB_ROOT_NEW_PASSWORD", "")
-    if new_password and new_password != password:
-        logger.info(
-            "Initial root password rejected; retrying with GITLAB_ROOT_NEW_PASSWORD."
-        )
-        return _get_oauth_token(base_url, new_password, verify)
-
-    return success, oauth_token
-
-
-def create_pat(root_password: str) -> tuple[bool, str]:
-    """Create a root admin Personal Access Token via the admin API."""
-    try:
-        base_url = build_base_url()
-        verify = get_ssl_verify()
-    except RuntimeError as exc:
-        return False, str(exc)
-
-    success, oauth_token = _get_oauth_token_with_retry(base_url, root_password, verify)
+    success, output = execute_docker_command(
+        GITLAB_CONTAINER_NAME,
+        ["gitlab-rails", "runner", PAT_SCRIPT],
+        DockerRunOptions(verbose=False),
+    )
     if not success:
-        return False, f"Failed to obtain OAuth token: {oauth_token}"
-
-    return _create_pat_via_api(oauth_token)
+        return False, f"Failed to create PAT with gitlab-rails runner: {output}"
+    return _parse_pat(output)
 
 
 def _get_tokens_path() -> Path:
