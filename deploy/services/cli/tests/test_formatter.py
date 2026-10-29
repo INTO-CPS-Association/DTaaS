@@ -3,6 +3,7 @@
 from io import StringIO
 from typing import cast, List, Union
 
+import pytest
 from rich.console import Console
 from python_on_whales import Container
 
@@ -78,6 +79,25 @@ def test_format_container_status_unhealthy():
     format_container_status(containers, console)
     output = string_io.getvalue()
     assert "not ready" in output
+
+
+@pytest.mark.parametrize(
+    "name, ready, expected",
+    [
+        ("gitlab", False, "starting"),
+        ("gitlab", True, "running"),
+        ("grafana", False, "running"),
+    ],
+)
+def test_healthy_gitlab_needs_readiness(mocker, name, ready, expected):
+    """A healthy GitLab shows starting until its readiness check passes"""
+    is_ready = mocker.patch(
+        "dtaas_services.pkg.formatter.is_gitlab_ready", return_value=ready
+    )
+    container = make_mock_container(name, "running", health_status="healthy")
+    containers = cast(List[Union[Container, RemovedServiceEntry]], [container])
+    assert build_status_json(containers)[0]["status"] == expected
+    assert is_ready.called is (name == "gitlab")
 
 
 def test_build_status_json_uses_compose_service_label():

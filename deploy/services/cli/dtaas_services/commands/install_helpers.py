@@ -76,9 +76,8 @@ GITLAB_NOT_READY_HINT = (
     "It typically takes 5–10 minutes after first start.[/yellow]\n"
     "[cyan]Next steps:[/cyan]\n"
     "  1. Check health:  dtaas-services service status -s gitlab\n"
-    "     It will be 'starting' or 'not-ready' while it's initializing.\n"
-    "  2. When GitLab health shows 'running', wait a few more minutes\n"
-    "     (GitLab keeps starting after that), then re-run:\n"
+    "     It will be 'starting' or 'not ready' while it's initializing.\n"
+    "  2. When GitLab health shows 'running', re-run:\n"
     "     dtaas-services service install -s gitlab"
 )
 

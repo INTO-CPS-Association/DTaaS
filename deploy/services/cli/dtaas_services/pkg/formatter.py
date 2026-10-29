@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 from rich.console import Console
 from rich.table import Table
 from python_on_whales import Container
+from .services.gitlab.health import GITLAB_CONTAINER_NAME, is_gitlab_ready
 # pylint: disable=too-few-public-methods
 
 
@@ -67,12 +68,19 @@ def normalize_service_name(user_input: str) -> str:
     return USER_TO_SERVICE_NAME.get(user_input.lower(), user_input.lower())
 
 
+def _is_unready_gitlab(container) -> bool:
+    """Docker reports GitLab healthy before GitLab itself serves requests."""
+    return container.name == GITLAB_CONTAINER_NAME and not is_gitlab_ready()
+
+
 def _running_health_status(container) -> str | None:
     """Return health status when it should override 'running'."""
     health = getattr(getattr(container, "state", None), "health", None)
     status = getattr(health, "status", None)
     if status in ("starting", "unhealthy"):
         return status
+    if status == "healthy" and _is_unready_gitlab(container):
+        return "starting"
     return None
 
 
@@ -81,7 +89,8 @@ def _effective_status(container) -> str:
 
     When Docker reports 'running' but the health check is 'starting' or
     'unhealthy', return the health status instead so the user sees the
-    real readiness state.
+    real readiness state. A healthy GitLab that fails its readiness check
+    (the one service install waits for) is 'starting'.
     """
     state = getattr(getattr(container, "state", None), "status", None) or "unknown"
     if state != "running":

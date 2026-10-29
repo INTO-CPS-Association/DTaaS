@@ -313,7 +313,8 @@ The install command checks GitLab readiness and returns immediately:
 * If GitLab is still starting, the command prints a status hint
   and exits. Check progress with `dtaas-services service status -s gitlab`
   and re-run `dtaas-services service install -s gitlab` once the status
-  shows `running`.
+  shows `running`. Status shows GitLab as `starting` until its
+  `/-/readiness` check passes, the same check the install waits for.
 
 > **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
 > up to `config/backup_gitlab_tokens.json` and the `root_password` entry is
