@@ -85,9 +85,9 @@ git diff -U0 "$base"..HEAD | grep '^+' | grep -inE \
   'password|passwd|secret|token|api[_-]?key|/home/|/Users/|@[a-z0-9-]+\.[a-z]{2,}'
 ```
 
-Read every hit. A placeholder or a variable name is fine. A value is a
-finding, and a value already pushed is a secret to rotate, not only a
-line to delete.
+Read every hit, then run the gitleaks hook (`pre-commit run gitleaks`).
+A placeholder is fine. A value is a finding, and a value already pushed
+is a secret to rotate, not only a line to delete.
 
 Colours, radii, spacing and shadows in the client come from the theme,
 so a colour literal outside the theme files is a finding:

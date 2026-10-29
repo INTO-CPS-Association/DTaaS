@@ -77,4 +77,6 @@ Commits name people only. The `no-tool-attribution` hook in
 message that credits a coding tool as co-author, for example a
 `Co-Authored-By` trailer that names one. `pre-commit install` installs it
 together with the other hooks. Disclose agent use in the pull request
-description instead.
+description instead. The `Commit Checks` workflow runs the same check on
+every commit of a pull request, because `git commit --no-verify` skips the
+local hook.
