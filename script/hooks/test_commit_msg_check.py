@@ -1,5 +1,6 @@
 """Unit tests for commit_msg_check."""
 
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -50,28 +51,41 @@ class OffendingLinesTest(unittest.TestCase):
 class MainTest(unittest.TestCase):
     """Exit status of the hook entry point."""
 
+    def setUp(self):
+        """Use a temporary directory as the git directory."""
+        self.base = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.base)
+
     def write_message(self, text: str) -> str:
-        """Write text to a temporary message file and return its path."""
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".txt", delete=False, encoding="utf-8"
-        ) as handle:
-            handle.write(text)
-        self.addCleanup(Path(handle.name).unlink)
-        return handle.name
+        """Write text to COMMIT_EDITMSG in the git directory, return its path."""
+        path = self.base / "COMMIT_EDITMSG"
+        path.write_text(text, encoding="utf-8")
+        return str(path)
 
     def test_clean_message_exits_zero(self):
         """A clean message exits with status 0."""
         path = self.write_message("fix: x\n")
-        self.assertEqual(commit_msg_check.main(["hook", path]), 0)
+        self.assertEqual(commit_msg_check.main(["hook", path], self.base), 0)
 
     def test_refused_message_exits_one(self):
         """A refused message exits with status 1."""
         path = self.write_message("fix: x\n\nCo-Authored-By: Copilot <c@example.org>\n")
-        self.assertEqual(commit_msg_check.main(["hook", path]), 1)
+        self.assertEqual(commit_msg_check.main(["hook", path], self.base), 1)
 
     def test_missing_argument_exits_two(self):
         """A call without the file argument exits with status 2."""
-        self.assertEqual(commit_msg_check.main(["hook"]), 2)
+        self.assertEqual(commit_msg_check.main(["hook"], self.base), 2)
+
+    def test_file_outside_git_dir_is_not_read(self):
+        """A path outside the git directory is refused without reading it."""
+        outside = self.base.parent / "outside.txt"
+        self.assertEqual(commit_msg_check.main(["hook", str(outside)], self.base), 2)
+
+    def test_traversal_back_into_git_dir_resolves(self):
+        """A path with .. that resolves inside the git directory is read."""
+        self.write_message("fix: x\n")
+        path = f"{self.base}/../{self.base.name}/COMMIT_EDITMSG"
+        self.assertEqual(commit_msg_check.main(["hook", path], self.base), 0)
 
 
 if __name__ == "__main__":
