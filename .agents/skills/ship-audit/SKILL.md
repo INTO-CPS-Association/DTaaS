@@ -14,17 +14,33 @@ fixes the order in which they are checked and what counts as evidence.
 
 `review-pull-request` checks the merge gates of a pull request that is
 already open. This skill runs earlier, on the branch, so the findings are
-fixed before a reviewer spends time on them.
+fixed before a reviewer spends time on them. The commands are written for
+a POSIX shell: Linux, macOS, or Git Bash on Windows.
 
 ## Rule zero: scope the audit to the diff
 
-Find the base first.
+Find the base first. The upstream remote is the one pointing at
+`github.com/INTO-CPS-Association/DTaaS`, whatever its name. The target is
+`TARGET_BRANCH`, else the open pull request's base, else the default branch.
 
 ```bash
-git fetch upstream
-base=$(git merge-base HEAD upstream/<target-branch>)
+remote=$(git remote -v | grep -iE 'github\.com[:/]into-cps-association/dtaas(\.git)? ' | awk '{ print $1; exit }')
+git fetch "$remote"
+target=${TARGET_BRANCH:-$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || git remote show "$remote" | sed -n 's/.*HEAD branch: //p')}
+base=$(git merge-base HEAD "$remote/$target")
 git diff --name-only "$base"..HEAD
 ```
+
+Then run the pre-commit hooks over the whole branch:
+
+```bash
+pre-commit run --from-ref "$base" --to-ref HEAD
+pre-commit run --hook-stage pre-push --from-ref "$base" --to-ref HEAD
+```
+
+The first runs the linters, gitleaks and the file checks on every changed
+file, the second the test suites of the touched components. The gates
+below quote their output and do by hand only what no hook checks.
 
 Every finding is traced to a file in that list. A hit in a file the change
 does not touch belongs to the base branch: report it as context and leave
@@ -52,10 +68,11 @@ route by a string only that page renders.
 ## Gate 2: what the change deletes or moves
 
 A file that stops existing takes every reference to it with it. Before a
-file is removed or renamed, search the whole repository for its name:
+file is removed or renamed, search the tracked files for its name, which
+skips `node_modules` and build output on every platform:
 
 ```bash
-grep -rn "<basename>" . --exclude-dir=node_modules --exclude-dir=.git
+git grep -n "<basename>"
 ```
 
 Build scripts, CI workflows, `mkdocs.yml` and the publish scripts are
@@ -85,9 +102,13 @@ git diff -U0 "$base"..HEAD | grep '^+' | grep -inE \
   'password|passwd|secret|token|api[_-]?key|/home/|/Users/|@[a-z0-9-]+\.[a-z]{2,}'
 ```
 
-Read every hit, then run the gitleaks hook (`pre-commit run gitleaks`).
-A placeholder is fine. A value is a finding, and a value already pushed
-is a secret to rotate, not only a line to delete.
+Read every hit next to the gitleaks result. A placeholder is fine. A
+value is a finding, and a pushed value is a secret to rotate.
+
+The configuration templates in `references/config_exceptions.json` carry
+dummy credentials on purpose, so a hit there is expected while the value
+stays a visible placeholder or a documented default. A new template with
+credentials joins that list in the same change.
 
 Colours, radii, spacing and shadows in the client come from the theme,
 so a colour literal outside the theme files is a finding:
@@ -110,8 +131,8 @@ git diff -U0 "$base"..HEAD -- client/src | grep '^+' | \
 ## Gate 5: code standards
 
 - The linters and formatters of `PROJECT.md` under "Code standards" pass
-  on every touched file: `.pylintrc`, eslint, prettier,
-  `.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`.
+  on every touched file. The pre-commit run covers eslint, prettier,
+  markdownlint and shellcheck. Run `.pylintrc` and `.yamllint.yml` by hand.
 - Functions stay within the size limit of `AGENTS.md`.
 - Comments explain why, not what. A file where most lines are comments is
   explaining the obvious.
@@ -174,9 +195,10 @@ version and a date bound:
 - A generator is run from the directory its README names, and its output
   is opened and looked at. A headless browser given a wrong path writes a
   blank image and exits with status zero.
-- Every binary the change adds is stored through Git LFS. Check each one
-  before the commit, because a raw blob in the history needs a rewrite to
-  remove:
+- Every binary the change adds is stored through Git LFS. The
+  `check-added-large-files` hook refuses a large file outside LFS. Check
+  each smaller binary before the commit too, because a raw blob in the
+  history needs a rewrite to remove:
 
 ```bash
 git check-attr filter -- <file>
@@ -204,35 +226,13 @@ Never raise the number by mocking the module under test.
 
 ## Gate 11: review it as the maintainer will
 
-**Scope.** The whole branch against the current tip of its base, not the
-last commit. A branch that grew over several review rounds carries text
-written for an earlier round.
-
-**Every earlier review point.** List each point from each review on the
-pull request and mark it done (with the commit), deliberately not done
-(with the reason) or open. A point answered in code and not in a reply is
-invisible to the person who raised it.
-
-**Documentation against the code.** Read every Markdown file the branch
-adds or changes and check each claim against the code as it is now:
-counts of tests and files, the state of other pull requests and issues,
-anything the branch has since removed, and behaviour claims verified in
-the code that implements them.
-
-**Issues the pull request closes.** Go through each issue's success
-criteria and mark each one met, met differently (name the difference) or
-open.
-
-**The pull request description.** Every number and every "none" in it
-holds on the current head.
-
-**The maintainer's own tools.** Read the reviews already posted, which
-cost nothing. Do not trigger a maintainer's review agent on the pull
-request to get a review, because it runs on their account.
-
-**Say what has not been run.** An end-to-end suite that needs a live
-installation, a browser check nobody performed, a screenshot older than
-the change. Naming the gap costs a sentence.
+Read the whole branch against the current tip of its base, the way the
+maintainer will: every earlier review point marked done, not done or
+open, every Markdown claim checked against the code, the success criteria
+of each issue the pull request closes, and every number in its
+description. Read the reviews already posted and never trigger a
+maintainer's review agent, which runs on their account. Name what has not
+been run. `references/maintainer-review.md` has each step in full.
 
 ## Report
 

@@ -99,3 +99,11 @@ repos:
       - id: check-yaml
         files: '^(docs|deploy|script|ssl)/.*'
         stages: [pre-commit]
+      # Files tracked by Git LFS are exempt, so this catches a binary
+      # added before its extension was named in .gitattributes.
+      - id: check-added-large-files
+        stages: [pre-commit]
+      - id: check-merge-conflict
+        stages: [pre-commit]
+      - id: detect-private-key
+        stages: [pre-commit]

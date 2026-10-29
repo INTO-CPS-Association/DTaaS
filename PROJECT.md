@@ -110,12 +110,14 @@ Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
 rather than reasoning about style.
 
 `pre-commit install` sets up three stages. The commit stage runs
-formatting, markdown and shell checks and a gitleaks scan of the staged
-changes for secrets. The commit-msg stage refuses a message that credits
-a coding tool as co-author. The push stage runs the test suites of
-`client`, `servers/lib` and `servers/execution/runner` when you touched
-them. The `Commit Checks` workflow repeats the secret scan and the
-commit message check on every pull request.
+formatting, markdown and shell checks, a gitleaks scan of the staged
+changes for secrets, and refuses a private key, a leftover merge
+conflict marker or a large file outside Git LFS. The commit-msg stage
+refuses a message that credits a coding tool as co-author. The push
+stage runs the test suites of `client`, `servers/lib` and
+`servers/execution/runner` when you touched them. The `Commit Checks`
+workflow repeats the secret scan and the commit message check on every
+pull request.
 
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors
