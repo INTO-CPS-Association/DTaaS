@@ -363,7 +363,12 @@ automatically:
 4. Creates an initial Personal Access Token with `gitlab-rails runner`
    inside the container (about a minute) and saves it to
    `config/gitlab_tokens.json`
-5. Creates Server and Client OAuth application tokens.
+5. Creates the Server and Client OAuth applications owned by root (root's
+   User Settings > Applications) with `gitlab-rails runner` (about a minute)
+   and saves their credentials to `config/gitlab_tokens.json`. A rerun keeps
+   their client ids, applies `config/gitlab_oauth.json` again, renews their
+   secrets and deletes instance wide applications of the same name created
+   by version 1.1.0 and earlier.
 
 ## Troubleshooting
 

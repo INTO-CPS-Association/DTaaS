@@ -76,32 +76,25 @@ def test_step_create_oauth_apps_success(
 ):
     """Test OAuth app creation step success."""
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup.create_server_application",
-        return_value=(True, sample_server_result, ""),
+        "dtaas_services.pkg.services.gitlab.setup.create_oauth_applications",
+        return_value=(True, [sample_server_result, sample_client_result], ""),
     )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup.create_client_application",
-        return_value=(True, sample_client_result, ""),
-    )
-    success, srv, cli, error = setup._step_create_oauth_apps(mock_console, TEST_TOKEN)
+    success, srv, cli, error = setup._step_create_oauth_apps(mock_console)
     assert success is True
     assert srv is sample_server_result
     assert cli is sample_client_result
     assert error == ""
+    printed = " ".join(str(c.args[0]) for c in mock_console.print.call_args_list)
+    assert "User Settings > Applications" in printed
+    assert "new client secrets" in printed
 
 
-def test_step_create_oauth_apps_client_fails(
-    mock_console, mocker, sample_server_result
-):
-    """Test OAuth app creation when client app fails."""
+def test_step_create_oauth_apps_failure(mock_console, mocker):
+    """Test OAuth app creation step failure."""
     mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup.create_server_application",
-        return_value=(True, sample_server_result, ""),
+        "dtaas_services.pkg.services.gitlab.setup.create_oauth_applications",
+        return_value=(False, [], "rails error"),
     )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.setup.create_client_application",
-        return_value=(False, None, "client error"),
-    )
-    success, _, _, error = setup._step_create_oauth_apps(mock_console, TEST_TOKEN)
-    assert success is False
-    assert "client error" in error
+    success, srv, cli, error = setup._step_create_oauth_apps(mock_console)
+    assert (success, srv, cli) == (False, None, None)
+    assert "rails error" in error

@@ -354,7 +354,12 @@ steps:
    (`/etc/gitlab/initial_root_password`).
 4. Creates an initial Personal Access Token with `gitlab-rails runner`
    inside the container (about a minute).
-5. Creates the server and client OAuth applications.
+5. Creates the server and client OAuth applications owned by root (root's
+   **User Settings > Applications**) with `gitlab-rails runner` (about a
+   minute). A rerun keeps their client ids, applies
+   `config/gitlab_oauth.json` again, renews their secrets and deletes
+   instance wide applications of the same name created by version 1.1.0
+   and earlier.
 6. Saves the root password, token and OAuth application details to
    `config/gitlab_tokens.json`.
 7. Resets the root password to `GITLAB_ROOT_NEW_PASSWORD`.

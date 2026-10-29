@@ -139,7 +139,7 @@ cli/
 │          └── gitlab/     # GitLab service module
 │               ├── __init__.py
 │               ├── _api.py         # python-gitlab client factory
-│               ├── app_token.py    # OAuth application creation, listing, and deletion
+│               ├── app_token.py    # Root owned OAuth applications via gitlab-rails
 │               ├── health.py       # Container health checking and readiness waiting
 │               ├── password.py     # Root password retrieval and reset
 │               ├── personal_token.py  # Personal Access Token creation via gitlab-rails
@@ -305,8 +305,11 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
   * `_api.py`: `python-gitlab` client factory; builds an authenticated
     `gitlab.Gitlab` instance from environment variables (`HOSTNAME`,
     `GITLAB_PORT`, `SSL_VERIFY`)
-  * `app_token.py`: OAuth application creation, listing, and deletion
-    via `python-gitlab`; used during post-install to register the DTaaS client
+  * `app_token.py`: Creates the DTaaS Server and Client OAuth applications
+    owned by root (User Settings > Applications) with one
+    `docker exec gitlab gitlab-rails runner` call, since the REST API only
+    creates instance wide applications; a rerun reuses them by name, renews
+    their secrets and deletes instance wide applications of the same name
   * `health.py`: Container health polling and readiness waiting;
     exports `is_gitlab_running()` for pre-flight checks and
     `is_gitlab_healthy()` for non-blocking health status queries
@@ -317,8 +320,8 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
     via `docker exec gitlab gitlab-rails runner`;
     saves the result to `config/gitlab_tokens.json`
   * `setup.py`: Post-install orchestration — checks health (non-blocking),
-    and when healthy: resets password, creates PAT, and registers
-    the OAuth application. Returns immediately with a status hint
+    and when healthy: resets password, creates PAT, and creates root's
+    OAuth applications. Returns immediately with a status hint
     if GitLab is still starting.
   * `users.py`: Creates GitLab user accounts from `config/credentials.csv`
     using `python-gitlab` and the root PAT

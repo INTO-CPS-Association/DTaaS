@@ -1,19 +1,39 @@
-"""Create, list, and delete GitLab OAuth Application tokens."""
+"""Create the DTaaS OAuth applications owned by the GitLab root user."""
 
 import json
-import logging
 import os
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-import gitlab
-import gitlab.exceptions
-import requests.exceptions
+from ...docker_utils import execute_docker_command, DockerRunOptions
+from ...sanitize import escape_js_string
+from .personal_token import GITLAB_CONTAINER_NAME, ROOT_USER_ID
 
-from ._api import get_gitlab_client
+APP_MARKER = "DTAAS_APP="
+APP_KINDS = ("Server", "Client")
 
-logger = logging.getLogger(__name__)
+# The REST API only creates instance wide applications, so the script creates
+# them as root's (User Settings > Applications). Per configured app, inside one
+# transaction: delete instance wide apps of the same name, reuse or create
+# root's app, apply the configured settings and renew the secret of a reused
+# app (GitLab stores secrets hashed). Each app is printed after the commit.
+APPS_SCRIPT_HEAD = (
+    f"root = User.find({ROOT_USER_ID}); "
+    "org = root.organization || Organizations::Organization.default_organization; "
+    "configs = JSON.parse('"
+)
+APPS_SCRIPT_TAIL = (
+    "'); "
+    "apps = ActiveRecord::Base.transaction do configs.map do |cfg| "
+    "Authn::OauthApplication.where(owner_id: nil, name: cfg['name']).destroy_all; "
+    "app = root.oauth_applications.find_or_initialize_by(name: cfg['name']); "
+    "app.assign_attributes(cfg); app.organization ||= org; "
+    "app.renew_secret if app.persisted?; app.save!; "
+    "{ id: app.id, name: app.name, uid: app.uid, secret: app.plaintext_secret } "
+    "end end; "
+    f"apps.each {{ |app| puts '{APP_MARKER}' + app.to_json }}"
+)
 
 
 @dataclass
@@ -96,99 +116,78 @@ def _build_apps_config() -> list[OAuthAppConfig]:
     return apps
 
 
-def _to_result(app) -> OAuthAppResult:
-    """Convert a python-gitlab Application object to OAuthAppResult."""
-    return OAuthAppResult(
-        application_id=app.id,
-        name=getattr(app, "application_name", ""),
-        client_id=app.application_id,
-        client_secret=getattr(app, "secret", ""),
+def _select_server_and_client() -> tuple[list[OAuthAppConfig], str]:
+    """Pick the server and client apps, in that order, from the OAuth config.
+
+    Returns:
+        Tuple of (configs, error message); configs is empty on error
+    """
+    apps = _build_apps_config()
+    selected = []
+    for kind in APP_KINDS:
+        config = next((a for a in apps if kind.lower() in a.name.lower()), None)
+        if config is None:
+            return [], f"{kind} Authorization app not found in OAuth config"
+        selected.append(config)
+    return selected, ""
+
+
+def _build_apps_script(configs: list[OAuthAppConfig]) -> str:
+    """Return the gitlab-rails runner script for the given apps."""
+    payload = json.dumps([asdict(config) for config in configs])
+    return APPS_SCRIPT_HEAD + escape_js_string(payload) + APPS_SCRIPT_TAIL
+
+
+def _parse_apps(output: str) -> list[OAuthAppResult]:
+    """Extract the apps printed by the apps script from gitlab-rails output."""
+    results = []
+    for line in output.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(APP_MARKER):
+            data = json.loads(stripped.removeprefix(APP_MARKER))
+            results.append(
+                OAuthAppResult(
+                    application_id=data["id"],
+                    name=data["name"],
+                    client_id=data["uid"],
+                    client_secret=data["secret"],
+                )
+            )
+    return results
+
+
+def _run_apps_script(
+    configs: list[OAuthAppConfig],
+) -> tuple[bool, list[OAuthAppResult], str]:
+    """Run the apps script in the GitLab container and parse its output.
+
+    The secrets travel on stdout only, never on the docker command line.
+    """
+    success, output = execute_docker_command(
+        GITLAB_CONTAINER_NAME,
+        ["gitlab-rails", "runner", _build_apps_script(configs)],
+        DockerRunOptions(verbose=False),
     )
-
-
-def create_application(
-    private_token: str, config: OAuthAppConfig
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create an OAuth application on the GitLab instance.
-
-    Args:
-        private_token: GitLab Personal Access Token with ``api`` scope
-        config: Application configuration
-
-    Returns:
-        Tuple of (success, OAuthAppResult or None, error message)
-    """
-    try:
-        gl = get_gitlab_client(private_token)
-        app = gl.applications.create(
-            {
-                "name": config.name,
-                "redirect_uri": config.redirect_uri,
-                "confidential": config.confidential,
-                "scopes": config.scopes,
-                "trusted": config.trusted,
-            }
+    if not success:
+        return False, [], (
+            f"Failed to create OAuth applications with gitlab-rails runner: {output}"
         )
-        return True, _to_result(app), ""
-    except gitlab.exceptions.GitlabError as exc:
-        return False, None, f"Failed to create '{config.name}': {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, None, f"Network error creating '{config.name}': {exc}"
+    results = _parse_apps(output)
+    if len(results) != len(configs):
+        return False, [], "No OAuth applications in the gitlab-rails runner output"
+    return True, results, ""
 
 
-def create_server_application(
-    private_token: str,
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Server Authorization OAuth application."""
-    apps = _build_apps_config()
-    server_config = next((a for a in apps if "server" in a.name.lower()), None)
-    if server_config is None:
-        return False, None, "Server Authorization app not found in OAuth config"
-    logger.info("Creating '%s'...", server_config.name)
-    return create_application(private_token, server_config)
+def create_oauth_applications() -> tuple[bool, list[OAuthAppResult], str]:
+    """Create or update root's DTaaS Server and Client Authorization apps.
 
-
-def create_client_application(
-    private_token: str,
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Client Authorization OAuth application."""
-    apps = _build_apps_config()
-    client_config = next((a for a in apps if "client" in a.name.lower()), None)
-    if client_config is None:
-        return False, None, "Client Authorization app not found in OAuth config"
-    logger.info("Creating '%s'...", client_config.name)
-    return create_application(private_token, client_config)
-
-
-def list_all_applications(
-    private_token: str,
-) -> tuple[bool, list[dict[str, Any]], str]:
-    """List all registered OAuth applications.
+    Runs one ``gitlab-rails runner`` call (about a minute). A rerun keeps each
+    app's client id and renews its secret.
 
     Returns:
-        Tuple of (success, list of application dicts, error message)
+        Tuple of (success, [server result, client result], error message)
     """
-    try:
-        gl = get_gitlab_client(private_token)
-        apps = gl.applications.list()
-        return True, [app.attributes for app in apps], ""
-    except gitlab.exceptions.GitlabError as exc:
-        return False, [], f"Failed to list applications: {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, [], f"Network error listing applications: {exc}"
-
-
-def delete_application(private_token: str, application_id: int) -> tuple[bool, str]:
-    """Delete an OAuth application by its ID.
-
-    Returns:
-        Tuple of (success, message)
-    """
-    try:
-        gl = get_gitlab_client(private_token)
-        gl.applications.delete(application_id)
-        return True, "Application successfully deleted."
-    except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to delete application {application_id}: {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, f"Network error deleting application {application_id}: {exc}"
+    configs, error = _select_server_and_client()
+    if error:
+        return False, [], error
+    return _run_apps_script(configs)

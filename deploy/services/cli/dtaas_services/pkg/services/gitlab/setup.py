@@ -13,11 +13,7 @@ from ...utils import write_secret_file
 from .health import is_gitlab_healthy
 from .password import get_initial_root_password, reset_gitlab_password
 from .personal_token import create_pat
-from .app_token import (
-    OAuthAppResult,
-    create_server_application,
-    create_client_application,
-)
+from .app_token import OAuthAppResult, create_oauth_applications
 
 logger = logging.getLogger(__name__)
 
@@ -167,22 +163,21 @@ def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]
 
 
 def _step_create_oauth_apps(
-    console: Console, pat: str
+    console: Console,
 ) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
-    """Create both OAuth application tokens."""
-    console.print("[cyan]Creating OAuth application tokens...[/cyan]")
-
-    success, server_result, error_msg = create_server_application(pat)
+    """Create or update root's Server and Client Authorization apps."""
+    console.print(
+        "[cyan]Creating root's OAuth applications (gitlab-rails runner, "
+        "about a minute)...[/cyan]"
+    )
+    success, apps, error_msg = create_oauth_applications()
     if not success:
         return False, None, None, error_msg
-    console.print("[green]  ✅ Server Authorization app created.[/green]")
-
-    success, client_result, error_msg = create_client_application(pat)
-    if not success:
-        return False, None, None, error_msg
-    console.print("[green]  ✅ Client Authorization app created.[/green]")
-
-    return True, server_result, client_result, ""
+    console.print(
+        "[green]  ✅ Server and Client Authorization apps ready in root's "
+        "User Settings > Applications, with new client secrets.[/green]"
+    )
+    return True, apps[0], apps[1], ""
 
 
 def _setup_tokens_phase(
@@ -190,7 +185,7 @@ def _setup_tokens_phase(
 ) -> Tuple[bool, str]:
     """Create OAuth apps, validate results, and save all tokens."""
     success, server_result, client_result, error_msg = _step_create_oauth_apps(
-        console, pat
+        console
     )
     if not success:
         return False, error_msg
