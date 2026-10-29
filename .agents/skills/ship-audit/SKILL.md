@@ -38,13 +38,14 @@ pre-commit run --from-ref "$base" --to-ref HEAD
 pre-commit run --hook-stage pre-push --from-ref "$base" --to-ref HEAD
 ```
 
-The first runs the linters, gitleaks and the file checks on every changed
-file, the second the test suites of the touched components. The gates
-below quote their output and do by hand only what no hook checks.
+The first runs the linters, gitleaks and the private key check on every
+changed file, the second the test suites of the touched components. The
+large-file and merge-conflict hooks act only at commit and merge time.
 
-Every finding is traced to a file in that list. A hit in a file the change
-does not touch belongs to the base branch: report it as context and leave
-it alone, as `PROJECT.md` asks under "Verifying a change". Never truncate
+Every finding is traced to a file in the `git diff --name-only` list. A
+hit in a file the change does not touch belongs to the base branch: report
+it as context and leave it alone, as `PROJECT.md` asks under "Verifying a
+change". Never truncate
 `git status` or `git diff --name-only` with `head`, because a deletion
 below the cut is a deletion nobody explains.
 
@@ -68,8 +69,7 @@ route by a string only that page renders.
 ## Gate 2: what the change deletes or moves
 
 A file that stops existing takes every reference to it with it. Before a
-file is removed or renamed, search the tracked files for its name, which
-skips `node_modules` and build output on every platform:
+file is removed or renamed, search the tracked files, not `node_modules`:
 
 ```bash
 git grep -n "<basename>"
@@ -132,7 +132,7 @@ git diff -U0 "$base"..HEAD -- client/src | grep '^+' | \
 
 - The linters and formatters of `PROJECT.md` under "Code standards" pass
   on every touched file. The pre-commit run covers eslint, prettier,
-  markdownlint and shellcheck. Run `.pylintrc` and `.yamllint.yml` by hand.
+  markdownlint and shellcheck. Run pylint, yamllint and mdl by hand.
 - Functions stay within the size limit of `AGENTS.md`.
 - Comments explain why, not what. A file where most lines are comments is
   explaining the obvious.
