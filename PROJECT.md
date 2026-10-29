@@ -109,10 +109,11 @@ Enforced by tooling, not prose: `.pylintrc`, eslint, prettier,
 `.markdownlint.yaml`, `.mdl_style.rb` and `.yamllint.yml`. Run them
 rather than reasoning about style.
 
-`pre-commit install` sets up both stages. The commit stage runs
-formatting, markdown and shell checks; the push stage runs the test
-suites of `client`, `servers/lib` and `servers/execution/runner` when
-you touched them.
+`pre-commit install` sets up three stages. The commit stage runs
+formatting, markdown and shell checks. The commit-msg stage refuses a
+message that credits a coding tool as co-author. The push stage runs the
+test suites of `client`, `servers/lib` and `servers/execution/runner`
+when you touched them.
 
 Beyond those: prefer clarity to cleverness, keep functions focused, name
 symbols meaningfully, comment only non-obvious logic, and handle errors

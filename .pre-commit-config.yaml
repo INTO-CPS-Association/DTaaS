@@ -1,4 +1,4 @@
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
   - repo: local
@@ -43,6 +43,12 @@ repos:
         files: "^servers/lib/.*"
         args: ["-c", "cd servers/lib && yarn build && yarn test:all"]
         stages: [pre-push]
+
+      - id: no-tool-attribution
+        name: commit message credits no coding tool
+        entry: python script/hooks/commit_msg_check.py
+        language: python
+        stages: [commit-msg]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
