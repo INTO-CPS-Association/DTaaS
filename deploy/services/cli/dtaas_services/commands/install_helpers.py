@@ -1,5 +1,6 @@
 """Helpers for the service install command (ThingsBoard and GitLab flows)."""
 
+from dataclasses import dataclass, field
 from typing import Optional
 import click
 from rich.console import Console
@@ -7,7 +8,7 @@ from ..pkg.lib import Service
 from ..pkg.services.postgres.postgres import wait_for_postgres_ready
 from ..pkg.services.thingsboard.tb_utility import run_thingsboard_install
 from ..pkg.services.thingsboard.sysadmin_util import update_sysadmin_email_in_db
-from ..pkg.services.gitlab import setup_gitlab
+from ..pkg.services.gitlab import OAuthAppOptions, setup_gitlab
 
 # Accepted selector names mapped to the install flow they run.
 INSTALL_FLOWS = {
@@ -82,10 +83,12 @@ GITLAB_NOT_READY_HINT = (
 )
 
 
-def _install_gitlab(console: Console, service_obj: Service) -> None:
+def _install_gitlab(
+    console: Console, service_obj: Service, options: OAuthAppOptions
+) -> None:
     """Run GitLab post-install setup flow."""
     docker = _ensure_service_running(console, service_obj, "gitlab")
-    success, msg = setup_gitlab(console, docker)
+    success, msg = setup_gitlab(console, docker, options)
     if success:
         console.print(f"[green]✅ {msg}[/green]")
         return
@@ -95,10 +98,19 @@ def _install_gitlab(console: Console, service_obj: Service) -> None:
     raise click.ClickException(f"GitLab installation failed: {msg}")
 
 
-def install_services(
-    console: Console, service_obj: Service, targets: list[str]
-) -> None:
+@dataclass
+class InstallPlan:
+    """The install targets in order, and the GitLab only install flags."""
+
+    targets: list[str]
+    gitlab: OAuthAppOptions = field(default_factory=OAuthAppOptions)
+
+
+def install_services(console: Console, service_obj: Service, plan: InstallPlan) -> None:
     """Run the install flow of each target in order."""
-    installers = {"thingsboard": _install_thingsboard, "gitlab": _install_gitlab}
-    for target in targets:
-        installers[target](console, service_obj)
+    installers = {
+        "thingsboard": lambda: _install_thingsboard(console, service_obj),
+        "gitlab": lambda: _install_gitlab(console, service_obj, plan.gitlab),
+    }
+    for target in plan.targets:
+        installers[target]()

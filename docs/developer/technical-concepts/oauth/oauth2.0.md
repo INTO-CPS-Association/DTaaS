@@ -35,8 +35,9 @@ entities: the User, the OAuth 2.0 Client and the GitLab instance.
 Many platforms can initialise an OAuth 2.0 client. DTaaS does it by
 creating an "application" in GitLab. The client does not have to be
 initialised on the same platform as the identity provider; the two are
-separate concerns. The DTaaS OAuth 2.0 client is a GitLab instance-wide
-application, and its configuration has two main elements:
+separate concerns. The DTaaS OAuth 2.0 client is a GitLab application
+owned by the root user (root's **User Settings → Applications**), and its
+configuration has two main elements:
 
 - **Redirect URI**: the URI to which users are redirected after they
   approve sharing information with the client.

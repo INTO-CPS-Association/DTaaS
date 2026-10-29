@@ -4,6 +4,7 @@ import click
 import pytest
 from dtaas_services.cmd import services
 from dtaas_services.commands.install_helpers import resolve_install_targets
+from dtaas_services.pkg.services.gitlab import OAuthAppOptions
 # pylint: disable=W0621
 
 INSTALL = ["service", "install"]
@@ -91,6 +92,35 @@ def test_install_gitlab_success(runner, mock_setup_gitlab, selector):
     assert result.exit_code == 0
     assert "GitLab setup completed" in result.output
     mock_setup_gitlab.assert_called_once()
+
+
+@pytest.mark.usefixtures("gitlab_started")
+@pytest.mark.parametrize(
+    "flags, options",
+    [
+        ([], OAuthAppOptions()),
+        (["--rotate-secrets"], OAuthAppOptions(rotate_secrets=True)),
+        (["--replace-instance-apps"], OAuthAppOptions(replace_instance_apps=True)),
+    ],
+)
+def test_install_gitlab_passes_flags(runner, mock_setup_gitlab, flags, options):
+    """The GitLab flags reach the setup as options"""
+    mock_setup_gitlab.return_value = (True, "GitLab setup completed")
+    result = runner.invoke(services, INSTALL + ["-s", "gitlab", *flags])
+    assert result.exit_code == 0
+    assert mock_setup_gitlab.call_args.args[2] == options
+
+
+def test_install_gitlab_flags_ignored_without_gitlab(runner, mocker, mock_service_setup):
+    """The GitLab flags do nothing for a ThingsBoard only install"""
+    thingsboard = mocker.patch(f"{HELPERS}._install_thingsboard")
+    gitlab = mocker.patch(f"{HELPERS}._install_gitlab")
+    flags = ["--rotate-secrets", "--replace-instance-apps"]
+    result = runner.invoke(services, INSTALL + ["-s", "thingsboard", *flags])
+    assert result.exit_code == 0
+    thingsboard.assert_called_once()
+    gitlab.assert_not_called()
+    assert mock_service_setup["service"].called
 
 
 @pytest.mark.usefixtures("gitlab_started")

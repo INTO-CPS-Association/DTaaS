@@ -1,39 +1,24 @@
-"""Create the DTaaS OAuth applications owned by the GitLab root user."""
+"""Create or update the DTaaS OAuth applications owned by the GitLab root user."""
 
 import json
 import os
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from ...docker_utils import execute_docker_command, DockerRunOptions
-from ...sanitize import escape_js_string
-from .personal_token import GITLAB_CONTAINER_NAME, ROOT_USER_ID
+from .app_script import (
+    APP_KEYS,
+    APP_MARKER,
+    INSTANCE_APP_KEYS,
+    INSTANCE_APP_MARKER,
+    OAuthAppOptions,
+    parse_marked,
+    run_apps_script,
+    runner_error,
+)
+from .tokens_file import TOKENS_FILENAME
 
-APP_MARKER = "DTAAS_APP="
 APP_KINDS = ("Server", "Client")
-
-# The REST API only creates instance wide applications, so the script creates
-# them as root's (User Settings > Applications). Per configured app, inside one
-# transaction: delete instance wide apps of the same name, reuse or create
-# root's app, apply the configured settings and renew the secret of a reused
-# app (GitLab stores secrets hashed). Each app is printed after the commit.
-APPS_SCRIPT_HEAD = (
-    f"root = User.find({ROOT_USER_ID}); "
-    "org = root.organization || Organizations::Organization.default_organization; "
-    "configs = JSON.parse('"
-)
-APPS_SCRIPT_TAIL = (
-    "'); "
-    "apps = ActiveRecord::Base.transaction do configs.map do |cfg| "
-    "Authn::OauthApplication.where(owner_id: nil, name: cfg['name']).destroy_all; "
-    "app = root.oauth_applications.find_or_initialize_by(name: cfg['name']); "
-    "app.assign_attributes(cfg); app.organization ||= org; "
-    "app.renew_secret if app.persisted?; app.save!; "
-    "{ id: app.id, name: app.name, uid: app.uid, secret: app.plaintext_secret } "
-    "end end; "
-    f"apps.each {{ |app| puts '{APP_MARKER}' + app.to_json }}"
-)
 
 
 @dataclass
@@ -132,62 +117,84 @@ def _select_server_and_client() -> tuple[list[OAuthAppConfig], str]:
     return selected, ""
 
 
-def _build_apps_script(configs: list[OAuthAppConfig]) -> str:
-    """Return the gitlab-rails runner script for the given apps."""
-    payload = json.dumps([asdict(config) for config in configs])
-    return APPS_SCRIPT_HEAD + escape_js_string(payload) + APPS_SCRIPT_TAIL
+def _entry_named(entries: list[dict], name: str) -> dict | None:
+    """Return the printed app with the given name."""
+    return next((entry for entry in entries if entry["name"] == name), None)
 
 
-def _parse_apps(output: str) -> list[OAuthAppResult]:
-    """Extract the apps printed by the apps script from gitlab-rails output."""
-    results = []
-    for line in output.splitlines():
-        stripped = line.strip()
-        if stripped.startswith(APP_MARKER):
-            data = json.loads(stripped.removeprefix(APP_MARKER))
-            results.append(
-                OAuthAppResult(
-                    application_id=data["id"],
-                    name=data["name"],
-                    client_id=data["uid"],
-                    client_secret=data["secret"],
-                )
-            )
-    return results
-
-
-def _run_apps_script(
-    configs: list[OAuthAppConfig],
-) -> tuple[bool, list[OAuthAppResult], str]:
-    """Run the apps script in the GitLab container and parse its output.
-
-    The secrets travel on stdout only, never on the docker command line.
-    """
-    success, output = execute_docker_command(
-        GITLAB_CONTAINER_NAME,
-        ["gitlab-rails", "runner", _build_apps_script(configs)],
-        DockerRunOptions(verbose=False),
+def _saved_secret(saved: dict[str, Any], client_id: str) -> str | None:
+    """Return the secret saved in the tokens file for a client id."""
+    apps = [value for value in saved.values() if isinstance(value, dict)]
+    return next(
+        (a.get("client_secret") for a in apps if a.get("client_id") == client_id), None
     )
-    if not success:
-        return False, [], (
-            f"Failed to create OAuth applications with gitlab-rails runner: {output}"
+
+
+def _resolve(
+    entry: dict | None, name: str, saved: dict[str, Any]
+) -> tuple[OAuthAppResult | None, str]:
+    """Build the result of one app; a kept secret comes from the tokens file."""
+    if entry is None:
+        return None, f"'{name}' missing from the gitlab-rails runner output"
+    secret = entry["secret"] or _saved_secret(saved, entry["uid"])
+    if not secret:
+        return None, (
+            f"root's app '{name}' already exists, but config/{TOKENS_FILENAME} "
+            f"has no secret for its client id {entry['uid']}. GitLab cannot show "
+            "the old secret; rerun with --rotate-secrets to renew it"
         )
-    results = _parse_apps(output)
-    if len(results) != len(configs):
-        return False, [], "No OAuth applications in the gitlab-rails runner output"
-    return True, results, ""
+    return OAuthAppResult(entry["id"], name, entry["uid"], secret), ""
 
 
-def create_oauth_applications() -> tuple[bool, list[OAuthAppResult], str]:
+@dataclass
+class OAuthAppsOutcome:
+    """What the runner call made, even when part of it failed.
+
+    apps holds every app with a usable secret, keyed server_app and
+    client_app as in the tokens file, so the caller can save it before
+    reporting errors.
+    """
+
+    apps: dict[str, OAuthAppResult] = field(default_factory=dict)
+    instance_apps: list[dict] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+
+
+def _collect(
+    configs: list[OAuthAppConfig], output: str, saved: dict[str, Any]
+) -> OAuthAppsOutcome:
+    """Match the printed apps to the configured server and client apps."""
+    entries, errors = parse_marked(output, APP_MARKER, APP_KEYS)
+    found, found_errors = parse_marked(output, INSTANCE_APP_MARKER, INSTANCE_APP_KEYS)
+    outcome = OAuthAppsOutcome(instance_apps=found, errors=errors + found_errors)
+    for kind, config in zip(APP_KINDS, configs):
+        result, error = _resolve(_entry_named(entries, config.name), config.name, saved)
+        if result is None:
+            outcome.errors.append(error)
+        else:
+            outcome.apps[f"{kind.lower()}_app"] = result
+    return outcome
+
+
+def create_oauth_applications(
+    options: OAuthAppOptions, saved: dict[str, Any]
+) -> OAuthAppsOutcome:
     """Create or update root's DTaaS Server and Client Authorization apps.
 
-    Runs one ``gitlab-rails runner`` call (about a minute). A rerun keeps each
-    app's client id and renews its secret.
+    Runs one ``gitlab-rails runner`` call (about a minute). The output is
+    read even when the call fails, since the apps are printed after the
+    commit and a printed secret must not be lost; the error is then the
+    runner's own.
 
-    Returns:
-        Tuple of (success, [server result, client result], error message)
+    Args:
+        options: Whether to renew secrets and delete same name instance apps
+        saved: The tokens file contents, for the secrets of reused apps
     """
     configs, error = _select_server_and_client()
     if error:
-        return False, [], error
-    return _run_apps_script(configs)
+        return OAuthAppsOutcome(errors=[error])
+    success, output = run_apps_script([asdict(c) for c in configs], options)
+    outcome = _collect(configs, output, saved)
+    if not success:
+        outcome.errors = [f"gitlab-rails runner failed: {runner_error(output)}"]
+    return outcome

@@ -82,22 +82,29 @@ def test_format_container_status_unhealthy():
 
 
 @pytest.mark.parametrize(
-    "name, ready, expected",
+    "state, overrides, expected",
     [
-        ("gitlab", False, "starting"),
-        ("gitlab", True, "running"),
-        ("grafana", False, "running"),
+        ("running", {"gitlab": "unhealthy"}, "unhealthy"),
+        ("running", {"grafana": "unhealthy"}, "running"),
+        ("running", None, "running"),
+        ("exited", {"gitlab": "unhealthy"}, "exited"),
     ],
 )
-def test_healthy_gitlab_needs_readiness(mocker, name, ready, expected):
-    """A healthy GitLab shows starting until its readiness check passes"""
-    is_ready = mocker.patch(
-        "dtaas_services.pkg.formatter.is_gitlab_ready", return_value=ready
-    )
-    container = make_mock_container(name, "running", health_status="healthy")
+def test_status_overrides_apply_to_running_containers(state, overrides, expected):
+    """An override replaces Docker's status of a running container only"""
+    container = make_mock_container("gitlab", state, health_status="healthy")
     containers = cast(List[Union[Container, RemovedServiceEntry]], [container])
-    assert build_status_json(containers)[0]["status"] == expected
-    assert is_ready.called is (name == "gitlab")
+    assert build_status_json(containers, overrides)[0]["status"] == expected
+
+
+def test_format_container_status_override():
+    """The table shows an unhealthy override as not ready"""
+    container = make_mock_container("gitlab", "running", health_status="healthy")
+    containers = cast(List[Union[Container, RemovedServiceEntry]], [container])
+    string_io = StringIO()
+    console = Console(file=string_io, force_terminal=True)
+    format_container_status(containers, console, {"gitlab": "unhealthy"})
+    assert "not ready" in string_io.getvalue()
 
 
 def test_build_status_json_uses_compose_service_label():
