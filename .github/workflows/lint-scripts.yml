@@ -144,7 +144,7 @@ jobs:
         if: matrix.skill == 'upgrade-npm-packages'
         working-directory: .
         run: |
-          frontmatter() { awk '/^---$/ { n++; next } n == 1' "$1"; }
+          frontmatter() { local file="$1"; awk '/^---$/ { n++; next } n == 1' "$file"; }
           status=0
           for skill in .agents/skills/*/; do
             name=$(basename "$skill")
