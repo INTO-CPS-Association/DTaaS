@@ -226,6 +226,8 @@ only.
     ThingsBoard and GitLab. A service that is not running is skipped.
     For GitLab, a Personal Access Token is created for each new user and
     saved to `config/gitlab_user_tokens.json`.
+    The names each service gives these accounts are listed in
+    [Naming Convention](naming/index.md).
 
 3. Add users to a specific service:
 

@@ -60,7 +60,7 @@ The currently available services are:
 
 | Service     | Advantage                                                                                                                                                                                                   |
 | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| InfluxDB    | Internet of Things (IoT) device management and data visualisation platform. This service stores data for digital twins and provides alerting capabilities.                                                  |
+| InfluxDB    | Time-series database that stores data for digital twins and provides alerting capabilities.                                                                                                                 |
 | RabbitMQ    | Communication broker for message exchange between physical and digital twins.                                                                                                                               |
 | Grafana     | Visualisation dashboard service for presenting digital twin data.                                                                                                                                           |
 | MQTT        | Lightweight data transfer broker for IoT devices and physical twins providing data to digital twins.                                                                                                        |
