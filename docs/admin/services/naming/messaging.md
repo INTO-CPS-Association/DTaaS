@@ -64,7 +64,11 @@ disconnect each other.
 Topic levels are values, so they keep the spelling of the site that owns
 them. Topics are case-sensitive
 ([MQTT 3.1.1, section 4.7.3](https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html)).
-A topic never starts with `/` or `$`. Each topic carries one quantity
+A topic never starts with `/` or `$`. A topic level never contains `.`,
+because RabbitMQ uses `.` for the `/` of a topic and topics with dots
+do not work as expected
+([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)).
+Each topic carries one quantity
 ([HiveMQ topic best practices](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)).
 The level names become tags or columns with the same names in every
 database.
