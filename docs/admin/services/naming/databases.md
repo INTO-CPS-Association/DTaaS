@@ -44,7 +44,7 @@ layout, suited to devices whose quantities vary
 | Field        | `value`, or a shared name above            | `value`             |
 | Task         | `<bucket>_<what it does>`                  | `swim_raw_to_1h`    |
 | Token        | `<account>_<read or write>`                | `swim_ingest_write` |
-| Check        | `<measurement>_<quantity>_<condition>`     | `reading_temperature_high` |
+| Check        | `<quantity>_<condition>`                   | `temperature_high`  |
 
 Data lives in tag and field values, never in measurement, tag or field
 names
@@ -64,7 +64,7 @@ reading,project=SWiM,building=CTO,level=room,unit_id=0224,area=seat48A,device_ty
 | Database     | `<group>`, or `<username>` for own data     | `swim`                    |
 | Schema       | `public`, or one per purpose                | `public`                  |
 | Table        | Singular noun                               | `device`                  |
-| Join table   | Both tables in alphabetical order           | `device_space`            |
+| Join table   | Both tables in alphabetical order           | `document_space`          |
 | Column       | A shared name above, or `snake_case`        | `device_id`               |
 | Primary key  | `<table>_id`, or the natural key            | `device_id`               |
 | Foreign key column | The primary key it points to          | `space_id`                |
@@ -84,8 +84,16 @@ none is given, such as `films_lower_idx`
 Writing them out keeps them the same in every installation.
 
 ```sql
+create table space (
+  space_id    text primary key,
+  building_id text not null,
+  ifc_guid    text,
+  created_at  timestamptz not null default now()
+);
+
 create table device (
   device_id   text primary key,
+  space_id    text references space (space_id),
   project     text not null,
   building    text not null,
   level       text not null,
@@ -124,8 +132,8 @@ create index reading_device_id_time_idx on reading (device_id, time desc);
 | Embedded document | Singular noun                          | `location`            |
 | Index        | `<collection>_<fields>_idx`                 | `reading_meta_device_id_idx` |
 
-A time series collection uses `timeField: "time"` and `metaField: "meta"`,
-and queries filter on fields inside `meta`, such as `meta.device_id`
+A time series collection uses `timeField: "time"` and `metaField: "meta"`.
+Queries filter on fields inside `meta`, such as `meta.device_id`
 ([MongoDB time series best practices](https://www.mongodb.com/docs/manual/core/timeseries/timeseries-best-practices/)).
 Collection names may not contain `$` or start with `system.`
 ([MongoDB limits](https://www.mongodb.com/docs/manual/reference/limits/)).

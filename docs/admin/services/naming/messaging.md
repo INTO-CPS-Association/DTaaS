@@ -20,7 +20,7 @@ the [Naming Convention](index.md) page.
 | User             | Person or program account                  | `swim_ingest`             |
 
 Exchange and queue names use `.` between the parts, as RabbitMQ's own
-names do (`amq.topic`). Names that start with `amq.` belong to the broker,
+names do (`amq.topic`). Names that start with `amq.` belong to the broker
 and declaring one is refused
 ([RabbitMQ queues](https://www.rabbitmq.com/docs/queues)). A queue name is
 at most 255 bytes.
@@ -63,8 +63,8 @@ disconnect each other.
 
 Topic levels are values, so they keep the spelling of the site that owns
 them. Topics are case-sensitive
-([MQTT 3.1.1, section 4.7.3](https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html)),
-and a topic never starts with `/` or `$`. Each topic carries one quantity
+([MQTT 3.1.1, section 4.7.3](https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html)).
+A topic never starts with `/` or `$`. Each topic carries one quantity
 ([HiveMQ topic best practices](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)).
 The level names become tags or columns with the same names in every
 database.

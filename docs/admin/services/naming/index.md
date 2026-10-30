@@ -33,9 +33,16 @@ The section has four pages:
 | Units             | Kept in a `unit` value, never in a name (`value` and `unit`, not `temp_c`) |
 | Reserved prefixes | `_`, `amq.`, `system.` and `pg_` are left to the services                  |
 
-Three places use another separator because the service requires it, and
-the page for that service says so: MQTT topic levels (`/`), RabbitMQ
-exchange and queue names (`.`) and Grafana dashboard UIDs (`-`).
+Some names follow another rule because a service or the repository
+already requires it. The page for that service says so:
+
+- MQTT topic levels use `/`.
+- RabbitMQ exchange and queue names use `.`.
+- Grafana dashboard UIDs, Git branches, Docker networks and compose files
+  use `-`.
+- Environment variables and CI variables are `UPPER_SNAKE_CASE`.
+- Titles that people read, such as dashboards, rule chains, the
+  ThingsBoard tenant and the Grafana organisation, use Title Case.
 
 Identifier values that come from outside, such as a device ID written by
 a sensor maker, keep their own spelling as a value. They never become a
@@ -58,11 +65,11 @@ The pattern for a username, a group or an account is
 unquoted names to lowercase and allows 63 bytes
 ([PostgreSQL identifiers](https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS)).
 It is a valid MongoDB database name, which may not contain `/\. "$`
-([MongoDB limits](https://www.mongodb.com/docs/manual/reference/limits/)),
-a valid InfluxDB bucket name, which needs two or more characters and may
-not start with `_`
-([InfluxDB buckets](https://docs.influxdata.com/influxdb/v2/admin/buckets/create-bucket/)),
-and a valid RabbitMQ virtual host and queue name.
+([MongoDB limits](https://www.mongodb.com/docs/manual/reference/limits/)).
+It is a valid InfluxDB bucket name, which needs two or more characters
+and may not start with `_`
+([InfluxDB buckets](https://docs.influxdata.com/influxdb/v2/admin/buckets/create-bucket/)).
+It is also a valid RabbitMQ virtual host and queue name.
 
 These names are reserved and are never given to a person or a group:
 `dtaas`, `dtaas_admin`, `admin`, `root`, `postgres`, `thingsboard`,
