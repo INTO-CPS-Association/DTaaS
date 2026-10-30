@@ -300,10 +300,10 @@ The "Check connectivity" page of each device names these two ports, so open
 both in the firewall of the server. Plain HTTP and plain MQTT are not offered.
 
 ThingsBoard stores what that page shows when it is installed, from the
-`DEVICE_CONNECTIVITY_*` variables in `compose.thingsboard.yml`. An existing
-installation keeps its stored values, so change them as system administrator
-in the connectivity settings, which the API serves at
-`/api/admin/settings/connectivity`.
+`DEVICE_CONNECTIVITY_*` variables in `compose.thingsboard.yml`, and an
+existing installation keeps the values it stored. `dtaas-services user add -s
+thingsboard` writes the two published ports into those settings as well, so
+an existing installation gets them too.
 
 ### GitLab Installation
 
