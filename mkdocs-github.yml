@@ -141,7 +141,11 @@ nav:
                       admin/workspace/secure-server/keycloak-setup.md
                   - Design: admin/workspace/secure-server/design.md
       - Platform Services: admin/services/cli.md
-      - Naming Convention: admin/services/naming.md
+      - Naming Convention:
+          - Rules and Identity: admin/services/naming/index.md
+          - Messaging: admin/services/naming/messaging.md
+          - Databases: admin/services/naming/databases.md
+          - Applications: admin/services/naming/applications.md
       - GitLab:
           - Server: admin/gitlab/index.md
           - Integration: admin/gitlab/integration.md
