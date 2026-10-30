@@ -3,7 +3,8 @@
 from .setup import setup_gitlab
 from .users import setup_gitlab_users
 from .password import reset_gitlab_password
-from .health import is_gitlab_running, is_gitlab_healthy
+from .health import is_gitlab_running, is_gitlab_healthy, status_overrides
+from .app_script import OAuthAppOptions
 
 __all__ = [
     "setup_gitlab",
@@ -11,4 +12,6 @@ __all__ = [
     "reset_gitlab_password",
     "is_gitlab_running",
     "is_gitlab_healthy",
+    "status_overrides",
+    "OAuthAppOptions",
 ]

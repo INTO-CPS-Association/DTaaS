@@ -1,30 +1,72 @@
-"""Tests for GitLab OAuth application token management (app_token.py)."""
+"""Tests for GitLab OAuth application creation (app_token.py)."""
 
 import json
-from unittest.mock import Mock, MagicMock
 import pytest
-from gitlab.exceptions import GitlabError
 from dtaas_services.pkg.services.gitlab import app_token
-# pylint: disable=W0212
+from dtaas_services.pkg.services.gitlab.app_script import (
+    APP_MARKER,
+    INSTANCE_APP_MARKER,
+    OAuthAppOptions,
+)
+from dtaas_services.pkg.services.gitlab.app_token import OAuthAppResult
+# pylint: disable=W0212,W0621
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
-
+SERVER = "DTaaS Server Authorization"
+CLIENT = "DTaaS Client Authorization"
 MOCK_OAUTH_JSON = [
     {
-        "name": "DTaaS Server Authorization",
+        "name": SERVER,
         "redirect_uri": "https://example.com/_oauth",
         "confidential": True,
         "scopes": "read_user",
         "trusted": False,
     },
     {
-        "name": "DTaaS Client Authorization",
+        "name": CLIENT,
         "redirect_uri": "https://example.com/Library",
         "confidential": False,
         "scopes": "api openid profile read_repository read_user",
         "trusted": True,
     },
 ]
+SAVED = {
+    "personal_access_token": "glpat-x",
+    "server_app": {"client_id": "s-cid", "client_secret": "old-s"},
+    "client_app": {"client_id": "c-cid", "client_secret": "old-c"},
+}
+
+
+def _app_line(app_id, name, uid, secret):
+    data = {"id": app_id, "name": name, "uid": uid, "secret": secret}
+    return f"{APP_MARKER}{json.dumps(data)}"
+
+
+def _output(*lines):
+    return "\n".join(["warning: something", *lines])
+
+
+SERVER_LINE = _app_line(7, SERVER, "s-cid", "s-sec")
+CLIENT_LINE = _app_line(8, CLIENT, "c-cid", "c-sec")
+
+
+@pytest.fixture
+def oauth_config(mocker):
+    """Serve MOCK_OAUTH_JSON as the OAuth config file."""
+    return mocker.patch.object(
+        app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
+    )
+
+
+@pytest.fixture
+def mock_run(mocker):
+    """Mock the gitlab-rails runner call."""
+    return mocker.patch.object(app_token, "run_apps_script")
+
+
+def _create(mock_run, output, saved=None):
+    """Run create_oauth_applications on the given runner result."""
+    mock_run.return_value = output
+    return app_token.create_oauth_applications(OAuthAppOptions(), saved or {})
 
 
 def test_load_oauth_apps_config_success(tmp_path, monkeypatch):
@@ -37,7 +79,7 @@ def test_load_oauth_apps_config_success(tmp_path, monkeypatch):
 
     result = app_token._load_oauth_apps_config()
     assert len(result) == 2
-    assert result[0]["name"] == "DTaaS Server Authorization"
+    assert result[0]["name"] == SERVER
 
 
 def test_load_oauth_apps_config_missing_file(tmp_path, monkeypatch):
@@ -59,150 +101,82 @@ def test_build_apps_config_missing_redirect_uri(mocker):
         app_token._build_apps_config()
 
 
-def test_create_server_application_missing_server(mocker):
-    """Test error returned when no server app is found in the config."""
-    client_only = [MOCK_OAUTH_JSON[1]]
-    mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=client_only)
-
-    success, result, error = app_token.create_server_application("tok")
-    assert success is False
-    assert result is None
-    assert "Server Authorization" in error
-
-
-def test_create_client_application_missing_client(mocker):
-    """Test error returned when no client app is found in the config."""
-    server_only = [MOCK_OAUTH_JSON[0]]
-    mocker.patch.object(app_token, "_load_oauth_apps_config", return_value=server_only)
-
-    success, result, error = app_token.create_client_application("tok")
-    assert success is False
-    assert result is None
-    assert "Client Authorization" in error
+@pytest.mark.usefixtures("oauth_config")
+def test_new_apps_come_back_keyed_as_in_the_tokens_file(mock_run):
+    """Server then client config go to one call; printed secrets are used"""
+    options = OAuthAppOptions(rotate_secrets=True)
+    mock_run.return_value = (True, _output(SERVER_LINE, CLIENT_LINE))
+    outcome = app_token.create_oauth_applications(options, {})
+    assert outcome.apps == {
+        "server_app": OAuthAppResult(7, SERVER, "s-cid", "s-sec"),
+        "client_app": OAuthAppResult(8, CLIENT, "c-cid", "c-sec"),
+    }
+    assert (outcome.errors, outcome.instance_apps) == ([], [])
+    mock_run.assert_called_once_with(MOCK_OAUTH_JSON, options)
 
 
-def test_create_application_request_failure(mocker):
-    """Test creating an application when the API request fails."""
-    mock_gl = MagicMock()
-    mock_gl.applications.create.side_effect = GitlabError("connection refused")
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
+@pytest.mark.usefixtures("oauth_config")
+def test_reused_apps_keep_the_saved_secret(mock_run):
+    """An app printed without a secret takes the one saved for its client id"""
+    output = _output(
+        _app_line(7, SERVER, "s-cid", None), _app_line(8, CLIENT, "c-cid", None)
     )
-    config = app_token.OAuthAppConfig(
-        name="MyApp",
-        redirect_uri="https://services.intocps.org/callback",
-        confidential=True,
-        scopes="api",
-    )
-    success, result, error = app_token.create_application(TEST_TOKEN, config)
-    assert success is False
-    assert result is None
-    assert "connection refused" in error
+    outcome = _create(mock_run, (True, output), SAVED)
+    assert not outcome.errors
+    assert outcome.apps["server_app"].client_secret == "old-s"
+    assert outcome.apps["client_app"].client_secret == "old-c"
 
 
-def _mock_gitlab_app(app_id, name, client_id, secret):
-    mock_app = Mock()
-    mock_app.id = app_id
-    mock_app.application_name = name
-    mock_app.application_id = client_id
-    mock_app.secret = secret
-    return mock_app
+@pytest.mark.usefixtures("oauth_config")
+@pytest.mark.parametrize("saved", [{}, {"server_app": {"client_id": "other"}}])
+def test_reused_app_without_saved_secret_asks_for_rotation(mock_run, saved):
+    """No saved secret for the client id: the app is not saved, the error says why"""
+    output = _output(_app_line(7, SERVER, "s-cid", None), CLIENT_LINE)
+    outcome = _create(mock_run, (True, output), saved)
+    assert list(outcome.apps) == ["client_app"]
+    assert len(outcome.errors) == 1
+    assert "s-cid" in outcome.errors[0]
+    assert "--rotate-secrets" in outcome.errors[0]
 
 
-def test_create_server_application_success(mocker):
-    """Test creating the server OAuth app."""
+@pytest.mark.usefixtures("oauth_config")
+def test_partial_output_keeps_the_printed_apps(mock_run):
+    """One good line and one bad line: the good app is kept, both reasons given"""
+    bad = f'{APP_MARKER}{{"id": 8, "secret": "c-sec"'
+    outcome = _create(mock_run, (True, _output(SERVER_LINE, bad)))
+    assert list(outcome.apps) == ["server_app"]
+    assert outcome.errors == [
+        f"unreadable {APP_MARKER} line (invalid JSON)",
+        f"'{CLIENT}' missing from the gitlab-rails runner output",
+    ]
+
+
+@pytest.mark.usefixtures("oauth_config")
+def test_instance_apps_are_reported(mock_run):
+    """Same name instance wide apps printed by the script are passed on"""
+    instance = f'{INSTANCE_APP_MARKER}{{"id": 3, "name": "{SERVER}", "uid": "old"}}'
+    outcome = _create(mock_run, (True, _output(instance, SERVER_LINE, CLIENT_LINE)))
+    assert outcome.instance_apps == [{"id": 3, "name": SERVER, "uid": "old"}]
+    assert not outcome.errors
+
+
+@pytest.mark.usefixtures("oauth_config")
+def test_runner_failure_keeps_printed_apps_and_hides_secrets(mock_run):
+    """A failed call still yields what was printed; its error has no secret"""
+    outcome = _create(mock_run, (False, _output(SERVER_LINE, "Error: boom")))
+    assert list(outcome.apps) == ["server_app"]
+    assert outcome.errors == [
+        "gitlab-rails runner failed: warning: something\nError: boom"
+    ]
+
+
+@pytest.mark.parametrize("kind, keep", [("Server", 1), ("Client", 0)])
+def test_missing_app_config_fails_before_the_runner(mocker, mock_run, kind, keep):
+    """A config without the server or client app fails before docker runs"""
     mocker.patch.object(
-        app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
+        app_token, "_load_oauth_apps_config", return_value=[MOCK_OAUTH_JSON[keep]]
     )
-
-    mock_gl = MagicMock()
-    mock_gl.applications.create.return_value = _mock_gitlab_app(
-        1, "DTaaS Server Authorization", "s-cid", "s-sec"
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-
-    success, result, _ = app_token.create_server_application(TEST_TOKEN)
-    assert success is True
-    assert result is not None
-    assert result.client_id == "s-cid"
-
-
-def test_create_client_application_success(mocker):
-    """Test creating the client OAuth app."""
-    mocker.patch.object(
-        app_token, "_load_oauth_apps_config", return_value=MOCK_OAUTH_JSON
-    )
-
-    mock_gl = MagicMock()
-    mock_gl.applications.create.return_value = _mock_gitlab_app(
-        2, "DTaaS Client Authorization", "c-cid", "c-sec"
-    )
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-
-    success, result, _ = app_token.create_client_application(TEST_TOKEN)
-    assert success is True
-    assert result is not None
-    assert result.client_id == "c-cid"
-
-
-def test_list_all_applications_success(mocker):
-    """Test listing all applications successfully."""
-    mock_gl = MagicMock()
-    mock_app = Mock()
-    mock_app.attributes = {"id": 1}
-    mock_gl.applications.list.return_value = [mock_app]
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-    success, apps, _ = app_token.list_all_applications(TEST_TOKEN)
-    assert success is True
-    assert len(apps) == 1
-    assert apps[0] == {"id": 1}
-
-
-def test_list_all_applications_request_failure(mocker):
-    """Test listing applications when request fails."""
-    mock_gl = MagicMock()
-    mock_gl.applications.list.side_effect = GitlabError("timeout")
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-    success, apps, error = app_token.list_all_applications(TEST_TOKEN)
-    assert success is False
-    assert apps == []
-    assert "timeout" in error
-
-
-def test_delete_application_success(mocker):
-    """Test deleting an application successfully."""
-    mock_gl = MagicMock()
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-    success, msg = app_token.delete_application(TEST_TOKEN, 42)
-    assert success is True
-    assert "deleted" in msg.lower()
-    mock_gl.applications.delete.assert_called_once_with(42)
-
-
-def test_delete_application_request_failure(mocker):
-    """Test deleting an application when request fails."""
-    mock_gl = MagicMock()
-    mock_gl.applications.delete.side_effect = GitlabError("connection error")
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.app_token.get_gitlab_client",
-        return_value=mock_gl,
-    )
-    success, msg = app_token.delete_application(TEST_TOKEN, 42)
-    assert success is False
-    assert "connection error" in msg
+    outcome = _create(mock_run, (True, ""))
+    assert not outcome.apps
+    assert outcome.errors == [f"{kind} Authorization app not found in OAuth config"]
+    mock_run.assert_not_called()

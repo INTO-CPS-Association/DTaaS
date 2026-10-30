@@ -76,17 +76,19 @@ def _running_health_status(container) -> str | None:
     return None
 
 
-def _effective_status(container) -> str:
+def _effective_status(container, overrides: dict[str, str]) -> str:
     """Return the most informative status for a container.
 
     When Docker reports 'running' but the health check is 'starting' or
     'unhealthy', return the health status instead so the user sees the
-    real readiness state.
+    real readiness state. overrides (container name to status) wins over
+    both for a running container; the caller passes the service specific
+    checks, such as GitLab's readiness.
     """
     state = getattr(getattr(container, "state", None), "status", None) or "unknown"
     if state != "running":
         return state
-    return _running_health_status(container) or state
+    return overrides.get(container.name) or _running_health_status(container) or state
 
 
 def _format_status_display(state: str) -> str:
@@ -98,12 +100,14 @@ def _format_status_display(state: str) -> str:
 def format_container_status(
     containers: List[Union[Container, RemovedServiceEntry]],
     console: Optional[Console] = None,
+    overrides: Optional[dict[str, str]] = None,
 ) -> None:
     """
     Format and display container status in a nice table.
     Args:
         containers: List of Container objects or RemovedServiceEntry objects from python_on_whales
         console: Optional Rich console instance (creates new one if not provided)
+        overrides: Optional container name to status map (see _effective_status)
     """
     if console is None:
         console = Console()
@@ -120,7 +124,7 @@ def format_container_status(
     for container in sorted_containers:
         display_name = _get_display_name(container.name)
         container_name = container.name
-        status_display = _format_status_display(_effective_status(container))
+        status_display = _format_status_display(_effective_status(container, overrides or {}))
         table.add_row(display_name, container_name, status_display)
     console.print(table)
 
@@ -135,17 +139,19 @@ def _service_name(container: Union[Container, RemovedServiceEntry]) -> str:
 
 def build_status_json(
     containers: List[Union[Container, RemovedServiceEntry]],
+    overrides: Optional[dict[str, str]] = None,
 ) -> list[dict[str, str]]:
     """List each container with its service name and effective status.
 
     A list, not a mapping: replicas of one compose service share a service
     label, and keying on it would silently drop all but one of them.
+    overrides is the container name to status map of _effective_status.
     """
     return [
         {
             "service": _service_name(container),
             "container": container.name,
-            "status": _effective_status(container),
+            "status": _effective_status(container, overrides or {}),
         }
         for container in sorted(containers, key=_service_name)
     ]
@@ -165,7 +171,7 @@ def _sort_service_names(
             status_display = "❌ [red]not installed[/red]"
         else:
             container_name = container.name
-            status_display = _format_status_display(_effective_status(container))
+            status_display = _format_status_display(_effective_status(container, {}))
         table.add_row(display_name, container_name, status_display)
     return sorted_services
 

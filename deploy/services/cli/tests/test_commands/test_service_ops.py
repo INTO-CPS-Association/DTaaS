@@ -56,6 +56,26 @@ def test_status_json(runner, mock_service_setup):
 
 
 @pytest.mark.parametrize(
+    "flags, expected",
+    [(["--json"], '"status": "unhealthy"'), ([], "not ready")],
+)
+def test_status_shows_unready_gitlab_as_unhealthy(
+    runner, mocker, mock_service_setup, flags, expected
+):
+    """A healthy GitLab failing its readiness check is not shown as running"""
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.health.is_gitlab_ready", return_value=False
+    )
+    mock_service_setup["service_instance"].get_status.return_value = (
+        None,
+        [make_mock_container("gitlab", "running", "healthy")],
+    )
+    result = runner.invoke(services, ["service", "status", *flags])
+    assert result.exit_code == 0
+    assert expected in result.stdout
+
+
+@pytest.mark.parametrize(
     "command",
     [
         ["service", "start"],
