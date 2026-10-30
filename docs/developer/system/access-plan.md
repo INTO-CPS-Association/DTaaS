@@ -15,9 +15,9 @@ its own pull request.
    the browser.
 3. `traefik-forward-auth` protects the website, the library microservice
    and the workspaces. The image is `thomseddon/traefik-forward-auth` with
-   the `latest` tag, and it has no rules for groups.
-4. Each workspace lists its own tools at `{appURL}/{username}/services`,
-   and the Workbench page shows them.
+   the `latest` tag. It has no rules for groups.
+4. Each workspace lists its own tools at `{appURL}/{username}/services`.
+   The Workbench page shows them.
 5. Every client extension and menu page is shown to every signed-in
    person.
 6. The platform services (GitLab, Grafana, ThingsBoard, RabbitMQ,
@@ -36,8 +36,8 @@ its own pull request.
   every component.
 - The website shows only the pages, extensions, workspace tools and
   services the person may use.
-- Leaving a group removes the access everywhere when the tokens expire,
-  and signing out ends every session.
+- Leaving a group removes the access everywhere when the tokens expire.
+  Signing out ends every session.
 - Every component still checks access itself. Hiding a link is a
   convenience and not a control
   ([OWASP Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)).
