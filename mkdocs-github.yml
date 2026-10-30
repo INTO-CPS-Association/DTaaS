@@ -172,6 +172,7 @@ nav:
           - Current Status: developer/system/current-status.md
           - Client Extensions: developer/system/extensions.md
           - Research Overview: developer/system/research-overview.md
+          - Access Plan: developer/system/access-plan.md
           - Code Review:
               - Overview: developer/system/review/index.md
               - Architecture Review:
