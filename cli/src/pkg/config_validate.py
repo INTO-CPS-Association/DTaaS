@@ -8,6 +8,7 @@ check builds on.
 
 from . import utils
 from .constants import DEPLOY_TYPES
+from .config_validate_frontend import check_logger_url, validate_warnings
 from .config_validate_gitlab import check_gitlab
 from .validators import (
     get_nested,
@@ -180,6 +181,7 @@ _CHECKS = (
     _check_resources,
     _check_users,
     check_gitlab,
+    check_logger_url,
 )
 
 
@@ -197,10 +199,11 @@ def collect_errors(data, deploy_type=None):
 
 
 def validate_config(output_dir):
-    """Validate dtaas.toml in *output_dir*, returning a list of problems.
+    """Validate dtaas.toml in *output_dir*, returning (problems, warnings).
 
-    The list is empty when the configuration is valid. Raises FileNotFoundError
-    when no dtaas.toml is found and ValueError when the file cannot be parsed.
+    The problems list is empty when the configuration is valid; warnings do
+    not make it invalid. Raises FileNotFoundError when no dtaas.toml is found
+    and ValueError when the file cannot be parsed.
     """
     toml_path = utils.find_toml(output_dir)
     if toml_path is None:
@@ -210,4 +213,4 @@ def validate_config(output_dir):
     data, err = utils.import_toml(str(toml_path))
     if err is not None:
         raise ValueError(str(err))
-    return collect_errors(data)
+    return collect_errors(data), validate_warnings(data)

@@ -51,11 +51,16 @@ def _user_value(users, key):
 
 
 def _toml_lookup(toml_data, source):
-    """Resolve a ``section.key`` source string to its value in toml_data."""
+    """Resolve a ``section.key`` source string to its value in toml_data.
+
+    A missing key gives None, so an empty value can be told apart from it;
+    the [[users]] pseudo-keys give '' for both.
+    """
     section, _, key = source.partition(".")
     if section == "users":
         return _user_value(toml_data.get("users", []), key)
-    return str(toml_data.get(section, {}).get(key, "")).strip()
+    value = toml_data.get(section, {}).get(key)
+    return None if value is None else str(value).strip()
 
 
 def _validate_value(value):
@@ -64,14 +69,32 @@ def _validate_value(value):
         raise ValueError(f"Config value must not contain newlines: {value!r}")
 
 
+def _entry_text(toml_data, source, fmt):
+    """Return the text one entry writes, or None when it leaves its key alone.
+
+    *fmt* is a format string, which skips a missing or empty value, or a
+    {value: text} map, which writes only the values it lists (a missing key
+    never matches).
+    """
+    value = _toml_lookup(toml_data, source)
+    if isinstance(fmt, dict):
+        return fmt.get(value)
+    if not value:
+        return None
+    _validate_value(value)
+    return fmt.format(value)
+
+
 def _build_entry_values(entries, toml_data):
-    """Build the key->value substitution dict for one file's entries."""
+    """Build the key->value substitution dict for one file's entries.
+
+    Entries apply in order, so a later entry for a key replaces an earlier one.
+    """
     values = {}
     for file_key, source, fmt in entries:
-        value = _toml_lookup(toml_data, source)
-        if value:
-            _validate_value(value)
-            values[file_key] = fmt.format(value)
+        text = _entry_text(toml_data, source, fmt)
+        if text is not None:
+            values[file_key] = text
     return values
 
 

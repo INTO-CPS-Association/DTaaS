@@ -97,8 +97,9 @@ The main sections are:
 - `[[users]]`: the starting users, one record each.
 - `[gitlab]`: optional GitLab account provisioning for `user add`
   (see [GitLab provisioning](#gitlab-provisioning-optional)).
-- `[frontend]`: the OAuth application of the DTaaS web client, for the
-  server types.
+- `[frontend]`: the OAuth application of the DTaaS web client, and the
+  logger it sends workflow logs to (see
+  [Remote logging](cli-config.md#remote-logging)), for the server types.
 - One section per deployment type, such as `[secure-server]`, which
   holds the OAuth credentials for that type.
 
@@ -112,7 +113,7 @@ An abridged `dtaas.toml`:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.2.1"
+version="2.3.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -152,6 +153,7 @@ ssl_verify=true
 [frontend]
 react-app-client-id="your_client_id_here"
 react-app-oauth-url="https://gitlab.com"
+logger-url="https://foo.com/logger"
 ...
 ```
 
@@ -194,7 +196,9 @@ dtaas config validate    # checks an existing dtaas.toml
 `generate` writes `dtaas.toml` and a sample `users.csv` (bulk input
 for `user add --file`) into `--output-dir`. `--force` overwrites an
 existing `dtaas.toml`. `validate` reports every problem in the file at
-once; see [Validation Rules](cli-config.md#validation-rules).
+once; see [Validation Rules](cli-config.md#validation-rules). It also
+warns, without failing, when `[frontend].logger-url` is missing,
+empty (remote logging off) or still the template's example.
 
 **Options:**
 

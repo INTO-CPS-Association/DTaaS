@@ -18,16 +18,27 @@ _CONF_SERVER_FILE = "config/conf.server"
 _SRC_USERNAME1 = "users.username1"
 _SRC_USERNAME2 = "users.username2"
 _DNS = "common.server-dns"
+_LOGGER_URL = "frontend.logger-url"
+# logger-url = "" (present but empty) writes an empty LOGGER_URL.
+_EMPTY_TURNS_OFF = {"": ""}
 
 
 def _frontend_js(scheme):
-    """JS substitution entries for config/client.js using the given URL scheme."""
+    """JS substitution entries for config/client.js using the given URL scheme.
+
+    The LOGGER_URL entries apply in order: the logger this deployment runs,
+    then a set logger-url in its place, then an empty value when logger-url
+    is empty, which hides remote logging on the website.
+    """
     return [
         ("REACT_APP_CLIENT_ID", "frontend.react-app-client-id", "{}"),
         ("REACT_APP_AUTH_AUTHORITY", "frontend.react-app-oauth-url", "{}"),
         ("REACT_APP_URL", _DNS, f"{scheme}://{{}}"),
         ("REACT_APP_REDIRECT_URI", _DNS, f"{scheme}://{{}}/Library"),
         ("REACT_APP_LOGOUT_REDIRECT_URI", _DNS, f"{scheme}://{{}}/"),
+        ("LOGGER_URL", _DNS, f"{scheme}://{{}}/logger"),
+        ("LOGGER_URL", _LOGGER_URL, "{}"),
+        ("LOGGER_URL", _LOGGER_URL, _EMPTY_TURNS_OFF),
     ]
 
 
