@@ -186,6 +186,17 @@ def test_substitute_config_echoes_placeholder_warnings(capsys):
     assert "Warning: unresolved placeholder" in capsys.readouterr().out
 
 
+def test_substitute_config_echoes_logger_url_warning(capsys):
+    """_substitute_config says which logger an unset logger-url falls back to."""
+    toml_data = {"common": {"server-dns": "myserver.com"}, "frontend": {}}
+    with patch("src.cmd_deploy_utils.deployConfigPkg.apply_config"):
+        _substitute_config("secure-server", "/out", toml_data)
+
+    out = capsys.readouterr().out
+    assert "Warning: frontend.logger-url is not set" in out
+    assert "LOGGER_URL is https://myserver.com/logger" in out
+
+
 def test_copy_deploy_certs_echoes_note(capsys):
     """_copy_deploy_certs prints the note returned by certsPkg.copy_certs."""
     spec = CertsCopySpec("secure-server", "/certs-src", False)

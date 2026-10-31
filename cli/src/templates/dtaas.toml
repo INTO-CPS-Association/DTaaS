@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="2.2.1"
+version="2.3.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -83,6 +83,10 @@ ssl_verify=true
 react-app-client-id="your_client_id_here"
 # GitLab instance URL, no trailing slash
 react-app-oauth-url="https://gitlab.com"
+# Logger microservice URL, including the /logger route prefix. Leave it
+# empty ("") to turn remote logging off. Without this key, the website uses
+# the logger of this installation, http(s)://<server-dns>/logger.
+logger-url="https://foo.com/logger"
 
 [localhost]
 default-user="user1"

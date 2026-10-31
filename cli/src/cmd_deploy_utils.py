@@ -10,6 +10,7 @@ import click
 from .pkg import host_dirs as hostDirsPkg
 from .pkg import certs as certsPkg
 from .pkg import config_update as configUpdatePkg
+from .pkg import config_validate_frontend as frontendPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import utils as utilsPkg
 from .pkg.users_utils import is_valid_username
@@ -74,7 +75,9 @@ def _substitute_config(deploy_type, output_dir, toml_data):
         deployConfigPkg.apply_config(output_dir, specs)
     except (OSError, ValueError, TypeError) as exc:
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
-    for warning in deployConfigPkg.check_placeholders(output_dir, specs):
+    warnings = deployConfigPkg.check_placeholders(output_dir, specs)
+    warnings += frontendPkg.generate_warnings(toml_data, specs)
+    for warning in warnings:
         click.echo(warning)
 
 
