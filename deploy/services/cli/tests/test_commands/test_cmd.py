@@ -1,9 +1,7 @@
-"""Tests for the main CLI entry point (cmd.py) and deprecated aliases"""
+"""Tests for the main CLI entry point (cmd.py)"""
 
 import pytest
 from dtaas_services.cmd import services
-from dtaas_services.commands import service_ops
-from dtaas_services.commands.aliases import DEPRECATED_ALIASES
 # pylint: disable=W0621
 
 
@@ -41,33 +39,21 @@ def test_noun_help_lists_verbs(runner, noun, verbs):
 
 
 @pytest.mark.parametrize(
-    "old_name, new_name, target",
-    DEPRECATED_ALIASES,
-    ids=[alias[0] for alias in DEPRECATED_ALIASES],
-)
-def test_deprecated_alias_forwards(runner, mocker, old_name, new_name, target):
-    """Old spellings forward to the new command and warn on stderr"""
-    callback = mocker.patch.object(target, "callback")
-    result = runner.invoke(services, [old_name])
-    assert result.exit_code == 0
-    callback.assert_called_once()
-    assert f"'dtaas-services {old_name}' is deprecated" in result.stderr
-    assert f"use 'dtaas-services {new_name}'" in result.stderr
-
-
-@pytest.mark.parametrize(
-    "args, target, expected_kwargs",
+    "old_name",
     [
-        (["install", "-s", "gitlab"], service_ops.install,
-         {"service_names": "gitlab", "legacy_service": None}),
-        (["install", "--service", "gitlab"], service_ops.install,
-         {"service_names": None, "legacy_service": "gitlab"}),
-        (["remove", "-v"], service_ops.remove, {"service_names": None, "volumes": True}),
+        "generate-project",
+        "setup",
+        "install",
+        "start",
+        "stop",
+        "restart",
+        "status",
+        "remove",
+        "clean",
     ],
 )
-def test_deprecated_alias_keeps_old_flags(runner, mocker, args, target, expected_kwargs):
-    """Old flags still reach the new command through the alias"""
-    callback = mocker.patch.object(target, "callback")
-    result = runner.invoke(services, args)
-    assert result.exit_code == 0
-    callback.assert_called_once_with(**expected_kwargs)
+def test_removed_top_level_spellings_are_rejected(runner, old_name):
+    """The 0.x top level spellings removed in 2.0.0 are unknown commands"""
+    result = runner.invoke(services, [old_name])
+    assert result.exit_code == 2
+    assert f"No such command '{old_name}'" in result.output

@@ -134,6 +134,6 @@ LOGGER_URL: "http://localhost:4003/logger";
 ```
 
 The API is specified in
-[`servers/logger/API.md`](https://github.com/INTO-CPS-Association/DTaaS/blob/main/servers/logger/API.md).
+[`servers/logger/API.md`](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/API.md).
 Installing and configuring the logger is covered in the
 [administrator guide](../../../admin/servers/logger/npm.md).

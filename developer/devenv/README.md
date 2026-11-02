@@ -168,7 +168,8 @@ these from a host terminal:
 - the `developer/check/` compose stack;
 - `servers/lib/compose.lib.dev.yml`;
 - `dtaas platform ...` and `dtaas user ...`;
-- `dtaas-services install|setup|start|stop|status`;
+- `dtaas-services host setup` and `dtaas-services service
+  install|start|stop|status`;
 - local builds of the published images.
 
 This is a deliberate trade. Mounting the host Docker socket would force

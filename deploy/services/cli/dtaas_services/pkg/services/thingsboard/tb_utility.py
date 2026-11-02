@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def get_ssl_verify() -> bool:
     """Get SSL_VERIFY from environment (after Config loads services.env).
     Deferred to runtime so this module can be imported even when
-    config/services.env doesn't exist (e.g., during generate-project).
+    config/services.env doesn't exist (e.g., during project generate).
     """
     raw = os.getenv("SSL_VERIFY", "true").strip().lower()
     return raw not in ("false", "0", "no", "off")

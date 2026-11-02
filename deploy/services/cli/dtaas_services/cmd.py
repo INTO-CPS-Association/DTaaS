@@ -2,7 +2,6 @@
 
 import click
 from .commands import (
-    aliases,
     host_ops,
     project_ops,
     service_ops,
@@ -69,8 +68,6 @@ def user():
 user.add_command(user_ops.add)
 user.add_command(user_ops.reset_password)
 user.add_command(signals_ops.add_signals)
-
-aliases.register_deprecated_aliases(services)
 
 
 if __name__ == "__main__":

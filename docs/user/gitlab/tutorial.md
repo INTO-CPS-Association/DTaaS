@@ -41,7 +41,9 @@ used as a remote git server in two ways:
 
 This tutorial uses a PAT to work with the GitLab server.
 
-First, create a PAT.
+First, create a PAT under **User settings > Access > Personal access
+tokens** with **Generate token > Legacy token**, and tick the
+`write_repository` scope.
 
 ![Create PAT](create-PAT.png)
 

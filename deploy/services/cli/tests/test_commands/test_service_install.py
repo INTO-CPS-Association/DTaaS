@@ -4,6 +4,7 @@ import click
 import pytest
 from dtaas_services.cmd import services
 from dtaas_services.commands.install_helpers import resolve_install_targets
+from dtaas_services.pkg.services.gitlab import OAuthAppOptions
 # pylint: disable=W0621
 
 INSTALL = ["service", "install"]
@@ -83,14 +84,43 @@ def test_install_service_init_errors(runner, mocker, error, expected):
 
 
 @pytest.mark.usefixtures("gitlab_started")
-@pytest.mark.parametrize("selector", [["-s", "gitlab"], ["--service", "gitlab"]])
+@pytest.mark.parametrize("selector", [["-s", "gitlab"], ["--services", "gitlab"]])
 def test_install_gitlab_success(runner, mock_setup_gitlab, selector):
-    """Test successful GitLab install with the new and the legacy selector"""
+    """Test successful GitLab install with the short and the long selector"""
     mock_setup_gitlab.return_value = (True, "GitLab setup completed")
     result = runner.invoke(services, INSTALL + selector)
     assert result.exit_code == 0
     assert "GitLab setup completed" in result.output
     mock_setup_gitlab.assert_called_once()
+
+
+@pytest.mark.usefixtures("gitlab_started")
+@pytest.mark.parametrize(
+    "flags, options",
+    [
+        ([], OAuthAppOptions()),
+        (["--rotate-secrets"], OAuthAppOptions(rotate_secrets=True)),
+        (["--replace-instance-apps"], OAuthAppOptions(replace_instance_apps=True)),
+    ],
+)
+def test_install_gitlab_passes_flags(runner, mock_setup_gitlab, flags, options):
+    """The GitLab flags reach the setup as options"""
+    mock_setup_gitlab.return_value = (True, "GitLab setup completed")
+    result = runner.invoke(services, INSTALL + ["-s", "gitlab", *flags])
+    assert result.exit_code == 0
+    assert mock_setup_gitlab.call_args.args[2] == options
+
+
+def test_install_gitlab_flags_ignored_without_gitlab(runner, mocker, mock_service_setup):
+    """The GitLab flags do nothing for a ThingsBoard only install"""
+    thingsboard = mocker.patch(f"{HELPERS}._install_thingsboard")
+    gitlab = mocker.patch(f"{HELPERS}._install_gitlab")
+    flags = ["--rotate-secrets", "--replace-instance-apps"]
+    result = runner.invoke(services, INSTALL + ["-s", "thingsboard", *flags])
+    assert result.exit_code == 0
+    thingsboard.assert_called_once()
+    gitlab.assert_not_called()
+    assert mock_service_setup["service"].called
 
 
 @pytest.mark.usefixtures("gitlab_started")
@@ -131,25 +161,12 @@ def test_install_rejects_blank_selector(runner, mock_service_setup, selector):
     mock_service_setup["service_instance"].manage_services.assert_not_called()
 
 
-def test_install_rejects_both_selector_spellings(runner, mock_service_setup):
-    """Passing --services and the deprecated --service together is an error"""
-    result = runner.invoke(
-        services, INSTALL + ["-s", "gitlab", "--service", "thingsboard"]
-    )
-    assert result.exit_code != 0
-    assert "Pass only --services" in result.output
+def test_install_rejects_removed_service_option(runner, mock_service_setup):
+    """The --service spelling removed in 1.1.0 is an unknown option"""
+    result = runner.invoke(services, INSTALL + ["--service", "gitlab"])
+    assert result.exit_code == 2
+    assert "No such option '--service'" in result.output
     mock_service_setup["service_instance"].manage_services.assert_not_called()
-
-
-@pytest.mark.usefixtures("gitlab_started")
-def test_install_legacy_selector_warns(runner, mock_setup_gitlab):
-    """The deprecated --service spelling warns on stderr before forwarding"""
-    mock_setup_gitlab.return_value = (True, "GitLab setup completed")
-    result = runner.invoke(
-        services, INSTALL + ["--service", "gitlab"], catch_exceptions=False
-    )
-    assert result.exit_code == 0
-    assert "'--service' is deprecated; use '--services'" in result.stderr
 
 
 def test_install_drops_blank_selector_elements(runner, mocker, mock_service_setup):

@@ -3,8 +3,11 @@
 from unittest.mock import Mock
 import pytest
 from python_on_whales.exceptions import DockerException
+from conftest import make_mock_container
 from dtaas_services.pkg.services.gitlab import health
 # pylint: disable=W0212, W0621
+
+HEALTH = "dtaas_services.pkg.services.gitlab.health"
 
 
 @pytest.fixture
@@ -75,28 +78,59 @@ def test_is_gitlab_running_docker_exception(mocker):
     assert health.is_gitlab_running() is False
 
 
-def test_is_gitlab_healthy_healthy(mock_docker, mocker):
-    """Test is_gitlab_healthy returns 'healthy' when container is healthy."""
+@pytest.fixture
+def gitlab_container(mocker):
+    """GitLab container returned by the compose listing"""
     container = Mock()
     container.name = "gitlab"
-    container.state.health.status = "healthy"
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.health._get_gitlab_container",
-        return_value=container,
-    )
-    assert health.is_gitlab_healthy(mock_docker) == "healthy"
+    mocker.patch(f"{HEALTH}._get_gitlab_container", return_value=container)
+    return container
 
 
-def test_is_gitlab_healthy_starting(mock_docker, mocker):
-    """Test is_gitlab_healthy returns 'starting' when container is starting."""
-    container = Mock()
-    container.name = "gitlab"
-    container.state.health.status = "starting"
-    mocker.patch(
-        "dtaas_services.pkg.services.gitlab.health._get_gitlab_container",
-        return_value=container,
-    )
-    assert health.is_gitlab_healthy(mock_docker) == "starting"
+@pytest.fixture
+def mock_ready(mocker):
+    """Mock the in-container readiness check"""
+    return mocker.patch(f"{HEALTH}.is_gitlab_ready", return_value=True)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        ("healthy", True, "healthy"),
+        ("healthy", False, "unhealthy"),
+        ("starting", True, "starting"),
+        ("unhealthy", True, "unhealthy"),
+    ],
+)
+def test_is_gitlab_healthy_needs_docker_health_and_readiness(
+    mock_docker, gitlab_container, mock_ready, case
+):
+    """Healthy means Docker says healthy and GitLab itself is ready; a failed
+    readiness check is an outage or a boot in progress, shown as unhealthy"""
+    docker_status, ready, expected = case
+    gitlab_container.state.health.status = docker_status
+    mock_ready.return_value = ready
+    assert health.is_gitlab_healthy(mock_docker) == expected
+
+
+@pytest.mark.parametrize(
+    "result, expected",
+    [
+        ((True, '{"status":"ok","master_check":[{"status":"ok"}]}'), True),
+        ((True, '{"status":"failed"}'), False),
+        ((True, "<html>502 Bad Gateway</html>"), False),
+        ((True, "[]"), False),
+        ((False, "Docker error: curl: (7) Failed to connect"), False),
+    ],
+)
+def test_is_gitlab_ready(mocker, result, expected):
+    """Only an 'ok' readiness answer from inside the container counts"""
+    exec_mock = mocker.patch(f"{HEALTH}.execute_docker_command", return_value=result)
+    assert health.is_gitlab_ready() is expected
+    container, cmd, options = exec_mock.call_args.args
+    assert container == "gitlab"
+    assert cmd == ["curl", "-sk", "--max-time", "10", health.GITLAB_READINESS_URL]
+    assert options.verbose is False
 
 
 def test_is_gitlab_healthy_not_found(mock_docker, mocker):
@@ -118,3 +152,23 @@ def test_is_gitlab_healthy_unknown_state(mock_docker, mocker):
         return_value=container,
     )
     assert health.is_gitlab_healthy(mock_docker) == "unknown state"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        (("gitlab", "running", "healthy"), False, {"gitlab": "unhealthy"}),
+        (("gitlab", "running", "healthy"), True, {}),
+        (("gitlab", "running", "starting"), False, {}),
+        (("gitlab", "exited", "healthy"), False, {}),
+        (("grafana", "running", "healthy"), False, {}),
+    ],
+)
+def test_status_overrides(mock_ready, case):
+    """Only a running GitLab that Docker calls healthy is checked for readiness"""
+    container_args, ready, expected = case
+    mock_ready.return_value = ready
+    containers = [make_mock_container(*container_args)]
+    assert health.status_overrides(containers) == expected
+    checked = container_args == ("gitlab", "running", "healthy")
+    assert mock_ready.called is checked

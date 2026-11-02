@@ -60,7 +60,6 @@ cli/
 │   ├── cmd.py              # CLI entry point (imports from commands/)
 │   ├── commands/           # CLI command modules
 │   │   ├── __init__.py
-│   │   ├── aliases.py      # Deprecated old spellings forwarding to new commands
 │   │   ├── host_ops.py     # host setup
 │   │   ├── install_helpers.py # ThingsBoard and GitLab install flows
 │   │   ├── project_ops.py  # project generate
@@ -140,7 +139,7 @@ cli/
 │          └── gitlab/     # GitLab service module
 │               ├── __init__.py
 │               ├── _api.py         # python-gitlab client factory
-│               ├── app_token.py    # OAuth application creation, listing, and deletion
+│               ├── app_token.py    # Root owned OAuth applications via gitlab-rails
 │               ├── health.py       # Container health checking and readiness waiting
 │               ├── password.py     # Root password retrieval and reset
 │               ├── personal_token.py  # Personal Access Token creation via gitlab-rails
@@ -241,9 +240,6 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
  `status`, `remove`, `clean`
 * **`install_helpers.py`**: ThingsBoard and GitLab install flows used by
  `service install`
-* **`aliases.py`**: hidden deprecated top level spellings (for example
- `start`) that warn on stderr and forward to the new command; remove at
- the next major version
 * **`user_ops.py`**: User management commands (`user add`, `user reset-password`)
 * **`utility.py`**: Shared command utilities
 
@@ -309,21 +305,38 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
   * `_api.py`: `python-gitlab` client factory; builds an authenticated
     `gitlab.Gitlab` instance from environment variables (`HOSTNAME`,
     `GITLAB_PORT`, `SSL_VERIFY`)
-  * `app_token.py`: OAuth application creation, listing, and deletion
-    via `python-gitlab`; used during post-install to register the DTaaS client
+  * `app_script.py`: The `gitlab-rails runner` script that creates or
+    updates root's OAuth applications in one transaction (the REST API only
+    creates instance wide applications), `OAuthAppOptions` (the
+    `--rotate-secrets` and `--replace-instance-apps` flags) and a parser of
+    its output that never raises and never quotes a secret
+  * `app_token.py`: Picks the Server and Client applications from
+    `config/gitlab_oauth.json`, runs the script and matches its output to
+    them; a reused application keeps the secret saved for its client id
+  * `app_setup.py`: The install step for the applications: saves every
+    application that has a secret, even when the step fails, lists same
+    name instance wide applications and names the applications whose
+    credentials changed
+  * `tokens_file.py`: Reads `config/gitlab_tokens.json` and merges fields
+    into it, so each step saves its secret at once
   * `health.py`: Container health polling and readiness waiting;
-    exports `is_gitlab_running()` for pre-flight checks and
-    `is_gitlab_healthy()` for non-blocking health status queries
+    exports `is_gitlab_running()` for pre-flight checks,
+    `is_gitlab_healthy()` for non-blocking health status queries and
+    `status_overrides()` for `service status`; one rule makes a healthy
+    container that fails `/-/readiness` `unhealthy`
   * `password.py`: Reads the auto-generated root password from
     `/etc/gitlab/initial_root_password` and resets it to
     `GITLAB_ROOT_NEW_PASSWORD` via the API
   * `personal_token.py`: Creates the initial root Personal Access Token
-    via `docker exec gitlab gitlab-rails runner`;
-    saves the result to `config/gitlab_tokens.json`
-  * `setup.py`: Post-install orchestration — checks health (non-blocking),
-    and when healthy: resets password, creates PAT, and registers
-    the OAuth application. Returns immediately with a status hint
-    if GitLab is still starting.
+    via `docker exec gitlab gitlab-rails runner` and reads it back from
+    `config/gitlab_tokens.json`
+  * `setup.py`: Post-install orchestration. Checks health (non-blocking),
+    and when healthy: reads the initial root password (first install only),
+    creates and saves the PAT, creates root's OAuth applications, then on
+    the first install resets the root password. The first install is the
+    one without `GITLAB_ROOT_CURRENT_PASSWORD` in
+    `config/password.env.current`. Returns immediately with a status hint
+    if GitLab is not ready.
   * `users.py`: Creates GitLab user accounts from `config/credentials.csv`
     using `python-gitlab` and the root PAT
 
@@ -502,9 +515,9 @@ Stops and removes Docker containers:
 * **Root user**: The `root` admin account (user ID `1`) is created automatically
   by GitLab Omnibus on first boot. DTaaS does not create it — it only reads the
   auto-generated password and resets it to `GITLAB_ROOT_NEW_PASSWORD`.
-  During `dtaas-services service install -s gitlab`, the root password is automatically
-  changed to `GITLAB_ROOT_NEW_PASSWORD` and recorded in
-  `config/password.env.current`.
+  During the first `dtaas-services service install -s gitlab`, the root password is
+  automatically changed to `GITLAB_ROOT_NEW_PASSWORD` and recorded in
+  `config/password.env.current`; reruns leave it alone.
 * **Password Reset**: The root password can be reset independently using
   `dtaas-services user reset-password -s gitlab`, which reads
   `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account

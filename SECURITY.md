@@ -6,7 +6,8 @@ Security updates are provided for these versions:
 
 | Version | Supported |
 | :------ | :-------- |
-| 1.0.0   | Yes       |
+| 1.1.0   | Yes       |
+| 1.0.0   | No        |
 | 0.8.0   | No        |
 | 0.7.0   | No        |
 | 0.6.0   | No        |

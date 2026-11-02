@@ -1,7 +1,9 @@
 """Shared fixtures for GitLab service tests."""
 
+import re
 from unittest.mock import Mock, MagicMock
 import pytest
+from dtaas_services.pkg.services.gitlab import app_script, tokens_file
 from dtaas_services.pkg.services.gitlab.app_token import OAuthAppResult
 
 TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
@@ -36,3 +38,23 @@ def sample_client_result():
     return OAuthAppResult(
         application_id=2, name="Client App", client_id="c-cid", client_secret="c-sec"
     )
+
+
+@pytest.fixture
+def tokens_path(mocker, tmp_path):
+    """Put the project base dir, so config/gitlab_tokens.json, in tmp_path."""
+    mocker.patch.object(tokens_file.Config, "get_base_dir", return_value=tmp_path)
+    return tmp_path / "config" / "gitlab_tokens.json"
+
+
+def ruby_payload(script):
+    """Return the JSON text the apps script hands to JSON.parse, as Ruby reads it."""
+    literal = script.removeprefix(app_script.APPS_SCRIPT_HEAD)
+    literal = literal.removesuffix(app_script.APPS_SCRIPT_TAIL)
+    return re.sub(r"\\([\\'])", r"\1", literal)
+
+
+def write_text(path, text):
+    """Write text to path, creating its folder."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")

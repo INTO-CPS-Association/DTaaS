@@ -298,12 +298,12 @@ InfluxDB tokens in its Signals Gateway admin pages.
 
 After the GitLab instance is running, two OAuth 2.0 applications must be
 registered to connect DTaaS and Traefik forward-auth to the integrated
-GitLab.
+GitLab. Create both as the root user, so that they appear in root's
+**User Settings → Applications**.
 
 ### DTaaS Client Authorization (React Frontend)
 
-1. In GitLab, go to **Admin Area → Applications** (or the user's
-   **Edit Profile → Applications**).
+1. In GitLab, sign in as root and go to **User Settings → Applications**.
 1. Create a new application:
    - **Name**: DTaaS Client Authorization
    - **Redirect URI**: `https://intocps.org/Library`
@@ -319,7 +319,7 @@ For full details, see the
 
 ### DTaaS Server Authorization (Traefik Forward-Auth)
 
-1. In GitLab, go to **Admin Area → Applications**.
+1. In GitLab, sign in as root and go to **User Settings → Applications**.
 1. Create a new application:
    - **Name**: DTaaS Server Authorization
    - **Redirect URI**: `https://intocps.org/_oauth`

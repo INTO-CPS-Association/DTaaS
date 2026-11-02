@@ -334,16 +334,23 @@ GitLab takes 5–10 minutes to become healthy after the first start.
 The install command checks GitLab’s readiness and returns immediately:
 
 * **If GitLab is healthy**: the command runs post-install setup
-  (password reset, PAT creation, OAuth app registration) and
-  saves the access token to `config/gitlab_tokens.json`.
-* **If GitLab is still starting**: the command prints a status hint
+  (PAT creation, OAuth app registration and, on the first install, root
+  password reset) and saves each secret to `config/gitlab_tokens.json`
+  as soon as it exists, so a later failing step cannot lose it.
+* **If GitLab is not ready**: the command prints a status hint
   and exits. Check progress with `dtaas-services service status -s gitlab`
   and re-run `dtaas-services service install -s gitlab` once the status
-  shows `healthy`.
+  shows `running`. Status shows GitLab as `starting` while Docker's health
+  check starts up, then as `not ready` (`unhealthy` with `--json`) until
+  its `/-/readiness` check passes, the same check the install waits for.
+  A GitLab that ran before and shows `not ready` has a failing part, such
+  as Gitaly or the database.
 
-> **Note:** After a successful setup, `config/gitlab_tokens.json` is backed
+> **Note:** After the first successful setup, `config/gitlab_tokens.json` is backed
 > up to `config/backup_gitlab_tokens.json` and the `root_password` entry is
-> removed from the live tokens file.
+> removed from the live tokens file. A rerun neither reads the initial
+> password nor resets root's password; use
+> `dtaas-services user reset-password -s gitlab` for that.
 > If the GitLab installation becomes corrupted before the root password is
 > changed, the initial password can be found in the backup file:
 > `config/backup_gitlab_tokens.json`.
@@ -373,31 +380,43 @@ The `dtaas-services service install -s gitlab` command performs the following st
 automatically:
 
 1. Starts the GitLab Docker container
-2. Checks if GitLab is healthy (non-blocking — exits immediately if not ready)
+2. Checks if GitLab is healthy and its `/-/readiness` check passes inside
+   the container (non-blocking — exits immediately if not ready)
 3. Reads the auto-generated root password from the container
    (`/etc/gitlab/initial_root_password`)
-4. Creates an initial Personal Access Token and saves it to
+4. Creates an initial Personal Access Token with `gitlab-rails runner`
+   inside the container (about a minute) and saves it to
    `config/gitlab_tokens.json`
-5. Creates Server and Client OAuth application tokens.
+5. Creates the Server and Client OAuth applications owned by root (root's
+   User Settings > Applications) with `gitlab-rails runner` (about a minute)
+   and saves their credentials to `config/gitlab_tokens.json`
+6. On the first install only: resets the root password to
+   `GITLAB_ROOT_NEW_PASSWORD` and moves the initial password to
+   `config/backup_gitlab_tokens.json`
 
-## Upgrading from 0.x
+### Rerunning the GitLab install
 
-Version 1.0.0 groups every command as `dtaas-services <noun> <verb>`.
-The old spellings still work for this release; they print a deprecation
-notice and will be removed in the next major version.
+A rerun of `dtaas-services service install -s gitlab` replaces the
+Personal Access Token and applies `config/gitlab_oauth.json` to root's
+OAuth applications again:
 
-| Before | After |
-| :--- | :--- |
-| `dtaas-services generate-project` | `dtaas-services project generate [--force]` |
-| `dtaas-services setup` | `dtaas-services host setup` |
-| `dtaas-services install -s <svc>` | `dtaas-services service install -s <svc>` |
-| `dtaas-services start/stop/restart/clean` | `dtaas-services service start/stop/restart/clean` |
-| `dtaas-services status` | `dtaas-services service status [--json]` |
-| `dtaas-services remove -v` | `dtaas-services service remove --volumes` |
-| `dtaas-services user add/reset-password` | unchanged |
+* Root's applications keep their client ids and secrets. GitLab stores
+  secrets hashed, so the kept secrets come from `config/gitlab_tokens.json`.
+  If that file has no secret for an application's client id, the install
+  stops and asks for `--rotate-secrets`.
+* `--rotate-secrets` renews the client secrets of root's applications.
+* Instance wide applications with the configured names (made by version
+  1.1.0 and earlier, or by hand in Admin Area > Applications) are listed and
+  left alone. `--replace-instance-apps` deletes them, and with them the
+  tokens they issued.
+* When an application gets a new client id or secret, the install names
+  it. Copy the new values from `config/gitlab_tokens.json` into the DTaaS
+  configuration (step 4 of the [integration guide](GITLAB_INTEGRATION.md)).
+* Both flags only affect GitLab; a ThingsBoard install ignores them.
 
-`service install -s` now accepts a comma separated list, like the other
-`service` commands.
+To move an installation made by 1.1.0 to root's applications, rerun the
+install (root's applications are created next to the old ones), switch
+DTaaS to the new credentials, then rerun with `--replace-instance-apps`.
 
 ## Troubleshooting
 

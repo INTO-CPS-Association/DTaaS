@@ -121,8 +121,8 @@ Once the GitLab container shows as `healthy`:
    [GitLab docs](https://docs.gitlab.com/ee/user/profile/account/create_accounts.html)).
    The usernames **must** match `USERNAME1`/`USERNAME2` in `config/.env`.
 
-1. Register two OAuth 2.0 applications in GitLab
-   (Admin Area → Applications):
+1. Register two OAuth 2.0 applications in GitLab, signed in as root,
+   in root's **User Settings → Applications**:
 
    - **DTaaS Client Authorization** for the React SPA frontend.
      See the [client auth docs](../../client/auth.md).

@@ -11,8 +11,10 @@ PKCE authorisation flow. The setup steps are:
 - The
   [GitLab Omnibus Docker](https://docs.gitlab.com/ee/install/docker.html)
   can be used for this purpose.
-- The OAuth 2.0 application should be configured as an
-  [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
+- The OAuth 2.0 application should be created by the GitLab root user
+  as a
+  [user owned application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
+  (root's **User Settings → Applications**).
 
 **2. Determine the Website's Hostname:**
 

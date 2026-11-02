@@ -1,19 +1,24 @@
-"""Create, list, and delete GitLab OAuth Application tokens."""
+"""Create or update the DTaaS OAuth applications owned by the GitLab root user."""
 
 import json
-import logging
 import os
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-import gitlab
-import gitlab.exceptions
-import requests.exceptions
+from .app_script import (
+    APP_KEYS,
+    APP_MARKER,
+    INSTANCE_APP_KEYS,
+    INSTANCE_APP_MARKER,
+    OAuthAppOptions,
+    parse_marked,
+    run_apps_script,
+    runner_error,
+)
+from .tokens_file import TOKENS_FILENAME
 
-from ._api import get_gitlab_client
-
-logger = logging.getLogger(__name__)
+APP_KINDS = ("Server", "Client")
 
 
 @dataclass
@@ -96,99 +101,100 @@ def _build_apps_config() -> list[OAuthAppConfig]:
     return apps
 
 
-def _to_result(app) -> OAuthAppResult:
-    """Convert a python-gitlab Application object to OAuthAppResult."""
-    return OAuthAppResult(
-        application_id=app.id,
-        name=getattr(app, "application_name", ""),
-        client_id=app.application_id,
-        client_secret=getattr(app, "secret", ""),
+def _select_server_and_client() -> tuple[list[OAuthAppConfig], str]:
+    """Pick the server and client apps, in that order, from the OAuth config.
+
+    Returns:
+        Tuple of (configs, error message); configs is empty on error
+    """
+    apps = _build_apps_config()
+    selected = []
+    for kind in APP_KINDS:
+        config = next((a for a in apps if kind.lower() in a.name.lower()), None)
+        if config is None:
+            return [], f"{kind} Authorization app not found in OAuth config"
+        selected.append(config)
+    return selected, ""
+
+
+def _entry_named(entries: list[dict], name: str) -> dict | None:
+    """Return the printed app with the given name."""
+    return next((entry for entry in entries if entry["name"] == name), None)
+
+
+def _saved_secret(saved: dict[str, Any], client_id: str) -> str | None:
+    """Return the secret saved in the tokens file for a client id."""
+    apps = [value for value in saved.values() if isinstance(value, dict)]
+    return next(
+        (a.get("client_secret") for a in apps if a.get("client_id") == client_id), None
     )
 
 
-def create_application(
-    private_token: str, config: OAuthAppConfig
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create an OAuth application on the GitLab instance.
+def _resolve(
+    entry: dict | None, name: str, saved: dict[str, Any]
+) -> tuple[OAuthAppResult | None, str]:
+    """Build the result of one app; a kept secret comes from the tokens file."""
+    if entry is None:
+        return None, f"'{name}' missing from the gitlab-rails runner output"
+    secret = entry["secret"] or _saved_secret(saved, entry["uid"])
+    if not secret:
+        return None, (
+            f"root's app '{name}' already exists, but config/{TOKENS_FILENAME} "
+            f"has no secret for its client id {entry['uid']}. GitLab cannot show "
+            "the old secret; rerun with --rotate-secrets to renew it"
+        )
+    return OAuthAppResult(entry["id"], name, entry["uid"], secret), ""
+
+
+@dataclass
+class OAuthAppsOutcome:
+    """What the runner call made, even when part of it failed.
+
+    apps holds every app with a usable secret, keyed server_app and
+    client_app as in the tokens file, so the caller can save it before
+    reporting errors.
+    """
+
+    apps: dict[str, OAuthAppResult] = field(default_factory=dict)
+    instance_apps: list[dict] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+
+
+def _collect(
+    configs: list[OAuthAppConfig], output: str, saved: dict[str, Any]
+) -> OAuthAppsOutcome:
+    """Match the printed apps to the configured server and client apps."""
+    entries, errors = parse_marked(output, APP_MARKER, APP_KEYS)
+    found, found_errors = parse_marked(output, INSTANCE_APP_MARKER, INSTANCE_APP_KEYS)
+    outcome = OAuthAppsOutcome(instance_apps=found, errors=errors + found_errors)
+    for kind, config in zip(APP_KINDS, configs):
+        result, error = _resolve(_entry_named(entries, config.name), config.name, saved)
+        if result is None:
+            outcome.errors.append(error)
+        else:
+            outcome.apps[f"{kind.lower()}_app"] = result
+    return outcome
+
+
+def create_oauth_applications(
+    options: OAuthAppOptions, saved: dict[str, Any]
+) -> OAuthAppsOutcome:
+    """Create or update root's DTaaS Server and Client Authorization apps.
+
+    Runs one ``gitlab-rails runner`` call (about a minute). The output is
+    read even when the call fails, since the apps are printed after the
+    commit and a printed secret must not be lost; the error is then the
+    runner's own.
 
     Args:
-        private_token: GitLab Personal Access Token with ``api`` scope
-        config: Application configuration
-
-    Returns:
-        Tuple of (success, OAuthAppResult or None, error message)
+        options: Whether to renew secrets and delete same name instance apps
+        saved: The tokens file contents, for the secrets of reused apps
     """
-    try:
-        gl = get_gitlab_client(private_token)
-        app = gl.applications.create(
-            {
-                "name": config.name,
-                "redirect_uri": config.redirect_uri,
-                "confidential": config.confidential,
-                "scopes": config.scopes,
-                "trusted": config.trusted,
-            }
-        )
-        return True, _to_result(app), ""
-    except gitlab.exceptions.GitlabError as exc:
-        return False, None, f"Failed to create '{config.name}': {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, None, f"Network error creating '{config.name}': {exc}"
-
-
-def create_server_application(
-    private_token: str,
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Server Authorization OAuth application."""
-    apps = _build_apps_config()
-    server_config = next((a for a in apps if "server" in a.name.lower()), None)
-    if server_config is None:
-        return False, None, "Server Authorization app not found in OAuth config"
-    logger.info("Creating '%s'...", server_config.name)
-    return create_application(private_token, server_config)
-
-
-def create_client_application(
-    private_token: str,
-) -> tuple[bool, OAuthAppResult | None, str]:
-    """Create the DTaaS Client Authorization OAuth application."""
-    apps = _build_apps_config()
-    client_config = next((a for a in apps if "client" in a.name.lower()), None)
-    if client_config is None:
-        return False, None, "Client Authorization app not found in OAuth config"
-    logger.info("Creating '%s'...", client_config.name)
-    return create_application(private_token, client_config)
-
-
-def list_all_applications(
-    private_token: str,
-) -> tuple[bool, list[dict[str, Any]], str]:
-    """List all registered OAuth applications.
-
-    Returns:
-        Tuple of (success, list of application dicts, error message)
-    """
-    try:
-        gl = get_gitlab_client(private_token)
-        apps = gl.applications.list()
-        return True, [app.attributes for app in apps], ""
-    except gitlab.exceptions.GitlabError as exc:
-        return False, [], f"Failed to list applications: {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, [], f"Network error listing applications: {exc}"
-
-
-def delete_application(private_token: str, application_id: int) -> tuple[bool, str]:
-    """Delete an OAuth application by its ID.
-
-    Returns:
-        Tuple of (success, message)
-    """
-    try:
-        gl = get_gitlab_client(private_token)
-        gl.applications.delete(application_id)
-        return True, "Application successfully deleted."
-    except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to delete application {application_id}: {exc}"
-    except requests.exceptions.RequestException as exc:
-        return False, f"Network error deleting application {application_id}: {exc}"
+    configs, error = _select_server_and_client()
+    if error:
+        return OAuthAppsOutcome(errors=[error])
+    success, output = run_apps_script([asdict(c) for c in configs], options)
+    outcome = _collect(configs, output, saved)
+    if not success:
+        outcome.errors = [f"gitlab-rails runner failed: {runner_error(output)}"]
+    return outcome
