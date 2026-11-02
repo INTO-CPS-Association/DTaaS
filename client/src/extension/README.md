@@ -9,6 +9,24 @@ services the client gives it.
 The Buildings page is the first extension, from the `./dtaas` entry of
 `@into-cps-association/bim-kit`.
 
+## Where the Contract Lives
+
+The code of the contract now lives in the client core, in `client/sdk/`. It
+keeps its package name, `@into-cps-association/dtaas-sdk`, and the client
+links it with `link:./sdk`. The name stays so that an extension installed
+from npm, such as `bim-kit`, which imports the published name, resolves to
+the local code. The client builds and tests it from source, with its own
+toolchain, and `yarn test:sdk` runs its tests.
+
+Prasad proposed to keep the name `dtaas-sdk`, to move the logic part of the
+contract into the client core and to turn the `dtaas-sdk` repository into a
+tool that generates the skeleton of a new extension for extension
+developers. The first part is what `client/sdk/` does. How an external
+extension gets the contract types from now on is an open decision: either a
+types package published from `client/sdk/`, or the types carried by the
+skeleton generator. Until it is decided, nothing here is published and the
+npm release `0.1.0` stays the version external extensions build against.
+
 ## Adding an Extension
 
 1. `yarn add` the extension's package.

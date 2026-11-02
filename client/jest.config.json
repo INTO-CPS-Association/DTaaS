@@ -17,19 +17,15 @@
           "paths": {
             "*": ["./src/*"],
             "test/*": ["./test/*"],
-            "@into-cps-association/dtaas-sdk/schema": [
-              "node_modules/@into-cps-association/dtaas-sdk/dist/schema/index.d.ts"
-            ],
-            "@into-cps-association/dtaas-sdk/testing": [
-              "node_modules/@into-cps-association/dtaas-sdk/dist/testing/index.d.ts"
-            ]
+            "@into-cps-association/dtaas-sdk": ["sdk/src/index.ts"],
+            "@into-cps-association/dtaas-sdk/*": ["sdk/src/*/index.ts"]
           }
         }
       }
     ]
   },
   "transformIgnorePatterns": [
-    "/node_modules/(?!(d3-shape|recharts|uuid|@into-cps-association/dt-automation|@into-cps-association/dtaas-sdk)/).+\\.js$"
+    "/node_modules/(?!(d3-shape|recharts|uuid|@into-cps-association/dt-automation)/).+\\.js$"
   ],
   "collectCoverage": true,
   "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
@@ -57,7 +53,8 @@
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts",
     "^@into-cps-association/bim-kit/dtaas$": "<rootDir>/test/__mocks__/bimExtensionMock.tsx",
-    "^@into-cps-association/dtaas-sdk/(schema|testing)$": "<rootDir>/node_modules/@into-cps-association/dtaas-sdk/dist/$1/index.js"
+    "^@into-cps-association/dtaas-sdk$": "<rootDir>/sdk/src/index.ts",
+    "^@into-cps-association/dtaas-sdk/(schema|testing|eslint)$": "<rootDir>/sdk/src/$1/index.ts"
   },
   "maxWorkers": 3,
   "setupFiles": ["<rootDir>/test/setupTests.ts"]

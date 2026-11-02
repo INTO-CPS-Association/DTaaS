@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.1",
+  "name": "junction-7-live",
+  "layout": { "type": "split", "panes": ["photo", "camera", "grafana"] },
+  "substrates": {
+    "photo": {
+      "adapter": "image",
+      "source": "git://twins/junction7/junction7.jpg",
+      "calibration": {
+        "type": "homography",
+        "id": "h1",
+        "imagePoints": [
+          [412, 880],
+          [1502, 872],
+          [1710, 1040],
+          [210, 1050]
+        ],
+        "worldPoints": [
+          [0, 0],
+          [24, 0],
+          [24, 12],
+          [0, 12]
+        ],
+        "units": "m"
+      }
+    },
+    "camera": {
+      "adapter": "video",
+      "source": "https://video.example/junction7/index.m3u8",
+      "latencyHintMs": 2500
+    },
+    "grafana": {
+      "adapter": "embed",
+      "source": "https://grafana.example/d/abc/junction7",
+      "timeParams": ["from", "to"]
+    }
+  },
+  "transports": [
+    {
+      "adapter": "mqtt",
+      "url": "wss://rabbitmq.example:15676/ws",
+      "topics": ["dtaas/junction7/+/count"],
+      "channel": "measured"
+    },
+    {
+      "adapter": "influx",
+      "org": "dtaas",
+      "bucket": "junction7",
+      "role": "history"
+    },
+    {
+      "adapter": "file",
+      "url": "lib://data/junction7-sumo-out.csv",
+      "channel": "simulated"
+    }
+  ],
+  "anchors": [
+    {
+      "signalPath": "junction7/armA/queueLen",
+      "kind": "image-region",
+      "ref": "poly:armA",
+      "homographyId": "h1",
+      "label": "North arm queue"
+    }
+  ],
+  "encodings": [
+    {
+      "target": "junction7/armA/queueLen",
+      "substrate": "photo",
+      "encoding": {
+        "type": "regionFill",
+        "domain": [0, 40],
+        "scheme": "traffic"
+      }
+    },
+    {
+      "target": "junction7/armA/queueLen",
+      "substrate": "photo",
+      "encoding": {
+        "type": "residual",
+        "against": "simulated",
+        "domain": [-8, 8]
+      }
+    }
+  ]
+}

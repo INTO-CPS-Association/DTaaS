@@ -11,7 +11,7 @@ extensions.
 | :------------------------------------ | :------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                                                  |
 | `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The Buildings extension: IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.2.0`. |
-| `@into-cps-association/dtaas-sdk`     | [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) | The contract between the client and its extensions. The client pins version `0.1.0`.                                                                                                           |
+| `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its extensions, version `0.1.0`. The client links the local package (`link:./sdk`), so an extension from npm, such as `bim-kit`, resolves to it.          |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -20,8 +20,8 @@ describes how it is released.
 ## The Extension Host
 
 The client is a host for domain extensions built on
-[`@into-cps-association/dtaas-sdk`](https://github.com/INTO-CPS-Association/dtaas-sdk),
-the contract between the two. A domain extension is an npm package that
+`@into-cps-association/dtaas-sdk`, the contract between the two, whose code
+lives in `client/sdk/`. A domain extension is an npm package that
 declares what it adds, such as pages, menu items, digital twin tabs, anchor
 kinds, encoding presets and substrates, as one `DtaasExtension` object.
 

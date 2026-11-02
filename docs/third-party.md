@@ -47,7 +47,6 @@ a notice.
 | Software Package                                                                             | Usage     | Licence                             |
 | :------------------------------------------------------------------------------------------- | :-------- | :---------------------------------- |
 | [@into-cps-association/bim-kit](https://www.npmjs.com/package/@into-cps-association/bim-kit) | mandatory | INTO-CPS Association Public Licence |
-| [@into-cps-association/dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk)         | mandatory | INTO-CPS Association Public Licence |
 | [web-ifc](https://github.com/ThatOpen/engine_web-ifc)                                        | mandatory | MPL 2.0                             |
 
 `web-ifc` is the IFC geometry kernel, and it reaches the client through

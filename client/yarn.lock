@@ -817,10 +817,9 @@
     "@reduxjs/toolkit" "^2.13.0"
     uuid "^14.0.2"
 
-"@into-cps-association/dtaas-sdk@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@into-cps-association/dtaas-sdk/-/dtaas-sdk-0.1.0.tgz#9a8b92d699ba5049e981648499d696e59a01f96e"
-  integrity sha512-jH8vvgjAbTWBE67HIv95e0LAkvhgDZN+MRqI5FwDPIbhP9Fpjx6fhQ18RggWjoqHGDq60ZnQApwW4QdXX+rH3g==
+"@into-cps-association/dtaas-sdk@link:./sdk":
+  version "0.0.0"
+  uid ""
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"

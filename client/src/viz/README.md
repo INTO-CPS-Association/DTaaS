@@ -3,7 +3,8 @@
 The common visualisation core of the client: the layers every domain shares,
 built once, which extensions consume through the SDK's `signals` and `viz`
 services and never re-implement. It follows layers 1 to 5 of the modular
-architecture in `dtaas-sdk`.
+architecture in `dtaas-sdk`. The contract it implements,
+`@into-cps-association/dtaas-sdk`, lives in `client/sdk/`.
 
 ## What Each File Does
 
