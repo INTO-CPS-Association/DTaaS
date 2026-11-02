@@ -14,7 +14,8 @@ the platform credentials.
    `/oauth/token/info` for its expiry and `/api/v4/user` for the user, and
    caches the answer for 60 s under the SHA-256 of the token. With
    `gitlab-client-id` set, a token issued to another OAuth application is
-   refused.
+   refused. Left empty, the check is off and the gateway logs a warning at
+   startup.
 1. With the user's own token, the gateway lists the projects of the
    `gitlab-group` group that the user can read. In DTaaS the twins of user
    `alice` live in the project `DTaaS/alice` under `digital_twins/<twin>`.

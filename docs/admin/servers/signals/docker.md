@@ -17,7 +17,9 @@ traefik-forward-auth checks the session first, and `config/conf.server` lists
 traefik-forward-auth. No port of the gateway is published on the host.
 
 1. Create the configuration from the example of the package and fill in the
-   addresses of GitLab, RabbitMQ and InfluxDB:
+   addresses of GitLab, RabbitMQ and InfluxDB. Replace
+   `<DTAAS_CLIENT_APPLICATION_ID>` with the Application ID of the DTaaS client
+   OAuth application, `REACT_APP_CLIENT_ID` in `config/client.js`:
 
    ```bash
    cp config/signals.yaml.example config/signals.yaml

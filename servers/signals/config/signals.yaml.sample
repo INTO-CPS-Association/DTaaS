@@ -34,9 +34,12 @@ gitlab-timeout: 5000
 # When set, the request must carry this header with the email of the token's
 # user, as traefik-forward-auth sets it. Leave empty to skip the check.
 forwarded-user-header: ''
-# When set, only tokens GitLab issued to this OAuth application are accepted:
-# the Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js.
-gitlab-client-id: ''
+# Only tokens GitLab issued to this OAuth application are accepted. Replace
+# the placeholder with the Application ID of the DTaaS client OAuth
+# application, REACT_APP_CLIENT_ID in client.js. Until it is replaced every
+# token is refused. Left empty, the check is off and the gateway logs a
+# warning at startup.
+gitlab-client-id: '<DTAAS_CLIENT_APPLICATION_ID>'
 # How long an identity and a user's project list are cached (milliseconds).
 identity-cache-ttl: 60000
 projects-cache-ttl: 60000

@@ -8,6 +8,7 @@ import AppModule from './app.module.js';
 import Config from './config/config.service.js';
 import resolveConfigPath from './config/cli.js';
 import { buildCorsOptions } from './config/cors.js';
+import startupWarnings from './config/startup-warnings.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -57,12 +58,7 @@ async function bootstrap() {
   const configPath = resolveConfigPath(process.argv);
   if (configPath !== undefined) process.env.SIGNALS_CONFIG_PATH = configPath;
   const config = new Config();
-  if (config.get('gitlab-url') === '') {
-    Logger.warn(
-      'gitlab-url is not set: every request with a token is refused',
-      'Signals',
-    );
-  }
+  startupWarnings(config).forEach((warning) => Logger.warn(warning, 'Signals'));
   const app = await createSignalsApp(config);
   await app.listen(config.get('port'), config.get('hostname'));
 }

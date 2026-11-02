@@ -169,7 +169,9 @@ client at `/signals`. It starts only with the `signals` profile, so a
 deployment without it starts as before.
 
 1. Copy the configuration and set the addresses of GitLab, RabbitMQ and
-   InfluxDB:
+   InfluxDB. Replace `<DTAAS_CLIENT_APPLICATION_ID>` with the Application ID
+   of the DTaaS client OAuth application, `REACT_APP_CLIENT_ID` in
+   `config/client.js`, so the gateway refuses tokens of other applications:
 
    ```bash
    cp config/signals.yaml.example config/signals.yaml

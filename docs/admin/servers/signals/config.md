@@ -23,7 +23,7 @@ The keys a deployment sets are:
 | `gitlab-url` | The GitLab that signs users in. The gateway sends the user's token to this address and to no other |
 | `gitlab-group` | The group whose projects hold the users' twins, `DTaaS` by default |
 | `gitlab-branch` | The branch whose committed `visualisation.json` files declare the signals, `master` by default |
-| `gitlab-client-id` | The Application ID of the DTaaS client, `REACT_APP_CLIENT_ID` in `client.js`. When set, a token GitLab issued to another OAuth application is refused |
+| `gitlab-client-id` | The Application ID of the DTaaS client OAuth application, `REACT_APP_CLIENT_ID` in `client.js`. A token GitLab issued to another OAuth application is refused. The examples carry the placeholder `<DTAAS_CLIENT_APPLICATION_ID>`, which refuses every token until it is replaced. Empty turns the check off and the gateway logs a warning at startup |
 | `forwarded-user-header` | A header that must carry the e-mail of the token's user, such as `x-forwarded-user` behind traefik-forward-auth. Empty skips the check |
 | `rabbitmq-url` | The broker, `amqp://` or `amqps://`, with no credentials in the address |
 | `rabbitmq-user` | The read-only service user, `dtaas-signals` by default |
