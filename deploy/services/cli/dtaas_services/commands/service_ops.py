@@ -7,8 +7,10 @@ from rich.console import Console
 from ..pkg.lib import Service
 from ..pkg.formatter import build_status_json, format_container_status
 from ..pkg.password_store import remove_service_passwords
+from ..pkg.services.gitlab import OAuthAppOptions, status_overrides
 from ..pkg.utils import check_root_unix
 from .install_helpers import (
+    InstallPlan,
     install_services,
     resolve_install_targets,
 )
@@ -33,28 +35,32 @@ from .utility import (
         "Installs both if not specified."
     ),
 )
-def install(service_names):
-    """
-    Install service database schema or run post-install setup.
+@click.option(
+    "--rotate-secrets", is_flag=True, help="GitLab: renew root's OAuth app secrets."
+)
+@click.option(
+    "--replace-instance-apps",
+    is_flag=True,
+    help="GitLab: delete same name instance wide OAuth apps.",
+)
+def install(service_names, rotate_secrets, replace_instance_apps):
+    """Install service database schema or run post-install setup (after host setup).
 
-    Prerequisites:
-    - dtaas-services host setup must be completed
+    For ThingsBoard (run once): starts PostgreSQL if needed, initializes
+    the database and creates the default system administrator account.
 
-    For ThingsBoard: automatically starts PostgreSQL if needed, then
-    initializes the database and creates the default system administrator
-    account.
-
-    For GitLab: waits for readiness, retrieves the root password, creates
-    a Personal Access Token, and registers OAuth application tokens.
+    For GitLab: waits for readiness, creates a Personal Access Token and
+    root's OAuth applications. A rerun keeps the apps' secrets unless
+    --rotate-secrets is given and deletes same name instance wide apps only
+    with --replace-instance-apps. Both flags only affect GitLab.
 
     If no service is specified, both ThingsBoard and GitLab are installed.
-
-    Must be run only once after initial setup.
     """
     try:
         check_root_unix()
         targets = resolve_install_targets(parse_service_list(service_names))
-        install_services(Console(), Service(), targets)
+        gitlab = OAuthAppOptions(rotate_secrets, replace_instance_apps)
+        install_services(Console(), Service(), InstallPlan(targets, gitlab))
     except FileNotFoundError as e:
         raise click.ClickException(str(e)) from e
     except click.ClickException:
@@ -98,10 +104,11 @@ def restart(service_names):
 
 def _print_status(containers: list, as_json: bool) -> None:
     """Print container status as a rich table or as JSON."""
+    overrides = status_overrides(containers)
     if as_json:
-        click.echo(json.dumps(build_status_json(containers), indent=2))
+        click.echo(json.dumps(build_status_json(containers, overrides), indent=2))
         return
-    format_container_status(containers, Console())
+    format_container_status(containers, Console(), overrides)
 
 
 @click.command()

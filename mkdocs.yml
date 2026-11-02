@@ -7,6 +7,7 @@ copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
 # published with the site.
 exclude_docs: |
   assets/diagrams/originals/
+  developer/plans/
 
 theme:
   name: material

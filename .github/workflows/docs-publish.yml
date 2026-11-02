@@ -179,6 +179,8 @@ jobs:
       group: docs-assemble-${{ github.event_name == 'pull_request' && github.ref || 'live' }}
     permissions:
       contents: read
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact_id }}
     steps:
       - name: Checkout
         # v7.0.1
@@ -217,6 +219,7 @@ jobs:
         run: python script/docs/docs.py check-scripts --site-dir pages
 
       - name: Upload site
+        id: upload
         # Hidden files such as pages/.git are left out of the artifact.
         # v5.0.0
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
@@ -236,9 +239,38 @@ jobs:
       id-token: write  # Required to verify the deployment's origin
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.result }}
     steps:
       - name: Deploy
         id: deployment
-        # v5.0.1
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+        # v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          ARTIFACT_ID: ${{ needs.assemble.outputs.artifact_id }}
+        with:
+          result-encoding: string
+          retries: 3
+          script: |
+            // A unique version per run, or Pages ignores a tag run on a deployed commit (#1889).
+            const version = `${context.sha}-${context.runId}-${context.runAttempt}`
+            const { data } = await github.request('POST /repos/{owner}/{repo}/pages/deployments', {
+              ...context.repo,
+              artifact_id: Number(process.env.ARTIFACT_ID),
+              pages_build_version: version,
+              oidc_token: await core.getIDToken(),
+            })
+            core.info(`Created deployment ${version}`)
+            const failures = ['deployment_failed', 'deployment_content_failed',
+              'deployment_cancelled', 'deployment_lost']
+            const deadline = Date.now() + 10 * 60 * 1000
+            while (Date.now() < deadline) {
+              await new Promise((resolve) => setTimeout(resolve, 5000))
+              const { data: deployment } = await github.request(`GET ${data.status_url}`)
+              core.info(`Status: ${deployment.status}`)
+              if (deployment.status === 'succeed') return data.page_url
+              if (failures.includes(deployment.status)) {
+                throw new Error(`Deployment ended with ${deployment.status}`)
+              }
+            }
+            await github.request(`POST ${data.status_url}/cancel`)
+            throw new Error('Deployment timed out after 10 minutes')

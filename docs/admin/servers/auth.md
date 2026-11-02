@@ -23,10 +23,14 @@ The configuration steps are:
 - The
   [GitLab Omnibus Docker](https://docs.gitlab.com/ee/install/docker.html)
   can be used for this purpose.
-- The OAuth 2.0 application should be configured as an
-  [instance-wide authorization type](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-an-instance-wide-application).
-  Select the options to generate a client secret and to make it a
-  trusted application.
+- The OAuth 2.0 application should be created by the GitLab root user
+  as a
+  [user owned application](https://docs.gitlab.com/ee/integration/oauth_provider.html#create-a-user-owned-application)
+  (root's **User Settings → Applications**).
+  Select the option to generate a client secret (**Confidential**).
+  GitLab offers the **Trusted** option only for instance-wide
+  applications, so each user approves the application once, on first
+  sign in.
 
 **2. Determine Website Hostname:**
 
@@ -49,8 +53,9 @@ two URLs are required: a _callback URL_ and a _logout URL_.
 
 **4. Create OAuth 2.0 Application:**
 
-The OAuth 2.0 application setup on GitLab is at Edit **Profile** ->
-**Application** <https://gitlab.intocps.org/-/profile/applications>.
+Sign in to GitLab as root. The OAuth 2.0 application setup is at
+**User Settings** -> **Applications**
+<https://gitlab.intocps.org/-/user_settings/applications>.
 
 When creating the OAuth 2.0 application on GitLab, select the
 **_read_user_** scope.

@@ -52,6 +52,13 @@ Follow these guides to create OAuth Application Tokens for -
 [backend](../../../docs/admin/servers/auth.md) is not required
 for <https://localhost> installation.
 
+With the Platform Services CLI, `dtaas-services service install -s gitlab`
+already creates both applications in root's User Settings > Applications and
+saves their credentials to `config/gitlab_tokens.json`. A rerun keeps their
+client ids and secrets; `--rotate-secrets` renews the secrets. Whenever the
+install reports new credentials for an application, repeat step 4 with the
+values from `config/gitlab_tokens.json` and restart the services.
+
 After this step the credentials for the application tokens titled
 **DTaaS Server Authorization** and **DTaaS Client Authorization**
 will be available, for use in the next step.

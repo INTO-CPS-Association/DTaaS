@@ -4,11 +4,10 @@ import json
 from pathlib import Path
 from typing import Tuple
 
-from ...config import Config
 from ...docker_utils import execute_docker_command, DockerRunOptions
+from .tokens_file import get_tokens_path as _get_tokens_path
 
 PAT_NAME = "dtaas-services"
-TOKENS_FILENAME = "gitlab_tokens.json"
 ROOT_USER_ID = 1
 GITLAB_CONTAINER_NAME = "gitlab"
 PAT_MARKER = "DTAAS_PAT="
@@ -60,11 +59,6 @@ def create_pat() -> tuple[bool, str]:
     if not success:
         return False, f"Failed to create PAT with gitlab-rails runner: {output}"
     return _parse_pat(output)
-
-
-def _get_tokens_path() -> Path:
-    """Return the path to the saved GitLab admin tokens file."""
-    return Config.get_base_dir() / "config" / TOKENS_FILENAME
 
 
 def _read_tokens_file(tokens_path: Path) -> Tuple[bool, str]:

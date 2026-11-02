@@ -2,56 +2,20 @@
 
 import json
 import logging
-from pathlib import Path
-from typing import Tuple, cast
-from dataclasses import dataclass, asdict
+from typing import Tuple
 
 from rich.console import Console
 
-from ...config import Config
+from ...password_store import get_current_password
 from ...utils import write_secret_file
+from .app_setup import step_create_oauth_apps
+from .app_token import OAuthAppOptions
 from .health import is_gitlab_healthy
-from .password import get_initial_root_password, reset_gitlab_password
+from .password import GITLAB_PW_KEY, get_initial_root_password, reset_gitlab_password
 from .personal_token import create_pat
-from .app_token import (
-    OAuthAppResult,
-    create_server_application,
-    create_client_application,
-)
+from .tokens_file import get_tokens_path, merge_tokens
 
 logger = logging.getLogger(__name__)
-
-TOKENS_FILENAME = "gitlab_tokens.json"
-
-
-@dataclass
-class GitLabTokens:
-    """All tokens produced by the GitLab setup process."""
-
-    root_password: str
-    personal_access_token: str
-    server_app: dict
-    client_app: dict
-
-
-def _save_tokens(tokens: GitLabTokens, output_path: Path) -> Tuple[bool, str]:
-    """Save tokens to a JSON file."""
-    try:
-        write_secret_file(output_path, json.dumps(asdict(tokens), indent=2))
-        return True, f"Tokens saved to {output_path}"
-    except OSError as exc:
-        return False, f"Failed to save tokens: {exc}"
-
-
-def _get_tokens_output_path() -> Path:
-    """Return path to config/gitlab_tokens.json."""
-    base_dir = Config.get_base_dir()
-    return base_dir / "config" / TOKENS_FILENAME
-
-
-def _app_result_to_dict(result: OAuthAppResult) -> dict:
-    """Convert an OAuthAppResult to a plain dict for serialization."""
-    return asdict(result)
 
 
 def _check_gitlab_health(console: Console, docker) -> Tuple[bool, str]:
@@ -90,44 +54,31 @@ def _step_create_pat(console: Console) -> Tuple[bool, str]:
     return True, token
 
 
-def _step_save_tokens(
-    console: Console,
-    root_password: str,
-    results: dict,
-) -> Tuple[bool, str]:
-    """Save all tokens to a JSON file."""
-    tokens = GitLabTokens(
-        root_password=root_password,
-        personal_access_token=cast(str, results.get("pat")),
-        server_app=_app_result_to_dict(
-            cast(OAuthAppResult, results.get("server_result"))
-        ),
-        client_app=_app_result_to_dict(
-            cast(OAuthAppResult, results.get("client_result"))
-        ),
-    )
-
-    output_path = _get_tokens_output_path()
-    success, msg = _save_tokens(tokens, output_path)
-
+def _step_save_tokens(console: Console, fields: dict) -> Tuple[bool, str]:
+    """Save fields into the tokens file right away."""
+    success, msg = merge_tokens(fields)
     if success:
         console.print(f"[green]✅ {msg}[/green]")
     return success, msg
 
 
-def _run_prereq_steps(console: Console, docker) -> Tuple[bool, str, str, str]:
-    """Run health check, password retrieval, PAT creation."""
-    healthy, status_msg = _check_gitlab_health(console, docker)
-    if not healthy:
-        return False, "", "", status_msg
+def _step_password_and_pat(console: Console, first_install: bool) -> Tuple[bool, str]:
+    """Read the initial root password (first install only), create the PAT, save.
 
-    success, root_password = _step_get_password(console)
-    if not success:
-        return False, "", "", root_password
-
+    Creating the PAT revokes the previous one, so the new PAT is saved
+    before any later step can fail.
+    """
+    fields = {}
+    if first_install:
+        success, password = _step_get_password(console)
+        if not success:
+            return False, password
+        fields["root_password"] = password
     success, pat = _step_create_pat(console)
-    error = "" if success else pat
-    return success, root_password, pat, error
+    if not success:
+        return False, pat
+    fields["personal_access_token"] = pat
+    return _step_save_tokens(console, fields)
 
 
 def _step_reset_root_password(console: Console) -> Tuple[bool, str]:
@@ -152,7 +103,7 @@ def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]
     console.print(
         "[cyan]Backing up tokens and removing root password from tokens file...[/cyan]"
     )
-    tokens_path = _get_tokens_output_path()
+    tokens_path = get_tokens_path()
     backup_path = tokens_path.parent / "backup_gitlab_tokens.json"
     try:
         with tokens_path.open("r", encoding="utf-8") as fh:
@@ -166,67 +117,62 @@ def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]
         return False, f"Failed to update tokens file: {exc}"
 
 
-def _step_create_oauth_apps(
-    console: Console, pat: str
-) -> Tuple[bool, OAuthAppResult | None, OAuthAppResult | None, str]:
-    """Create both OAuth application tokens."""
-    console.print("[cyan]Creating OAuth application tokens...[/cyan]")
-
-    success, server_result, error_msg = create_server_application(pat)
-    if not success:
-        return False, None, None, error_msg
-    console.print("[green]  ✅ Server Authorization app created.[/green]")
-
-    success, client_result, error_msg = create_client_application(pat)
-    if not success:
-        return False, None, None, error_msg
-    console.print("[green]  ✅ Client Authorization app created.[/green]")
-
-    return True, server_result, client_result, ""
-
-
-def _setup_tokens_phase(
-    console: Console, pat: str, root_password: str
-) -> Tuple[bool, str]:
-    """Create OAuth apps, validate results, and save all tokens."""
-    success, server_result, client_result, error_msg = _step_create_oauth_apps(
-        console, pat
-    )
-    if not success:
-        return False, error_msg
-
-    if server_result is None or client_result is None:
-        return False, "Unexpected error: OAuth app results are missing"
-
-    results = {
-        "pat": pat,
-        "server_result": server_result,
-        "client_result": client_result,
-    }
-    return _step_save_tokens(console, root_password, results)
-
-
-def setup_gitlab(console: Console, docker) -> Tuple[bool, str]:
-    """Run the full GitLab post-install setup.
-
-    Check health → password → PAT → OAuth apps → save → reset root password.
-    """
-    console.print("[bold cyan]Starting GitLab setup...[/bold cyan]")
-
-    success, root_password, pat, error_msg = _run_prereq_steps(console, docker)
-    if not success:
-        return False, error_msg
-
-    ok, msg = _setup_tokens_phase(console, pat, root_password)
-    if not ok:
-        return False, msg
-
+def _finish_first_install(console: Console) -> Tuple[bool, str]:
+    """Set the configured root password and move the initial one to the backup."""
     pw_ok, pw_msg = _step_reset_root_password(console)
     if not pw_ok:
         return False, f"Root password reset failed: {pw_msg}"
-
     bk_ok, bk_msg = _step_remove_root_password_from_tokens(console)
     if not bk_ok:
         return False, f"Failed to remove root password from tokens: {bk_msg}"
+    return True, ""
 
-    return True, "GitLab setup completed successfully."
+
+def _is_first_install() -> bool:
+    """The first install records root's password once it has reset it."""
+    return not get_current_password(GITLAB_PW_KEY)
+
+
+def _run_token_steps(
+    console: Console, first_install: bool, options: OAuthAppOptions
+) -> Tuple[bool, str]:
+    """Create and save the PAT, then the OAuth apps."""
+    success, msg = _step_password_and_pat(console, first_install)
+    if not success:
+        return False, msg
+    return step_create_oauth_apps(console, options)
+
+
+def _finish(console: Console, first_install: bool) -> Tuple[bool, str]:
+    """Reset the root password on the first install only.
+
+    A rerun leaves it alone: the initial password file is gone after 24
+    hours, and the reset would undo a password changed since.
+    """
+    if first_install:
+        return _finish_first_install(console)
+    console.print(
+        "[cyan]Root password was set by an earlier install; left unchanged "
+        "(dtaas-services user reset-password -s gitlab resets it).[/cyan]"
+    )
+    return True, ""
+
+
+def setup_gitlab(
+    console: Console, docker, options: OAuthAppOptions | None = None
+) -> Tuple[bool, str]:
+    """Run the GitLab post-install setup.
+
+    Check health, then initial password (first install), PAT, OAuth apps,
+    then root password reset and backup (first install). Every secret is
+    saved as soon as it exists.
+    """
+    console.print("[bold cyan]Starting GitLab setup...[/bold cyan]")
+    healthy, status_msg = _check_gitlab_health(console, docker)
+    if not healthy:
+        return False, status_msg
+    first_install = _is_first_install()
+    success, msg = _run_token_steps(console, first_install, options or OAuthAppOptions())
+    if success:
+        success, msg = _finish(console, first_install)
+    return (True, "GitLab setup completed successfully.") if success else (False, msg)
