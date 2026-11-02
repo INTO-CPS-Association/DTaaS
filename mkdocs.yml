@@ -160,6 +160,12 @@ nav:
               - Design Review: developer/system/review/design-review.md
               - Systemic Issues: developer/system/review/systemic-issues.md
               - Improvements: developer/system/review/improvements.md
+      - Plans:
+          - Naming Convention:
+              - Rules and Identity: developer/plans/naming/index.md
+              - Messaging: developer/plans/naming/messaging.md
+              - Databases: developer/plans/naming/databases.md
+              - Applications: developer/plans/naming/applications.md
       - Technical Concepts:
           - OAuth 2.0 and Keycloak: developer/technical-concepts/oauth-keycloak.md
           - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
@@ -186,12 +192,6 @@ nav:
           - Publish NPM Packages: developer/contributions/npm-packages.md
           - Upgrade NPM Packages: developer/contributions/npm-upgrade.md
           - Vagrant: developer/vagrant.md
-  - Plan:
-      - Naming Convention:
-          - Rules and Identity: plan/naming/index.md
-          - Messaging: plan/naming/messaging.md
-          - Databases: plan/naming/databases.md
-          - Applications: plan/naming/applications.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:
