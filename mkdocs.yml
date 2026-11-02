@@ -160,6 +160,8 @@ nav:
               - Design Review: developer/system/review/design-review.md
               - Systemic Issues: developer/system/review/systemic-issues.md
               - Improvements: developer/system/review/improvements.md
+      - Plans:
+          - Access Plan: developer/plans/access-plan.md
       - Technical Concepts:
           - OAuth 2.0 and Keycloak: developer/technical-concepts/oauth-keycloak.md
           - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
@@ -186,8 +188,6 @@ nav:
           - Publish NPM Packages: developer/contributions/npm-packages.md
           - Upgrade NPM Packages: developer/contributions/npm-upgrade.md
           - Vagrant: developer/vagrant.md
-  - Plan:
-      - Access Plan: plan/access-plan.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:
