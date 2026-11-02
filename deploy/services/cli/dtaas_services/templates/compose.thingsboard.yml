@@ -24,6 +24,20 @@ services:
       SSL_CREDENTIALS_TYPE: "PEM"
       SSL_PEM_CERT: "/certs/thingsboard-fullchain.pem"
       SSL_PEM_KEY: "/certs/thingsboard-privkey.pem"
+      # MQTT over TLS for devices, with the same certificate as the web API.
+      MQTT_SSL_ENABLED: "true"
+      MQTT_SSL_CREDENTIALS_TYPE: "PEM"
+      MQTT_SSL_PEM_CERT: "/certs/thingsboard-fullchain.pem"
+      MQTT_SSL_PEM_KEY: "/certs/thingsboard-privkey.pem"
+      # What the "Check connectivity" page of a device tells it to use. The
+      # defaults name the ports inside the container, which a device outside
+      # cannot reach, so the page names the published ports instead.
+      DEVICE_CONNECTIVITY_HTTP_ENABLED: "false"
+      DEVICE_CONNECTIVITY_HTTPS_ENABLED: "true"
+      DEVICE_CONNECTIVITY_HTTPS_PORT: "${THINGSBOARD_PORT}"
+      DEVICE_CONNECTIVITY_MQTT_ENABLED: "false"
+      DEVICE_CONNECTIVITY_MQTTS_ENABLED: "true"
+      DEVICE_CONNECTIVITY_MQTTS_PORT: "${THINGSBOARD_MQTT_SSL_PORT}"
     logging:
       driver: 'json-file'
       options:

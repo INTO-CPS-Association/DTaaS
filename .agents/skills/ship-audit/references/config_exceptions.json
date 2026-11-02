@@ -1,0 +1,18 @@
+{
+  "description": "Configuration templates that carry dummy credentials on purpose, so that an installation starts with a value to replace. A credential hit in one of these files is expected while the value stays a visible placeholder or a documented default.",
+  "files": [
+    "cli/src/templates/dtaas.toml",
+    "cli/src/templates/users.csv",
+    "client/test/.env.template",
+    "deploy/dtaas/docker/secure-server/config/.env.example",
+    "deploy/dtaas/docker/secure-server_with_integrated-gitlab/config/.env.example",
+    "deploy/dtaas/docker/server/config/.env.example",
+    "deploy/services/cli/dtaas_services/templates/compose.services.yml",
+    "deploy/services/cli/dtaas_services/templates/compose.thingsboard.yml",
+    "deploy/services/cli/dtaas_services/templates/config/credentials.csv.template",
+    "deploy/services/cli/dtaas_services/templates/config/services.env.template",
+    "deploy/workspace/dex/localhost/config/dex-config.yaml.example",
+    "deploy/workspace/keycloak/production/config/.env.example",
+    "developer/check/config/.env.example"
+  ]
+}
