@@ -76,7 +76,7 @@ bucket or database without manual work by an administrator.
 | GitLab group           | Reporter               | Developer              | Maintainer             |
 | Grafana folder         | Viewer                 | Editor                 | Admin                  |
 | ThingsBoard customer   | Read-only user         | Customer user          | Customer admin         |
-| RabbitMQ vhost         | Read                   | Read and write         | Configure              |
+| RabbitMQ topics in `/` | Read                   | Read and write         | Read and write         |
 | Databases of the group | Read                   | Read and write         | Owner                  |
 
 The levels are a first proposal for the team to decide.
