@@ -7,6 +7,7 @@ copyright: Copyright &copy; 2022 - 2026 The INTO-CPS Association
 # published with the site.
 exclude_docs: |
   assets/diagrams/originals/
+  developer/plans/
 
 theme:
   name: material
@@ -180,12 +181,6 @@ nav:
               - Systemic Issues:
                   developer/system/review/systemic-issues.md
               - Improvements: developer/system/review/improvements.md
-      - Plans:
-          - Naming Convention:
-              - Rules and Identity: developer/plans/naming/index.md
-              - Messaging: developer/plans/naming/messaging.md
-              - Databases: developer/plans/naming/databases.md
-              - Applications: developer/plans/naming/applications.md
       - Technical Concepts:
           - OAuth 2.0 and Keycloak:
               developer/technical-concepts/oauth-keycloak.md
