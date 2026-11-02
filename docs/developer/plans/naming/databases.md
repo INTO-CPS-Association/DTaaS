@@ -51,7 +51,7 @@ names
 ([InfluxDB schema design](https://docs.influxdata.com/influxdb/v2/write-data/best-practices/schema-design/)).
 Names starting with `_` belong to InfluxDB
 ([line protocol](https://docs.influxdata.com/influxdb/v2/reference/syntax/line-protocol/)).
-Every bucket has a retention period chosen when it is created.
+How long a bucket keeps raw readings is not decided yet.
 
 ```text
 reading,project=SWiM,building=CTO,level=room,unit_id=0224,area=seat48A,device_type=S,device_id=S-SWiM-CTO-room-0224-seat48A-TRH-0001,quantity=temperature,unit=Cel value=24.87 1793353208000000000

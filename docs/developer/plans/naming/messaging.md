@@ -8,7 +8,7 @@ the [Naming Convention](index.md) page.
 
 | Concept          | Name                                       | Example                   |
 | :--------------- | :----------------------------------------- | :------------------------ |
-| Virtual host     | `<group>`, or `<username>` for own data    | `swim`                    |
+| Virtual host     | `/` for all MQTT traffic                   | `/`                       |
 | Exchange         | `<group>.<purpose>`                        | `swim.readings`           |
 | Exchange type    | `topic` for readings, `direct` for commands |                          |
 | Queue            | `<consumer>.<purpose>`                     | `telegraf.readings`       |
@@ -18,12 +18,14 @@ the [Naming Convention](index.md) page.
 | Routing key      | The MQTT topic with `.` for `/`            | `SWiM.CTO.room.0224...`   |
 | Binding          | Exchange to queue by routing key pattern   | `SWiM.CTO.#`              |
 | User             | Person or program account                  | `swim_ingest`             |
+| Topic permission | Write and read on the project's prefix     | `^SWiM\.CTO\.`             |
 
 Exchange and queue names use `.` between the parts, as RabbitMQ's own
 names do (`amq.topic`). Names that start with `amq.` belong to the broker
 and declaring one is refused
 ([RabbitMQ queues](https://www.rabbitmq.com/docs/queues)). A queue name is
-at most 255 bytes.
+at most 255 bytes. The names of exchanges, queues, dead-letter queues and
+streams are a proposal. The decision on them is postponed.
 
 The MQTT plugin publishes to the exchange `amq.topic` and turns each
 `/` of a topic into a `.` in the routing key
@@ -35,15 +37,16 @@ key pattern.
 
 | Concept     | Name                                                    | Example                      |
 | :---------- | :------------------------------------------------------ | :--------------------------- |
-| Username    | `<vhost>:<account>`                                     | `swim:swim_ingest`           |
+| Username    | `<account>`                                             | `swim_ingest`                |
 | Client ID   | `<account>_<host or device>`                            | `swim_ingest_dtl2`           |
 | Topic       | `<project>/<building>/<level>/<unit_id>/<area>/<device_type>/<device_id>/<quantity>` | below |
 | Command     | The device topic with `/cmd/<command>` in place of the quantity | `.../A/<device_id>/cmd/set` |
 | Status      | The device topic with `/status` in place of the quantity | `.../S/<device_id>/status`  |
 
-The virtual host goes in the username because RabbitMQ sends a client
-without it to the virtual host `/`
-([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)).
+The username carries no virtual host, because the broker sends all MQTT
+traffic through `/`. Accounts are kept apart by topic permissions, which
+RabbitMQ applies to MQTT publishing
+([RabbitMQ topic authorisation](https://www.rabbitmq.com/docs/access-control#topic-authorisation)).
 
 A client ID is unique per connection. Two clients with the same ID
 disconnect each other.

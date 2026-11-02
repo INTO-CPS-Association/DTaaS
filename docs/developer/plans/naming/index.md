@@ -58,7 +58,7 @@ name.
 | Role level         | `viewer`, `member` or `admin`                 | `viewer`       |
 | Program account    | `<group>_<purpose>`                           | `swim_ingest`  |
 | Read-only program  | `<group>_<purpose>_ro`                        | `swim_view_ro` |
-| Administrator      | `dtaas_admin` in every service                | `dtaas_admin`  |
+| Administrator      | `dtaas_admin`, wherever a service allows it   | `dtaas_admin`  |
 
 The pattern for a username, a group or an account is
 `^[a-z][a-z0-9_]{2,31}$`. It is valid unquoted in PostgreSQL, which folds
@@ -80,10 +80,13 @@ A program account belongs to a group and has only the permissions its
 purpose needs. A person never shares a program account. A program never
 uses a person's account.
 
-Every resource that belongs to a group is named after the group. A
-resource for one person only, such as a private bucket, is named after the
-username. A group name and a username never coincide, because both come
-from the same GitLab namespace.
+A group is placed on the grouping each service already has: an
+organisation in InfluxDB and Grafana, a tenant or customer in ThingsBoard
+and a topic prefix in RabbitMQ and MQTT. A group resource is made only
+where a project needs to share data, because each one is extra work in
+every service. A resource for one person only, such as a private bucket,
+is named after the username. A group name and a username never coincide,
+because both come from the same GitLab namespace.
 
 ## Names Made Today
 
@@ -116,10 +119,11 @@ The convention addresses four consequences of this.
 2. A CSV username that equals an administrator or shared name, such as
    `dtaas` or `thingsboard`, is reported as "already exists" and the
    existing resource is reused without warning.
-3. RabbitMQ sends MQTT clients to the virtual host `/` unless the username
-   names another one as `vhost:username`
-   ([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)). The
-   per-user permissions exist only on the per-user virtual host.
+3. All MQTT traffic goes through the virtual host `/`, as the broker
+   sets with `mqtt.vhost = /`. The per-user virtual hosts that `user add`
+   makes are not used by MQTT. Without topic permissions, an account may
+   publish and read every topic in `/`
+   ([RabbitMQ topic authorisation](https://www.rabbitmq.com/docs/access-control#topic-authorisation)).
 4. InfluxDB buckets are created without a retention period, so the data
    is kept forever.
 
@@ -129,10 +133,29 @@ The convention is not enforced by the code yet. The changes it needs are:
 
 1. Validate every CSV username against `^[a-z][a-z0-9_]{2,31}$` and
    reject the reserved names before any service is touched.
-2. Rename the administrator accounts to `dtaas_admin`.
-3. Create group resources, named after the GitLab group, as well as
-   per-user ones.
+2. Use `dtaas_admin` for new installations, in the services that allow
+   it.
+3. Create group resources on the grouping of each service, where a
+   project needs to share data.
 4. Create the roles `<group>_viewer`, `<group>_member` and
    `<group>_admin` in every service that has roles.
-5. Set a retention period on every InfluxDB bucket.
-6. Document the `vhost:username` form for MQTT clients.
+5. Give every MQTT account topic permissions in `/`, limited to the
+   topics of its project.
+
+## Decisions
+
+The maintainer answered the open points of this convention on 2 November
+2026.
+
+| Point                            | Decision                                                  |
+| :------------------------------- | :-------------------------------------------------------- |
+| Usernames with a dot             | Rejected, not mapped. The pattern above has no dot        |
+| Role levels                      | `viewer`, `member` and `admin` are enough for now         |
+| One administrator name           | `dtaas_admin` is the aim, as uniform as the services allow |
+| Group resources                  | On the grouping of each service, where the benefit is clear |
+| Singular names                   | Yes                                                       |
+| ThingsBoard telemetry keys       | Not enforceable, since ThingsBoard stores what devices send |
+| RabbitMQ exchange and queue names | Postponed                                                |
+| MQTT virtual host                | All MQTT traffic goes through `/`                         |
+| InfluxDB retention               | Postponed                                                 |
+| Keycloak realm name              | Postponed. It can change later                            |

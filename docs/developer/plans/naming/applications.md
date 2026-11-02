@@ -28,10 +28,11 @@ entity view and dashboard, with device and asset profiles
 ([ThingsBoard entities and relations](https://thingsboard.io/docs/user-guide/entities-and-relations/)).
 ThingsBoard advises camelCase for telemetry keys
 ([ThingsBoard telemetry](https://thingsboard.io/docs/user-guide/telemetry/)).
-A quantity of one lowercase word meets both that advice and this
-convention. Titles that people read, such as dashboards and rule chains,
-use Title Case. Entity names that programs look up use the identifiers
-above.
+ThingsBoard stores the keys that devices send, so the platform cannot
+enforce a style. The keys that DTaaS sends are one lowercase word where
+possible, which meets both that advice and this convention. Titles that
+people read, such as dashboards and rule chains, use Title Case. Entity
+names that programs look up use the identifiers above.
 
 ## Grafana
 
