@@ -9,6 +9,7 @@ from dtaas_services.pkg.services.influxdb.signals_tokens import (
     find_bucket_id,
     get_tokens_file,
     read_tokens,
+    revoke_old_tokens,
     setup_signals_tokens,
     write_signals_tokens,
 )
@@ -33,10 +34,14 @@ def env(mocker):
     return config.return_value.env
 
 
-def _influx(bucket_ids: dict):
-    """Answer bucket list and auth create like the influx CLI does"""
+def _influx(bucket_ids: dict, auths=()):
+    """Answer bucket list, auth list, auth delete and auth create like the influx CLI"""
     def answer(command, _context):
+        if command[1:3] == ["auth", "delete"]:
+            return True, "{}"
         org = command[command.index("--org") + 1]
+        if command[1:3] == ["auth", "list"]:
+            return True, json.dumps(list(auths))
         if command[1] == "bucket":
             if org not in bucket_ids:
                 return False, f'Error: bucket "{org}" not found'
@@ -142,7 +147,8 @@ def test_write_signals_tokens_keeps_existing(mock_exec, env, mocker, tmp_path):
     assert write_signals_tokens(path)[0] is True
     tokens = json.loads(path.read_text(encoding="utf-8"))
     assert tokens == {"alice": "old", "bob": f"{TOKEN}-bob"}
-    assert mock_exec.call_count == 2
+    # Bucket lookup, old-token check and creation, all for bob only.
+    assert mock_exec.call_count == 3
 
 
 def test_write_signals_tokens_keeps_tokens_made_before_a_failure(
@@ -155,7 +161,8 @@ def test_write_signals_tokens_keeps_tokens_made_before_a_failure(
     answer = _influx({"alice": "b1", "bob": "b2"})
     mock_exec.side_effect = [
         answer(["influx", "bucket", "--org", "alice"], ""),
-        answer(["influx", "auth", "--org", "alice"], ""),
+        answer(["influx", "auth", "list", "--org", "alice"], ""),
+        answer(["influx", "auth", "create", "--org", "alice"], ""),
         (False, "Failed to find bucket bob: refused"),
     ]
     path = tmp_path / "influx-tokens.json"
@@ -163,6 +170,48 @@ def test_write_signals_tokens_keeps_tokens_made_before_a_failure(
     assert success is False
     assert "refused" in error
     assert json.loads(path.read_text(encoding="utf-8")) == {"alice": f"{TOKEN}-alice"}
+
+
+def test_revoke_old_tokens_deletes_only_gateway_tokens(mock_exec):
+    """Only the tokens this module made for the org are deleted"""
+    mock_exec.side_effect = _influx({}, auths=[
+        {"id": "old1", "description": "dtaas-signals read alice"},
+        {"id": "keep", "description": "alice's own token"},
+    ])
+    assert revoke_old_tokens("alice") == (True, "")
+    deleted = [c.args[0] for c in mock_exec.call_args_list if c.args[0][2] == "delete"]
+    assert deleted == [["influx", "auth", "delete", "--skip-verify", "--id", "old1"]]
+
+
+def test_revoke_old_tokens_list_failure(mock_exec):
+    """A failed listing stops before a new token is made"""
+    mock_exec.return_value = (False, "Failed to list the tokens of org alice: refused")
+    success, error = revoke_old_tokens("alice")
+    assert success is False
+    assert "refused" in error
+
+
+def test_write_signals_tokens_revokes_orphans_when_file_is_lost(
+    mock_exec, env, mocker, tmp_path
+):
+    """A lost file does not leave the earlier tokens valid in InfluxDB"""
+    mocker.patch(f"{MODULE}.get_existing_orgs", return_value=(True, {"alice"}, ""))
+    mock_exec.side_effect = _influx(
+        {"alice": "b1"}, auths=[{"id": "old1", "description": "dtaas-signals read alice"}]
+    )
+    assert write_signals_tokens(tmp_path / "influx-tokens.json")[0] is True
+    deleted = [c.args[0][-1] for c in mock_exec.call_args_list if c.args[0][2] == "delete"]
+    assert deleted == ["old1"]
+
+
+def test_write_signals_tokens_drops_removed_users(mock_exec, env, mocker, tmp_path):
+    """An org that no longer exists leaves the file"""
+    mocker.patch(f"{MODULE}.get_existing_orgs", return_value=(True, {"alice"}, ""))
+    path = tmp_path / "influx-tokens.json"
+    path.write_text(json.dumps({"alice": "a", "bob": "b"}), encoding="utf-8")
+    assert write_signals_tokens(path)[0] is True
+    assert json.loads(path.read_text(encoding="utf-8")) == {"alice": "a"}
+    mock_exec.assert_not_called()
 
 
 def test_setup_signals_tokens_without_file(env, mocker):

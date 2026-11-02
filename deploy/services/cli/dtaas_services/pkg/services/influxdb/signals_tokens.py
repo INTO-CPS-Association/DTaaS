@@ -73,6 +73,38 @@ def create_read_token(org: str, bucket_id: str) -> tuple[bool, str, str]:
     return True, auth["token"], ""
 
 
+def revoke_old_tokens(org: str) -> tuple[bool, str]:
+    """Delete the gateway tokens an org already has in InfluxDB.
+
+    An org is only given a token when it is missing from the tokens file, so
+    a token found here belongs to a file that was lost or replaced. Nothing
+    reads it any more and leaving it valid would keep a copy of the
+    credential that no one manages.
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    success, output = execute_influxdb_command(
+        ["influx", "auth", "list", "--skip-verify", "--json", "--org", org],
+        f"Failed to list the tokens of org {org}",
+    )
+    if not success:
+        return False, output
+    success, auths, error_msg = parse_json_response(output)
+    if not success or not isinstance(auths, list):
+        return False, error_msg or f"Unexpected token list for org {org}"
+    for auth in auths:
+        if auth.get("description") != DESCRIPTION.format(org=org):
+            continue
+        success, output = execute_influxdb_command(
+            ["influx", "auth", "delete", "--skip-verify", "--id", auth["id"]],
+            f"Failed to delete an old token of org {org}",
+        )
+        if not success:
+            return False, output
+    return True, ""
+
+
 def read_tokens(path: Path) -> tuple[bool, dict, str]:
     """Read the tokens file, or an empty mapping when it does not exist yet.
 
@@ -113,6 +145,9 @@ def _add_token(org: str, tokens: dict) -> tuple[bool, str]:
     success, bucket_id, error_msg = find_bucket_id(org)
     if not success or not bucket_id:
         return success, error_msg
+    success, error_msg = revoke_old_tokens(org)
+    if not success:
+        return False, error_msg
     success, token, error_msg = create_read_token(org, bucket_id)
     if success:
         tokens[org] = token
@@ -123,7 +158,9 @@ def write_signals_tokens(path: Path) -> tuple[bool, str]:
     """Give every user org without a token one, and write the tokens file.
 
     An org already in the file keeps its token, so running this again creates
-    tokens only for new users instead of one more token for every user.
+    tokens only for new users instead of one more token for every user. An org
+    that no longer exists leaves the file, since InfluxDB deleted its tokens
+    with it when the user was removed.
 
     Returns:
         Tuple of (success, message)
@@ -134,6 +171,7 @@ def write_signals_tokens(path: Path) -> tuple[bool, str]:
     success, orgs, error_msg = _user_orgs()
     if not success:
         return False, error_msg
+    tokens = {org: token for org, token in tokens.items() if org in orgs}
     before = len(tokens)
     for org in (org for org in orgs if org not in tokens):
         success, error_msg = _add_token(org, tokens)
