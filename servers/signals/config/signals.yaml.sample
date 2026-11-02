@@ -1,0 +1,19 @@
+# Signals gateway configuration. Copy to signals.yaml and adjust.
+# Every key may also be set with an environment variable: SIGNALS_ and the
+# key in upper case with '_' for '-', for example SIGNALS_PORT.
+
+# Where the service listens.
+hostname: 127.0.0.1
+port: 4004
+
+# Off by default: behind Traefik the client is served from the same origin.
+# Set an origin only when the client runs elsewhere.
+cors-allow-origin: ''
+cors-allow-credentials: false
+
+# Largest JSON request body, in bytes.
+max-payload-bytes: 65536
+# Requests per TCP peer per window (milliseconds). Behind a reverse proxy
+# this is a budget shared by every user.
+throttle-ttl: 60000
+throttle-limit: 120
