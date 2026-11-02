@@ -21,4 +21,7 @@ rabbitmq-url: amqps://services.foo.com:8083
 rabbitmq-user: dtaas-signals
 rabbitmq-password-file: /run/secrets/signals-rabbitmq-password
 influx-url: https://services.foo.com:8086
+# Each InfluxDB token may only read the bucket of its org. With
+# SIGNALS_INFLUX_TOKENS_FILE in services.env set to config/secrets/influx-tokens.json
+# of this package, 'dtaas-services user add-signals' writes them.
 influx-tokens-file: /run/secrets/signals-influx-tokens

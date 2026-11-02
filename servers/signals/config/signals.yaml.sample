@@ -54,7 +54,11 @@ vhost-template: '{owner}'
 
 # InfluxDB 2, read for the history of a signal.
 influx-url: http://localhost:8086
-# JSON file mapping each org to a read-only token: {"alice": "..."}
+# JSON file mapping each org to a token that can only read the org's bucket:
+# {"alice": "..."}. The gateway only sends Flux queries, so a token with
+# write access is never needed. With SIGNALS_INFLUX_TOKENS_FILE set to this
+# file, 'dtaas-services user add-signals' creates the read-only tokens and
+# writes them here with mode 600.
 influx-tokens-file: ./secrets/influx-tokens.json
 # A twin's influx transport is used only when its org and bucket equal these,
 # filled with the owner. Anything else is ignored and logged.

@@ -244,6 +244,11 @@ Failures are reported as text on stderr, so a script reads stdout only.
    grants the user read-only permissions on every existing vhost, and
    `user add` grants it on each new user vhost.
 
+   With `SIGNALS_INFLUX_TOKENS_FILE` also set to the file that the
+   gateway's `influx-tokens-file` names, the command gives each user org an
+   InfluxDB token that can only read the user's bucket and writes the tokens
+   to that file with mode 600, and `user add` does the same for each new user.
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard

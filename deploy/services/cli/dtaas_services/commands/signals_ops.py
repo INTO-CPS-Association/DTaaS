@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 from ..pkg.services.rabbitmq_signals import setup_signals_user
+from ..pkg.services.influxdb.signals_tokens import setup_signals_tokens
 
 
 def _read_password(password_file: Path | None) -> str:
@@ -29,10 +30,13 @@ def _read_password(password_file: Path | None) -> str:
 )
 def add_signals(password_file):
     """
-    Create the read-only RabbitMQ user of the signals gateway.
+    Create the read-only RabbitMQ user and InfluxDB tokens of the signals gateway.
     The user is SIGNALS_RABBITMQ_USER of config/services.env. It gets the
     read-only permissions of the gateway on every existing vhost, and
-    'user add' grants it on each new user vhost.
+    'user add' grants it on each new user vhost. When
+    SIGNALS_INFLUX_TOKENS_FILE is set, every user org also gets an InfluxDB
+    token that can only read the user's bucket, written to that file, and
+    'user add' does the same for each new user.
     Example:
         dtaas-services user add-signals
         dtaas-services user add-signals --password-file signals-password
@@ -44,3 +48,8 @@ def add_signals(password_file):
     if not success:
         raise click.ClickException(message)
     Console().print(f"[green]RabbitMQ: {message}[/green]")
+    success, message = setup_signals_tokens()
+    if not success:
+        raise click.ClickException(message)
+    if message:
+        Console().print(f"[green]InfluxDB: {message}[/green]")

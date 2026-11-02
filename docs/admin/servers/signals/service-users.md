@@ -56,7 +56,28 @@ gateway.
 ## The InfluxDB Read-Only Tokens
 
 The DTaaS services CLI creates one org and one bucket for each user, both named
-after the user. For each org, create a token that can only read that bucket.
+after the user. The gateway needs, for each org, a token that can only read
+that bucket. It cannot write a point and it cannot read another user's bucket.
+
+### Tokens With the DTaaS Services CLI
+
+Name the file that `influx-tokens-file` of the gateway reads in
+`config/services.env` of the [platform services](../../services/cli.md). A
+relative path is read against the directory of `config/services.env`:
+
+```bash
+SIGNALS_INFLUX_TOKENS_FILE=/path/to/signals/config/secrets/influx-tokens.json
+```
+
+Then `dtaas-services user add-signals` also creates the tokens. For each user
+org without an entry in the file, it creates a token with read permission on
+the user's bucket only and adds it to the file. The file is written with mode
+600 and the tokens are never printed. An org already in the file keeps its
+token. From then on, `dtaas-services user add` does the same for each new user.
+The admin org `INFLUXDB_ORG` gets no token.
+
+### Tokens With the influx CLI
+
 In the `influxdb` container of the platform services:
 
 ```bash
