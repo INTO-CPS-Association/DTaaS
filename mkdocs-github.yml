@@ -141,11 +141,6 @@ nav:
                       admin/workspace/secure-server/keycloak-setup.md
                   - Design: admin/workspace/secure-server/design.md
       - Platform Services: admin/services/cli.md
-      - Naming Convention:
-          - Rules and Identity: admin/services/naming/index.md
-          - Messaging: admin/services/naming/messaging.md
-          - Databases: admin/services/naming/databases.md
-          - Applications: admin/services/naming/applications.md
       - GitLab:
           - Server: admin/gitlab/index.md
           - Integration: admin/gitlab/integration.md
@@ -213,6 +208,12 @@ nav:
           - Publish NPM Packages: developer/contributions/npm-packages.md
           - Upgrade NPM Packages: developer/contributions/npm-upgrade.md
           - Vagrant: developer/vagrant.md
+  - Plan:
+      - Naming Convention:
+          - Rules and Identity: plan/naming/index.md
+          - Messaging: plan/naming/messaging.md
+          - Databases: plan/naming/databases.md
+          - Applications: plan/naming/applications.md
   - Bugs: bugs.md
   - Thanks: thanks.md
   - License:
