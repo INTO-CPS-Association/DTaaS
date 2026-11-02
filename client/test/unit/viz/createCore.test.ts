@@ -1,7 +1,4 @@
-import {
-  clearAccessToken,
-  setAccessToken,
-} from '@into-cps-association/dt-automation';
+import { clearAccessToken, setAccessToken } from 'util/auth/credentials';
 import createCore, { historyFrom, transportsFrom } from 'viz/createCore';
 
 const contents = {

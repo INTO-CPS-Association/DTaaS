@@ -1,15 +1,15 @@
 /**
  * The `git` host service: GitLab under the signed-in user's OAuth session.
  *
- * The client already signs in to GitLab, keeps the access token through
- * `@into-cps-association/dt-automation` and reads the GitLab address from
+ * The client already signs in to GitLab, keeps the access token in the core
+ * credential store (`util/auth/credentials`) and reads the GitLab address from
  * `env.js`. This service reuses both, so an extension never handles a token.
  * Content travels base64 encoded both ways, since a model or a binary asset is
  * not safe inside a JSON string.
  */
 
 import { Gitlab } from '@gitbeaker/rest';
-import { getAccessToken } from '@into-cps-association/dt-automation';
+import { getAccessToken } from 'util/auth/credentials';
 import type {
   CommitResult,
   FileChange,

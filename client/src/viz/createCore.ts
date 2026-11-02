@@ -17,7 +17,7 @@ import type {
   SignalsService,
   VizService,
 } from '@into-cps-association/dtaas-sdk';
-import { getAccessToken } from '@into-cps-association/dt-automation';
+import { getAccessToken } from 'util/auth/credentials';
 import type { LiveTransport } from 'viz/transport';
 import createGatewayTransport from 'viz/gatewayTransport';
 import createGatewayHistory, { type SignalHistory } from 'viz/gatewayHistory';
