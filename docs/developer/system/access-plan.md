@@ -2,186 +2,222 @@
 
 This page plans how a person signs in to DTaaS once and receives, with that
 one sign-in, every access they have: website pages, client extensions,
-workspace tools, servers, platform services and data. The same sign-in
-decides what the person can see and what stays hidden. It is a plan for
-discussion. Nothing on this page is implemented yet and each step becomes
-its own pull request.
+workspace tools, servers, platform services and data. It also plans how
+the system's own credentials are kept and how access ends when a person
+leaves or changes group. It is a plan for discussion. Nothing on this page
+is implemented yet and each step becomes its own pull request.
 
-## How Access Works Today
+The plan covers three layers, each compared below as it is today and as it
+is planned:
 
-1. A person signs in to the website through one identity provider per
-   installation: GitLab (the default), Keycloak or Dex.
-2. The React client runs OAuth 2.0 with PKCE and keeps the access token in
-   the browser.
-3. `traefik-forward-auth` protects the website, the library microservice
-   and the workspaces. The image is `thomseddon/traefik-forward-auth` with
-   the `latest` tag. It has no rules for groups.
-4. Each workspace lists its own tools at `{appURL}/{username}/services`.
-   The Workbench page shows them.
-5. Every client extension and menu page is shown to every signed-in
-   person.
-6. The platform services (GitLab, Grafana, ThingsBoard, RabbitMQ,
-   InfluxDB, MongoDB and PostgreSQL) are not behind the sign-in. Each
-   listens on its own port and has its own accounts, made by
-   `dtaas-services user add` from `config/credentials.csv`. A person
-   signs in to each one separately, with a separate password.
-7. The website does not know which services exist or which ones a person
-   may open.
+1. People: sign-in, roles and what each person sees.
+2. System credentials: the administrator passwords and tokens that the
+   installation itself uses.
+3. Devices and programs: sensors, Telegraf and CI jobs.
 
-## Goals
+```mermaid
+flowchart LR
+  subgraph Today
+    P1[Person] -->|GitLab, Keycloak or Dex| W1[Website]
+    P1 -->|own password| S1[Each service on its own port]
+  end
+  subgraph Planned
+    P2[Person] --> K[Keycloak realm dtaas]
+    K -->|GitLab login| G[GitLab groups]
+    K --> T[Gate on port 443]
+    T --> W2[Website, tools and services by role]
+  end
+```
 
-- One sign-in gives every access the person has, with no second password
-  for any part of DTaaS.
-- One table, under version control, says which group gets which role in
-  every component.
-- The website shows only the pages, extensions, workspace tools and
-  services the person may use.
-- Leaving a group removes the access everywhere when the tokens expire.
-  Signing out ends every session.
-- Every component still checks access itself. Hiding a link is a
-  convenience and not a control
+## Role-Based Access Control
+
+The access model is role-based access control (RBAC): each person is
+assigned one or more roles and each role carries the permissions of the
+people in it
+([NIST RBAC](https://csrc.nist.gov/projects/role-based-access-control)).
+Here a person receives a role by being a member of a GitLab group at a
+level. The roles are `<group>_viewer`, `<group>_member` and
+`<group>_admin`, named as in the naming convention for the platform
+services. One table maps each role to a permission in every component.
+
+Two checks sit next to the roles and are not part of them:
+
+- A workspace belongs to one person, so the gate also checks that the
+  person is its owner or a member of its group.
+- A new person or role starts with no access. Access is granted only by
+  the table
   ([OWASP Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)).
-- Only port 443 open to people, plus MQTT over TLS for devices.
 
-## What the Sign-In Covers
+## Layer 1: People
 
-| Component                      | Examples                                          | How it trusts the sign-in                        |
-| :----------------------------- | :------------------------------------------------ | :----------------------------------------------- |
-| Website pages                  | Library, Digital Twins, Workbench, Account        | Session held by a website backend                |
-| Client extensions              | Building Models, visualisation                    | Declared roles, calls carry the person's token   |
-| Workspace tools                | JupyterLab, VS Code, desktop over VNC, terminal   | The gate checks owner or group of the workspace  |
-| Platform servers               | Library, runner, logger, signals gateway          | The gate and a token for that server             |
-| GitLab                         | Twins, projects, CI runs                          | OpenID Connect sign-in through the provider      |
-| Grafana                        | Dashboards                                        | Generic OAuth, roles from the token              |
-| ThingsBoard                    | Devices, dashboards                               | OAuth 2.0 with a custom mapper                   |
-| RabbitMQ                       | Management, AMQP, MQTT                            | OAuth 2.0 plugin, the token as password          |
-| PostgreSQL                     | Twin databases                                    | OAuth with a validator module                    |
-| InfluxDB, MongoDB              | Time series, documents                            | Short-lived accounts made from the person's roles |
-| Devices and programs           | Sensors, Telegraf, CI jobs                        | Their own accounts, never a person's             |
+| Topic        | Today                                                         | Planned                                                       |
+| :----------- | :------------------------------------------------------------ | :------------------------------------------------------------ |
+| Sign-in      | Website through GitLab, Keycloak or Dex. Each service has its own accounts and passwords | One sign-in through Keycloak, with GitLab as the login. No second password |
+| Roles        | None. Each person owns a private space in each service        | RBAC by group, from one access table under version control   |
+| What is shown | Every page and extension to every signed-in person           | Only what the person's roles allow. Each component checks again |
+| Tokens       | Held in the browser                                           | Held by a website backend, short-lived, one audience each     |
+| Gate         | `thomseddon/traefik-forward-auth:latest`, with no group rules | One maintained forward-auth proxy that checks the group       |
+| Ports        | Each service listens on its own port                          | Port 443 for people, plus MQTT over TLS for devices           |
 
-### Sources for Each Service
+Today `dtaas-services user add` reads `config/credentials.csv` and makes
+one account per person in each service. RabbitMQ gives that account
+configure, write and read on its own virtual host. MongoDB gives
+`readWrite` on its own database and PostgreSQL makes it the owner of its
+own database. Two people of the same project cannot share a virtual host,
+bucket or database without manual work by an administrator.
 
-- GitLab Free self-managed accepts an external OpenID Connect provider such
-  as Keycloak
+### The Access Table
+
+| Component              | `<group>_viewer`       | `<group>_member`       | `<group>_admin`        |
+| :--------------------- | :--------------------- | :--------------------- | :--------------------- |
+| Website pages          | Library, Digital Twins | All pages of the group | All pages of the group |
+| Client extensions      | View only              | Use                    | Use and configure      |
+| Workspace tools        | None                   | Own workspace          | Own workspace          |
+| GitLab group           | Reporter               | Developer              | Maintainer             |
+| Grafana folder         | Viewer                 | Editor                 | Admin                  |
+| ThingsBoard customer   | Read-only user         | Customer user          | Customer admin         |
+| RabbitMQ vhost         | Read                   | Read and write         | Configure              |
+| Databases of the group | Read                   | Read and write         | Owner                  |
+
+The levels are a first proposal for the team to decide.
+
+### How Each Component Trusts the Sign-In
+
+| Component           | How it trusts the sign-in                                |
+| :------------------ | :------------------------------------------------------- |
+| Website pages       | Session held by a website backend                        |
+| Client extensions   | Declared roles, calls carry the person's token           |
+| Workspace tools     | The gate checks owner or group of the workspace          |
+| Platform servers    | The gate and a token for that server                     |
+| GitLab              | OpenID Connect sign-in through the provider              |
+| Grafana             | Generic OAuth, roles from the token                      |
+| ThingsBoard         | OAuth 2.0 with a custom mapper                           |
+| RabbitMQ            | OAuth 2.0 plugin, the token as password                  |
+| PostgreSQL          | OAuth with a validator module                            |
+| InfluxDB, MongoDB   | Short-lived accounts made from the person's roles        |
+
+- GitLab Free self-managed accepts Keycloak as an OpenID Connect provider
   ([GitLab OpenID Connect](https://docs.gitlab.com/administration/auth/oidc/)).
-- Grafana maps a claim in the token to a role with `role_attribute_path`
+  GitLab's ID token carries only `groups_direct`
+  ([GitLab as provider](https://docs.gitlab.com/integration/openid_connect_provider/)),
+  so Keycloak reads the groups and puts the roles in its tokens.
+- Grafana maps a claim to a role with `role_attribute_path`
   ([Grafana generic OAuth](https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/)).
-  Team sync is an Enterprise feature, so teams are made by provisioning.
-- ThingsBoard signs in with OAuth 2.0 and maps the token to a tenant,
-  customer and user with a mapper
+- ThingsBoard maps the token to a tenant, customer and user
   ([ThingsBoard OAuth 2.0](https://thingsboard.io/docs/user-guide/oauth-2-support/)).
-- RabbitMQ reads the scopes in the token. AMQP and MQTT clients pass the
-  token as the password and the management interface signs in with the
-  authorization code flow
+- RabbitMQ reads permissions from the token scopes and maps roles to
+  scopes with `scope_aliases`
   ([RabbitMQ OAuth 2.0](https://www.rabbitmq.com/docs/oauth2)).
-- PostgreSQL 18, the version DTaaS installs, accepts OAuth bearer tokens.
-  It checks them with a validator module chosen for the provider
+- PostgreSQL 18 accepts OAuth bearer tokens through a validator module
   ([PostgreSQL OAuth](https://www.postgresql.org/docs/18/auth-oauth.html)).
-- MongoDB supports OpenID Connect only in the Enterprise edition
-  ([MongoDB OIDC](https://www.mongodb.com/docs/manual/core/oidc/security-oidc/)).
-  InfluxDB 2 OSS has no OpenID Connect sign-in in its documentation. Both
-  therefore receive short-lived accounts, made for the person from their
-  roles and removed when they expire.
+- MongoDB has OpenID Connect only in Enterprise
+  ([MongoDB OIDC](https://www.mongodb.com/docs/manual/core/oidc/security-oidc/))
+  and the InfluxDB 2 OSS documentation describes none.
 
-## Target Design
+## Layer 2: System Credentials
 
-### One Identity Provider
+| Topic              | Today                                                       | Planned                                                       |
+| :----------------- | :---------------------------------------------------------- | :------------------------------------------------------------ |
+| Administrator passwords | `config/services.env`, copied by hand from a template that ships with passwords filled in | Random passwords generated at installation |
+| File permissions   | `services.env` keeps the mode of the copy. Tokens and changed passwords are written with mode 600 | Every secret file written with mode 600 |
+| Containers         | Passwords passed as environment variables, readable with `docker inspect` | Compose secrets mounted as files, through `_FILE` variables where the image supports them |
+| Commands           | `rabbitmqctl add_user` and `influx user create` receive the password as an argument | Passwords passed through standard input |
+| Rotation           | `user reset-password` for ThingsBoard and GitLab only       | One `secret rotate` command per service                       |
 
-Keycloak runs one realm, `dtaas`, with GitLab as the login behind it.
-Every component is a client of that realm. A person signs in once and the
-Keycloak session signs them in to every component they open.
+Compose mounts each secret at `/run/secrets/<name>` and keeps it out of
+the environment. The `_FILE` variables are a convention of some images,
+such as the PostgreSQL image
+([Docker Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/)).
+Rotation is automated because manual rotation leads to mistakes
+([OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)).
 
-GitLab's ID token carries only `groups_direct` and further group claims
-come from its userinfo endpoint
-([GitLab as OpenID Connect provider](https://docs.gitlab.com/integration/openid_connect_provider/)).
-Keycloak reads the GitLab groups and puts the roles in the tokens it
-issues.
+A secrets manager is not part of the first steps. OpenBao, the open fork
+of HashiCorp Vault, could issue the short-lived database accounts of
+layer 1, since its database engine creates accounts with a lease
+([OpenBao databases](https://openbao.org/docs/secrets/databases/)). It is
+one more service to run, with a seal key and snapshots to keep, so it is
+listed as a decision.
 
-### One Access Table
+## Layer 3: Devices and Programs
 
-One file in the repository maps each group and level to a role in every
-component. Keycloak and the services are configured from it, so a change
-of access is a reviewed commit.
+| Topic    | Today                                    | Planned                                                    |
+| :------- | :--------------------------------------- | :--------------------------------------------------------- |
+| Accounts | A person's account, made from the CSV   | Program accounts `<group>_<purpose>` that belong to the group |
+| Secrets  | Kept wherever the site keeps them        | Mounted as files, never in images or repositories          |
+| Tokens   | None                                     | Client credentials grant from Keycloak where the service accepts tokens |
 
-| Component          | `<group>_viewer`          | `<group>_member`             | `<group>_admin`            |
-| :----------------- | :------------------------ | :--------------------------- | :------------------------- |
-| Website pages      | Library, Digital Twins    | All pages of the group       | All pages of the group      |
-| Client extensions  | View only                 | Use                          | Use and configure          |
-| Workspace tools    | None                      | Own workspace                | Own workspace              |
-| GitLab group       | Reporter                  | Developer                    | Maintainer                 |
-| Grafana folder     | Viewer                    | Editor                       | Admin                      |
-| ThingsBoard customer | Read-only user          | Customer user                | Customer admin             |
-| RabbitMQ vhost     | Read                      | Read and write               | Configure                  |
-| Databases of the group | Read                  | Read and write               | Owner                      |
+## When a Person Joins, Leaves or Changes Group
 
-The role names follow the naming convention for the platform services.
-The levels in this table are a first proposal for the team to decide.
+The installation acts on every departure and transfer. It disables the
+account within a period the operators set
+([NIST SP 800-53 AC-2](https://www.stigviewer.com/controls/nist-800-53/AC-2)).
 
-### One Access Profile
+| Event                     | Today                                              | Planned                                                     |
+| :------------------------ | :------------------------------------------------- | :---------------------------------------------------------- |
+| Joins                     | A row in `credentials.csv`, then `user add`        | Added to a GitLab group at a level                          |
+| Leaves                    | Accounts removed by hand in each service. No command exists | Blocked in GitLab or removed from the group. Tokens expire within minutes |
+| Changes group             | No groups exist                                    | Moved to the new group. Roles change at the next token      |
+| Partner with an end date  | No end date                                        | Membership with an expiry date                              |
+| An administrator leaves   | Every administrator password stays known           | `secret rotate` for every service                           |
 
-A small service behind the gate answers at `{appURL}/platform/access`. It
-reads who is asking from the session and returns, for every component,
-whether the person may use it, with which role and the link. It checks
-that each service answers before listing it.
+Signing out of Keycloak does not revoke access tokens already issued, so
+they stay valid until they expire
+([Keycloak sessions](https://docs.redhat.com/en/documentation/red_hat_build_of_keycloak/26.2/html/server_administration_guide/managing-user-sessions)).
+Tokens therefore live for minutes. Resources belong to the group, so the
+data stays when a person leaves.
 
-The website builds its menu, the extension list, the Workbench tools and
-the services list from this one answer. A client extension declares the
-roles it needs and the host leaves it out for a person without them.
+## What Changes for Each Role
 
-### Tokens Stay on the Server
-
-The website gets a backend that holds the tokens. The browser holds only
-an `HttpOnly`, `Secure` and `SameSite` cookie
-([RFC 10017](https://www.rfc-editor.org/rfc/rfc10017.html)). When the
-website or an extension calls a server, the backend exchanges the
-person's token for one meant only for that server. Keycloak supports this
-standard token exchange by default
-([Keycloak token exchange](https://www.keycloak.org/securing-apps/token-exchange)).
-Every token is short-lived and has one audience
-([RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html)).
-
-### One Gate
-
-Traefik sends every request through one maintained forward-auth proxy
-that checks the session and the group. The databases and the broker's
-management port are reached only through the services, never from
-outside.
-
-### Devices and Programs
-
-Devices, Telegraf and CI jobs use program accounts named
-`<group>_<purpose>`, with only the permissions their purpose needs.
-Where a service accepts tokens, a program gets one from Keycloak with the
-client credentials grant. Their secrets are mounted as files, never put
-in images or repositories.
+| Who                  | What changes                                                    |
+| :------------------- | :-------------------------------------------------------------- |
+| Operator             | Edits the access table and group memberships, runs `secret rotate` |
+| Researcher           | Signs in once and sees only the pages, tools and services of their groups |
+| Partner site         | Reaches the broker over MQTT with TLS on one port, with a program account |
+| Device               | Uses a program account of its group, never a person's          |
 
 ## Steps
 
 Each step is one pull request and can be reviewed on its own.
 
-1. Write the access table and the group and role names.
-2. Pin the forward-auth image to a digest, or replace it with a
+1. Generate random administrator passwords, write secret files with mode
+   600, pass passwords through standard input and add `user remove`.
+2. Mount the passwords as Compose secrets and add `secret rotate`.
+3. Write the access table and the group and role names.
+4. Pin the forward-auth image to a digest, or replace it with a
    maintained proxy that checks groups.
-3. Add the Keycloak realm `dtaas` with GitLab as the login, in one test
+5. Add the Keycloak realm `dtaas` with GitLab as the login, in one test
    installation.
-4. Sign in to GitLab, Grafana and ThingsBoard through Keycloak.
-5. Add the access profile service and build the website menu, extension
+6. Sign in to GitLab, Grafana and ThingsBoard through Keycloak.
+7. Add the access profile service and build the website menu, extension
    list, Workbench tools and services list from it.
-6. Move the website tokens to a backend, with token exchange for calls to
-   the servers.
-7. Sign in to RabbitMQ with tokens, for people and for MQTT and AMQP
+8. Move the website tokens to a backend, with token exchange for calls to
+   the servers
+   ([Keycloak token exchange](https://www.keycloak.org/securing-apps/token-exchange)).
+9. Sign in to RabbitMQ with tokens, for people and for MQTT and AMQP
    programs.
-8. Sign in to PostgreSQL with tokens, after choosing a validator module.
-9. Add short-lived accounts for InfluxDB and MongoDB.
-10. Close every service port except 443 and MQTT over TLS.
-11. Make signing out end the sessions in every component.
+10. Sign in to PostgreSQL with tokens, after choosing a validator module.
+11. Add short-lived accounts for InfluxDB and MongoDB.
+12. Close every service port except 443 and MQTT over TLS.
+13. Make signing out end the sessions in every component.
 
-## Open Questions
+Steps 1 and 2 change no behaviour for people and need no decision below.
 
-- Does every installation run Keycloak, or only the multi-user ones?
-- Are viewer, member and admin the right levels and who owns the access
-  table?
-- Which validator module does PostgreSQL use and is it maintained?
-- What makes the short-lived InfluxDB and MongoDB accounts and how long
-  do they last?
-- Do devices outside the network keep a separate MQTT account?
+## Decisions
+
+1. Keycloak in every installation, or only in multi-user ones?
+2. GitLab as the login behind Keycloak, or GitLab alone?
+3. Are `viewer`, `member` and `admin` the right levels, is the mapping
+   right and who owns the access table?
+4. A website backend that holds the tokens, which changes the React
+   client?
+5. Pin the current forward-auth proxy, or replace it with one that checks
+   groups, such as oauth2-proxy?
+6. Which PostgreSQL validator module is used and is it maintained?
+7. What makes the short-lived InfluxDB and MongoDB accounts, a small
+   service of DTaaS or OpenBao? How long do they last?
+8. Closing every service port except 443 and MQTT over TLS changes how
+   partner sites reach the broker. Is that acceptable?
+9. Devices outside the network: separate MQTT accounts, or tokens with
+   the client credentials grant?
+10. How long may an account stay active after a person leaves?
+11. The order of the steps.
