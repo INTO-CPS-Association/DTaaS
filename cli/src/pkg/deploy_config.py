@@ -3,7 +3,8 @@
 import re
 from pathlib import Path
 from ._deploy_data import _DEPLOY_FILES, _SECRET_PLACEHOLDERS
-from .constants import USER_PSEUDO_KEY_RE, SECRET_FILENAMES
+from .constants import USER_PSEUDO_KEY_RE
+from .file_modes import set_config_mode
 
 
 def _set_env_value(text, key, value):
@@ -175,16 +176,15 @@ def _write_if_changed(path, old, new):
 def _apply_to_file(path, file_format, values):
     """Apply key/value substitutions to one config file. Returns error or None.
 
-    Secret-bearing files are chmod'd 0600 on every call, not only when this
-    run happened to change their content -- an existing config/.env from
-    before this hardening was added must end up non-world-readable too.
+    The file's config mode (file_modes.set_config_mode) is set on every
+    call, not only when this run happened to change its content, so an
+    installation from an older CLI ends up at the right mode too.
     """
     try:
         content = _decode_editable(path.read_bytes())
         if content is not None:
             _write_if_changed(path, content, _render(content, file_format, values))
-            if path.name in SECRET_FILENAMES:
-                path.chmod(0o600)
+            set_config_mode(path)
     except (OSError, UnicodeDecodeError) as exc:
         return str(exc)
     return None

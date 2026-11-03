@@ -61,6 +61,20 @@ def test_apply_config_chmods_secret_file_even_when_content_is_unchanged(tmp_path
     mock_chmod.assert_called_once_with(0o600)
 
 
+def test_apply_config_chmods_client_js_readable_even_when_unchanged(tmp_path):
+    """config/client.js is chmod'd 0644 on every run, never 0600: the website
+    container reads it as uid 1000 and crashes when it cannot (#1861), and
+    an installation from an older CLI has it at 0600 already."""
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / "client.js").write_text(JS_TEXT)
+    spec = ("config/client.js", "js", {"REACT_APP_CLIENT_ID": "your_client_id_here"})
+
+    with patch.object(Path, "chmod") as mock_chmod:
+        apply_config(str(tmp_path), [spec])
+    mock_chmod.assert_called_once_with(0o644)
+
+
 def test_apply_config_does_not_chmod_non_secret_files(tmp_path):
     """A file outside the secret-filename allowlist (e.g. tls.yml) is left alone."""
     (tmp_path / "tls.yml").write_text("issuer: http://old\n")
