@@ -32,16 +32,31 @@ describe('Config', () => {
     const config = new Config();
     expect(config.get('hostname')).toBe('127.0.0.1');
     expect(config.get('port')).toBe(4004);
-    expect(config.get('cors-allow-origin')).toBe('');
-    expect(config.get('throttle-limit')).toBe(120);
+    expect(config.get('max-payload-bytes')).toBe(65_536);
   });
 
   it('reads YAML', async () => {
-    const filePath = await yamlFile('port: 4100\nthrottle-limit: 10\n');
+    const filePath = await yamlFile('port: 4100\nmax-payload-bytes: 10\n');
     const config = new Config();
     config.loadConfig(filePath);
     expect(config.get('port')).toBe(4100);
-    expect(config.get('throttle-limit')).toBe(10);
+    expect(config.get('max-payload-bytes')).toBe(10);
+  });
+
+  it('reads the file named by SIGNALS_CONFIG_PATH', async () => {
+    process.env.SIGNALS_CONFIG_PATH = await yamlFile('port: 4300\n');
+    expect(new Config().get('port')).toBe(4300);
+  });
+
+  it('reads signals.yaml from the working directory when no file is named', async () => {
+    await yamlFile('port: 4400\n');
+    const cwd = process.cwd();
+    process.chdir(tempDir);
+    try {
+      expect(new Config().get('port')).toBe(4400);
+    } finally {
+      process.chdir(cwd);
+    }
   });
 
   it('lets SIGNALS_* variables override the YAML', async () => {
@@ -50,15 +65,6 @@ describe('Config', () => {
     const config = new Config();
     config.loadConfig(filePath);
     expect(config.get('port')).toBe(4200);
-  });
-
-  it('reads booleans written as words', () => {
-    process.env.SIGNALS_CORS_ALLOW_CREDENTIALS = 'yes';
-    expect(new Config().get('cors-allow-credentials')).toBe(true);
-    process.env.SIGNALS_CORS_ALLOW_CREDENTIALS = 'No';
-    expect(new Config().get('cors-allow-credentials')).toBe(false);
-    process.env.SIGNALS_CORS_ALLOW_CREDENTIALS = 'perhaps';
-    expect(() => new Config()).toThrow();
   });
 
   it('refuses a missing file, unknown keys and a port that is not a number', async () => {

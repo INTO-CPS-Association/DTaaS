@@ -1,5 +1,4 @@
 import { Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 
 export type PlaceholderAnswer = {
   status: 'not-implemented';
@@ -12,7 +11,6 @@ export type PlaceholderAnswer = {
 @Controller('signals')
 export default class SignalsController {
   @Get('health')
-  @SkipThrottle()
   health(): { status: 'ok' } {
     return { status: 'ok' };
   }

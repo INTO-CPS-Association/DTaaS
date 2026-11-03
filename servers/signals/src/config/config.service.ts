@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { Injectable } from '@nestjs/common';
 import {
@@ -8,16 +9,25 @@ import {
   configSchema,
   envNameOf,
 } from './schema.js';
-import resolveFile from './util.js';
+
+const DEFAULT_CONFIG_FILE = 'signals.yaml';
 
 type RawValues = Record<string, unknown>;
 
+// SIGNALS_CONFIG_PATH names the file and must exist when set. Without it,
+// signals.yaml in the working directory is read when present.
+function selectConfigPath(configPath?: string): string | undefined {
+  const named = configPath ?? process.env.SIGNALS_CONFIG_PATH?.trim();
+  if (named !== undefined && named !== '') return path.resolve(named);
+  const fallback = path.resolve(DEFAULT_CONFIG_FILE);
+  return existsSync(fallback) ? fallback : undefined;
+}
+
 function readYaml(configPath: string): RawValues {
-  const resolvedPath = resolveFile(configPath);
-  const loaded = yaml.load(readFileSync(resolvedPath, 'utf8'));
+  const loaded = yaml.load(readFileSync(configPath, 'utf8'));
   if (loaded === undefined || loaded === null) return {};
   if (typeof loaded !== 'object' || Array.isArray(loaded)) {
-    throw new TypeError(`${resolvedPath} must hold a mapping of keys`);
+    throw new TypeError(`${configPath} must hold a mapping of keys`);
   }
   return loaded as RawValues;
 }
@@ -40,11 +50,8 @@ export default class Config {
   }
 
   loadConfig(configPath?: string): void {
-    const selected = configPath ?? process.env.SIGNALS_CONFIG_PATH;
-    const fromYaml =
-      selected !== undefined && selected.trim() !== ''
-        ? readYaml(selected)
-        : {};
+    const selected = selectConfigPath(configPath);
+    const fromYaml = selected === undefined ? {} : readYaml(selected);
     this.values = configSchema.parse({
       ...fromYaml,
       ...readEnv(process.env),

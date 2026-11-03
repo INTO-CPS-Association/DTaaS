@@ -14,7 +14,7 @@ touches. Each one starts after the previous one is merged.
 | 1 | Design and skeleton | This plan, the service with its configuration, a health route, placeholder `stream` and `range` routes that answer 501, the Docker image and the CI workflow that tests and publishes the package and the image |
 | 2 | Security framework | Sign-in check, access policy, rate limits and the decision log |
 | 3 | API | Live samples from RabbitMQ (AMQP and MQTT) as server-sent events, history from InfluxDB and data sent by the client to a twin |
-| 4 | Developer and deployment | The four docker packages, the administrator pages and the `dtaas-services` commands for the read-only RabbitMQ user and InfluxDB tokens |
+| 4 | Developer and deployment | The four docker packages, the administrator pages and the `dtaas-services` commands for the gateway's RabbitMQ user and read-only InfluxDB tokens |
 
 The client parts follow discussion #1912 on the Extension API and wait for its
 decisions on the name and place of the contract.
@@ -31,8 +31,8 @@ decisions on the name and place of the contract.
 | Who | Where it runs | What it needs |
 | :-- | :------------ | :------------ |
 | A client extension, for example `bim` | The user's browser | Read live and past signals of the twins the user can read and send data to the twins the user can write to |
-| A digital twin in a workspace | A container on the DTaaS server | Read and write signals of its own project, with low delay |
-| A digital twin started by a GitLab runner | A remote machine | Read and write signals of its own project |
+| A digital twin in a workspace | A container on the DTaaS server | Read and write signals of its own group, with low delay |
+| A digital twin started by a GitLab runner | A remote machine | Read and write signals of its own group |
 | A device or an external system, such as the NTU sensors of room 02-24 | A partner's network | Write the signals of one project only |
 | Grafana and ThingsBoard | The DTaaS server | Read the signals of the groups their users belong to, directly from the data services |
 
@@ -74,13 +74,15 @@ ThingsBoard telemetry.
 
 There is one signals gateway for all extensions, as the first common platform
 service. An extension that needs something the gateway does not serve, for
-example a protocol of its own domain, may add its own backend later. A gateway
+example a protocol of its own domain, may add its own backend later. The
+discussion #1912 lists server-side extensions as a non-goal, so this waits for
+a decision there. A gateway
 per extension is not the default, because it would repeat the sign-in and access
 code in each one.
 
 ### Sign-In Through OpenID Connect (G5)
 
-Today the gateway asks GitLab who owns a token. The security pull request keeps
+In #1879 the gateway asks GitLab who owns a token. The security pull request keeps
 that behind the identity interface and adds token validation through OpenID
 Connect discovery and the provider's published keys, so Keycloak and Dex work
 the same way. The token must be issued to the DTaaS client application (its
@@ -89,7 +91,7 @@ of only logging a warning.
 
 ### Access by Group Role (G2, G6, G7)
 
-Today a path is allowed when a `visualisation.json` committed in a GitLab
+In #1879 a path is allowed when a `visualisation.json` committed in a GitLab
 project the person can read declares it. That rule stays as the first policy
 behind `AccessPolicy`. The next policy reads the group roles of the access plan
 (`<group>_viewer`, `<group>_member`, `<group>_admin`). Both are checked on every
@@ -103,17 +105,25 @@ takes effect within a minute.
 | Twin in a workspace | A broker account and an InfluxDB token for the group, limited to the group's virtual host and bucket, mounted as files |
 | Twin on a GitLab runner | The group's broker account in a masked and protected CI/CD variable |
 | Device or external system | One broker account per device or partner, with write permission only on that project's topics |
-| Gateway | A read-only broker account and one read-only InfluxDB token per bucket, from `dtaas-services` |
+| Gateway | A broker account that reads the twins' topics and writes only their command topics (`.../cmd/<command>`) and one read-only InfluxDB token per bucket, from `dtaas-services` |
+
+The gateway's account is the one exception to G4, because it serves every
+user. Its access is limited to reading signals and writing commands and every
+request is checked against the person's own rights first.
 
 ### Virtual Hosts
 
-Each owner keeps a virtual host in RabbitMQ, which separates the data flows of
-different users, as in the access plan. The gateway opens one connection per
-owner virtual host (`vhost-template: "{owner}"`) and keeps that template.
+Two statements from the reviews meet here. The review of #1906 notes that the
+broker forces all MQTT traffic through the virtual host `/`, so MQTT accounts
+are kept apart by topic permissions. The review of this plan states that
+virtual hosts are needed to separate the data flows of users. AMQP can follow
+the second with one virtual host per owner (`vhost-template: "{owner}"`).
+Devices and twins publish over MQTT, so their data stays in `/` until the
+broker setting changes. Which of the two the gateway reads is an open question.
 
 ### One Source of `visualisation.json` (G8)
 
-Today the client reads the file from the user's workspace and the gateway reads
+In #1879 the client reads the file from the user's workspace and the gateway reads
 the copy committed in GitLab. When the two differ, the page asks for paths the
 gateway refuses. The client will read the committed copy, which is the one
 the gateway reads. The page will show which paths were refused.
@@ -122,17 +132,25 @@ the gateway reads. The page will show which paths were refused.
 
 Live samples go out as server-sent events, past samples as JSON over HTTP and
 data sent to a twin as a JSON request. Server-sent events pass through Traefik
-and proxies as ordinary HTTP and reconnect on their own. The skeleton keeps the
-transport behind the stream service, so it can change without changing the
+and proxies as ordinary HTTP. The stream request carries its list of paths in
+the body, so the client reads it with `fetch` and reconnects itself, since the
+browser's `EventSource` only sends GET requests. The API pull request keeps the
+transport behind one service, so it can change without changing the
 extensions.
 
 ## Decided in Review
 
-1. A group keeps its own virtual host, also for the gateway.
+1. Virtual hosts separate the data flows of users.
 2. Dashboards read ThingsBoard and Grafana directly. Only the data exchanged
    in both directions between the client and the twins goes through the
    gateway.
 3. A runner uses a CI/CD variable for now.
+
+## Open Questions
+
+1. MQTT traffic is forced through `/` today. Does MQTT move to one virtual
+   host per user, or does the gateway read `/` with topic permissions per
+   group?
 
 ## Left for Later
 

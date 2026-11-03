@@ -18,10 +18,9 @@ logger microservice. Every route is under `/signals`:
 ```text
 servers/signals/
 ├── src/
-│   ├── main.ts                    # Entry point, reads --config
-│   ├── app.module.ts              # Root module and the rate limit
+│   ├── main.ts                    # Entry point
+│   ├── app.module.ts              # Root module
 │   ├── signals.controller.ts      # The three routes
-│   ├── socket-address-throttler.guard.ts  # Request rate limit per TCP peer
 │   └── config/                    # signals.yaml and SIGNALS_* variables
 ├── config/signals.yaml.sample     # Every key with its default
 └── test/                          # Unit and end-to-end tests

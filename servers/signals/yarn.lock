@@ -716,10 +716,6 @@
   dependencies:
     tslib "2.8.1"
 
-"@nestjs/throttler@6.7.1":
-  version "6.7.1"
-  resolved "https://registry.npmjs.org/@nestjs/throttler/-/throttler-6.7.1.tgz"
-  integrity sha512-gAyY1AkU+cSK5DCjFOB43xax9oakameH4xZa9kAgqBqSBQZgmv3DZylLV8KyZNzOGhceL3kDVtby+CF8VAdmEA==
 
 "@noble/hashes@^1.1.5":
   version "1.8.0"

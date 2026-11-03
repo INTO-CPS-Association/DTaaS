@@ -5,8 +5,8 @@ to the DTaaS client, so that no broker or InfluxDB credential reaches the
 browser. The requirements and the choices behind it are in
 [the plan](../../docs/developer/plans/signals-gateway.md).
 
-This is the skeleton. It has the configuration, the rate limit, the build,
-the tests and the publishing workflow. The routes keep their final paths:
+This is the skeleton. It has the configuration, the build, the tests and
+the publishing workflow. The routes keep their final paths:
 
 | Route | Answer now |
 | :--- | :--- |
@@ -22,8 +22,8 @@ RabbitMQ, MQTT and InfluxDB readers come in the API pull request.
 Copy [`config/signals.yaml.sample`](config/signals.yaml.sample) to
 `signals.yaml` and adjust it. Every key can also be set with an environment
 variable: `SIGNALS_` and the key in upper case with `_` for `-`, for example
-`SIGNALS_PORT`. The service reads `signals.yaml` from the working directory,
-or the file given with `--config` or `SIGNALS_CONFIG_PATH`.
+`SIGNALS_PORT`. The service reads the file named by `SIGNALS_CONFIG_PATH`,
+or `signals.yaml` in the working directory when that variable is not set.
 
 ## Development
 

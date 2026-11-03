@@ -60,7 +60,6 @@
     "@nestjs/common": "11.2.6",
     "@nestjs/core": "11.2.6",
     "@nestjs/platform-express": "11.2.6",
-    "@nestjs/throttler": "6.7.1",
     "cross-env": "10.1.0",
     "js-yaml": "4.3.2",
     "reflect-metadata": "0.2.2",
