@@ -153,7 +153,7 @@ ssl_verify=true
 [frontend]
 react-app-client-id="your_client_id_here"
 react-app-oauth-url="https://gitlab.com"
-logger-url="https://foo.com/logger"
+logger-url="https://intocps.org/logger"
 ...
 ```
 
@@ -198,7 +198,8 @@ for `user add --file`) into `--output-dir`. `--force` overwrites an
 existing `dtaas.toml`. `validate` reports every problem in the file at
 once; see [Validation Rules](cli-config.md#validation-rules). It also
 warns, without failing, when `[frontend].logger-url` is missing,
-empty (remote logging off) or still the template's example.
+empty (remote logging off), still the template's example, or a URL
+whose path does not end in `/logger`.
 
 **Options:**
 
@@ -267,6 +268,9 @@ Copies the project structure for one deployment scenario
 target directory. It also writes the user-workspace templates and the
 `files/template/` skeleton, and, for the types that run the logger,
 creates `logs/logger/` (see [`platform install`](#platform-install)).
+When `dtaas.toml` is present, it is validated for `--type` first (see
+[Validation Rules](cli-config.md#validation-rules)), and a problem
+stops the command before any file is written.
 
 ```bash
 dtaas deployment generate --type <name>

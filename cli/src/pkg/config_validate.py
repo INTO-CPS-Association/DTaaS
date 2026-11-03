@@ -198,6 +198,21 @@ def collect_errors(data, deploy_type=None):
     return errors
 
 
+def require_valid(data, deploy_type):
+    """Raise ValueError listing every dtaas.toml problem for *deploy_type*, if any.
+
+    Used by the commands that write the values into a deployment
+    ('deployment generate', 'platform update --config'). Scoped to that
+    deployment type, so an unrelated leftover section (e.g. a
+    [workspace-secure-server] block in a secure-server deployment) does not
+    block it.
+    """
+    errors = collect_errors(data, deploy_type)
+    if errors:
+        listed = "\n".join(f"- {err}" for err in errors)
+        raise ValueError(f"Invalid dtaas.toml:\n{listed}")
+
+
 def validate_config(output_dir):
     """Validate dtaas.toml in *output_dir*, returning (problems, warnings).
 

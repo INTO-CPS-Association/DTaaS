@@ -1,13 +1,29 @@
-"""Tests for collect_errors and validate_config as a whole."""
+"""Tests for collect_errors, require_valid and validate_config as a whole."""
 
 import pytest
-from src.pkg.config_validate import collect_errors, validate_config
+from src.pkg.config_validate import collect_errors, require_valid, validate_config
 from src.pkg.project import generate_config
 
 
 def test_valid_config_has_no_errors(base):
     """A fully populated, correct config produces no problems."""
     assert collect_errors(base) == []
+
+
+def test_require_valid_raises_with_field_messages():
+    """require_valid surfaces every dtaas.toml problem as a field-level message."""
+    with pytest.raises(ValueError) as exc:
+        require_valid({"common": {}}, "secure-server")
+    message = str(exc.value)
+    assert message.startswith("Invalid dtaas.toml:\n- ")
+    assert "git-repo is missing" in message
+    assert "common.server-dns is missing" in message
+
+
+def test_require_valid_accepts_a_valid_config(base):
+    """A valid config passes; a leftover section of another type is ignored."""
+    base["workspace-secure-server"] = {"keycloak-issuer-url": "not a url"}
+    require_valid(base, "secure-server")
 
 
 def test_non_dict_sections_report_missing_keys():

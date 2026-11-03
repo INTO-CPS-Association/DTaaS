@@ -1,7 +1,30 @@
 """Tests for the deploy_config value helpers: lookup, checks and setters."""
 
+import ast
+import re
 import pytest
-from src.pkg.deploy_config import _set_yaml_value, _toml_lookup, _validate_value
+from src.pkg.deploy_config import (
+    _set_js_value,
+    _set_yaml_value,
+    _toml_lookup,
+    _validate_value,
+)
+
+JS_TEXT = (
+    "    LOGGER_URL: 'https://intocps.org/logger',\n"
+    "    REACT_APP_URL: 'https://myserver.com',\n"
+)
+# Python reads \\ and \' in a single quoted literal as JS does.
+JS_VALUES = [
+    "https://myserver.com/logger",
+    "",
+    "it's",
+    "a\\b",
+    "ends\\",
+    "\\'",
+    "https://a/x\\', REACT_APP_URL: (globalThis.pwned=1)//",
+]
+JS_IDS = ["url", "empty", "quote", "backslash", "trailing", "escaped", "injection"]
 
 
 YAML_TEXT = (
@@ -24,13 +47,24 @@ def test_validate_value_rejects_newline():
         _validate_value("value\nINJECTED=1")
 
 
-def test_toml_lookup_tells_missing_from_empty():
-    """A missing section key is None, an empty one '', so an entry can treat
-    an empty value as a choice of its own (logger-url = "" turns logging off)."""
-    toml = {"frontend": {"logger-url": ""}}
-    assert _toml_lookup(toml, "frontend.logger-url") == ""
-    assert _toml_lookup(toml, "frontend.react-app-client-id") is None
-    assert _toml_lookup(toml, "localhost.client-id") is None
+@pytest.mark.parametrize("value", JS_VALUES, ids=JS_IDS)
+def test_set_js_value_writes_one_string_literal(value):
+    """Whatever the value holds, the key gets one JS string literal that
+    reads back as that value, and the next key is left as it was."""
+    first, second = _set_js_value(JS_TEXT, "LOGGER_URL", value).splitlines()
+    literal = re.fullmatch(r"    LOGGER_URL: (.*),", first)
+    assert literal
+    assert ast.literal_eval(literal.group(1)) == value
+    assert second == "    REACT_APP_URL: 'https://myserver.com',"
+
+
+@pytest.mark.parametrize("value", JS_VALUES, ids=JS_IDS)
+def test_set_js_value_replaces_its_own_output(value):
+    """A second write replaces all of the first one, escapes included, so a
+    repeated 'platform update --config' never leaves a tail behind."""
+    once = _set_js_value(JS_TEXT, "LOGGER_URL", value)
+    again = _set_js_value(once, "LOGGER_URL", "https://myserver.com/logger")
+    assert again == _set_js_value(JS_TEXT, "LOGGER_URL", "https://myserver.com/logger")
 
 
 def test_toml_lookup_returns_empty_for_out_of_range_index():

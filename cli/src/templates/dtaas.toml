@@ -86,7 +86,7 @@ react-app-oauth-url="https://gitlab.com"
 # Logger microservice URL, including the /logger route prefix. Leave it
 # empty ("") to turn remote logging off. Without this key, the website uses
 # the logger of this installation, http(s)://<server-dns>/logger.
-logger-url="https://foo.com/logger"
+logger-url="https://intocps.org/logger"
 
 [localhost]
 default-user="user1"

@@ -230,13 +230,14 @@ Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 `[secure-server-gitlab]`, `[workspace-localhost]` and
 `[workspace-secure-server]`. Each is checked only when its section is
 present. `config validate` checks every section in the file, while
-`platform update --config` checks only the section of the installed
-deployment type, plus `[frontend]`.
+`deployment generate` and `platform update --config` check only the
+section of the type they write, plus `[frontend]`. Both list every
+problem and stop before they write a file.
 
 `config validate` also prints warnings, which do not make the file
-invalid: a `[frontend]` section whose `logger-url` is missing, empty or
-still the template's example gets one, see
-[Remote logging](#remote-logging).
+invalid: a `[frontend]` section whose `logger-url` is missing, empty,
+still the template's example, or a URL whose path does not end in
+`/logger` gets one, see [Remote logging](#remote-logging).
 
 For `workspace-secure-server`, no command writes `client-id` or
 `auth-authority` into `config/client.js`; `auth-authority` is only
@@ -245,7 +246,9 @@ checked to be a URL. Edit
 hand.
 
 `path` and `certs-src` are checked against the local filesystem, so
-run `validate` on the deployment host. If a check fails with a
+run `validate` and `deployment generate` on the deployment host. A
+fresh `dtaas.toml` fails both until `path` names an existing
+directory, and `certs-src` does too or is removed. If a check fails with a
 permission error (for example, `certs-src` under the root-owned
 `/etc/letsencrypt`), the CLI prints the command to re-run with
 `sudo`.
@@ -257,8 +260,9 @@ ignored, but any value that is present is still validated.
 
 ## Configuration substitution
 
-When `dtaas.toml` is present, `deployment generate` substitutes its
-values into the generated files. `platform update --config` repeats
+When `dtaas.toml` is present, `deployment generate` validates it for
+`--type` (see [Validation rules](#validation-rules)), then substitutes
+its values into the generated files. `platform update --config` repeats
 the same substitution on an installed deployment. Each `--type` reads
 from its matching top-level section in `dtaas.toml`. Depending on the
 type, values go into the dotenv files (`config/.env`,
@@ -290,10 +294,12 @@ The website sends workflow logs to the
 | `logger-url = "<url>"`               | `<url>`, which must include the `/logger` route prefix                  |
 | `logger-url = ""`                    | Empty: remote logging is off, and the website hides the option          |
 
-The template ships `logger-url = "https://foo.com/logger"`, an example
+The template ships `logger-url = "https://intocps.org/logger"`, an example
 to replace. `deployment generate` and `config validate` warn while the
-key is missing, empty, or still that example, so you know what the
-website does:
+key is missing, empty, still that example, or a URL whose path does not
+end in `/logger`, so you know what the website does. `deployment
+generate` also warns when `secure-server` or `secure-server-gitlab` get
+an `http://` logger, which browsers block as mixed content:
 
 ```text
 Warning: frontend.logger-url is not set
@@ -305,8 +311,16 @@ Warning: frontend.logger-url is empty
   the option. Set logger-url in dtaas.toml to turn it on.
 
 Warning: frontend.logger-url is the template example
-  Logs go to https://foo.com/logger, which is not your logger.
+  Logs go to https://intocps.org/logger, which is not your logger.
   Set logger-url to your logger, or to "" to turn remote logging off.
+
+Warning: frontend.logger-url does not end in /logger
+  The logger serves its routes under /logger, so https://logs.example.com/ may
+  not reach it. Ignore this if a proxy in front of it adds the path.
+
+Warning: frontend.logger-url is http on an https site
+  Browsers block the website's requests to http://logs.example.com/logger (mixed
+  content), so no logs arrive. Use an https URL for the logger.
 ```
 
 Set `logger-url` to a URL of your own to silence the warning.

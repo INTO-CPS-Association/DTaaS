@@ -12,12 +12,20 @@ def _set_env_value(text, key, value):
     return pattern.sub(lambda _: f"{key}={value}", text)
 
 
+# Backslash and quote, escaped in one pass so no escape is escaped again.
+_JS_ESCAPES = str.maketrans({"\\": "\\\\", "'": "\\'"})
+
+
 def _set_js_value(text, key, value):
-    """Set the quoted value of ``key`` in a window.env object literal."""
-    pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')[^']*(')")
-    return pattern.sub(
-        lambda m: m.group(1) + value.replace("'", "\\'") + m.group(2), text
-    )
+    """Set the quoted value of ``key`` in a window.env object literal.
+
+    The new value is escaped, so it stays one string literal whatever it
+    holds; the old one is matched past its escapes, so a rewrite replaces
+    all of it.
+    """
+    pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')(?:\\.|[^'\\])*(')")
+    escaped = value.translate(_JS_ESCAPES)
+    return pattern.sub(lambda m: m.group(1) + escaped + m.group(2), text)
 
 
 def _set_yaml_value(text, key, value):
@@ -51,16 +59,11 @@ def _user_value(users, key):
 
 
 def _toml_lookup(toml_data, source):
-    """Resolve a ``section.key`` source string to its value in toml_data.
-
-    A missing key gives None, so an empty value can be told apart from it;
-    the [[users]] pseudo-keys give '' for both.
-    """
+    """Resolve a ``section.key`` source string to its value in toml_data."""
     section, _, key = source.partition(".")
     if section == "users":
         return _user_value(toml_data.get("users", []), key)
-    value = toml_data.get(section, {}).get(key)
-    return None if value is None else str(value).strip()
+    return str(toml_data.get(section, {}).get(key, "")).strip()
 
 
 def _validate_value(value):
@@ -69,27 +72,26 @@ def _validate_value(value):
         raise ValueError(f"Config value must not contain newlines: {value!r}")
 
 
+def _formatted(toml_data, source, fmt):
+    """Return *fmt* filled with the value of *source*, or None when it is unset."""
+    value = _toml_lookup(toml_data, source)
+    return fmt.format(value) if value else None
+
+
 def _entry_text(toml_data, source, fmt):
     """Return the text one entry writes, or None when it leaves its key alone.
 
     *fmt* is a format string, which skips a missing or empty value, or a
-    {value: text} map, which writes only the values it lists (a missing key
-    never matches).
+    function of toml_data that returns the text (None for no change).
     """
-    value = _toml_lookup(toml_data, source)
-    if isinstance(fmt, dict):
-        return fmt.get(value)
-    if not value:
-        return None
-    _validate_value(value)
-    return fmt.format(value)
+    text = fmt(toml_data) if callable(fmt) else _formatted(toml_data, source, fmt)
+    if text is not None:
+        _validate_value(text)
+    return text
 
 
 def _build_entry_values(entries, toml_data):
-    """Build the key->value substitution dict for one file's entries.
-
-    Entries apply in order, so a later entry for a key replaces an earlier one.
-    """
+    """Build the key->value substitution dict for one file's entries."""
     values = {}
     for file_key, source, fmt in entries:
         text = _entry_text(toml_data, source, fmt)

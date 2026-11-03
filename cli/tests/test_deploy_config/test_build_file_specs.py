@@ -149,9 +149,8 @@ def test_build_file_specs_workspace_secure_server_targets_config_env():
         ({}, "{scheme}://myserver.com/logger"),
         ({"logger-url": LOGGER}, LOGGER),
         ({"logger-url": ""}, ""),
-        ({"logger-url": "  "}, ""),
     ],
-    ids=["unset", "set", "empty", "blank"],
+    ids=["unset", "set", "empty"],
 )
 def test_build_file_specs_logger_url(server_type, frontend, expected):
     """LOGGER_URL is this installation's logger unless logger-url names

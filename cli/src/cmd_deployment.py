@@ -9,7 +9,11 @@ import click
 from .pkg import project as projectPkg
 from .pkg import host_dirs as hostDirsPkg
 from .pkg.constants import DEPLOY_TYPES
-from .cmd_deploy_utils import VerticalChoicesCommand, apply_deploy_config
+from .cmd_deploy_utils import (
+    VerticalChoicesCommand,
+    apply_deploy_config,
+    validate_deploy_config,
+)
 from .cmd_options import target_dir_option, force_option
 
 
@@ -45,10 +49,12 @@ def generate(deploy_type, output_dir, force):
     Copies docker-compose.yml and supporting files for the chosen --type, the
     user-management templates, and the workspace skeleton into the target
     directory, substituting values from dtaas.toml when present. dtaas.toml is
-    generated separately with 'dtaas config generate'.
+    generated separately with 'dtaas config generate'. A dtaas.toml that fails
+    validation for --type stops the command before any file is written.
 
     Next: edit generated files if needed, then run 'dtaas platform install'.
     """
+    validate_deploy_config(deploy_type, output_dir)
     try:
         projectPkg.generate_deploy_project(deploy_type, output_dir, force)
         projectPkg.generate_user_templates(output_dir, force)
