@@ -46,6 +46,11 @@ This default configuration works when an account is available on
 <https://gitlab.com>. Modify this file as needed for
 environment-specific values.
 
+The container runs as the `node` user (uid 1000) from version 1.7.2 on,
+so `env.js` must be readable by all users (`chmod 644 env.js`). When it
+is not, the website does not load: its scripts fail in the browser and
+the server stops on the first request for `env.js`.
+
 ### Run
 
 Use the following commands to start and stop the container:

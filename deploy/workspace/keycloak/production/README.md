@@ -171,6 +171,18 @@ rule.user3_access.whitelist = user3@localhost
 - Test OAuth2 service:
   `docker compose --env-file config/.env logs traefik-forward-auth`
 
+### Website Does Not Load
+
+**Problem**: The page opens, but its scripts fail in the browser console
+(`NS_ERROR_CORRUPTED_CONTENT`, or blocked for a disallowed MIME type)
+and `env.js` returns `502 Bad Gateway`
+
+**Solutions**:
+
+- Make `config/client.js` readable for the website container, which
+  runs as uid 1000 and stops when it cannot read the file:
+  `chmod 644 config/client.js` (no restart is needed)
+
 ### Port Conflicts
 
 **Problem**: Ports 80 or 443 already in use

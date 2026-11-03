@@ -67,3 +67,10 @@ by default, and users turn them on in their account settings. When
 `LOGGER_URL` is empty or missing, enabled logging keeps events in the
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
+
+The `intocps/dtaas-web` image (1.7.2 and later) runs as uid 1000 and
+serves the mounted `env.js` to every browser, so the file on the host
+(for example `config/client.js`) must be readable by all users, such as
+mode `0644`. It holds no secrets. When the container cannot read it,
+the website does not load: its scripts fail in the browser and `env.js`
+returns `502 Bad Gateway`.

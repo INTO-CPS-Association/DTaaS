@@ -313,6 +313,12 @@ the `certs/` directory). See
 for details. If `dtaas.toml` is not found, the command prints a note
 and the generated files keep their placeholder values.
 
+On Linux and macOS the command also sets `config/.env` and
+`config/conf.server` to `0600` and `config/client.js` to `0644`: the
+website container (`intocps/dtaas-web` 1.7.2 and later) runs as uid
+1000 and must read `config/client.js`, or the website does not load.
+See [File modes](cli-config.md#file-modes).
+
 !!! tip "Verify the Docker image tag"
     `users.server.yml` and `users.server.secure.yml` pin a workspace
     image tag (e.g. `intocps/workspace:main-56c6f68`). Check
@@ -602,7 +608,10 @@ dtaas platform update --config --output-dir ./my-server
 refuses to apply an invalid file. A second run with no `dtaas.toml`
 changes reports `No configuration changes` and restarts nothing. If
 secrets are still template placeholders after the update, the command
-lists them.
+lists them. Each run also sets the mode of the files it writes values
+into, so for the server types and `localhost` a `config/client.js` left
+at `0600` by an older CLI becomes `0644` again (see
+[File modes](cli-config.md#file-modes)).
 
 **Options:**
 
