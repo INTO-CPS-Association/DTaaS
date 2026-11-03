@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 from mkdocs_hooks import find_unresolved_lfs_files, format_unresolved_files
+from page_cleanup import LOCAL_MATHJAX, clean_pages
 
 DEVELOPMENT = "development"
 BUILT_PDF = Path("pdf") / "DTaaS-docs.pdf"
@@ -23,9 +24,12 @@ LANDING_ASSETS = (
     Path("assets") / "fonts" / "inter-latin-400-normal.woff2",
     Path("assets") / "fonts" / "inter-latin-700-normal.woff2",
 )
+# The MathJax the cleaned pages of old versions load, at the site root.
+MATHJAX_ASSETS = (*LOCAL_MATHJAX, Path("assets") / "js" / "mathjax-3.2.2" / "LICENSE")
 # Replaced by the current year when the landing page is installed.
 YEAR_MARK = "{{ year }}"
 RELEASE_TAG = re.compile(r"^v(\d+)\.(\d+)(?:\.\d+)*$")
+VERSION_NAME = re.compile(r"version\d+\.\d+")
 # GitHub Pages refuses sites over 1 GB; stop with room to spare.
 MAX_SITE_BYTES = 900 * 1024**2
 MB = 1024**2
@@ -97,41 +101,6 @@ def reject_oversized_site(pages_dir: Path) -> int:
     return size
 
 
-# polyfill.io changed owner in 2024 and served malicious code. The versions
-# published before then load it, so every assembly strips it from the site,
-# and a release commits the cleaned pages back to webpage-docs.
-POLYFILL_SOURCES = ('src="https://polyfill.io/', 'src="https://cdn.polyfill.io/')
-
-
-def is_polyfill_tag(line: str) -> bool:
-    """Whether a line is a script element that loads polyfill.io."""
-    tag = line.strip()
-    return (
-        tag.startswith("<script")
-        and tag.endswith("</script>")
-        and any(source in tag for source in POLYFILL_SOURCES)
-    )
-
-
-def remove_polyfill(pages_dir: Path) -> int:
-    """Remove every polyfill.io script line from the site; return the pages fixed."""
-    root = pages_dir.resolve()
-    fixed = 0
-    for found in root.rglob("*.html"):
-        # A symbolic link in the checkout could lead out of the site, and
-        # nothing outside it is rewritten.
-        page = found.resolve()
-        if not page.is_relative_to(root):
-            continue
-        lines = page.read_text("utf-8").splitlines(keepends=True)
-        kept = [line for line in lines if not is_polyfill_tag(line)]
-        if len(kept) != len(lines):
-            with page.open("w", encoding="utf-8") as cleaned:
-                cleaned.writelines(kept)
-            fixed += 1
-    return fixed
-
-
 def require_release_row(landing_page: Path, version: str) -> None:
     """Refuse a release whose version has no row on the landing page."""
     if f'href="{version}/index.html"' not in landing_page.read_text("utf-8"):
@@ -142,7 +111,13 @@ def require_release_row(landing_page: Path, version: str) -> None:
 
 
 def install_version(site_dir: Path, pages_dir: Path, version: str) -> None:
-    """Replace the version's directory and PDF with the built ones."""
+    """Replace the version's directory and PDF with the built ones.
+
+    The version names a directory that is deleted first, so only the names
+    version_name gives are accepted, and never a path.
+    """
+    if version != DEVELOPMENT and not VERSION_NAME.fullmatch(version):
+        raise PublishError(f"'{version}' is not development or a name like version1.0")
     target = pages_dir / version
     shutil.rmtree(target, ignore_errors=True)
     shutil.copytree(site_dir, target)
@@ -153,15 +128,16 @@ def install_version(site_dir: Path, pages_dir: Path, version: str) -> None:
 
 
 def install_landing_page(docs_dir: Path, pages_dir: Path) -> None:
-    """Copy the landing page and the files it links to into the site root.
+    """Copy the landing page, its files and the MathJax of old pages to the root.
 
-    The copyright line ends at the year the site is published, written in
+    Cleaned pages of old versions load MathJax from the root, since their own
+    directories hold no copy. The copyright line ends at the year the site is published, written in
     place of YEAR_MARK, so it never goes stale.
     """
     landing = (docs_dir / "redirect-page.html").read_text("utf-8")
     landing = landing.replace(YEAR_MARK, str(date.today().year))
     (pages_dir / "index.html").write_text(landing, "utf-8")
-    for asset in LANDING_ASSETS:
+    for asset in LANDING_ASSETS + MATHJAX_ASSETS:
         target = pages_dir / asset
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(docs_dir / asset, target)
@@ -176,6 +152,6 @@ def assemble(site_dir: Path, pages_dir: Path, version: str, docs_dir: Path) -> i
         require_release_row(docs_dir / "redirect-page.html", version)
     install_version(site_dir, pages_dir, version)
     install_landing_page(docs_dir, pages_dir)
-    remove_polyfill(pages_dir)
+    clean_pages(pages_dir)
     reject_lfs_pointers(pages_dir)
     return reject_oversized_site(pages_dir)

@@ -4,8 +4,8 @@
  * Two components display markdown a user wrote, and both built their own
  * Remarkable with `html: true` and passed the result to
  * `dangerouslySetInnerHTML`. An `<img src=x onerror=...>` inside a markdown
- * file therefore reached the DOM and ran, against an origin whose
- * sessionStorage holds the access token.
+ * file therefore reached the DOM and ran, inside the page that holds the
+ * access token.
  *
  * Rendering lives here so a third component cannot reintroduce that by
  * configuring Remarkable itself. `html: false` is what closes it, at the cost

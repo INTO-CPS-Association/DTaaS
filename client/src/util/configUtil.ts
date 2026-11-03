@@ -27,13 +27,25 @@ const urlKeys = [
   'REACT_APP_LOGOUT_REDIRECT_URI',
   'REACT_APP_AUTH_AUTHORITY',
   'LOGGER_URL',
+  'REACT_APP_VIZ_SIGNALS_URL',
 ];
 
-const isConfiguredKey = (key: string): boolean =>
-  key === 'LOGGER_URL'
-    ? Boolean(globalThis.env.LOGGER_URL?.trim()) &&
+// Services checked at their /health endpoint, since their root answers no GET.
+const healthKeys = new Set(['LOGGER_URL', 'REACT_APP_VIZ_SIGNALS_URL']);
+
+// The signals gateway is optional: without it the client shows no live data.
+const isConfiguredKey = (key: string): boolean => {
+  if (key === 'LOGGER_URL') {
+    return (
+      Boolean(globalThis.env.LOGGER_URL?.trim()) &&
       getEffectiveRemoteLoggingEnabled()
-    : true;
+    );
+  }
+  if (key === 'REACT_APP_VIZ_SIGNALS_URL') {
+    return Boolean(globalThis.env.REACT_APP_VIZ_SIGNALS_URL?.trim());
+  }
+  return true;
+};
 
 const configuredKeys = (keys: string[]) => keys.filter(isConfiguredKey);
 
@@ -49,7 +61,7 @@ function appendHealthPath(url: string): string {
   return `${trimTrailingSlashes(url)}/health`;
 }
 
-async function loggerUrlIsReachable(url: string): Promise<ValidationType> {
+async function healthIsReachable(url: string): Promise<ValidationType> {
   const result = await urlIsReachable(appendHealthPath(url));
   return result.error === undefined ? { ...result, value: url } : result;
 }
@@ -71,8 +83,8 @@ function getValidationPromises(): Record<string, Promise<ValidationType>> {
     ...Object.fromEntries(
       configuredKeys(urlKeys).map((key) => [
         key,
-        key === 'LOGGER_URL'
-          ? loggerUrlIsReachable(globalThis.env[key] ?? '')
+        healthKeys.has(key)
+          ? healthIsReachable(globalThis.env[key] ?? '')
           : urlIsReachable(globalThis.env[key] ?? ''),
       ]),
     ),

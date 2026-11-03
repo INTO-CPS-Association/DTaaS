@@ -33,9 +33,10 @@ Non-obvious. Use these rather than guessing a script name.
 
 | Project | Command |
 | :--- | :--- |
-| `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int` |
+| `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int && yarn test:sdk` |
 | `servers/lib` | `yarn build && yarn test:all` |
 | `servers/logger` | `yarn test` |
+| `servers/signals` | `yarn build && yarn test && yarn test:int` |
 | `lib/dt-automation` | `yarn test:unit` |
 | `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
 | `lib/gitlab_common` | `poetry run pytest` |

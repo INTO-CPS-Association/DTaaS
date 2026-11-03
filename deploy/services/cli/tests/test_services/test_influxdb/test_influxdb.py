@@ -78,9 +78,31 @@ def test_execute_setup_steps_success(mocker):
     mock_create.return_value = (True, "")
     mock_fetch.return_value = (True, {"user1": "id1"}, {"org1"}, "")
     mock_setup.return_value = (True, "")
+    mock_tokens = mocker.patch(
+        f"{INFLUXDB_PATH}.setup_signals_tokens", return_value=(True, "")
+    )
     success, error = _execute_setup_steps(mock_file)
     assert success is True
     assert error == ""
+    mock_tokens.assert_called_once_with()
+
+
+def test_execute_setup_steps_skips_tokens_when_orgs_fail(mocker):
+    """No signals token is created when the user orgs could not be set up"""
+    mock_file = mock_open(read_data="username,password\nuser1,pass1\n")()
+    mocker.patch(
+        f"{INFLUXDB_PATH}.create_users_from_credentials", return_value=(True, "")
+    )
+    mocker.patch(
+        f"{INFLUXDB_PATH}._fetch_influxdb_data",
+        return_value=(True, {"user1": "id1"}, set(), ""),
+    )
+    mocker.patch(
+        f"{INFLUXDB_PATH}.setup_user_organizations", return_value=(False, "no org")
+    )
+    mock_tokens = mocker.patch(f"{INFLUXDB_PATH}.setup_signals_tokens")
+    assert _execute_setup_steps(mock_file) == (False, "no org")
+    mock_tokens.assert_not_called()
 
 
 def test_execute_setup_steps_create_users_fails(mocker):

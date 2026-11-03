@@ -1,0 +1,42 @@
+{
+  "preset": "ts-jest/presets/default-esm",
+  "testEnvironment": "node",
+  "transform": {
+    "^.+\\.(t|j)sx?$": [
+      "ts-jest",
+      {
+        "useESM": true
+      }
+    ]
+  },
+  "collectCoverage": true,
+  "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
+  "collectCoverageFrom": ["src/**/*.{ts,js}"],
+  "coveragePathIgnorePatterns": [
+    "node_modules",
+    "./dist",
+    "./src/app.module.ts"
+  ],
+  "extensionsToTreatAsEsm": [".ts"],
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "modulePathIgnorePatterns": [],
+  "coverageDirectory": "<rootDir>/coverage/",
+  "coverageThreshold": {
+    "global": {
+      "branches": 70,
+      "functions": 80,
+      "lines": 80,
+      "statements": 80
+    }
+  },
+  "verbose": true,
+  "testRegex": "./test/.*\\.spec.tsx?$",
+  "testPathIgnorePatterns": ["/node_modules/", "/test/integration/"],
+  "modulePaths": ["<rootDir>", "<rootDir>/src/", "<rootDir>/test/"],
+  "moduleDirectories": ["node_modules", "src", "test"],
+  "rootDir": "./",
+  "roots": ["<rootDir>", "src/", "test/"],
+  "moduleNameMapper": {
+    "^(\\.\\.?\\/.+)\\.jsx?$": "$1"
+  }
+}

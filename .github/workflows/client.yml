@@ -66,6 +66,7 @@ jobs:
         run: |
           yarn test:int
           yarn test:unit
+          yarn test:sdk
           yarn test:coverage:int-unit
 
       - name: Upload unit and integration test coverage to Codecov

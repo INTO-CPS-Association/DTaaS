@@ -1,0 +1,72 @@
+{
+  "name": "@into-cps-association/signals-ms",
+  "version": "0.1.0",
+  "description": "DTaaS signals gateway microservice",
+  "main": "dist/src/main.js",
+  "repository": "https://github.com/into-cps-association/DTaaS.git",
+  "author": "prasadtalasila",
+  "license": "The INTO-CPS Association License",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
+    "check:final": "concurrently -s all -g -n syntax,format,build,test \"yarn syntax\" \"yarn format\" \"yarn build\" \"yarn test\"",
+    "format": "prettier --ignore-path .gitignore --write \"src/**/*.{ts,tsx,css,scss}\" \"test/**/*.{ts,tsx,css,scss}\"",
+    "format:check": "prettier --ignore-path .gitignore --check \"src/**/*.{ts,tsx,css,scss}\" \"test/**/*.{ts,tsx,css,scss}\"",
+    "graph": "npx madge --image src.svg src && npx madge --image test.svg test",
+    "start": "npx cross-env NODE_OPTIONS=--es-module-specifier-resolution=node --experimental-specifier-resolution=node NODE_NO_WARNINGS=1 node dist/src/main.js",
+    "syntax": "npx eslint . --fix",
+    "syntax:check": "npx eslint .",
+    "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
+    "test:e2e": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/e2e",
+    "test:int": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false --verbose=true --testPathIgnorePatterns=/node_modules/ -- test/integration",
+    "test:nocov": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false",
+    "test:unit": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/unit"
+  },
+  "bin": {
+    "signals-ms": "./dist/src/main.js"
+  },
+  "files": [
+    "dist/"
+  ],
+  "prettier": {
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@jest/globals": "30.5.2",
+    "@nestjs/testing": "11.2.6",
+    "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
+    "@types/js-yaml": "4.0.9",
+    "@types/node": "26.6.3",
+    "@types/supertest": "7.2.1",
+    "@typescript-eslint/eslint-plugin": "8.70.1",
+    "@typescript-eslint/parser": "8.70.1",
+    "concurrently": "9.2.4",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jest": "29.16.6",
+    "eslint-plugin-prettier": "5.5.6",
+    "globals": "16.5.0",
+    "jest": "30.5.2",
+    "prettier": "3.9.9",
+    "supertest": "7.3.0",
+    "ts-jest": "29.4.14",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.2.6",
+    "@nestjs/core": "11.2.6",
+    "@nestjs/platform-express": "11.2.6",
+    "@nestjs/throttler": "6.7.1",
+    "amqplib": "2.2.0",
+    "cross-env": "10.1.0",
+    "js-yaml": "4.3.2",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "zod": "4.6.5"
+  }
+}

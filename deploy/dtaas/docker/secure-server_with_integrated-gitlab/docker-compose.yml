@@ -36,8 +36,31 @@ services:
         traefik.http.routers.client.rule=Host(`${SERVER_DNS:-localhost}`)
         && PathPrefix(`/`)
       - "traefik.http.routers.client.tls=true"
-      - "traefik.http.routers.client.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.client.middlewares=traefik-forward-auth,client-headers"
       - "traefik.http.services.client.loadbalancer.server.port=4000"
+      # Security headers of the website. The monaco-editor prefix is where
+      # the editor of the Digital Twins page loads itself from, and
+      # 'wasm-unsafe-eval' lets the Buildings page start its IFC parser.
+      - >-
+        traefik.http.middlewares.client-headers.headers.contentSecurityPolicy=default-src
+        'self';
+        script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        font-src 'self' data: https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/;
+        img-src 'self' data: blob: https:;
+        connect-src 'self' ${OAUTH_URL}/ blob: data:;
+        worker-src 'self' blob:;
+        frame-src 'self'; frame-ancestors 'self';
+        object-src 'none'; base-uri 'self'
+      - "traefik.http.middlewares.client-headers.headers.contentTypeNosniff=true"
+      - >-
+        traefik.http.middlewares.client-headers.headers.referrerPolicy=strict-origin-when-cross-origin
+      - "traefik.http.middlewares.client-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.client-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.common-headers.headers.contentTypeNosniff=true"
+      - >-
+        traefik.http.middlewares.common-headers.headers.referrerPolicy=strict-origin-when-cross-origin
+      - "traefik.http.middlewares.common-headers.headers.stsSeconds=31536000"
     networks:
       - frontend
 
@@ -54,8 +77,33 @@ services:
         traefik.http.routers.logger-ms.rule=Host(`${SERVER_DNS:-localhost}`)
         && PathPrefix(`/logger`)
       - "traefik.http.routers.logger-ms.tls=true"
-      - "traefik.http.routers.logger-ms.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.logger-ms.middlewares=traefik-forward-auth,common-headers"
       - "traefik.http.routers.logger-ms.priority=100"
+    networks:
+      - frontend
+
+  # The signals gateway, started only with the "signals" profile because it
+  # needs its configuration and two secret files, described in CONFIG.md.
+  signals:
+    image: intocps/signals-ms:0.1.0
+    restart: unless-stopped
+    profiles:
+      - signals
+    volumes:
+      - "./config/signals.yaml:/dtaas/signals/signals.yaml:ro"
+    secrets:
+      - signals-rabbitmq-password
+      - signals-influx-tokens
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.signals.entryPoints=web-secure"
+      - "traefik.http.services.signals.loadbalancer.server.port=4004"
+      - >-
+        traefik.http.routers.signals.rule=Host(`${SERVER_DNS:-localhost}`)
+        && PathPrefix(`/signals`)
+      - "traefik.http.routers.signals.tls=true"
+      - "traefik.http.routers.signals.middlewares=traefik-forward-auth,common-headers"
+      - "traefik.http.routers.signals.priority=100"
     networks:
       - frontend
 
@@ -73,7 +121,7 @@ services:
         traefik.http.routers.u1.rule=Host(`${SERVER_DNS:-localhost}`)
         && PathPrefix(`/${USERNAME1:-user1}`)
       - "traefik.http.routers.u1.tls=true"
-      - "traefik.http.routers.u1.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.u1.middlewares=traefik-forward-auth,common-headers"
     networks:
       - users
 
@@ -91,7 +139,7 @@ services:
         traefik.http.routers.u2.rule=Host(`${SERVER_DNS:-localhost}`)
         && PathPrefix(`/${USERNAME2:-user2}`)
       - "traefik.http.routers.u2.tls=true"
-      - "traefik.http.routers.u2.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.u2.middlewares=traefik-forward-auth,common-headers"
     networks:
       - users
 
@@ -107,7 +155,7 @@ services:
         traefik.http.routers.libms.rule=Host(`${SERVER_DNS:-localhost}`)
         && PathPrefix(`/lib`)
       - "traefik.http.routers.libms.tls=true"
-      - "traefik.http.routers.libms.middlewares=traefik-forward-auth"
+      - "traefik.http.routers.libms.middlewares=traefik-forward-auth,common-headers"
     networks:
       - frontend
 
@@ -175,6 +223,11 @@ services:
     networks:
       - frontend
 
+secrets:
+  signals-rabbitmq-password:
+    file: ./config/secrets/rabbitmq-password
+  signals-influx-tokens:
+    file: ./config/secrets/influx-tokens.json
 
 networks:
   frontend:

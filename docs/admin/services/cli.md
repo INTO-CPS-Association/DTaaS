@@ -233,6 +233,23 @@ only.
     dtaas-services user add -s rabbitmq
     ```
 
+4. For the [signals gateway](../servers/signals/service-users.md), set
+    `SIGNALS_RABBITMQ_USER` in `config/services.env`, for example to
+    `dtaas-signals`, and create its read-only RabbitMQ user:
+
+    ```bash
+    dtaas-services user add-signals --password-file signals-password
+    ```
+
+    Without `--password-file` the command prompts for the password. It
+    grants the user read-only permissions on every existing vhost, and
+    `user add` grants it on each new user vhost.
+
+    With `SIGNALS_INFLUX_TOKENS_FILE` also set to the file that the
+    gateway's `influx-tokens-file` names, the command gives each user org an
+    InfluxDB token that can only read the user's bucket and writes the tokens
+    to that file with mode 600, and `user add` does the same for each new user.
+
 ## ThingsBoard
 
 We recommend ThingsBoard for digital twins that need IoT device management.

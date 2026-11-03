@@ -81,6 +81,14 @@ The web application can also carry domain-specific pages that come
 from separate npm packages. [Client Extensions](extensions.md) describes
 the current state and the proposed extension architecture.
 
+The signals gateway microservice serves the live and past signals of
+digital twins to the web application at `/signals`. It reads RabbitMQ
+and InfluxDB of the platform services with read-only service
+credentials kept on the server, and serves a user only the signals that
+the twins of that user declare in GitLab. The browser holds no broker
+or InfluxDB credential. [Client Extensions](extensions.md#live-signals)
+shows the data path.
+
 Several of these components are not implemented yet; the table below
 gives their status. The [architecture review](review/architecture-review.md)
 describes the system as implemented.
@@ -99,6 +107,7 @@ documentation.
 | Web Application           | [React Web Application](../codebase/client.md)                                                                                  |
 | Reusable Assets           | [Library Microservice](../codebase/lib-ms.md)                                                                                   |
 | Workflow Logs             | [Logger Microservice](../../user/servers/logger/LOGGER-MS.md)                                                                   |
+| Live Signals              | [Signals Gateway](../codebase/signals-ms.md)                                                                                    |
 | Digital Twins and DevOps  | [Integrated GitLab](../../admin/gitlab/index.md)                                                                                |
 | Platform Services         | [Third-party Services](./../../admin/services/cli.md) (MQTT, InfluxDB, RabbitMQ, Grafana, MongoDB, PostgreSQL, and ThingsBoard) |
 | DT Lifecycle Manager      | Not available yet                                                                                                               |

@@ -32,6 +32,10 @@ install order:
   `service clean`
 - `user add`
 - `user reset-password`
+- `user add-signals`, in `commands/signals_ops.py`, which creates the
+  read-only RabbitMQ user of the signals gateway and, when
+  `SIGNALS_INFLUX_TOKENS_FILE` is set, its read-only InfluxDB tokens
+  (`pkg/services/influxdb/signals_tokens.py`)
 
 Poetry script mapping (`pyproject.toml`):
 

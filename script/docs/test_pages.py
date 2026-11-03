@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import page_cleanup
 import pages
 
 LFS_POINTER = b"version https://git-lfs.github.com/spec/v1\noid sha256:00\n"
@@ -25,7 +26,7 @@ def fixture_docs_dir(tmp_path: Path) -> Path:
     """A docs/ directory whose landing page lists version1.0."""
     docs = tmp_path / "docs"
     write(docs / "redirect-page.html", '<a href="version1.0/index.html">')
-    for asset in pages.LANDING_ASSETS:
+    for asset in pages.LANDING_ASSETS + pages.MATHJAX_ASSETS:
         write(docs / asset, "x")
     return docs
 
@@ -79,32 +80,72 @@ def test_assemble_writes_the_current_year(tmp_path, site_dir, docs_dir):
     assert landing == f"&copy; 2022 - {date.today().year}"
 
 
-def test_assemble_removes_polyfill_from_old_versions(tmp_path, site_dir, docs_dir):
-    """Assemble removes polyfill from old versions."""
+OLD_HEAD = (
+    "<head>\n"
+    '    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+    '    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">\n'
+    "</head>\n"
+    "<body>\n"
+    '    <script src="assets/javascripts/bundle.min.js"></script>\n'
+    '    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js'
+    '?config=TeX-AMS-MML_HTMLorMML"></script>\n'
+    '    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>\n'
+    '    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">'
+    "</script>\n"
+    "</body>\n"
+)
+
+
+def test_assemble_cleans_old_versions(tmp_path, site_dir, docs_dir):
+    """Old pages lose every CDN and load the MathJax at the site root."""
     pages_dir = tmp_path / "pages"
-    old_page = write(
-        pages_dir / "version0.3" / "index.html",
-        "<head>\n"
-        '        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6">'
-        "</script>\n"
-        '        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/x.js"></script>\n'
-        "</head>\n",
-    )
+    old_page = write(pages_dir / "version0.3" / "user" / "index.html", OLD_HEAD)
     pages.assemble(site_dir, pages_dir, pages.DEVELOPMENT, docs_dir)
     html = old_page.read_text("utf-8")
-    assert "polyfill.io" not in html
-    assert "cdn.jsdelivr.net" in html
+    assert "https://" not in html
+    assert html.count("<script") == 3
+    assert html.index("mathjax-config.js") < html.index("tex-svg.js")
+    assert '<script src="../../assets/js/mathjax-config.js"></script>' in html
+    assert '    <script src="assets/javascripts/bundle.min.js"></script>\n' in html
+    assert "\n\n" not in html
+    for asset in pages.MATHJAX_ASSETS:
+        assert (pages_dir / asset).is_file()
 
 
-def test_remove_polyfill_leaves_files_outside_the_site(tmp_path):
-    """Remove polyfill leaves files outside the site."""
+def test_clean_pages_keeps_what_it_does_not_name(tmp_path):
+    """A page with no CDN element is left byte for byte."""
+    text = '<script src="https://example.org/x.js"></script>\n<link rel="icon" href="x">\n'
+    kept = write(tmp_path / "pages" / "index.html", text)
+    assert page_cleanup.clean_pages(tmp_path / "pages") == 0
+    assert kept.read_text("utf-8") == text
+
+
+def test_clean_pages_reads_uppercase_and_inline_elements(tmp_path):
+    """Tags are found by parsing, so case and placement do not matter."""
+    page = write(
+        tmp_path / "pages" / "index.html",
+        '<p>a</p><SCRIPT SRC="https://cdn.polyfill.io/v3/x.js"></SCRIPT><p>b</p>',
+    )
+    assert page_cleanup.clean_pages(tmp_path / "pages") == 1
+    assert page.read_text("utf-8") == "<p>a</p><p>b</p>"
+
+
+def test_clean_pages_leaves_files_outside_the_site(tmp_path):
+    """Clean pages leaves files outside the site."""
     tag = '<script src="https://polyfill.io/v3/polyfill.min.js"></script>\n'
     outside = write(tmp_path / "outside.html", tag)
     site = tmp_path / "pages"
     site.mkdir()
     (site / "link.html").symlink_to(outside)
-    assert pages.remove_polyfill(site) == 0
+    assert page_cleanup.clean_pages(site) == 0
     assert outside.read_text("utf-8") == tag
+
+
+@pytest.mark.parametrize("version", ["../outside", "version1", "version1.0/x", ""])
+def test_install_version_refuses_other_names(tmp_path, site_dir, version):
+    """Only development and versionX.Y name a directory to replace."""
+    with pytest.raises(pages.PublishError, match="not development"):
+        pages.install_version(site_dir, tmp_path / "pages", version)
 
 
 def test_assemble_keeps_other_versions(tmp_path, site_dir, docs_dir):

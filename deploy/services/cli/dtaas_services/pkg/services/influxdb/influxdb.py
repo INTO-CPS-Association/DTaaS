@@ -14,6 +14,7 @@ from .user_management import (
     get_influxdb_users,
     create_influxdb_user,
 )
+from .signals_tokens import setup_signals_tokens
 
 
 def _fetch_influxdb_data() -> tuple[bool, dict, set, str]:
@@ -51,7 +52,11 @@ def _execute_setup_steps(creds_file) -> tuple[bool, str]:
     if not success:
         return False, error_msg
     # Set up org and bucket for each user
-    return setup_user_organizations(users_dict, existing_orgs)
+    success, error_msg = setup_user_organizations(users_dict, existing_orgs)
+    if not success:
+        return False, error_msg
+    # Give the signals gateway a read-only token for each new user org
+    return setup_signals_tokens()
 
 
 def setup_influxdb_users() -> tuple[bool, str]:

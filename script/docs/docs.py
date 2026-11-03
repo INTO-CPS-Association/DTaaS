@@ -85,7 +85,7 @@ def assemble(args: argparse.Namespace) -> None:
 
 
 def check_scripts(args: argparse.Namespace) -> None:
-    """Fail when a page of the site loads a script from an unapproved host."""
+    """Fail when a page of the site loads a script or a font from another host."""
     # The release job copies only docs.py and pages.py into the checkout of
     # an older tag, which has no script_hosts.py, so it is imported here.
     import script_hosts  # pylint: disable=import-outside-toplevel
@@ -93,10 +93,10 @@ def check_scripts(args: argparse.Namespace) -> None:
     found = script_hosts.foreign_scripts(Path(args.site_dir).resolve())
     if found:
         raise pages.PublishError(
-            "scripts from hosts outside script_hosts.ALLOWED_HOSTS:\n"
+            "addresses outside script_hosts.ALLOWED_SOURCES:\n"
             + "\n".join(found)
         )
-    print(f"every script in {args.site_dir} comes from an approved host")
+    print(f"every page in {args.site_dir} loads only from its own site")
 
 
 def parser() -> argparse.ArgumentParser:

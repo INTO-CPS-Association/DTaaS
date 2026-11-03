@@ -124,16 +124,17 @@ from which digital twins can be executed.
 Measurement page. These pages show the integration of the DTaaS with
 GitLab CI/CD and are experimental.
 
-**Buildings**: Opens the [Building Models](bim.md) page, which draws the
-IFC building models in your library and colours them by the readings
-their sensors report.
-
 **Workbench**: Not every digital twin can be managed in Jupyter Lab.
 This page links to the other tools in your workspace.
 
 **Insights**: Information the platform can give you about itself: the
 [Logs](logs.md) of this website and the configuration check described
 above.
+
+**Buildings**: The item with the apartment block icon, last in the menu.
+It opens the [Building Models](bim.md) page, which draws the IFC building
+models in your library and colours them by the readings their sensors
+report.
 
 ## Library Page
 
@@ -212,10 +213,10 @@ structure on the server.
 
 ![Menu](images/digital_twins.png)
 
-The Digital Twins page has three tabs, **Create**, **Execute** and
-**Analyze**, and each tab shows Jupyter Lab below its description.
-The descriptions suggest tasks for these lifecycle phases of
-a digital twin. The [lifecycle phases of digital twin](../digital-twins/lifecycle.md)
+The Digital Twins page has four tabs: **Create**, **Execute**,
+**Analyze** and **Visualise**. The first three show Jupyter Lab below
+their description, and the descriptions suggest tasks for these lifecycle
+phases of a digital twin. The [lifecycle phases of digital twin](../digital-twins/lifecycle.md)
 page explains them further.
 
 ??? tip "Create"
@@ -244,6 +245,21 @@ page explains them further.
     The reusable assets (files) shown in
     the file manager are also available in Jupyter Lab. Jupyter Lab also has
     a git plugin for linking files with external git repositories.
+
+### Visualise Tab
+
+The **Visualise** tab draws a digital twin with its live readings, for
+example a photograph of a site with each sensor marked on it, next to a
+dashboard of the same sensors. Choose a twin from the **Digital Twin**
+list. The tab reads the `visualisation.json` file in the folder of that
+twin, under `digital_twins/`, and says so when the folder has none. The
+[visualisation schema](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/visualisation-schema.md)
+describes the format of that file.
+
+Above the drawing is a timeline. The slider covers the last hour, and
+moving it shows every pane as it was at that time. The **Live** button
+returns to the present, and the label next to the clock says whether
+live readings are arriving.
 
 ## Workbench
 

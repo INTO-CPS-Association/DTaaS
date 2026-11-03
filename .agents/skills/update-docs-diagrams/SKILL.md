@@ -62,18 +62,28 @@ command from the repository root.
    ```bash
    python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
+   uv venv .agents/skills/update-docs-diagrams/scripts/.venv
+   uv pip install --python .agents/skills/update-docs-diagrams/scripts/.venv --require-hashes \
+     -r .agents/skills/update-docs-diagrams/scripts/requirements.txt
+   .agents/skills/update-docs-diagrams/scripts/.venv/bin/python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
      docs/assets/diagrams/dtaas-diagrams.drawio docs/assets/diagrams/dtaas-diagrams.drawio
    ```
 
-   Both can run again on their own output without changing it. The image
-   and font tools are pinned with hashes in
+   The restyle and the shrink can run again on their own output without
+   changing it. The image and font tools are pinned with hashes in
    `.agents/skills/update-docs-diagrams/scripts/requirements.txt`, which
    holds only these three tools and installs on Windows, macOS and Linux. It
    is a different file from `script/docs/mkdocs-requirements.txt`. A page that
    draws a concept and not the DTaaS system goes into `NO_MARK` in
    `config/pages.py`, or it gets the DTaaS mark and the boundary line on its
    largest box.
+
+   The image tools are installed into their own virtual environment with
+   `--require-hashes`, so a download whose hash differs from the pinned one
+   is refused. `uv run --with-requirements` does not check the hashes. On
+   Windows, the interpreter is
+   `.agents\skills\update-docs-diagrams\scripts\.venv\Scripts\python`. The
+   environment is made once and reused.
 
    Several pages carry edits made by hand after the restyle, listed in
    `docs/assets/diagrams/hand-edits.md`, and running the restyle on the whole

@@ -17,6 +17,8 @@ The options are set in `env.js`, which defines `window.env`.
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
       LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
+      // REACT_APP_VIZ_SIGNALS_URL: 'Address of the signals gateway'(optional),
+      // REACT_APP_VIZ_ALLOWED_ORIGINS: 'Origins for images and embeds'(optional),
     };
   };
 
@@ -67,3 +69,76 @@ by default, and users turn them on in their account settings. When
 `LOGGER_URL` is empty or missing, enabled logging keeps events in the
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
+
+## Domain Extensions and Live Signals
+
+These keys are optional. A client without them runs every extension it was
+built with, and shows no live readings.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
+| `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
+| `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
+| `REACT_APP_VIZ_SIGNALS_URL` | The address of the DTaaS signals gateway, for example `https://foo.com/signals` |
+| `REACT_APP_VIZ_ALLOWED_ORIGINS` | Origins besides this site that a `visualisation.json` may load images and embedded pages from, separated by commas, for example `'https://grafana.foo.com'` |
+
+With `REACT_APP_VIZ_SIGNALS_URL` set, the client asks the signals gateway
+for the signals the open pages need, such as the sensor topics of a
+building model, and colours the pages with the readings. The gateway reads
+the broker and the time-series database on the server, and the client
+proves who the user is with the user's GitLab access token, sent in the
+`Authorization` header. No broker login reaches the browser. When the key
+is set, the configuration check requests `<REACT_APP_VIZ_SIGNALS_URL>/health`.
+
+The Docker Compose packages in `deploy/dtaas/docker/` serve the gateway at
+`/signals` on the same server as the website, so the key is the `/signals`
+address of that server, such as `https://foo.com/signals`. The
+[signals gateway pages](../servers/signals/docker.md) describe how to start
+it.
+
+A `visualisation.json` names the sources of its images and embedded pages.
+A `lib://` source from the library and a source on the client's own origin
+are always allowed. An `http` or `https` source on another origin is shown
+only when its origin, such as `https://grafana.foo.com`, is listed in
+`REACT_APP_VIZ_ALLOWED_ORIGINS`. The key is empty by default, so another
+site's page is not framed unless an administrator allows it. A refused
+source shows an error that names its origin.
+
+## Security Headers
+
+The Docker Compose packages in `deploy/dtaas/docker/` give the website a
+Traefik `headers` middleware, `client-headers`. It sends a
+Content-Security-Policy, `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin` and
+`X-Frame-Options: SAMEORIGIN`. The other routers of the package (logger,
+signals gateway, library and workspaces) get `common-headers`, with the same
+two headers and no policy, since a policy written for the website would break
+JupyterLab.
+The TLS packages add `Strict-Transport-Security` with a one-year
+`max-age` to both.
+
+The policy allows only the website's own origin, with these exceptions:
+
+| Directive | Allows | Why |
+| :--- | :--- | :--- |
+| `script-src`, `style-src`, `font-src` | `https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/` | The file editor of the Digital Twins page loads itself from there |
+| `script-src` | `'wasm-unsafe-eval'` | The Buildings page compiles its IFC parser, which is WebAssembly |
+| `style-src` | `'unsafe-inline'` | The component library writes its styles at run time |
+| `img-src` | `data:`, `blob:`, `https:` | Avatars from the identity provider and images of a `visualisation.json` |
+| `connect-src` | `${OAUTH_URL}/`, `blob:`, `data:` | Sign-in and the GitLab API, and the parser the Buildings page carries |
+| `worker-src` | `blob:` | The workers of the editor |
+
+`connect-src` names `OAUTH_URL` of the package's `.env`, so it assumes that
+`REACT_APP_AUTH_AUTHORITY` in `env.js` is the same GitLab, and
+`OAUTH_URL` must not end in a slash. The `localhost` package has no
+`OAUTH_URL`, and its GitLab is named only in `env.js`, which Docker Compose
+cannot read, so there `connect-src` allows every `https:` origin.
+
+Edit the `contentSecurityPolicy` label of the client service when the
+deployment needs more:
+
+- A signals gateway on another origin than the website: add its origin to
+  `connect-src`.
+- An origin in `REACT_APP_VIZ_ALLOWED_ORIGINS` whose pages are embedded: add
+  it to `frame-src`. Images from it are already allowed.

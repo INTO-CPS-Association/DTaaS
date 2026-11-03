@@ -25,6 +25,7 @@ placed later.
 | `admin/gitlab/gitlab-independent-install.png`                                                  | `admin/gitlab/index.md`                                                                                                                                                                                                                                        |
 | `admin/gitlab/gitlab-integrated-runner.png`                                                    | `admin/gitlab/runner-linux.md`, `admin/gitlab/runner-windows.md`                                                                                                                                                                                               |
 | `developer/system/multi-domain.png`                                                            | `developer/system/extensions.md`                                                                                                                                                                                                                               |
+| `developer/system/signals-path.png`                                                            | `developer/system/extensions.md`                                                                                                                                                                                                                               |
 | `user/DTaaS-user-view.png`                                                                     | `user/features.md`                                                                                                                                                                                                                                             |
 | `developer/system/research-overview/system-architecture.png`                                   | `developer/system/research-overview.md`                                                                                                                                                                                                                        |
 | `deploy/dtaas/docker/server/server.png`                                                        | `deploy/dtaas/docker/server/README.md`, the insecure server package, drawn with an `http` URL                                                                                                                                                                  |
@@ -188,13 +189,20 @@ them and can be run again on its own output without changing anything.
 1. Open `dtaas-diagrams.drawio` in drawio and edit the page.
 1. Apply the rules and shrink any new raster logo. The restyle undoes the
    hand edits listed in [hand-edits.md](hand-edits.md), so run it on a copy
-   that holds only the new or changed page and bring that page back:
+   that holds only the new or changed page and bring that page back. The
+   image and font tools run from their own virtual environment, made once
+   with `--require-hashes`, because `uv run --with-requirements` does not
+   check the hashes. On Windows, the interpreter is
+   `.agents\skills\update-docs-diagrams\scripts\.venv\Scripts\python`.
 
    ```bash
+   uv venv .agents/skills/update-docs-diagrams/scripts/.venv
+   uv pip install --python .agents/skills/update-docs-diagrams/scripts/.venv \
+     --require-hashes -r .agents/skills/update-docs-diagrams/scripts/requirements.txt
    python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
-   uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
+   .agents/skills/update-docs-diagrams/scripts/.venv/bin/python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
      docs/assets/diagrams/dtaas-diagrams.drawio \
      docs/assets/diagrams/dtaas-diagrams.drawio
    ```
@@ -217,13 +225,12 @@ them and can be run again on its own output without changing anything.
 The export draws text with the fonts installed on the machine. Install Inter
 first, or drawio falls back to another face without a warning. The diagrams use
 two weights, 400 and 700, and the documentation site already carries both as
-`woff2` in `docs/assets/fonts`. `fonttools` turns each into a font the system
-can install:
+`woff2` in `docs/assets/fonts`. `fonttools`, from the virtual environment of
+the steps above, turns each into a font the system can install:
 
 ```bash
 for weight in 400 700; do
-  uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt \
-    fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" \
+  .agents/skills/update-docs-diagrams/scripts/.venv/bin/fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" \
     "docs/assets/fonts/inter-latin-$weight-normal.woff2"
 done
 ```
@@ -233,7 +240,7 @@ Linux. On Windows, make the two files in PowerShell, then open each one and
 choose Install:
 
 ```powershell
-foreach ($weight in 400, 700) { uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" "docs/assets/fonts/inter-latin-$weight-normal.woff2" }
+foreach ($weight in 400, 700) { .agents\skills\update-docs-diagrams\scripts\.venv\Scripts\fonttools ttLib.woff2 decompress -o "Inter-$weight.ttf" "docs/assets/fonts/inter-latin-$weight-normal.woff2" }
 ```
 
 ## How the File Was Made
@@ -246,7 +253,7 @@ it are kept so the conversion can be repeated on a later version of that file:
 python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py retheme original.drawio themed.drawio
 python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py split themed.drawio split.drawio
 python3 .agents/skills/update-docs-diagrams/scripts/diagrams.py restyle split.drawio styled.drawio
-uv run --with-requirements .agents/skills/update-docs-diagrams/scripts/requirements.txt python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
+.agents/skills/update-docs-diagrams/scripts/.venv/bin/python .agents/skills/update-docs-diagrams/scripts/diagrams.py shrink \
   styled.drawio dtaas-diagrams.drawio
 ```
 
