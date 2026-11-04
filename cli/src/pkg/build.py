@@ -24,10 +24,12 @@ import sys
 from pathlib import Path
 
 try:
-    from .constants import SECRET_FILENAMES, SECRET_SUFFIXES
+    from .constants import PUBLIC_CONFIG_FILENAMES, SECRET_FILENAMES, SECRET_SUFFIXES
 except ImportError:  # run as a plain script: `python src/pkg/build.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from constants import SECRET_FILENAMES, SECRET_SUFFIXES
+    from constants import PUBLIC_CONFIG_FILENAMES, SECRET_FILENAMES, SECRET_SUFFIXES
+
+_LOCAL_FILENAMES = SECRET_FILENAMES | PUBLIC_CONFIG_FILENAMES
 
 _CLI_ROOT = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _CLI_ROOT.parent
@@ -47,14 +49,15 @@ _SOURCES: dict[str, str] = {
 
 
 def _ignore(_directory: str, names: list[str]) -> list[str]:
-    """copytree ignore hook: keep locally-configured secrets out of the wheel.
+    """copytree ignore hook: keep locally-configured files out of the wheel.
 
     Only *.example templates should ever reach src/templates/deploy; a real
     deployment run against these source directories may have populated
-    SECRET_FILENAMES/SECRET_SUFFIXES locally (they're gitignored for exactly
-    this reason), and copytree would otherwise happily package them.
+    SECRET_FILENAMES, PUBLIC_CONFIG_FILENAMES or SECRET_SUFFIXES locally
+    (they're gitignored for exactly this reason), and copytree would
+    otherwise happily package them.
     """
-    return [n for n in names if n in SECRET_FILENAMES or n.endswith(SECRET_SUFFIXES)]
+    return [n for n in names if n in _LOCAL_FILENAMES or n.endswith(SECRET_SUFFIXES)]
 
 
 def _copy_tree(src: Path, dest: Path, ignore_func=None) -> None:

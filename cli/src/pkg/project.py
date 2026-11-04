@@ -3,7 +3,8 @@
 import shutil
 from pathlib import Path
 import click
-from .constants import DEPLOY_TYPES, SECRET_FILENAMES
+from .constants import DEPLOY_TYPES
+from .file_modes import set_config_mode
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEPLOY_TEMPLATES_DIR = TEMPLATES_DIR / "deploy"
@@ -30,8 +31,7 @@ def _copy_template(template_name, dest_dir, force=False):
     skipped = dest.exists() and not force
     if not skipped:
         shutil.copy2(TEMPLATES_DIR / template_name, dest)
-    if dest.name in SECRET_FILENAMES:
-        dest.chmod(0o600)
+    set_config_mode(dest)
     return skipped
 
 
@@ -153,13 +153,12 @@ def _validate_deploy_inputs(deploy_type, src, dest):
 
 
 def _copy_example(example, force):
-    """Copy *.example file, chmod'ing secret targets to 0600."""
+    """Copy *.example file, setting the target's config mode (file_modes)."""
     target = example.with_suffix("")
     try:
         if force or not target.exists():
             shutil.copy2(example, target)
-        if target.name in SECRET_FILENAMES:
-            target.chmod(0o600)
+        set_config_mode(target)
     except OSError as exc:
         return str(exc)
     return None

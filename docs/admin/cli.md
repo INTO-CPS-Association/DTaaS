@@ -97,8 +97,9 @@ The main sections are:
 - `[[users]]`: the starting users, one record each.
 - `[gitlab]`: optional GitLab account provisioning for `user add`
   (see [GitLab provisioning](#gitlab-provisioning-optional)).
-- `[frontend]`: the OAuth application of the DTaaS web client, for the
-  server types.
+- `[frontend]`: the OAuth application of the DTaaS web client, and the
+  logger it sends workflow logs to (see
+  [Remote logging](cli-config.md#remote-logging)), for the server types.
 - One section per deployment type, such as `[secure-server]`, which
   holds the OAuth credentials for that type.
 
@@ -112,7 +113,7 @@ An abridged `dtaas.toml`:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.2.1"
+version="2.3.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -152,6 +153,7 @@ ssl_verify=true
 [frontend]
 react-app-client-id="your_client_id_here"
 react-app-oauth-url="https://gitlab.com"
+logger-url="https://intocps.org/logger"
 ...
 ```
 
@@ -194,7 +196,10 @@ dtaas config validate    # checks an existing dtaas.toml
 `generate` writes `dtaas.toml` and a sample `users.csv` (bulk input
 for `user add --file`) into `--output-dir`. `--force` overwrites an
 existing `dtaas.toml`. `validate` reports every problem in the file at
-once; see [Validation Rules](cli-config.md#validation-rules).
+once; see [Validation Rules](cli-config.md#validation-rules). It also
+warns, without failing, when `[frontend].logger-url` is missing,
+empty (remote logging off), still the template's example, or a URL
+whose path does not end in `/logger`.
 
 **Options:**
 
@@ -263,6 +268,9 @@ Copies the project structure for one deployment scenario
 target directory. It also writes the user-workspace templates and the
 `files/template/` skeleton, and, for the types that run the logger,
 creates `logs/logger/` (see [`platform install`](#platform-install)).
+When `dtaas.toml` is present, it is validated for `--type` first (see
+[Validation Rules](cli-config.md#validation-rules)), and a problem
+stops the command before any file is written.
 
 ```bash
 dtaas deployment generate --type <name>
@@ -304,6 +312,12 @@ the `certs/` directory). See
 [Configuration Substitution](cli-config.md#configuration-substitution)
 for details. If `dtaas.toml` is not found, the command prints a note
 and the generated files keep their placeholder values.
+
+On Linux and macOS the command also sets `config/.env` and
+`config/conf.server` to `0600` and `config/client.js` to `0644`: the
+website container (`intocps/dtaas-web` 1.7.2 and later) runs as uid
+1000 and must read `config/client.js`, or the website does not load.
+See [File modes](cli-config.md#file-modes).
 
 !!! tip "Verify the Docker image tag"
     `users.server.yml` and `users.server.secure.yml` pin a workspace
@@ -594,7 +608,10 @@ dtaas platform update --config --output-dir ./my-server
 refuses to apply an invalid file. A second run with no `dtaas.toml`
 changes reports `No configuration changes` and restarts nothing. If
 secrets are still template placeholders after the update, the command
-lists them.
+lists them. Each run also sets the mode of the files it writes values
+into, so for the server types and `localhost` a `config/client.js` left
+at `0600` by an older CLI becomes `0644` again (see
+[File modes](cli-config.md#file-modes)).
 
 **Options:**
 

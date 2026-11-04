@@ -8,6 +8,7 @@ check builds on.
 
 from . import utils
 from .constants import DEPLOY_TYPES
+from .config_validate_frontend import check_logger_url, validate_warnings
 from .config_validate_gitlab import check_gitlab
 from .validators import (
     get_nested,
@@ -180,6 +181,7 @@ _CHECKS = (
     _check_resources,
     _check_users,
     check_gitlab,
+    check_logger_url,
 )
 
 
@@ -196,11 +198,27 @@ def collect_errors(data, deploy_type=None):
     return errors
 
 
-def validate_config(output_dir):
-    """Validate dtaas.toml in *output_dir*, returning a list of problems.
+def require_valid(data, deploy_type):
+    """Raise ValueError listing every dtaas.toml problem for *deploy_type*, if any.
 
-    The list is empty when the configuration is valid. Raises FileNotFoundError
-    when no dtaas.toml is found and ValueError when the file cannot be parsed.
+    Used by the commands that write the values into a deployment
+    ('deployment generate', 'platform update --config'). Scoped to that
+    deployment type, so an unrelated leftover section (e.g. a
+    [workspace-secure-server] block in a secure-server deployment) does not
+    block it.
+    """
+    errors = collect_errors(data, deploy_type)
+    if errors:
+        listed = "\n".join(f"- {err}" for err in errors)
+        raise ValueError(f"Invalid dtaas.toml:\n{listed}")
+
+
+def validate_config(output_dir):
+    """Validate dtaas.toml in *output_dir*, returning (problems, warnings).
+
+    The problems list is empty when the configuration is valid; warnings do
+    not make it invalid. Raises FileNotFoundError when no dtaas.toml is found
+    and ValueError when the file cannot be parsed.
     """
     toml_path = utils.find_toml(output_dir)
     if toml_path is None:
@@ -210,4 +228,4 @@ def validate_config(output_dir):
     data, err = utils.import_toml(str(toml_path))
     if err is not None:
         raise ValueError(str(err))
-    return collect_errors(data)
+    return collect_errors(data), validate_warnings(data)

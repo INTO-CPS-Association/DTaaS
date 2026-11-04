@@ -1,6 +1,7 @@
 """Tests for the config / platform CLI commands."""
 
 from unittest.mock import patch
+import pytest
 from src.cmd import dtaas
 # pylint: disable=redefined-outer-name
 
@@ -88,24 +89,34 @@ def test_config_generate_error(runner):
     assert "Error while generating config" in result.output
 
 
-def test_config_validate_valid(runner):
-    """config validate reports success when no problems are found."""
-    with patch("src.cmd_config.configValidatePkg.validate_config", return_value=[]):
+@pytest.mark.parametrize("warnings", [[], ["Warning: frontend.logger-url is not set"]])
+def test_config_validate_valid(runner, warnings):
+    """config validate reports success when no problems are found, after any
+    warnings, which do not make the configuration invalid."""
+    with patch(
+        "src.cmd_config.configValidatePkg.validate_config",
+        return_value=([], warnings),
+    ):
         result = runner.invoke(dtaas, ["config", "validate"])
 
     assert result.exit_code == 0
-    assert "Configuration is valid" in result.output
+    assert result.output.splitlines() == [*warnings, "Configuration is valid"]
 
 
 def test_config_validate_reports_problems(runner):
-    """config validate lists every problem and exits non-zero."""
+    """config validate lists every problem and exits non-zero, still printing
+    its warnings."""
     with patch(
         "src.cmd_config.configValidatePkg.validate_config",
-        return_value=["git-repo must be a valid URL", "common.path is missing"],
+        return_value=(
+            ["git-repo must be a valid URL", "common.path is missing"],
+            ["Warning: frontend.logger-url is not set"],
+        ),
     ):
         result = runner.invoke(dtaas, ["config", "validate"])
 
     assert result.exit_code != 0
+    assert "Warning: frontend.logger-url is not set" in result.output
     assert "Invalid dtaas.toml" in result.output
     assert "- git-repo must be a valid URL" in result.output
     assert "- common.path is missing" in result.output

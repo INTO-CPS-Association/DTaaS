@@ -3,7 +3,8 @@
 import re
 from pathlib import Path
 from ._deploy_data import _DEPLOY_FILES, _SECRET_PLACEHOLDERS
-from .constants import USER_PSEUDO_KEY_RE, SECRET_FILENAMES
+from .constants import USER_PSEUDO_KEY_RE
+from .file_modes import set_config_mode
 
 
 def _set_env_value(text, key, value):
@@ -12,12 +13,20 @@ def _set_env_value(text, key, value):
     return pattern.sub(lambda _: f"{key}={value}", text)
 
 
+# Backslash and quote, escaped in one pass so no escape is escaped again.
+_JS_ESCAPES = str.maketrans({"\\": "\\\\", "'": "\\'"})
+
+
 def _set_js_value(text, key, value):
-    """Set the quoted value of ``key`` in a window.env object literal."""
-    pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')[^']*(')")
-    return pattern.sub(
-        lambda m: m.group(1) + value.replace("'", "\\'") + m.group(2), text
-    )
+    """Set the quoted value of ``key`` in a window.env object literal.
+
+    The new value is escaped, so it stays one string literal whatever it
+    holds; the old one is matched past its escapes, so a rewrite replaces
+    all of it.
+    """
+    pattern = re.compile(rf"\b({re.escape(key)}\s*:\s*')(?:\\.|[^'\\])*(')")
+    escaped = value.translate(_JS_ESCAPES)
+    return pattern.sub(lambda m: m.group(1) + escaped + m.group(2), text)
 
 
 def _set_yaml_value(text, key, value):
@@ -64,14 +73,31 @@ def _validate_value(value):
         raise ValueError(f"Config value must not contain newlines: {value!r}")
 
 
+def _formatted(toml_data, source, fmt):
+    """Return *fmt* filled with the value of *source*, or None when it is unset."""
+    value = _toml_lookup(toml_data, source)
+    return fmt.format(value) if value else None
+
+
+def _entry_text(toml_data, source, fmt):
+    """Return the text one entry writes, or None when it leaves its key alone.
+
+    *fmt* is a format string, which skips a missing or empty value, or a
+    function of toml_data that returns the text (None for no change).
+    """
+    text = fmt(toml_data) if callable(fmt) else _formatted(toml_data, source, fmt)
+    if text is not None:
+        _validate_value(text)
+    return text
+
+
 def _build_entry_values(entries, toml_data):
     """Build the key->value substitution dict for one file's entries."""
     values = {}
     for file_key, source, fmt in entries:
-        value = _toml_lookup(toml_data, source)
-        if value:
-            _validate_value(value)
-            values[file_key] = fmt.format(value)
+        text = _entry_text(toml_data, source, fmt)
+        if text is not None:
+            values[file_key] = text
     return values
 
 
@@ -150,16 +176,15 @@ def _write_if_changed(path, old, new):
 def _apply_to_file(path, file_format, values):
     """Apply key/value substitutions to one config file. Returns error or None.
 
-    Secret-bearing files are chmod'd 0600 on every call, not only when this
-    run happened to change their content -- an existing config/.env from
-    before this hardening was added must end up non-world-readable too.
+    The file's config mode (file_modes.set_config_mode) is set on every
+    call, not only when this run happened to change its content, so an
+    installation from an older CLI ends up at the right mode too.
     """
     try:
         content = _decode_editable(path.read_bytes())
         if content is not None:
             _write_if_changed(path, content, _render(content, file_format, values))
-            if path.name in SECRET_FILENAMES:
-                path.chmod(0o600)
+            set_config_mode(path)
     except (OSError, UnicodeDecodeError) as exc:
         return str(exc)
     return None

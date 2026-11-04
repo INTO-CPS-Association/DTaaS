@@ -260,39 +260,38 @@ def test_generate_deploy_project_warns_when_no_templates(tmp_path, capsys):
     mock_copy.assert_not_called()
 
 
-def test_copy_example_chmods_secret_target_on_fresh_copy(tmp_path):
-    """A freshly copied secret file (.env from .env.example) is chmod'd 0600.
+MODES = [(".env", 0o600), ("client.js", 0o644)]
 
-    Windows chmod() can't be asserted via the resulting st_mode (it only
-    tracks the read-only attribute, so 0o600 and 0o644 read back identically)
-    -- so this asserts the call itself, which is the portable signal.
-    """
-    example = tmp_path / ".env.example"
+
+@pytest.mark.parametrize("name, mode", MODES)
+def test_copy_example_chmods_config_target_on_fresh_copy(tmp_path, name, mode):
+    """A fresh copy gets its config mode: .env 0600, client.js 0644 (#1861).
+    Asserts the chmod call: Windows st_mode only tracks the read-only flag."""
+    example = tmp_path / f"{name}.example"
     example.write_text("KEY=value\n")
-
     with patch.object(Path, "chmod") as mock_chmod:
         result = _copy_example(example, force=False)
 
     assert result is None
-    assert (tmp_path / ".env").read_text() == "KEY=value\n"
-    mock_chmod.assert_called_once_with(0o600)
+    assert (tmp_path / name).read_text() == "KEY=value\n"
+    mock_chmod.assert_called_once_with(mode)
 
 
-def test_copy_example_chmods_preexisting_secret_target_left_in_place(tmp_path):
-    """A config/.env that already exists (so --force-less copy is skipped) is
-    still hardened -- covers a deployment generated before this hardening
-    existed, which is exactly the population at risk."""
-    example = tmp_path / ".env.example"
+@pytest.mark.parametrize("name, mode", MODES)
+def test_copy_example_chmods_preexisting_target_left_in_place(tmp_path, name, mode):
+    """A target that already exists (the copy is skipped) still gets its mode:
+    a deployment from an older CLI has a world-readable .env, or a client.js
+    at 0600 that the website's non-root server cannot read."""
+    example = tmp_path / f"{name}.example"
     example.write_text("KEY=placeholder\n")
-    target = tmp_path / ".env"
+    target = tmp_path / name
     target.write_text("KEY=live-secret\n")
-
     with patch.object(Path, "chmod") as mock_chmod:
         result = _copy_example(example, force=False)
 
     assert result is None
     assert target.read_text() == "KEY=live-secret\n"  # untouched, not overwritten
-    mock_chmod.assert_called_once_with(0o600)
+    mock_chmod.assert_called_once_with(mode)
 
 
 def test_copy_example_does_not_chmod_non_secret_target(tmp_path):

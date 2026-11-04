@@ -62,7 +62,9 @@ dtaas platform uninstall
     - [config](#config)
     - [deployment generate](#deployment-generate)
       - [Configuration substitution](#configuration-substitution)
+      - [Remote logging](#remote-logging)
       - [TLS certificate placement](#tls-certificate-placement)
+      - [File modes](#file-modes)
     - [platform install](#platform-install)
     - [platform uninstall](#platform-uninstall)
     - [Lifecycle operations: status / stop / start / pause / resume](#lifecycle-operations)
@@ -149,6 +151,7 @@ directory) and reports all problems at once:
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true` |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
 | `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
+| `[frontend].logger-url` | When present, an `http(s)` URL, or `""` to turn remote logging off |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
 
@@ -158,11 +161,19 @@ Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 `[secure-server-gitlab]`, `[workspace-localhost]`, and
 `[workspace-secure-server]`; each is checked only when its section is
 present. `config validate` checks every section in the file, while
-`platform update --config` checks only the installed type's section, plus
-`[frontend]`.
+`deployment generate` and `platform update --config` check only the section
+of the type they write, plus `[frontend]`. Both list every problem and stop
+before they write a file.
 
-`path` and `certs-src` are checked against the local filesystem, run
-`validate` on the deployment host. If a check fails with a permission error
+`config validate` also prints warnings, which do not make the file invalid:
+a `[frontend]` section whose `logger-url` is missing, empty, still the
+template's example, or a URL whose path does not end in `/logger` gets one
+(see [Remote logging](#remote-logging)).
+
+`path` and `certs-src` are checked against the local filesystem, so run
+`validate` and `deployment generate` on the deployment host. A fresh
+`dtaas.toml` fails both until `path` names an existing directory, and
+`certs-src` does too or is removed. If a check fails with a permission error
 (e.g. `certs-src` points under `/etc/letsencrypt`, which is root-owned), the
 CLI says so and prints the elevated form to re-run:
 `sudo -E env PATH="$PATH" dtaas <command>`.
@@ -189,7 +200,9 @@ directory ready to be customised. It also writes the user workspace
 templates that `user add` builds new workspaces from: `users.server.yml`,
 `users.server.secure.yml`, `users.resources.yml`, and the `files/template/`
 skeleton. For the types that run the logger it also creates `logs/logger/`
-(see [platform install](#platform-install)).
+(see [platform install](#platform-install)). When `dtaas.toml` is present,
+it is validated for `--type` first, and a problem stops the command before
+any file is written.
 
 ```bash
 dtaas deployment generate --type <name>
@@ -254,12 +267,76 @@ sections are substituted across all types.
 If `dtaas.toml` is not found, a note is printed and generated files keep
 their default placeholder values.
 
+#### Remote logging
+
+The website sends workflow logs to the logger microservice at `LOGGER_URL`
+in `config/client.js`. For the server types, `[frontend].logger-url` sets it:
+
+| `[frontend]` | `LOGGER_URL` |
+|---|---|
+| No `logger-url` | `http(s)://<server-dns>/logger`, the logger every server type runs |
+| `logger-url = "<url>"` | `<url>`, which must include the `/logger` route prefix |
+| `logger-url = ""` | Empty: remote logging is off, and the website hides the option |
+
+The template ships `logger-url = "https://intocps.org/logger"`, an example to
+replace. `deployment generate` and `config validate` warn while the key is
+missing, empty, still that example, or a URL whose path does not end in
+`/logger`, so you know what the website does. `deployment generate` also
+warns when `secure-server` or `secure-server-gitlab` get an `http://`
+logger, which browsers block as mixed content:
+
+```text
+Warning: frontend.logger-url is not set
+  LOGGER_URL is https://dtaas.example.com/logger, the logger of this installation.
+  Set logger-url in dtaas.toml to choose it explicitly.
+
+Warning: frontend.logger-url is empty
+  Remote logging is off: LOGGER_URL is empty and the website hides
+  the option. Set logger-url in dtaas.toml to turn it on.
+
+Warning: frontend.logger-url is the template example
+  Logs go to https://intocps.org/logger, which is not your logger.
+  Set logger-url to your logger, or to "" to turn remote logging off.
+
+Warning: frontend.logger-url does not end in /logger
+  The logger serves its routes under /logger, so https://logs.example.com/ may
+  not reach it. Ignore this if a proxy in front of it adds the path.
+
+Warning: frontend.logger-url is http on an https site
+  Browsers block the website's requests to http://logs.example.com/logger (mixed
+  content), so no logs arrive. Use an https URL for the logger.
+```
+
+Set `logger-url` to a URL of your own to silence the warning.
+`platform update --config` writes the same value without a warning. A
+deployment generated by a CLI older than 2.3.0 still has the `intocps.org`
+logger of the old template in `config/client.js`; its next
+`platform update --config` replaces it, and any hand edit of `LOGGER_URL`,
+with the value from this table. `localhost` keeps the
+`http://localhost/logger` of its template, and the workspace types keep
+their empty `LOGGER_URL`.
+
 #### TLS certificate placement
 
 For the TLS types (`secure-server`, `secure-server-gitlab`,
 `workspace-secure-server`), `deployment generate` also populates the
 `certs/` directory in the output. It reads `[common.security].certs-src` from
 `dtaas.toml` and copies the latest `fullchain.pem` and `privkey.pem` there.
+
+#### File modes
+
+On Linux and macOS, `deployment generate` sets `config/.env` and
+`config/conf.server` to `0600` (they hold the OAuth secrets) and
+`config/client.js` to `0644`, on every run and also for files that
+already exist. The website container (`intocps/dtaas-web` 1.7.2 and later)
+runs as uid 1000 and serves `config/client.js` to every browser as
+`env.js`; when it cannot read the file, the website does not load (its
+scripts fail and `env.js` returns `502 Bad Gateway`).
+`platform update --config` sets the mode of each file it writes values
+into, which never includes `config/client.js` for
+`workspace-secure-server`. A deployment generated by a CLI older than
+2.3.0 has `config/client.js` at `0600`: run `chmod 644 config/client.js`
+before moving it to the 1.7.2 image (no restart is needed).
 
 > **Tip: verify the Docker image tag**
 > `users.server.yml` and `users.server.secure.yml` contain a pinned workspace
@@ -544,6 +621,9 @@ dtaas platform update --config --output-dir ./my-server
 `--config` validates `dtaas.toml` before making any changes and refuses to
 apply if problems are found. It is **idempotent** a second run with no
 `dtaas.toml` changes reports `No configuration changes` and restarts nothing.
+Each run also sets the mode of the files it writes values into, so for the
+server types and `localhost` a `config/client.js` left at `0600` by an older
+CLI becomes `0644` again (see [File modes](#file-modes)).
 
 **Options:**
 
@@ -1123,7 +1203,7 @@ type (see matrix above).
 # ── Metadata (top level) ──────────────────────────────────────────────────────
 # Describes the instance. Only git-repo is checked by validate (an http(s) URL).
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.2.1"
+version  = "2.3.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -1191,6 +1271,10 @@ load_balance = false
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
+# Logger microservice URL, with the /logger route prefix ("" turns remote
+# logging off). Without the key, the logger of this installation is used,
+# http(s)://<server-dns>/logger (see "Remote logging" above).
+logger-url          = "https://logs.example.com/logger"
 
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas user add` also creates

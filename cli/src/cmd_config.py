@@ -72,9 +72,11 @@ def validate(output_dir):
     secure-server-gitlab, workspace-localhost, workspace-secure-server.
     """
     try:
-        errors = configValidatePkg.validate_config(output_dir)
+        errors, warnings = configValidatePkg.validate_config(output_dir)
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
+    for warning in warnings:
+        click.echo(warning)
     if errors:
         listed = "\n".join(f"- {err}" for err in errors)
         raise click.ClickException(f"Invalid dtaas.toml:\n{listed}")
