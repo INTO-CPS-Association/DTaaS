@@ -1,7 +1,7 @@
 # This is the config for DTaaS CLI
 
 name="Digital Twin as a Service (DTaaS)"
-version="2.3.0"
+version="2.4.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -56,18 +56,23 @@ groups=["default","dtaas","beta-testers","load-balanced-tier1"]
 load_balance=true
 
 # --- GitLab user provisioning for users added with 'dtaas user add' --------
-# When enabled, 'user add' also creates each new user's GitLab account and a
-# Personal Access Token. Off by default, so existing deployments are
-# unaffected.
+# When enabled, 'user add' also creates each new user's GitLab account, a
+# Personal Access Token and two private projects, 'common' and 'user'. Off
+# by default, so existing deployments are unaffected.
 [gitlab]
 provision=false
 api_url="https://gitlab.com"
 ssl_verify=true
-# The admin PAT that creates the accounts and tokens on api_url: it must
-# belong to an administrator and carry the api scope (plus admin_mode on an
-# instance with Admin Mode enabled). Prefer the DTAAS_GITLAB_PAT environment
-# variable, which keeps the token off disk and is used first when both are
-# set. This file is generated mode 0600 and gitignored.
+# Public templates of the two projects: the dtaas host clones each one with
+# git and pushes it. Set both, or remove both for accounts and tokens only.
+common_template="https://gitlab.com/dtaas/common.git"
+user_template="https://gitlab.com/dtaas/user1.git"
+# The admin PAT that creates the accounts, tokens and projects on api_url
+# (and pushes the templates): it must belong to an administrator and carry
+# the api scope (plus admin_mode on an instance with Admin Mode enabled).
+# Prefer the DTAAS_GITLAB_PAT environment variable, which keeps the token
+# off disk and is used first when both are set. This file is generated mode
+# 0600 and gitignored.
 #pat="glpat-xxxxxxxxxxxxxxxxxxxx"
 
 # Installation-specific configuration

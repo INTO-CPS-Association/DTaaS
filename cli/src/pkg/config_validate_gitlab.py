@@ -6,7 +6,29 @@ problems and an acceptable value returns an empty list, so 'dtaas config
 validate' can report all of them at once.
 """
 
+from .constants import GITLAB_PROJECT_TEMPLATES
 from .validators import get_nested, is_url, optional, required
+
+TEMPLATES_TOGETHER = (
+    "gitlab.common_template and gitlab.user_template must both be set, "
+    "or both left out"
+)
+
+
+def template_errors(gitlab):
+    """Each project template, when present, must be an http(s) URL, and the
+    two are set together or not at all: leaving both out means accounts and
+    tokens only. Shared with Config.get_gitlab_templates, since 'user add'
+    does not run 'config validate'."""
+    present = [key for key in GITLAB_PROJECT_TEMPLATES.values() if key in gitlab]
+    errors = [
+        f"gitlab.{key} must be a valid URL"
+        for key in present
+        if not is_url(gitlab[key])
+    ]
+    if len(present) == 1:
+        errors.append(TEMPLATES_TOGETHER)
+    return errors
 
 
 def _gitlab_provision_errors(gitlab):
@@ -52,4 +74,5 @@ def check_gitlab(data):
     )
     errors += _gitlab_pat_errors(gitlab)
     errors += _gitlab_ssl_verify_errors(gitlab)
+    errors += template_errors(gitlab)
     return errors

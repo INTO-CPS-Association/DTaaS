@@ -14,7 +14,7 @@ from gitlab_common import (
     revoke_user_pats,
 )
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 TEST_USERNAME = "testuser"
 TEST_EMAIL = "test@example.com"
 TEST_PASSWORD = "UserP@ss123"  # noqa: S105 # NOSONAR

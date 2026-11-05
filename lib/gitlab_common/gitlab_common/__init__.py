@@ -3,13 +3,19 @@
 Every function here takes explicit arguments (URL, token, user fields) and
 performs no environment, filesystem, console, or process-global state
 changes, so it is reused unchanged by both consumers. Deployment-specific
-glue URL derivation, token persistence, credential files, docker, and
-terminal output lives in each consumer instead: ``dtaas_services.pkg.
-services.gitlab`` and the DTaaS CLI's ``pkg.gitlab``.
+glue URL derivation, token persistence, credential files, docker, git
+clone and push, and terminal output lives in each consumer instead:
+``dtaas_services.pkg.services.gitlab`` and the DTaaS CLI's ``pkg.gitlab``.
 """
 
 from .client import get_gitlab_client
 from .messages import with_hint
+from .projects import (
+    ProjectLookup,
+    ProjectState,
+    create_user_project,
+    find_project,
+)
 from .users import (
     CreateOutcome,
     CreateUserResult,
@@ -26,8 +32,12 @@ __all__ = [
     "create_user",
     "create_user_pat",
     "revoke_user_pats",
+    "find_project",
+    "create_user_project",
     "validate_user_row",
     "CreateOutcome",
     "CreateUserResult",
     "PatOptions",
+    "ProjectLookup",
+    "ProjectState",
 ]

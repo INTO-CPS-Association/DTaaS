@@ -72,7 +72,7 @@ cli/
 │   │   ├── deploy.py             # Install/uninstall orchestration
 │   │   ├── deploy_config.py      # Scenario configuration mapping
 │   │   ├── _deploy_data.py       # Per-scenario substitution specs
-│   │   ├── gitlab/               # Optional GitLab user provisioning
+│   │   ├── gitlab/               # GitLab accounts, tokens, projects (git)
 │   │   ├── lifecycle.py          # Platform status/stop/start/pause
 │   │   ├── messages.py           # Shape of user command output
 │   │   ├── project.py            # Template copying for 'generate'
@@ -84,6 +84,7 @@ cli/
 │   │   ├── users_compose.py      # Per-user compose generation
 │   │   ├── users_delete.py       # User delete handler
 │   │   ├── users_gitlab.py       # GitLab account and token setup
+│   │   ├── users_gitlab_projects.py # GitLab projects from templates
 │   │   ├── users_gitlab_records.py # Saved tokens and markers
 │   │   ├── users_gitlab_targets.py # Users to provision in GitLab
 │   │   ├── users_lifecycle.py    # Per-user pause/stop/resume
@@ -115,8 +116,9 @@ The CLI also keeps two files of its own. `dtaas.users.registry.json`
 and `.dtaas.state.json` (`pkg/state.py`) caches what is known about the
 provisioned user containers.
 
-GitLab account provisioning in `pkg/gitlab/` is built on the
-`gitlab_common` library. `src/pkg/build.py` vendors it from
+GitLab provisioning in `pkg/gitlab/` (accounts, tokens and the
+projects filled from templates with `git` clone and push) is built on
+the `gitlab_common` library. `src/pkg/build.py` vendors it from
 `lib/gitlab_common/` into the source tree, so run it before running the
 tests:
 

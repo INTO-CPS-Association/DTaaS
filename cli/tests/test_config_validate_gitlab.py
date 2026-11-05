@@ -5,7 +5,9 @@ every problem at once, so these cover the section as a user meets it.
 """
 
 import copy
+import pytest
 from src.pkg.config_validate import collect_errors
+from src.pkg.config_validate_gitlab import TEMPLATES_TOGETHER
 
 
 def test_gitlab_section_not_a_table(base):
@@ -71,3 +73,39 @@ def test_gitlab_provisioning_with_only_an_api_url_validates(base):
     ok = copy.deepcopy(base)
     ok["gitlab"] = {"provision": True, "api_url": "https://gitlab.example.com"}
     assert collect_errors(ok) == []
+
+
+COMMON = "https://gitlab.com/dtaas/common.git"
+USER = "https://gitlab.com/dtaas/user1.git"
+
+
+@pytest.mark.parametrize(
+    "templates,expected",
+    [
+        ({"common_template": COMMON, "user_template": USER}, []),
+        ({"common_template": COMMON}, [TEMPLATES_TOGETHER]),
+        ({"user_template": USER}, [TEMPLATES_TOGETHER]),
+        (
+            {"common_template": "ftp://example.com/common.git", "user_template": "x"},
+            [
+                "gitlab.common_template must be a valid URL",
+                "gitlab.user_template must be a valid URL",
+            ],
+        ),
+        (
+            {"user_template": "git@gitlab.com:dtaas/user1.git"},
+            ["gitlab.user_template must be a valid URL", TEMPLATES_TOGETHER],
+        ),
+    ],
+    ids=["both", "common-only", "user-only", "not-http", "ssh-and-alone"],
+)
+def test_gitlab_project_templates(base, templates, expected):
+    """The two templates are http(s) URLs, set together or both left out;
+    every problem is listed at once."""
+    config = copy.deepcopy(base)
+    config["gitlab"] = {
+        "provision": True,
+        "api_url": "https://gitlab.example.com",
+        **templates,
+    }
+    assert collect_errors(config) == expected

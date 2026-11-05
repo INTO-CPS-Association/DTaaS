@@ -13,6 +13,10 @@ STATE_FILE = ".dtaas.state.json"
 # For pkg/users.py: GitLab provisioning token storage
 GITLAB_USER_TOKENS_FILE = "gitlab_user_tokens.json"
 
+# For pkg/users_gitlab_projects.py: each GitLab project 'user add' creates in
+# a provisioned user's namespace, and the [gitlab] key naming its template.
+GITLAB_PROJECT_TEMPLATES = {"common": "common_template", "user": "user_template"}
+
 # For utils.py
 LOCALHOST_SERVER = "localhost"
 

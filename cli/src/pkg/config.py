@@ -1,6 +1,8 @@
 """This file supports the DTaaS config class"""
 
 from . import utils
+from .config_validate_gitlab import template_errors
+from .constants import GITLAB_PROJECT_TEMPLATES
 
 
 class Config:
@@ -195,3 +197,20 @@ class Config:
         if isinstance(value, str) and value.strip():
             return value.strip(), None
         return bool(value), None
+
+    def get_gitlab_templates(self):
+        """Gets {project name: template URL} from [gitlab].common_template
+        and [gitlab].user_template, or {} when both are left out (accounts
+        and tokens only). Checked as 'config validate' checks them, since
+        'user add' does not run it."""
+        section, err = self.get_gitlab_section()
+        if err is not None or section is None:
+            return {}, err
+        errors = template_errors(section)
+        if errors:
+            return {}, Exception("Config file error: " + "; ".join(errors))
+        return {
+            name: section[key]
+            for name, key in GITLAB_PROJECT_TEMPLATES.items()
+            if key in section
+        }, None
