@@ -13,6 +13,7 @@ pages.
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
 | `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
 | `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
+| `@into-cps-association/dtaas-ext-bim` | `client/extensions/bim/` in this repository                    | The `bim` extension the client loads: the extension of `bim-kit` with the `aec` substrate. The client links the local package (`link:./extensions/bim`). |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -21,7 +22,8 @@ describes how it is released.
 ## The Building Models Page
 
 The Building Models page is the first extension. `client/src/extensions.ts`
-imports it from the `./dtaas` entry of `bim-kit`, so the page, the model
+imports it from `client/extensions/bim/`, which takes the extension of the
+`./dtaas` entry of `bim-kit` and adds the `aec` substrate. The page, the model
 conversion and the writing of converted models back to the library live in that
 package and its tests run there. A change to the page reaches DTaaS as a new
 version of `bim-kit` and not as a pull request against this repository. The
@@ -62,8 +64,29 @@ calls `setup` of each extension once and gives each one the SDK's
 the snackbar, the page shell, settings, a logger, its configuration and the
 services of other extensions that it names in `requires`. The GitLab credentials
 stay in the client core. An extension does not import client internals or the
-code of another extension. Until the common visualisation core joins the client,
-the `signals` service delivers nothing and reports every connection as down.
+code of another extension.
+
+## The Visualisation Core
+
+`client/src/viz/` is the common visualisation core, which every extension shares
+through the `signals` and `viz` services. It keeps every sample in a temporal
+store read by time, holds one playhead for every page, evaluates the encodings
+of a `visualisation.json`, reads and saves that file in the twin's folder and
+draws the standard `image` and `embed` substrates. A domain brings its own
+substrates: the bim extension in `client/extensions/bim/` contributes `aec`, the
+building model in 3D, so the client core holds no building code. The Visualise
+tab of the Digital Twins page draws a twin from the `visualisation.json`
+committed in its folder.
+
+The core reads every signal from the DTaaS signals gateway, at the address in
+`REACT_APP_VIZ_SIGNALS_URL`. `client/src/viz/gatewayTransport.ts` opens `POST
+/signals/stream` for the live samples as server-sent events.
+`client/src/viz/gatewayHistory.ts` asks `POST /signals/range` for the past ones.
+Both send the signed-in user's GitLab access token in the `Authorization` header
+and never in an address. The browser opens no connection to the broker or to a
+database. Without the address the core still runs: every connection reads `down`
+and a range holds only what the client has seen. The gateway itself is planned
+in the [signals gateway plan](../plans/signals-gateway.md).
 
 ## Proposed Modular Architecture
 

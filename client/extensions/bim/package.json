@@ -1,0 +1,27 @@
+{
+  "name": "@into-cps-association/dtaas-ext-bim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The bim extension of the DTaaS client: the Buildings page of bim-kit with the aec substrate of the visualisation core.",
+  "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
+  "license": "The INTO-CPS Association License",
+  "type": "module",
+  "sideEffects": false,
+  "// exports": "The client builds and tests this package from its TypeScript source, as it does the contract in ../../sdk.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "cd ../.. && yarn test:ext"
+  },
+  "peerDependencies": {
+    "@into-cps-association/bim-kit": "0.2.0",
+    "@into-cps-association/dtaas-sdk": "*",
+    "@mui/icons-material": ">=9",
+    "@mui/material": ">=9",
+    "react": ">=19",
+    "react-dom": ">=19",
+    "three": ">=0.186.0"
+  }
+}

@@ -19,6 +19,7 @@ import {
   type SnackbarSeverity,
 } from '@into-cps-association/dtaas-sdk';
 import PageShell from 'components/PageShell';
+import HostTheme from 'theme/HostTheme';
 import {
   cleanUsername,
   libraryURLFor,
@@ -115,7 +116,7 @@ export function createPlatformServices(
     library: lib,
     contents: createContentsService(lib.baseUrl),
     git: createGitService(),
-    ui: { snackbar: store.notify, Page: PageShell },
+    ui: { snackbar: store.notify, Page: PageShell, Theme: HostTheme },
     // Settings are read by name, so the typed slice is read as a record.
     settings: {
       get: <T>(key: string) =>

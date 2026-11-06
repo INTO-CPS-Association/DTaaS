@@ -1,0 +1,40 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "jsx": "react-jsx",
+          "noUnusedLocals": false,
+          "types": ["jest", "node"],
+          "esModuleInterop": true,
+          "paths": {
+            "src/*": ["./src/*"],
+            "tests/*": ["./tests/*"],
+            "@into-cps-association/dtaas-sdk": ["../../sdk/src/index.ts"],
+            "@into-cps-association/dtaas-sdk/*": ["../../sdk/src/*/index.ts"]
+          }
+        }
+      }
+    ]
+  },
+  "collectCoverage": true,
+  "coverageReporters": ["text", "cobertura", "clover", "lcov", "json"],
+  "collectCoverageFrom": ["src/**/*.{ts,tsx}"],
+  "testTimeout": 15000,
+  "testRegex": "/tests/.*\\.test\\.tsx?$",
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1",
+    "^tests/(.*)$": "<rootDir>/tests/$1",
+    "^@into-cps-association/dtaas-sdk$": "<rootDir>/../../sdk/src/index.ts",
+    "^@into-cps-association/dtaas-sdk/(schema|testing)$": "<rootDir>/../../sdk/src/$1/index.ts",
+    "^@into-cps-association/bim-kit/dtaas$": "<rootDir>/tests/__mocks__/bimKitMock.tsx",
+    "\\.(css|less|scss)$": "<rootDir>/tests/__mocks__/styleMock.ts"
+  },
+  "verbose": true,
+  "maxWorkers": 3,
+  "setupFiles": ["<rootDir>/tests/setupTests.ts"],
+  "setupFilesAfterEnv": ["<rootDir>/tests/jestDom.ts"]
+}

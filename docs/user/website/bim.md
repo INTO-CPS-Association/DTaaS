@@ -201,24 +201,20 @@ names the tool that generated it and says nothing about the source.
 
 ## Live Readings
 
-The viewer draws whatever readings it is given and does not subscribe to
-anything. It knows neither the broker nor the topic scheme, so the same
-component can serve a demonstration fed by a local publisher and a deployment
-fed by the platform.
+The viewer draws whatever readings it is given and opens no connection of its
+own. The client reads them through the DTaaS signals gateway and hands each
+binding the latest reading of the topic its manifest names. The browser holds no
+broker login: it sends the gateway the user's GitLab access token instead. The
+administrator sets the address of the gateway in `REACT_APP_VIZ_SIGNALS_URL`, as
+the [client configuration](../../admin/client/config.md) describes.
 
-How readings reach the client is not decided yet. There are two options, and
-they are not equivalent:
+Without that address the page still opens every model, with no readings. That is
+also the behaviour for a model that declares no sensors. Most architectural
+models declare none.
 
-- The client subscribes to MQTT over WebSocket against the platform's RabbitMQ,
-  through the `rabbitmq_web_mqtt` plugin, and passes the latest value to the
-  viewer.
-- A platform service, the MQTT Agent described in the DTaaS material,
-  subscribes, validates, stores, and serves the latest value to the client.
-
-The second option separates concerns better, but it depends on that service
-existing and running, which has not been confirmed. Until this is settled the
-route shows models without readings. That is already the correct behaviour for
-a model that declares no sensors, and most architectural models declare none.
+A building model can also be drawn on the Visualise tab of the Digital Twins
+page, from the `visualisation.json` of a twin, with the `aec` substrate of the
+bim extension.
 
 ## What Is Not Built Yet
 

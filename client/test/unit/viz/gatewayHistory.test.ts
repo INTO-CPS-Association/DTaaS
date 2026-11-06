@@ -1,0 +1,115 @@
+import createGatewayHistory from 'viz/gatewayHistory';
+import createGatewaySession from 'viz/gatewaySession';
+
+const TOKEN = 'glpat-secret-token';
+
+function answer(body: unknown, status = 200) {
+  return {
+    ok: status === 200,
+    status,
+    json: async () => body,
+  } as Response;
+}
+
+function history(response: Response) {
+  const fetch = jest.fn(async () => response);
+  return {
+    fetch,
+    history: createGatewayHistory({
+      url: 'https://signals.example',
+      token: () => TOKEN,
+      fetch,
+    }),
+  };
+}
+
+describe('the signals gateway history', () => {
+  it('asks for a range with the token in the header only', async () => {
+    const { fetch, history: gateway } = history(answer({ samples: [] }));
+
+    await gateway.range(['a', 'b'], 'measured', 10, 20);
+
+    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://signals.example/range');
+    expect(JSON.parse(init.body as string)).toEqual({
+      paths: ['a', 'b'],
+      channel: 'measured',
+      from: 10,
+      to: 20,
+    });
+    expect(init.headers).toMatchObject({ Authorization: `Bearer ${TOKEN}` });
+    expect(url).not.toContain(TOKEN);
+  });
+
+  it('keeps the samples it can read, on the channel asked for', async () => {
+    const samples = [
+      { path: 'a', channel: 'measured', ts: 10, value: 1, quality: 'good' },
+      { path: 'a', ts: 11, value: { not: 'a value' } },
+      { path: 'a', ts: 'late', value: 2 },
+      { path: 'b', ts: 12, value: 'on', quality: 'unknown' },
+      null,
+    ];
+    const { history: gateway } = history(answer({ samples, truncated: true }));
+
+    const { samples: range, truncated } = await gateway.range(
+      ['a', 'b'],
+      'measured',
+      0,
+      20,
+    );
+
+    expect(truncated).toBe(true);
+    expect(range).toEqual([
+      {
+        twinId: '',
+        signalPath: 'a',
+        channel: 'measured',
+        ts: 10,
+        value: 1,
+        quality: 'good',
+      },
+      {
+        twinId: '',
+        signalPath: 'b',
+        channel: 'measured',
+        ts: 12,
+        value: 'on',
+        quality: undefined,
+      },
+    ]);
+  });
+
+  it('reads an answer without samples as none', async () => {
+    const { history: gateway } = history(answer({ status: 'odd' }));
+
+    await expect(gateway.range(['a'], 'measured', 0, 1)).resolves.toEqual({
+      samples: [],
+      truncated: false,
+    });
+  });
+
+  it('rejects when the gateway refuses the range', async () => {
+    const { history: gateway } = history(answer({}, 403));
+
+    await expect(gateway.range(['a'], 'measured', 0, 1)).rejects.toThrow('403');
+  });
+
+  it('does not send again a token the gateway refused', async () => {
+    const fetch = jest.fn(async () => answer({}, 401));
+    const session = createGatewaySession(() => TOKEN);
+    const gateway = createGatewayHistory({
+      url: 'https://signals.example',
+      token: () => TOKEN,
+      fetch,
+      session,
+    });
+
+    await expect(gateway.range(['a'], 'measured', 0, 1)).rejects.toThrow('401');
+    await expect(gateway.range(['a'], 'measured', 2, 3)).rejects.toThrow(
+      'refused the sign-in',
+    );
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(session.signInNeeded()).toBe(true);
+  });
+});

@@ -8,6 +8,20 @@ import PageShell from 'components/PageShell';
 import TabDescription from 'components/tab/TabDescription';
 import extensionHost from 'extension/extensionHost';
 import DigitalTwinTabPage from 'extension/DigitalTwinTabPage';
+import VisualiseTab from 'route/digitaltwins/visualise/VisualiseTab';
+
+const visualiseTab: TabData = {
+  label: 'Visualise',
+  body: (
+    <>
+      <TabDescription>
+        See a digital twin drawn from the visualisation.json in its folder,
+        coloured by the signals it reports, and move back in time.
+      </TabDescription>
+      <VisualiseTab />
+    </>
+  ),
+};
 
 /** The tabs the domain extensions add, after the core ones. */
 const extensionTabs: TabData[] = extensionHost.digitalTwinTabs.map(
@@ -29,7 +43,7 @@ function DTContent() {
       </>
     ),
   }));
-  DTTab.push(...extensionTabs);
+  DTTab.push(visualiseTab, ...extensionTabs);
 
   return (
     <Layout>

@@ -200,6 +200,27 @@ export default [
     },
   },
   {
+    // The bim extension is built with the client, as the contract is, and
+    // its src/ and tests/ aliases are its own, so types come from its config.
+    files: ['extensions/bim/**'],
+
+    languageOptions: {
+      parserOptions: {
+        project: ['./extensions/bim/tsconfig.eslint.json'],
+      },
+    },
+
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: true,
+          packageDir: [dirname, path.join(dirname, 'extensions/bim')],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.slice.ts'],
 
     rules: {

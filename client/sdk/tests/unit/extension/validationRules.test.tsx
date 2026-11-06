@@ -150,9 +150,19 @@ describe('substrate rules', () => {
   it('accepts a preset on a standard substrate', () => {
     expect(
       errorsOf((e) => {
-        e.visualisation.presets[0].substrate = 'aec';
+        e.visualisation.presets[0].substrate = 'image';
       }),
     ).toEqual([]);
+  });
+
+  it('refuses a preset on aec from an extension that does not contribute it', () => {
+    expect(
+      errorsOf((e) => {
+        e.visualisation.presets[0].substrate = 'aec';
+      }),
+    ).toEqual([
+      'visualisation.presets[0] "demo.pressure": unknown substrate "aec"',
+    ]);
   });
 
   it('requires a detect function when visualisation is present', () => {

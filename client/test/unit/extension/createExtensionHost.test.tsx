@@ -112,7 +112,7 @@ describe('createExtensionHost', () => {
   });
 
   it('refuses a preset id another extension registered first', () => {
-    const preset = { id: 'heat', label: 'Heat', substrate: 'aec' };
+    const preset = { id: 'heat', label: 'Heat', substrate: 'image' };
     const contribution = (presets: unknown[]) =>
       ({ detect: () => false, presets }) as never;
     const first = kit('first', { visualisation: contribution([preset]) });
