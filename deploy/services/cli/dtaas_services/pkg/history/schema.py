@@ -66,8 +66,21 @@ def _applied(conn: psycopg.Connection) -> set[str]:
     return {row[0] for row in rows}
 
 
+def _run_script(conn: psycopg.Connection, migration: Migration, as_role: str) -> None:
+    """Run one migration, as another role when one is given."""
+    if as_role:
+        conn.execute(sql.SQL("SET LOCAL ROLE {}").format(sql.Identifier(as_role)))
+    # A migration is a fixed text of the package or of an installed kit,
+    # never user input, so it runs as one script.
+    conn.execute(sql.SQL(migration.statements))  # type: ignore[arg-type]
+    if as_role:
+        conn.execute("RESET ROLE")
+
+
 def apply_migrations(
-    conn: psycopg.Connection, migrations: tuple[Migration, ...] | list[Migration]
+    conn: psycopg.Connection,
+    migrations: tuple[Migration, ...] | list[Migration],
+    as_role: str = "",
 ) -> list[str]:
     """Apply the migrations not yet recorded, in order, in the open transaction.
 
@@ -80,9 +93,7 @@ def apply_migrations(
     for migration in migrations:
         if migration.name in done:
             continue
-        # A migration is a fixed text of the package or of an installed kit,
-        # never user input, so it runs as one script.
-        conn.execute(sql.SQL(migration.statements))  # type: ignore[arg-type]
+        _run_script(conn, migration, as_role)
         conn.execute(
             "INSERT INTO schema_migration (name) VALUES (%s)", (migration.name,)
         )
