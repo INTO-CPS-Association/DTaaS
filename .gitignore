@@ -213,6 +213,7 @@ runner.yaml
 # dtaas-services
 services.env
 deploy/services/cli/config/password.env.current
+deploy/services/secrets/
 credentials.csv
 # Generated secret files (defense-in-depth; also covered by the directory rule below)
 deploy/services/cli/certs
