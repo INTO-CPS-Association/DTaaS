@@ -148,6 +148,7 @@ serve may add its own backend later. Discussion #1912 lists server-side
 extensions as a non-goal, so this waits for a decision there. A gateway per
 extension is not the default, because it would repeat the sign-in and
 access code in each one.
+[Domain kits](domain-kits.md) plans what the SDK gives every extension.
 
 ### Sign-In Through OpenID Connect (G5)
 
@@ -230,7 +231,8 @@ against the person's own rights first.
 
 1. ThingsBoard keeps its own PostgreSQL database. Does its telemetry also
    reach `reading`, or does ThingsBoard take the place of Telegraf? The
-   feature comparison with ThingsBoard answers this.
+   feature comparison with ThingsBoard and Eclipse Ditto answers this,
+   together with whether Ditto can take the gateway's role.
 2. The foreign key `reading_device_id_fkey` makes Telegraf retry a whole
    batch when one device is not yet in `device`. Is a device registered
    before it publishes, or is the key left out?

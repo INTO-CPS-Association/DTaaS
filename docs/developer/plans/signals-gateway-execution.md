@@ -5,6 +5,27 @@ the order of the work, where each piece of code comes from, what is written
 new and how each phase is checked before review. The plan says what and why.
 This page says how.
 
+## Order of the Work
+
+```mermaid
+flowchart LR
+  P1[1 Design and skeleton] --> P2[2 Security] --> P3[3 Live over MQTT]
+  P3 --> P4[4 History] --> P5[5 Data to a twin] --> P6[6 Packages and guides]
+  A[A Merge 1] --> P2
+  B[B ThingsBoard comparison] --> P4
+  C[C Local Telegraf and PostgreSQL] --> P3
+  D[D Test publisher on the convention] --> P3
+  X[Discussion 1912] --> C1[Extension API core and K-a]
+  C1 --> C2[Web extension host]
+  C2 --> C3[bim as an extension and K-b]
+  C3 --> C4[Visualisation]
+  P3 --> C4
+  KC[K-c Kit template] --> KD[K-d soil-kit]
+  C4 --> KD
+  P4 --> KD
+  KD --> KE[K-e Kits chosen at deployment]
+```
+
 ## Rules for Every Phase
 
 - One pull request at a time. A phase opens after the previous one is
@@ -37,7 +58,7 @@ This page says how.
 | Step | Work | Done when |
 | :--- | :--- | :--- |
 | A | Merge this pull request | Merged |
-| B | A feature comparison of ThingsBoard with Telegraf and the gateway, with a source for each row: licence, ingest from an external broker, history store, history API, access control, cost of running it | Shared with the maintainer. It answers open question 1 of the plan |
+| B | A feature comparison of Telegraf with the gateway against ThingsBoard and Eclipse Ditto, with a source for each row: licence, ingest from an external broker, history store, history API, live events to a browser, access control, configuration schema, cost of running it. Apache NiFi, Node-RED and Apache Airflow, named in the review of this plan, are checked for overlap | Shared with the maintainer. It answers open question 1 of the plan and says whether Ditto can serve the gateway's role |
 | C | Telegraf and PostgreSQL in a local test installation, with the `reading` table of the naming convention | A reading published over MQTT is in `reading` |
 | D | Test publishers move to the topic and payload of the naming convention: eight topic levels and a JSON payload with `value`, `ts` and `unit`. The room 02-24 test publisher sends seven levels and CSV today | The test publisher follows the convention |
 
@@ -153,6 +174,7 @@ This page says how.
 The four client pull requests (Extension API core, web extension host,
 `bim` as an extension and visualisation) wait for discussion #1912. The
 visualisation pull request reads signals after phase 3.
+The kit phases are on the [domain kits](domain-kits.md) page.
 
 ## Risks
 
