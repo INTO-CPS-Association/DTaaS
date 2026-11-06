@@ -8,18 +8,21 @@ import path from 'node:path';
 import AppModule from 'src/app.module';
 import { SIGNAL_BROKER } from 'src/broker/broker';
 import Config from 'src/config/config.service';
+import PostgresClient from 'src/history/postgres.client';
 import { configureSignalsApp } from 'src/main';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
+import FakePostgres, { rowsFrom } from 'test/helpers/fake-postgres';
 import { openStream, waitFor } from 'test/helpers/sse-client';
 import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
-import { PUMP } from 'test/helpers/twins';
+import { PUMP, visualisationOf } from 'test/helpers/twins';
 
 const ALICE_TOKEN = 'alice-oauth-token-0123456789';
 const BOB_TOKEN = 'bob-oauth-token-9876543210';
 const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
 const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
 const FLOW = 'alice/pump/flow';
-const RANGE = { paths: [FLOW], channel: 'measured', from: 0, to: 1000 };
+const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
+const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
 const ENV_KEYS = [
   'SIGNALS_GITLAB_URL',
   'SIGNALS_GITLAB_CLIENT_ID',
@@ -50,9 +53,17 @@ describe('Signals gateway e2e', () => {
       [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
       [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
     },
-    [{ id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } }],
+    [
+      {
+        id: 10,
+        owner: 'alice',
+        sha: 'c0ffee',
+        twins: { pump: PUMP, room: visualisationOf([ROOM]) },
+      },
+    ],
   );
   const broker = new FakeBroker();
+  const postgres = new FakePostgres(() => rowsFrom(0, 2));
   const logger = new CapturingLogger();
   let app: NestExpressApplication;
   let base = '';
@@ -81,6 +92,8 @@ describe('Signals gateway e2e', () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(SIGNAL_BROKER)
       .useValue(broker)
+      .overrideProvider(PostgresClient)
+      .useValue(postgres.asClient())
       .compile();
     app = moduleRef.createNestApplication<NestExpressApplication>({
       bodyParser: false,
@@ -157,13 +170,17 @@ describe('Signals gateway e2e', () => {
     });
   });
 
-  it('answers 501 on range for a declared path of a readable project', async () => {
+  it("serves the history of a readable twin from its group's database", async () => {
     const response = await post('range', ALICE_TOKEN, RANGE);
-    expect(response.status).toBe(501);
+    expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      status: 'not-implemented',
-      route: 'range',
+      samples: [
+        { path: ROOM, channel: 'measured', ts: 0, value: 0, quality: null },
+        { path: ROOM, channel: 'measured', ts: 1, value: 1, quality: null },
+      ],
+      truncated: false,
     });
+    expect(postgres.queries[0].database).toBe('alice');
   });
 
   it('refuses with 403 an undeclared path and a reader without the project', async () => {

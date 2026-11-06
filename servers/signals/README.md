@@ -13,7 +13,7 @@ and decides access first:
 | `GET /signals/health` | `200` with `{"status":"ok"}` |
 | `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else live samples as server-sent events |
 | `GET /signals/stats` | What the user's ended streams forwarded and dropped |
-| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else `501` |
+| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else past samples as JSON, `502` when the database fails |
 
 A token is either a GitLab token, which GitLab is asked about, or a JWT of
 a Keycloak realm or Dex instance named in `oidc-providers`. A path is
@@ -23,7 +23,10 @@ the owner's group in `owners-file`, which `dtaas-services` writes. Every
 decision is logged without the token. Live samples come from RabbitMQ over
 MQTT, on one connection of the service account `dtaas_signals`. A message
 outside the payload convention (`value`, `ts` and `unit`) is dropped and
-counted. History from PostgreSQL comes in phase 4 of the plan.
+counted. Past samples come from the `reading` table of the database of the
+owner's group, which Telegraf writes, read as `dtaas_signals_ro`. A topic of
+eight levels names its series by device and quantity. A range with more
+points than `range-max-points` is averaged in `date_bin` bins.
 
 ## Configuration
 
@@ -45,6 +48,8 @@ yarn test:int
 yarn start
 ```
 
-`yarn test:int` starts RabbitMQ 4.4.0 with the MQTT plugin in Docker and
-checks that the gateway receives a device's reading and is refused a topic
-outside its read permission. It is skipped when Docker is not running.
+`yarn test:int` starts RabbitMQ 4.4.0 with the MQTT plugin and PostgreSQL
+18.6 in Docker. It checks that the gateway receives a device's reading, is
+refused a topic outside its read permission, reads and bins the history and
+cannot write with its read-only account. It is skipped when Docker is not
+running.

@@ -104,5 +104,20 @@ stream-recheck-interval: 60000
 keep-alive-interval: 15000
 # The reconnect wait sent to the client as 'retry:', in milliseconds.
 retry-interval: 5000
-# Longest history range a request may ask for, in milliseconds.
+# PostgreSQL, read for the history of a signal as the read-only account.
+# The URL names only the host and port. Each group has its own database,
+# named by the template filled with the owner of the twin.
+postgres-url: postgres://localhost:5432
+postgres-user: dtaas_signals_ro
+# File holding the account's password, and nothing else. Mode 600.
+postgres-password-file: /run/secrets/postgresql_dtaas_signals_ro_password
+postgres-database-template: '{group}'
+# Verify the server certificate over TLS. Turn on outside the Docker network.
+postgres-tls: false
+# Timeout of one connection and one query, in milliseconds.
+postgres-timeout: 10000
+
+# Longest history range (milliseconds) and most points in one answer. A
+# longer series is averaged in date_bin bins.
 range-max-span: 604800000
+range-max-points: 10000

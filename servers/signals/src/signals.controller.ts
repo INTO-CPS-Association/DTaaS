@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   Body,
   Controller,
   ForbiddenException,
@@ -20,14 +21,12 @@ import AccessService, { type PathDecision } from './authz/access.service.js';
 import type { Action, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import { parseRangeRequest, parseStreamRequest } from './dto/requests.js';
+import HistoryService, {
+  type HistoryAnswer,
+} from './history/history.service.js';
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
 import StreamSlots from './stream/stream-slots.js';
-
-export type PlaceholderAnswer = {
-  status: 'not-implemented';
-  route: 'range';
-};
 
 function subjectOf(request: AuthenticatedRequest): Subject {
   const user = userOf(request);
@@ -35,8 +34,8 @@ function subjectOf(request: AuthenticatedRequest): Subject {
   return { id, username, token: user.token, owners };
 }
 
-// Stream serves live samples as server-sent events. Range signs the user in
-// and decides access, then answers 501 until the history phase fills it in.
+// Stream serves live samples as server-sent events and range serves past
+// samples as JSON, both behind the sign-in and the access decision.
 @Controller('signals')
 export default class SignalsController {
   // eslint-disable-next-line no-useless-constructor
@@ -46,6 +45,7 @@ export default class SignalsController {
     private readonly streams: StreamService,
     private readonly slots: StreamSlots,
     private readonly stats: DeliveryStats,
+    private readonly history: HistoryService,
   ) {} // eslint-disable-line no-empty-function
 
   @Get('health')
@@ -84,19 +84,25 @@ export default class SignalsController {
   }
 
   @Post('range')
-  @HttpCode(HttpStatus.NOT_IMPLEMENTED)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(SignalsAuthGuard)
   async range(
     @Body() body: unknown,
     @Req() request: AuthenticatedRequest,
-  ): Promise<PlaceholderAnswer> {
+  ): Promise<HistoryAnswer> {
     const limits = {
       ...this.pathLimits(),
       maxSpan: this.config.get('range-max-span'),
     };
-    const { paths } = parseRangeRequest(body, limits);
-    await this.authorise(subjectOf(request), 'range', paths);
-    return { status: 'not-implemented', route: 'range' };
+    const { paths, ...span } = parseRangeRequest(body, limits);
+    const decision = await this.authorise(subjectOf(request), 'range', paths);
+    try {
+      return await this.history.range(decision.allowed, span);
+    } catch {
+      // The database's own message may name a host or a role, so the client
+      // gets no detail.
+      throw new BadGatewayException();
+    }
   }
 
   // Nothing the user may read is refused before any work is done.

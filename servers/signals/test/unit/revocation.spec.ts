@@ -17,8 +17,10 @@ import DeliveryStats from 'src/stream/delivery-stats';
 import StreamService from 'src/stream/stream.service';
 import StreamSlots from 'src/stream/stream-slots';
 import testConfig from 'test/helpers/config';
+import HistoryService from 'src/history/history.service';
 import ownersOf from 'test/helpers/owners';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
+import FakePostgres from 'test/helpers/fake-postgres';
 import FakeGitLabClient from 'test/helpers/fake-gitlab-client';
 import FakeResponse from 'test/helpers/fake-response';
 import { PUMP } from 'test/helpers/twins';
@@ -76,6 +78,7 @@ function gatewayWith(overrides: Partial<ConfigValues> = {}) {
     new StreamService(config, broker, stats),
     new StreamSlots(config),
     stats,
+    new HistoryService(config, new FakePostgres(() => []).asClient()),
   );
   return { controller, broker, membership };
 }
@@ -160,10 +163,7 @@ describe('Revoked access', () => {
     const range = () => controller.range(RANGE, REQUEST);
     const opened = range();
     await jest.advanceTimersByTimeAsync(GITLAB_LATENCY);
-    await expect(opened).resolves.toEqual({
-      status: 'not-implemented',
-      route: 'range',
-    });
+    await expect(opened).resolves.toEqual({ samples: [], truncated: false });
     membership.projects = [];
     // Within projects-cache-ttl both still read the cached membership.
     await expect(range()).resolves.toBeDefined();

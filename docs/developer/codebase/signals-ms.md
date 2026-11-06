@@ -14,7 +14,7 @@ logger microservice. Every route is under `/signals`:
 | `GET /signals/health` | `{"status":"ok"}` |
 | `POST /signals/stream` | Sign-in and access check, then live samples from MQTT as server-sent events |
 | `GET /signals/stats` | Samples forwarded and dropped by the user's ended streams |
-| `POST /signals/range` | Sign-in and access check, then `501`. Past samples as JSON later |
+| `POST /signals/range` | Sign-in and access check, then past samples from PostgreSQL as JSON |
 
 ```text
 servers/signals/
@@ -27,6 +27,7 @@ servers/signals/
 │   ├── dto/                       # Request validation
 │   ├── broker/                    # One MQTT connection to RabbitMQ
 │   ├── stream/                    # Server-sent events of one stream
+│   ├── history/                   # Past samples from each group database
 │   └── config/                    # signals.yaml and SIGNALS_* variables
 ├── config/signals.yaml.sample     # Every key with its default
 └── test/                          # Unit and end-to-end tests
