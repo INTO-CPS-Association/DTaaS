@@ -1,22 +1,86 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import type { LoggerService } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import AppModule from 'src/app.module';
 import Config from 'src/config/config.service';
 import { configureSignalsApp } from 'src/main';
+import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
+import { PUMP } from 'test/helpers/twins';
 
-describe('Signals gateway skeleton', () => {
+const ALICE_TOKEN = 'alice-oauth-token-0123456789';
+const BOB_TOKEN = 'bob-oauth-token-9876543210';
+const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
+const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
+const FLOW = 'alice/pump/flow';
+const RANGE = { paths: [FLOW], channel: 'measured', from: 0, to: 1000 };
+const ENV_KEYS = [
+  'SIGNALS_GITLAB_URL',
+  'SIGNALS_GITLAB_CLIENT_ID',
+  'SIGNALS_OWNERS_FILE',
+];
+
+class CapturingLogger implements LoggerService {
+  readonly lines: string[] = [];
+  log = (message: unknown) => this.lines.push(String(message));
+  error = (message: unknown) => this.lines.push(String(message));
+  warn = (message: unknown) => this.lines.push(String(message));
+  debug = (message: unknown) => this.lines.push(String(message));
+  verbose = (message: unknown) => this.lines.push(String(message));
+}
+
+const ALICE = { id: 1, username: 'alice', email: 'alice@example.org' };
+
+describe('Signals gateway e2e', () => {
+  const gitlab = new StubGitLab(
+    {
+      [ALICE_TOKEN]: { ...ALICE, projects: [10] },
+      [BOB_TOKEN]: {
+        id: 2,
+        username: 'bob',
+        email: 'bob@example.org',
+        projects: [],
+      },
+      [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
+      [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
+    },
+    [{ id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } }],
+  );
+  const logger = new CapturingLogger();
   let app: NestExpressApplication;
   let base = '';
+  let dir = '';
+
+  const post = (route: string, token: string | undefined, body: unknown) =>
+    fetch(`${base}/signals/${route}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token === undefined ? {} : { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify(body),
+    });
 
   beforeAll(async () => {
+    process.env.SIGNALS_GITLAB_URL = await gitlab.start();
+    process.env.SIGNALS_GITLAB_CLIENT_ID = STUB_APPLICATION;
+    dir = await mkdtemp(path.join(os.tmpdir(), 'signals-e2e-'));
+    const owners = path.join(dir, 'owners.json');
+    await writeFile(
+      owners,
+      JSON.stringify({ alice: { group: 'alice', topics: ['alice/'] } }),
+    );
+    process.env.SIGNALS_OWNERS_FILE = owners;
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
     app = moduleRef.createNestApplication<NestExpressApplication>({
       bodyParser: false,
-      logger: false,
     });
+    app.useLogger(logger);
     configureSignalsApp(app, moduleRef.get(Config));
     await app.listen(0, '127.0.0.1');
     base = await app.getUrl();
@@ -24,37 +88,84 @@ describe('Signals gateway skeleton', () => {
 
   afterAll(async () => {
     await app.close();
+    await gitlab.stop();
+    ENV_KEYS.forEach((key) => delete process.env[key]);
+    await rm(dir, { recursive: true, force: true });
   });
 
-  it('answers the health check', async () => {
+  it('answers health with no detail and no token', async () => {
     const response = await fetch(`${base}/signals/health`);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: 'ok' });
+    await expect(response.json()).resolves.toEqual({ status: 'ok' });
     expect(response.headers.get('x-powered-by')).toBeNull();
   });
 
   it.each(['stream', 'range'])(
-    'answers 501 on the placeholder %s route',
+    'refuses %s without a token or with an unknown one',
     async (route) => {
-      const response = await fetch(`${base}/signals/${route}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paths: [] }),
-      });
-      expect(response.status).toBe(501);
-      expect(await response.json()).toEqual({
-        status: 'not-implemented',
-        route,
-      });
+      const body = route === 'range' ? RANGE : { paths: [FLOW] };
+      expect((await post(route, undefined, body)).status).toBe(401);
+      expect((await post(route, 'not-a-token', body)).status).toBe(401);
     },
   );
 
+  it.each([EXPIRED_TOKEN, OTHER_APP_TOKEN])(
+    'refuses with 401 an expired token or one of another application',
+    async (token) => {
+      expect((await post('stream', token, { paths: [FLOW] })).status).toBe(401);
+      expect((await post('range', token, RANGE)).status).toBe(401);
+    },
+  );
+
+  it('accepts a declared path of a readable project, then answers 501', async () => {
+    const stream = await post('stream', ALICE_TOKEN, { paths: [FLOW] });
+    expect(stream.status).toBe(501);
+    await expect(stream.json()).resolves.toEqual({
+      status: 'not-implemented',
+      route: 'stream',
+    });
+    expect((await post('range', ALICE_TOKEN, RANGE)).status).toBe(501);
+  });
+
+  it('refuses with 403 an undeclared path and a reader without the project', async () => {
+    const undeclared = { paths: ['alice/pump/secret'] };
+    expect((await post('stream', ALICE_TOKEN, undeclared)).status).toBe(403);
+    expect((await post('stream', BOB_TOKEN, { paths: [FLOW] })).status).toBe(
+      403,
+    );
+    expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
+  });
+
+  it('refuses wildcards with 400 and too many paths with 413', async () => {
+    expect(
+      (await post('stream', ALICE_TOKEN, { paths: ['alice/#'] })).status,
+    ).toBe(400);
+    const many = Array.from({ length: 201 }, (_, i) => `alice/${i}`);
+    expect((await post('stream', ALICE_TOKEN, { paths: many })).status).toBe(
+      413,
+    );
+  });
+
   it('refuses a body above the payload limit', async () => {
-    const response = await fetch(`${base}/signals/stream`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ padding: 'x'.repeat(70 * 1024) }),
+    const response = await post('stream', ALICE_TOKEN, {
+      padding: 'x'.repeat(70 * 1024),
     });
     expect(response.status).toBe(413);
+  });
+
+  it('logs every decision and never a token', () => {
+    const text = logger.lines.join('\n');
+    expect(text).toContain(
+      '"user":"alice","action":"stream","resource":"alice/pump/flow","decision":"allow"',
+    );
+    expect(text).toContain(
+      '"user":"bob","action":"stream","resource":"alice/pump/flow","decision":"deny"',
+    );
+    [ALICE_TOKEN, BOB_TOKEN, EXPIRED_TOKEN, OTHER_APP_TOKEN].forEach((token) =>
+      expect(text).not.toContain(token),
+    );
+    expect(gitlab.requests.every((url) => !url.includes(ALICE_TOKEN))).toBe(
+      true,
+    );
   });
 });

@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import AppModule from './app.module.js';
 import Config from './config/config.service.js';
+import { buildCorsOptions } from './config/cors.js';
+import startupWarnings, { startupErrors } from './config/startup-warnings.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -17,7 +20,18 @@ export function configureSignalsApp(
   app: NestExpressApplication,
   config: Config,
 ): void {
+  const cors = buildCorsOptions(
+    config.get('cors-allow-origin'),
+    config.get('cors-allow-credentials'),
+  );
+  // Behind Traefik the client is on the same origin, so CORS stays off
+  // unless an origin is configured.
+  if (cors.origin !== false) app.enableCors(cors);
   app.disable('x-powered-by');
+  // Behind Traefik every request comes from the proxy. Naming it here lets
+  // the rate limit count each client, from the address the proxy appended.
+  const proxies = config.get('trusted-proxies');
+  if (proxies.length > 0) app.set('trust proxy', proxies);
   app.useBodyParser('json', { limit: config.get('max-payload-bytes') });
   app.enableShutdownHooks();
 }
@@ -30,10 +44,14 @@ export function isEntrypoint(entrypoint: string | undefined): boolean {
 }
 
 async function bootstrap() {
+  // Settings the gateway refuses stop it before anything is started.
+  const errors = startupErrors(new Config());
+  if (errors.length > 0) throw new Error(errors.join('\n'));
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
   });
   const config = app.get(Config);
+  startupWarnings(config).forEach((warning) => Logger.warn(warning, 'Signals'));
   configureSignalsApp(app, config);
   await app.listen(config.get('port'), config.get('hostname'));
 }
