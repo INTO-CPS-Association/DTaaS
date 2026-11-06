@@ -1,0 +1,10 @@
+# Signals gateway configuration. Copy to signals.yaml and adjust.
+# Every key may also be set with an environment variable: SIGNALS_ and the
+# key in upper case with '_' for '-', for example SIGNALS_PORT.
+
+# Where the service listens.
+hostname: 127.0.0.1
+port: 4004
+
+# Largest JSON request body, in bytes.
+max-payload-bytes: 65536
