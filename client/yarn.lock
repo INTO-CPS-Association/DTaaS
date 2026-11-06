@@ -817,6 +817,10 @@
     "@reduxjs/toolkit" "^2.13.0"
     uuid "^14.0.2"
 
+"@into-cps-association/dtaas-sdk@link:./sdk":
+  version "0.0.0"
+  uid ""
+
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz"

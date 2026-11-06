@@ -12,6 +12,7 @@ pages.
 | :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
 | `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.1.1`. |
+| `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -34,10 +35,24 @@ table (`src/routes.tsx`), the menu (`src/page/MenuItems.tsx`), the icon
 registry (`src/components/appIcons.tsx`) and `package.json`. A page for
 another domain would have to edit the same files.
 
+## The Extension Contract
+
+`client/sdk/` holds `@into-cps-association/dtaas-sdk`, the contract between the
+client and its domain extensions: the `DtaasExtension` type, the `HostServices`
+types, the schema of `visualisation.json`, the validation helpers and a test
+harness with `fakeHostServices`, `fakeSignals` and `checkConformance`, so an
+extension is tested without a running installation. Its README describes the
+package and `yarn test:sdk` runs its tests.
+
+An extension declares the contract revision it was built against (`sdk: 1`) and
+may declare the versions of the API it works with as a semver range (`apiRange`,
+such as `^1.1`). A host refuses an extension whose range does not include the
+API version the host implements (`SDK_VERSION`).
+
 ## Proposed Modular Architecture
 
-The modular architecture described here is a proposal. It is not merged
-into the client, and `client/package.json` does not depend on the SDK.
+The rest of the modular architecture described here is a proposal. The client
+does not load extensions yet.
 
 The [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk)
 repository holds `@into-cps-association/dtaas-sdk`, which defines a
