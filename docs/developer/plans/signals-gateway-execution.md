@@ -14,6 +14,7 @@ flowchart LR
   A[A Merge 1] --> P2
   B[B ThingsBoard comparison] --> P4
   C[C Local Telegraf and PostgreSQL] --> P3
+  C --> P4
   D[D Test publisher on the convention] --> P3
   X[Discussion 1912] --> C1[Extension API core and K-a]
   C1 --> C2[Web extension host]
