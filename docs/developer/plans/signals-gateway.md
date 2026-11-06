@@ -1,11 +1,11 @@
 # Signals Gateway: Requirements, Architecture and Phases
 
-This plan opens the first of the pull requests that split #1879. It states
-who needs the signals of a digital twin, what the platform must guarantee to
-each of them, the architecture agreed with the maintainer on 6 November 2026
-and the phases in which it is built. Names follow the
-[naming convention](naming/index.md) and access follows the
-[access plan](access-plan.md).
+This plan opens the first of the pull requests that split #1879. It states who
+needs the signals of a digital twin, what the platform must guarantee to each of
+them, the architecture agreed with the maintainer on 6 November 2026 and the
+phases in which it is built. Names follow the [naming
+convention](naming/index.md) and access follows the [access
+plan](access-plan.md).
 
 ## Architecture
 
@@ -21,47 +21,49 @@ flowchart LR
 ```
 
 - Live samples go from RabbitMQ to the gateway and from the gateway to the
-  browser. They never pass through a database, because reading live data
-  from a database means polling it.
+  browser. They never pass through a database, because reading live data from a
+  database means polling it.
 - Telegraf is the only program that writes history. Its MQTT consumer input
-  reads the readings and its PostgreSQL output, available since Telegraf
-  1.24, writes them
-  ([Telegraf PostgreSQL output](https://docs.influxdata.com/telegraf/v1/output-plugins/postgresql/)).
-- The gateway reads history from PostgreSQL with a role that may only
+  reads the readings and its PostgreSQL output, available since Telegraf 1.24,
+  writes them ([Telegraf PostgreSQL
+  output](https://docs.influxdata.com/telegraf/v1/output-plugins/postgresql/)).
+- The history of a signal lives in the database of the GitLab group that owns
+  the twin declaring it. The gateway reads it there with a role that may only
   select. Grafana reads the same tables directly.
+- ThingsBoard keeps its own PostgreSQL database. DTaaS stores the history on its
+  own, so ThingsBoard's storage does not affect it.
 - No program written for one site sits in the data path. Telegraf and the
   gateway are configured, not extended.
 
 ## Phases
 
-Each phase is one pull request with its tests and the documentation it
-touches. It starts after the previous one is merged and passes the
-repository checks (lint, tests, SonarQube, Codecov and Qlty) before review.
-The [execution plan](signals-gateway-execution.md) lists the code each
-phase takes from #1879, the new code and the checks.
+Each phase is one pull request with its tests and the documentation it touches.
+It starts after the previous one is merged and passes the repository checks
+(lint, tests, SonarQube, Codecov and Qlty) before review. The [execution
+plan](signals-gateway-execution.md) lists the code each phase takes from #1879,
+the new code and the checks.
 
 | Phase | Pull request | Content | Done when |
 | :---- | :----------- | :------ | :-------- |
 | 1 | Design and skeleton | This plan, `servers/signals` with its configuration, the health route, `stream` and `range` routes that answer 501, the Docker image and the workflow that publishes the package and the image | The image answers 200 on health and 501 on the other routes |
-| 2 | Security framework | Sign-in through OpenID Connect, `AccessPolicy` over the committed `visualisation.json`, rate limits and the decision log | A token of another application, an expired token and an undeclared path are refused in tests |
+| 2 | Security architecture | A mapping of the RBAC and attribute-based access control that GitLab, Keycloak and Dex can provide, the Traefik glue, then sign-in from each provider to the gateway, `AccessPolicy` over the committed `visualisation.json`, rate limits and the decision log | The mapping is reviewed. For each provider, tests refuse a token issued to another application or audience, an expired token and an undeclared path |
 | 3 | Live samples over MQTT | MQTT subscription in the virtual host `/`, `POST /signals/stream` as server-sent events, the account `dtaas_signals` with topic permissions, made by `dtaas-services` | A reading published by a test device reaches a browser stream and a path of another group is refused |
-| 4 | History | Telegraf, the `reading` and `device` tables, the PostgreSQL roles, `POST /signals/range` and the Grafana data source | A reading published in phase 3 is returned by `range` and shown in Grafana |
+| 4 | History | Telegraf with one config file per twin, the `reading` and `device` tables, twin registration in `dtaas-services`, the PostgreSQL roles, `POST /signals/range` and the Grafana data source | A reading published in phase 3 is returned by `range` and shown in Grafana |
 | 5 | Data to a twin | `POST /signals/command`, published to `.../cmd/<command>` for a person with the `member` role | A set point reaches a test twin and a `viewer` is refused |
-| 6 | Packages and guides | The four docker packages, the administrator pages and the user guide | A fresh installation streams, stores and shows a reading |
+| 6 | Packages and guides | The four docker packages, the administrator pages, the user guide and the comparison with ThingsBoard and Eclipse Ditto | A fresh installation streams, stores and shows a reading |
 
-Phase 3 takes the stream code of #1879 and replaces its AMQP reader with an
-MQTT reader. Phase 4 replaces the InfluxDB reader of #1879 with a
-PostgreSQL reader.
+Phase 3 takes the stream code of #1879 and replaces its AMQP reader with an MQTT
+reader. Phase 4 replaces the InfluxDB reader of #1879 with a PostgreSQL reader.
 
-The client parts follow discussion #1912 on the Extension API and wait for
-its decisions on the name and place of the contract.
+The client parts follow the increments of discussion #1912 (its section 14). The
+[domain kits](domain-kits.md) page maps the kit phases onto them.
 
-| Order | Pull request | Content taken from #1879 |
-| :---- | :----------- | :----------------------- |
-| 1 | Extension API core | The contract now in `client/sdk` |
-| 2 | Web extension host | Host services, extension registration in `extensions.ts`, menu, routes and the credentials held in the client core |
-| 3 | `bim` as an extension | The Buildings page moved out of the client into its own package |
-| 4 | Visualisation | The common core, the Visualise tab and the `image` and `embed` substrates, reading signals through the gateway after phase 3 |
+| Order | Pull request | #1912 step | Content taken from #1879 and its follow-up branch |
+| :---- | :----------- | :--------- | :----------------------- |
+| 1 | Extension API core | 2 | The contract now in `client/sdk` |
+| 2 | Web extension host | 3 | Host services, extension registration in `extensions.ts`, menu, routes and the credentials held in the client core |
+| 3 | `bim` as an extension | 5 | The Buildings page moved out of the client into its own package |
+| 4 | Visualisation | 6 | The common core, the Visualise tab, the substrate registry and the `image` and `embed` substrates, with `aec` moved into `bim`, reading signals through the gateway after phase 3 |
 
 ## Who Reads and Writes Signals
 
@@ -97,151 +99,145 @@ its decisions on the name and place of the contract.
 ### Browser Through the Gateway, Programs Directly (G1, G3, G10)
 
 The browser reaches signals only through the gateway, in both directions.
-Programs on the server, on a runner or at a partner connect to RabbitMQ and
-MQTT directly, with their own scoped credential. A program needs to write,
-needs low delay and already has client libraries for these protocols, so
-putting the gateway in its path adds a hop and a single point of failure
-without adding protection.
+Programs on the server, on a runner or at a partner connect to RabbitMQ and MQTT
+directly, with their own scoped credential. A program needs to write, needs low
+delay and already has client libraries for these protocols, so putting the
+gateway in its path adds a hop and a single point of failure without adding
+protection.
+
+### Live Samples Over MQTT (Phase 3, G11)
+
+The broker sends all MQTT traffic through the virtual host `/`, as the naming
+convention decided, so the gateway subscribes there. It holds one connection per
+instance, with the client ID `dtaas_signals_<host>`. It makes one subscription
+per path that an open stream asks for. Live samples use QoS 0, since a sample
+lost during a reconnect is still in the history. A message is forwarded only
+when it carries the fields `value`, `ts` and `unit` of the payload convention
+and fits `max-message-bytes`. Every other message is dropped and counted in
+`stats`.
+
+### History Through Telegraf (Phase 4, G4, G11)
+
+- One Telegraf process reads a directory with one config file per twin (the
+  maintainer's preference) and reloads it with `--watch-config`. A reload
+  restarts the whole agent and a malformed file stops it, so each file comes
+  from one template tested in CI and passes `telegraf config check`, which does
+  not start the plugins, before it is written.
+- Each file holds an MQTT consumer input with the account `<group>_telegraf`,
+  the client ID `<group>_telegraf_<twin>`, the topic prefix of the twin, QoS 1
+  and a persistent session, so the broker keeps the readings that arrive during
+  a restart. The input adds a routing tag with the twin. The file's PostgreSQL
+  output accepts only that tag and the twin's registered devices, so no reading
+  reaches another group's database. A twin belongs to one group.
+- `topic_parsing` turns the eight topic levels into tags. The JSON v2 parser
+  reads `value` as the field, `unit` as a tag and `ts` as the time.
+  `name_override` names the table `reading`. Only the tags `device_id`,
+  `quantity` and `unit` are kept and status topics are dropped.
+- `dtaas-services` creates `reading`, `device` and `reading_device_id_time_idx`
+  in each group database, as on the [databases page](naming/databases.md), with
+  empty table templates in Telegraf, so Telegraf only inserts.
+- A device is registered before it publishes. PostgreSQL refuses a reading of an
+  unknown device and Telegraf drops that whole batch, so the registration
+  command writes the `device` rows and the twin's config file in one step.
+  Removing a twin removes its file and its session queue.
+- All history is kept. The `range` route reads with parameterised queries, keeps
+  the limits of #1879 (seven days and 10000 points per answer) and downsamples a
+  longer series with `date_bin`.
 
 ### Dashboards Read the Services Directly
 
 Grafana reads PostgreSQL directly, through a data source per group with a
-read-only role. ThingsBoard keeps its telemetry in its own database. Only
-the data exchanged between the client and the twins goes through the
-gateway.
-
-### Live Samples Over MQTT (Phase 3, G11)
-
-The broker sends all MQTT traffic through the virtual host `/`, as the
-naming convention decided, so the gateway subscribes there. It holds one
-connection per instance, with the client ID `dtaas_signals_<host>`. It
-makes one subscription per path that any open stream asks for. Live samples use
-QoS 0, since a sample lost during a reconnect is still in the history. A
-message is forwarded only when it carries the fields `value`, `ts` and
-`unit` of the payload convention and fits `max-message-bytes`. Every other
-message is dropped and counted in `stats`.
-
-### History Through Telegraf (Phase 4, G11)
-
-- The MQTT consumer input subscribes with the account `dtaas_telegraf`,
-  QoS 1, a fixed client ID and a persistent session, so the broker keeps
-  the readings that arrive while Telegraf restarts
-  ([Telegraf MQTT consumer](https://docs.influxdata.com/telegraf/v1/input-plugins/mqtt_consumer/)).
-- `topic_parsing` turns the eight topic levels into tags with the names of
-  the naming convention. The JSON v2 parser reads `value` as the field,
-  `unit` as a tag and `ts` as the time. `name_override` sets the table name
-  to `reading`.
-- The tables `reading` and `device` and the index
-  `reading_device_id_time_idx` are created by `dtaas-services` in the
-  database of each group, as on the [databases page](naming/databases.md).
-  Telegraf keeps only the tags that are columns of `reading` and its role
-  may only insert, so it never creates or alters a table.
-- The gateway's `range` route reads with parameterised queries, keeps the
-  limits of #1879 (seven days and 10000 points per answer) and downsamples
-  a longer series with `date_bin`.
+read-only role. Only the data exchanged between the client and the twins goes
+through the gateway.
 
 ### One Common Gateway, Extension Backends Allowed (G9)
 
-There is one signals gateway for all extensions, as the first common
-platform service. An extension that needs something the gateway does not
-serve may add its own backend later. Discussion #1912 lists server-side
-extensions as a non-goal, so this waits for a decision there. A gateway per
-extension is not the default, because it would repeat the sign-in and
-access code in each one.
-[Domain kits](domain-kits.md) plans what the SDK gives every extension.
+There is one signals gateway for all extensions, as the first common platform
+service. Discussion #1912 lists server-side extensions as a non-goal, so an
+extension backend waits for a decision there. A gateway per extension would
+repeat the sign-in and access code in each one. [Domain kits](domain-kits.md)
+plans what the SDK gives every extension.
 
-### Sign-In Through OpenID Connect (G5)
+### Sign-In and Access (Phase 2, G2, G5, G6, G7)
 
-In #1879 the gateway asks GitLab who owns a token. Phase 2 keeps that
-behind the identity interface and adds token validation through OpenID
-Connect discovery and the provider's published keys, so Keycloak and Dex
-work the same way. The token must be issued to the DTaaS client
-application (its `aud` or client id) and an empty client id stops the
-service at startup.
+- The first step is the mapping the maintainer asked for: the claims, roles and
+  attributes each provider gives, how the access table of the access plan maps
+  onto them and onto each service and the glue between Traefik and Keycloak.
+  Traefik Proxy has ForwardAuth and no built-in OIDC middleware. DTaaS uses
+  `thomseddon/traefik-forward-auth` today.
+- GitLab access tokens are opaque, so the gateway asks GitLab about them, as
+  #1879 does. Keycloak and Dex tokens are JWTs, checked for signature, expiry,
+  issuer and an audience that names the gateway (RFC 9068 and RFC 9700).
+- Until step 8 of the access plan moves the tokens to a website backend, the
+  browser holds the token and sends it to the gateway. RFC 10017 recommends that
+  backend for applications with personal or business data.
+- A path is allowed when a `visualisation.json` committed in a project the
+  person can read declares it. Group roles of the access plan come next, checked
+  against a cache of at most 60 seconds. Roles carried inside a token change
+  only when the token expires. Sending data to a twin needs `member`.
 
-### Access by Group Role (G2, G6, G7)
-
-In #1879 a path is allowed when a `visualisation.json` committed in a
-GitLab project the person can read declares it. That rule stays as the
-first policy behind `AccessPolicy`. The next policy reads the group roles
-of the access plan (`<group>_viewer`, `<group>_member`, `<group>_admin`).
-Both are checked on every request against a cache of at most 60 seconds,
-so removing a person from a group takes effect within a minute. Sending
-data to a twin needs `member`.
-
-### One Source of `visualisation.json` (G8)
+### One Source of `visualisation.json` and the API Style (G8, G10)
 
 The client reads the copy committed in GitLab, which is the one the gateway
-reads. The page shows which paths were refused.
-
-### API Style (G10)
-
-Live samples go out as server-sent events, past samples as JSON over HTTP
-and data sent to a twin as a JSON request. Server-sent events pass through
-Traefik and proxies as ordinary HTTP. The stream request carries its list
-of paths in the body, so the client reads it with `fetch` and reconnects
-itself, since the browser's `EventSource` only sends GET requests. The
-transport sits behind one service, so it can change without changing the
-extensions.
+reads. The page shows which paths were refused. Live samples go out as
+server-sent events, past samples as JSON over HTTP and data sent to a twin as a
+JSON request. The stream request carries its paths in the body, so the client
+reads it with `fetch` and reconnects itself, since the browser's `EventSource`
+only sends GET requests.
 
 ## Accounts, Names and Secrets (G4, G12, G13)
 
 | Account | Service | May | Secret file |
 | :------ | :------ | :-- | :---------- |
 | `dtaas_signals` | RabbitMQ, MQTT in `/` | Read the topics of the projects served, write only `.../cmd/<command>` | `rabbitmq_dtaas_signals_password` |
-| `dtaas_telegraf` | RabbitMQ, MQTT in `/` | Read the topics of the projects served | `rabbitmq_dtaas_telegraf_password` |
-| `<group>_ingest` | PostgreSQL, database `<group>` | Insert into `reading` | `postgresql_<group>_ingest_password` |
 | `dtaas_signals_ro` | PostgreSQL, every group database | Select from `reading` and `device` | `postgresql_dtaas_signals_ro_password` |
+| `<group>_telegraf` | RabbitMQ, MQTT in `/` | Read the topics of the group's projects | `rabbitmq_<group>_telegraf_password` |
+| `<group>_telegraf` | PostgreSQL, database `<group>` | Insert into `reading` | `postgresql_<group>_telegraf_password` |
 | `<group>_view_ro` | PostgreSQL, database `<group>` | Select, for the Grafana data source `postgresql_<group>` | `postgresql_<group>_view_ro_password` |
 | Device or partner | RabbitMQ, MQTT in `/` | Write the topics of one project | Kept by the site |
 
-The gateway's accounts are the exception to G4, because they serve every
-user. Their access is limited as above and every request is checked
-against the person's own rights first.
+The gateway's two accounts are the exception to G4, because they serve every
+user. Their access is limited as above and every request is checked against the
+person's own rights first.
 
 - `dtaas-services` makes the accounts with random passwords, passed through
-  standard input and written with mode 600, as in steps 1 and 2 of the
-  access plan.
-- Containers read secrets as Compose secrets under `/run/secrets`. The
-  gateway reads them through its `*-password-file` keys and refuses a plain
-  password at startup. Telegraf reads them through its Docker secret store,
+  standard input and written with mode 600, as in steps 1 and 2 of the access
+  plan.
+- Containers read secrets as Compose secrets under `/run/secrets`. The gateway
+  reads them through its `*-password-file` keys and refuses a password given in
+  a key or a variable. Telegraf reads them through its Docker secret store,
   available since Telegraf 1.27.
 - MQTT and PostgreSQL use TLS on every connection that leaves the Docker
-  network.
-- Images are pinned to an exact version. The decision log records the user,
-  the paths and the result, never a token or a sample.
-
-| Credential for a program | Kept where |
-| :----------------------- | :--------- |
-| Twin in a workspace | The group's broker account, mounted as a file |
-| Twin on a GitLab runner | The group's broker account in a masked and protected CI/CD variable |
+  network. Images are pinned to an exact version. The decision log records the
+  user, the paths and the result, never a token or a sample.
+- A twin in a workspace gets the group's broker account as a file. A twin on a
+  GitLab runner gets it in a masked and protected CI/CD variable.
 
 ## Decided in Review
 
-1. Virtual hosts separate the data flows of users. MQTT stays in `/` with
-   topic permissions per project.
+1. Virtual hosts separate the data flows of users. MQTT stays in `/` with topic
+   permissions per project.
 2. Dashboards read the services directly. Only the data exchanged in both
    directions between the client and the twins goes through the gateway.
 3. A runner uses a CI/CD variable for now.
 4. Live samples come from RabbitMQ through the gateway. Telegraf writes the
    history to PostgreSQL and the gateway reads it from there.
 5. The first API phase streams MQTT readings only.
+6. ThingsBoard keeps its own PostgreSQL database. Eclipse Ditto is not used. The
+   comparison of both goes into the documentation.
+7. A device is registered before it publishes.
+8. Telegraf has one config file per twin, or per domain or user if that works
+   better in practice.
+9. All history is kept.
+10. Security has its own pull request, which starts with the mapping of the
+    providers and with sign-in from each provider to the gateway.
 
 ## Open Questions
 
-1. ThingsBoard keeps its own PostgreSQL database. Does its telemetry also
-   reach `reading`, or does ThingsBoard take the place of Telegraf? The
-   feature comparison with ThingsBoard and Eclipse Ditto answers this,
-   together with whether Ditto can take the gateway's role.
-2. The foreign key `reading_device_id_fkey` makes Telegraf retry a whole
-   batch when one device is not yet in `device`. Is a device registered
-   before it publishes, or is the key left out?
-3. One Telegraf per installation, or one per group?
-4. How long is raw history kept? Is TimescaleDB used for it?
+1. Is TimescaleDB used for `reading`, given that all history is kept?
 
 ## Left for Later
 
-- A runner's job could sign in to RabbitMQ with its GitLab ID token through
-  the RabbitMQ OAuth 2.0 plugin, so the credential ends with the job.
-- Live samples over AMQP, for twins that publish to a virtual host of
-  their own.
+- A runner's job could sign in to RabbitMQ with its GitLab ID token through the
+  RabbitMQ OAuth 2.0 plugin, so the credential ends with the job.
+- Live samples over AMQP, for twins that publish to a virtual host of their own.
