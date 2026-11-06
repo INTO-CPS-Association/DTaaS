@@ -31,7 +31,7 @@
   },
   "verbose": true,
   "testRegex": "./test/.*\\.spec.tsx?$",
-  "testPathIgnorePatterns": ["/node_modules/"],
+  "testPathIgnorePatterns": ["/node_modules/", "/test/integration/"],
   "modulePaths": ["<rootDir>", "<rootDir>/src/", "<rootDir>/test/"],
   "moduleDirectories": ["node_modules", "src", "test"],
   "rootDir": "./",

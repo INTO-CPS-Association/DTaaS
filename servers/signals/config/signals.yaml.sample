@@ -74,8 +74,35 @@ owners-file: /run/secrets/signals_owners.json
 # The channel of a topic whose mqtt transport names none.
 default-channel: measured
 
-# Limits of one request.
+# RabbitMQ over MQTT, with the service account of the gateway. mqtts://
+# verifies the broker certificate. No user name or password in the URL.
+mqtt-url: mqtt://localhost:1883
+mqtt-user: dtaas_signals
+# File holding the account's password, and nothing else. Mode 600.
+mqtt-password-file: /run/secrets/rabbitmq_dtaas_signals_password
+# Timeout of one connection attempt, in milliseconds.
+mqtt-connect-timeout: 10000
+
+# Limits of one request and one user.
 max-paths-per-stream: 200
 max-path-length: 256
+max-streams-per-user: 4
+# Broker messages larger than this many bytes are dropped. So is a message
+# outside the payload convention: a number value, an RFC 3339 ts and a unit.
+max-message-bytes: 65536
+# Bytes a stream may hold unsent while the client reads slower than samples
+# arrive. Past this, new samples are dropped and counted as congested.
+max-backlog-bytes: 1048576
+# A stream closes after this many milliseconds, or when the token expires.
+stream-max-age: 600000
+# Milliseconds between two checks that the user may still read every signal
+# of an open stream. A revoked signal ends the stream. The check reads the
+# project list cached for projects-cache-ttl, so a revocation takes effect
+# within this interval plus projects-cache-ttl.
+stream-recheck-interval: 60000
+# Milliseconds between ': keep-alive' comments on a stream.
+keep-alive-interval: 15000
+# The reconnect wait sent to the client as 'retry:', in milliseconds.
+retry-interval: 5000
 # Longest history range a request may ask for, in milliseconds.
 range-max-span: 604800000
