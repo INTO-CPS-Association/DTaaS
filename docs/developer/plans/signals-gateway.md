@@ -37,6 +37,8 @@ flowchart LR
 Each phase is one pull request with its tests and the documentation it
 touches. It starts after the previous one is merged and passes the
 repository checks (lint, tests, SonarQube, Codecov and Qlty) before review.
+The [execution plan](signals-gateway-execution.md) lists the code each
+phase takes from #1879, the new code and the checks.
 
 | Phase | Pull request | Content | Done when |
 | :---- | :----------- | :------ | :-------- |
