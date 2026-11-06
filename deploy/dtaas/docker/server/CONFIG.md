@@ -124,6 +124,9 @@ rule.<NAME>.whitelist=<email>
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/lib`)
 
+rule.signals.action=auth
+rule.signals.rule=PathPrefix(`/signals`)
+
 rule.onlyu1.action=auth
 rule.onlyu1.rule=PathPrefix(`/user1`)
 rule.onlyu1.whitelist=user1@emailservice.com
@@ -173,6 +176,12 @@ uid 1000, the user that runs the logger:
 mkdir -p logs/logger
 sudo chown -R 1000:1000 logs/logger
 ```
+
+## config/signals.yaml - Signals Gateway
+
+Copy `config/signals.yaml.example` to `config/signals.yaml` and the three
+secrets to `config/secrets/` (mode 600), set `COMPOSE_PROFILES=signals` and
+`REACT_APP_VIZ_SIGNALS_URL`. The Signals Gateway guide gives each step.
 
 ## OAuth 2.0 Application Setup
 

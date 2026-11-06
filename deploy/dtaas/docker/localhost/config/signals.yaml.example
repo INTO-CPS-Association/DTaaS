@@ -1,0 +1,36 @@
+# Signals gateway configuration of this package. Copy it to signals.yaml.
+# servers/signals/config/signals.yaml.sample in the DTaaS repository
+# documents every key. The gateway refuses a key it does not know.
+# No secret is written here: Docker Compose mounts the three files of
+# config/secrets/ under /run/secrets/, where the keys below name them.
+
+# The GitLab that signs users in, the same as REACT_APP_AUTH_AUTHORITY in
+# client.js. The gateway sends the user's token to this address only.
+gitlab-url: https://gitlab.com
+# The group whose projects hold the users' twins and the branch whose
+# committed visualisation.json files declare the signals.
+gitlab-group: DTaaS
+gitlab-branch: master
+# Replace the placeholder with the Application ID of the DTaaS client OAuth
+# application, REACT_APP_CLIENT_ID in client.js, so a token issued to another
+# OAuth application is refused. Until it is replaced every token is refused.
+gitlab-client-id: '<DTAAS_CLIENT_APPLICATION_ID>'
+# The subnet of the Docker network dtaas_default, where Traefik runs, as
+# 'docker network inspect dtaas_default' prints it. The rate limit then counts
+# each client instead of the proxy. Empty trusts no proxy.
+trusted-proxies: []
+
+# Written by 'dtaas-services user add-history --owner'. Without it no topic
+# is served.
+owners-file: /run/secrets/signals_owners.json
+
+# RabbitMQ over MQTT and PostgreSQL of the platform services
+# (deploy/services), on the ports of their services.env. Both connections use
+# TLS and verify the certificate of the host named here.
+mqtt-url: mqtts://services.foo.com:8085
+mqtt-user: dtaas_signals
+mqtt-password-file: /run/secrets/rabbitmq_dtaas_signals_password
+postgres-url: postgres://services.foo.com:5432
+postgres-user: dtaas_signals_ro
+postgres-password-file: /run/secrets/postgresql_dtaas_signals_ro_password
+postgres-tls: true

@@ -48,8 +48,10 @@ USER_PSEUDO_KEY_RE = re.compile(r"(username|email)(\d+)$")
 # Credential-bearing files. These must never reach the packaged wheel
 # (build.py) and are chmod'd 0600 wherever the CLI writes them (project.py,
 # deploy_config.py): dtaas.toml can carry the GitLab provisioning PAT,
-# users.csv an optional plaintext password column, and gitlab_user_tokens.json
-# the PATs issued to provisioned users.
+# users.csv an optional plaintext password column, gitlab_user_tokens.json
+# the PATs issued to provisioned users, and the secrets/ folder of a package
+# the passwords of the signals gateway. signals.yaml is a local copy of its
+# example, like client.js.
 SECRET_FILENAMES = frozenset(
     {
         ".env",
@@ -58,6 +60,8 @@ SECRET_FILENAMES = frozenset(
         "forward-auth-conf",
         "dtaas.toml",
         "users.csv",
+        "secrets",
+        "signals.yaml",
         GITLAB_USER_TOKENS_FILE,
     }
 )

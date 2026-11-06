@@ -1,10 +1,13 @@
 # Signals Path: Comparison With ThingsBoard and Eclipse Ditto
 
-This page is step B of the [execution plan](signals-gateway-execution.md). It
-compares the signals path of the [signals gateway plan](signals-gateway.md)
-with ThingsBoard Community Edition and Eclipse Ditto on the points the plan
-depends on. The DTaaS column describes the design, since the gateway is not
-built yet. The other columns describe what the official documentation and
+This page compares the signals path that the [install page](install.md)
+sets up with ThingsBoard Community Edition and Eclipse Ditto, on the points
+the [signals gateway
+plan](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/docs/developer/plans/signals-gateway.md)
+depends on. It is step B of the [execution
+plan](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/docs/developer/plans/signals-gateway-execution.md).
+The DTaaS column describes Telegraf and the gateway as these pages install
+them. The other columns describe what the official documentation and
 repositories state, read on 6 November 2026 at Telegraf 1.40.3, ThingsBoard
 4.4.0.2 and Eclipse Ditto 3.9.8. The numbers in each cell point to the sources
 listed after the table. A point that the sources read do not settle is marked
@@ -12,7 +15,7 @@ as not found.
 
 ## Comparison
 
-| Point | Telegraf and the DTaaS gateway (as designed) | ThingsBoard Community Edition | Eclipse Ditto |
+| Point | Telegraf and the DTaaS gateway | ThingsBoard Community Edition | Eclipse Ditto |
 | :---- | :------------------------------------------- | :---------------------------- | :------------ |
 | Licence | Telegraf is under the MIT licence (1). The gateway is part of the DTaaS repository, under GPL version 3 or the INTO-CPS Association Public License 1.0, at the recipient's choice (2). | Version 4.4.0 and later are under the Business Source License 1.1. Its Additional Use Grant allows production use at no charge without a commercial purpose up to 1,000 devices, or with a commercial purpose up to 100 devices on one server, while the ThingsBoard attribution stays visible and a licence key issued by ThingsBoard is used. Use by an accredited educational institution not for commercial profit is not a commercial purpose. Each version changes to Apache 2.0 four years after publication. Version 4.3.1 is under Apache 2.0 (7, 8). | Eclipse Public License 2.0 (15). |
 | Ingest from an external MQTT broker | The Telegraf MQTT consumer input subscribes to the RabbitMQ MQTT listener with QoS 1, a persistent session and `topic_parsing` of the topic levels into tags (3, 5). | Platform integrations, which connect external brokers, are available in Professional Edition and Cloud only (9). The separate ThingsBoard IoT Gateway, under Apache 2.0, has an MQTT connector that subscribes to topics of a broker over MQTT 3.1, 3.1.1 or 5 and maps them to device attributes and time series (10, 11). | A connection with the MQTT 3.1.1 or MQTT 5 binding subscribes to source topics of an external broker. Payloads that are not Ditto Protocol need a payload mapping (16, 17). |
@@ -30,8 +33,10 @@ as not found.
    input](https://github.com/influxdata/telegraf/blob/master/plugins/inputs/mqtt_consumer/README.md)
 4. [Telegraf PostgreSQL
    output](https://docs.influxdata.com/telegraf/v1/output-plugins/postgresql/)
-5. [Signals gateway plan](signals-gateway.md)
-6. [Naming convention](naming/index.md)
+5. [Signals gateway
+   plan](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/docs/developer/plans/signals-gateway.md)
+6. [Naming
+   convention](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/docs/developer/plans/naming/index.md)
 7. [ThingsBoard licence on
    master](https://github.com/thingsboard/thingsboard/blob/master/LICENSE)
 8. [ThingsBoard licence at

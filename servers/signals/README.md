@@ -1,6 +1,6 @@
 # Signals Gateway Microservice
 
-The signals gateway will serve the live and past signals of digital twins
+The signals gateway serves the live and past signals of digital twins
 to the DTaaS client, so that no broker or PostgreSQL credential reaches the
 browser. The requirements and the choices behind it are in
 [the plan](../../docs/developer/plans/signals-gateway.md).
