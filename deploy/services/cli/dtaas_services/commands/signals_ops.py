@@ -2,6 +2,7 @@
 
 import click
 from rich.console import Console
+from .utility import projects_option
 from ..pkg.secret_files import secret_path
 from ..pkg.services.signals_account import (
     SIGNALS_ACCOUNT,
@@ -11,13 +12,8 @@ from ..pkg.services.signals_account import (
 
 
 @click.command(name="add-signals")
-@click.option(
-    "--project",
-    "-p",
-    "projects",
-    multiple=True,
-    required=True,
-    help="Project the gateway serves, the first topic level. Repeat for more.",
+@projects_option(
+    "Project the gateway serves, the first topic level. Repeat for more."
 )
 def add_signals(projects):
     """

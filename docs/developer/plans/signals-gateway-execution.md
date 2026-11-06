@@ -159,8 +159,11 @@ flowchart LR
   the twin's topic prefix, a `tagdrop` for status topics, the JSON v2 parser
   with `timestamp_format = "rfc3339"` and `timestamp_timezone = "UTC"`,
   `name_override = "reading"`, QoS 1, a persistent session and a routing tag.
-  `outputs.postgresql` has a `tagpass` on that tag and on the registered
-  `device_id` values, `taginclude = ["device_id", "quantity", "unit"]`, empty
+  The input has a `tagpass` on the registered `device_id` values and
+  `outputs.postgresql` a `tagpass` on the routing tag, because Telegraf joins
+  the tag keys of one `tagpass` with OR
+  ([Telegraf configuration](https://github.com/influxdata/telegraf/blob/v1.40.2/docs/CONFIGURATION.md)).
+  The output has `taginclude = ["device_id", "quantity", "unit"]`, empty
   `create_templates` and `add_column_templates` and its password from
   `secretstores.docker`. An insert-only role is enough, since the output writes
   with COPY.

@@ -250,6 +250,85 @@ that start with `dtaas_signals_`. A random password is written to
 `rabbitmqctl` through standard input. Running the command again keeps the
 password and replaces the list of projects.
 
+### History of Signals
+
+Telegraf writes the readings of registered twins to the PostgreSQL database
+of the group that owns them, with one config file per twin. Set up a group
+once, with the projects whose topics it reads:
+
+```bash
+dtaas-services user add-history -g swim -p SWiM
+```
+
+This makes the MQTT account `swim_telegraf`, which may read the topics of
+`SWiM` and publish nowhere, and the database `swim` with the tables `device`
+and `reading` and the index `reading_device_id_time_idx`. It makes the roles
+`swim_telegraf` (insert into `reading`), `swim_view_ro` and `dtaas_signals_ro`
+(select from `device` and `reading`) and the Grafana data source
+`postgresql_swim` in `config/grafana/provisioning/datasources`. No other role
+may connect to the database. Passwords go to `secrets/telegraf`,
+`secrets/grafana` and `secrets/signals` with mode 600 and roles get a
+SCRAM-SHA-256 verifier, so no password reaches the server. Restart Grafana to
+load a new data source.
+
+The signals gateway refuses a declared topic outside the group of the project
+that declares it. Map each GitLab project path whose twins use the group with
+a repeatable `--owner`:
+
+```bash
+dtaas-services user add-history -g swim -p SWiM -o jady
+```
+
+The owners go to `secrets/signals/signals_owners.json` with mode 600, as
+`{"jady": {"group": "swim", "topics": ["SWiM/"]}}`. A second run adds new
+topics to an owner. An owner already mapped to another group is refused
+before any service is touched. `secrets/signals` also holds
+`rabbitmq_dtaas_signals_password` and `postgresql_dtaas_signals_ro_password`,
+the files the gateway reads under `/run/secrets`.
+
+Register a twin from a JSON file that lists its devices:
+
+```json
+{
+  "group": "swim",
+  "twin": "room_0224",
+  "topic_prefix": "SWiM/CTO/room/0224",
+  "devices": [
+    {"topic": "SWiM/CTO/room/0224/seat48A/S/S-SWiM-CTO-room-0224-seat48A-TRH-0001",
+     "brick_class": "Air_Temperature_Sensor"}
+  ]
+}
+```
+
+```bash
+dtaas-services twin register -f room_0224.json
+```
+
+The command renders the twin's Telegraf file from one template and runs
+`telegraf config check` on it, with the local `telegraf` or the image
+`telegraf:1.40.2` through Docker. Without either it writes nothing. After the
+check it writes the `device` rows and then moves the file into
+`config/telegraf/telegraf.d`, which Telegraf watches. Only readings of the
+registered devices reach `reading`, so a reading of an unknown device is
+dropped by Telegraf and refused by the foreign key.
+
+The broker delivers at most `mqtt.prefetch` (10 in `config/rabbitmq/rabbitmq.conf`)
+unacknowledged readings to each twin and Telegraf acknowledges a reading only
+after writing it. Each twin file therefore writes a batch as soon as ten
+readings are buffered (`metric_batch_size = 10`, `max_undelivered_messages =
+10`) and flushes a partial batch every second. Keep these values equal to
+`mqtt.prefetch` if you change it.
+
+```bash
+dtaas-services twin remove -g swim -t room_0224
+```
+
+This deletes the twin's file, sends SIGHUP to the `telegraf` container when it
+runs under Docker so the agent reloads, waits until Telegraf has left its MQTT
+session queue and then deletes that queue. Devices and readings are kept. If
+the queue still has a consumer, for example because the container was not
+reachable, run `docker kill -s HUP telegraf` and the command again.
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard

@@ -123,3 +123,49 @@ def test_grant_mqtt_account_stops_after_a_failure(run):
     run.return_value = _result(1, stderr="no_such_user")
     assert accounts.grant_mqtt_account("x_user", "^$", "^$")[0] is False
     assert run.call_count == 1
+
+
+def test_delete_session_queue_waits_for_the_consumer_to_leave(mocker):
+    """The queue is deleted only once Telegraf no longer reads it"""
+    mocker.patch.object(accounts.time, "sleep")
+    queue = "mqtt-subscription-swim_telegraf_room_0224qos1"
+    ctl = mocker.patch.object(
+        accounts,
+        "rabbitmqctl",
+        side_effect=[(True, f"{queue}\t1\n"), (True, f"{queue}\t0\n"), (True, "")],
+    )
+    assert accounts.delete_session_queue("swim_telegraf_room_0224") == (
+        True,
+        f"Deleted {queue}",
+    )
+    assert ctl.call_args.args[0] == ["delete_queue", "-p", "/", queue, "--if-unused"]
+
+
+def test_delete_session_queue_accepts_a_missing_queue(mocker):
+    """A twin that never connected has no queue to delete"""
+    mocker.patch.object(accounts, "rabbitmqctl", return_value=(True, "other\t0\n"))
+    success, message = accounts.delete_session_queue("swim_telegraf_x")
+    assert success
+    assert "No session queue" in message
+
+
+def test_delete_session_queue_gives_up_while_a_consumer_stays(mocker):
+    """A queue still read after the wait is kept and reported"""
+    mocker.patch.object(accounts.time, "sleep")
+    mocker.patch.object(accounts.time, "monotonic", side_effect=[0, 5, 100])
+    queue = "mqtt-subscription-swim_telegraf_xqos1"
+    mocker.patch.object(accounts, "rabbitmqctl", return_value=(True, f"{queue}\t1\n"))
+    success, message = accounts.delete_session_queue("swim_telegraf_x", wait_seconds=10)
+    assert not success
+    assert "still has a consumer" in message
+
+
+@pytest.mark.parametrize("suffix", ["stream", "command"])
+@pytest.mark.parametrize("qos", ["0", "1"])
+def test_gateway_client_ids_get_their_session_queues(run, suffix, qos):
+    """dtaas_signals_<host>_stream and _command may use their own queues"""
+    accounts.grant_mqtt_account("dtaas_signals", "^$", "^$")
+    configure, write, read = run.call_args_list[0].args[0][-3:]
+    queue = f"mqtt-subscription-dtaas_signals_dtl_2_{suffix}qos{qos}"
+    for pattern in (configure, write, read):
+        assert re.match(pattern, queue)
