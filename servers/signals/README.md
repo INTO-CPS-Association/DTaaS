@@ -1,7 +1,7 @@
 # Signals Gateway Microservice
 
 The signals gateway will serve the live and past signals of digital twins
-to the DTaaS client, so that no broker or InfluxDB credential reaches the
+to the DTaaS client, so that no broker or PostgreSQL credential reaches the
 browser. The requirements and the choices behind it are in
 [the plan](../../docs/developer/plans/signals-gateway.md).
 
@@ -14,8 +14,8 @@ the publishing workflow. The routes keep their final paths:
 | `POST /signals/stream` | `501` with `{"status":"not-implemented","route":"stream"}` |
 | `POST /signals/range` | `501` with `{"status":"not-implemented","route":"range"}` |
 
-Sign-in and access control come in the security pull request. The
-RabbitMQ, MQTT and InfluxDB readers come in the API pull request.
+Sign-in and access control come in phase 2 of the plan, live samples over
+MQTT in phase 3 and history from PostgreSQL in phase 4.
 
 ## Configuration
 
