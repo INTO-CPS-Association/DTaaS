@@ -17,6 +17,7 @@ import DeliveryStats from 'src/stream/delivery-stats';
 import StreamService from 'src/stream/stream.service';
 import StreamSlots from 'src/stream/stream-slots';
 import testConfig from 'test/helpers/config';
+import CommandService from 'src/command/command.service';
 import HistoryService from 'src/history/history.service';
 import ownersOf from 'test/helpers/owners';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
@@ -79,6 +80,7 @@ function gatewayWith(overrides: Partial<ConfigValues> = {}) {
     new StreamSlots(config),
     stats,
     new HistoryService(config, new FakePostgres(() => []).asClient()),
+    new CommandService(config, broker),
   );
   return { controller, broker, membership };
 }
@@ -92,7 +94,7 @@ async function lastDelivery(
   let delivered = Date.now();
   while (!response.writableEnded && Date.now() < limit) {
     const before = response.chunks.length;
-    broker.publish('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', reading(1));
     if (response.chunks.length > before) delivered = Date.now();
     await jest.advanceTimersByTimeAsync(STEP);
   }

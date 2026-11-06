@@ -39,6 +39,7 @@ export default class MqttBroker implements SignalBroker, OnModuleDestroy {
   private readonly table = new BindingTable<BrokerListener>();
   private readonly subscriptions = new Map<string, Promise<void>>();
   private client?: Promise<MqttClient>;
+  private commandClient?: Promise<MqttClient>;
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
@@ -61,9 +62,31 @@ export default class MqttBroker implements SignalBroker, OnModuleDestroy {
     return { close: () => this.release(client, topics, listener) };
   }
 
+  // Commands go on their own connection. RabbitMQ closes a connection that
+  // publishes where it may not, and the streams' connection stays up.
+  async publish(topic: string, body: string): Promise<void> {
+    this.commandClient ??= this.open('command').then((client) => {
+      client.on('close', () => {
+        this.commandClient = undefined;
+        client.end(true);
+      });
+      return client;
+    });
+    const pending = this.commandClient;
+    pending.catch(() => {
+      if (this.commandClient === pending) this.commandClient = undefined;
+    });
+    const client = await pending;
+    await client.publishAsync(topic, body, { qos: 1 });
+  }
+
   async onModuleDestroy(): Promise<void> {
-    const client = await this.client?.catch(() => undefined);
-    await client?.endAsync(true);
+    const clients = [this.client, this.commandClient].map((client) =>
+      client?.catch(() => undefined),
+    );
+    await Promise.all(
+      clients.map(async (client) => (await client)?.endAsync(true)),
+    );
   }
 
   // One SUBSCRIBE per topic, shared by every stream that asks for the topic
@@ -102,23 +125,28 @@ export default class MqttBroker implements SignalBroker, OnModuleDestroy {
   }
 
   private connection(): Promise<MqttClient> {
-    this.client ??= this.open().catch((error: unknown) => {
-      this.client = undefined;
-      throw error;
-    });
+    this.client ??= this.open('stream')
+      .then((client) => {
+        client.on('message', (topic, body) => this.deliver(topic, body));
+        client.on('close', () => this.lost(client));
+        return client;
+      })
+      .catch((error: unknown) => {
+        this.client = undefined;
+        throw error;
+      });
     return this.client;
   }
 
-  private async open(): Promise<MqttClient> {
+  private async open(purpose: 'stream' | 'command'): Promise<MqttClient> {
+    const user = this.config.get('mqtt-user');
     const client = await this.connector(this.config.get('mqtt-url'), {
-      clientId: clientIdOf(this.config.get('mqtt-user')),
-      username: this.config.get('mqtt-user'),
+      clientId: `${clientIdOf(user)}_${purpose}`,
+      username: user,
       password: await readSecretFile(
         this.config.get('mqtt-password-file'),
         'mqtt-password-file',
       ),
-      // MQTT 5 answers a refused publication with a reason code, where MQTT
-      // 3.1.1 closes the connection and with it every stream.
       protocolVersion: 5,
       clean: true,
       reconnectPeriod: 0,
@@ -127,13 +155,11 @@ export default class MqttBroker implements SignalBroker, OnModuleDestroy {
       // so here keeps an environment default from switching it off.
       rejectUnauthorized: true,
     });
-    client.on('message', (topic, body) => this.deliver(topic, body));
     // Without a listener, an 'error' event after the connection is up would
-    // end the process. The 'close' that follows tells every stream.
+    // end the process. The 'close' that follows is handled by the caller.
     client.on('error', (error) =>
-      this.logger.warn(`MQTT connection error: ${error.message}`),
+      this.logger.warn(`MQTT ${purpose} connection error: ${error.message}`),
     );
-    client.on('close', () => this.lost(client));
     return client;
   }
 

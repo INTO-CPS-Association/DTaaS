@@ -17,3 +17,21 @@ export default function isPlainTopic(
     !CONTROL_CHARACTERS.test(topic)
   );
 }
+
+const COMMAND_NAME = /^[a-z][a-z0-9_]{0,31}$/;
+const ACTUATOR_LEVEL = 5;
+
+/**
+ * Where a command to the device of an actuator topic goes: the device topic
+ * with 'cmd/<command>' in place of the quantity, as the naming convention
+ * gives. Only an actuator ('A') topic of eight levels takes a command.
+ */
+export function commandTopicOf(
+  topic: string,
+  command: string,
+): string | undefined {
+  const levels = topic.split('/');
+  if (levels.length !== 8 || levels[ACTUATOR_LEVEL] !== 'A') return undefined;
+  if (!COMMAND_NAME.test(command)) return undefined;
+  return [...levels.slice(0, 7), 'cmd', command].join('/');
+}

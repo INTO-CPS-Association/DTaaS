@@ -108,6 +108,7 @@ describe('A Keycloak or Dex sign-in', () => {
     username: 'dave',
     token: 'jwt-of-dave',
     owners: ['alice', 'nobody'],
+    writers: [] as string[],
   };
   let tokenDir = '';
 
@@ -152,6 +153,17 @@ describe('A Keycloak or Dex sign-in', () => {
     ]);
     expect(decision.refused).toEqual(['bob/x']);
     expect(new Set(gitlab.tokens)).toEqual(new Set(['service-token']));
+  });
+
+  it('sends no command for a reader without a write grant', async () => {
+    const tokenFile = path.join(tokenDir, 'gitlab_dtaas_signals_token');
+    await writeFile(tokenFile, 'service-token\n', { mode: 0o600 });
+    const access = new AccessService(claimsPolicy(groupWithAlice(), tokenFile));
+    const decision = await access.decide(DAVE, 'command', ['alice/pump/flow']);
+    expect(decision.allowed).toEqual([]);
+    const writer = { ...DAVE, writers: ['alice'] };
+    const allowed = await access.decide(writer, 'command', ['alice/pump/flow']);
+    expect(allowed.allowed).toHaveLength(1);
   });
 
   it('refuses every path when the token file is missing', async () => {

@@ -15,7 +15,7 @@ import type {
 import Owners, { ownsTopic } from './owners.js';
 import TwinReader, { type GroupProject } from './twin-reader.js';
 
-const READ_ACTIONS: ReadonlySet<Action> = new Set(['stream', 'range']);
+const ACTIONS: ReadonlySet<Action> = new Set(['stream', 'range', 'command']);
 
 const projectSchema = z.object({
   id: z.number().int(),
@@ -68,16 +68,18 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     subject: Subject,
     action: Action,
   ): Promise<SignalTarget[]> {
-    if (!READ_ACTIONS.has(action)) return [];
+    if (!ACTIONS.has(action)) return [];
+    const writes = action === 'command';
     if (subject.owners === undefined) {
-      const projects = await this.projectsOf(subject);
+      const projects = await this.projectsOf(subject, writes);
       return this.signalsOfAll(projects, subject.token);
     }
     const token = await readSecretFile(
       this.config.get('gitlab-token-file'),
       'gitlab-token-file',
     );
-    const projects = await this.projectsOfOwners(subject.owners, token);
+    const owners = writes ? (subject.writers ?? []) : subject.owners;
+    const projects = await this.projectsOfOwners(owners, token);
     return this.signalsOfAll(projects, token);
   }
 
@@ -117,12 +119,19 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     return lists.flat();
   }
 
-  private async projectsOf(subject: Subject): Promise<GroupProject[]> {
-    const key = subject.id;
+  // Reading needs gitlab-min-access-level on the project and sending data
+  // to a twin needs gitlab-min-write-level, Developer by default.
+  private async projectsOf(
+    subject: Subject,
+    writes: boolean,
+  ): Promise<GroupProject[]> {
+    const level = this.config.get(
+      writes ? 'gitlab-min-write-level' : 'gitlab-min-access-level',
+    );
+    const key = `${subject.id}:${level}`;
     const cached = this.projects.get(key);
     if (cached !== undefined) return cached;
     const groupPath = this.config.get('gitlab-group');
-    const level = this.config.get('gitlab-min-access-level');
     const resource = `api/v4/groups/${encodeURIComponent(groupPath)}/projects?min_access_level=${level}&simple=true`;
     const items = await this.gitlab.getPages(resource, subject.token);
     const projects = items.flatMap((item) => projectOf(item, groupPath));

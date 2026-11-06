@@ -129,6 +129,18 @@ describe('GitLabTwinPolicy', () => {
     );
   });
 
+  it('asks GitLab for the projects the user may write before a command', async () => {
+    const gitlab = new FakeGitLabClient([
+      [/min_access_level=30&simple=true$/, () => [PROJECT]],
+      [BRANCH, () => ({ commit: { id: 's1' } })],
+      [TWINS, () => TREE],
+      [/files\/digital_twins%2Fpump%2F/, () => PUMP],
+    ]);
+    const targets = await policyWith(gitlab).listResources(ALICE, 'command');
+    expect(targets.map((t) => t.path)).toContain('alice/pump/flow');
+    expect(gitlab.callsTo(/min_access_level=20/)).toBe(0);
+  });
+
   it('rebuilds the index only when the branch moves', async () => {
     const state = { sha: 's1', projects: [PROJECT] };
     const gitlab = gitlabFor(state);

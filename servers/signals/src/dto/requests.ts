@@ -60,3 +60,29 @@ export function parseRangeRequest(
   if (to <= from || to - from > limits.maxSpan) throw badRequest();
   return { paths: checkedPaths(parsed.data.paths, limits), channel, from, to };
 }
+
+export type CommandRequest = {
+  path: string;
+  command: string;
+  value: number;
+  unit: string;
+};
+
+const commandSchema = z
+  .object({
+    path: z.string(),
+    command: z.string().max(32),
+    value: z.number().finite(),
+    unit: z.string().min(1).max(32),
+  })
+  .strict();
+
+export function parseCommandRequest(
+  body: unknown,
+  maxPathLength: number,
+): CommandRequest {
+  const parsed = commandSchema.safeParse(body);
+  if (!parsed.success || !isPlainTopic(parsed.data.path, maxPathLength))
+    throw badRequest();
+  return parsed.data;
+}

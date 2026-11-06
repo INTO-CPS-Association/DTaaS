@@ -22,6 +22,9 @@ const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
 const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
 const FLOW = 'alice/pump/flow';
 const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
+const VALVE = 'alice/CTO/plant/01/loop1/A/A-0001/position';
+const READER_TOKEN = 'carol-reporter-token-2222222222';
+const GAUGE = 'alice/CTO/plant/01/loop1/A/A-0002/position';
 const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
 const ENV_KEYS = [
   'SIGNALS_GITLAB_URL',
@@ -52,13 +55,25 @@ describe('Signals gateway e2e', () => {
       },
       [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
       [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
+      [READER_TOKEN]: {
+        id: 3,
+        username: 'carol',
+        email: 'carol@example.org',
+        projects: [10],
+        writable: [],
+      },
     },
     [
       {
         id: 10,
         owner: 'alice',
         sha: 'c0ffee',
-        twins: { pump: PUMP, room: visualisationOf([ROOM]) },
+        twins: {
+          pump: PUMP,
+          room: visualisationOf([ROOM]),
+          valve: visualisationOf([VALVE], 'setpoint'),
+          gauge: visualisationOf([GAUGE]),
+        },
       },
     ],
   );
@@ -144,7 +159,7 @@ describe('Signals gateway e2e', () => {
     const opening = await stream.readUntil('"state":"live"');
     expect(opening.startsWith('retry: 5000\n\n')).toBe(true);
     expect(opening).toContain('event: refused\ndata: {"paths":["bob/secret"]}');
-    broker.publish(FLOW, reading(3));
+    broker.deliver(FLOW, reading(3));
     const text = await stream.readUntil('event: sample');
     expect(text).toContain(
       '"path":"alice/pump/flow","twin":"pump","channel":"measured"',
@@ -191,6 +206,29 @@ describe('Signals gateway e2e', () => {
     );
     expect(broker.bindings).toHaveLength(0);
     expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
+  });
+
+  it('sends a set point of a writer to the command topic of the device', async () => {
+    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
+    const response = await post('command', ALICE_TOKEN, body);
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({
+      status: 'sent',
+      topic: 'alice/CTO/plant/01/loop1/A/A-0001/cmd/set',
+    });
+    expect(JSON.parse(broker.published[0].body)).toMatchObject({ value: 40 });
+  });
+
+  it('refuses a command of a reader, and one to a path that takes none', async () => {
+    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
+    const sent = broker.published.length;
+    expect((await post('command', READER_TOKEN, body)).status).toBe(403);
+    const sensor = { ...body, path: ROOM };
+    expect((await post('command', ALICE_TOKEN, sensor)).status).toBe(400);
+    const readOnly = { ...body, path: GAUGE };
+    expect((await post('command', ALICE_TOKEN, readOnly)).status).toBe(403);
+    expect((await post('command', undefined, body)).status).toBe(401);
+    expect(broker.published).toHaveLength(sent);
   });
 
   it('refuses wildcards with 400 and too many paths with 413', async () => {
