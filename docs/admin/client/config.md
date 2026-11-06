@@ -77,3 +77,4 @@ with.
 | :--- | :--- |
 | `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
 | `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
+| `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
