@@ -13,6 +13,8 @@ import menuSlice from 'store/menu.slice';
 import authSlice from 'store/auth.slice';
 import settingsSlice from 'store/settings.slice';
 import workbenchSlice from 'store/workbench.slice';
+import registry from 'extension/extensionRegistry';
+import extensionState from 'extension/extensionState';
 
 export const rootReducer = combineReducers({
   menu: menuSlice,
@@ -27,6 +29,8 @@ export const rootReducer = combineReducers({
   settings: settingsSlice,
   executionHistory: executionHistorySlice,
   workbench: workbenchSlice,
+  // The slices of the domain extensions, at state.ext.<id>.
+  ext: extensionState(registry.reducers),
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

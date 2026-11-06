@@ -67,3 +67,13 @@ by default, and users turn them on in their account settings. When
 `LOGGER_URL` is empty or missing, enabled logging keeps events in the
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
+
+## Domain Extensions
+
+These keys are optional. A client without them runs every extension it was built
+with.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
+| `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
