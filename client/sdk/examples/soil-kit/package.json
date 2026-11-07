@@ -1,0 +1,23 @@
+{
+  "name": "@into-cps-association/soil-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DTaaS domain extension for soil profiles: the soil-profile substrate, the soil-depth anchor kind and the soil_sensor table.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "sideEffects": false,
+  "dtaas": {
+    "id": "soil"
+  },
+  "exports": {
+    ".": "./dist/core/index.js",
+    "./react": "./dist/react/ProfileTable.js",
+    "./dtaas": "./dist/dtaas/index.js"
+  },
+  "peerDependencies": {
+    "@into-cps-association/dtaas-sdk": "^0.1.0",
+    "@mui/material": ">=9",
+    "react": ">=19",
+    "zod": "^4.0.0"
+  }
+}

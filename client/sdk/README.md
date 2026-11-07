@@ -38,5 +38,10 @@ client. The tests keep the `src/` and `tests/` aliases of
 `jest.config.json`. `examples/hello-kit/` is the minimal extension the
 integration tests mount.
 
+`examples/soil-kit/` is a second kit, for soil profiles, which a deployment
+loads as a deployed extension. `yarn build:kit <kit folder>` builds an
+example kit as that bundle with `examples/vite.deploy.config.ts`.
+`hello-kit/README.md` explains how a new kit starts from the template.
+
 `client/src/extension/README.md` describes the open decision about how
 external extensions get these types.

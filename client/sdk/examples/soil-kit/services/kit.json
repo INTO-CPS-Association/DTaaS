@@ -1,0 +1,6 @@
+{
+  "name": "soil",
+  "tables": {
+    "soil_sensor": ["depth_from", "depth_to"]
+  }
+}

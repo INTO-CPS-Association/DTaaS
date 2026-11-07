@@ -41,7 +41,8 @@ To compile one in:
 To deploy one, without a rebuild:
 
 1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
-   which writes one script.
+   which writes one script. `yarn build:kit soil-kit` does this for the
+   example kits in `sdk/examples/`.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
    `'extensions/soil/index.js'`.
