@@ -151,7 +151,7 @@ directory) and reports all problems at once:
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true` |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
 | `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
-| `[gitlab].common_template`, `user_template` | When present, an `http(s)` URL; set both, or leave both out (accounts and tokens only) |
+| `[gitlab].template_group`, `template_host` | When present, a GitLab group path (subgroups with `/`) and an `http(s)` URL; set both, or leave both out (accounts and tokens only) |
 | `[frontend].logger-url` | When present, an `http(s)` URL, or `""` to turn remote logging off |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
@@ -720,20 +720,23 @@ pushes it. The containers are provisioned first, and a GitLab failure
 never undoes them.
 
 **Setup, once per installation.** Turn provisioning on in `dtaas.toml`
-(the generated file already holds both templates; remove both keys for
-accounts and tokens only, since setting one alone is an error):
+(the generated file already names the template group; remove both keys
+for accounts and tokens only, since setting one alone is an error). The
+templates are `<template_host>/<template_group>/common.git` and
+`user1.git`; change the group to use your own copies:
 
 ```toml
 [gitlab]
-provision = true
-api_url   = "https://gitlab.example.com"
-common_template = "https://gitlab.com/dtaas/common.git"
-user_template   = "https://gitlab.com/dtaas/user1.git"
+provision      = true
+api_url        = "https://gitlab.example.com"
+template_host  = "https://gitlab.com"
+template_group = "dtaas"
 ```
 
 Then export an admin token. It must belong to a GitLab administrator and
-carry the `api` scope, plus `admin_mode` when GitLab Admin Mode is on; the
-same token pushes the templates:
+carry the `api` scope, plus `admin_mode` when GitLab Admin Mode is on.
+It creates the accounts, tokens and projects; the templates are pushed
+with each user's own token, so a push runs as that user:
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
@@ -829,14 +832,22 @@ GitLab project 'bob/user' created.
 No new users added.
 ```
 
-**Example 5: a project that already has content.** A `common` or `user`
-project with commits in it is never touched; every run that reaches it
-says so and carries on:
+**Example 5: a project that already exists.** A `common` or `user`
+project that the run did not create is never pushed to, even when it is
+empty, since its settings belong to its owner. The run says so and
+carries on. A project with content is then recorded as done, so the
+warning shows once; an empty one warns on every run until it is deleted:
 
 ```console
 Warning: GitLab project 'alice/common' has content.
   It was left as it is: no template was pushed into it.
+Warning: GitLab project 'alice/user' exists but is empty.
+  It was not created by this run, so no template was pushed into it. Delete it, then run 'dtaas user add alice' again.
 ```
+
+The push asks GitLab to start no CI pipeline (`ci.skip`). A template
+that cannot be cloned fails before the project is created; a failed push
+leaves the new project empty, to be deleted before the re-run.
 
 **Files written.** Each user's token is saved to `gitlab_user_tokens.json`
 in the current directory (mode `0600`) the moment it is issued:
@@ -849,8 +860,9 @@ in the current directory (mode `0600`) the moment it is issued:
 ```
 
 Hand each user their token, and treat the file as a credential store. The
-registry records the account id, the issued token and the projects filled
-so far, which is how a re-run knows what is done; starting users get the
+registry records the account id, the issued token and the projects done
+so far (created, or found with content), which is how a re-run knows what
+is done; starting users get the
 same markers in a section of their own:
 
 ```json
@@ -923,14 +935,20 @@ same markers in a section of their own:
 - Projects are made only once the user's account and token exist. A
   project failure (a template that cannot be cloned, a push GitLab
   refuses, no `git`) fails that user alone: their account, token and
-  other project stay, and other users carry on. A failed clone or push
-  leaves the project empty; name the user again to fill it.
+  other project stay, and other users carry on. A template that cannot
+  be cloned fails before the project is created; a failed push leaves
+  the new project empty: delete it, then name the user again.
 - Templates are cloned without a login, so they must be public `http(s)`
-  repositories. The push uses the admin token, passed to `git` through
-  environment variables for the `api_url` host only, never on the command
-  line or to the template host.
+  repositories. The push uses the user's own token (issued by this run,
+  or saved in `gitlab_user_tokens.json`; without one the user's projects
+  are skipped), passed to `git` through environment variables for the
+  `api_url` host only, never on the command line or to the template host.
+  The admin token never pushes.
 - Git LFS is not supported: a template whose default branch holds LFS
-  pointer files is refused instead of being pushed as pointers.
+  pointer files (small files in the pointer format) is refused instead
+  of being pushed as pointers. LFS rules in `.gitattributes` alone are
+  not refused, since the files can still be stored whole. A template
+  with no commits is refused too.
 - Users provisioned by a CLI older than 2.4.0 have no projects yet. Name
   them again, with no password, to create them.
 - `user delete` never removes the GitLab account or its projects; see
@@ -1356,8 +1374,8 @@ logger-url          = "https://logs.example.com/logger"
 [gitlab]
 provision  = false
 api_url    = "https://gitlab.example.com"
-common_template = "https://gitlab.com/dtaas/common.git"
-user_template   = "https://gitlab.com/dtaas/user1.git"
+template_host  = "https://gitlab.com"   # with template_group: the
+template_group = "dtaas"                # public common and user1 templates
 # pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 

@@ -41,8 +41,9 @@ def test_gitlab_empty_pat_rejected(base):
     """A [gitlab].pat key that is present but blank is a config mistake."""
     bad = copy.deepcopy(base)
     bad["gitlab"] = {"pat": "   "}
-    assert "gitlab.pat is set but empty: remove it or set a real token" in collect_errors(
-        bad
+    assert (
+        "gitlab.pat is set but empty: remove it or set a real token"
+        in collect_errors(bad)
     )
 
 
@@ -75,33 +76,31 @@ def test_gitlab_provisioning_with_only_an_api_url_validates(base):
     assert collect_errors(ok) == []
 
 
-COMMON = "https://gitlab.com/dtaas/common.git"
-USER = "https://gitlab.com/dtaas/user1.git"
+HOST = "https://gitlab.com"
+GROUP_ERROR = (
+    "gitlab.template_group must be a GitLab group path, such as dtaas "
+    "or dtaas/templates"
+)
 
 
 @pytest.mark.parametrize(
     "templates,expected",
     [
-        ({"common_template": COMMON, "user_template": USER}, []),
-        ({"common_template": COMMON}, [TEMPLATES_TOGETHER]),
-        ({"user_template": USER}, [TEMPLATES_TOGETHER]),
+        ({"template_group": "dtaas", "template_host": HOST}, []),
+        ({"template_group": "dt/templates", "template_host": HOST}, []),
+        ({"template_group": "dtaas"}, [TEMPLATES_TOGETHER]),
+        ({"template_host": HOST}, [TEMPLATES_TOGETHER]),
         (
-            {"common_template": "ftp://example.com/common.git", "user_template": "x"},
-            [
-                "gitlab.common_template must be a valid URL",
-                "gitlab.user_template must be a valid URL",
-            ],
+            {"template_group": "dtaas/", "template_host": "ftp://example.com"},
+            [GROUP_ERROR, "gitlab.template_host must be a valid URL"],
         ),
-        (
-            {"user_template": "git@gitlab.com:dtaas/user1.git"},
-            ["gitlab.user_template must be a valid URL", TEMPLATES_TOGETHER],
-        ),
+        ({"template_group": "dtaas.git"}, [GROUP_ERROR, TEMPLATES_TOGETHER]),
     ],
-    ids=["both", "common-only", "user-only", "not-http", "ssh-and-alone"],
+    ids=["both", "subgroup", "group-only", "host-only", "both-bad", "bad-and-alone"],
 )
 def test_gitlab_project_templates(base, templates, expected):
-    """The two templates are http(s) URLs, set together or both left out;
-    every problem is listed at once."""
+    """The group is a GitLab group path and the host an http(s) URL, set
+    together or both left out; every problem is listed at once."""
     config = copy.deepcopy(base)
     config["gitlab"] = {
         "provision": True,

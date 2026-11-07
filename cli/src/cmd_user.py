@@ -111,9 +111,9 @@ def add(**kwargs):
 
     When [gitlab].provision is enabled in dtaas.toml, each newly-added user's
     GitLab account and Personal Access Token are also created; see
-    --password. With [gitlab].common_template and user_template set, the
+    --password. With [gitlab].template_group and template_host set, the
     user also gets two private GitLab projects, 'common' and 'user', cloned
-    from those templates and pushed (git must be installed). Naming a
+    from that group's templates and pushed (git must be installed). Naming a
     dtaas.toml starting user provisions its GitLab account, token and
     projects alone, taking its email, and the password when none is given,
     from its [[users]] record.

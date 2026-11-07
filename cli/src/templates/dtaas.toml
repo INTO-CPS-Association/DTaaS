@@ -63,12 +63,15 @@ load_balance=true
 provision=false
 api_url="https://gitlab.com"
 ssl_verify=true
-# Public templates of the two projects: the dtaas host clones each one with
-# git and pushes it. Set both, or remove both for accounts and tokens only.
-common_template="https://gitlab.com/dtaas/common.git"
-user_template="https://gitlab.com/dtaas/user1.git"
+# The public group holding the templates of the two projects, on
+# template_host: <template_host>/<template_group>/common.git and user1.git.
+# The dtaas host clones each one with git and pushes it. Set both keys, or
+# remove both for accounts and tokens only.
+template_host="https://gitlab.com"
+template_group="dtaas"
 # The admin PAT that creates the accounts, tokens and projects on api_url
-# (and pushes the templates): it must belong to an administrator and carry
+# (each user's own token pushes their templates): it must belong to an
+# administrator and carry
 # the api scope (plus admin_mode on an instance with Admin Mode enabled).
 # Prefer the DTAAS_GITLAB_PAT environment variable, which keeps the token
 # off disk and is used first when both are set. This file is generated mode

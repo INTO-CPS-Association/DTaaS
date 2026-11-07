@@ -1,4 +1,4 @@
-"""Tests for the settings git runs with: where the admin token goes, TLS,
+"""Tests for the settings git runs with: where the push token goes, TLS,
 prompts, and what reaches the output. Git itself is asked which setting it
 applies to which URL (git config --get-urlmatch)."""
 
@@ -9,7 +9,8 @@ from unittest.mock import patch
 
 import pytest
 from src.pkg.gitlab import repos
-from src.pkg.gitlab.repos import GitAccess, git_env
+from src.pkg.gitlab.repos import GitAccess, TemplateClone, git_env
+from tests.test_pkg_gitlab.test_repos.conftest import USER_TOKEN
 
 TEMPLATE_HOST_URL = "https://gitlab.com/dtaas/common.git"
 
@@ -68,25 +69,54 @@ def test_git_never_prompts(access, monkeypatch):
     assert "sslVerify" not in "".join(env.values())
 
 
+@pytest.mark.parametrize("auth", [False, True], ids=["clone", "push"])
+def test_a_stalled_transfer_is_aborted(access, auth):
+    """Git gives up on any host, the template's included, once a transfer
+    stays under 1000 bytes a second for a minute."""
+    env = git_env(access, auth=auth)
+    for url in (TEMPLATE_HOST_URL, access.project_url("alice/common")):
+        assert _urlmatch(env, "http.lowSpeedLimit", url) == "1000"
+        assert _urlmatch(env, "http.lowSpeedTime", url) == "60"
+
+
 def test_git_errors_never_show_the_token(access):
     """Whatever git prints, the token and the header carrying it are masked."""
     printed = f"fatal: {access.auth_header()}\nfatal: token {access.token} refused\n"
     failed = subprocess.CompletedProcess([], 128, "", printed)
-    with patch("src.pkg.gitlab.repos._run", return_value=failed):
+    with patch("src.pkg.gitlab.repos.run_git", return_value=failed):
         error = repos._git(["push"], {}, access)  # pylint: disable=protected-access
     assert access.token not in error
     assert access.auth_header().split()[-1] not in error
     assert error.count("***") == 2
 
 
-def test_access_comes_from_the_admin_client(access):
-    """The push uses the URL, token and TLS setting the admin client has,
-    and a trailing slash on the URL does not double up."""
-    gl = SimpleNamespace(
-        url=access.api_url, private_token=access.token, ssl_verify="/ca.pem"
+def _admin_client(access, ssl_verify=True):
+    """The admin GitLab client's settings, holding the admin token."""
+    return SimpleNamespace(
+        url=access.api_url, private_token=access.token, ssl_verify=ssl_verify
     )
-    assert GitAccess.from_client(gl) == GitAccess(
-        access.api_url, access.token, "/ca.pem"
-    )
+
+
+def test_access_comes_from_the_admin_client_without_its_token(access):
+    """git gets the URL and TLS setting the admin client has, never the
+    admin token, and a trailing slash on the URL does not double up."""
+    from_client = GitAccess.from_client(_admin_client(access, "/ca.pem"))
+    assert from_client == GitAccess(access.api_url, "", "/ca.pem")
     slashed = GitAccess(f"{access.api_url}/", access.token)
     assert slashed.project_url("alice/user") == f"{access.api_url}/alice/user.git"
+
+
+def test_the_push_authenticates_as_the_user(access):
+    """The push carries the user's token in the header for the GitLab host,
+    asks for no pipeline, and the admin token is nowhere in its settings."""
+    clone = TemplateClone(GitAccess.from_client(_admin_client(access)), "t.git", "")
+    pushed = subprocess.CompletedProcess([], 0, "", "")
+    with patch("src.pkg.gitlab.repos.run_git", return_value=pushed) as run:
+        assert clone.push("alice/common", USER_TOKEN) == ""
+    args, env = run.call_args.args
+    as_user = GitAccess(access.api_url, USER_TOKEN)
+    project = access.project_url("alice/common")
+    assert _urlmatch(env, "http.extraHeader", project) == as_user.auth_header()
+    assert args[-4:] == ["-o", "ci.skip", project, "HEAD"]
+    assert access.token not in "".join(env.values())
+    assert GitAccess(access.api_url, access.token).auth_header() not in env.values()

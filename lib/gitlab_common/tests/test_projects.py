@@ -5,76 +5,83 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
-from gitlab.exceptions import GitlabCreateError, GitlabGetError
+from gitlab.exceptions import GitlabCreateError, GitlabListError
 from gitlab_common import (
     ProjectState,
     create_user_project,
-    find_project,
+    find_user_project,
+)
+
+API_FAILURES = pytest.mark.parametrize(
+    "exc",
+    [GitlabListError("404 User Not Found", 404), requests.ConnectionError("refused")],
+    ids=["gitlab-error", "unreachable"],
 )
 
 
-def _gl_returning(project):
-    """Mock client whose project lookup returns *project*."""
-    gl = MagicMock()
-    gl.projects.get.return_value = project
-    return gl
+def _project(path, **state):
+    """A project as GitLab lists it, in the namespace 'alice.k'."""
+    return SimpleNamespace(path=path, path_with_namespace=f"alice.k/{path}", **state)
 
 
-def _gl_raising(exc):
-    """Mock client whose project lookup raises *exc*."""
+def _gl_listing(*projects):
+    """Mock client whose user project listing yields *projects*."""
     gl = MagicMock()
-    gl.projects.get.side_effect = exc
+    gl.users.get.return_value.projects.list.return_value = iter(projects)
     return gl
 
 
 @pytest.mark.parametrize(
-    "project,state",
+    "state,expected",
     [
-        (SimpleNamespace(empty_repo=True), ProjectState.EMPTY),
-        (SimpleNamespace(empty_repo=False), ProjectState.HAS_CONTENT),
-        (SimpleNamespace(), ProjectState.HAS_CONTENT),
+        ({"empty_repo": True}, ProjectState.EMPTY),
+        ({"empty_repo": False}, ProjectState.HAS_CONTENT),
+        ({}, ProjectState.HAS_CONTENT),
     ],
     ids=["empty", "content", "state-not-reported"],
 )
-def test_find_project_reports_the_repository_state(project, state):
-    """Only a repository GitLab reports as empty is EMPTY, so a caller never
-    pushes into one whose state it cannot see."""
-    gl = _gl_returning(project)
-    lookup = find_project(gl, "alice/common")
-    assert lookup.state is state
-    assert lookup.error == ""
-    gl.projects.get.assert_called_once_with("alice/common")
+def test_find_user_project_reports_state_and_gitlab_path(state, expected):
+    """The project is looked up among the user id's own projects, and its
+    path is the one GitLab reports. Only a repository GitLab reports as
+    empty is EMPTY, so a caller never pushes into one it cannot see."""
+    gl = _gl_listing(_project("common", **state))
+    lookup = find_user_project(gl, 42, "common")
+    assert (lookup.state, lookup.error, lookup.path) == (expected, "", "alice.k/common")
+    gl.users.get.assert_called_once_with(42, lazy=True)
+    gl.users.get.return_value.projects.list.assert_called_once_with(
+        search="common", iterator=True
+    )
 
 
-def test_find_project_missing_on_404():
-    """A 404 means there is no project at that path: MISSING, not a failure."""
-    lookup = find_project(_gl_raising(GitlabGetError("Not found", 404)), "alice/common")
-    assert lookup.state is ProjectState.MISSING
-    assert lookup.error == ""
+def test_find_user_project_matches_the_path_exactly():
+    """A search hit whose path only contains the name is not the project."""
+    gl = _gl_listing(_project("common-old"), _project("my-common"))
+    lookup = find_user_project(gl, 42, "common")
+    assert (lookup.state, lookup.path) == (ProjectState.MISSING, "")
 
 
-@pytest.mark.parametrize(
-    "exc",
-    [GitlabGetError("Forbidden", 403), requests.ConnectionError("refused")],
-    ids=["gitlab-error", "unreachable"],
-)
-def test_find_project_failure_keeps_the_reason(exc):
-    """Any other error is FAILED with the path and GitLab's own words, and
-    an unreachable instance is reported, never raised."""
-    lookup = find_project(_gl_raising(exc), "alice/common")
+@API_FAILURES
+def test_find_user_project_failure_keeps_the_reason(exc):
+    """An unknown user id or an unreachable instance is FAILED with the
+    project, the user id and GitLab's own words, never raised."""
+    gl = MagicMock()
+    gl.users.get.return_value.projects.list.side_effect = exc
+    lookup = find_user_project(gl, 42, "common")
     assert lookup.state is ProjectState.FAILED
-    assert "alice/common" in lookup.error
+    assert "'common'" in lookup.error
+    assert "42" in lookup.error
     assert str(exc) in lookup.error
 
 
 def test_create_user_project_posts_a_private_empty_project():
     """The project goes into the user's namespace through the admin endpoint,
-    private, with no import_url."""
+    private, with no import_url, and its GitLab path is returned."""
     gl = MagicMock()
-    ok, error = create_user_project(gl, 42, "common")
-    assert (ok, error) == (True, "")
+    created = gl.users.get.return_value.projects.create
+    created.return_value = _project("common")
+    assert create_user_project(gl, 42, "common") == (True, "alice.k/common")
     gl.users.get.assert_called_once_with(42, lazy=True)
-    gl.users.get.return_value.projects.create.assert_called_once_with(
+    created.assert_called_once_with(
         {"name": "common", "path": "common", "visibility": "private"}
     )
 

@@ -1,6 +1,9 @@
 """Tests for Config: the [gitlab] provisioning settings."""
 
+from pathlib import Path
+
 import pytest
+import tomlkit
 from src.pkg import config
 from src.pkg.config import Config
 
@@ -111,24 +114,33 @@ def test_get_gitlab_ssl_verify_propagates_section_error(mock_utils):
     assert err is not None
 
 
-COMMON_TEMPLATE = "https://gitlab.com/dtaas/common.git"
-USER_TEMPLATE = "https://gitlab.com/dtaas/user1.git"
+TEMPLATE_KEYS = {"template_host": "https://gitlab.com", "template_group": "dtaas"}
+DEFAULT_TEMPLATES = {
+    "common": "https://gitlab.com/dtaas/common.git",
+    "user": "https://gitlab.com/dtaas/user1.git",
+}
+SHIPPED_TOML = Path(__file__).parents[2] / "src" / "templates" / "dtaas.toml"
+GROUP_PATH_ERROR = "gitlab.template_group must be a GitLab group path"
 
 
 @pytest.mark.parametrize(
     "gitlab,expected",
     [
+        (TEMPLATE_KEYS, DEFAULT_TEMPLATES),
         (
-            {"common_template": COMMON_TEMPLATE, "user_template": USER_TEMPLATE},
-            {"common": COMMON_TEMPLATE, "user": USER_TEMPLATE},
+            {"template_host": "https://git.example.org/", "template_group": "lab/dt"},
+            {
+                "common": "https://git.example.org/lab/dt/common.git",
+                "user": "https://git.example.org/lab/dt/user1.git",
+            },
         ),
         ({"provision": True}, {}),
     ],
-    ids=["both-set", "both-left-out"],
+    ids=["default-group", "changed-group", "both-left-out"],
 )
-def test_get_gitlab_templates_maps_project_to_template(mock_utils, gitlab, expected):
-    """Both keys give one template per project, in project order; neither
-    gives none, which means accounts and tokens only."""
+def test_get_gitlab_templates_builds_urls_from_the_group(mock_utils, gitlab, expected):
+    """Both keys give one template per project, in project order, inside the
+    group on the host; neither gives none: accounts and tokens only."""
     mock_utils.return_value = ({"gitlab": gitlab}, None)
     templates, err = config.Config().get_gitlab_templates()
     assert err is None
@@ -136,27 +148,39 @@ def test_get_gitlab_templates_maps_project_to_template(mock_utils, gitlab, expec
     assert list(templates) == list(expected)
 
 
+def test_the_generated_config_uses_the_dtaas_group(mock_utils):
+    """The dtaas.toml 'config generate' writes sets the group to dtaas on
+    gitlab.com, so the templates are the published ones."""
+    shipped = tomlkit.parse(SHIPPED_TOML.read_text(encoding="utf-8")).unwrap()
+    assert shipped["gitlab"]["template_group"] == "dtaas"
+    mock_utils.return_value = (shipped, None)
+    assert config.Config().get_gitlab_templates() == (DEFAULT_TEMPLATES, None)
+
+
 @pytest.mark.parametrize(
     "gitlab,message",
     [
-        ({"common_template": COMMON_TEMPLATE}, "must both be set"),
-        ({"user_template": USER_TEMPLATE}, "must both be set"),
+        ({"template_group": "dtaas"}, "must both be set"),
+        ({"template_host": "https://gitlab.com"}, "must both be set"),
+        ({**TEMPLATE_KEYS, "template_group": "-dtaas"}, GROUP_PATH_ERROR),
         (
-            {
-                "common_template": "git@gitlab.com:dtaas/common.git",
-                "user_template": USER_TEMPLATE,
-            },
-            "gitlab.common_template must be a valid URL",
+            {**TEMPLATE_KEYS, "template_group": "https://gitlab.com/dtaas"},
+            GROUP_PATH_ERROR,
         ),
-        ({"common_template": COMMON_TEMPLATE, "user_template": ""}, "user_template"),
+        ({**TEMPLATE_KEYS, "template_group": ""}, GROUP_PATH_ERROR),
+        (
+            {**TEMPLATE_KEYS, "template_host": "git@gitlab.com"},
+            "gitlab.template_host must be a valid URL",
+        ),
     ],
-    ids=["common-only", "user-only", "ssh-url", "empty"],
+    ids=["group-only", "host-only", "dash-first", "url-as-group", "empty", "ssh"],
 )
 def test_get_gitlab_templates_rejects_what_validate_rejects(
     mock_utils, gitlab, message
 ):
     """'user add' does not run 'config validate', so the getter refuses the
-    same settings: one key alone, or a value that is not an http(s) URL."""
+    same settings: one key alone, a group GitLab would refuse, or a host
+    that is not an http(s) URL."""
     mock_utils.return_value = ({"gitlab": gitlab}, None)
     templates, err = config.Config().get_gitlab_templates()
     assert templates == {}

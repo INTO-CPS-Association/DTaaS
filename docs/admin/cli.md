@@ -149,8 +149,8 @@ load_balance=true
 provision=false
 api_url="https://gitlab.com"
 ssl_verify=true
-common_template="https://gitlab.com/dtaas/common.git"
-user_template="https://gitlab.com/dtaas/user1.git"
+template_host="https://gitlab.com"
+template_group="dtaas"
 #pat="glpat-xxxxxxxxxxxxxxxxxxxx"
 
 [frontend]
@@ -728,10 +728,11 @@ docker compose --env-file config/.env up -d --force-recreate traefik-forward-aut
 
 When `[gitlab].provision = true` in `dtaas.toml` (off by default),
 `user add` also creates a GitLab account for each user it adds and issues
-that account a Personal Access Token (PAT). With `[gitlab].common_template`
-and `[gitlab].user_template` set, as in the generated `dtaas.toml`, each
+that account a Personal Access Token (PAT). With `[gitlab].template_group`
+and `[gitlab].template_host` set, as in the generated `dtaas.toml`, each
 of those users then gets two private projects in their own GitLab
-namespace, `common` and `user`, filled from the two templates. The
+namespace, `common` and `user`, filled from the templates `common` and
+`user1` of that group. The
 containers are provisioned first; a GitLab failure never undoes them, but
 it does make the command exit non-zero. The `[gitlab]` keys, the password
 sources and the files written are described in
@@ -739,8 +740,9 @@ sources and the files written are described in
 
 The projects are made on the machine that runs `dtaas`: it clones each
 template with `git` into a temporary folder and pushes it to the new
-project. That machine needs `git` 2.31 or later on its `PATH`, and network
-access to the template host and to GitLab.
+project, asking GitLab to start no CI pipeline. That machine needs `git`
+2.31 or later on its `PATH`, and network access to the template host and
+to GitLab.
 
 ##### Set up the admin token
 
@@ -766,10 +768,11 @@ instance has Admin Mode enabled, then export the token where you run
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
-The same token creates the projects and pushes the templates into them:
-the `api` scope covers Git over HTTP, so nothing more is needed. Git gets
-the token through environment variables, never on the command line, and
-sends it to the `api_url` host only.
+The same token creates the projects. The templates are pushed into them
+with each user's own token, the one `user add` issued them (kept in
+`gitlab_user_tokens.json`), so a push runs as that user, never as the
+admin. Git gets the token through environment variables, never on the
+command line, and sends it to the `api_url` host only.
 
 Choose an expiry you will rotate, because provisioning stops working
 the day the token lapses. When
@@ -1004,27 +1007,37 @@ GitLab provisioning failed for 'alice'.
 
 ##### Project scenarios
 
-**A project that already has content** is never touched; every run that
-reaches it says so and carries on:
+**A project that already exists** is never pushed to, even when it is
+empty, since its settings belong to its owner. The run says so and
+carries on. A project with content is then recorded as done, so the
+warning shows once; an empty one warns on every run until it is deleted:
 
 ```text
 Warning: GitLab project 'alice/common' has content.
   It was left as it is: no template was pushed into it.
+Warning: GitLab project 'alice/user' exists but is empty.
+  It was not created by this run, so no template was pushed into it. Delete it, then run 'dtaas user add alice' again.
 ```
 
-**A failed project** (a template that cannot be cloned, a push GitLab
-refuses) fails that user alone; their account, token and other project
-stay. The project is left empty, and naming the user again fills it:
+**A failed project** fails that user alone; their account, token and
+other project stay. A template that cannot be cloned fails before the
+project is created, so naming the user again retries it:
 
 ```text
 GitLab project 'alice/user' failed.
   Could not clone https://templates.example.org/dtaas/user1.git.
     fatal: unable to access 'https://templates.example.org/dtaas/user1.git/': Could not resolve host: templates.example.org
     Templates are cloned without a login, so they must be public.
-  The project is left empty; 'dtaas user add alice' fills it.
 ```
 
-A template that uses Git LFS fails the same way. Without `git` 2.31 or
+A template with no commits, or one holding Git LFS pointer files, fails
+the same way. A push that GitLab
+refuses, or that stalls, leaves the new project empty: delete it, then
+name the user again. The push runs with the user's own token, which
+GitLab may refuse until the user has signed in once and set a new
+password; the message says so. A user with no token saved in
+`gitlab_user_tokens.json` gets no project (`GitLab projects for 'alice'
+skipped.`) until the token is put back. Without `git` 2.31 or
 later, no project is attempted (`GitLab projects skipped for every
 user.`). Users provisioned before 2.4.0 get their projects when named
 again, with no password. For accounts and tokens only, remove both

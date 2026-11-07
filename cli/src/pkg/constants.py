@@ -14,8 +14,9 @@ STATE_FILE = ".dtaas.state.json"
 GITLAB_USER_TOKENS_FILE = "gitlab_user_tokens.json"
 
 # For pkg/users_gitlab_projects.py: each GitLab project 'user add' creates in
-# a provisioned user's namespace, and the [gitlab] key naming its template.
-GITLAB_PROJECT_TEMPLATES = {"common": "common_template", "user": "user_template"}
+# a provisioned user's namespace, and the template repository it is filled
+# from, in [gitlab].template_group on template_host.
+GITLAB_PROJECT_TEMPLATES = {"common": "common", "user": "user1"}
 
 # For utils.py
 LOCALHOST_SERVER = "localhost"
@@ -42,6 +43,9 @@ USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
 NUMERIC_HOST_RE = re.compile(r"^[0-9.]+$")
+# One segment of a GitLab group path (used with fullmatch): letters, digits,
+# _ . and -, not starting with -, at most 255 characters.
+NAMESPACE_SEGMENT_RE = re.compile(r"[A-Za-z0-9_.][A-Za-z0-9_.-]{0,254}")
 
 # For users_utils.py: rule.onlyu<N>. prefixes in config/conf.server.
 CONF_SERVER_RULE_NUM_RE = re.compile(r"rule\.onlyu(\d+)\.")

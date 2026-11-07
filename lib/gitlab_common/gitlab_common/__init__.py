@@ -14,7 +14,7 @@ from .projects import (
     ProjectLookup,
     ProjectState,
     create_user_project,
-    find_project,
+    find_user_project,
 )
 from .users import (
     CreateOutcome,
@@ -32,7 +32,7 @@ __all__ = [
     "create_user",
     "create_user_pat",
     "revoke_user_pats",
-    "find_project",
+    "find_user_project",
     "create_user_project",
     "validate_user_row",
     "CreateOutcome",

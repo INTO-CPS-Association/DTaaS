@@ -26,7 +26,7 @@ from .provisioner import (
     ensure_user_resources,
     revoke_issued_tokens,
 )
-from .repos import git_problem
+from .git_run import git_problem
 
 __all__ = [
     "resolve_client",

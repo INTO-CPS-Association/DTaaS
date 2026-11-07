@@ -233,15 +233,30 @@ one owner and one responsibility:
 push from the `dtaas` host (_cli/src/pkg/users_gitlab_projects.py_,
 _cli/src/pkg/gitlab/repos.py_, `gitlab_common/projects.py`).
 
-- **The admin token pushes**, through `GIT_CONFIG_COUNT` variables (git
+- **The user's own token pushes**, the PAT the CLI issued them (this
+  run's, or the saved one), through `GIT_CONFIG_COUNT` variables (git
   2.31) as a header scoped to `api_url`: never in argv or a `.git/config`,
-  never sent to the template host. The user's own token could be refused
-  while their password is expired (CVE-2021-39872 fix).
+  never sent to the template host. Whatever a push sets off (webhooks,
+  integrations) runs as the user; the admin token never reaches git. The
+  push also carries `ci.skip`, so no pipeline starts. Open risk: GitLab
+  may refuse the token while the account's password counts as expired
+  (CVE-2021-39872 fix); that push fails with a hint, with no fallback to
+  the admin.
 - **No Git LFS.** The clone is bare; a template holding LFS pointers is
-  refused rather than pushed as stubs.
-- **No state for half done work.** The project is created before the
-  clone, so a failed run leaves it empty and the next run fills it.
-  Content is never overwritten, and only projects the CLI filled are
-  recorded.
+  refused rather than pushed as stubs. A pointer is matched by its format
+  (under 1024 bytes, version, oid and size lines), not by `.gitattributes`:
+  the default `user1` names LFS there but stores its files whole.
+- **Only a project this run created is filled.** The template is cloned
+  first, so an unusable template leaves nothing behind. A project that
+  already exists, even an empty one, is never pushed to: its settings (a
+  CI configuration path, webhooks) are its owner's. A failed push leaves
+  the new project empty, to be deleted before a re-run. A project found
+  with content is recorded after one warning, since nothing is left to
+  do; an empty one is not, so it warns until the admin deletes it.
+- **GitLab names the path.** The project is looked up among the user id's
+  own projects, and the push goes to the `path_with_namespace` GitLab
+  returns, never to a path built from the DTaaS username.
+- **Bounded git.** A transfer under 1000 bytes a second for 60 seconds is
+  aborted, and any git command stops after 15 minutes.
 - **A second pass** after all accounts, so a token that cannot be saved
   still stops the account step as before.
