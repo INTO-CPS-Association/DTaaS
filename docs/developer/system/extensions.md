@@ -48,8 +48,13 @@ API version the host implements (`SDK_VERSION`).
 ## The Extension Host
 
 `client/src/extension/` is the host side of the contract. It reads the
-extensions compiled into a build from `client/src/extensions.ts` and decides
-which of them run. An extension is left out, with the reason in the browser
+extensions compiled into a build from `client/src/extensions.ts`, then the
+bundles a deployment lists in `REACT_APP_EXTENSIONS_DEPLOYED`, and decides
+which of them run. A bundle is built with `kitBuildConfig` from the contract's
+`./deploy` entry. It takes React, the router, MUI, zod and the contract from the
+client instead of carrying its own copies, so an operator adds a kit without
+editing the client or rebuilding it, as with the prebuilt extensions of
+JupyterLab. An extension is left out, with the reason in the browser
 console, when it is malformed, when its `apiRange` does not include the host's
 API version, when its id is taken, when `REACT_APP_EXTENSIONS_DISABLED` in
 `env.js` lists it, when its `REACT_APP_EXT_<ID>_*` keys do not satisfy its
@@ -107,7 +112,8 @@ proposal:
   and configuration. An extension does not import client internals.
 - The client lists the extensions compiled into a build in one file,
   `src/extensions.ts`. A deployment can disable a compiled-in extension
-  in `env.js` with `REACT_APP_EXTENSIONS_DISABLED`.
+  in `env.js` with `REACT_APP_EXTENSIONS_DISABLED` and add a bundled one
+  with `REACT_APP_EXTENSIONS_DEPLOYED`.
 - A common visualisation core, `dtaas-visualisation`, holds the parts
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.

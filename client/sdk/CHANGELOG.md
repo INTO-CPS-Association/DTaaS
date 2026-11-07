@@ -29,6 +29,12 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `colourAt` and `position`), so a kit draws a legend in the colours of the
   core. The same version adds the optional `UiService.Theme`, the host's theme
   for what a kit draws into a React root of its own.
+- API version `1.4.0`: deployed extensions (requirement K9). A deployment lists
+  bundles under `extensions/<id>/` in `REACT_APP_EXTENSIONS_DEPLOYED` and the
+  host loads them at start, without a rebuild. The `./deploy` entry gives
+  `kitBuildConfig`, the Vite settings that build such a bundle with React,
+  the router, MUI, zod and this contract taken from the host
+  (`SHARED_MODULES`) instead of bundled.
 
 ### Changed
 

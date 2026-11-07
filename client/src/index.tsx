@@ -6,31 +6,15 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 
-import { StrictMode } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ReactDOM from 'react-dom/client';
-import AppProvider from 'AppProvider';
-import { useURLbasename } from 'util/envUtil';
-import routes from 'routes';
+import type { EnvRecord } from '@into-cps-association/dtaas-sdk';
+import {
+  loadDeployedExtensions,
+  setDeployedExtensions,
+} from 'extension/deployedExtensions';
 
-const App = () => {
-  const router = createBrowserRouter(routes, {
-    basename: `/${useURLbasename()}`,
-  });
-
-  const root = document.getElementById('root');
-
-  if (root) {
-    ReactDOM.createRoot(root).render(
-      <StrictMode>
-        <AppProvider>
-          <RouterProvider router={router} />
-        </AppProvider>
-      </StrictMode>,
-    );
-  } else {
-    throw Error("Couldn't find root element");
-  }
-};
-
-App();
+// The deployed extensions load before the client's own modules, because the
+// store and the routes read the extension registry when they are imported.
+loadDeployedExtensions((globalThis.env ?? {}) as EnvRecord)
+  .then(setDeployedExtensions)
+  .then(() => import('startClient'))
+  .then(({ default: startClient }) => startClient());

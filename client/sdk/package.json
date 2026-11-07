@@ -13,6 +13,7 @@
     "./schema": "./src/schema/index.ts",
     "./testing": "./src/testing/index.ts",
     "./eslint": "./src/eslint/index.ts",
+    "./deploy": "./src/deploy/index.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
