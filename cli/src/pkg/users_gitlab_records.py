@@ -48,6 +48,12 @@ def _load_tokens(path):
     return tokens
 
 
+def load_saved_tokens():
+    """The tokens saved in the token file, {username: token}, {} when there
+    is no file. Raises ValueError or OSError as _load_tokens does."""
+    return _load_tokens(Path(GITLAB_USER_TOKENS_FILE))
+
+
 def _clear_stale_tmp(path):
     """Remove the temp file an interrupted save left next to *path*."""
     tmp = utils.secret_tmp_path(path)
@@ -76,9 +82,7 @@ def check_token_file():
         _clear_stale_tmp(path)
         utils.write_secret_file(path, json.dumps(_load_tokens(path), indent=2))
     except (OSError, ValueError) as exc:
-        return Exception(
-            with_hint(f"{GITLAB_USER_TOKENS_FILE} cannot be used.", exc)
-        )
+        return Exception(with_hint(f"{GITLAB_USER_TOKENS_FILE} cannot be used.", exc))
     return None
 
 
@@ -118,7 +122,9 @@ def persist_account_result(result):
     if result.token:
         _save_gitlab_tokens({result.username: result.token})
         set_gitlab_pat_issued([result.username])
-        echo_hint(_issued_summary(result), f"The token is in {GITLAB_USER_TOKENS_FILE}.")
+        echo_hint(
+            _issued_summary(result), f"The token is in {GITLAB_USER_TOKENS_FILE}."
+        )
 
 
 def _issued_summary(result):
