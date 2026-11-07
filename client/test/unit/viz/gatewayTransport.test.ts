@@ -202,6 +202,26 @@ describe('the signals gateway transport', () => {
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
+  it('stops asking for paths after a 403, until the page asks for them again', async () => {
+    const fetch = jest.fn(async () => answerOf([], 403));
+    const transport = createGatewayTransport({
+      url: 'https://signals.example',
+      token: () => TOKEN,
+      fetch,
+    });
+
+    const stop = transport.subscribe(['secret'], jest.fn());
+    await jest.advanceTimersByTimeAsync(REOPEN_DELAY_MS);
+    await jest.advanceTimersByTimeAsync(60_000);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(transport.state()).toBe('down');
+
+    stop();
+    transport.subscribe(['secret'], jest.fn());
+    await jest.advanceTimersByTimeAsync(REOPEN_DELAY_MS);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it('still tries again after a refusal that is not about the token', async () => {
     const fetch = jest.fn(async () => answerOf([], 503));
     const transport = createGatewayTransport({

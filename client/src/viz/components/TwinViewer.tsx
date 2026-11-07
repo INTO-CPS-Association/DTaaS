@@ -52,7 +52,7 @@ function TwinViewer(props: TwinViewerProps) {
   const { asset, signals, viz } = props;
   const { register, panes, problems } = usePanes(asset, viz);
   const version = useSamples(asset, signals);
-  const loaded = useHistory(asset, signals);
+  const loaded = useHistory(asset, signals, viz.presets);
   const t = signals.playhead.use();
   useEffect(
     () => draw({ asset, signals, viz }, panes, t),

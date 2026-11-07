@@ -23,6 +23,7 @@ import eventHandler from 'viz/gatewayEvents';
 import {
   authorization,
   endpoint,
+  FORBIDDEN,
   UNAUTHORISED,
   type GatewaySettings,
 } from 'viz/gateway';
@@ -88,10 +89,24 @@ interface Stream {
   stop(): void;
 }
 
-/** How long to wait after a failure, or undefined when the token was refused. */
-function retryAfter(settings: GatewaySettings, token: string, error: unknown) {
+/**
+ * How long to wait after a failure, or undefined when nothing should be asked
+ * again: the token was refused, or none of the paths may be read. The gateway
+ * answers 403 only when it refuses every path, so those paths are refused
+ * here as a `refused` event would, until the page asks for them again.
+ */
+function retryAfter(
+  settings: GatewaySettings,
+  token: string,
+  error: unknown,
+  refusePaths: () => void,
+) {
   if (error instanceof RefusedError && error.status === UNAUTHORISED) {
     settings.session?.refuse(token);
+    return undefined;
+  }
+  if (error instanceof RefusedError && error.status === FORBIDDEN) {
+    refusePaths();
     return undefined;
   }
   return RECONNECT_DELAY_MS;
@@ -103,6 +118,7 @@ function openStream(
   paths: readonly string[],
   onEvent: (event: SseEvent) => void,
   signal: AbortSignal,
+  refuse: (path: string) => void,
 ): Promise<number | undefined> {
   const token = settings.token();
   if (settings.session?.isRefused(token)) return Promise.resolve(undefined);
@@ -115,7 +131,8 @@ function openStream(
     settings.fetch,
   ).then(
     (result) => result.retryMs ?? RECONNECT_DELAY_MS,
-    (error: unknown) => retryAfter(settings, token, error),
+    (error: unknown) =>
+      retryAfter(settings, token, error, () => paths.forEach(refuse)),
   );
 }
 
@@ -207,15 +224,16 @@ export default function createGatewayTransport(
   const state = stateCell();
   const refused = new Set<string>();
   const channel = settings.channel ?? 'measured';
+  const refuse = (path: string) => refused.add(path);
   const onEvent = eventHandler({
     sinksOf: book.sinksOf,
     setState: state.set,
-    refuse: (path) => refused.add(path),
+    refuse,
     channel,
   });
   const wanted = () => book.paths().filter((path) => !refused.has(path));
   const connect: Connect = (paths, signal) =>
-    openStream(settings, paths, onEvent, signal);
+    openStream(settings, paths, onEvent, signal, refuse);
   const stream = streamRunner(wanted, connect, state);
   return {
     id: `signals gateway ${settings.url}`,

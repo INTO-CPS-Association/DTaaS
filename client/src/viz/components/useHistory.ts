@@ -11,17 +11,28 @@
 import { useEffect, useState } from 'react';
 import type {
   Channel,
+  EncodingPreset,
   SignalsService,
   VisualisationAsset,
 } from '@into-cps-association/dtaas-sdk';
+import { encodingsOf, presetsOf } from 'viz/resolve';
 import { HOUR_MS } from 'viz/time';
 
 const MINUTE_MS = 60_000;
 
-/** The channels the encodings of a visualisation read. */
-export function channelsOf(asset: VisualisationAsset): Channel[] {
-  const named = asset.encodings.map(
-    (e) => (e.encoding as { channel?: Channel }).channel ?? 'measured',
+/**
+ * The channels the encodings of a visualisation read. A binding that names a
+ * preset reads the channels of the preset's encodings.
+ */
+export function channelsOf(
+  asset: VisualisationAsset,
+  registered: readonly EncodingPreset[],
+): Channel[] {
+  const presets = presetsOf(asset, registered);
+  const named = asset.encodings.flatMap((binding) =>
+    (encodingsOf(binding, presets) ?? []).map(
+      (encoding) => (encoding as { channel?: Channel }).channel ?? 'measured',
+    ),
   );
   return [...new Set(named)];
 }
@@ -30,6 +41,7 @@ export function channelsOf(asset: VisualisationAsset): Channel[] {
 export default function useHistory(
   asset: VisualisationAsset,
   signals: SignalsService,
+  presets: readonly EncodingPreset[],
 ): number {
   const minute = Math.floor(signals.playhead.use() / MINUTE_MS);
   const [loaded, setLoaded] = useState(0);
@@ -37,7 +49,7 @@ export default function useHistory(
     let current = true;
     const paths = [...new Set(asset.encodings.map((e) => e.target))];
     const to = (minute + 1) * MINUTE_MS;
-    const reads = channelsOf(asset).map((channel) =>
+    const reads = channelsOf(asset, presets).map((channel) =>
       signals.range(paths, channel, to - HOUR_MS - MINUTE_MS, to),
     );
     Promise.all(reads)
@@ -47,6 +59,6 @@ export default function useHistory(
     return () => {
       current = false;
     };
-  }, [asset, signals, minute]);
+  }, [asset, signals, presets, minute]);
   return loaded;
 }

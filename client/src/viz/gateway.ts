@@ -23,6 +23,9 @@ export interface GatewaySettings {
 /** HTTP 401: the gateway did not accept the token. */
 export const UNAUTHORISED = 401;
 
+/** HTTP 403: the token is valid but may read none of the paths asked for. */
+export const FORBIDDEN = 403;
+
 /** The address of one endpoint of the gateway. */
 export function endpoint(settings: GatewaySettings, name: string): string {
   const base = settings.url.endsWith('/')

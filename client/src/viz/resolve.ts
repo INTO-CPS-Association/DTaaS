@@ -33,7 +33,18 @@ export interface ResolvedBinding {
 
 type Binding = VisualisationAsset['encodings'][number];
 
-function encodingsOf(
+/** The presets a visualisation may name: the registered ones and its own. */
+export function presetsOf(
+  asset: VisualisationAsset,
+  registered: readonly EncodingPreset[],
+): ReadonlyMap<string, EncodingPreset> {
+  return new Map(
+    [...registered, ...(asset.presets ?? [])].map((p) => [p.id, p]),
+  );
+}
+
+/** The encodings of one binding, its own or those of its preset. */
+export function encodingsOf(
   binding: Binding,
   presets: ReadonlyMap<string, EncodingPreset>,
 ): Encoding[] | undefined {
@@ -74,9 +85,7 @@ export default function resolveEncodings(
   readAt: ReadAt,
   t: number,
 ): ResolvedBinding[] {
-  const presets = new Map(
-    [...registered, ...(asset.presets ?? [])].map((p) => [p.id, p]),
-  );
+  const presets = presetsOf(asset, registered);
   return asset.encodings.map((binding) =>
     resolveBinding(binding, presets, readAt, t),
   );
