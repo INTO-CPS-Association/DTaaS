@@ -172,9 +172,13 @@ plans what the SDK gives every extension.
   browser holds the token and sends it to the gateway. RFC 10017 recommends that
   backend for applications with personal or business data.
 - A path is allowed when a `visualisation.json` committed in a project the
-  person can read declares it. Group roles of the access plan come next, checked
-  against a cache of at most 60 seconds. Roles carried inside a token change
-  only when the token expires. Sending data to a twin needs `member`.
+  person can read declares it and the topic starts with a prefix of the
+  owner's group. `dtaas-services` writes the owners file that maps each owner
+  to its group and topic prefixes, from the same data that sets the broker
+  topic permissions and names the group database. Without that check a twin
+  could declare a topic of another group. Group roles of the access plan come
+  next, checked against a cache of at most 60 seconds. Roles carried inside a
+  token change only when the token expires. Sending data to a twin needs `member`.
 
 ### One Source of `visualisation.json` and the API Style (G8, G10)
 
