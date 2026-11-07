@@ -27,6 +27,7 @@ each step:
   files that `dtaas-services` makes.
 - [Configuration](config.md): the keys of `signals.yaml`.
 - [Docker](docker.md): the gateway in the DTaaS packages and on its own.
+- [Domain Kits](kits.md): a kit's bundle for the client and its tables.
 - [Comparison](comparison.md): the signals path next to ThingsBoard and
   Eclipse Ditto.
 
@@ -41,13 +42,18 @@ Generate and set up the platform services as the
 [platform services page](../../services/cli.md) describes, then start them:
 
 ```bash
-dtaas-services service start
+dtaas-services service start -s rabbitmq,postgres,grafana,telegraf
 ```
 
 `compose.services.yml` holds RabbitMQ with its MQTT plugin, PostgreSQL,
-Grafana and Telegraf. `TELEGRAF_MQTT_SERVER` in `config/services.env` names
-the MQTT address that Telegraf reads, `ssl://rabbitmq:8883` inside the Docker
-network by default.
+Grafana and Telegraf. Without `-s` the command also starts the other
+services of the file, such as GitLab and ThingsBoard.
+`TELEGRAF_MQTT_SERVER` in `config/services.env` names the MQTT address that
+Telegraf reads, `ssl://rabbitmq:8883` inside the Docker network by default.
+With self-signed certificates, Telegraf has to trust
+the certificate authority too: mount its certificate into the `telegraf`
+service and name it in `SSL_CERT_FILE`, or Telegraf refuses the broker and
+stores nothing.
 
 ## 2. Make the Accounts and the Group Database
 
@@ -125,9 +131,15 @@ connects to the broker with its own account, not with the `url` of the file.
 A topic must also start with a prefix of the owner's group in the owners file,
 here `SWiM/`.
 
+The Visualise tab lists the twins of the user's workspace, so copy the same
+folder into `files/<user>/digital_twins/` of the installation too. The
+gateway reads only the committed copy.
+
 ## 5. Configure and Start the Gateway
 
-In the DTaaS Docker package of the installation:
+In the DTaaS Docker package of the installation, after its README has made
+`config/.env` and `config/client.js`. `DEFAULT_USER` in `config/.env` is the
+GitLab username of the user, or the client cannot list that user's twins.
 
 1. Copy `config/signals.yaml.example` to `config/signals.yaml`. Set
    `gitlab-url`, `gitlab-client-id`, the services host in `mqtt-url` and
@@ -172,7 +184,9 @@ A device publishes with its own MQTT account. To publish one reading by hand,
 the management API of RabbitMQ can send it to `amq.topic`, where the MQTT
 plugin routes it with `.` in place of `/`
 ([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)). `curl` asks for
-the password of the administrator of `config/services.env`:
+the password of the administrator of `config/services.env`. With a
+self-signed certificate, add `--cacert` with the certificate of the
+authority:
 
 ```bash
 curl -u dtaas -H 'Content-Type: application/json' \
@@ -197,8 +211,14 @@ the client sends. Behind traefik-forward-auth the request also needs the
 session cookie of the browser. For the store check:
 
 ```bash
-docker exec -it postgres psql -U <POSTGRES_USER> -d swim \
+docker exec postgres psql -U <POSTGRES_USER> -d swim \
   -c 'select * from reading order by time desc limit 1'
 ```
 
 `<POSTGRES_USER>` is the administrator of `config/services.env`.
+
+## 8. Add a Domain Kit
+
+A domain kit, such as `soil-kit`, adds its pages and views to the client and
+its own tables to the group databases, without a change to the client, the
+gateway or Telegraf. [Domain Kits](kits.md) gives the steps.
