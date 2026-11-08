@@ -18,7 +18,9 @@ import {
 } from 'three';
 
 const MARKER_SHARE = 0.012;
-const LABEL_SHARE = 0.09;
+// At 0.09 a label was read at about 7 pt once the view was shrunk to a
+// printed column, smaller than the text around it.
+const LABEL_SHARE = 0.13;
 const LABEL_FONT_PX = 48;
 // Labels sit in the scene, whose background is light in both themes.
 const LABEL_BACKGROUND = 'rgba(255, 255, 255, 0.9)';
