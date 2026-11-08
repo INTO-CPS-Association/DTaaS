@@ -15,7 +15,9 @@ for a new kit.
 
 The SDK's own test suite exercises the kit in
 [`tests/integration/helloKit.test.tsx`](../../tests/integration/helloKit.test.tsx),
-and the SDK's lint rules for kits are applied to this directory.
+and
+[`tests/integration/exampleKitsLint.test.ts`](../../tests/integration/exampleKitsLint.test.ts)
+checks its sources against the SDK's lint rules for kits.
 
 In this repository the kit imports its own modules through the `examples/*`
 path alias; a standalone kit would use relative imports.
