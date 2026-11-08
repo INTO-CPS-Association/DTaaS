@@ -38,6 +38,13 @@ matches `^[a-z][a-z0-9_]{2,31}$` and a topic has eight levels.
 
 ## 1. Start the Platform Services
 
+The commands of this page come with `dtaas-services` 1.2.0, so install that
+version or a later one:
+
+```bash
+pip install "dtaas-services>=1.2.0"
+```
+
 Generate and set up the platform services as the
 [platform services page](../../services/cli.md) describes, then start them:
 
