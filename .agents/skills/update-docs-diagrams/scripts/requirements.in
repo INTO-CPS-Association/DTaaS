@@ -2,4 +2,4 @@
 # scripts themselves use the standard library only.
 pillow==12.3.0
 fonttools==4.66.1
-brotli==1.2.0
+brotli==1.2.1
