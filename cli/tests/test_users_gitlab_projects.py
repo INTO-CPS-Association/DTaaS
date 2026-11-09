@@ -12,6 +12,8 @@ from src.pkg.users_gitlab_targets import GitlabCandidate, GitlabUserResult
 
 COMMON = "https://gitlab.com/dtaas/common.git"
 USER = "https://gitlab.com/dtaas/user1.git"
+# The command a failed push names, to provision alice again.
+RERUN = "dtaas user add alice"
 RUN = GitlabRun("gl", {"common": COMMON, "user": USER})
 MODULE = "src.pkg.users_gitlab_projects.gitlabPkg"
 CREATED = ProjectResult(ProjectOutcome.CREATED)
@@ -66,8 +68,8 @@ def test_a_new_account_gets_both_projects_recorded(gitlab, capsys):
     makes them again."""
     assert _run(_new("alice", 42)) == []
     assert _requests(gitlab["ensure"]) == [
-        ProjectRequest(42, "alice", "common", COMMON, "new-alice"),
-        ProjectRequest(42, "alice", "user", USER, "new-alice"),
+        ProjectRequest(42, "alice", "common", COMMON, RERUN, "new-alice"),
+        ProjectRequest(42, "alice", "user", USER, RERUN, "new-alice"),
     ]
     assert load_registry()["alice"]["gitlab_projects"] == ["common", "user"]
     out = capsys.readouterr().out
@@ -83,7 +85,7 @@ def test_an_earlier_account_gets_only_the_missing_project(gitlab):
     to the recorded list."""
     assert _run(_earlier("alice", 7, ("common",))) == []
     assert _requests(gitlab["ensure"]) == [
-        ProjectRequest(7, "alice", "user", USER, "saved-alice")
+        ProjectRequest(7, "alice", "user", USER, RERUN, "saved-alice")
     ]
     assert load_registry()["alice"]["gitlab_projects"] == ["common", "user"]
 

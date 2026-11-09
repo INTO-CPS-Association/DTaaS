@@ -6,7 +6,7 @@ import pytest
 from dtaas_services.pkg.services.gitlab import app_script, tokens_file
 from dtaas_services.pkg.services.gitlab.app_token import OAuthAppResult
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 TEST_PASSWORD = "RootPass123"  # noqa: S105 # NOSONAR
 
 

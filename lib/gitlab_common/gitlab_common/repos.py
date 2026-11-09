@@ -6,10 +6,10 @@ comes first, so a template that cannot be used fails before any project is
 created. No GitLab import is involved, so the instance needs no import source
 enabled and never has to reach the template host itself.
 
-The push authenticates with the user's own token (the PAT this CLI issued
-them), never the admin's, so whatever a push sets off on GitLab (webhooks,
-integrations) runs as the user. It also carries the push option ci.skip,
-so it starts no CI pipeline. The admin token never reaches git.
+The push authenticates with the user's own token (the PAT the consuming
+CLI issued them), never the admin's, so whatever a push sets off on GitLab
+(webhooks, integrations) runs as the user. It also carries the push option
+ci.skip, so it starts no CI pipeline. The admin token never reaches git.
 
 The clone is checked by template_checks.py (no commits, Git LFS pointers)
 before anything is pushed, and git itself runs through git_run.py, which
@@ -22,7 +22,7 @@ the template host. Prompts and credential helpers are off, so a template that
 needs a login fails at once instead of waiting for input, and the admin's own
 saved git credentials are never used. A transfer slower than
 LOW_SPEED_LIMIT bytes a second for LOW_SPEED_SECONDS is aborted by git, so a
-stalled host cannot hang 'user add'.
+stalled host cannot hang the command that provisions users.
 """
 
 import base64
@@ -32,7 +32,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from pathlib import Path
 
-from ...gitlab_common import with_hint
+from .messages import with_hint
 from .git_run import run_git
 from .template_checks import template_problem
 
@@ -45,8 +45,8 @@ PUBLIC_TEMPLATES = "Templates are cloned without a login, so they must be public
 @dataclass(frozen=True)
 class GitAccess:
     """How git reaches GitLab: the instance URL, the token a push
-    authenticates with (the user's own, "" for a clone), and
-    [gitlab].ssl_verify (True, False, or the path of a CA bundle)."""
+    authenticates with (the user's own, "" for a clone), and the GitLab
+    client's ssl_verify (True, False, or the path of a CA bundle)."""
 
     api_url: str
     token: str
@@ -69,7 +69,7 @@ class GitAccess:
 
 
 def _config_pairs(access, auth):
-    """The git settings of one command; *auth* adds *access*'s token."""
+    """The git settings of one command: *auth* adds *access*'s token."""
     scope = f"http.{access.api_url.rstrip('/')}"
     pairs = [
         ("credential.helper", ""),
@@ -109,7 +109,7 @@ def _scrubbed(text, access):
 
 
 def _git(args, env, access):
-    """Run git; "" on success, else its last error lines, token masked."""
+    """Run git: "" on success, else its last error lines, token masked."""
     done = run_git(args, env)
     if done.returncode == 0:
         return ""
@@ -119,7 +119,7 @@ def _git(args, env, access):
 
 
 def _clone(access, url, repo):
-    """Bare clone *url* into *repo*; "" or why it failed."""
+    """Bare clone *url* into *repo*: "" or why it failed."""
     error = _git(
         ["clone", "--bare", "--quiet", "--", url, repo], git_env(access), access
     )
@@ -129,7 +129,7 @@ def _clone(access, url, repo):
 
 @dataclass(frozen=True)
 class TemplateClone:
-    """A template cloned by cloned_template; *error* says why it cannot be
+    """A template cloned by cloned_template: *error* says why it cannot be
     pushed, or is "" when it can."""
 
     access: GitAccess
@@ -139,7 +139,7 @@ class TemplateClone:
     def push(self, path, token):
         """Push the default branch to the project *path* (GitLab's
         path_with_namespace) as the owner of *token*, the user's own, with
-        no CI pipeline; "" or why it failed."""
+        no CI pipeline: "" or why it failed."""
         access = replace(self.access, token=token)
         url = access.project_url(path)
         args = ["-C", self.repo, "push", "--quiet", "--no-verify"]

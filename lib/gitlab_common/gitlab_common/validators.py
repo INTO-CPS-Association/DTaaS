@@ -1,10 +1,40 @@
-"""Input validation helpers for GitLab user management."""
+"""Input validation helpers for GitLab user management, and the value
+rules of the template settings that both CLIs check."""
 
 import re
 from typing import Tuple
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,254}$")
 INVALID_EMAIL_ERROR = "Invalid user input: email format is invalid."
+# An http(s) URL (used with fullmatch, so a trailing newline is refused): a
+# host of letters, digits, dots and dashes, an optional port and an optional
+# path. No two parts can match the same text, so it runs in linear time.
+HTTP_URL_PATTERN = re.compile(r"https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?")
+# One segment of a GitLab group path (used with fullmatch): letters, digits,
+# _ . and -, not starting with -, at most 255 characters.
+NAMESPACE_SEGMENT_PATTERN = re.compile(r"[A-Za-z0-9_.][A-Za-z0-9_.-]{0,254}")
+
+
+def is_http_url(value: object) -> bool:
+    """True when *value* is an http(s) URL (case-insensitive) with a host
+    and an optional port and path."""
+    return isinstance(value, str) and bool(HTTP_URL_PATTERN.fullmatch(value.lower()))
+
+
+def _is_namespace_segment(segment: str) -> bool:
+    """True for one segment of a GitLab group path: GitLab also refuses one
+    that ends in .git or .atom."""
+    if not NAMESPACE_SEGMENT_PATTERN.fullmatch(segment):
+        return False
+    return not segment.endswith((".git", ".atom"))
+
+
+def is_namespace_path(value: object) -> bool:
+    """True when *value* is a GitLab group path, such as 'dtaas', or
+    'dtaas/templates' for a subgroup."""
+    return isinstance(value, str) and all(
+        _is_namespace_segment(segment) for segment in value.split("/")
+    )
 
 
 def _validate_username(username: str) -> str | None:

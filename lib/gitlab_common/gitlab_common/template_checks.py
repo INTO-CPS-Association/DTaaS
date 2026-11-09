@@ -12,7 +12,7 @@ LFS there and still store the files themselves (the default 'user1' does),
 and such a template pushes whole.
 """
 
-from ...gitlab_common import with_hint
+from .messages import with_hint
 from .git_run import run_git
 
 LFS_POINTER_PATTERNS = (
@@ -30,7 +30,7 @@ NO_COMMITS = "The template has no commits."
 
 def _read(repo, args):
     """The NUL separated output of git *args* in *repo*, and "" or why it
-    failed; git grep's "no match" (exit 1, nothing on stderr) is no output."""
+    failed: git grep's "no match" (exit 1, nothing on stderr) is no output."""
     done = run_git(["-C", repo, *args])
     if done.returncode == 0 or (done.returncode == 1 and not done.stderr.strip()):
         return [entry for entry in done.stdout.split("\0") if entry], ""

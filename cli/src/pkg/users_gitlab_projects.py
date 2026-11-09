@@ -171,8 +171,9 @@ def _make_projects(run, target, token):
     succeeded = True
     for name, url in run.templates.items():
         if name not in target.done:
+            rerun = f"dtaas user add {target.username}"
             request = gitlabPkg.ProjectRequest(
-                target.user_id, target.username, name, url, token
+                target.user_id, target.username, name, url, rerun, token
             )
             succeeded = _one_project(run.gl, request, done) and succeeded
     return succeeded

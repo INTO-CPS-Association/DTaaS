@@ -36,6 +36,7 @@ MongoDB, InfluxDB, RabbitMQ, Grafana, ThingsBoard and GitLab.
 * Python 3.10 or higher
 * Docker and Docker Compose
 * TLS certificates
+* Git 2.31 or later, for the GitLab projects of `user add`
 
 ## Installation
 
@@ -81,6 +82,10 @@ Commands follow the form `dtaas-services <noun> <verb>`. The nouns are
    * `GITLAB_PORT`: port for the local GitLab instance (default: `8090`)
    * `GITLAB_ROOT_NEW_PASSWORD`: strong password to set for the GitLab
      root admin
+   * `GITLAB_TEMPLATE_HOST` and `GITLAB_TEMPLATE_GROUP`: where the
+     templates of each user's GitLab projects live (default
+     `https://gitlab.com` and `dtaas`). Set both, or remove both for
+     GitLab accounts and tokens only
    * `TB_SYSADMIN_NEW_PASSWORD`: new password for the ThingsBoard
      system admin
    * `TB_TENANT_ADMIN_PASSWORD`: new password for the tenant admin
@@ -127,9 +132,11 @@ overwrites these files, which are reported as kept:
 
 * `services.env`, `credentials.csv`, `gitlab_oauth.json`
 * `gitlab_tokens.json`, `gitlab_user_tokens.json`, `password.env.current`
+* `gitlab_user_projects.json`
 * `mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`
 
-The first six hold your settings and live credentials; the last three are
+The first seven hold your settings, live credentials and the record of
+finished GitLab projects. The last three are
 service configuration you may have hardened locally. Overwritten files and
 existing directories keep the permissions they already had, so a tightened
 `config/` stays tightened. To adopt the packaged version of a kept file, copy
@@ -225,7 +232,26 @@ only.
     This creates user accounts in InfluxDB, RabbitMQ, MongoDB, PostgreSQL,
     ThingsBoard and GitLab. A service that is not running is skipped.
     For GitLab, a Personal Access Token is created for each new user and
-    saved to `config/gitlab_user_tokens.json`.
+    saved to `config/gitlab_user_tokens.json` (merged, so the tokens of users
+    added earlier stay). When `GITLAB_TEMPLATE_HOST` and
+    `GITLAB_TEMPLATE_GROUP` are set, each user also gets two private projects
+    in their own namespace, `common` and `user`, filled from
+    `<host>/<group>/common.git` and `.../user1.git`. This host clones each
+    template (they must be public) and pushes it as the user, with their own
+    token and no CI pipeline. One line per project says what happened:
+
+    ```text
+      ✅ GitLab project 'user1/common' created.
+        Private, filled from https://gitlab.com/dtaas/common.git
+    ```
+
+    A project that already exists is never pushed to: it gets a `Warning:`
+    (once when it has content, on every run while it is empty). A failed
+    project fails that user only, and running the command again makes only
+    the missing projects (finished ones are recorded in
+    `config/gitlab_user_projects.json`). A user whose account existed before
+    the run gets projects only when a token of theirs is saved in
+    `config/gitlab_user_tokens.json`.
 
 3. Add users to a specific service:
 

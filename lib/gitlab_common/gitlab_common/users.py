@@ -195,3 +195,27 @@ def revoke_user_pats(
         return True, ""
     except API_ERRORS as exc:
         return False, f"Failed to revoke the tokens of GitLab user {user_id}: {exc}"
+
+
+def find_user_id(gl: gitlab.Gitlab, username: str) -> Tuple[int | None, str]:
+    """Look up the id of the GitLab account whose username is *username*.
+
+    Lists ``GET /users?username=`` and keeps only an exact match, so a
+    similar name is never taken for the account.
+
+    Args:
+        gl: Authenticated gitlab.Gitlab client, owned by an administrator.
+        username: The account's username.
+
+    Returns:
+        Tuple of (user_id_or_None, error): the id and "" when the account is
+        found, else None and why not.
+    """
+    try:
+        listed = gl.users.list(username=username, iterator=True)
+        user = next((found for found in listed if found.username == username), None)
+    except API_ERRORS as exc:
+        return None, f"Failed to look up GitLab user '{username}': {exc}"
+    if user is None:
+        return None, f"GitLab has no user named '{username}'."
+    return user.id, ""

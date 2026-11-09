@@ -120,6 +120,10 @@ def add(service_names):
     """
     Add user accounts to InfluxDB, RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab.
     Reads config/credentials.csv and creates accounts in all services.
+    On GitLab, each user also gets the private projects 'common' and 'user',
+    filled from the templates that GITLAB_TEMPLATE_HOST and
+    GITLAB_TEMPLATE_GROUP name in config/services.env (needs git 2.31 or
+    later on this host).
     Example:
         dtaas-services user add
         dtaas-services user add -s thingsboard

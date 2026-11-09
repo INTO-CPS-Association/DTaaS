@@ -5,7 +5,7 @@ from gitlab.exceptions import GitlabError
 from dtaas_services.pkg.services.gitlab import password
 # pylint: disable=W0212
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 TEST_PASSWORD = "Astr0n0m1c@lG28ww"  # noqa: S105 # NOSONAR
 TEST_NEW_PASSWORD = "NewP@ssw0rd!"  # noqa: S105 # NOSONAR
 

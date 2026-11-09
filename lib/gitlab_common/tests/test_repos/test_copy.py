@@ -1,8 +1,8 @@
 """Tests for cloned_template and TemplateClone.push: a real git clone and
 push between local repositories, so no network is needed."""
 
-from src.pkg.gitlab.repos import cloned_template
-from tests.test_pkg_gitlab.test_repos.conftest import USER_TOKEN
+from gitlab_common.repos import cloned_template
+from tests.test_repos.conftest import USER_TOKEN
 
 
 def _copy(local, template, path="alice/common"):
@@ -13,7 +13,7 @@ def _copy(local, template, path="alice/common"):
 
 def test_copy_pushes_the_default_branch_and_leaves_no_temp_files(local, scratch):
     """The project gets the template's default branch with its history, and
-    nothing else; the temporary clone is gone afterwards."""
+    nothing else: the temporary clone is gone afterwards."""
     template = local.template({"README.md": "common\n"})
 
     assert _copy(local, template) == ""

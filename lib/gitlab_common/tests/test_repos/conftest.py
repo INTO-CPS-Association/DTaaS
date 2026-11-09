@@ -1,4 +1,4 @@
-"""Fixtures shared by the gitlab/repos.py tests: local repositories standing
+"""Fixtures shared by the repos.py tests: local repositories standing
 in for the template and the GitLab project, and the admin access git is
 given. Git is isolated by the isolated_git fixture of the parent conftest."""
 
@@ -6,8 +6,8 @@ import tempfile
 from types import SimpleNamespace
 
 import pytest
-from src.pkg.gitlab.repos import GitAccess
-from tests.test_pkg_gitlab.conftest import fixture_git
+from gitlab_common.repos import GitAccess
+from tests.conftest import fixture_git
 
 TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 USER_TOKEN = "fake-user-token"  # noqa: S105 # NOSONAR

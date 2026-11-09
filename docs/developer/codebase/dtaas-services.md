@@ -81,7 +81,13 @@ deploy/services/cli/
 │   ├── gitlab_common/      # vendored from lib/gitlab_common (gitignored)
 │   │   ├── client.py
 │   │   ├── errors.py
+│   │   ├── git_run.py
 │   │   ├── messages.py
+│   │   ├── project_fill.py
+│   │   ├── projects.py
+│   │   ├── repos.py
+│   │   ├── template_checks.py
+│   │   ├── templates.py
 │   │   ├── users.py
 │   │   └── validators.py
 │   └── templates/
@@ -178,7 +184,11 @@ A generated project is driven by:
 - TLS certificates copied into the generated `certs/` layout.
 
 The main GitLab-related environment variables are `HOSTNAME`,
-`GITLAB_PORT`, `SSL_VERIFY` and `GITLAB_ROOT_NEW_PASSWORD`.
+`GITLAB_PORT`, `SSL_VERIFY`, `GITLAB_ROOT_NEW_PASSWORD`, and
+`GITLAB_TEMPLATE_HOST` with `GITLAB_TEMPLATE_GROUP`, which name the
+templates of each user's `common` and `user` projects. `gitlab_common`
+also holds the project step's `git` work (clone, checks, push), shared
+with the DTaaS CLI, so the host needs `git` 2.31 or later.
 
 ## Typical Workflow
 

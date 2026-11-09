@@ -1,28 +1,34 @@
-"""Tests for creating and filling one GitLab project (pkg/gitlab/projects.py)."""
+"""Tests for creating and filling one GitLab project (project_fill.py)."""
 
 from contextlib import contextmanager
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from src.gitlab_common import ProjectLookup, ProjectState
-from src.pkg.gitlab import ProjectOutcome, ProjectRequest, ensure_project
-from src.pkg.gitlab.repos import GitAccess
+from gitlab_common import (
+    ProjectLookup,
+    ProjectOutcome,
+    ProjectRequest,
+    ProjectState,
+    ensure_project,
+)
+from gitlab_common.repos import GitAccess
 
 TEMPLATE = "https://gitlab.com/dtaas/common.git"
 USER_TOKEN = "fake-alice-token"  # noqa: S105 # NOSONAR
-REQUEST = ProjectRequest(42, "alice", "common", TEMPLATE, USER_TOKEN)
+RERUN = "dtaas user add alice"
+REQUEST = ProjectRequest(42, "alice", "common", TEMPLATE, RERUN, USER_TOKEN)
 GL = SimpleNamespace(
     url="https://gitlab.example.com", private_token="t", ssl_verify=True
 )
-MODULE = "src.pkg.gitlab.projects"
+MODULE = "gitlab_common.project_fill"
 GITLAB_PATH = "alice.k/common"
 
 
 @contextmanager
 def _gitlab(lookup, created=(True, GITLAB_PATH), clone_error="", pushed=""):
     """Patch the lookup, the template clone and the create call of
-    projects.py; the clone's push answers *pushed*."""
+    projects.py: the clone's push answers *pushed*."""
     clone = MagicMock(error=clone_error)
     clone.push.return_value = pushed
     with patch(f"{MODULE}.find_user_project", return_value=lookup) as find, patch(
@@ -48,6 +54,11 @@ def test_a_missing_project_is_created_then_pushed_as_the_user():
     )
     calls.create.assert_called_once_with(GL, 42, "common")
     calls.clone.push.assert_called_once_with(GITLAB_PATH, USER_TOKEN)
+
+
+def test_the_request_names_the_project_as_the_user_knows_it():
+    """Messages name the project by username, not GitLab's namespace."""
+    assert REQUEST.path == "alice/common"
 
 
 def test_the_token_is_kept_out_of_the_request_repr():

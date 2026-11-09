@@ -2,7 +2,7 @@
 
 Every git command of the project step goes through run_git, so each one is
 stopped after GIT_TIMEOUT_SECONDS: a slow or stalled host, or a template
-too large to finish, cannot hang 'user add'.
+too large to finish, cannot hang the command that provisions users.
 """
 
 import re

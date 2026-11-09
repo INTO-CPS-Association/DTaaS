@@ -5,8 +5,8 @@ import subprocess
 from unittest.mock import patch
 
 import pytest
-from src.pkg.gitlab.template_checks import NO_COMMITS, template_problem
-from tests.test_pkg_gitlab.conftest import fixture_git
+from gitlab_common.template_checks import NO_COMMITS, template_problem
+from tests.conftest import fixture_git
 
 LFS_POINTER = (
     "version https://git-lfs.github.com/spec/v1\n"
@@ -76,7 +76,7 @@ GIT_FAILS = subprocess.CompletedProcess([], 128, "", "fatal: bad object HEAD")
 )
 def test_a_git_error_is_reported(results):
     """A git failure while reading HEAD is reported with git's words."""
-    with patch("src.pkg.gitlab.template_checks.run_git", side_effect=results):
+    with patch("gitlab_common.template_checks.run_git", side_effect=results):
         problem = template_problem("repo.git")
     assert problem.splitlines() == [
         "Could not read the template's default branch.",

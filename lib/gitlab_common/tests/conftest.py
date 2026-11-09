@@ -1,5 +1,7 @@
-"""Fixtures shared by the pkg/gitlab tests that run real git: git isolated
-from the developer's own settings, and template repositories to clone."""
+"""Fixtures shared by the tests that run real git (git_run, template_checks,
+repos): git isolated from the developer's own settings, and template
+repositories to clone. isolated_git is autouse, so no test of this package
+ever reads the developer's git settings."""
 
 import subprocess
 

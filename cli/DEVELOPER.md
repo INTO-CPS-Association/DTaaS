@@ -48,8 +48,8 @@ The CLI is written in Python and uses the following libraries:
 
 - [git](https://git-scm.com/) 2.31 or later : not a Python dependency but a
   program on the host that runs `dtaas user add` with project templates set.
-  _cli/src/pkg/gitlab/repos.py_ clones each template and pushes it to the
-  user's new project (see
+  _lib/gitlab_common/gitlab_common/repos.py_ clones each template and
+  pushes it to the user's new project (see
   [GitLab Projects: Design Rationale](#gitlab-projects-design-rationale)).
 
 ## Setup
@@ -231,7 +231,8 @@ one owner and one responsibility:
 
 `user add` fills each user's `common` and `user` projects by a clone and
 push from the `dtaas` host (_cli/src/pkg/users_gitlab_projects.py_,
-_cli/src/pkg/gitlab/repos.py_, `gitlab_common/projects.py`).
+`gitlab_common/repos.py` and `gitlab_common/project_fill.py`, shared with
+dtaas-services).
 
 - **The user's own token pushes**, the PAT the CLI issued them (this
   run's, or the saved one), through `GIT_CONFIG_COUNT` variables (git

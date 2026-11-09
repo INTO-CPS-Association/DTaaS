@@ -51,6 +51,7 @@ RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab
 * Python 3.10 or higher
 * Docker and Docker Compose
 * TLS certificates
+* Git 2.31 or later, for the GitLab projects of `user add`
 
 ### Install from Wheel Package
 
@@ -103,6 +104,9 @@ structure:
    * `HOSTNAME`: Public hostname of the DTaaS server (used for certificate paths)
    * `GITLAB_PORT`: Port for the local GitLab instance (default: `8090`)
    * `GITLAB_ROOT_NEW_PASSWORD`: Strong password to set for the GitLab root admin
+   * `GITLAB_TEMPLATE_HOST` and `GITLAB_TEMPLATE_GROUP`: Where the templates of
+     each user's GitLab projects live (default `https://gitlab.com` and `dtaas`).
+     Set both, or remove both for GitLab accounts and tokens only
    * `TB_SYSADMIN_NEW_PASSWORD`: New password for the ThingsBoard system admin
    * Port numbers for each service
    * `TB_TENANT_ADMIN_PASSWORD`: New password for the tenant admin
@@ -123,13 +127,14 @@ structure:
 * `--path` Directory to generate project structure (default: current directory)
 * `--force` Overwrite existing compose files and package files under `config/`.
   Generated credentials (`services.env`, `credentials.csv`,
-  `gitlab_oauth.json` and the token files) and service configuration
-  (`mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`) are never
-  overwritten; each one is listed as kept. To adopt the packaged version of a
-  kept file, copy it aside, delete it and run the command again. Overwritten
-  files and existing directories keep the permissions they had, so a tightened
-  `config/` stays tightened; re-run `dtaas-services host setup` if certificate
-  or service file permissions were affected.
+  `gitlab_oauth.json`, the token files and `gitlab_user_projects.json`) and
+  service configuration (`mongod.conf.secure`, `rabbitmq.conf`,
+  `rabbitmq.enabled_plugins`) are never overwritten. Each one is listed as
+  kept. To adopt the packaged version of a kept file, copy it aside, delete it
+  and run the command again. Overwritten files and existing directories keep
+  the permissions they had, so a tightened `config/` stays tightened. Re-run
+  `dtaas-services host setup` if certificate or service file permissions were
+  affected.
 
 **Example:**
 
@@ -224,7 +229,26 @@ Failures are reported as text on stderr, so a script reads stdout only.
    ThingsBoard, and GitLab
    (each service is skipped gracefully if it is not running).
    For GitLab, a Personal Access Token is created for each new user and
-   saved to `config/gitlab_user_tokens.json`.
+   saved to `config/gitlab_user_tokens.json` (merged, so the tokens of users
+   added earlier stay). When `GITLAB_TEMPLATE_HOST` and
+   `GITLAB_TEMPLATE_GROUP` are set, each user also gets two private projects
+   in their own namespace, `common` and `user`, filled from
+   `<host>/<group>/common.git` and `.../user1.git`. This host clones each
+   template (they must be public) and pushes it as the user, with their own
+   token and no CI pipeline. One line per project says what happened:
+
+   ```text
+     ✅ GitLab project 'user1/common' created.
+       Private, filled from https://gitlab.com/dtaas/common.git
+   ```
+
+   A project that already exists is never pushed to: it gets a `Warning:`
+   (once when it has content, on every run while it is empty). A failed
+   project fails that user only, and running the command again makes only
+   the missing projects (finished ones are recorded in
+   `config/gitlab_user_projects.json`). A user whose account existed before
+   the run gets projects only when a token of theirs is saved in
+   `config/gitlab_user_tokens.json`.
 
 3. Add users to a specific service:
 

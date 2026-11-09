@@ -8,7 +8,7 @@ from dtaas_services.pkg.services.gitlab import personal_token as pt
 
 # pylint: disable=W0212,W0621
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 
 
 @pytest.fixture

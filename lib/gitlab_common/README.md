@@ -1,16 +1,21 @@
 # gitlab-common
 
 Provider-agnostic [python-gitlab](https://python-gitlab.readthedocs.io/)
-operations shared across DTaaS Python packages: `dtaas-services` (service
-provisioning) and the DTaaS CLI `dtaas` (GitLab account, PAT and project
-provisioning in `dtaas user add`, PAT revocation in `dtaas user delete`).
+operations shared across DTaaS Python packages: `dtaas-services` (GitLab
+account, PAT and project provisioning in `dtaas-services user add -s gitlab`)
+and the DTaaS CLI `dtaas` (the same in `dtaas user add`, PAT revocation in
+`dtaas user delete`).
 
-Every function takes explicit arguments (URL, token, user fields) and performs
-**no** environment, filesystem, console, or process-global-state I/O.
-Deployment-specific glue -- URL derivation, token persistence, credential
-files, docker, git clone and push, and terminal output -- stays in each
-consuming application. For example, this package creates a user's empty
-project, and the DTaaS CLI fills it from a template with `git`.
+Every function takes explicit arguments (URL, token, user fields) and reads
+**no** configuration, environment or credential file of its own. The API
+calls perform no console or process-global-state I/O. The project step's git
+work (`git_run.py`, `template_checks.py`, `repos.py`, `project_fill.py`) runs
+`git` on the host in a temporary folder, and lives here so that both
+consumers fill projects with the same safeguards: the template is cloned
+bare and checked first, the push runs as the user with their own token and
+`-o ci.skip`, and every git command is bounded in time. Deployment-specific
+glue (URL derivation, token and state persistence, credential files, docker
+and terminal output) stays in each consuming application.
 
 ## This package is not installed as a dependency
 
@@ -52,7 +57,19 @@ dependency on the other, only a shared source location during development.
 | `revoke_user_pats(gl, user_id, name="dtaas")` | Revoke the user's active Personal Access Tokens with that name. Finding none counts as success. |
 | `find_user_project(gl, user_id, name)` | Look up the project whose path is `name` among the projects of GitLab user `user_id` (`GET /users/:user_id/projects`); returns a `ProjectLookup` whose `ProjectState` is MISSING (no such project), EMPTY (GitLab reports `empty_repo`), HAS_CONTENT (anything else, an unreported state included) or FAILED (an unknown user id included, with GitLab's words in `error`). `path` holds GitLab's `path_with_namespace` for a project found. |
 | `create_user_project(gl, user_id, name)` | Create an empty private project in the user's namespace through the administrator endpoint `POST /projects/user/:user_id`, with no `import_url`. Returns `(True, path_with_namespace)` or `(False, error)`. |
+| `find_user_id(gl, username)` | Look up the id of the account whose username is exactly `username` (`GET /users?username=`). Returns `(user_id, "")`, or `(None, error)` when there is no such account or the request failed. |
+| `ensure_project(gl, request)` | Make sure the project of a `ProjectRequest` (user id, username, project name, template URL, `rerun` command, the user's token) exists, filled from its template when this call creates it. A missing project is created only after the template has been cloned bare and checked (no commits, Git LFS pointers), then pushed as the user with `-o ci.skip`. A project that exists is never touched. Returns a `ProjectResult` whose `ProjectOutcome` is CREATED, EMPTY, HAS_CONTENT or FAILED (with why, and after a failed push the `rerun` command to finish with). |
+| `git_problem()` | Why `git` cannot be used on this host (missing, or older than 2.31), or `""`. Check it once before any project. |
+| `template_urls(host, group)` | `{project name: template URL}` for `PROJECT_TEMPLATES` (`common` from `common`, `user` from `user1`), each `<host>/<group>/<repository>.git`. |
+| `template_errors(host, group, keys)` | What is wrong with the template settings (each `None` when unset), named with the consumer's `TemplateKeys`: the group must pass `is_namespace_path`, the host `is_http_url`, and the two are set together or not at all. |
+| `is_http_url(value)`, `is_namespace_path(value)` | The value rules of the template settings: an http(s) URL with a host and an optional port and path, and a GitLab group path such as `dtaas` or `dtaas/templates`. |
 | `with_hint(summary, hint)` | Format a message as one short summary line with its detail indented underneath, the shape every message in this package and its consumers follows. |
+
+Every git command runs through `git_run.run_git`, which stops it after 15
+minutes, and git aborts a transfer slower than 1000 bytes a second for 60
+seconds. Settings reach git through `GIT_CONFIG_COUNT` variables, never the
+command line, and the user's token travels in an HTTP header scoped to the
+GitLab URL, never to the template host.
 
 Every GitLab call in this package catches `errors.API_ERRORS`
 (`gitlab.exceptions.GitlabError` plus `requests.RequestException`, which

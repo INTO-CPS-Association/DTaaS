@@ -5,7 +5,7 @@ import subprocess
 from unittest.mock import patch
 
 import pytest
-from src.pkg.gitlab import git_run
+from gitlab_common import git_run
 
 
 @pytest.mark.parametrize(
@@ -23,7 +23,7 @@ from src.pkg.gitlab import git_run
 def test_git_problem_checks_the_version(version, usable):
     """git 2.31 is the first to read settings from GIT_CONFIG_COUNT."""
     found = subprocess.CompletedProcess([], 0, version + "\n", "")
-    with patch("src.pkg.gitlab.git_run.run_git", return_value=found):
+    with patch("gitlab_common.git_run.run_git", return_value=found):
         problem = git_run.git_problem()
     assert (problem == "") is usable
     assert usable or "git 2.31 or later is needed" in problem
@@ -31,7 +31,7 @@ def test_git_problem_checks_the_version(version, usable):
 
 def test_git_problem_without_git():
     """A host without git is told so, in one line."""
-    with patch("src.pkg.gitlab.git_run.run_git", side_effect=FileNotFoundError("git")):
+    with patch("gitlab_common.git_run.run_git", side_effect=FileNotFoundError("git")):
         assert git_run.git_problem() == "git is not installed, or not on PATH."
 
 
@@ -41,11 +41,11 @@ def test_this_hosts_git_is_usable():
 
 
 def test_a_git_command_that_hangs_is_stopped():
-    """Every git command runs with a timeout; one that reaches it fails
+    """Every git command runs with a timeout: one that reaches it fails
     with a message instead of hanging 'user add'."""
     timeout = git_run.GIT_TIMEOUT_SECONDS
     expired = subprocess.TimeoutExpired(["git", "clone"], timeout)
-    with patch("src.pkg.gitlab.git_run.subprocess.run", side_effect=expired) as run:
+    with patch("gitlab_common.git_run.subprocess.run", side_effect=expired) as run:
         done = git_run.run_git(["clone"])
     assert (done.returncode, done.stderr) == (
         -1,

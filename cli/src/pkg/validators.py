@@ -8,13 +8,8 @@ import ipaddress
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from email_validator import EmailNotValidError, validate_email
 from fqdn import FQDN
-from .constants import (
-    NAMESPACE_SEGMENT_RE,
-    NUMERIC_HOST_RE,
-    SIZE_RE,
-    URL_RE,
-    USERNAME_RE,
-)
+from ..gitlab_common import is_http_url
+from .constants import NUMERIC_HOST_RE, SIZE_RE, USERNAME_RE
 
 
 def get_nested(data, *keys):
@@ -26,24 +21,9 @@ def get_nested(data, *keys):
 
 
 def is_url(value):
-    """True when *value* is an http(s) URL (case-insensitive) with a host/path."""
-    return isinstance(value, str) and bool(URL_RE.match(value.lower()))
-
-
-def _is_namespace_segment(segment):
-    """True for one segment of a GitLab group path; GitLab also refuses one
-    that ends in .git or .atom."""
-    if not NAMESPACE_SEGMENT_RE.fullmatch(segment):
-        return False
-    return not segment.endswith((".git", ".atom"))
-
-
-def is_namespace_path(value):
-    """True when *value* is a GitLab group path, such as 'dtaas', or
-    'dtaas/templates' for a subgroup."""
-    return isinstance(value, str) and all(
-        _is_namespace_segment(segment) for segment in value.split("/")
-    )
+    """True when *value* is an http(s) URL (case-insensitive) with a host/path:
+    gitlab_common's rule, so both CLIs accept the same URLs."""
+    return is_http_url(value)
 
 
 def _is_ip(value):

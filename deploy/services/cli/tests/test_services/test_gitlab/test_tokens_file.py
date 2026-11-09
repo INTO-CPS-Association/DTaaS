@@ -1,4 +1,4 @@
-"""Tests for reading and merging config/gitlab_tokens.json (tokens_file.py)."""
+"""Tests for the GitLab JSON files under config/ (tokens_file.py)."""
 
 import json
 from pathlib import Path
@@ -67,3 +67,29 @@ def test_read_saved_tokens_unreadable(tokens_path):
     data, error = tokens_file.read_saved_tokens()
     assert data == {}
     assert error.startswith(f"Failed to read {tokens_path}")
+
+
+def test_get_user_tokens_path(mocker):
+    """The users' tokens live next to the install secrets"""
+    mocker.patch.object(
+        tokens_file.Config, "get_base_dir", return_value=Path("/srv/dtaas")
+    )
+    assert tokens_file.get_user_tokens_path() == Path(
+        "/srv/dtaas/config/gitlab_user_tokens.json"
+    )
+
+
+def test_merge_into_another_file_keeps_its_entries(tokens_path):
+    """The users' token file is merged the same way: a run that adds a user
+    keeps the tokens of the users added before"""
+    user_tokens = tokens_path.with_name("gitlab_user_tokens.json")
+    write_text(user_tokens, json.dumps({"alice": "old-alice"}))
+    assert tokens_file.merge_tokens({"bob": "new-bob"}, user_tokens) == (
+        True,
+        f"Tokens saved to {user_tokens}",
+    )
+    assert tokens_file.read_saved_tokens(user_tokens) == (
+        {"alice": "old-alice", "bob": "new-bob"},
+        "",
+    )
+    assert not tokens_path.exists()

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gitlab-common"
-version = "0.3.0"
+version = "0.4.0"
 description = "Provider-agnostic GitLab operations shared across DTaaS packages"
 authors = ["Mohamed Abdulkarim"]
 license = "INTO-CPS-Association"
