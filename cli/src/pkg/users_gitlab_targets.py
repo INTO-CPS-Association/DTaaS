@@ -19,6 +19,7 @@ class GitlabCandidate:
     existing_user_id: object
     password: object
     pat_issued: bool = False
+    projects: tuple = ()
 
 
 @dataclass
@@ -72,6 +73,7 @@ def _candidate(username, details, password):
         details.get("gitlab_user_id"),
         password,
         bool(details.get("gitlab_pat_issued")),
+        tuple(details.get("gitlab_projects") or ()),
     )
 
 

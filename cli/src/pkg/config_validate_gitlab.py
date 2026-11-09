@@ -6,7 +6,36 @@ problems and an acceptable value returns an empty list, so 'dtaas config
 validate' can report all of them at once.
 """
 
-from .validators import get_nested, is_url, optional, required
+from .validators import get_nested, is_namespace_path, is_url, optional, required
+
+TEMPLATES_TOGETHER = (
+    "gitlab.template_group and gitlab.template_host must both be set, "
+    "or both left out"
+)
+
+# Each template key, the check its value must pass, and the message if not.
+_TEMPLATE_CHECKS = (
+    (
+        "template_group",
+        is_namespace_path,
+        "gitlab.template_group must be a GitLab group path, such as dtaas "
+        "or dtaas/templates",
+    ),
+    ("template_host", is_url, "gitlab.template_host must be a valid URL"),
+)
+
+
+def template_errors(gitlab):
+    """template_group, when present, must be a GitLab group path and
+    template_host an http(s) URL, and the two are set together or not at
+    all: leaving both out means accounts and tokens only. Shared with
+    Config.get_gitlab_templates, since 'user add' does not run 'config
+    validate'."""
+    present = [check for check in _TEMPLATE_CHECKS if check[0] in gitlab]
+    errors = [message for key, valid, message in present if not valid(gitlab[key])]
+    if len(present) == 1:
+        errors.append(TEMPLATES_TOGETHER)
+    return errors
 
 
 def _gitlab_provision_errors(gitlab):
@@ -52,4 +81,5 @@ def check_gitlab(data):
     )
     errors += _gitlab_pat_errors(gitlab)
     errors += _gitlab_ssl_verify_errors(gitlab)
+    errors += template_errors(gitlab)
     return errors

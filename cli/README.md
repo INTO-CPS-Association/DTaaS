@@ -151,6 +151,7 @@ directory) and reports all problems at once:
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true` |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
 | `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
+| `[gitlab].template_group`, `template_host` | When present, a GitLab group path (subgroups with `/`) and an `http(s)` URL; set both, or leave both out (accounts and tokens only) |
 | `[frontend].logger-url` | When present, an `http(s)` URL, or `""` to turn remote logging off |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
@@ -695,7 +696,7 @@ username already in the registry is reported (`'alice' already exists,
 skipping`) and never added twice or overwritten. A username declared in
 `dtaas.toml`'s `[[users]]` is reported as a starting user, whose workspace
 `dtaas.toml` manages; with GitLab provisioning on, naming one creates its
-GitLab account (see below).
+GitLab account, token and projects (see below).
 
 A `USERNAME` or `--file` is required (not both): a bare `dtaas user add`
 with neither is rejected rather than silently reprovisioning the whole
@@ -712,28 +713,42 @@ example after `compose.users.yml` was lost), use `dtaas config reconcile
 
 With `[gitlab].provision = true`, `user add` also creates a GitLab account
 for each user it adds, and issues that account a Personal Access Token
-(PAT). The containers are provisioned first, and a GitLab failure never
-undoes them.
+(PAT). With both template keys set, the user then gets two private
+projects in their own namespace, `common` and `user`: the CLI creates each
+one empty, clones its template with `git` into a temporary folder, and
+pushes it. The containers are provisioned first, and a GitLab failure
+never undoes them.
 
-**Setup, once per installation.** Turn provisioning on in `dtaas.toml`:
+**Setup, once per installation.** Turn provisioning on in `dtaas.toml`
+(the generated file already names the template group; remove both keys
+for accounts and tokens only, since setting one alone is an error). The
+templates are `<template_host>/<template_group>/common.git` and
+`user1.git`; change the group to use your own copies:
 
 ```toml
 [gitlab]
-provision = true
-api_url   = "https://gitlab.example.com"
+provision      = true
+api_url        = "https://gitlab.example.com"
+template_host  = "https://gitlab.com"
+template_group = "dtaas"
 ```
 
 Then export an admin token. It must belong to a GitLab administrator and
-carry the `api` scope, plus `admin_mode` when GitLab Admin Mode is on:
+carry the `api` scope, plus `admin_mode` when GitLab Admin Mode is on.
+It creates the accounts, tokens and projects; the templates are pushed
+with each user's own token, so a push runs as that user:
 
 ```bash
 export DTAAS_GITLAB_PAT="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
 
 `[gitlab].pat` in `dtaas.toml` is the fallback when the variable is unset.
+For the projects, the machine that runs `dtaas` needs `git` 2.31 or later
+and network access to the template host and to GitLab.
 
 **Example 1: add one user.** Without `--password`, the CLI asks for the
-initial GitLab password with hidden input:
+initial GitLab password with hidden input. Accounts and tokens are reported
+first, for every user of the run, then the projects:
 
 ```console
 $ dtaas user add --email alice@intocps.org alice
@@ -741,6 +756,10 @@ GitLab password for 'alice':
 Repeat for confirmation:
 GitLab account and token created for 'alice'.
   The token is in gitlab_user_tokens.json.
+GitLab project 'alice/common' created.
+  Private, filled from https://gitlab.com/dtaas/common.git
+GitLab project 'alice/user' created.
+  Private, filled from https://gitlab.com/dtaas/user1.git
 Users added successfully
 ```
 
@@ -760,6 +779,14 @@ GitLab account and token created for 'alice'.
   The token is in gitlab_user_tokens.json.
 GitLab account and token created for 'bob'.
   The token is in gitlab_user_tokens.json.
+GitLab project 'alice/common' created.
+  Private, filled from https://gitlab.com/dtaas/common.git
+GitLab project 'alice/user' created.
+  Private, filled from https://gitlab.com/dtaas/user1.git
+GitLab project 'bob/common' created.
+  Private, filled from https://gitlab.com/dtaas/common.git
+GitLab project 'bob/user' created.
+  Private, filled from https://gitlab.com/dtaas/user1.git
 Users added successfully
 ```
 
@@ -767,9 +794,9 @@ A row with an empty `password` cell refuses the whole run before anything
 is changed, naming the users concerned.
 
 **Example 3: a starting user.** Naming a `[[users]]` user of `dtaas.toml`
-creates only their GitLab account and token. Their workspace and email come
-from `dtaas.toml`, and the password from `[[users]].password` (or the
-prompt):
+creates only their GitLab account, token and projects. Their workspace and
+email come from `dtaas.toml`, and the password from `[[users]].password`
+(or the prompt):
 
 ```console
 $ dtaas user add username1
@@ -777,14 +804,18 @@ $ dtaas user add username1
   Its workspace is managed there, not by 'user add'.
 GitLab account and token created for 'username1'.
   The token is in gitlab_user_tokens.json.
+GitLab project 'username1/common' created.
+  Private, filled from https://gitlab.com/dtaas/common.git
+GitLab project 'username1/user' created.
+  Private, filled from https://gitlab.com/dtaas/user1.git
 No new users added.
 ```
 
 **Example 4: retry after a failure.** Suppose GitLab had refused bob's
-password in example 2: alice got her account, bob got only his container,
-and the command exited non-zero. Fix the password in `users.csv` and run the
-same command again. Only the missing work is done, and alice is not issued
-a second token:
+password in example 2: alice got her account and projects, bob got only
+his container, and the command exited non-zero. Fix the password in
+`users.csv` and run the same command again. Only the missing work is done:
+alice is not issued a second token, and her projects are not touched:
 
 ```console
 $ dtaas user add --file users.csv
@@ -794,8 +825,29 @@ GitLab account step skipped for 'alice'.
   A Personal Access Token was already issued on an earlier run (see gitlab_user_tokens.json). A re-run does not reissue one.
 GitLab account and token created for 'bob'.
   The token is in gitlab_user_tokens.json.
+GitLab project 'bob/common' created.
+  Private, filled from https://gitlab.com/dtaas/common.git
+GitLab project 'bob/user' created.
+  Private, filled from https://gitlab.com/dtaas/user1.git
 No new users added.
 ```
+
+**Example 5: a project that already exists.** A `common` or `user`
+project that the run did not create is never pushed to, even when it is
+empty, since its settings belong to its owner. The run says so and
+carries on. A project with content is then recorded as done, so the
+warning shows once; an empty one warns on every run until it is deleted:
+
+```console
+Warning: GitLab project 'alice/common' has content.
+  It was left as it is: no template was pushed into it.
+Warning: GitLab project 'alice/user' exists but is empty.
+  It was not created by this run, so no template was pushed into it. Delete it, then run 'dtaas user add alice' again.
+```
+
+The push asks GitLab to start no CI pipeline (`ci.skip`). A template
+that cannot be cloned fails before the project is created; a failed push
+leaves the new project empty, to be deleted before the re-run.
 
 **Files written.** Each user's token is saved to `gitlab_user_tokens.json`
 in the current directory (mode `0600`) the moment it is issued:
@@ -808,9 +860,10 @@ in the current directory (mode `0600`) the moment it is issued:
 ```
 
 Hand each user their token, and treat the file as a credential store. The
-registry records the account id and the issued token, which is how a re-run
-knows what is done; starting users get the same markers in a section of
-their own:
+registry records the account id, the issued token and the projects done
+so far (created, or found with content), which is how a re-run knows what
+is done; starting users get the
+same markers in a section of their own:
 
 ```json
 {
@@ -823,13 +876,21 @@ their own:
       "load_balance": true,
       "desired_status": "running",
       "gitlab_user_id": 42,
-      "gitlab_pat_issued": true
+      "gitlab_pat_issued": true,
+      "gitlab_projects": [
+        "common",
+        "user"
+      ]
     }
   },
   "starting_users": {
     "username1": {
       "gitlab_user_id": 7,
-      "gitlab_pat_issued": true
+      "gitlab_pat_issued": true,
+      "gitlab_projects": [
+        "common",
+        "user"
+      ]
     }
   }
 }
@@ -870,7 +931,27 @@ their own:
   once can lose each other's changes.
 - For a GitLab behind an internal CA, set `[gitlab].ssl_verify` to the CA
   bundle's path. `false` turns verification off and prints a warning.
-- `user delete` never removes the GitLab account; see
+  It also applies to `git` for URLs on the `api_url` host.
+- Projects are made only once the user's account and token exist. A
+  project failure (a template that cannot be cloned, a push GitLab
+  refuses, no `git`) fails that user alone: their account, token and
+  other project stay, and other users carry on. A template that cannot
+  be cloned fails before the project is created; a failed push leaves
+  the new project empty: delete it, then name the user again.
+- Templates are cloned without a login, so they must be public `http(s)`
+  repositories. The push uses the user's own token (issued by this run,
+  or saved in `gitlab_user_tokens.json`; without one the user's projects
+  are skipped), passed to `git` through environment variables for the
+  `api_url` host only, never on the command line or to the template host.
+  The admin token never pushes.
+- Git LFS is not supported: a template whose default branch holds LFS
+  pointer files (small files in the pointer format) is refused instead
+  of being pushed as pointers. LFS rules in `.gitattributes` alone are
+  not refused, since the files can still be stored whole. A template
+  with no commits is refused too.
+- Users provisioned by a CLI older than 2.4.0 have no projects yet. Name
+  them again, with no password, to create them.
+- `user delete` never removes the GitLab account or its projects; see
   [user delete](#user-delete).
 
 Every scenario with its full output, including each failure and how to fix
@@ -964,11 +1045,12 @@ removed from the registry.
 > **Note: the GitLab account stays.** `user delete` removes the user from the
 > DTaaS installation and revokes the Personal Access Tokens named `dtaas` that
 > the CLI issued to them, so they lose repository access. Their GitLab account
-> stays, so the user can still sign in there. A revoked token is dropped from
-> `gitlab_user_tokens.json`. Revoking uses the same admin token as `user add`
-> (`DTAAS_GITLAB_PAT` or `[gitlab].pat`, and `[gitlab].api_url`), even when
-> `[gitlab].provision` is now off. When a token cannot be revoked (GitLab
-> unreachable, admin token missing or refused), the delete still completes,
+> and its projects stay, so the user can still sign in there. A revoked token
+> is dropped from `gitlab_user_tokens.json`. Revoking uses the same admin
+> token as `user add` (`DTAAS_GITLAB_PAT` or `[gitlab].pat`, and
+> `[gitlab].api_url`), even when `[gitlab].provision` is now off. When a
+> token cannot be revoked (GitLab unreachable, admin token missing or
+> refused), the delete still completes,
 > the token stays in `gitlab_user_tokens.json`, and the command exits with an
 > error naming the user: revoke that token in GitLab. To remove an account, a
 > GitLab administrator deletes it in GitLab. **Do that before re-adding the
@@ -1203,7 +1285,7 @@ type (see matrix above).
 # ── Metadata (top level) ──────────────────────────────────────────────────────
 # Describes the instance. Only git-repo is checked by validate (an http(s) URL).
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.3.0"
+version  = "2.4.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -1279,7 +1361,10 @@ logger-url          = "https://logs.example.com/logger"
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas user add` also creates
 # each new user's GitLab account and a Personal Access Token (see
-# "Add Users" in cli.md). The provisioning token must belong to an
+# "Add Users" in cli.md), and with both *_template keys set, two private
+# projects, common and user, cloned from them with git on this host and
+# pushed. Remove both template keys for accounts and tokens only. The
+# provisioning token must belong to an
 # administrator and carry the api scope (plus admin_mode on an instance with
 # Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
 # rather than committing it here. A [gitlab].pat key is the fallback when the
@@ -1289,6 +1374,8 @@ logger-url          = "https://logs.example.com/logger"
 [gitlab]
 provision  = false
 api_url    = "https://gitlab.example.com"
+template_host  = "https://gitlab.com"   # with template_group: the
+template_group = "dtaas"                # public common and user1 templates
 # pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 

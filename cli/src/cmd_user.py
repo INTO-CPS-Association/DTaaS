@@ -54,6 +54,16 @@ def _add_summary(staged):
     return "No new users added."
 
 
+def _provision_flag(config_obj):
+    """[gitlab].provision as (flag, err). When it is on, the project
+    templates are checked too, so a bad [gitlab] section stops 'user add'
+    before anything is staged."""
+    provision, err = config_obj.get_gitlab_provision()
+    if err is None and provision:
+        err = config_obj.get_gitlab_templates()[1]
+    return provision, err
+
+
 @user_group.command()
 @click.argument("username", required=False)
 @file_option("Bulk-add users from a CSV file into the registry.")
@@ -101,8 +111,11 @@ def add(**kwargs):
 
     When [gitlab].provision is enabled in dtaas.toml, each newly-added user's
     GitLab account and Personal Access Token are also created; see
-    --password. Naming a dtaas.toml starting user provisions its
-    GitLab half alone, taking its email, and the password when none is given,
+    --password. With [gitlab].template_group and template_host set, the
+    user also gets two private GitLab projects, 'common' and 'user', cloned
+    from that group's templates and pushed (git must be installed). Naming a
+    dtaas.toml starting user provisions its GitLab account, token and
+    projects alone, taking its email, and the password when none is given,
     from its [[users]] record.
     """
     user_input = UserAddInput(**kwargs)
@@ -122,7 +135,7 @@ def add(**kwargs):
         err = userPkg.check_add_supported(config_obj)
         if err is not None:
             return err
-        provision, err = config_obj.get_gitlab_provision()
+        provision, err = _provision_flag(config_obj)
         if err is not None:
             return err
         staged = stage_users_for_add(user_input, provision)
