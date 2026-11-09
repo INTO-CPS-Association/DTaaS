@@ -85,15 +85,12 @@ def _make_projects(context: _Context, user: tuple[str, int], token: str) -> bool
     missing = [
         item for item in context.run.templates.items() if item[0] not in progress.done
     ]
-    results = [
-        _one_project(
-            context.run.gl,
-            ProjectRequest(user_id, username, name, url, RERUN, token),
-            progress,
-        )
-        for name, url in missing
-    ]
-    return all(results)
+    succeeded = True
+    for name, url in missing:
+        request = ProjectRequest(user_id, username, name, url, RERUN, token)
+        # The call comes first, so a failure never skips the next project.
+        succeeded = _one_project(context.run.gl, request, progress) and succeeded
+    return succeeded
 
 
 def _token(context: _Context, account: Account) -> str:
