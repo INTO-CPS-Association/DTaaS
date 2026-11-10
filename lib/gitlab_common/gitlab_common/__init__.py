@@ -13,6 +13,7 @@ CLI's ``pkg.gitlab``.
 """
 
 from .client import get_gitlab_client
+from .errors import describe_api_error
 from .git_run import git_problem
 from .messages import with_hint
 from .project_fill import (
@@ -46,6 +47,7 @@ from .validators import is_http_url, is_namespace_path, validate_user_row
 
 __all__ = [
     "get_gitlab_client",
+    "describe_api_error",
     "with_hint",
     "create_user",
     "create_user_pat",

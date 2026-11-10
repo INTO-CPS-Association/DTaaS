@@ -15,7 +15,7 @@ from typing import Tuple
 
 import gitlab
 
-from .errors import API_ERRORS
+from .errors import API_ERRORS, describe_api_error
 
 PRIVATE = "private"
 
@@ -71,7 +71,8 @@ def find_user_project(gl: gitlab.Gitlab, user_id: int, name: str) -> ProjectLook
     except API_ERRORS as exc:
         return ProjectLookup(
             ProjectState.FAILED,
-            f"Failed to look up project '{name}' of GitLab user {user_id}: {exc}",
+            f"Failed to look up project '{name}' of GitLab user {user_id}: "
+            f"{describe_api_error(exc)}",
         )
     if project is None:
         return ProjectLookup(ProjectState.MISSING)
@@ -102,5 +103,6 @@ def create_user_project(gl: gitlab.Gitlab, user_id: int, name: str) -> Tuple[boo
     except API_ERRORS as exc:
         return (
             False,
-            f"Failed to create project '{name}' for GitLab user {user_id}: {exc}",
+            f"Failed to create project '{name}' for GitLab user {user_id}: "
+            f"{describe_api_error(exc)}",
         )

@@ -63,6 +63,7 @@ dependency on the other, only a shared source location during development.
 | `template_urls(host, group)` | `{project name: template URL}` for `PROJECT_TEMPLATES` (`common` from `common`, `user` from `user1`), each `<host>/<group>/<repository>.git`. |
 | `template_errors(host, group, keys)` | What is wrong with the template settings (each `None` when unset), named with the consumer's `TemplateKeys`: the group must pass `is_namespace_path`, the host `is_http_url`, and the two are set together or not at all. |
 | `is_http_url(value)`, `is_namespace_path(value)` | The value rules of the template settings: an http(s) URL with a host and an optional port and path, and a GitLab group path such as `dtaas` or `dtaas/templates`. |
+| `describe_api_error(exc)` | One short line for a caught `API_ERRORS` exception: GitLab's own message as python-gitlab prints it, or, when GitLab answered with an HTML error page, `<status>: GitLab error page (request ID <id>)` instead of the whole page. |
 | `with_hint(summary, hint)` | Format a message as one short summary line with its detail indented underneath, the shape every message in this package and its consumers follows. |
 
 Every git command runs through `git_run.run_git`, which stops it after 15
@@ -75,6 +76,8 @@ Every GitLab call in this package catches `errors.API_ERRORS`
 (`gitlab.exceptions.GitlabError` plus `requests.RequestException`, which
 python-gitlab does not wrap), so an unreachable instance is reported as one
 user's failure and never raised into a caller's loop over other users.
+Its message names the exception through `describe_api_error`, so an HTML
+error page never floods the output.
 
 ## Developing this package in isolation
 

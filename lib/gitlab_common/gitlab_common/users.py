@@ -9,7 +9,7 @@ from typing import Sequence, Tuple
 import gitlab
 import gitlab.exceptions
 
-from .errors import API_ERRORS
+from .errors import API_ERRORS, describe_api_error
 
 from .validators import validate_user_row
 
@@ -117,13 +117,17 @@ def create_user(
     except gitlab.exceptions.GitlabCreateError as exc:
         if exc.response_code == 409:
             logger.info("GitLab reported a conflict for '%s': %s", username, exc)
-            return CreateUserResult(CreateOutcome.ALREADY_EXISTS, error=str(exc))
+            return CreateUserResult(
+                CreateOutcome.ALREADY_EXISTS, error=describe_api_error(exc)
+            )
         return CreateUserResult(
-            CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
+            CreateOutcome.FAILED,
+            error=f"Failed to create user '{username}': {describe_api_error(exc)}",
         )
     except API_ERRORS as exc:
         return CreateUserResult(
-            CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
+            CreateOutcome.FAILED,
+            error=f"Failed to create user '{username}': {describe_api_error(exc)}",
         )
 
 
@@ -165,7 +169,10 @@ def create_user_pat(
             return False, f"Empty token in PAT response for '{username}'"
         return True, token
     except API_ERRORS as exc:
-        return False, f"Failed to create PAT for '{username}': {exc}"
+        return (
+            False,
+            f"Failed to create PAT for '{username}': {describe_api_error(exc)}",
+        )
 
 
 def revoke_user_pats(
@@ -194,7 +201,11 @@ def revoke_user_pats(
                 gl.personal_access_tokens.delete(token.id)
         return True, ""
     except API_ERRORS as exc:
-        return False, f"Failed to revoke the tokens of GitLab user {user_id}: {exc}"
+        return (
+            False,
+            f"Failed to revoke the tokens of GitLab user {user_id}: "
+            f"{describe_api_error(exc)}",
+        )
 
 
 def find_user_id(gl: gitlab.Gitlab, username: str) -> Tuple[int | None, str]:
@@ -215,7 +226,10 @@ def find_user_id(gl: gitlab.Gitlab, username: str) -> Tuple[int | None, str]:
         listed = gl.users.list(username=username, iterator=True)
         user = next((found for found in listed if found.username == username), None)
     except API_ERRORS as exc:
-        return None, f"Failed to look up GitLab user '{username}': {exc}"
+        return (
+            None,
+            f"Failed to look up GitLab user '{username}': {describe_api_error(exc)}",
+        )
     if user is None:
         return None, f"GitLab has no user named '{username}'."
     return user.id, ""

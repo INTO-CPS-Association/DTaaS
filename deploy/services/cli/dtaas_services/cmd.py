@@ -2,6 +2,7 @@
 
 import click
 from .commands import host_ops, project_ops, service_ops, user_ops
+from .pkg.utils import permission_hint
 
 
 class WorkflowGroup(click.Group):
@@ -11,7 +12,19 @@ class WorkflowGroup(click.Group):
         return list(self.commands)
 
 
-@click.group(cls=WorkflowGroup)
+class ServicesGroup(WorkflowGroup):
+    """Root group: a file no command could open ends the command with the fix,
+    not a traceback (see ``permission_hint``)."""
+
+    def invoke(self, ctx: click.Context):
+        try:
+            return super().invoke(ctx)
+        except PermissionError as exc:
+            message = permission_hint(exc.filename) if exc.filename else str(exc)
+            raise click.ClickException(message) from exc
+
+
+@click.group(cls=ServicesGroup)
 def services():
     """Manage DTaaS platform services.
 

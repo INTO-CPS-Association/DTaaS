@@ -2,8 +2,12 @@
 
 from pathlib import Path
 from unittest.mock import Mock, mock_open
+import pytest
 from dtaas_services.pkg.utils import (
     check_root_unix,
+    explain_permission_error,
+    permission_hint,
+    write_secret_file,
     get_container_health_status,
     has_running_container,
     is_container_running,
@@ -12,6 +16,7 @@ from dtaas_services.pkg.utils import (
     process_credentials_file,
     create_users_from_credentials,
 )
+from tests.conftest import denied
 # pylint: disable=W0613
 
 # Test fixture constants (not real credentials)
@@ -182,3 +187,46 @@ def test_create_users_from_credentials_failure(mocker):
     success, error_msg = create_users_from_credentials(mock_file(), mock_user_creation)
     assert success is False
     assert error_msg == "User creation failed"
+
+
+def test_permission_hint_names_the_file_and_the_fix():
+    """The hint says whose file it probably is and the command that fixes it"""
+    hint = permission_hint("/srv/config/gitlab_tokens.json")
+    assert hint.startswith("Permission denied: /srv/config/gitlab_tokens.json.")
+    assert "'dtaas-services service install' runs as root" in hint
+    assert hint.endswith('Run: sudo chown "$USER": /srv/config/gitlab_tokens.json')
+
+
+def test_explain_permission_error_adds_the_fix(tmp_path):
+    """A denied access is raised again with the hint, the original as cause"""
+    path = tmp_path / "gitlab_tokens.json"
+    with pytest.raises(PermissionError) as caught:
+        with explain_permission_error(path):
+            raise denied(path)
+    assert str(caught.value) == permission_hint(path)
+    assert isinstance(caught.value.__cause__, PermissionError)
+
+
+def test_explain_permission_error_keeps_other_errors(tmp_path):
+    """Any other error passes through unchanged"""
+    with pytest.raises(FileNotFoundError, match="^gone$"):
+        with explain_permission_error(tmp_path):
+            raise FileNotFoundError("gone")
+
+
+def test_write_secret_file_replaces_the_file(tmp_path):
+    """The content lands in the file and no temporary file is left"""
+    path = tmp_path / "config" / "gitlab_user_tokens.json"
+    write_secret_file(path, "{}")
+    write_secret_file(path, '{"a": 1}')
+    assert path.read_text(encoding="utf-8") == '{"a": 1}'
+    assert [p.name for p in path.parent.iterdir()] == [path.name]
+
+
+def test_write_secret_file_denied_names_the_fix(tmp_path, mocker):
+    """A denied write reports the fix and leaves no temporary file"""
+    path = tmp_path / "config" / "gitlab_user_tokens.json"
+    mocker.patch.object(Path, "write_text", side_effect=denied(path))
+    with pytest.raises(PermissionError, match="sudo chown"):
+        write_secret_file(path, "{}")
+    assert not list(path.parent.iterdir())

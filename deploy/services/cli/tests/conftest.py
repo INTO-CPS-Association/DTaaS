@@ -33,3 +33,8 @@ def edited_project(tmp_path, package_root):
     (target_dir / "config" / "services.env.template").write_text("edited")
     (target_dir / "config" / "services.env").write_text(KEPT_ENV)
     return target_dir
+
+
+def denied(path) -> PermissionError:
+    """The error open() raises for a file that belongs to another user."""
+    return PermissionError(13, "Permission denied", str(path))

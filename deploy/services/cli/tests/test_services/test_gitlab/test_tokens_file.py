@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import pytest
 from dtaas_services.pkg.services.gitlab import tokens_file
+from dtaas_services.pkg.utils import permission_hint
+from tests.conftest import denied
 from tests.test_services.test_gitlab.conftest import TEST_TOKEN, write_text
 # pylint: disable=W0621
 
@@ -93,3 +95,19 @@ def test_merge_into_another_file_keeps_its_entries(tokens_path):
         "",
     )
     assert not tokens_path.exists()
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda path: tokens_file.read_saved_tokens(path)[1],
+        lambda path: tokens_file.merge_tokens({"k": "v"}, path)[1],
+    ],
+    ids=["read", "merge"],
+)
+def test_a_file_owned_by_root_reports_the_fix(tmp_path, mocker, call):
+    """A token file written as root by 'service install' fails with the fix"""
+    path = tmp_path / "gitlab_tokens.json"
+    write_text(path, "{}")
+    mocker.patch.object(Path, "open", side_effect=denied(path))
+    assert call(path).endswith(permission_hint(path))

@@ -275,7 +275,9 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
   protected config names, and copies that keep destination permissions
 * **`docker_utils.py`**: Docker command execution helpers `execute_docker_command`
 * **`utils.py`**: Shared utilities (credentials file handling, container state
-  helpers, root-check, CI detection)
+  helpers, root-check, CI detection, `write_secret_file`, and
+  `permission_hint` with `explain_permission_error`, which turn a denied
+  access to a file under `config/` into a message with the `chown` fix)
 * **`lib/`**: Core service management modules
   * `manager.py`: Docker Compose service management
   * `docker_executor.py`: Docker command execution
@@ -621,6 +623,11 @@ It is managed by `pkg/password_store.py`.
   `dtaas-services service install -s gitlab`.
 * **Cleaned** when a service is removed via `dtaas-services service remove`.
   Only entries belonging to the removed service are deleted.
+* **Owned by root** after `service install`, which must run as root. A later
+  command run as the admin cannot open it (nor `config/gitlab_tokens.json`),
+  and stops with `Permission denied: <file>` and the `sudo chown "$USER":
+  <file>` that fixes it. The root `ServicesGroup` in `cmd.py` turns any
+  permission error no command handled into that message, never a traceback.
 
 ### Error Handling Pattern
 

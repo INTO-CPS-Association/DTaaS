@@ -449,6 +449,18 @@ run the setup command with appropriate privileges:
 sudo -E env PATH="$PATH" dtaas-services host setup
 ```
 
+`service install` must run as root, so the files it writes under `config/`
+(`gitlab_tokens.json`, `password.env.current`) belong to root. A later
+command run as yourself, such as `user add` or `service remove`, then stops
+with `Permission denied: <file>` and the command that fixes it:
+
+```bash
+sudo chown "$USER": config/gitlab_tokens.json config/password.env.current
+```
+
+Run `user add` without `sudo` afterwards, so the GitLab projects are pushed
+and the files it writes are owned by you.
+
 ### Thingsboard connection error
 
 After starting ThingsBoard and before adding users or changing passwords,

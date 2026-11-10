@@ -2,6 +2,8 @@
 
 import pytest
 from dtaas_services.cmd import services
+from dtaas_services.pkg.utils import permission_hint
+from tests.conftest import denied
 # pylint: disable=W0621
 
 
@@ -57,3 +59,22 @@ def test_removed_top_level_spellings_are_rejected(runner, old_name):
     result = runner.invoke(services, [old_name])
     assert result.exit_code == 2
     assert f"No such command '{old_name}'" in result.output
+
+
+PASSWORDS = "/srv/config/password.env.current"
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [denied(PASSWORDS), PermissionError(permission_hint(PASSWORDS))],
+    ids=["raw", "explained"],
+)
+def test_a_permission_error_ends_with_the_fix(runner, mocker, exc):
+    """A file no command could open ends the command with exit code 1 and
+    the fix, never a traceback"""
+    mocker.patch(
+        "dtaas_services.commands.user_ops.parse_service_list", side_effect=exc
+    )
+    result = runner.invoke(services, ["user", "add"])
+    assert result.exit_code == 1
+    assert f"Error: {permission_hint(PASSWORDS)}" in result.output

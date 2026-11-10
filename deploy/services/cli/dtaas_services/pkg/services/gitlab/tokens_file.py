@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Tuple
 
 from ...config import Config
-from ...utils import write_secret_file
+from ...utils import explain_permission_error, write_secret_file
 
 TOKENS_FILENAME = "gitlab_tokens.json"
 USER_TOKENS_FILENAME = "gitlab_user_tokens.json"
@@ -32,12 +32,12 @@ def read_json_object(path: Path) -> dict[str, Any]:
     """Return the object saved in *path*, or {} when the file does not exist yet.
 
     Raises:
-        OSError: If the file cannot be read
+        OSError: If the file cannot be read (PermissionError with the fix)
         ValueError: If the file does not hold a JSON object
     """
     if not path.exists():
         return {}
-    with path.open("r", encoding="utf-8") as fh:
+    with explain_permission_error(path), path.open("r", encoding="utf-8") as fh:
         data = json.load(fh)
     if not isinstance(data, dict):
         raise ValueError("expected a JSON object")

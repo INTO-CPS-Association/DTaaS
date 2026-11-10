@@ -1,11 +1,12 @@
 """Utility functions for DTaaS services CLI"""
 
+from contextlib import contextmanager
 from pathlib import Path
 import sys
 import os
 import csv
 import platform
-from typing import Callable, Tuple
+from typing import Callable, Iterator, Tuple
 from .config import Config
 
 
@@ -153,14 +154,41 @@ def write_secret_file(path: Path, content: str, encoding: str = "utf-8") -> None
         encoding: Text encoding (default UTF-8).
 
     Raises:
-        OSError: If the write or rename fails.
+        OSError: If the write or rename fails, a PermissionError with
+            :func:`permission_hint` as its message when access is denied.
     """
-    path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
+    with explain_permission_error(path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            tmp.write_text(content, encoding=encoding)
+            os.chmod(tmp, 0o600)
+            os.replace(tmp, path)
+        except Exception:
+            tmp.unlink(missing_ok=True)
+            raise
+
+
+def permission_hint(path: str | os.PathLike) -> str:
+    """Say why *path* cannot be opened and how to fix it.
+
+    'service install' must run as root, so the secret files it writes under
+    config/ belong to root, and a later command run as the admin cannot open
+    them.
+    """
+    return (
+        f"Permission denied: {path}. It probably belongs to root, as "
+        "'dtaas-services service install' runs as root. "
+        f'Run: sudo chown "$USER": {path}'
+    )
+
+
+@contextmanager
+def explain_permission_error(path: Path) -> Iterator[None]:
+    """Raise a PermissionError met inside the block again with
+    :func:`permission_hint` for *path* as its message, so every caller that
+    prints the error tells the admin the fix."""
     try:
-        tmp.write_text(content, encoding=encoding)
-        os.chmod(tmp, 0o600)
-        os.replace(tmp, path)
-    except Exception:
-        tmp.unlink(missing_ok=True)
-        raise
+        yield
+    except PermissionError as exc:
+        raise PermissionError(permission_hint(path)) from exc
