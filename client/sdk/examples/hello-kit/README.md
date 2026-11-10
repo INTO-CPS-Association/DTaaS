@@ -19,43 +19,54 @@ and
 [`tests/integration/exampleKitsLint.test.ts`](../../tests/integration/exampleKitsLint.test.ts)
 checks its sources against the SDK's lint rules for kits.
 
-In this repository the kit imports its own modules through the `examples/*`
-path alias; a standalone kit would use relative imports.
+The folder is also a project of its own, with `package.json`,
+`tsconfig.json`, `vite.config.ts`, `jest.config.json` and `tests/`, so it can
+be copied out of this repository as it is. Its sources use relative imports
+only.
+
+| Path               | Role                                                  |
+| ------------------ | ----------------------------------------------------- |
+| `vite.config.ts`   | Builds the deployed bundle with `kitBuildConfig`      |
+| `tests/`           | Checks that the host accepts the kit and mounts pages |
+| `jest.config.json` | Compiles the SDK, which is ESM only, for the tests    |
 
 ## Start a New Kit From This One
 
-1. Copy this folder next to it, for example to `sdk/examples/wind-kit/`.
+1. Copy this folder into a new repository, for example `wind-kit`.
 1. Choose the id of the new extension, such as `wind`, and write it in
    `defineExtension` in `src/dtaas/index.ts`, in `dtaas.id` of
    `package.json` and in the name of the package. The id names the pages
    (`/wind`), the `env.js` keys (`REACT_APP_EXT_WIND_*`) and the folder the
    bundle is deployed to.
-1. Replace `hello-kit` in the `examples/hello-kit/...` imports with the new
-   folder name and rename the anchor kind and the preset.
-1. Copy `tests/integration/helloKit.test.tsx` for the new kit and run the
-   SDK's tests from `client/`, with no installation of DTaaS:
+1. Rename the anchor kind, the preset and the id in `tests/`.
+1. Install and test, with no installation of DTaaS:
 
    ```bash
-   yarn test:sdk
+   yarn install
+   yarn test
    ```
 
-1. Build the deployed bundle from `client/`:
+1. Build the deployed bundle:
 
    ```bash
-   yarn build:kit wind-kit
+   yarn build
    ```
 
-   The bundle is one script,
-   `sdk/examples/wind-kit/dist/deploy/wind/index.js`. A second argument
-   names another output folder. It takes React, the router, MUI, zod and
-   the contract from the client (`SHARED_MODULES`) and bundles everything
-   else the kit imports.
+   The bundle is one script, `dist/deploy/wind/index.js`. `DTAAS_KIT_OUT`
+   names another output folder. It takes React, the router, MUI, zod and the
+   contract from the client (`SHARED_MODULES`) and bundles everything else
+   the kit imports.
 
 1. Deploy it: copy the script to `extensions/wind/index.js` next to the
    client's `env.js` and list it in `REACT_APP_EXTENSIONS_DEPLOYED`, for
-   example `'extensions/wind/index.js'`. The client loads it when it
-   starts, without a rebuild.
+   example `'extensions/wind/index.js'`. The client loads it when it starts,
+   without a rebuild.
 
-`tests/integration/kitBundle.test.ts` builds this kit and `soil-kit` the
-same way, runs each bundle with the client's shared modules and checks that
-it registers its extension and passes the conformance harness.
+The soil-kit is a kit made this way, with its own unit and integration tests,
+a test that builds and mounts the bundle and a lint test against the SDK's
+kit rules.
+
+Inside this repository, `yarn build:kit hello-kit` builds the same bundle
+from the SDK's source and `tests/integration/kitBundle.test.ts` runs it with
+the client's shared modules and checks that it registers its extension and
+passes the conformance harness.

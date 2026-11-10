@@ -6,8 +6,17 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-09
+
 ### Added
 
+- `./schema` checks that every encoding reads a signal some transport provides.
+  An encoding reads its `target` on `measured` or on the `channel` it names, and
+  a `residual` also reads it on its `against` channel. An `mqtt` transport
+  provides the paths its topics match, with MQTT wildcards, and the other
+  adapters provide any path on their channel, which is `measured` when none is
+  named. A binding that reads a signal no transport provides is refused with an
+  issue that names the binding, the signal and the channel.
 - `DtaasExtension.apiRange`: the range of the extension API an extension works
   with, such as `^1.1`. `validateExtension` refuses an extension whose range
   does not include the host's API version, so a host refuses it at start-up
@@ -32,18 +41,35 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - API version `1.4.0`: deployed extensions (requirement K9). A deployment lists
   bundles under `extensions/<id>/` in `REACT_APP_EXTENSIONS_DEPLOYED` and the
   host loads them at start, without a rebuild. The `./deploy` entry gives
-  `kitBuildConfig`, the Vite settings that build such a bundle with React,
-  the router, MUI, zod and this contract taken from the host
-  (`SHARED_MODULES`) instead of bundled.
+  `kitBuildConfig`, the Vite settings that build such a bundle with React, the
+  router, MUI, zod and this contract taken from the host (`SHARED_MODULES`)
+  instead of bundled. Its `muiIconsPlugin` lets a kit import any icon of
+  `@mui/icons-material` and bundle only that icon.
+- `./deploy` is published as compiled JavaScript, so the Vite configuration of a
+  kit outside this repository imports `kitBuildConfig` like any other package.
+- `examples/hello-kit` is the template for a new kit: relative imports, a
+  `package.json` with build and type-check scripts and a `vite.config.ts` that
+  builds the deployed bundle with `./deploy`. `yarn build:kit <kit folder>`
+  builds an example kit inside this repository and
+  `tests/integration/kitBundle.test.ts` mounts the bundle on a fake host.
 
 ### Changed
 
+- `./schema` makes the `url` of an `mqtt` transport optional. A host with a
+  signals gateway serves the topics itself, so a `visualisation.json` can name
+  the topics it reads and leave the broker to the host. A declaration that gives
+  a URL is still valid, and the URL scheme is still checked. The `url` of a
+  `stomp` transport stays required.
 - `aec` is no longer a standard substrate (requirement K5). The bim extension
   contributes it, so a preset that names `aec` needs an extension that
   contributes the substrate.
 
 ### Security
 
+- `./schema` refuses a transport `url` or a substrate `source` that carries a
+  user name or password, such as `mqtt://user:secret@broker`, so a
+  `visualisation.json` committed to a repository can never hold a broker or
+  database credential.
 - `./schema` refuses a transport `url` or a substrate `source` whose scheme is
   not allowed, so `javascript:`, `data:`, `vbscript:` and `file:` URLs no longer
   pass `parseVisualisationAsset`. MQTT and STOMP transports take `ws`, `wss`,

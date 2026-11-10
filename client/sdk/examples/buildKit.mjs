@@ -2,7 +2,7 @@
  * `yarn build:kit <kit> [outDir]`: build the example kit in the folder <kit>
  * as a deployed extension, with the settings of `vite.deploy.config.ts`.
  * Without an output folder the bundle goes to
- * `sdk/examples/<kit>/dist/deploy/<id>/index.js`.
+ * `examples/<kit>/dist/deploy/<id>/index.js`.
  */
 
 import path from 'node:path';

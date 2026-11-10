@@ -47,18 +47,6 @@ describe('urlSchema', () => {
     },
   );
 
-  it.each([
-    'https://user:secret@a.example/x',
-    'https://user@a.example/x',
-    'https://:secret@a.example/x',
-  ])('refuses %j, which carries a login', (value) => {
-    const result = absoluteOnly.safeParse(value);
-    expect(result.success).toBe(false);
-    expect(result.error?.issues[0].message).toBe(
-      'A URL must not carry a user name or password',
-    );
-  });
-
   it('refuses an empty string and a malformed URL', () => {
     expect(accepts(withPaths, '')).toBe(false);
     expect(accepts(withPaths, 'https://[')).toBe(false);
@@ -67,6 +55,27 @@ describe('urlSchema', () => {
   it('refuses a URL longer than 2048 characters', () => {
     const long = `https://a.example/${'a'.repeat(2048)}`;
     expect(accepts(absoluteOnly, long)).toBe(false);
+  });
+
+  it.each([
+    'https://user:secret@a.example/x',
+    'https://user@a.example/x',
+    'https://:secret@a.example/x',
+    'HTTPS://user:secret@a.example/x',
+  ])('refuses %j, which carries credentials', (value) => {
+    expect(accepts(withPaths, value)).toBe(false);
+  });
+
+  it('accepts an @ in the path, which is not a credential', () => {
+    expect(accepts(withPaths, 'https://a.example/team@x/run.csv')).toBe(true);
+    expect(accepts(withPaths, 'data/team@x/run.csv')).toBe(true);
+  });
+
+  it('says why a URL with credentials is refused', () => {
+    const result = absoluteOnly.safeParse('https://user:secret@a.example/x');
+    expect(result.error?.issues.map((i) => i.message)).toEqual([
+      'A URL must not carry a user name or password. The host keeps credentials',
+    ]);
   });
 
   it('names the allowed schemes in the error', () => {

@@ -4,8 +4,8 @@
  *
  * `buildKit.mjs` names the kit folder in `DTAAS_KIT` and may name another
  * output folder in `DTAAS_KIT_OUT`. The kit's `package.json` gives its id
- * under `dtaas.id`, so the folder name and the id may differ, as `soil-kit`
- * and `soil` do.
+ * under `dtaas.id`, so the folder name and the id may differ, as `hello-kit`
+ * and `hello` do.
  */
 
 import { readFileSync } from 'node:fs';

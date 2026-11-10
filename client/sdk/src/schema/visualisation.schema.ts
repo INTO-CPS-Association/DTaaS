@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { listOf, nonEmpty, text } from './common.schema';
 import { anchorSchema } from './anchor.schema';
+import { checkCoverage } from './coverage';
 import { encodingSchema } from './encoding.schema';
 import { encodingPresetSchema } from './preset.schema';
 import { substrateDescriptorSchema } from './substrate.schema';
@@ -84,6 +85,7 @@ export const visualisationAssetSchema = assetShape.superRefine((asset, ctx) => {
   checkPanes(asset, ctx);
   checkBindings(asset, ctx);
   checkHomographies(asset, ctx);
+  checkCoverage(asset.transports, asset.encodings, ctx);
 });
 
 /** Validates an unknown value as a visualisation asset without throwing. */

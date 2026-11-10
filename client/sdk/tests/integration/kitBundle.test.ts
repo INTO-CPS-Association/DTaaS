@@ -33,7 +33,7 @@ const SHARED = {
   zod,
 };
 
-const CLIENT = path.resolve(__dirname, '../../..');
+const ROOT = path.resolve(__dirname, '../..');
 const out = mkdtempSync(path.join(tmpdir(), 'dtaas-kit-'));
 
 afterAll(() => rmSync(out, { recursive: true, force: true }));
@@ -41,8 +41,8 @@ afterAll(() => rmSync(out, { recursive: true, force: true }));
 /** Build a kit with `yarn build:kit` into a folder of its own. */
 function build(kit: string): string {
   const folder = path.join(out, kit);
-  execFileSync('node', ['sdk/examples/buildKit.mjs', kit, folder], {
-    cwd: CLIENT,
+  execFileSync('node', ['examples/buildKit.mjs', kit, folder], {
+    cwd: ROOT,
     stdio: 'pipe',
   });
   return path.join(folder, 'index.js');
@@ -68,7 +68,6 @@ function evaluate(
 
 describe.each([
   ['hello-kit', 'hello', { REACT_APP_EXT_HELLO_GREETING: 'Hej' }],
-  ['soil-kit', 'soil', { REACT_APP_EXT_SOIL_TWIN: 'soil_p03' }],
 ])('the deployed bundle of %s', (kit, id, env) => {
   let registered: Record<string, { extension: DtaasExtension }>;
   let bundle: string;

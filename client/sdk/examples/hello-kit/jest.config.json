@@ -1,0 +1,23 @@
+{
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.[tj]sx?$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "jsx": "react-jsx",
+          "allowJs": true,
+          "esModuleInterop": true,
+          "isolatedModules": true,
+          "rootDir": "."
+        }
+      }
+    ]
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!@into-cps-association/dtaas-sdk/)"
+  ],
+  "setupFiles": ["<rootDir>/tests/setupTests.ts"],
+  "setupFilesAfterEnv": ["@testing-library/jest-dom"],
+  "testRegex": "/tests/.*\\.test\\.tsx?$"
+}

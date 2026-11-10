@@ -18,7 +18,9 @@ const fileUrl = urlSchema({
 
 const mqtt = z.object({
   adapter: z.literal('mqtt'),
-  url: brokerUrl,
+  // Optional: a host with a signals gateway serves the topics itself, so a
+  // declaration can name the topics it reads and leave the broker to the host.
+  url: brokerUrl.optional(),
   topics: names,
   channel,
   qos: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),

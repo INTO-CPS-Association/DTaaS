@@ -17,7 +17,7 @@ function sourcesOf(folder: string): string[] {
     .map((file) => path.join(folder, file));
 }
 
-const kitSources = ['hello-kit', 'soil-kit'].flatMap((kit) =>
+const kitSources = ['hello-kit'].flatMap((kit) =>
   sourcesOf(path.join(examples, kit, 'src')),
 );
 
@@ -42,7 +42,7 @@ const lint = (file: string) =>
 
 describe('the example kits', () => {
   it('have sources to check', () => {
-    expect(kitSources.length).toBeGreaterThan(10);
+    expect(kitSources.length).toBeGreaterThan(5);
   });
 
   it.each(kitSources.map((file) => [path.relative(examples, file), file]))(
