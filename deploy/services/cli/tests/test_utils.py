@@ -197,21 +197,28 @@ def test_permission_hint_names_the_file_and_the_fix():
     assert hint.endswith('Run: sudo chown "$USER": /srv/config/gitlab_tokens.json')
 
 
+def _raise_inside(path, exc):
+    """Raise *exc* inside explain_permission_error(path)."""
+    with explain_permission_error(path):
+        raise exc
+
+
 def test_explain_permission_error_adds_the_fix(tmp_path):
     """A denied access is raised again with the hint, the original as cause"""
     path = tmp_path / "gitlab_tokens.json"
+    original = denied(path)
     with pytest.raises(PermissionError) as caught:
-        with explain_permission_error(path):
-            raise denied(path)
+        _raise_inside(path, original)
     assert str(caught.value) == permission_hint(path)
-    assert isinstance(caught.value.__cause__, PermissionError)
+    assert caught.value.__cause__ is original
 
 
 def test_explain_permission_error_keeps_other_errors(tmp_path):
     """Any other error passes through unchanged"""
-    with pytest.raises(FileNotFoundError, match="^gone$"):
-        with explain_permission_error(tmp_path):
-            raise FileNotFoundError("gone")
+    original = FileNotFoundError("gone")
+    with pytest.raises(FileNotFoundError) as caught:
+        _raise_inside(tmp_path, original)
+    assert caught.value is original
 
 
 def test_write_secret_file_replaces_the_file(tmp_path):
