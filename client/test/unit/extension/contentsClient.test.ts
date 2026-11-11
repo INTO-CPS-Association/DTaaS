@@ -87,19 +87,63 @@ describe('the contents service', () => {
     expect(JSON.parse(renamed.body)).toEqual({ path: 'common/a.txt' });
   });
 
-  it('clears the old file before renaming when it overwrites', async () => {
+  it('moves the old file aside, renames the new one, then deletes the old', async () => {
     fetchMock
       .mockResolvedValueOnce(respond(201))
       .mockResolvedValueOnce(respond(200))
-      .mockResolvedValueOnce(respond(204))
-      .mockResolvedValueOnce(respond(200));
+      .mockResolvedValueOnce(respond(200))
+      .mockResolvedValueOnce(respond(200))
+      .mockResolvedValueOnce(respond(204));
 
     await contents.put('a.txt', new Uint8Array([1]));
 
-    expect(fetchMock.mock.calls[2]).toEqual([
-      `${BASE}/api/contents/a.txt`,
-      expect.objectContaining({ method: 'DELETE' }),
+    const steps = fetchMock.mock.calls
+      .slice(2)
+      .map(([url, init]) => [url, init.method, init.body]);
+    expect(steps).toEqual([
+      [
+        `${BASE}/api/contents/a.txt`,
+        'PATCH',
+        JSON.stringify({ path: 'a.txt.previous' }),
+      ],
+      [
+        `${BASE}/api/contents/a.txt.part`,
+        'PATCH',
+        JSON.stringify({ path: 'a.txt' }),
+      ],
+      [`${BASE}/api/contents/a.txt.previous`, 'DELETE', undefined],
     ]);
+  });
+
+  it('puts the old file back when the new one cannot take its name', async () => {
+    fetchMock
+      .mockResolvedValueOnce(respond(201))
+      .mockResolvedValueOnce(respond(200))
+      .mockResolvedValueOnce(respond(200))
+      .mockResolvedValueOnce(respond(500))
+      .mockResolvedValue(respond(200));
+
+    await expect(contents.put('a.txt', new Uint8Array([1]))).rejects.toThrow(
+      'HTTP 500',
+    );
+
+    const steps = fetchMock.mock.calls
+      .slice(4)
+      .map(([url, init]) => [url, init.method, init.body]);
+    expect(steps).toEqual([
+      [
+        `${BASE}/api/contents/a.txt.previous`,
+        'PATCH',
+        JSON.stringify({ path: 'a.txt' }),
+      ],
+      [`${BASE}/api/contents/a.txt.part`, 'DELETE', undefined],
+    ]);
+    expect(
+      fetchMock.mock.calls.some(
+        ([url, init]) =>
+          url === `${BASE}/api/contents/a.txt` && init.method === 'DELETE',
+      ),
+    ).toBe(false);
   });
 
   it('does not replace a file when overwrite is false', async () => {

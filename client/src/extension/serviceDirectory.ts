@@ -40,11 +40,23 @@ export default function createServiceDirectory(
 ): ServiceDirectory {
   const offers = offersOf(enabled);
   const built = new Map<string, unknown>();
+  // The services being built, in order, so a service that needs itself
+  // through `requires` is named instead of overflowing the stack.
+  const building: string[] = [];
   const build = (id: string) => {
     const offer = offers.get(id);
     if (!offer) throw new Error(`No enabled extension provides ${id}`);
+    if (building.includes(id)) {
+      const cycle = [...building.slice(building.indexOf(id)), id];
+      throw new Error(`Services require each other: ${cycle.join(' -> ')}`);
+    }
     if (!built.has(id)) {
-      built.set(id, offer.service.create(hostOf(offer.provider)));
+      building.push(id);
+      try {
+        built.set(id, offer.service.create(hostOf(offer.provider)));
+      } finally {
+        building.pop();
+      }
     }
     return built.get(id);
   };

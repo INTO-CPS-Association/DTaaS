@@ -54,8 +54,13 @@ export default function useHistory(
     );
     Promise.all(reads)
       .then(() => current && setLoaded((n) => n + 1))
-      // eslint-disable-next-line no-console
-      .catch((error) => console.warn('The past signals were not read.', error));
+      // Only the message is written, so no error object reaches the console.
+      .catch((error: unknown) =>
+        // eslint-disable-next-line no-console
+        console.warn(
+          `The past signals were not read: ${error instanceof Error ? error.message : String(error)}`,
+        ),
+      );
     return () => {
       current = false;
     };

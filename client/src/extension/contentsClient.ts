@@ -96,6 +96,35 @@ async function get(url: UrlOf, path: string): Promise<Uint8Array> {
   return new Uint8Array(await response.arrayBuffer());
 }
 
+/** The suffix the old file takes while an overwrite renames the new one in. */
+const PREVIOUS_SUFFIX = '.previous';
+
+/**
+ * Give the partial file the name of a file that exists. The rename refuses a
+ * taken name, so the old file first moves aside, and it comes back when the
+ * rename fails. Only after the rename is the old file deleted, so a failure
+ * at any step leaves one of the two files under the real name.
+ */
+async function replace(
+  url: UrlOf,
+  path: string,
+  partial: string,
+  headers: Record<string, string>,
+): Promise<void> {
+  const target = await url('api/contents', path);
+  const previousPath = `${path}${PREVIOUS_SUFFIX}`;
+  const previous = await url('api/contents', previousPath);
+  await rename(target, headers, previousPath);
+  try {
+    await rename(partial, headers, path);
+  } catch (error) {
+    await rename(previous, headers, path).catch(() => undefined);
+    throw error;
+  }
+  // The new file is in place. An old copy that stays is only clutter.
+  await discard(previous, headers);
+}
+
 /** Write under a temporary name, then take the real one, or leave nothing. */
 async function put(
   url: UrlOf,
@@ -112,11 +141,11 @@ async function put(
   const headers = writeHeaders();
   try {
     await writePartial(partial, headers, bytes);
-    // The rename refuses a taken name, so an overwrite clears it first.
     if (overwrite && !(await isFree(target))) {
-      await checked(target, { method: 'DELETE', headers });
+      await replace(url, path, partial, headers);
+    } else {
+      await rename(partial, headers, path);
     }
-    await rename(partial, headers, path);
   } catch (error) {
     await discard(partial, headers);
     throw error;

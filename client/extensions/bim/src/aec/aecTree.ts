@@ -54,6 +54,8 @@ export function storeysOf(tree: PropertyTree): string[] {
     .sort((a, b) => (a.elevation_m ?? 0) - (b.elevation_m ?? 0))
     .map((storey) => storey.name);
   const listed = [...new Set(ordered)].filter((name) => used.has(name));
-  const unlisted = [...used].filter((name) => !listed.includes(name)).sort();
+  const unlisted = [...used]
+    .filter((name) => !listed.includes(name))
+    .sort((a, b) => a.localeCompare(b));
   return [...listed, ...unlisted];
 }

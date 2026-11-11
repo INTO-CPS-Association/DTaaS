@@ -17,7 +17,9 @@
           "paths": {
             "*": ["./src/*"],
             "test/*": ["./test/*"],
-            "@into-cps-association/dtaas-ext-bim": ["extensions/bim/src/index.ts"],
+            "@into-cps-association/dtaas-ext-bim": [
+              "extensions/bim/src/index.ts"
+            ],
             "@into-cps-association/dtaas-sdk": ["sdk/src/index.ts"],
             "@into-cps-association/dtaas-sdk/*": ["sdk/src/*/index.ts"]
           }
@@ -37,6 +39,7 @@
     "build",
     "extensions",
     "src/index.tsx",
+    "src/startClient.tsx",
     "src/AppProvider.tsx",
     "src/store/store.ts",
     "src/preview/util/gitlabDriver.ts"

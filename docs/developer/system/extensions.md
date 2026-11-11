@@ -40,10 +40,12 @@ harness with `fakeHostServices`, `fakeSignals` and `checkConformance`, so an
 extension is tested without a running installation. Its README describes the
 package and `yarn test:sdk` runs its tests.
 
-An extension declares the contract revision it was built against (`sdk: 1`) and
-may declare the versions of the API it works with as a semver range (`apiRange`,
-such as `^1.1`). A host refuses an extension whose range does not include the
-API version the host implements (`SDK_VERSION`).
+An extension declares the contract revision it was built against (`sdk: 1`),
+which is separate from the npm version of the package, and a host refuses an
+extension built for another revision. An extension may also declare the versions
+of the API it works with as a semver range (`apiRange`, such as `^1.1`). A host
+refuses an extension whose range does not include the API version the host
+implements (`SDK_VERSION`).
 
 ## The Extension Host
 
@@ -67,9 +69,19 @@ at `/library/preview?file=<path>` and a Redux slice at `state.ext.<id>`. It
 calls `setup` of each extension once and gives each one the SDK's
 `HostServices`: the signed-in user, the library, the workspace files, GitLab,
 the snackbar, the page shell, settings, a logger, its configuration and the
-services of other extensions that it names in `requires`. The GitLab credentials
-stay in the client core. An extension does not import client internals or the
-code of another extension.
+services of other extensions that it names in `requires`. The source of an
+extension does not import client internals or the code of another extension,
+and the SDK's ESLint rules check this when the extension is built.
+
+These services guard against the mistakes of a trusted extension. They do not
+confine a hostile one. The code of an extension, compiled in or deployed, runs
+in the page with the rights of the client, so it can reach what the client
+reaches, including the requests that carry the user's GitLab access token. A
+deployed bundle is therefore accepted only from `extensions/<id>/` on the
+client's own origin, where the operator of the deployment places it, and an
+entry of `REACT_APP_EXTENSIONS_DEPLOYED` may carry a `#sha384-<hash>` that the
+browser checks before it runs the file. Loading a bundle from another address
+is not supported.
 
 ## The Visualisation Core
 
@@ -97,10 +109,9 @@ in the [signals gateway plan](../plans/signals-gateway.md).
 
 The rest of the modular architecture described here is a proposal.
 
-The [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk)
-repository holds `@into-cps-association/dtaas-sdk`, which defines a
-contract between the web client (the host) and domain extensions. In the
-proposal:
+The contract itself is the `client/sdk/` package described above. The
+[dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) repository
+holds the proposal it came from. In the proposal:
 
 - A domain extension is an npm package. It declares what it contributes,
   such as pages, navigation entries, digital twin tabs, asset previews,
@@ -118,10 +129,8 @@ proposal:
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.
 
-The SDK declares a contract revision (`sdk: 1`) that is separate from its npm
-version, and a host built on the SDK refuses an extension built for another
-revision. The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1
-onto the contract as a private package.
+The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1 onto the
+contract as a private package.
 
 The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are

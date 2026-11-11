@@ -22,7 +22,7 @@ const App = () => {
       </StrictMode>,
     );
   } else {
-    throw Error("Couldn't find root element");
+    throw new Error("Couldn't find root element");
   }
 };
 
