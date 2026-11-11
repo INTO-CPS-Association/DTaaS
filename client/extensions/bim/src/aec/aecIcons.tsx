@@ -9,7 +9,7 @@ import BlurOnIcon from '@mui/icons-material/BlurOn';
 import CenterFocusStrongIcon from '@mui/icons-material/CenterFocusStrong';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
-// `HelpOutline` is gone from @mui/icons-material 9; `HelpOutlined` is the
+// `HelpOutline` is gone from @mui/icons-material 9. `HelpOutlined` is the
 // same outlined question mark.
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';

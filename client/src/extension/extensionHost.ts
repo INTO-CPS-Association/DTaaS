@@ -57,7 +57,16 @@ export function hostFor(ext: DtaasExtension): HostServices {
 
 const directory = createServiceDirectory(registry.enabled, hostFor);
 
-startExtensions(registry.enabled, hostFor);
+// Each setup reports its own failure, so this only answers a fault in the
+// start itself. The user is told and the rest of the client still loads.
+startExtensions(registry.enabled, hostFor).catch(() =>
+  store.dispatch(
+    showSnackbar({
+      message: 'The extensions could not be started.',
+      severity: 'error',
+    }),
+  ),
+);
 
 export { env };
 export default registry;

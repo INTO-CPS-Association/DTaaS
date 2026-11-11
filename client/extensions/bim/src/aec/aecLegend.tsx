@@ -130,7 +130,7 @@ function ClassRow({ entry, selected, onPick }: ClassRowProps) {
   );
 }
 
-/** What the colours of the model mean; a row lights its class. */
+/** What the colours of the model mean. A row lights its class. */
 export function ClassLegend({
   classes,
   highlighted,

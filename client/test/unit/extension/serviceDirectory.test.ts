@@ -39,6 +39,36 @@ describe('services between extensions', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it('names services that require each other instead of looping', () => {
+    const wind: DtaasExtension = kit('wind', {
+      requires: ['grid.lines'],
+      provides: [
+        {
+          id: 'wind.farms',
+          create: () => directory.forExtension(wind).get('grid.lines'),
+        },
+      ],
+    });
+    const grid: DtaasExtension = kit('grid', {
+      requires: ['wind.farms'],
+      provides: [
+        {
+          id: 'grid.lines',
+          create: () => directory.forExtension(grid).get('wind.farms'),
+        },
+      ],
+    });
+    const directory = createServiceDirectory([wind, grid], hostOf);
+
+    expect(() => directory.forExtension(grid).get('wind.farms')).toThrow(
+      'Services require each other: wind.farms -> grid.lines -> wind.farms',
+    );
+    // A later request still sees the cycle, and not a half-built service.
+    expect(() => directory.forExtension(grid).get('wind.farms')).toThrow(
+      'Services require each other',
+    );
+  });
+
   it('refuses a service no running extension provides', () => {
     const directory = createServiceDirectory([soil], hostOf);
 

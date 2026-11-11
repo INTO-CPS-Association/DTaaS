@@ -131,9 +131,9 @@ describe('the Visualise tab', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'The visualisation could not be read.',
     );
+    // One sentence, with the message of the error and not the error object.
     expect(warn).toHaveBeenCalledWith(
-      'The visualisation could not be read.',
-      expect.any(Error),
+      expect.stringMatching(/^The visualisation could not be read\. \S/),
     );
     warn.mockRestore();
   });
@@ -171,9 +171,9 @@ describe('the Visualise tab', () => {
       'The digital twins could not be listed.',
     );
     expect(screen.queryByText(/secret/)).toBeNull();
+    // One sentence, with the message of the error and not the error object.
     expect(warn).toHaveBeenCalledWith(
-      'The digital twins could not be listed.',
-      expect.any(Error),
+      expect.stringMatching(/^The digital twins could not be listed\. \S/),
     );
     warn.mockRestore();
     mockListFails = false;

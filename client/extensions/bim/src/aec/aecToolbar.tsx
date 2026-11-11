@@ -1,7 +1,7 @@
 /**
  * The row above the `aec` canvas, as on the Buildings page: one outlined
  * icon button per option, each printing its key, then the floor picker. A
- * toggle that is on is drawn selected; an action never lights up.
+ * toggle that is on is drawn selected. An action never lights up.
  */
 
 import Box from '@mui/material/Box';

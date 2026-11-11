@@ -17,7 +17,9 @@
           "paths": {
             "*": ["./src/*"],
             "test/*": ["./test/*"],
-            "@into-cps-association/dtaas-ext-bim": ["extensions/bim/src/index.ts"],
+            "@into-cps-association/dtaas-ext-bim": [
+              "extensions/bim/src/index.ts"
+            ],
             "@into-cps-association/dtaas-sdk": ["sdk/src/index.ts"],
             "@into-cps-association/dtaas-sdk/*": ["sdk/src/*/index.ts"]
           }
