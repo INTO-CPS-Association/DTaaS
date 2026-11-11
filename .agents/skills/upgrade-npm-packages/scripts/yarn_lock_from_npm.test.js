@@ -65,6 +65,18 @@ test('yarnLockFromNpm merges ranges that share one version', () => {
   assert.match(yarnLockFromNpm(npmLock), /^c@\^2\.0\.0, c@\^2\.1\.0:$/m);
 });
 
+test('yarnLockFromNpm keeps an alias apart from the name it aliases', () => {
+  const npmLock = structuredClone(NPM_LOCK);
+  npmLock.packages[''].dependencies['c-alias'] = 'npm:c@^2.0.0';
+  npmLock.packages['node_modules/c-alias'] = {
+    name: 'c',
+    ...tarball('c', '2.1.0'),
+  };
+  const lock = yarnLockFromNpm(npmLock);
+  assert.match(lock, /^"c-alias@npm:c@\^2\.0\.0":\n {2}version "2\.1\.0"$/m);
+  assert.match(lock, /^c@\^2\.0\.0:\n {2}version "2\.1\.0"$/m);
+});
+
 test('yarnLockFromNpm rejects a missing required dependency', () => {
   const npmLock = structuredClone(NPM_LOCK);
   delete npmLock.packages['node_modules/c'];
