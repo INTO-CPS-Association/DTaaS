@@ -1,13 +1,17 @@
 /**
  * Calls `setup` of every running extension once, after the store and the
- * host services exist. A setup that fails is reported in the console, where
- * a developer looks. The client and the other extensions carry on.
+ * host services exist. A setup that fails is reported through the logger of
+ * that extension, as a sentence and without the error object. The client and
+ * the other extensions carry on.
  */
 
 import type {
   DtaasExtension,
   HostServices,
 } from '@into-cps-association/dtaas-sdk';
+
+const reasonOf = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 export default function startExtensions(
   enabled: readonly DtaasExtension[],
@@ -18,8 +22,7 @@ export default function startExtensions(
       Promise.resolve()
         .then(() => ext.setup?.(hostOf(ext)))
         .catch((error: unknown) =>
-          // eslint-disable-next-line no-console
-          console.warn(`Extension ${ext.id} failed to set up:`, error),
+          hostOf(ext).logger.warn(`Setup failed: ${reasonOf(error)}`),
         ),
     ),
   );
