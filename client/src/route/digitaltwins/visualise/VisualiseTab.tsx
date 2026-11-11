@@ -25,6 +25,13 @@ const readCommitted = committedReader(sharedServices);
 
 function Drawing({ loaded }: { readonly loaded: Loaded }) {
   if (loaded.state === 'loading') return <CircularProgress sx={{ m: 2 }} />;
+  if (loaded.state === 'error' && loaded.signIn) {
+    return (
+      <Alert severity="warning">
+        Your GitLab session has ended. Sign in again to see this twin.
+      </Alert>
+    );
+  }
   if (loaded.state === 'error') {
     return <Alert severity="error">The visualisation could not be read.</Alert>;
   }

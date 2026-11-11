@@ -9,6 +9,9 @@ jest.mock('extension/extensionHost', () => {
     '@into-cps-association/dtaas-sdk/testing',
   );
   const { GitFileMissing } = jest.requireActual('extension/gitClient');
+  const GitSignInNeeded = jest.requireActual(
+    'extension/gitSignInNeeded',
+  ).default;
   const asset = {
     schemaVersion: '1.0',
     name: 'junction-7',
@@ -26,6 +29,7 @@ jest.mock('extension/extensionHost', () => {
       'digital_twins/mass-spring/visualisation.json': JSON.stringify(asset),
       'digital_twins/broken/main.sh': 'echo run',
       'digital_twins/slow/main.sh': 'echo run',
+      'digital_twins/expired/main.sh': 'echo run',
     },
     settings: {
       GROUP_NAME: 'DTaaS',
@@ -43,6 +47,9 @@ jest.mock('extension/extensionHost', () => {
     read: (repo: string, path: string, ref: string) => {
       mockGitReads.push(`${repo}@${ref}:${path}`);
       if (path.includes('/slow/')) return new Promise(jest.fn());
+      if (path.includes('/expired/')) {
+        return Promise.reject(new GitSignInNeeded(repo));
+      }
       const text = committed[`${repo}@${ref}:${path}`];
       return text === undefined
         ? Promise.reject(new GitFileMissing(repo, path, ref))
@@ -81,6 +88,7 @@ describe('the Visualise tab', () => {
     const options = within(screen.getByRole('listbox')).getAllByRole('option');
     expect(options.map((o) => o.textContent)).toEqual([
       'broken',
+      'expired',
       'junction7',
       'mass-spring',
       'slow',
@@ -126,6 +134,19 @@ describe('the Visualise tab', () => {
     expect(warn).toHaveBeenCalledWith(
       'The visualisation could not be read.',
       expect.any(Error),
+    );
+    warn.mockRestore();
+  });
+
+  it('asks to sign in again when GitLab refuses the token', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    await act(async () => {
+      render(<VisualiseTab />);
+    });
+    await choose('expired');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Your GitLab session has ended. Sign in again to see this twin.',
     );
     warn.mockRestore();
   });

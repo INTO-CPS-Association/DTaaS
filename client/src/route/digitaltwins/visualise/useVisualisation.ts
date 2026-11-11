@@ -4,13 +4,19 @@
 
 import { useEffect, useState } from 'react';
 import type { VisualisationAsset } from '@into-cps-association/dtaas-sdk';
+import GitSignInNeeded from 'extension/gitSignInNeeded';
 import { logged } from 'route/digitaltwins/twins/useTwins';
 import type { ReadDeclaration } from 'route/digitaltwins/visualise/committedVisualisation';
 
 export type Loaded =
   | { readonly state: 'loading' }
   | { readonly state: 'none' }
-  | { readonly state: 'error'; readonly message: string }
+  | {
+      readonly state: 'error';
+      readonly message: string;
+      /** GitLab refused the token, so signing in again would help. */
+      readonly signIn: boolean;
+    }
   | { readonly state: 'ready'; readonly asset: VisualisationAsset };
 
 /** The visualisation of one twin, or that it has none. */
@@ -24,6 +30,7 @@ function loadTwin(read: ReadDeclaration, twin: string): Promise<Loaded> {
 const failed = (reason: Error): Loaded => ({
   state: 'error',
   message: logged('The visualisation could not be read.', reason),
+  signIn: reason instanceof GitSignInNeeded,
 });
 
 /**
