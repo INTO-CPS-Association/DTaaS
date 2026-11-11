@@ -127,8 +127,9 @@ export class GitlabAPI implements BackendAPI {
       this.client.RepositoryFiles.show(projectId, filePath, ref),
     );
     // atob returns one character per byte; decode the bytes as UTF-8.
-    const bytes = Uint8Array.from(atob(response.content), (char) =>
-      char.charCodeAt(0),
+    const bytes = Uint8Array.from(
+      atob(response.content),
+      (char) => char.codePointAt(0) as number,
     );
     return { content: new TextDecoder().decode(bytes) };
   }
