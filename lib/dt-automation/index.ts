@@ -54,6 +54,7 @@ export { updateFrozenSettings } from './src/gitlab/measure/measurement.settings'
 export type {
   Execution,
   ExecutionResult,
+  MeasurementExport,
   MeasurementRecord,
   MeasurementResultsStorage,
   MeasurementSetters,
@@ -62,8 +63,8 @@ export type {
   Trial,
 } from './src/gitlab/measure/measurement.types';
 export {
-  downloadResultsJson,
-  downloadTaskResultJson,
+  buildResultsExport,
+  buildTaskResultExport,
   getMeasurementStatus,
   getRunnerTags,
   getTotalTime,

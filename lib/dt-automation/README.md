@@ -152,7 +152,12 @@ measurement. The package restores the saved results only while it holds no
 results in memory.
 
 The measurement API provides operations for starting and stopping measurements,
-managing active pipelines, storing results, and downloading measurement data.
+managing active pipelines, and storing results.
+
+`buildResultsExport` and `buildTaskResultExport` build the results file and
+return its `fileName`, `content` and `mimeType`. The application saves the
+file: a browser can offer it as a download, and a Node.js application can
+return or store it.
 
 ## Backend Architecture
 

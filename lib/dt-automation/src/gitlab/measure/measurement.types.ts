@@ -39,6 +39,12 @@ export type MeasurementResultsStorage = {
   removeItem(key: string): void;
 };
 
+export type MeasurementExport = {
+  fileName: string;
+  content: string;
+  mimeType: 'application/json';
+};
+
 export type Configuration = ExternalConfiguration;
 
 export type Status =
