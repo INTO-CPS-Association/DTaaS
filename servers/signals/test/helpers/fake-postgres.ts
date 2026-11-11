@@ -10,12 +10,11 @@ export default class FakePostgres {
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor(private readonly answer: (query: Query) => Row[] | Error) {}
 
-  async query(database: string, text: string, values: unknown[]) {
+  query(database: string, text: string, values: unknown[]): Promise<Row[]> {
     const query = { database, text, values };
     this.queries.push(query);
     const rows = this.answer(query);
-    if (rows instanceof Error) throw rows;
-    return rows;
+    return rows instanceof Error ? Promise.reject(rows) : Promise.resolve(rows);
   }
 
   asClient(): PostgresClient {
