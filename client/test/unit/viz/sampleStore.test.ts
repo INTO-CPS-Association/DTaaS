@@ -21,6 +21,15 @@ describe('the sample store', () => {
     expect(store.valueAt('room/temp', 'measured', 99)?.value).toBe(3);
   });
 
+  it('reads the unit a sample came with, and none when it had none', () => {
+    const store = createSampleStore();
+    store.insert({ ...sample(10, 40), unit: '%' });
+    store.insert(sample(20, 41));
+
+    expect(store.valueAt('room/temp', 'measured', 10)?.unit).toBe('%');
+    expect(store.valueAt('room/temp', 'measured', 20)?.unit).toBeUndefined();
+  });
+
   it('keeps one sample at an instant, the latest inserted', () => {
     const store = createSampleStore();
     [sample(10, 1), sample(20, 2), sample(10, 5)].forEach(store.insert);

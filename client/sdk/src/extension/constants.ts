@@ -7,7 +7,7 @@ export const SDK_MAJOR = 1 as const;
  * contribution point or service raises the minor number and a change that an
  * existing extension would notice raises the major number (K10).
  */
-export const SDK_VERSION = '1.4.0';
+export const SDK_VERSION = '1.5.0';
 
 /** The value channels every signal can carry (R5). */
 export const CHANNELS = [

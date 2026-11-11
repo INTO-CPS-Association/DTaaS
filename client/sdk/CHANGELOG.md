@@ -6,6 +6,13 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- API version `1.5.0`: the optional `unit` of `SignalSample` and `Sampled`, the
+  unit a source gave with a value. A kit compares it with the unit it expects
+  and no longer has to assume one from the name of the quantity. A host that
+  does not know the unit leaves the field out.
+
 ### Fixed
 
 - `colourAt` keeps a position off the scale at the nearer end of the scheme and
