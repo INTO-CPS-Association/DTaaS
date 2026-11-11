@@ -3,8 +3,9 @@
  *
  * The real extension pulls in a renderer and a WebAssembly geometry kernel,
  * which a test of the menu or the routes does not need. This one declares the
- * same id, page path, menu label and icon, so the wiring is tested as it is,
- * and the package's own tests cover the page.
+ * same id, main page path, menu label, icon and order, so the wiring is tested
+ * as it is. It leaves out the model route, `setup` and the visualisation
+ * contribution, which the package's own tests cover.
  */
 
 import { lazy } from 'react';
