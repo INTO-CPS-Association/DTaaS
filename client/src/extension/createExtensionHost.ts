@@ -189,14 +189,11 @@ function withRequirementsMet(
   );
 }
 
-/**
- * Decide which extensions run, in manifest order, and merge what they add.
- * The first of two extensions with the same id or the same shared key wins.
- */
-export default function createExtensionHost(
+/** The extensions that pass every check but requirements, in order. */
+function admit(
   extensions: readonly DtaasExtension[],
   env: EnvRecord,
-): ExtensionHost {
+): { enabled: DtaasExtension[]; problems: ExtensionProblem[] } {
   const enabled: DtaasExtension[] = [];
   const problems: ExtensionProblem[] = [];
   const seen = new Set<string>();
@@ -212,6 +209,35 @@ export default function createExtensionHost(
     }
     seen.add(ext?.id);
   }
-  const running = withRequirementsMet(enabled, problems);
-  return { enabled: running, problems, ...mount(running) };
+  return { enabled, problems };
+}
+
+/**
+ * Decide which extensions run, in manifest order, and merge what they add.
+ * The first of two extensions with the same id or the same shared key wins.
+ *
+ * An extension left out for a missing service gives up its id and its keys,
+ * so the checks run again without it, and an extension it blocked can run.
+ * Each pass removes at least one extension, so the loop ends.
+ */
+export default function createExtensionHost(
+  extensions: readonly DtaasExtension[],
+  env: EnvRecord,
+): ExtensionHost {
+  const unmet: ExtensionProblem[] = [];
+  let candidates = [...extensions];
+  for (;;) {
+    const { enabled, problems } = admit(candidates, env);
+    const running = withRequirementsMet(enabled, unmet);
+    if (running.length === enabled.length) {
+      return {
+        enabled: running,
+        problems: [...problems, ...unmet],
+        ...mount(running),
+      };
+    }
+    candidates = candidates.filter(
+      (ext) => !enabled.includes(ext) || running.includes(ext),
+    );
+  }
 }

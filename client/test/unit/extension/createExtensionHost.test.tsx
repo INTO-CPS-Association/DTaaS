@@ -207,6 +207,28 @@ describe('mountPath', () => {
     );
   });
 
+  it('lets a key go when its owner is left out for a missing service', () => {
+    const preset = { id: 'heat', label: 'Heat', substrate: 'aec' };
+    const contribution = { detect: () => false, presets: [preset] } as never;
+    const first = kit('first', {
+      requires: ['pump.curves'],
+      visualisation: contribution,
+    });
+    const second = kit('second', { visualisation: contribution });
+    const again = kit('first');
+
+    const host = createExtensionHost([first, second, again], {});
+
+    expect(host.enabled).toEqual([second, again]);
+    expect(host.problems).toEqual([
+      {
+        id: 'first',
+        reason:
+          'requires service pump.curves, which no enabled extension provides',
+      },
+    ]);
+  });
+
   it('collects the tabs and the library previews of every extension', () => {
     const tab = {
       id: 'pid',
