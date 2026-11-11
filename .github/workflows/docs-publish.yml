@@ -181,6 +181,7 @@ jobs:
       contents: read
     outputs:
       artifact_id: ${{ steps.upload.outputs.artifact_id }}
+      build_version: ${{ steps.version.outputs.sha }}
     steps:
       - name: Checkout
         # v7.0.1
@@ -205,6 +206,19 @@ jobs:
           ref: webpage-docs
           path: pages
           lfs: false
+
+      - name: Choose Pages build version
+        id: version
+        # Pages resolves the build version as a commit of this repository
+        # and needs a new one per deployment (#1889). A tag run may be on an
+        # already-deployed commit, so it uses the release commit that the
+        # release job has just pushed to webpage-docs.
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then
+            echo "sha=$(git -C pages rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Assemble site
         run: |
@@ -247,12 +261,12 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         env:
           ARTIFACT_ID: ${{ needs.assemble.outputs.artifact_id }}
+          BUILD_VERSION: ${{ needs.assemble.outputs.build_version }}
         with:
           result-encoding: string
           retries: 3
           script: |
-            // A unique version per run, or Pages ignores a tag run on a deployed commit (#1889).
-            const version = `${context.sha}-${context.runId}-${context.runAttempt}`
+            const version = process.env.BUILD_VERSION
             const { data } = await github.request('POST /repos/{owner}/{repo}/pages/deployments', {
               ...context.repo,
               artifact_id: Number(process.env.ARTIFACT_ID),
