@@ -71,7 +71,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `./schema` makes the `url` of an `mqtt` transport optional. A host with a
   signals gateway serves the topics itself, so a `visualisation.json` can name
   the topics it reads and leave the broker to the host. A declaration that gives
-  a URL is still valid, and the URL scheme is still checked. The `url` of a
+  a URL is still valid and the URL scheme is still checked. The `url` of a
   `stomp` transport stays required.
 - `aec` is no longer a standard substrate (requirement K5). The bim extension
   contributes it, so a preset that names `aec` needs an extension that
@@ -90,7 +90,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   InfluxDB and HTTP take `http` and `https`. A file transport takes `http`,
   `https`, `lib` or a relative path. A substrate source takes `lib`, `git`,
   `http`, `https`, `blob` or a relative path. Schemes are read with the
-  browser's URL parser, so case and embedded tabs do not hide a scheme, and a
+  browser's URL parser, so case and embedded tabs do not hide a scheme and a
   relative path that names another host is refused.
 - `./schema` limits every string in a `visualisation.json` to 2048 characters
   and every list to 1000 items, so an oversized asset is refused before a host
@@ -103,7 +103,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Extension contract, revision 1: `DtaasExtension`, `DomainContribution` and
   every contribution type of the architecture proposal (§6.1).
 - Host contract: `HostServices` with `auth`, `library`, `contents`, `git`,
-  `signals`, `viz`, `ui`, `logger`, `settings` and `config` (§6.2);
+  `signals`, `viz`, `ui`, `logger`, `settings` and `config` (§6.2), with
   `HostProvider` and `useHost()`.
 - Visualisation layer types: `SignalSample`, `Channel`, `TransportAdapter`,
   `Anchor`, `AnchorKind`, the encoding vocabulary, `SubstrateAdapter`.
@@ -117,7 +117,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `checkConformance` and a socket guard.
 - `SignalsService.connection` (`ConnectionState`, `ConnectionStatus`) and
   `worstConnectionState`, so a kit can tell a quiet signal from a dead
-  connection; fake `signals.setConnection(state, paths?)` for tests.
+  connection. The fake `signals.setConnection(state, paths?)` is for tests.
 - `./eslint`: flat-config rules enforcing the extension boundary (§6.3).
 - `examples/hello-kit`: the template layout of a domain kit.
 

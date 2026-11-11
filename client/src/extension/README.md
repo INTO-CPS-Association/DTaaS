@@ -95,7 +95,7 @@ offers it, so no extension imports the code of another.
 
 ## When an Extension Is Left Out
 
-The client starts without an extension that fails a check, and writes the
+The client starts without an extension that fails a check and writes the
 reason to the browser console:
 
 - The SDK's `validateExtension` finds it malformed, for example a page that

@@ -53,7 +53,7 @@ function evaluate(
   bundle: string,
 ): Record<string, { extension: DtaasExtension }> {
   const window: Record<string, unknown> = {};
-  // A classic script runs with `this` as the window; the Function constructor
+  // A classic script runs with `this` as the window. The Function constructor
   // runs the bundle the same way, with the shared modules as its one global.
   // eslint-disable-next-line no-new-func
   new Function(SHARED_MODULES_GLOBAL, readFileSync(bundle, 'utf-8')).call(
