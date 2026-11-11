@@ -38,6 +38,12 @@ second MQTT connection, since RabbitMQ closes a connection that publishes
 where it may not. A command the broker does not take within
 `command-timeout` answers `504`.
 
+The stream route writes server-sent events by hand on a `POST`, not through
+the `@Sse()` decorator of NestJS. The decorator answers `GET`, and a `GET`
+would carry the list of paths in the URL, where proxies and logs keep it. The
+body of the `POST` carries the paths and the `Authorization` header carries the
+token, so both stay out of URLs.
+
 ## Configuration
 
 Copy [`config/signals.yaml.sample`](config/signals.yaml.sample) to

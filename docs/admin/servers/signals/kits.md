@@ -8,15 +8,9 @@ to the client, the gateway or Telegraf. The steps below follow the
 
 ## The Bundle for the Client
 
-Build the kit in `client/` of the repository:
-
-```bash
-yarn build:kit soil-kit
-```
-
-The bundle is written to
-`client/sdk/examples/soil-kit/dist/deploy/soil/index.js`, where `soil` is the
-id of the extension. A second argument names another output folder. Copy the
+Build the bundle in the kit's own repository, with the build its README
+gives. For `soil-kit` that is `yarn build`, which writes
+`dist/deploy/soil/index.js`, where `soil` is the id of the extension. Copy the
 bundle into the DTaaS Docker package as `config/extensions/soil/index.js` and
 mount that folder next to `env.js`, in the `client` service of
 `docker-compose.yml`:

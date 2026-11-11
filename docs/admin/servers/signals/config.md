@@ -69,6 +69,12 @@ of the owner's group in `owners-file`. A path of the history must have the
 eight levels of the naming convention. Every decision is logged with the
 user, the paths and the result, never with the token.
 
+The owner's group is the boundary of trust, not the twin or the project. A
+user who may write to one project of a group can declare in a twin any topic
+under the prefixes of that group, then stream it, read its history and, on the
+`setpoint` channel, send commands to it. Put owners who should not reach each
+other's devices in different groups.
+
 ## Live Signals Over MQTT
 
 | Key | What it does |
