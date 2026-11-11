@@ -72,16 +72,10 @@ describe('measurement.lifecycle', () => {
 
   it('handleBeforeUnload should do nothing if not running or no active pipelines', () => {
     const preventDefault = jest.fn();
-    handleBeforeUnload(
-      { preventDefault, returnValue: '' } as unknown as BeforeUnloadEvent,
-      harness.isRunningRef,
-    );
+    handleBeforeUnload({ preventDefault }, harness.isRunningRef);
     expect(preventDefault).not.toHaveBeenCalled();
     harness.isRunningRef.current = true;
-    handleBeforeUnload(
-      { preventDefault, returnValue: '' } as unknown as BeforeUnloadEvent,
-      harness.isRunningRef,
-    );
+    handleBeforeUnload({ preventDefault }, harness.isRunningRef);
     expect(preventDefault).not.toHaveBeenCalled();
   });
 
