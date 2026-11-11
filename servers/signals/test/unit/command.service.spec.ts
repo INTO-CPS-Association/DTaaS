@@ -21,14 +21,23 @@ describe('CommandService', () => {
     const broker = new FakeBroker();
     const service = new CommandService(testConfig(), broker);
     const topic = service.topicOf(REQUEST);
-    await expect(service.send(ALICE, topic, REQUEST)).resolves.toEqual({
+    await expect(
+      service.send(ALICE, topic, REQUEST, '203.0.113.7'),
+    ).resolves.toEqual({
       status: 'sent',
       topic: 'SWiM/CTO/plant/01/loop1/A/A-0001/cmd/set',
     });
     const body = JSON.parse(broker.published[0].body);
     expect(body).toMatchObject({ value: 40, unit: '%' });
     expect(Number.isFinite(Date.parse(body.ts))).toBe(true);
-    expect(String(log.mock.calls[0][0])).toContain('"action":"command-sent"');
+    expect(JSON.parse(String(log.mock.calls[0][0]))).toEqual({
+      user: 'alice',
+      action: 'command-sent',
+      topic: 'SWiM/CTO/plant/01/loop1/A/A-0001/cmd/set',
+      value: 40,
+      unit: '%',
+      address: '203.0.113.7',
+    });
     log.mockRestore();
   });
 
@@ -46,7 +55,7 @@ describe('CommandService', () => {
     };
     const service = new CommandService(testConfig(), broker);
     await expect(
-      service.send(ALICE, service.topicOf(REQUEST), REQUEST),
+      service.send(ALICE, service.topicOf(REQUEST), REQUEST, '203.0.113.7'),
     ).rejects.toBeInstanceOf(BadGatewayException);
   });
 
@@ -58,7 +67,7 @@ describe('CommandService', () => {
       broker,
     );
     await expect(
-      service.send(ALICE, service.topicOf(REQUEST), REQUEST),
+      service.send(ALICE, service.topicOf(REQUEST), REQUEST, '203.0.113.7'),
     ).rejects.toBeInstanceOf(GatewayTimeoutException);
   });
 });

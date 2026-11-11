@@ -36,6 +36,7 @@ export default class CommandService {
     subject: Subject,
     topic: string,
     request: CommandRequest,
+    clientAddress: string,
   ): Promise<CommandAnswer> {
     // The payload of the naming convention, with the set point as value.
     const body = JSON.stringify({
@@ -44,8 +45,17 @@ export default class CommandService {
       unit: request.unit,
     });
     await this.publishWithin(topic, body);
+    // The audit line says who moved which actuator to what, and from where.
+    // JSON.stringify escapes the unit, which is text the caller chose.
     this.logger.log(
-      JSON.stringify({ user: subject.username, action: 'command-sent', topic }),
+      JSON.stringify({
+        user: subject.username,
+        action: 'command-sent',
+        topic,
+        value: request.value,
+        unit: request.unit,
+        address: clientAddress,
+      }),
     );
     return { status: 'sent', topic };
   }
