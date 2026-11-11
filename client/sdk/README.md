@@ -36,3 +36,6 @@ yarn test:sdk
 client. The tests keep the `src/` and `tests/` aliases of
 `jest.config.json`. `examples/hello-kit/` is the minimal extension the
 integration tests mount.
+
+`client/src/extension/README.md` describes the open decision about how
+external extensions get these types.
