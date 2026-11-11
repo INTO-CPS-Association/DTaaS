@@ -10,7 +10,7 @@ React components and other React-specific code do not belong in this package.
 ## Prerequisites
 
 DT Automation is developed on Node.js 26 and supports Node.js 24 and
-later. It uses Yarn 1.22.22.
+later; CI checks both. It uses Yarn 1.22.22.
 
 Install the dependencies:
 
@@ -60,6 +60,8 @@ Run the unit tests with:
 yarn test:unit
 ```
 
+The tests run in Jest's Node environment, without a DOM.
+
 Run the TypeScript checks with:
 
 ```bash
@@ -74,6 +76,22 @@ yarn test:unit
 yarn build
 ```
 
+### Runtime Checks
+
+The package runs in browsers and in Node.js, so three checks keep `index.ts`
+and `src/` free of APIs that only one runtime provides:
+
+- ESLint rejects browser-only globals such as `window`, `document` and
+  `sessionStorage`, Node.js-only globals such as `process` and `Buffer`, and
+  imports of Node.js built-in modules.
+- `yarn typecheck` compiles without the DOM and Node.js types.
+  `src/shared-runtime.d.ts` declares the few globals that both provide.
+- `yarn build` uses the `neutral` platform of tsup with
+  `removeNodeProtocol: false`, so a `node:` import fails the build.
+
+Code that needs the API of one runtime belongs in the consuming application,
+which registers it through a setter such as `setMeasurementResultsStorage`.
+
 ## Validate the Package
 
 Use the package smoke test for changes to exports, build configuration, or
@@ -84,7 +102,17 @@ yarn smoke:package
 ```
 
 The test builds the package, creates an archive with `yarn pack`, installs it in
-a temporary project, and imports it through the published package name.
+a temporary project, and runs `scripts/smoke-consumer.mjs` there. That script
+imports the package through its published name and then:
+
+- registers in-memory stores and services
+- builds a results export
+- purges the measurement data
+- calls `handleBeforeUnload`
+
+CI runs the test on Node.js 24 and 26. It also checks that the archive holds
+only `package.json`, `README.md`, `LICENSE.md`, `dist/index.js` and the
+declaration files.
 
 Run the type check and package test together with:
 

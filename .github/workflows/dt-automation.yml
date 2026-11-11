@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        node-version: [26]
+        node-version: [24, 26]
     defaults:
       run:
         working-directory: lib/dt-automation/
@@ -59,7 +59,6 @@ jobs:
         run: |
           yarn typecheck
           yarn build
-          PACKAGE_NAME="$(node -p "require('./package.json').name")"
           PACKAGE_TGZ='dt-automation.tgz'
           yarn pack --filename "$PACKAGE_TGZ"
           ALLOWED_TARBALL_FILES='^package/(package\.json|README\.md|LICENSE\.md|dist/(index\.js|.*\.d\.ts))$'
@@ -73,16 +72,7 @@ jobs:
             echo "$UNEXPECTED_TARBALL_FILES"
             exit 1
           fi
-          TMP_DIR="$(mktemp -d)"
-          cd "$TMP_DIR"
-          yarn init -y
-          yarn add "file:$GITHUB_WORKSPACE/lib/dt-automation/$PACKAGE_TGZ"
-          PACKAGE_NAME="$PACKAGE_NAME" node --input-type=module <<'EOF'
-          const { formatName } = await import(process.env.PACKAGE_NAME);
-          if (formatName('digital-twin') !== 'Digital Twin') {
-            throw new Error('Package smoke test failed');
-          }
-          EOF
+          node scripts/smoke-package.mjs
 
   publish-package-github:
     permissions:

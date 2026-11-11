@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dt-automation",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "The DTaaS's data and business-logic layer including representations of digital twins, communication with data/execution managers like GitLab, file, pipeline and execution operations and maintaining Redux state for UI. Sits between the consuming application and DTaaS backend.",
   "contributors": [
     "Enok Maj",
@@ -23,7 +23,7 @@
     "smoke:package": "yarn build && node scripts/smoke-package.mjs",
     "validate:package": "yarn typecheck && yarn smoke:package"
   },
-  "// smoke:package": "Builds the package, then verifies that a clean consumer can install and import its tarball.",
+  "// smoke:package": "Builds the package, then verifies that a clean consumer can install its tarball and use it from Node.js.",
   "// validate:package": "Type-checks the source before running the package smoke test.",
   "// tsup": "Builds the package's ESM JavaScript file at dist/index.js.",
   "prettier": {

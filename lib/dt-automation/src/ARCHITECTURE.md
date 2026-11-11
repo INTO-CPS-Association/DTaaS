@@ -188,6 +188,22 @@ on the execution backend, if they are seperated.
 Statuses on pipelines are intermittently retrieved and showcased to the user
 who also has the option to stop execution, as well as reading execution logs received.
 
+## Runtime Services
+
+The package uses only the APIs that both browsers and Node.js provide, so the
+same code runs in both. The consuming application injects the runtime services
+through setters:
+
+- the environment, settings and measurement stores
+- the execution history storage services
+- the measurement database and results storage
+- the GitLab credentials
+
+The [README](../README.md#application-setup) describes the setters.
+
+The injected services and the measurement state are module variables, so one
+loaded copy of the package serves one user.
+
 ## Extension Points
 
 To expand on the backend support, you must create a file for both the API and
