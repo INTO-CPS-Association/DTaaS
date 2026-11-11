@@ -51,6 +51,8 @@ def test_load_kits_without_kits(base_dir):
         ({"name": "soil", "tables": {}}, "at least one table"),
         ({"name": "other", "tables": {"t": []}}, "must be named other"),
         ({"name": "Soil", "tables": {"t": []}}, "Invalid kit name"),
+        ({"tables": {"t": []}}, "name as text"),
+        ({"name": 7, "tables": {"t": []}}, "name as text"),
     ],
 )
 def test_load_kit_refuses_a_bad_manifest(tmp_path, manifest, message):

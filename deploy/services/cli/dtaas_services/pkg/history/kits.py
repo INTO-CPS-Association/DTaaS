@@ -78,7 +78,9 @@ def load_kit(folder: Path) -> Kit:
     except (OSError, json.JSONDecodeError) as e:
         raise KitError(f"Cannot read {folder / 'kit.json'}: {type(e).__name__}") from e
     name = manifest.get("name") if isinstance(manifest, dict) else None
-    valid, error_msg = validate_name("kit", name or "")
+    if not isinstance(name, str):
+        raise KitError(f"{folder / 'kit.json'} must give the kit's name as text")
+    valid, error_msg = validate_name("kit", name)
     if not valid:
         raise KitError(error_msg)
     if folder.name != name:

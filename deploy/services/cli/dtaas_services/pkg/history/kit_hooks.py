@@ -2,9 +2,12 @@
 
 - Setup: each kit gets the role <group>_kit_<kit>, which may only create
   tables in the schema public and reference device (device_id). Its
-  migrations run under that role, so a kit cannot change device or reading,
-  read the readings or touch the tables of another kit. The declared tables
-  are then checked and <group>_view_ro may select from them.
+  migrations run under that role with SET LOCAL ROLE, on the administrator's
+  connection. That keeps an honest migration from changing device or reading
+  by mistake, but it is no boundary: a migration can run RESET ROLE and act
+  as the administrator. A kit's migrations are therefore trusted code, to be
+  read before the kit is installed. The declared tables are then checked
+  and <group>_view_ro may select from them.
 - Registration: the rows a twin file gives for a kit table replace the rows
   of the twin's devices in that table, in the transaction that writes the
   devices.
@@ -105,9 +108,7 @@ def _check_rows(kit: Kit, table: str, rows: list[dict]) -> None:
             raise KitError(f"{table} has no columns {sorted(unknown)} to fill")
 
 
-def write_kit_rows(
-    conn: psycopg.Connection, twin: Twin, kits: tuple[Kit, ...]
-) -> None:
+def write_kit_rows(conn: psycopg.Connection, twin: Twin, kits: tuple[Kit, ...]) -> None:
     """Replace the kit rows of the twin's devices, as each kit's own role."""
     installed = {kit.name: kit for kit in kits}
     device_ids = [device.device_id for device in twin.devices]
