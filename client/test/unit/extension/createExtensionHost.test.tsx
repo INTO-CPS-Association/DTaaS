@@ -208,7 +208,8 @@ describe('mountPath', () => {
   });
 
   it('lets a key go when its owner is left out for a missing service', () => {
-    const preset = { id: 'heat', label: 'Heat', substrate: 'aec' };
+    // `image` stays a substrate of the core when `aec` moves into a kit.
+    const preset = { id: 'heat', label: 'Heat', substrate: 'image' };
     const contribution = { detect: () => false, presets: [preset] } as never;
     const first = kit('first', {
       requires: ['pump.curves'],
