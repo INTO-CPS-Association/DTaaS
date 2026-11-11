@@ -4,7 +4,6 @@ import stat
 from dtaas_services.pkg import secret_files
 
 
-
 def test_secret_path_follows_the_naming_convention(base_dir):
     """The file is secrets/<consumer>/<service>_<account>_password"""
     path = secret_files.secret_path("signals", "rabbitmq", "dtaas_signals")

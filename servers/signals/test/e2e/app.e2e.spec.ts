@@ -116,6 +116,7 @@ describe('Signals gateway e2e', () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ status: 'ok' });
     expect(response.headers.get('x-powered-by')).toBeNull();
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff');
   });
 
   it.each(['stream', 'range'])(

@@ -38,6 +38,15 @@ export default function startupWarnings(config: Config): string[] {
       'oidc-providers is set without gitlab-token-file: users signed in through Keycloak or Dex read nothing',
     );
   }
+  if (
+    config.get('forwarded-user-header') !== '' &&
+    config.get('trusted-proxies').length === 0
+  ) {
+    warnings.push(
+      'forwarded-user-header is set and trusted-proxies is empty: every user shares one rate limit and the logs show the address of the proxy. ' +
+        'List the network of the reverse proxy in trusted-proxies',
+    );
+  }
   return warnings;
 }
 
