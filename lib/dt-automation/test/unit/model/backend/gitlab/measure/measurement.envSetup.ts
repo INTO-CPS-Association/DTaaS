@@ -119,16 +119,17 @@ export function createStatusCheckingMock() {
   };
 }
 
-export function setupSessionStorage() {
-  Object.defineProperty(globalThis, 'sessionStorage', {
-    value: {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    },
-    writable: true,
-  });
+export function createTestStorage(items: Record<string, string> = {}) {
+  const stored = new Map(Object.entries(items));
+  return {
+    getItem: jest.fn((key: string) => stored.get(key) ?? null),
+    setItem: jest.fn((key: string, value: string) => {
+      stored.set(key, value);
+    }),
+    removeItem: jest.fn((key: string) => {
+      stored.delete(key);
+    }),
+  };
 }
 
 export function setupCredentials(token = 'test-token', username = 'test-user') {

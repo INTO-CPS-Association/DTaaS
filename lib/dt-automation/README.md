@@ -33,13 +33,13 @@ API.
 
 Register the services required by the features used by the application.
 
-| Feature           | Setup                                                                  |
-| :---------------- | :--------------------------------------------------------------------- |
-| Environment       | `setEnvironmentStore`                                                  |
-| GitLab settings   | `setSettingsStore`                                                     |
-| Authentication    | `setUsername` and `setAccessToken`                                     |
-| Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB` |
-| Measurements      | `setMeasurementStore`, `setMeasurementDB`                              |
+| Feature           | Setup                                                                                |
+| :---------------- | :----------------------------------------------------------------------------------- |
+| Environment       | `setEnvironmentStore`                                                                |
+| GitLab settings   | `setSettingsStore`                                                                   |
+| Authentication    | `setUsername` and `setAccessToken`                                                   |
+| Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB`               |
+| Measurements      | `setMeasurementStore`, `setMeasurementDB`, `setMeasurementResultsStorage` (optional) |
 
 ### Environment
 
@@ -143,6 +143,13 @@ The package root exports the following selectors:
 
 Register `setMeasurementStore` and `setMeasurementDB` when using measurement
 features.
+
+Results stay in memory unless a storage is registered with
+`setMeasurementResultsStorage`. A browser application can pass
+`sessionStorage` to keep the results across a page reload. Register the
+storage before the first call that starts, restarts, stops or purges a
+measurement. The package restores the saved results only while it holds no
+results in memory.
 
 The measurement API provides operations for starting and stopping measurements,
 managing active pipelines, storing results, and downloading measurement data.

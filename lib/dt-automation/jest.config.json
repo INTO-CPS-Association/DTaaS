@@ -19,6 +19,7 @@
     ]
   },
   "collectCoverage": false,
+  "collectCoverageFrom": ["src/**/*.ts", "!src/**/*.d.ts"],
   "testTimeout": 15000,
   "modulePathIgnorePatterns": ["dist"],
   "testRegex": "/test/.*\\.test.tsx?$",

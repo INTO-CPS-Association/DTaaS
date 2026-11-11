@@ -38,6 +38,7 @@ export {
   getDefaultConfig,
   getTasks,
   measurementState,
+  setMeasurementResultsStorage,
   setMeasurementStore,
 } from './src/gitlab/measure/measurement.execution';
 export {
@@ -54,6 +55,7 @@ export type {
   Execution,
   ExecutionResult,
   MeasurementRecord,
+  MeasurementResultsStorage,
   MeasurementSetters,
   Status,
   TimedTask,

@@ -24,10 +24,7 @@ import {
   createMockExecution,
   createMockActivePipeline,
 } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
-import {
-  setupSessionStorage,
-  setupCredentials,
-} from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
+import { setupCredentials } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
 import { clearAccessToken, clearUsername } from 'src/util/credentials';
 
 jest.mock('src/util/env', () => ({
@@ -75,8 +72,6 @@ beforeEach(() => {
   measurementState.executionResults = [];
   measurementState.currentMeasurementPromise = null;
   measurementState.currentTrialMinPipelineId = null;
-
-  setupSessionStorage();
 
   mockGetState.mockReturnValue(
     createMockStoreState({
