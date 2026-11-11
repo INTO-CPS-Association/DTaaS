@@ -3,6 +3,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { NextFunction, Request, Response } from 'express';
 import { realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import AppModule from './app.module.js';
@@ -28,6 +29,12 @@ export function configureSignalsApp(
   // unless an origin is configured.
   if (cors.origin !== false) app.enableCors(cors);
   app.disable('x-powered-by');
+  // The gateway answers JSON and event streams only, so a browser is told
+  // never to guess another type, also when no proxy adds the header.
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    next();
+  });
   // Behind Traefik every request comes from the proxy. Naming it here lets
   // the rate limit count each client, from the address the proxy appended.
   const proxies = config.get('trusted-proxies');

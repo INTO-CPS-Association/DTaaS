@@ -34,6 +34,7 @@ import HistoryService, {
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
 import StreamSlots from './stream/stream-slots.js';
+import { getClientTracker } from './socket-address-throttler.guard.js';
 
 function subjectOf(request: AuthenticatedRequest): Subject {
   const user = userOf(request);
@@ -133,7 +134,12 @@ export default class SignalsController {
     // channel. A path it declares only to be read takes none.
     if (decision.allowed[0].channel !== 'setpoint')
       throw new ForbiddenException();
-    return this.commands.send(subject, topic, command);
+    return this.commands.send(
+      subject,
+      topic,
+      command,
+      getClientTracker({ ip: request.ip, socket: request.socket }),
+    );
   }
 
   // Nothing the user may read is refused before any work is done.

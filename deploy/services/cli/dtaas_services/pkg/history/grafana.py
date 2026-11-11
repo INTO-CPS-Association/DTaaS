@@ -8,9 +8,9 @@ the secret file that its container mounts under /run/secrets.
 from pathlib import Path
 from ..config import Config
 from .names import view_account
+from .pg_admin import internal_address, sslmode
 
 DATASOURCES_DIR = Path("config") / "grafana" / "provisioning" / "datasources"
-POSTGRES_ADDRESS = "postgres:5432"
 # 1800 is how Grafana names PostgreSQL 18, the version of the services compose
 POSTGRES_VERSION = 1800
 
@@ -28,7 +28,7 @@ datasources:
     editable: false
     jsonData:
       database: {group}
-      sslmode: require
+      sslmode: {sslmode}
       postgresVersion: {version}
       timescaledb: false
     secureJsonData:
@@ -45,9 +45,12 @@ def write_datasource(group: str) -> Path:
     """Write the data source file of a group and return its path."""
     path = datasource_path(group)
     path.parent.mkdir(parents=True, exist_ok=True)
+    config = Config()
+    host, port = internal_address(config)
     content = TEMPLATE.format(
         group=group,
-        address=POSTGRES_ADDRESS,
+        address=f"{host}:{port}",
+        sslmode=sslmode(config),
         user=view_account(group),
         version=POSTGRES_VERSION,
     )

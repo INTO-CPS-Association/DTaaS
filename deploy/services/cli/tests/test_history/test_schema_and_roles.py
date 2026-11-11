@@ -11,7 +11,10 @@ def test_core_migration_follows_the_naming_convention():
     assert "CREATE TABLE reading (" in text
     assert "CONSTRAINT reading_device_id_fkey" in text
     assert "REFERENCES device (device_id)" in text
-    assert "CREATE INDEX reading_device_id_time_idx ON reading (device_id, time DESC)" in text
+    assert (
+        "CREATE INDEX reading_device_id_time_idx ON reading (device_id, time DESC)"
+        in text
+    )
 
 
 def test_apply_migrations_runs_new_ones_and_records_them():
@@ -37,7 +40,7 @@ def test_grant_history_gives_each_role_only_its_rights():
     roles.grant_history(conn, "swim")
     assert conn.statements == [
         'REVOKE ALL ON DATABASE "swim" FROM PUBLIC',
-        'REVOKE ALL ON SCHEMA public FROM PUBLIC',
+        "REVOKE ALL ON SCHEMA public FROM PUBLIC",
         'GRANT CONNECT ON DATABASE "swim" TO "swim_telegraf", "swim_view_ro", '
         '"dtaas_signals_ro"',
         'GRANT USAGE ON SCHEMA public TO "swim_telegraf", "swim_view_ro", '

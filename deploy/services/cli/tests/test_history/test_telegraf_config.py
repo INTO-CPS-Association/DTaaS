@@ -30,6 +30,13 @@ def test_render_leaves_no_placeholder(rendered):
     assert "$" not in text.replace("${TELEGRAF_SECRETS_DIR:-/run/secrets}", "")
 
 
+def test_render_connects_to_postgresql_with_tls(rendered):
+    """The output reaches postgres:5432 and requires TLS by default"""
+    _, conf = rendered
+    connection = conf["outputs"]["postgresql"][0]["connection"]
+    assert "host=postgres port=5432 sslmode=require " in connection
+
+
 def test_render_reads_the_twin_topics_with_qos_1(rendered):
     """Exactly eight levels under the prefix, QoS 1 and a persistent session"""
     _, conf = rendered
@@ -104,7 +111,9 @@ def test_rendered_file_passes_telegraf_config_check(rendered):
 def test_telegraf_config_check_refuses_an_unknown_option(rendered):
     """A typo in the file fails the real check"""
     text, _ = rendered
-    passed, message = telegraf_config.check(text.replace("qos = 1", "qos_x = 1"), "swim")
+    passed, message = telegraf_config.check(
+        text.replace("qos = 1", "qos_x = 1"), "swim"
+    )
     assert not passed
     assert "qos_x" in message
 
@@ -182,7 +191,9 @@ def test_reload_telegraf_skips_a_stopped_container(mocker):
     """A container that is not running gets no signal"""
     mocker.patch.object(telegraf_config.shutil, "which", return_value="/bin/docker")
     run = mocker.patch.object(
-        telegraf_config.subprocess, "run", return_value=Mock(returncode=0, stdout="false\n")
+        telegraf_config.subprocess,
+        "run",
+        return_value=Mock(returncode=0, stdout="false\n"),
     )
     assert telegraf_config.reload_telegraf() is False
     assert run.call_count == 1
@@ -192,7 +203,9 @@ def test_reload_telegraf_sends_sighup_to_the_running_container(mocker):
     """A running Telegraf container gets SIGHUP"""
     mocker.patch.object(telegraf_config.shutil, "which", return_value="/bin/docker")
     run = mocker.patch.object(
-        telegraf_config.subprocess, "run", return_value=Mock(returncode=0, stdout="true\n")
+        telegraf_config.subprocess,
+        "run",
+        return_value=Mock(returncode=0, stdout="true\n"),
     )
     assert telegraf_config.reload_telegraf() is True
     assert run.call_args.args[0] == ["docker", "kill", "--signal", "HUP", "telegraf"]

@@ -16,6 +16,7 @@ from pathlib import Path
 from string import Template
 from ..config import Config
 from .names import telegraf_account, telegraf_client_id
+from .pg_admin import internal_address, sslmode
 from .twin import DEVICE_LEVELS, Twin
 
 TELEGRAF_IMAGE = "telegraf:1.40.2"
@@ -23,7 +24,6 @@ TEMPLATE_PATH = Path(__file__).parent.parent.parent / "templates" / "telegraf"
 TEMPLATE_FILE = TEMPLATE_PATH / "twin.conf.template"
 TWINS_DIR = Path("config") / "telegraf" / "telegraf.d"
 DEFAULT_MQTT_SERVER = "ssl://rabbitmq:8883"
-POSTGRES_HOST = "postgres"
 CHECK_TIMEOUT_SECONDS = 120
 TELEGRAF_CONTAINER = "telegraf"
 
@@ -45,6 +45,7 @@ def render(twin: Twin) -> str:
     level pattern, so none holds a quote, a backslash or a glob character.
     """
     config = Config()
+    postgres_host, postgres_port = internal_address(config)
     return Template(TEMPLATE_FILE.read_text(encoding="utf-8")).substitute(
         group=twin.group,
         twin=twin.name,
@@ -56,7 +57,9 @@ def render(twin: Twin) -> str:
         account=telegraf_account(twin.group),
         route=f"{twin.group}/{twin.name}",
         device_ids=json.dumps([device.device_id for device in twin.devices]),
-        postgres_host=POSTGRES_HOST,
+        postgres_host=postgres_host,
+        postgres_port=postgres_port,
+        postgres_sslmode=sslmode(config),
     )
 
 
