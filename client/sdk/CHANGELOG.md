@@ -6,6 +6,12 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `colourAt` keeps a position off the scale at the nearer end of the scheme and
+  gives the first colour for `NaN`, as `position` does for a domain with no
+  width. It threw for a negative position and returned an invalid colour above 1.
+
 ## [0.1.1] - 2026-11-09
 
 ### Added

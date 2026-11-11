@@ -4,7 +4,7 @@
  * The names are the ones `visualisation.json` files use. They live in the
  * contract so the core and a kit's legend draw the same colours. A scheme
  * that is not listed falls back to `heat`, so a typo shows a colour and not
- * nothing, and the scheme list is the place to add one.
+ * nothing. The scheme list is the place to add one.
  */
 
 export const SCHEMES: Readonly<Record<string, readonly string[]>> = {
@@ -26,10 +26,15 @@ export function position(value: number, [min, max]: readonly number[]) {
   return Math.min(1, Math.max(0, (value - min) / (max - min)));
 }
 
-/** The colour at `t`, from 0 to 1, along a scheme. */
+/**
+ * The colour at `t`, from 0 to 1, along a scheme. A `t` off the scale takes
+ * the colour of the nearer end. One that is not a number takes the first
+ * colour, as `position` puts a domain with no width at 0.
+ */
 export function colourAt(scheme: string, t: number): string {
   const stops = SCHEMES[scheme] ?? SCHEMES.heat;
-  const scaled = t * (stops.length - 1);
+  const clamped = Number.isNaN(t) ? 0 : Math.min(1, Math.max(0, t));
+  const scaled = clamped * (stops.length - 1);
   const index = Math.min(stops.length - 2, Math.floor(scaled));
   const [from, to] = [channels(stops[index]), channels(stops[index + 1])];
   const fraction = scaled - index;

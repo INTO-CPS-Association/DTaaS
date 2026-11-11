@@ -4,7 +4,7 @@ export const SDK_MAJOR = 1 as const;
 /**
  * The version of the extension API this package describes, which a host built
  * on it implements. An extension's `apiRange` is checked against it. A new
- * contribution point or service raises the minor number, and a change that an
+ * contribution point or service raises the minor number and a change that an
  * existing extension would notice raises the major number (K10).
  */
 export const SDK_VERSION = '1.4.0';
