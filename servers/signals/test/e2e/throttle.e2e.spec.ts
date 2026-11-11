@@ -44,6 +44,10 @@ async function appWith(trustedProxies: string[]) {
   return { post, close };
 }
 
+// Each test starts a whole Nest app, which can take longer than Jest's 5 s
+// default on a loaded machine or runner.
+const APP_TEST_TIMEOUT = 30_000;
+
 describe('The rate limit behind a proxy', () => {
   let close = async () => undefined as void;
 
@@ -51,22 +55,30 @@ describe('The rate limit behind a proxy', () => {
     await close();
   });
 
-  it('counts each client a trusted proxy forwards', async () => {
-    const app = await appWith(['127.0.0.1']);
-    close = app.close;
-    expect((await app.post('203.0.113.1')).status).toBe(401);
-    expect((await app.post('203.0.113.1')).status).toBe(401);
-    expect((await app.post('203.0.113.1')).status).toBe(429);
-    expect((await app.post('203.0.113.2')).status).toBe(401);
-  });
+  it(
+    'counts each client a trusted proxy forwards',
+    async () => {
+      const app = await appWith(['127.0.0.1']);
+      close = app.close;
+      expect((await app.post('203.0.113.1')).status).toBe(401);
+      expect((await app.post('203.0.113.1')).status).toBe(401);
+      expect((await app.post('203.0.113.1')).status).toBe(429);
+      expect((await app.post('203.0.113.2')).status).toBe(401);
+    },
+    APP_TEST_TIMEOUT,
+  );
 
-  it('ignores a forwarded address from a peer that is not a trusted proxy', async () => {
-    const app = await appWith([]);
-    close = app.close;
-    await app.post('203.0.113.1');
-    await app.post('203.0.113.2');
-    expect((await app.post('203.0.113.3')).status).toBe(429);
-  });
+  it(
+    'ignores a forwarded address from a peer that is not a trusted proxy',
+    async () => {
+      const app = await appWith([]);
+      close = app.close;
+      await app.post('203.0.113.1');
+      await app.post('203.0.113.2');
+      expect((await app.post('203.0.113.3')).status).toBe(429);
+    },
+    APP_TEST_TIMEOUT,
+  );
 });
 
 describe('getClientTracker', () => {

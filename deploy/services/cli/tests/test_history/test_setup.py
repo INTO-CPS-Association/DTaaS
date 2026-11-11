@@ -66,8 +66,16 @@ def test_setup_database_runs_in_the_group_database(mocker):
     connect.assert_called_once_with("swim")
 
 
-def test_write_datasource_reads_the_password_from_a_file(base_dir):
+def grafana_env(mocker, base_dir, **env):
+    """Point Grafana's Config at the test folder with the given services.env"""
+    config = mocker.patch.object(grafana, "Config")
+    config.get_base_dir.return_value = base_dir
+    config.return_value.env = env
+
+
+def test_write_datasource_reads_the_password_from_a_file(base_dir, mocker):
     """The data source names its role and reads the secret through $__file"""
+    grafana_env(mocker, base_dir)
     path = grafana.write_datasource("swim")
     text = path.read_text(encoding="utf-8")
     assert path == base_dir / grafana.DATASOURCES_DIR / "postgresql_swim.yaml"
@@ -75,3 +83,19 @@ def test_write_datasource_reads_the_password_from_a_file(base_dir):
     assert "user: swim_view_ro" in text
     assert "database: swim" in text
     assert "$__file{/run/secrets/postgresql_swim_view_ro_password}" in text
+    assert "url: postgres:5432" in text
+    assert "sslmode: require" in text
+
+
+def test_write_datasource_takes_the_address_and_tls_of_services_env(base_dir, mocker):
+    """The address and sslmode come from services.env when set there"""
+    grafana_env(
+        mocker,
+        base_dir,
+        POSTGRES_INTERNAL_HOST="db.internal",
+        POSTGRES_INTERNAL_PORT="6432",
+        POSTGRES_SSLMODE="verify-full",
+    )
+    text = grafana.write_datasource("swim").read_text(encoding="utf-8")
+    assert "url: db.internal:6432" in text
+    assert "sslmode: verify-full" in text

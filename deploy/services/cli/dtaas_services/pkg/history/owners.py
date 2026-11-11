@@ -55,7 +55,9 @@ def _check(owner: str, group: str, topics: list[str]) -> None:
             raise OwnersError(f"Invalid topic prefix {topic!r}")
 
 
-def merge_owners(owners: dict, group: str, names: list[str], projects: list[str]) -> dict:
+def merge_owners(
+    owners: dict, group: str, names: list[str], projects: list[str]
+) -> dict:
     """Return the owners mapping with each name mapped to group and projects.
 
     An owner already in the file keeps its topics and gains the new ones. An
@@ -79,4 +81,6 @@ def merge_owners(owners: dict, group: str, names: list[str], projects: list[str]
 
 def write_owners(owners: dict) -> None:
     """Write the owners file with mode 600, replacing it in one rename."""
-    write_secret_file(owners_path(), json.dumps(owners, indent=2, sort_keys=True) + "\n")
+    write_secret_file(
+        owners_path(), json.dumps(owners, indent=2, sort_keys=True) + "\n"
+    )

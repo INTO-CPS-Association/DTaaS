@@ -7,7 +7,6 @@ from dtaas_services.pkg.services import rabbitmq_accounts
 # pylint: disable=W0621
 
 
-
 @pytest.fixture
 def ctl(mocker):
     """Mock rabbitmqctl, with no users in the broker"""

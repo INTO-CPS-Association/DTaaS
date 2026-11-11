@@ -57,7 +57,7 @@
     quantity = ["status"]
 
 [[outputs.postgresql]]
-  connection = "host=$postgres_host port=5432 dbname=$group user=$account password=@{$store:postgresql_${account}_password}"
+  connection = "host=$postgres_host port=$postgres_port sslmode=$postgres_sslmode dbname=$group user=$account password=@{$store:postgresql_${account}_password}"
   timestamp_column_type = "timestamp with time zone"
   startup_error_behavior = "retry"
   # A full batch is written at once, so the ten messages in flight are

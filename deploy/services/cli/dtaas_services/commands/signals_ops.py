@@ -12,9 +12,7 @@ from ..pkg.services.signals_account import (
 
 
 @click.command(name="add-signals")
-@projects_option(
-    "Project the gateway serves, the first topic level. Repeat for more."
-)
+@projects_option("Project the gateway serves, the first topic level. Repeat for more.")
 def add_signals(projects):
     """
     Create the MQTT account dtaas_signals of the signals gateway.
