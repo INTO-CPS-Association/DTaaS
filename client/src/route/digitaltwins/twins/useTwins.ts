@@ -12,10 +12,11 @@ import type {
 /**
  * The detail of a failure goes to the console, where a developer looks, and
  * the page shows a plain sentence, since the detail may name server paths.
+ * Only the message is written, so no error object reaches the console.
  */
 export function logged(what: string, reason: Error): string {
   // eslint-disable-next-line no-console
-  console.warn(what, reason);
+  console.warn(`${what} ${reason.message}`);
   return reason.message;
 }
 

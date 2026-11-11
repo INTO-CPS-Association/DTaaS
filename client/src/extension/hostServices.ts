@@ -5,9 +5,11 @@
  * GitLab, snackbar, page frame, settings). `servicesFor` then adds what is
  * per extension: a logger that names it, and `config()`, which reads only its
  * own `REACT_APP_EXT_<ID>_*` keys from `env.js`, and the services of the
- * other extensions it requires. An extension reaches nothing else of the
- * client, which is the boundary the SDK's ESLint rules enforce on the
- * extension's side.
+ * other extensions it requires. These services are what an extension is
+ * meant to use, and the SDK's ESLint rules hold an extension's source to
+ * them. They guard against the mistakes of a trusted extension. They do not
+ * confine a hostile one, since the code of an extension runs in the page
+ * with the rights of the client.
  */
 
 import {
