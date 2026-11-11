@@ -41,7 +41,7 @@ const userSchema = z.object({
 });
 
 // The cache key is a hash, so the cache never holds a token itself.
-function cacheKeyOf(token: string): string {
+export function cacheKeyOf(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
 

@@ -17,9 +17,7 @@ def _finish(success: bool, message: str) -> None:
 
 @click.command(name="add-history")
 @click.option("--group", "-g", required=True, help="GitLab group that owns the twins.")
-@projects_option(
-    "Project of the group, the first topic level. Repeat for more."
-)
+@projects_option("Project of the group, the first topic level. Repeat for more.")
 @click.option(
     "--owner",
     "-o",

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import GitLabClient, { notFoundAs } from '../auth/gitlab.client.js';
+import { cacheKeyOf } from '../auth/identity.service.js';
 import TtlCache from '../auth/ttl-cache.js';
 import Config from '../config/config.service.js';
 import readSecretFile from '../config/secrets.js';
@@ -40,6 +41,10 @@ export default class GitLabTwinPolicy implements AccessPolicy {
   // expire, and the cache is bounded, so projects no one reads any more do
   // not stay in memory.
   private readonly indexes = new TtlCache<ProjectIndex>();
+  // Keyed by project and token, so GitLab still answers for each user's own
+  // right to read the repository. It spares one call per project on each
+  // decision and on each recheck of an open stream.
+  private readonly branches = new TtlCache<string>();
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
@@ -147,7 +152,7 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     project: GroupProject,
     token: string,
   ): Promise<SignalTarget[]> {
-    const sha = await this.reader.branchSha(project, token);
+    const sha = await this.branchOf(project, token);
     if (sha === undefined) return [];
     const key = String(project.id);
     const cached = this.indexes.get(key);
@@ -156,6 +161,21 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     const expiresAt = Date.now() + this.config.get('twin-index-cache-ttl');
     this.indexes.set(key, { sha, targets }, expiresAt);
     return targets;
+  }
+
+  private async branchOf(
+    project: GroupProject,
+    token: string,
+  ): Promise<string | undefined> {
+    const key = `${project.id}:${cacheKeyOf(token)}`;
+    const cached = this.branches.get(key);
+    if (cached !== undefined) return cached;
+    const sha = await this.reader.branchSha(project, token);
+    if (sha !== undefined) {
+      const expiresAt = Date.now() + this.config.get('branch-cache-ttl');
+      this.branches.set(key, sha, expiresAt);
+    }
+    return sha;
   }
 }
 

@@ -39,9 +39,15 @@ def test_load_twin_reports_bad_json(tmp_path):
         ({"topic_prefix": "a/b/c/d/e/f/g"}, "fewer than seven"),
         ({"devices": []}, "at least one device"),
         ({"devices": ["x"]}, "JSON object"),
-        ({"devices": [{"topic": "Other/CTO/room/0224/seat48A/S/dev1"}]}, "seven levels"),
+        (
+            {"devices": [{"topic": "Other/CTO/room/0224/seat48A/S/dev1"}]},
+            "seven levels",
+        ),
         ({"devices": [{"topic": "SWiM/CTO/room/0224/seat48A/X/dev1"}]}, "S or A"),
-        ({"devices": [{"topic": "SWiM/CTO/room/0224/seat48A/S/dev*"}]}, "Invalid topic"),
+        (
+            {"devices": [{"topic": "SWiM/CTO/room/0224/seat48A/S/dev*"}]},
+            "Invalid topic",
+        ),
         ({"extra": 1}, "Unknown keys"),
     ],
 )

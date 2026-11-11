@@ -20,6 +20,8 @@ throttle-limit: 120
 # Addresses or CIDR ranges of the reverse proxies in front of the gateway,
 # such as Traefik. The client address is then taken from X-Forwarded-For as
 # the proxy appended it, so the limit counts each client. Empty trusts none.
+# The gateway warns at startup when forwarded-user-header is set and this
+# list is empty, since every user then shares one limit.
 trusted-proxies: []
 
 # The one GitLab that validates tokens and answers what a user may read.
@@ -65,6 +67,9 @@ projects-cache-ttl: 60000
 # How long the signals read from one project's committed twins are kept
 # (milliseconds). A new commit on gitlab-branch replaces them sooner.
 twin-index-cache-ttl: 600000
+# How long the commit of gitlab-branch is kept for one user and project
+# (milliseconds). A new commit is seen this much later at most.
+branch-cache-ttl: 5000
 # The folder of each project that holds one folder per twin.
 twins-folder: digital_twins
 # JSON file mapping each owner (the project path in gitlab-group) to its

@@ -7,7 +7,6 @@ export type ReadingKey = { deviceId: string; quantity: string };
 /** The device and quantity of a topic, or undefined for another shape. */
 export default function readingKeyOf(topic: string): ReadingKey | undefined {
   const levels = topic.split('/');
-  if (levels.length !== TOPIC_LEVELS || levels.some((level) => level === ''))
-    return undefined;
+  if (levels.length !== TOPIC_LEVELS || levels.includes('')) return undefined;
   return { deviceId: levels[6], quantity: levels[7] };
 }

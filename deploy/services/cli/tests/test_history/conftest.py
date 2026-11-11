@@ -2,17 +2,28 @@
 
 # pylint: disable=redefined-outer-name
 import json
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
+import psycopg
 import pytest
 from psycopg import sql
 
 DEVICE_ID = "S-SWiM-CTO-room-0224-seat48A-TRH-0001"
 
 
-class FakeConnection:
+# The code under test takes a psycopg.Connection. For the type checker the
+# fake is one, at run time it is a plain object that never opens a socket.
+if TYPE_CHECKING:
+    ConnectionBase = psycopg.Connection
+else:
+    ConnectionBase = object
+
+
+class FakeConnection(ConnectionBase):
     """Record the statements a connection runs, as text"""
 
-    def __init__(self, rows=None):
+    # The base class is only seen by the type checker, so nothing to call
+    def __init__(self, rows=None):  # pylint: disable=super-init-not-called
         self.statements = []
         self.params = []
         self.rows = rows or {}

@@ -120,6 +120,8 @@ def test_write_devices_sends_parameters_only():
     device = MagicMock()
     device.row.return_value = {"device_id": "x'; DROP TABLE reading; --"}
     registration.write_devices(conn, (device,))
-    query, rows = conn.cursor.return_value.__enter__.return_value.executemany.call_args.args
+    query, rows = (
+        conn.cursor.return_value.__enter__.return_value.executemany.call_args.args
+    )
     assert "DROP" not in query.as_string()
     assert rows == [{"device_id": "x'; DROP TABLE reading; --"}]
