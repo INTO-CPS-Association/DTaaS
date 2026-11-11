@@ -33,7 +33,7 @@ only.
 ## Start a New Kit From This One
 
 1. Copy this folder into a new repository, for example `wind-kit`.
-1. Choose the id of the new extension, such as `wind`, and write it in
+1. Choose the id of the new extension, such as `wind`. Write it in
    `defineExtension` in `src/dtaas/index.ts`, in `dtaas.id` of
    `package.json` and in the name of the package. The id names the pages
    (`/wind`), the `env.js` keys (`REACT_APP_EXT_WIND_*`) and the folder the
@@ -62,9 +62,10 @@ only.
    example `'extensions/wind/index.js'`. The client loads it when it starts,
    without a rebuild.
 
-The soil-kit is a kit made this way, with its own unit and integration tests,
-a test that builds and mounts the bundle and a lint test against the SDK's
-kit rules.
+The soil-kit, which lives in a repository of its own on the GitLab of Aarhus
+University and is not public yet, is a kit made this way. It has its own unit
+and integration tests, a test that builds and mounts the bundle and a lint
+test against the SDK's kit rules.
 
 Inside this repository, `yarn build:kit hello-kit` builds the same bundle
 from the SDK's source and `tests/integration/kitBundle.test.ts` runs it with

@@ -1,17 +1,13 @@
 .env
 .env.*
 !.env.example
-.claude/
 node_modules/
 dist/
 build/
 coverage/
-backup/
 .vscode/
 .idea/
 *.log
 logs/
 .DS_Store
 Thumbs.db
-__pycache__/
-*.pyc
