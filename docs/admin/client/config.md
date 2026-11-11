@@ -78,7 +78,7 @@ with and shows no live readings.
 | Key | What it does |
 | :--- | :--- |
 | `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
-| `REACT_APP_EXTENSIONS_DEPLOYED` | Bundles of extensions to load at start, separated by commas, each under `extensions/<id>/`, for example `'extensions/soil/index.js'` |
+| `REACT_APP_EXTENSIONS_DEPLOYED` | Bundles of extensions to load at start, separated by commas, each under `extensions/<id>/`, for example `'extensions/soil/index.js'`. An entry may end in `#sha384-<hash>` |
 | `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
 | `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
 | `REACT_APP_VIZ_SIGNALS_URL` | The address of the DTaaS signals gateway, for example `https://foo.com/signals` |
@@ -91,6 +91,18 @@ packages means mounting a folder such as `./extensions` at
 `REACT_APP_EXTENSIONS_DEPLOYED`. The client accepts only paths of that shape on
 its own origin. A bundle runs with the rights of the client, so install only
 bundles you trust. A compiled-in extension wins when both have the same id.
+
+To make the browser refuse a bundle that was changed after you installed it, add
+its hash to the entry, for example
+`'extensions/soil/index.js#sha384-<hash>'`. Only SHA-384 is accepted. Compute
+the hash of the installed file with:
+
+```bash
+openssl dgst -sha384 -binary extensions/soil/index.js | openssl base64 -A
+```
+
+Update the hash each time you replace the bundle. A bundle whose content does
+not match is not loaded, and the reason is written to the browser console.
 
 With `REACT_APP_VIZ_SIGNALS_URL` set, the client asks the signals gateway for
 the signals the open pages need and colours the pages with the readings. The

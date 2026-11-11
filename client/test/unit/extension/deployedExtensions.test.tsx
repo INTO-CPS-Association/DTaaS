@@ -5,6 +5,7 @@ import {
   deployedPaths,
   loadDeployedExtensions,
   loadScript,
+  prepareDeployedExtensions,
   provideSharedModules,
   setDeployedExtensions,
 } from 'extension/deployedExtensions';
@@ -20,6 +21,9 @@ function kit(id: string): DtaasExtension {
     routes: [{ path: '', element: page }],
   };
 }
+
+// A well-formed SHA-384 value: 64 base64 characters after the prefix.
+const HASH = `sha384-${'Ab0+/'.repeat(12)}Ab0+`;
 
 const deployedEnv = (list: string) => ({
   REACT_APP_EXTENSIONS_DEPLOYED: list,
@@ -54,6 +58,12 @@ describe('deployedPaths', () => {
     'extensions/Soil/index.js',
     'extensions/soil/index.mjs',
     'lib/soil/index.js',
+    'extensions/soil/index.js#',
+    'extensions/soil/index.js#sha384-short',
+    `extensions/soil/index.js#${HASH}=`,
+    `extensions/soil/index.js#${HASH.replace('sha384', 'sha1')}`,
+    `extensions/soil/index.js#${HASH} ${HASH}`,
+    `extensions/soil/index.js?v=1#${HASH}`,
   ])('refuses %s, which is not a file under extensions/<id>/', (path) => {
     const { paths, problems } = deployedPaths(deployedEnv(path));
 
@@ -62,9 +72,20 @@ describe('deployedPaths', () => {
       {
         id: path,
         reason:
-          'REACT_APP_EXTENSIONS_DEPLOYED accepts only extensions/<id>/<file>.js',
+          'REACT_APP_EXTENSIONS_DEPLOYED accepts only extensions/<id>/<file>.js, with an optional #sha384-<hash>',
       },
     ]);
+  });
+
+  it('keeps the hash an entry ends in, apart from its path', () => {
+    const { paths, problems } = deployedPaths(
+      deployedEnv(`extensions/soil/index.js#${HASH}`),
+    );
+
+    expect(paths).toEqual([
+      { id: 'soil', path: 'extensions/soil/index.js', integrity: HASH },
+    ]);
+    expect(problems).toEqual([]);
   });
 });
 
@@ -101,6 +122,36 @@ describe('loadDeployedExtensions', () => {
     expect(calls).toEqual(['provide', '/extensions/soil/index.js']);
     expect(result.extensions.map(({ id }) => id)).toEqual(['soil']);
     expect(result.problems).toEqual([]);
+  });
+
+  it('passes the listed hash of a bundle to the loader', async () => {
+    const load = jest.fn(async () => undefined);
+    const registry = { soil: { extension: kit('soil') } };
+
+    await loadDeployedExtensions(
+      deployedEnv(`extensions/soil/index.js#${HASH}, extensions/pump/index.js`),
+      { load, provide: noShare, registry: () => registry },
+    );
+
+    expect(load).toHaveBeenNthCalledWith(1, '/extensions/soil/index.js', HASH);
+    expect(load).toHaveBeenNthCalledWith(
+      2,
+      '/extensions/pump/index.js',
+      undefined,
+    );
+  });
+
+  it('reports what a loader threw when it is not an error', async () => {
+    // A loader may reject with a value that is not an error.
+    // eslint-disable-next-line prefer-promise-reject-errors
+    const load = () => Promise.reject('refused');
+
+    const result = await loadDeployedExtensions(
+      deployedEnv('extensions/soil/index.js'),
+      { load, provide: noShare },
+    );
+
+    expect(result.problems).toEqual([{ id: 'soil', reason: 'refused' }]);
   });
 
   it('finds an id with a hyphen under its underscored key', async () => {
@@ -196,6 +247,16 @@ describe('loadScript', () => {
     await expect(loaded).resolves.toBeUndefined();
     expect(script.getAttribute('src')).toBe('/extensions/soil/index.js');
     expect(script.async).toBe(false);
+    expect(script.hasAttribute('integrity')).toBe(false);
+    expect(script.hasAttribute('crossorigin')).toBe(false);
+  });
+
+  it('asks the browser to check the hash when one is given', () => {
+    loadScript('/extensions/soil/index.js', HASH).catch(() => undefined);
+    const script = document.head.querySelector('script') as HTMLScriptElement;
+
+    expect(script.integrity).toBe(HASH);
+    expect(script.crossOrigin).toBe('anonymous');
   });
 
   it('rejects when the script cannot be fetched', async () => {
@@ -218,5 +279,32 @@ describe('setDeployedExtensions', () => {
 
     expect(deployedExtensions()).toBe(result);
     setDeployedExtensions({ extensions: [], problems: [] });
+  });
+});
+
+describe('prepareDeployedExtensions', () => {
+  afterEach(() => setDeployedExtensions({ extensions: [], problems: [] }));
+
+  it('keeps what the loading returned', async () => {
+    const result = { extensions: [kit('soil')], problems: [] };
+
+    await prepareDeployedExtensions({}, async () => result);
+
+    expect(deployedExtensions()).toBe(result);
+  });
+
+  it('keeps a fault of the loading as one problem and does not reject', async () => {
+    const failing = () => Promise.reject(new Error('no shared modules'));
+
+    await expect(
+      prepareDeployedExtensions({}, failing),
+    ).resolves.toBeUndefined();
+
+    expect(deployedExtensions()).toEqual({
+      extensions: [],
+      problems: [
+        { id: 'REACT_APP_EXTENSIONS_DEPLOYED', reason: 'no shared modules' },
+      ],
+    });
   });
 });

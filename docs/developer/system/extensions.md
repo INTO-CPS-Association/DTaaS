@@ -67,9 +67,19 @@ at `/library/preview?file=<path>` and a Redux slice at `state.ext.<id>`. It
 calls `setup` of each extension once and gives each one the SDK's
 `HostServices`: the signed-in user, the library, the workspace files, GitLab,
 the snackbar, the page shell, settings, a logger, its configuration and the
-services of other extensions that it names in `requires`. The GitLab credentials
-stay in the client core. An extension does not import client internals or the
-code of another extension.
+services of other extensions that it names in `requires`. The source of an
+extension does not import client internals or the code of another extension,
+and the SDK's ESLint rules check this when the extension is built.
+
+These services guard against the mistakes of a trusted extension. They do not
+confine a hostile one. The code of an extension, compiled in or deployed, runs
+in the page with the rights of the client, so it can reach what the client
+reaches, including the requests that carry the user's GitLab access token. A
+deployed bundle is therefore accepted only from `extensions/<id>/` on the
+client's own origin, where the operator of the deployment places it, and an
+entry of `REACT_APP_EXTENSIONS_DEPLOYED` may carry a `#sha384-<hash>` that the
+browser checks before it runs the file. Loading a bundle from another address
+is not supported.
 
 ## The Visualisation Core
 
