@@ -53,4 +53,19 @@ describe('startup warnings', () => {
       'owners-file is not set: no topic is served, since no topic can be tied to its owner',
     ]);
   });
+
+  it('warns when a proxy sets the user header and no proxy is trusted', () => {
+    const header = {
+      ...CONFIGURED,
+      'forwarded-user-header': 'x-forwarded-user',
+    };
+    const warnings = startupWarnings(testConfig(header));
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toMatch(/trusted-proxies is empty/);
+    expect(
+      startupWarnings(
+        testConfig({ ...header, 'trusted-proxies': ['172.18.0.0/16'] }),
+      ),
+    ).toEqual([]);
+  });
 });

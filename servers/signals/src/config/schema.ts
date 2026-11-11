@@ -75,6 +75,9 @@ export const configSchema = z
     'identity-cache-ttl': positiveInt.default(MINUTE),
     'projects-cache-ttl': positiveInt.default(MINUTE),
     'twin-index-cache-ttl': positiveInt.default(10 * MINUTE),
+    // Short on purpose: it only spares GitLab one call per project on each
+    // decision, and a new commit is seen this much later at most.
+    'branch-cache-ttl': positiveInt.default(5000),
     'twins-folder': text.min(1).default('digital_twins'),
     // JSON file mapping each owner to its group and the topic prefixes of
     // that group, as dtaas-services gives the broker accounts and database:
