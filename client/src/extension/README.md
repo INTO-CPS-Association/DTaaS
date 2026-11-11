@@ -19,7 +19,7 @@ from npm, such as `bim-kit`, which imports the published name, resolves to
 the local code. The client builds and tests it from source with its own
 toolchain. `yarn test:sdk` runs its tests.
 
-Prasad proposed to keep the name `dtaas-sdk`, to move the logic part of the
+The plan is to keep the name `dtaas-sdk`, to move the logic part of the
 contract into the client core and to turn the `dtaas-sdk` repository into a
 tool that generates the skeleton of a new extension for extension
 developers. The first part is what `client/sdk/` does. How an external
