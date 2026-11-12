@@ -61,6 +61,22 @@ describe('grantsOfGroups', () => {
     ).toEqual(none);
   });
 
+  // Anyone who can create or rename groups in the provider must not reach
+  // another group's signals through a name that looks alike.
+  it('maps colliding names to different owners or to none', () => {
+    expect(
+      grantsOfGroups(['/a/b_viewer', 'a-b_viewer'], 'access-plan', 'DTaaS')
+        .readers,
+    ).toEqual(['a-b']);
+    expect(
+      grantsOfGroups(
+        ['DTaaS/a/b:developer', 'DTaaS/a-b:developer', 'DTaaSx/a-b:developer'],
+        'dex-gitlab',
+        'DTaaS',
+      ).readers,
+    ).toEqual(['a-b']);
+  });
+
   it('lists an owner once', () => {
     expect(
       grantsOfGroups(['alice_viewer', 'alice_member'], 'access-plan', 'DTaaS'),

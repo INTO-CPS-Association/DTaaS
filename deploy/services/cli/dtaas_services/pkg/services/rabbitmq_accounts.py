@@ -8,6 +8,7 @@ which routing keys it may publish and subscribe to
 (https://www.rabbitmq.com/docs/access-control#topic-authorisation).
 """
 
+import json
 import re
 import subprocess
 import time
@@ -122,6 +123,25 @@ def grant_mqtt_account(
     success, output = rabbitmqctl(
         ["set_topic_permissions", "-p", MQTT_VHOST, username, TOPIC_EXCHANGE]
         + [topic_write, topic_read]
+    )
+    return (True, "") if success else (False, output)
+
+
+def limit_session_queues(account: str, max_length: int) -> tuple[bool, str]:
+    """Cap the MQTT session queues of an account and drop the oldest first.
+
+    A stalled reader with a persistent QoS 1 session keeps its queue growing,
+    and a full disk makes RabbitMQ block every publisher with a disk alarm
+    (https://www.rabbitmq.com/docs/maxlength). The policy is named after the
+    account, so each account has one and setting it again replaces it.
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    definition = json.dumps({"max-length": max_length, "overflow": "drop-head"})
+    success, output = rabbitmqctl(
+        ["set_policy", "-p", MQTT_VHOST, "--apply-to", "queues"]
+        + [f"{account}-sessions", f"^mqtt-subscription-{account}_.*$", definition]
     )
     return (True, "") if success else (False, output)
 

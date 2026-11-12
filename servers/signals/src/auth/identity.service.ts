@@ -32,6 +32,7 @@ const tokenInfoSchema = z.object({
   resource_owner_id: z.number().int(),
   expires_in_seconds: z.number().nullable().optional(),
   application: z.object({ uid: z.string() }).nullable().optional(),
+  scope: z.array(z.string()).default([]),
 });
 
 const userSchema = z.object({
@@ -111,6 +112,7 @@ export default class IdentityService {
       if (tokenInfo.resource_owner_id !== owner.id)
         throw new InvalidTokenError();
       this.assertApplication(tokenInfo);
+      this.assertScope(tokenInfo);
       const seconds = tokenInfo.expires_in_seconds;
       if (typeof seconds === 'number' && seconds <= 0)
         throw new InvalidTokenError();
@@ -127,8 +129,17 @@ export default class IdentityService {
   // A token GitLab issued to another OAuth application of the same user is
   // not a DTaaS sign-in, so it reads nothing.
   private assertApplication(tokenInfo: z.infer<typeof tokenInfoSchema>): void {
-    const clientId = this.config.get('gitlab-client-id');
-    if (clientId !== '' && tokenInfo.application?.uid !== clientId)
+    const clientIds = this.config.get('gitlab-client-id');
+    const uid = tokenInfo.application?.uid ?? '';
+    if (clientIds.length > 0 && !clientIds.includes(uid))
+      throw new InvalidTokenError();
+  }
+
+  // GitLab tokens carry no audience, so the scope is the other thing the
+  // gateway can check about what the token was issued for.
+  private assertScope(tokenInfo: z.infer<typeof tokenInfoSchema>): void {
+    const accepted = this.config.get('gitlab-scopes');
+    if (!tokenInfo.scope.some((scope) => accepted.includes(scope)))
       throw new InvalidTokenError();
   }
 }
