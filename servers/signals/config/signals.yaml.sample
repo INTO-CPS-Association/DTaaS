@@ -69,7 +69,8 @@ oidc-providers: []
 # File with a GitLab token that has the read_api scope only, used to read the
 # twins of a user signed in through Keycloak or Dex. It can read every
 # project its user can, so that user should be a Reporter of the DTaaS group
-# and nothing more. Mode 600, nothing else in it.
+# and nothing more. Mode 600, nothing else in it. The gateway warns at start
+# when the token has a scope beyond read_api.
 gitlab-token-file: ''
 # How long an identity and a user's project list are cached (milliseconds).
 identity-cache-ttl: 60000
