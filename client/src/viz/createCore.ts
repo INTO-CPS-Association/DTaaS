@@ -33,10 +33,23 @@ export interface Core {
 const text = (value: unknown) =>
   typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined;
 
-/** The gateway `env.js` names, with one session for its stream and range. */
+/** True for an absolute `http` or `https` address. */
+const isWebAddress = (url: string) => {
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * The gateway `env.js` names, with one session for its stream and range.
+ * The user's token is sent to this address, so anything but an absolute
+ * `http` or `https` address leaves the client without a gateway.
+ */
 const gatewayOf = (env: EnvRecord) => {
   const url = text(env.REACT_APP_VIZ_SIGNALS_URL);
-  if (!url) return undefined;
+  if (!url || !isWebAddress(url)) return undefined;
   return {
     url,
     token: getAccessToken,
