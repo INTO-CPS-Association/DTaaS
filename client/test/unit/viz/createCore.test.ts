@@ -34,6 +34,18 @@ describe('the core of a deployment', () => {
     expect(historyFrom({})).toBeUndefined();
   });
 
+  it('has no gateway when env.js names something other than a web address', () => {
+    [
+      'signals',
+      '/signals',
+      'data:text/plain,signals',
+      'ftp://signals.example',
+    ].forEach((url) => {
+      expect(transportsFrom({ REACT_APP_VIZ_SIGNALS_URL: url })).toEqual([]);
+      expect(historyFrom({ REACT_APP_VIZ_SIGNALS_URL: url })).toBeUndefined();
+    });
+  });
+
   it('reads the gateway env.js names, with the session token', async () => {
     jest.useFakeTimers();
     setAccessToken('session-token');
