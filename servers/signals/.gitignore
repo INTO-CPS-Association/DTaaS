@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+dist/
+config/signals.yaml
+/signals.yaml
+package-lock.json

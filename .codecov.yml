@@ -45,6 +45,12 @@ component_management:
       paths:
         - servers/logger/**
     # this is an identifier that should not be changed
+    - component_id: signals_ms
+      # this is a display name, and can be changed freely
+      name: Signals Microservice
+      paths:
+        - servers/signals/**
+    # this is an identifier that should not be changed
     - component_id: runner
       # this is a display name, and can be changed freely
       name: Execution Runner
