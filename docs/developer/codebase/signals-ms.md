@@ -29,6 +29,6 @@ servers/signals/
 ## Build and Test
 
 The commands are in `servers/signals/README.md`. The `signals-ms.yml`
-workflow runs the lint, build and tests, and checks the health route of the
+workflow runs the lint, build and tests. It also checks the health route of the
 built service and of the Docker image. The npm package and the image are not
 published yet.

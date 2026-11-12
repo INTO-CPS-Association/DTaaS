@@ -22,7 +22,7 @@ services:
 The service has no sign-in yet, so the example publishes it on the loopback
 interface only. Put it behind Traefik before opening it to other hosts.
 
-The image sets `SIGNALS_HOSTNAME=0.0.0.0`, and a `SIGNALS_*` variable always
+The image sets `SIGNALS_HOSTNAME=0.0.0.0`. A `SIGNALS_*` variable always
 overrides the same key in `signals.yaml`. A `hostname` in the mounted file
 is therefore ignored inside the container.
 
