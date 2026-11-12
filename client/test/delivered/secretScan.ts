@@ -19,7 +19,7 @@ export const SECRET_PATTERNS: ReadonlyArray<{ name: string; pattern: RegExp }> =
     {
       name: 'token or secret with a value',
       pattern:
-        /(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token)["']?\s*[:=]\s*["'`][A-Za-z0-9_\-.]{16,}["'`]/i,
+        /(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token)["']?\s*[:=]\s*["'`][\w.-]{16,}["'`]/i,
     },
     {
       name: 'GitLab token',
