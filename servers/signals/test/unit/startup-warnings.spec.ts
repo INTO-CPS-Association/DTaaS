@@ -4,7 +4,7 @@ import testConfig from 'test/helpers/config';
 
 const CONFIGURED = {
   'gitlab-url': 'https://gitlab.example.org',
-  'gitlab-client-id': 'dtaas-client-app',
+  'gitlab-client-id': ['dtaas-client-app'],
   'owners-file': '/run/secrets/signals_owner_topics.json',
 };
 
@@ -16,7 +16,7 @@ describe('startup warnings', () => {
 
   it('refuses to start when the OAuth application check is off', () => {
     const errors = startupErrors(
-      testConfig({ ...CONFIGURED, 'gitlab-client-id': '' }),
+      testConfig({ ...CONFIGURED, 'gitlab-client-id': [] }),
     );
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatch(/gitlab-client-id is not set/);
@@ -26,7 +26,7 @@ describe('startup warnings', () => {
   it('starts with a warning when the development flag allows any client', () => {
     const config = testConfig({
       ...CONFIGURED,
-      'gitlab-client-id': '',
+      'gitlab-client-id': [],
       'allow-any-gitlab-client': true,
     });
     expect(startupErrors(config)).toEqual([]);
@@ -39,7 +39,7 @@ describe('startup warnings', () => {
     const config = testConfig({
       ...CONFIGURED,
       'gitlab-url': '',
-      'gitlab-client-id': '',
+      'gitlab-client-id': [],
     });
     expect(startupWarnings(config)).toEqual([
       'gitlab-url is not set: every request with a token is refused',

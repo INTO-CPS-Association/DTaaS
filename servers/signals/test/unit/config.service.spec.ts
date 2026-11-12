@@ -86,6 +86,21 @@ describe('Config', () => {
     expect(new Config().get('port')).toBe(4500);
   });
 
+  it('reads a list of OAuth applications from YAML or a comma-separated variable', async () => {
+    const yamlList = await yamlFile('gitlab-client-id: [gateway, client]\n');
+    const config = new Config();
+    config.loadConfig(yamlList);
+    expect(config.get('gitlab-client-id')).toEqual(['gateway', 'client']);
+    process.env.SIGNALS_GITLAB_CLIENT_ID = 'gateway, client';
+    expect(new Config().get('gitlab-client-id')).toEqual(['gateway', 'client']);
+    delete process.env.SIGNALS_GITLAB_CLIENT_ID;
+  });
+
+  it('refuses an access level below Reporter', async () => {
+    const guest = await yamlFile('gitlab-min-access-level: 10\n');
+    expect(() => new Config().loadConfig(guest)).toThrow();
+  });
+
   it('accepts an empty YAML file and refuses a list', async () => {
     expect(new Config().loadConfig(await yamlFile(''))).toBeUndefined();
     const list = await yamlFile('- a\n- b\n');
