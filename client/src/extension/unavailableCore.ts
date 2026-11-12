@@ -27,20 +27,20 @@ function playhead() {
 const signals = (): SignalsService => ({
   subscribe: () => () => undefined,
   valueAt: () => undefined,
-  range: async () => [],
+  range: () => Promise.resolve([]),
   playhead: playhead(),
   registry: {
-    search: async () => [],
-    get: async () => Promise.reject(new Error(UNAVAILABLE)),
+    search: () => Promise.resolve([]),
+    get: () => Promise.reject(new Error(UNAVAILABLE)),
   },
   connection: { get: () => 'down', use: () => 'down' },
 });
 
 const viz = (): VizService => ({
-  load: async () => null,
-  save: async () => Promise.reject(new Error(UNAVAILABLE)),
+  load: () => Promise.resolve(null),
+  save: () => Promise.reject(new Error(UNAVAILABLE)),
   substrates: {
-    get: async () => Promise.reject(new Error(UNAVAILABLE)),
+    get: () => Promise.reject(new Error(UNAVAILABLE)),
     list: () => [],
   },
   anchorKinds: [],

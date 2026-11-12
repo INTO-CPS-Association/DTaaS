@@ -51,7 +51,10 @@ function useChosen(tab: MountedTab['tab'], twin: string): Chosen {
   return answer?.twin === twin ? answer.chosen : { state: 'loading' };
 }
 
-function TabBody({ mounted, chosen }: { mounted: MountedTab; chosen: Chosen }) {
+function TabBody({
+  mounted,
+  chosen,
+}: Readonly<{ mounted: MountedTab; chosen: Chosen }>) {
   if (chosen.state === 'loading') return <CircularProgress sx={{ m: 2 }} />;
   if (chosen.state === 'error') {
     return <Alert severity="error">The digital twin could not be read.</Alert>;
