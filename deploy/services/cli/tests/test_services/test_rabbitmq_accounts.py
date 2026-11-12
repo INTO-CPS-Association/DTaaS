@@ -1,5 +1,6 @@
 """Tests for RabbitMQ program accounts in vhost '/'"""
 
+import json
 import re
 import subprocess
 from unittest.mock import Mock
@@ -169,3 +170,24 @@ def test_gateway_client_ids_get_their_session_queues(run, suffix, qos):
     queue = f"mqtt-subscription-dtaas_signals_dtl_2_{suffix}qos{qos}"
     for pattern in (configure, write, read):
         assert re.match(pattern, queue)
+
+
+def test_limit_session_queues_sets_one_policy_per_account(run):
+    """The policy caps the account's session queues and drops the oldest"""
+    assert accounts.limit_session_queues("swim_telegraf", 500) == (True, "")
+    args = run.call_args.args[0]
+    assert args[-6:-3] == ["/", "--apply-to", "queues"]
+    assert args[-3:-1] == [
+        "swim_telegraf-sessions",
+        "^mqtt-subscription-swim_telegraf_.*$",
+    ]
+    assert json.loads(args[-1]) == {"max-length": 500, "overflow": "drop-head"}
+
+
+def test_limit_session_queues_reports_a_failure(run):
+    """A refused policy is reported"""
+    run.return_value = _result(returncode=1, stderr="Error: no access")
+    assert accounts.limit_session_queues("swim_telegraf", 500) == (
+        False,
+        "rabbitmqctl set_policy failed: Error: no access",
+    )
