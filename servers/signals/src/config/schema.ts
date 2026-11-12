@@ -13,7 +13,12 @@ function toBoolean(value: unknown): unknown {
 }
 
 const booleanSchema = z.preprocess(toBoolean, z.boolean());
-const positiveInt = z.coerce.number().int().positive();
+// Environment variables arrive as text, YAML gives numbers. Only digit
+// strings are converted, so `true` or `1e3` is refused and not read as 1.
+const positiveInt = z
+  .union([z.number(), z.string().regex(/^\d+$/).transform(Number)])
+  .pipe(z.number().int().positive());
+const port = positiveInt.pipe(z.number().max(65_535));
 const text = z.string().trim();
 const httpUrl = z.url({ protocol: /^https?$/ });
 
@@ -39,7 +44,7 @@ const DAY = 24 * 60 * MINUTE;
 export const configSchema = z
   .object({
     hostname: text.min(1).default('127.0.0.1'),
-    port: positiveInt.default(4004),
+    port: port.default(4004),
     'cors-allow-origin': z
       .union([text, z.array(text.min(1)).min(1)])
       .default(''),

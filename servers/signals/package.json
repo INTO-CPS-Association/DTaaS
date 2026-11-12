@@ -9,7 +9,7 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "npx rimraf build node_modules coverage dist src.svg test.svg",
     "check:final": "concurrently -s all -g -n syntax,format,build,test \"yarn syntax\" \"yarn format\" \"yarn build\" \"yarn test\"",
     "format": "prettier --ignore-path .gitignore --write \"src/**/*.{ts,tsx,css,scss}\" \"test/**/*.{ts,tsx,css,scss}\"",
