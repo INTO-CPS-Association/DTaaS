@@ -1,8 +1,7 @@
 """GitLab project provisioning: look up a user's project, create one for them.
 
-Only the API half lives here. Filling a new project from a template (git
-clone and push) touches the filesystem and runs processes, so it stays in
-each consuming application, like every other kind of I/O.
+Only the API half lives here. Filling a new project from its template (git
+clone and push) is repos.py's, and project_fill.py decides between the two.
 
 Both functions address the user by GitLab user id and return the project's
 ``path_with_namespace`` as GitLab reports it, so a caller never builds a

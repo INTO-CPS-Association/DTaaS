@@ -6,7 +6,7 @@ import tempfile
 from types import SimpleNamespace
 
 import pytest
-from gitlab_common.repos import GitAccess
+from gitlab_common.repos import GitAccess, cloned_template
 from tests.conftest import fixture_git
 
 TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
@@ -28,6 +28,13 @@ def scratch(tmp_path, monkeypatch):
     folder.mkdir()
     monkeypatch.setattr(tempfile, "tempdir", str(folder))
     return folder
+
+
+def copy_template(local, template, path="alice/common", commit=""):
+    """Clone *template* (pinned to *commit*, if any), then push it to the
+    local project *path*: "" or the error."""
+    with cloned_template(local.access, str(template), commit) as clone:
+        return clone.error or clone.push(path, USER_TOKEN)
 
 
 def _refs(project):

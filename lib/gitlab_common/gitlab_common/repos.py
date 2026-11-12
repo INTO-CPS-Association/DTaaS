@@ -1,10 +1,13 @@
 """Fills a GitLab project from its template repository with git, on this host.
 
 The template is cloned bare into a temporary folder (cloned_template), then
-its default branch is pushed to the project (TemplateClone.push). The clone
-comes first, so a template that cannot be used fails before any project is
-created. No GitLab import is involved, so the instance needs no import source
-enabled and never has to reach the template host itself.
+its default branch is pushed to the project (TemplateClone.push). A pinned
+commit, when the consumer gives one, becomes that default branch in the
+clone, so exactly that commit is checked and pushed, whatever the template
+holds now. The clone comes first, so a template that cannot be used fails
+before any project is created. No GitLab import is involved, so the
+instance needs no import source enabled and never has to reach the
+template host itself.
 
 The push authenticates with the user's own token (the PAT the consuming
 CLI issued them), never the admin's, so whatever a push sets off on GitLab
@@ -35,6 +38,7 @@ from pathlib import Path
 from .messages import with_hint
 from .git_run import run_git
 from .template_checks import template_problem
+from .validators import is_commit_id
 
 _ERROR_LINES = 3
 LOW_SPEED_LIMIT = 1000
@@ -127,6 +131,34 @@ def _clone(access, url, repo):
     return with_hint(f"Could not clone {url}.", detail) if error else ""
 
 
+def _missing_commit(repo, url, commit):
+    """Why the clone *repo* of *url* cannot be pinned to *commit*, or ""."""
+    if not is_commit_id(commit):
+        return f"The pinned template commit '{commit}' is not a full commit id."
+    found = run_git(
+        ["-C", repo, "rev-parse", "--verify", "--quiet", f"{commit}^{{commit}}"]
+    )
+    if found.returncode == 0:
+        return ""
+    return with_hint(
+        f"{url} has no commit {commit}.",
+        "Pin a commit the template holds, or pin none to push its default branch.",
+    )
+
+
+def _pin(repo, url, commit):
+    """Point the default branch of the clone *repo* at *commit*: "" or why
+    it cannot be. No commit leaves the branch as it was cloned."""
+    problem = _missing_commit(repo, url, commit) if commit else ""
+    if problem or not commit:
+        return problem
+    moved = run_git(["-C", repo, "update-ref", "HEAD", commit])
+    if moved.returncode == 0:
+        return ""
+    detail = moved.stderr.strip() or f"git exited with {moved.returncode}."
+    return with_hint("Could not pin the template.", detail)
+
+
 @dataclass(frozen=True)
 class TemplateClone:
     """A template cloned by cloned_template: *error* says why it cannot be
@@ -149,8 +181,9 @@ class TemplateClone:
 
 
 @contextmanager
-def cloned_template(access, url):
-    """Bare clone the template *url*, checked by template_problem.
+def cloned_template(access, url, commit=""):
+    """Bare clone the template *url*, pinned to *commit* when one is given
+    (a full commit id the template holds), checked by template_problem.
 
     Yields a TemplateClone. The clone lives in a temporary folder that is
     removed when the block ends, failures and interruptions included. A
@@ -162,5 +195,9 @@ def cloned_template(access, url):
         prefix="dtaas-template-", ignore_cleanup_errors=True
     ) as tmp:
         repo = str(Path(tmp) / "template.git")
-        error = _clone(access, url, repo) or template_problem(repo)
+        error = (
+            _clone(access, url, repo)
+            or _pin(repo, url, commit)
+            or template_problem(repo)
+        )
         yield TemplateClone(access, repo, error)

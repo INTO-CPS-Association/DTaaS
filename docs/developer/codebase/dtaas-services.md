@@ -60,6 +60,7 @@ deploy/services/cli/
 │   │   ├── template.py
 │   │   ├── force_overwrite.py
 │   │   ├── docker_utils.py
+│   │   ├── file_lock.py
 │   │   ├── formatter.py
 │   │   ├── sanitize.py
 │   │   ├── utils.py
@@ -85,9 +86,11 @@ deploy/services/cli/
 │   │   ├── messages.py
 │   │   ├── project_fill.py
 │   │   ├── projects.py
+│   │   ├── push_token.py
 │   │   ├── repos.py
 │   │   ├── template_checks.py
 │   │   ├── templates.py
+│   │   ├── tokens.py
 │   │   ├── users.py
 │   │   └── validators.py
 │   └── templates/
@@ -171,7 +174,7 @@ checks and Rich console output. Two consequences are deliberate:
   not, so importing the shared module never silences warnings for
   unrelated consumers.
 - `gitlab_common` defaults Personal Access Tokens to least-privilege
-  repository-only scopes. `pkg/services/gitlab/users.py` asks for the
+  repository-only scopes. `pkg/services/gitlab/accounts.py` asks for the
   broader `api` scope explicitly through `PatOptions`.
 
 ## Configuration Inputs
@@ -185,10 +188,19 @@ A generated project is driven by:
 
 The main GitLab-related environment variables are `HOSTNAME`,
 `GITLAB_PORT`, `SSL_VERIFY`, `GITLAB_ROOT_NEW_PASSWORD`, and
-`GITLAB_TEMPLATE_HOST` with `GITLAB_TEMPLATE_GROUP`, which name the
-templates of each user's `common` and `user` projects. `gitlab_common`
-also holds the project step's `git` work (clone, checks, push), shared
-with the DTaaS CLI, so the host needs `git` 2.31 or later.
+`GITLAB_TEMPLATE_HOST` (https only) with `GITLAB_TEMPLATE_GROUP`, which
+name the templates of each user's `common` and `user` projects, and
+`GITLAB_TEMPLATE_COMMON_COMMIT` with `GITLAB_TEMPLATE_USER_COMMIT`, which
+pin each template to a full commit id. `gitlab_common` also holds the
+project step's `git` work (clone, pin, checks, push) and the check of the
+user's token before a project is created, shared with the DTaaS CLI, so
+the host needs `git` 2.31 or later.
+
+`config/gitlab_user_tokens.json`, `config/gitlab_user_projects.json` (the
+accounts the CLI made, by GitLab id and creation time, and their finished
+projects), `config/gitlab_tokens.json` and `config/password.env.current`
+are changed under a `<file>.lock` (`pkg/file_lock.py`), so commands run at
+the same time lose no entry.
 
 ## Typical Workflow
 

@@ -6,13 +6,7 @@ from unittest.mock import patch
 
 import pytest
 from gitlab_common.template_checks import NO_COMMITS, template_problem
-from tests.conftest import fixture_git
-
-LFS_POINTER = (
-    "version https://git-lfs.github.com/spec/v1\n"
-    "oid sha256:4d7a214614ab2935c943f9e0ff69d22eadbb8f32b1258daaa5e2ca24d17e2393\n"
-    "size 12345\n"
-)
+from tests.conftest import LFS_POINTER, fixture_git
 # pylint: disable=redefined-outer-name
 
 

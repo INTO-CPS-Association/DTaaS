@@ -10,7 +10,7 @@ from gitlab_common import (
     create_user_pat,
     create_user_project,
     describe_api_error,
-    find_user_id,
+    find_user,
     find_user_project,
     revoke_user_pats,
 )
@@ -36,6 +36,7 @@ def _field_errors():
     "exc,expected",
     [
         (GitlabHttpError(ERROR_PAGE, 500), SHORT_PAGE),
+        (GitlabHttpError(ERROR_PAGE), f"GitLab error page (request ID {REQUEST_ID})"),
         (GitlabHttpError("<html><body>Bad gateway</body></html>", 502),
          "502: GitLab error page"),
         (GitlabHttpError("500 Internal Server Error", 500),
@@ -43,11 +44,19 @@ def _field_errors():
         (_field_errors(), "400: {'username': ['has already been taken']}"),
         (requests.ConnectionError("refused"), "refused"),
     ],
-    ids=["page-with-id", "page-without-id", "json-message", "json-dict", "unreachable"],
+    ids=[
+        "page-with-id",
+        "page-without-status",
+        "page-without-id",
+        "json-message",
+        "json-dict",
+        "unreachable",
+    ],
 )
 def test_describe_api_error(exc, expected):
-    """An HTML error page shrinks to one line with its request ID. Every
-    other error reads exactly as python-gitlab or requests print it."""
+    """An HTML error page shrinks to one line with its request ID, after
+    the HTTP status when there is one (never 'None'). Every other error
+    reads exactly as python-gitlab or requests print it."""
     assert describe_api_error(exc) == expected
 
 
@@ -80,7 +89,7 @@ def _revoke_pats(gl, exc):
 
 def _find_user(gl, exc):
     gl.users.list.side_effect = exc
-    return find_user_id(gl, TEST_USERNAME)[1]
+    return find_user(gl, TEST_USERNAME)[1]
 
 
 @pytest.mark.parametrize(
@@ -101,7 +110,7 @@ def _find_user(gl, exc):
         "create_user-other-error",
         "create_user_pat",
         "revoke_user_pats",
-        "find_user_id",
+        "find_user",
     ],
 )
 def test_no_message_carries_an_error_page(call, exc_type):

@@ -151,7 +151,7 @@ directory) and reports all problems at once:
 | `[gitlab].api_url` | Must be an `http(s)` URL; **required** when `provision` is `true` |
 | `[gitlab].pat` | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`) |
 | `[gitlab].ssl_verify` | When present, `true`, `false`, or a CA-bundle path string |
-| `[gitlab].template_group`, `template_host` | When present, a GitLab group path (subgroups with `/`) and an `http(s)` URL; set both, or leave both out (accounts and tokens only) |
+| `[gitlab].template_group`, `template_host` | When present, a GitLab group path (subgroups with `/`, no segment ending in a dot) and an `https` URL: set both, or leave both out (accounts and tokens only) |
 | `[frontend].logger-url` | When present, an `http(s)` URL, or `""` to turn remote logging off |
 | Deployment-section URLs | When present, must be `http(s)` URLs |
 | Deployment-section `default-user` | When present, must be a valid username |
@@ -845,9 +845,10 @@ Warning: GitLab project 'alice/user' exists but is empty.
   It was not created by this run, so no template was pushed into it. Delete it, then run 'dtaas user add alice' again.
 ```
 
-The push asks GitLab to start no CI pipeline (`ci.skip`). A template
-that cannot be cloned fails before the project is created; a failed push
-leaves the new project empty, to be deleted before the re-run.
+The push asks GitLab to start no CI pipeline (`ci.skip`). A token that
+cannot push as the user, or a template that cannot be cloned, fails before
+the project is created. Only a push that then fails leaves the new project
+empty, to be deleted before the re-run.
 
 **Files written.** Each user's token is saved to `gitlab_user_tokens.json`
 in the current directory (mode `0600`) the moment it is issued:
@@ -933,13 +934,20 @@ same markers in a section of their own:
   bundle's path. `false` turns verification off and prints a warning.
   It also applies to `git` for URLs on the `api_url` host.
 - Projects are made only once the user's account and token exist. A
-  project failure (a template that cannot be cloned, a push GitLab
-  refuses, no `git`) fails that user alone: their account, token and
-  other project stay, and other users carry on. A template that cannot
-  be cloned fails before the project is created; a failed push leaves
-  the new project empty: delete it, then name the user again.
-- Templates are cloned without a login, so they must be public `http(s)`
-  repositories. The push uses the user's own token (issued by this run,
+  project failure (a token GitLab refuses, a template that cannot be
+  cloned, a push GitLab refuses, no `git`) fails that user alone: their
+  account, token and other project stay, and other users carry on. The
+  user's token is checked before anything is created: it must be valid,
+  belong to that account and carry `write_repository` or `api`, and the
+  account must not be a GitLab administrator. A template that cannot be
+  cloned fails before the project is created too. Only a push that fails
+  after that leaves the new project empty: delete it, then name the user
+  again.
+- Templates are cloned without a login, so they must be public `https`
+  repositories. Whoever controls the template group controls what every
+  user's projects start with, including the CI configuration DTaaS runs
+  when a user starts a digital twin. The push uses the user's own token
+  (issued by this run,
   or saved in `gitlab_user_tokens.json`; without one the user's projects
   are skipped), passed to `git` through environment variables for the
   `api_url` host only, never on the command line or to the template host.

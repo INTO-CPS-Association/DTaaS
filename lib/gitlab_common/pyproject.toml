@@ -9,15 +9,15 @@ packages = [{include = "gitlab_common"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-python-gitlab = "^8.3.0"
-requests = "^2.32.0"
+python-gitlab = "^8.6.0"
+requests = "^2.34.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.1.1"
+pytest = "^9.2.0"
 pytest-cov = "^7.1.0"
-pytest-mock = "^3.15.1"
-pylint = "^4.0.6"
-pyright = "^1.1.411"
+pytest-mock = "^3.17.0"
+pylint = "^4.1.3"
+pyright = "^1.1.414"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

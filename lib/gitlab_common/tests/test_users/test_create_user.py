@@ -24,16 +24,24 @@ def _fields(**overrides):
 
 
 def test_create_user_success():
-    """Creating a valid user reports CREATED with the new user id."""
+    """Creating a valid user reports CREATED with the new user id and the
+    account's creation time, which tells it from a later account that gets
+    the same id."""
     gl = MagicMock()
-    mock_user = Mock()
-    mock_user.id = 7
-    gl.users.create.return_value = mock_user
+    gl.users.create.return_value = Mock(id=7, created_at="2026-11-10T09:14:31.123Z")
     result = create_user(gl, **_fields())
     assert result.outcome is CreateOutcome.CREATED
     assert result.ok is True
     assert result.user_id == 7
+    assert result.created_at == "2026-11-10T09:14:31.123Z"
     assert result.error == ""
+
+
+def test_a_creation_time_that_is_not_text_reads_as_none():
+    """An answer without a usable creation time gives "", never a guess."""
+    gl = MagicMock()
+    gl.users.create.return_value = Mock(id=7, created_at=None)
+    assert create_user(gl, **_fields()).created_at == ""
 
 
 def test_create_user_already_exists():

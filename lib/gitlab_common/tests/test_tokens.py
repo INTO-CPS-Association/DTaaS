@@ -1,4 +1,4 @@
-"""Tests for create_user_pat and revoke_user_pats (gitlab_common/users.py)."""
+"""Tests for create_user_pat and revoke_user_pats (gitlab_common/tokens.py)."""
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, Mock

@@ -2,19 +2,19 @@
 
 Each outcome gets a line as it happens, with its detail indented below it:
 created, a warning for a project found in place, or a failure. A created
-project, and a project found with content, are recorded at once as finished
-in config/gitlab_user_projects.json (project_state.py), so a re-run never
-recreates, re-pushes or warns about them again. An empty project found in
-place is not recorded: every run that reaches it warns until the admin
+project, and a project found with content, are added at once to the user's
+record in config/gitlab_user_projects.json (project_state.py), so a re-run
+never recreates, re-pushes or warns about them again. An empty project found
+in place is not recorded: every run that reaches it warns until the admin
 deletes it.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from rich.console import Console
 
 from ....gitlab_common import ProjectOutcome, ProjectRequest, ProjectResult
-from .project_state import record_finished
+from .project_state import UserRecord, save_record
 
 RERUN = "dtaas-services user add -s gitlab"
 # A project found in place: (end of the warning line, its detail).
@@ -52,9 +52,10 @@ class ProjectTally:
 
 @dataclass
 class UserProgress:
-    """One user's finished projects, and the run's tally."""
+    """One user's record (their account and the projects finished in it),
+    to which each project this run finishes is added, and the run's tally."""
 
-    done: list[str]
+    record: UserRecord
     tally: ProjectTally
 
 
@@ -68,9 +69,10 @@ def say(style: str, headline: str, detail: str = "") -> None:
 
 
 def _record(request: ProjectRequest, progress: UserProgress) -> bool:
-    """Add *request*'s project to the user's finished projects: True once saved."""
-    progress.done.append(request.name)
-    error = record_finished(request.username, list(progress.done))
+    """Add *request*'s project to the user's record: True once saved."""
+    projects = (*progress.record.projects, request.name)
+    progress.record = replace(progress.record, projects=projects)
+    error = save_record(request.username, progress.record)
     if error:
         say(
             "red",
@@ -86,10 +88,11 @@ def _created(request: ProjectRequest, progress: UserProgress) -> bool:
     if not _record(request, progress):
         return False
     progress.tally.created += 1
+    pinned = f" at commit {request.template_commit}" if request.template_commit else ""
     say(
         "green",
         f"✅ GitLab project '{request.path}' created.",
-        f"Private, filled from {request.template_url}",
+        f"Private, filled from {request.template_url}{pinned}",
     )
     return True
 

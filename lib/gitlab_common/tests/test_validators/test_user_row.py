@@ -1,13 +1,12 @@
-"""Tests for shared GitLab input validation (gitlab_common/validators.py)."""
+"""Tests for the user row checks of gitlab_common/validators.py: username,
+email and password."""
 
-import pytest
-from gitlab_common import is_http_url, is_namespace_path, validators
+from gitlab_common import validators
 # pylint: disable=W0212
 
 TEST_EMAIL = "test@example.com"
 TEST_USERNAME = "testuser"
 TEST_PASSWORD = "UserP@ss123"  # noqa: S105 # NOSONAR
-
 
 def test_validate_username_accepts_valid():
     """Test username validation accepts a standard username."""
@@ -103,95 +102,3 @@ def test_validate_user_row_invalid_email():
     ok, err = validators.validate_user_row(TEST_USERNAME, "notanemail", TEST_PASSWORD)
     assert ok is False
     assert "Invalid user input" in err
-
-
-@pytest.mark.parametrize(
-    "value",
-    ["dtaas", "my-org/dt_templates", "a.b/c/d", "_x", "a" * 255],
-    ids=["group", "subgroup", "nested", "underscore-first", "longest-segment"],
-)
-def test_a_gitlab_group_path_is_accepted(value):
-    """Letters, digits, _ . and -, with / between nested groups."""
-    assert is_namespace_path(value)
-
-
-@pytest.mark.parametrize(
-    "value",
-    [
-        "",
-        "-dtaas",
-        "dtaas/",
-        "/dtaas",
-        "dt aas",
-        "https://gitlab.com/dtaas",
-        "dtaas.git",
-        "dtaas/x.atom",
-        "dtaas\n",
-        "a" * 256,
-        "a" * 20000 + "!",
-        42,
-    ],
-    ids=[
-        "empty",
-        "dash-first",
-        "trailing-slash",
-        "leading-slash",
-        "space",
-        "url",
-        "git-suffix",
-        "atom-suffix",
-        "newline",
-        "segment-too-long",
-        "long-hostile",
-        "not-a-string",
-    ],
-)
-def test_anything_else_is_refused(value):
-    """Whatever GitLab would refuse as a group path, and a very long value
-    is answered at once (the pattern is linear)."""
-    assert not is_namespace_path(value)
-
-
-@pytest.mark.parametrize(
-    "value",
-    [
-        "https://gitlab.com",
-        "http://git.example.org:8080/gitlab/",
-        "HTTPS://GitLab.COM/a_b/c~d",
-    ],
-    ids=["host", "port-and-path", "upper-case"],
-)
-def test_an_http_url_is_accepted(value):
-    """http or https, a host, an optional port and an optional path."""
-    assert is_http_url(value)
-
-
-@pytest.mark.parametrize(
-    "value",
-    [
-        "",
-        "gitlab.com",
-        "ftp://gitlab.com",
-        "git@gitlab.com:dtaas",
-        "https://gitlab.com/a b",
-        "https://user:pw@gitlab.com",
-        "https://gitlab.com\n",
-        "https://" + "a" * 20000 + "!",
-        None,
-    ],
-    ids=[
-        "empty",
-        "no-scheme",
-        "ftp",
-        "ssh",
-        "space",
-        "credentials",
-        "newline",
-        "long-hostile",
-        "not-a-string",
-    ],
-)
-def test_anything_but_an_http_url_is_refused(value):
-    """Other schemes, credentials in the URL, and a very long value are
-    refused at once (the pattern is linear)."""
-    assert not is_http_url(value)

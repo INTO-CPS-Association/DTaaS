@@ -3,9 +3,10 @@
 import json
 from pathlib import Path
 import pytest
+from dtaas_services.pkg.file_lock import lock_path
 from dtaas_services.pkg.services.gitlab import tokens_file
 from dtaas_services.pkg.utils import permission_hint
-from tests.conftest import denied
+from tests.conftest import denied, run_together
 from tests.test_services.test_gitlab.conftest import TEST_TOKEN, write_text
 # pylint: disable=W0621
 
@@ -97,17 +98,35 @@ def test_merge_into_another_file_keeps_its_entries(tokens_path):
     assert not tokens_path.exists()
 
 
+@pytest.mark.usefixtures("posix_hints")
 @pytest.mark.parametrize(
-    "call",
+    "call,locks",
     [
-        lambda path: tokens_file.read_saved_tokens(path)[1],
-        lambda path: tokens_file.merge_tokens({"k": "v"}, path)[1],
+        (lambda path: tokens_file.read_saved_tokens(path)[1], False),
+        (lambda path: tokens_file.merge_tokens({"k": "v"}, path)[1], True),
     ],
     ids=["read", "merge"],
 )
-def test_a_file_owned_by_root_reports_the_fix(tmp_path, mocker, call):
-    """A token file written as root by 'service install' fails with the fix"""
+def test_a_file_owned_by_root_reports_the_fix(tmp_path, mocker, call, locks):
+    """A token file written as root by 'service install' fails with the fix,
+    one chown that also names the lock file a merge holds"""
     path = tmp_path / "gitlab_tokens.json"
     write_text(path, "{}")
     mocker.patch.object(Path, "open", side_effect=denied(path))
-    assert call(path).endswith(permission_hint(path))
+    files = (path, lock_path(path)) if locks else (path,)
+    assert call(path).endswith(permission_hint(*files))
+
+
+def test_merges_at_the_same_time_lose_no_entry(tokens_path):
+    """Two commands merging into the same file at once take turns on its
+    lock, so every entry of both is kept"""
+
+    def merge_many(prefix):
+        for index in range(15):
+            tokens_file.merge_tokens({f"{prefix}{index}": index}, tokens_path)
+
+    run_together(merge_many, "ab")
+
+    saved, error = tokens_file.read_saved_tokens(tokens_path)
+    assert error == ""
+    assert saved == {f"{p}{index}": index for p in "ab" for index in range(15)}

@@ -1,18 +1,21 @@
 """Creates one of a user's GitLab projects and fills it from its template.
 
-The API calls are projects.py's (find_user_project, create_user_project)
-and the git work is repos.py's: this module decides between them. Only a
-project created by this call is filled: one that already exists, empty or
-not, is never pushed to, since its settings (a CI configuration path,
-webhooks) are its owner's. The template is cloned before the project is
-created, so an unusable template leaves nothing behind: the push goes to
-the path GitLab reports for the project, as the user, with their own token.
+The API calls are projects.py's (find_user_project, create_user_project),
+the token check is push_token.py's and the git work is repos.py's: this
+module decides between them. Only a project created by this call is filled:
+one that already exists, empty or not, is never pushed to, since its
+settings (a CI configuration path, webhooks) are its owner's. The user's
+token is checked and the template cloned (at its pinned commit, if any)
+before the project is created, so a token that cannot push or an unusable
+template leaves nothing behind: the push goes to the path GitLab reports
+for the project, as the user, with their own token.
 """
 
 from dataclasses import dataclass, field
 from enum import Enum
 
 from .projects import ProjectState, create_user_project, find_user_project
+from .push_token import push_problem
 from .repos import GitAccess, cloned_template
 
 
@@ -36,9 +39,9 @@ _FOUND = {
 @dataclass(frozen=True)
 class ProjectRequest:
     """One project to provision: its owner, its name, its template, the
-    command that provisions the owner again (named in the hint after a
-    failed push), and the owner's own token, which the push authenticates
-    with."""
+    command that provisions the owner again (named in the hints after a
+    failure), the owner's own token, which the push authenticates with, and
+    the template commit to push ("" for the template's default branch)."""
 
     user_id: int
     username: str
@@ -46,6 +49,7 @@ class ProjectRequest:
     template_url: str
     rerun: str
     token: str = field(repr=False)
+    template_commit: str = ""
 
     @property
     def path(self):
@@ -83,10 +87,18 @@ def _create_and_push(gl, request, clone):
     return f"{error}\n{_push_failed(request)}" if error else ""
 
 
+def _fill_new_project(gl, request):
+    """Clone the template, then create the project and push the clone: ""
+    or why it failed."""
+    access = GitAccess.from_client(gl)
+    url, commit = request.template_url, request.template_commit
+    with cloned_template(access, url, commit) as clone:
+        return clone.error or _create_and_push(gl, request, clone)
+
+
 def _create_from_template(gl, request):
-    """Clone the template, then create the project and push the clone."""
-    with cloned_template(GitAccess.from_client(gl), request.template_url) as clone:
-        error = clone.error or _create_and_push(gl, request, clone)
+    """Check the user's token, then create the project from its template."""
+    error = push_problem(gl, request) or _fill_new_project(gl, request)
     if error:
         return ProjectResult(ProjectOutcome.FAILED, error)
     return ProjectResult(ProjectOutcome.CREATED)
@@ -97,9 +109,10 @@ def ensure_project(gl, request) -> ProjectResult:
     this call creates it.
 
     The project is looked up among the projects of the GitLab user id. A
-    missing one is created private and filled (CREATED); one that exists is
-    left as it is (EMPTY or HAS_CONTENT). *gl*, the admin client, makes the
-    API calls: the push authenticates with the user's own token
+    missing one is created private and filled (CREATED), once the user's
+    token is known to push as the user (push_token.py), and one that exists
+    is left as it is (EMPTY or HAS_CONTENT). *gl*, the admin client, makes
+    the API calls: the push authenticates with the user's own token
     (request.token) and starts no CI pipeline.
     """
     lookup = find_user_project(gl, request.user_id, request.name)

@@ -1031,11 +1031,15 @@ GitLab project 'alice/user' failed.
 ```
 
 A template with no commits, or one holding Git LFS pointer files, fails
-the same way. A push that GitLab
+the same way. So does the user's token when GitLab refuses it (expired or
+revoked), when it belongs to another account or lacks the
+`write_repository` and `api` scopes, or when the account is a GitLab
+administrator: each is checked before anything is created. A push that
+GitLab then
 refuses, or that stalls, leaves the new project empty: delete it, then
 name the user again. The push runs with the user's own token, which
 GitLab may refuse until the user has signed in once and set a new
-password; the message says so. A user with no token saved in
+password: the message says so. A user with no token saved in
 `gitlab_user_tokens.json` gets no project (`GitLab projects for 'alice'
 skipped.`) until the token is put back. Without `git` 2.31 or
 later, no project is attempted (`GitLab projects skipped for every

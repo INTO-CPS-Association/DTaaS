@@ -1,21 +1,20 @@
-"""Values and fixtures shared by the tests of the GitLab account step and
-its orchestration (users.py)."""
+"""Values and fixtures shared by the tests of the GitLab step's
+orchestration (users.py): the rows of the credentials CSV, and the run put
+together."""
 
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from dtaas_services.pkg.services.gitlab import tokens_file
+from dtaas_services.pkg.services.gitlab.project_templates import ProjectTemplate
 from dtaas_services.pkg.services.gitlab.user_projects import ProjectTally
 
 MODULE = "dtaas_services.pkg.services.gitlab.users"
 TEST_TOKEN = "fake-user-token"  # noqa: S105 # NOSONAR
 ADMIN_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 TEST_PASSWORD = "UserP@ss123"  # noqa: S105 # NOSONAR
-TEST_USERNAME = "testuser"
-TEST_EMAIL = "test@example.com"
-ROW = {"username": TEST_USERNAME, "email": TEST_EMAIL, "password": TEST_PASSWORD}
-TEMPLATES = {"common": "https://gitlab.com/dtaas/common.git"}
+TEMPLATES = {"common": ProjectTemplate("https://gitlab.com/dtaas/common.git")}
 
 
 def csv_rows(*names):
@@ -48,4 +47,5 @@ def setup(mocker, tmp_path):
             f"{MODULE}.provision_projects", return_value=ProjectTally()
         ),
         tokens=tmp_path / "config" / "gitlab_user_tokens.json",
+        records=tmp_path / "config" / "gitlab_user_projects.json",
     )

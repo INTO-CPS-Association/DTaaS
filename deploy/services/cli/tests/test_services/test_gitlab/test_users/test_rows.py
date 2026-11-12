@@ -1,113 +1,20 @@
-"""Tests for the GitLab account step: accounts and their PATs from the
-credentials CSV (users.py)."""
+"""Tests for the rows of the credentials CSV in the GitLab step (users.py):
+every row is attempted, failures are collected, and the accounts in place
+go on to the token file and the project step."""
 
 from pathlib import Path
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 import pytest
-from gitlab.exceptions import GitlabCreateError, GitlabError
 from dtaas_services.pkg.services.gitlab import users
 from dtaas_services.pkg.services.gitlab.user_projects import Account
 from tests.test_services.test_gitlab.test_users.conftest import (
     ADMIN_TOKEN,
     MODULE,
-    ROW,
     TEST_TOKEN,
-    TEST_USERNAME,
     csv_rows,
 )
 # pylint: disable=W0212, W0621
-
-
-def test_create_single_user_success():
-    """Test creating a single user successfully."""
-    gl = MagicMock()
-    gl.users.create.return_value = Mock(id=7)
-    assert users._create_single_user(gl, ROW) == (True, "", 7)
-
-
-def test_create_single_user_already_exists():
-    """A user that already exists is a success with no id."""
-    gl = MagicMock()
-    gl.users.create.side_effect = GitlabCreateError(response_code=409)
-    assert users._create_single_user(gl, ROW) == (True, "", None)
-
-
-def test_create_single_user_request_failure():
-    """Test creating a user when API request fails."""
-    gl = MagicMock()
-    gl.users.create.side_effect = GitlabError("connection refused")
-    success, error, user_id = users._create_single_user(gl, ROW)
-    assert success is False
-    assert "connection refused" in error
-    assert user_id is None
-
-
-@pytest.mark.parametrize(
-    "row",
-    [
-        {**ROW, "username": "bad user"},
-        {"username": None, "email": None, "password": None},
-    ],
-    ids=["invalid-username", "none-values"],
-)
-def test_create_single_user_rejects_bad_rows_before_any_call(row):
-    """Invalid or missing values are refused before the API is called."""
-    gl = MagicMock()
-    success, error, user_id = users._create_single_user(gl, row)
-    assert (success, user_id) == (False, None)
-    assert "Invalid user input" in error
-    gl.users.create.assert_not_called()
-
-
-@pytest.fixture
-def created(mocker):
-    """Patch _create_single_user and create_user_pat of users.py."""
-
-    def patch(single, pat=(True, TEST_TOKEN)):
-        mocker.patch(f"{MODULE}._create_single_user", return_value=single)
-        return mocker.patch(f"{MODULE}.create_user_pat", return_value=pat)
-
-    return patch
-
-
-def test_a_new_user_gets_a_pat_and_an_account_with_id_and_token(created):
-    """The account carries the id and token the project step pushes with."""
-    created((True, "", 42))
-    assert users._create_user_and_pat(MagicMock(), ROW) == (
-        True,
-        "",
-        Account(TEST_USERNAME, 42, TEST_TOKEN),
-    )
-
-
-def test_an_existing_user_gets_no_pat(created):
-    """No token is issued for an account this run did not create."""
-    pat = created((True, "", None))
-    assert users._create_user_and_pat(MagicMock(), ROW) == (
-        True,
-        "",
-        Account(TEST_USERNAME),
-    )
-    pat.assert_not_called()
-
-
-@pytest.mark.parametrize(
-    "single,pat,error",
-    [
-        ((False, "bad request", None), (True, TEST_TOKEN), "bad request"),
-        ((True, "", 42), (False, "PAT refused"), "PAT refused"),
-    ],
-    ids=["account-fails", "pat-fails"],
-)
-def test_a_failed_account_or_pat_fails_the_row(created, single, pat, error):
-    """Either half failing fails the row, with no token for the project step."""
-    created(single, pat)
-    assert users._create_user_and_pat(MagicMock(), ROW) == (
-        False,
-        error,
-        Account(TEST_USERNAME),
-    )
 
 
 @pytest.mark.parametrize(
@@ -116,19 +23,26 @@ def test_a_failed_account_or_pat_fails_the_row(created, single, pat, error):
         ([True, True], True, [], ["user1", "user2"]),
         ([True, False, True], False, ["user2: user2 failed"], ["user1", "user3"]),
         ([False, False], False, ["user1: user1 failed", "user2: user2 failed"], []),
+        ([None, True], False, ["user1: user1 failed"], ["user1", "user2"]),
     ],
-    ids=["all-succeed", "one-fails", "all-fail"],
+    ids=["all-succeed", "one-fails", "all-fail", "failed-but-in-place"],
 )
 def test_every_row_is_processed_and_failures_collected(
     mocker, answers, ok, errors, kept
 ):
     """A failed row never stops the next: the accounts in place are kept
-    for the token file and the project step, and every error is named."""
+    for the token file and the project step (also one whose row failed, as
+    when its record could not be saved), and every error is named. None
+    stands for a failed row whose account is in place."""
     names = [f"user{index}" for index in range(1, len(answers) + 1)]
     mocker.patch(
-        f"{MODULE}._create_user_and_pat",
+        f"{MODULE}.create_account",
         side_effect=[
-            (good, "" if good else f"{name} failed", Account(name, 1, TEST_TOKEN))
+            (
+                bool(good),
+                "" if good else f"{name} failed",
+                Account(name, 1, TEST_TOKEN) if good is not False else None,
+            )
             for good, name in zip(answers, names)
         ],
     )
@@ -147,7 +61,7 @@ def test_process_credentials_reads_the_csv(mocker, tmp_path):
     )
     mocker.patch(
         f"{MODULE}._create_users_from_rows",
-        side_effect=lambda gl, reader: (
+        side_effect=lambda run, reader: (
             True,
             "",
             [Account(row["username"], 1, TEST_TOKEN) for row in reader],

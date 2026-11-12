@@ -23,7 +23,8 @@ def describe_api_error(exc: Exception) -> str:
     When GitLab answers with an HTML error page instead of JSON,
     python-gitlab puts the whole page in the exception text. That page is
     replaced by "GitLab error page" and the request ID it shows, which
-    finds the failure in GitLab's logs. Every other error reads as before.
+    finds the failure in GitLab's logs, after the HTTP status when the
+    exception has one. Every other error reads as before.
     """
     message = getattr(exc, "error_message", "")
     if not isinstance(message, str) or not message.lstrip().startswith("<"):
@@ -32,4 +33,5 @@ def describe_api_error(exc: Exception) -> str:
     page = "GitLab error page"
     if found:
         page += f" (request ID {found.group(1)})"
-    return f"{getattr(exc, 'response_code', None)}: {page}"
+    status = getattr(exc, "response_code", None)
+    return page if status is None else f"{status}: {page}"

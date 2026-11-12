@@ -18,7 +18,7 @@ TEMPLATES_TOGETHER = _TEMPLATE_KEYS.together
 
 def template_errors(gitlab):
     """template_group, when present, must be a GitLab group path and
-    template_host an http(s) URL, and the two are set together or not at
+    template_host an https URL, and the two are set together or not at
     all: leaving both out means accounts and tokens only. Shared with
     Config.get_gitlab_templates, since 'user add' does not run 'config
     validate'."""

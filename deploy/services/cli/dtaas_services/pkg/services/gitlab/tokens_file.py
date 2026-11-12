@@ -4,7 +4,9 @@ users' tokens) and gitlab_user_projects.json (the users' finished projects).
 
 Each file holds one JSON object, is written with mode 0600 through a
 temporary file and an atomic rename, and is merged into, never rewritten
-from scratch, so an entry saved by an earlier run is never lost.
+from scratch, so an entry saved by an earlier run is never lost. A merge
+reads, changes and writes the file while its lock is held (file_lock.py),
+so two commands merging at once never lose each other's entries.
 """
 
 import json
@@ -12,6 +14,7 @@ from pathlib import Path
 from typing import Any, Tuple
 
 from ...config import Config
+from ...file_lock import lock_path, locked
 from ...utils import explain_permission_error, write_secret_file
 
 TOKENS_FILENAME = "gitlab_tokens.json"
@@ -32,12 +35,15 @@ def read_json_object(path: Path) -> dict[str, Any]:
     """Return the object saved in *path*, or {} when the file does not exist yet.
 
     Raises:
-        OSError: If the file cannot be read (PermissionError with the fix)
+        OSError: If the file cannot be read (PermissionError with the fix,
+            one chown for the file and its lock)
         ValueError: If the file does not hold a JSON object
     """
     if not path.exists():
         return {}
-    with explain_permission_error(path), path.open("r", encoding="utf-8") as fh:
+    with explain_permission_error(path, lock_path(path)), path.open(
+        "r", encoding="utf-8"
+    ) as fh:
         data = json.load(fh)
     if not isinstance(data, dict):
         raise ValueError("expected a JSON object")
@@ -45,15 +51,18 @@ def read_json_object(path: Path) -> dict[str, Any]:
 
 
 def merge_json_object(path: Path, fields: dict[str, Any]) -> None:
-    """Write *fields* into the object saved in *path*, keeping its other entries.
+    """Write *fields* into the object saved in *path*, keeping its other
+    entries, while the file's lock is held.
 
     Raises:
-        OSError: If the file cannot be read or written
+        OSError: If the file cannot be read or written, or its lock is held
+            by another command for too long (TimeoutError)
         ValueError: If the file does not hold a JSON object
     """
-    data = read_json_object(path)
-    data.update(fields)
-    write_secret_file(path, json.dumps(data, indent=2))
+    with locked(path):
+        data = read_json_object(path)
+        data.update(fields)
+        write_secret_file(path, json.dumps(data, indent=2))
 
 
 def read_saved_tokens(path: Path | None = None) -> Tuple[dict[str, Any], str]:

@@ -11,9 +11,10 @@ Every function takes explicit arguments (URL, token, user fields) and reads
 calls perform no console or process-global-state I/O. The project step's git
 work (`git_run.py`, `template_checks.py`, `repos.py`, `project_fill.py`) runs
 `git` on the host in a temporary folder, and lives here so that both
-consumers fill projects with the same safeguards: the template is cloned
-bare and checked first, the push runs as the user with their own token and
-`-o ci.skip`, and every git command is bounded in time. Deployment-specific
+consumers fill projects with the same safeguards: the user's token is
+checked first (`push_token.py`), the template is cloned bare (at its pinned
+commit, if any) and checked, the push runs as the user with their own token
+and `-o ci.skip`, and every git command is bounded in time. Deployment-specific
 glue (URL derivation, token and state persistence, credential files, docker
 and terminal output) stays in each consuming application.
 
@@ -52,18 +53,18 @@ dependency on the other, only a shared source location during development.
 | --- | --- |
 | `get_gitlab_client(url, private_token, *, ssl_verify=True)` | Build an authenticated `gitlab.Gitlab` client. `ssl_verify` accepts a CA-bundle path as well as a bool. |
 | `validate_user_row(username, email, password)` | Validate user inputs before any API call. |
-| `create_user(gl, *, username, email, password)` | Create a user; returns a `CreateUserResult` with an explicit `CreateOutcome` (CREATED / ALREADY_EXISTS / FAILED) rather than encoding "already exists" as a nullable id. |
-| `create_user_pat(gl, user_id, username, options=None)` | Issue a Personal Access Token. `PatOptions` (name/scopes/expiry) defaults to least-privilege repository scopes; widen explicitly per call site. |
-| `revoke_user_pats(gl, user_id, name="dtaas")` | Revoke the user's active Personal Access Tokens with that name. Finding none counts as success. |
+| `create_user(gl, *, username, email, password)` | Create a user. Returns a `CreateUserResult` with an explicit `CreateOutcome` (CREATED / ALREADY_EXISTS / FAILED) rather than encoding "already exists" as a nullable id, and for CREATED the account's `user_id` and `created_at`, which together tell it from a later account of the same name (a reinstalled GitLab gives out the same ids again). |
+| `create_user_pat(gl, user_id, username, options=None)` | Issue a Personal Access Token (`tokens.py`). `PatOptions` (name/scopes/expiry) defaults to least-privilege repository scopes: widen explicitly per call site. |
+| `revoke_user_pats(gl, user_id, name="dtaas")` | Revoke the user's active Personal Access Tokens with that name (`tokens.py`). Finding none counts as success. |
 | `find_user_project(gl, user_id, name)` | Look up the project whose path is `name` among the projects of GitLab user `user_id` (`GET /users/:user_id/projects`); returns a `ProjectLookup` whose `ProjectState` is MISSING (no such project), EMPTY (GitLab reports `empty_repo`), HAS_CONTENT (anything else, an unreported state included) or FAILED (an unknown user id included, with GitLab's words in `error`). `path` holds GitLab's `path_with_namespace` for a project found. |
 | `create_user_project(gl, user_id, name)` | Create an empty private project in the user's namespace through the administrator endpoint `POST /projects/user/:user_id`, with no `import_url`. Returns `(True, path_with_namespace)` or `(False, error)`. |
-| `find_user_id(gl, username)` | Look up the id of the account whose username is exactly `username` (`GET /users?username=`). Returns `(user_id, "")`, or `(None, error)` when there is no such account or the request failed. |
-| `ensure_project(gl, request)` | Make sure the project of a `ProjectRequest` (user id, username, project name, template URL, `rerun` command, the user's token) exists, filled from its template when this call creates it. A missing project is created only after the template has been cloned bare and checked (no commits, Git LFS pointers), then pushed as the user with `-o ci.skip`. A project that exists is never touched. Returns a `ProjectResult` whose `ProjectOutcome` is CREATED, EMPTY, HAS_CONTENT or FAILED (with why, and after a failed push the `rerun` command to finish with). |
+| `find_user(gl, username)` | Look up the account whose username is exactly `username` (`GET /users?username=`). Returns `(UserInfo(user_id, created_at, is_admin), "")`, or `(None, error)` when there is no such account or the request failed. |
+| `ensure_project(gl, request)` | Make sure the project of a `ProjectRequest` (user id, username, project name, template URL, `rerun` command, the user's token, and an optional `template_commit`) exists, filled from its template when this call creates it. A missing project is created only after the user's token has passed `push_problem` (`GET /personal_access_tokens/self` with the token itself, which any scope may call: active, owned by that user id, `write_repository` or `api`, and the owner no administrator), and the template has been cloned bare, pinned to `template_commit` when one is given (its default branch is moved to that commit, so the checks and the push see exactly it) and checked (no commits, Git LFS pointers). It is then pushed as the user with `-o ci.skip`. A project that exists is never touched. Returns a `ProjectResult` whose `ProjectOutcome` is CREATED, EMPTY, HAS_CONTENT or FAILED (with why, and after a failed check or push the `rerun` command to finish with). |
 | `git_problem()` | Why `git` cannot be used on this host (missing, or older than 2.31), or `""`. Check it once before any project. |
 | `template_urls(host, group)` | `{project name: template URL}` for `PROJECT_TEMPLATES` (`common` from `common`, `user` from `user1`), each `<host>/<group>/<repository>.git`. |
-| `template_errors(host, group, keys)` | What is wrong with the template settings (each `None` when unset), named with the consumer's `TemplateKeys`: the group must pass `is_namespace_path`, the host `is_http_url`, and the two are set together or not at all. |
-| `is_http_url(value)`, `is_namespace_path(value)` | The value rules of the template settings: an http(s) URL with a host and an optional port and path, and a GitLab group path such as `dtaas` or `dtaas/templates`. |
-| `describe_api_error(exc)` | One short line for a caught `API_ERRORS` exception: GitLab's own message as python-gitlab prints it, or, when GitLab answered with an HTML error page, `<status>: GitLab error page (request ID <id>)` instead of the whole page. |
+| `template_errors(host, group, keys)` | What is wrong with the template settings (each `None` when unset), named with the consumer's `TemplateKeys`: the group must pass `is_namespace_path`, the host `is_https_url` (what is cloned is pushed into every user's private projects, so plain http is refused), and the two are set together or not at all. |
+| `is_http_url(value)`, `is_https_url(value)`, `is_namespace_path(value)`, `is_commit_id(value)` | Value rules: an http(s) URL (or an https one) with a host and an optional port and path, a GitLab group path such as `dtaas` or `dtaas/templates` (no segment ending in a dot, `.git` or `.atom`, so `..` never leaves the group), and a full commit id (40 hexadecimal characters). |
+| `describe_api_error(exc)` | One short line for a caught `API_ERRORS` exception: GitLab's own message as python-gitlab prints it, or, when GitLab answered with an HTML error page, `<status>: GitLab error page (request ID <id>)` instead of the whole page (without the status when the exception has none). |
 | `with_hint(summary, hint)` | Format a message as one short summary line with its detail indented underneath, the shape every message in this package and its consumers follows. |
 
 Every git command runs through `git_run.run_git`, which stops it after 15

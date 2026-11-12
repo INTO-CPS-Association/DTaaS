@@ -65,16 +65,22 @@ PASSWORDS = "/srv/config/password.env.current"
 
 
 @pytest.mark.parametrize(
-    "exc",
-    [denied(PASSWORDS), PermissionError(permission_hint(PASSWORDS))],
-    ids=["raw", "explained"],
+    "exc,shown",
+    [
+        (PermissionError(permission_hint(PASSWORDS)), permission_hint(PASSWORDS)),
+        (denied(PASSWORDS), f"[Errno 13] Permission denied: '{PASSWORDS}'"),
+    ],
+    ids=["config-file-with-its-fix", "any-other-file"],
 )
-def test_a_permission_error_ends_with_the_fix(runner, mocker, exc):
+def test_a_permission_error_ends_with_its_own_message(runner, mocker, exc, shown):
     """A file no command could open ends the command with exit code 1 and
-    the fix, never a traceback"""
+    the error's own message, never a traceback. Only the files this CLI
+    keeps under config/ carry a chown: no other file, such as one 'host
+    setup' gave to a service's user, gets that advice."""
     mocker.patch(
         "dtaas_services.commands.user_ops.parse_service_list", side_effect=exc
     )
     result = runner.invoke(services, ["user", "add"])
     assert result.exit_code == 1
-    assert f"Error: {permission_hint(PASSWORDS)}" in result.output
+    assert f"Error: {shown}" in result.output
+    assert result.output.count("chown") == shown.count("chown")

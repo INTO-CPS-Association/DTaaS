@@ -77,6 +77,7 @@ def test_read_tokens_file_invalid_json(tmp_path, text):
     assert "Failed to read token file" in msg
 
 
+@pytest.mark.usefixtures("posix_hints")
 def test_read_tokens_file_owned_by_root_reports_the_fix(tmp_path, mocker):
     """The file 'service install' wrote as root fails 'user add' with the fix"""
     tokens_file = tmp_path / "gitlab_tokens.json"

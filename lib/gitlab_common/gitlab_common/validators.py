@@ -6,13 +6,18 @@ from typing import Tuple
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,254}$")
 INVALID_EMAIL_ERROR = "Invalid user input: email format is invalid."
-# An http(s) URL (used with fullmatch, so a trailing newline is refused): a
-# host of letters, digits, dots and dashes, an optional port and an optional
-# path. No two parts can match the same text, so it runs in linear time.
-HTTP_URL_PATTERN = re.compile(r"https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?")
+# What follows the scheme of a URL (used with fullmatch, so a trailing
+# newline is refused): a host of letters, digits, dots and dashes, an
+# optional port and an optional path. No two parts can match the same text,
+# so it runs in linear time.
+_URL_AFTER_SCHEME = r"[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?"
+HTTP_URL_PATTERN = re.compile(rf"https?://{_URL_AFTER_SCHEME}")
+HTTPS_URL_PATTERN = re.compile(rf"https://{_URL_AFTER_SCHEME}")
 # One segment of a GitLab group path (used with fullmatch): letters, digits,
 # _ . and -, not starting with -, at most 255 characters.
 NAMESPACE_SEGMENT_PATTERN = re.compile(r"[A-Za-z0-9_.][A-Za-z0-9_.-]{0,254}")
+# A full commit id: 40 hexadecimal characters (used with fullmatch).
+COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}")
 
 
 def is_http_url(value: object) -> bool:
@@ -21,12 +26,24 @@ def is_http_url(value: object) -> bool:
     return isinstance(value, str) and bool(HTTP_URL_PATTERN.fullmatch(value.lower()))
 
 
+def is_https_url(value: object) -> bool:
+    """True when *value* is an https URL (case-insensitive) with a host and
+    an optional port and path: is_http_url without plain http."""
+    return isinstance(value, str) and bool(HTTPS_URL_PATTERN.fullmatch(value.lower()))
+
+
+def is_commit_id(value: object) -> bool:
+    """True when *value* is a full commit id: 40 hexadecimal characters,
+    in either case. A shortened id, a branch or a tag is not one."""
+    return isinstance(value, str) and bool(COMMIT_PATTERN.fullmatch(value.lower()))
+
+
 def _is_namespace_segment(segment: str) -> bool:
-    """True for one segment of a GitLab group path: GitLab also refuses one
-    that ends in .git or .atom."""
+    """True for one segment of a GitLab group path. GitLab also refuses one
+    that ends in a dot (so '.' and '..' are never segments), .git or .atom."""
     if not NAMESPACE_SEGMENT_PATTERN.fullmatch(segment):
         return False
-    return not segment.endswith((".git", ".atom"))
+    return not segment.endswith((".", ".git", ".atom"))
 
 
 def is_namespace_path(value: object) -> bool:

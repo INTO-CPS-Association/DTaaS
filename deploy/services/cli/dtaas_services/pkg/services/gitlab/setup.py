@@ -6,6 +6,7 @@ from typing import Tuple
 
 from rich.console import Console
 
+from ...file_lock import locked
 from ...password_store import get_current_password
 from ...utils import write_secret_file
 from .app_setup import step_create_oauth_apps
@@ -106,11 +107,12 @@ def _step_remove_root_password_from_tokens(console: Console) -> Tuple[bool, str]
     tokens_path = get_tokens_path()
     backup_path = tokens_path.parent / "backup_gitlab_tokens.json"
     try:
-        with tokens_path.open("r", encoding="utf-8") as fh:
-            tokens_data = json.load(fh)
-        write_secret_file(backup_path, json.dumps(tokens_data, indent=2))
-        tokens_data.pop("root_password", None)
-        write_secret_file(tokens_path, json.dumps(tokens_data, indent=2))
+        with locked(tokens_path):
+            with tokens_path.open("r", encoding="utf-8") as fh:
+                tokens_data = json.load(fh)
+            write_secret_file(backup_path, json.dumps(tokens_data, indent=2))
+            tokens_data.pop("root_password", None)
+            write_secret_file(tokens_path, json.dumps(tokens_data, indent=2))
         console.print("[green]\u2705 Root password removed from tokens file.[/green]")
         return True, "Root password removed from gitlab_tokens.json."
     except OSError as exc:

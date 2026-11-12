@@ -3,13 +3,13 @@
 Every function here takes explicit arguments (URL, token, user fields) and
 reads no configuration, environment or credential file of its own, so it is
 reused unchanged by both consumers. The API calls (client, users, tokens,
-projects) change no process-global state. The project step's git work
-(git_run, template_checks, repos, project_fill) runs git on this host in a
-temporary folder, and is shared too, so both consumers fill projects with
-the same safeguards. Deployment-specific glue (URL derivation, token
-persistence, credential files, docker, terminal output) lives in each
-consumer instead: ``dtaas_services.pkg.services.gitlab`` and the DTaaS
-CLI's ``pkg.gitlab``.
+projects, push_token) change no process-global state. The project step's
+git work (git_run, template_checks, repos, project_fill) runs git on this
+host in a temporary folder, and is shared too, so both consumers fill
+projects with the same safeguards. Deployment-specific glue (URL
+derivation, token persistence, credential files, docker, terminal output)
+lives in each consumer instead: ``dtaas_services.pkg.services.gitlab`` and
+the DTaaS CLI's ``pkg.gitlab``.
 """
 
 from .client import get_gitlab_client
@@ -34,16 +34,21 @@ from .templates import (
     template_errors,
     template_urls,
 )
+from .tokens import PatOptions, create_user_pat, revoke_user_pats
 from .users import (
     CreateOutcome,
     CreateUserResult,
-    PatOptions,
+    UserInfo,
     create_user,
-    create_user_pat,
-    find_user_id,
-    revoke_user_pats,
+    find_user,
 )
-from .validators import is_http_url, is_namespace_path, validate_user_row
+from .validators import (
+    is_commit_id,
+    is_http_url,
+    is_https_url,
+    is_namespace_path,
+    validate_user_row,
+)
 
 __all__ = [
     "get_gitlab_client",
@@ -51,7 +56,7 @@ __all__ = [
     "with_hint",
     "create_user",
     "create_user_pat",
-    "find_user_id",
+    "find_user",
     "revoke_user_pats",
     "find_user_project",
     "create_user_project",
@@ -60,11 +65,14 @@ __all__ = [
     "template_errors",
     "template_urls",
     "validate_user_row",
+    "is_commit_id",
     "is_http_url",
+    "is_https_url",
     "is_namespace_path",
     "CreateOutcome",
     "CreateUserResult",
     "PatOptions",
+    "UserInfo",
     "ProjectLookup",
     "ProjectState",
     "ProjectOutcome",

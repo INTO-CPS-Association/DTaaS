@@ -243,12 +243,21 @@ dtaas-services).
   may refuse the token while the account's password counts as expired
   (CVE-2021-39872 fix); that push fails with a hint, with no fallback to
   the admin.
+- **The token is checked before anything is created**
+  (`gitlab_common/push_token.py`). `GET /personal_access_tokens/self`
+  answers a token of any scope (`GET /user` would refuse the CLI's
+  repository-only tokens) with its owner, scopes and state: it must be
+  active, owned by the project's user id and carry `write_repository` or
+  `api`, and the owner (looked up with the admin client) must not be an
+  administrator. An expired, revoked or misplaced token so fails before a
+  project exists, instead of leaving an empty one.
 - **No Git LFS.** The clone is bare; a template holding LFS pointers is
   refused rather than pushed as stubs. A pointer is matched by its format
   (under 1024 bytes, version, oid and size lines), not by `.gitattributes`:
   the default `user1` names LFS there but stores its files whole.
-- **Only a project this run created is filled.** The template is cloned
-  first, so an unusable template leaves nothing behind. A project that
+- **Only a project this run created is filled.** The token is checked
+  and the template cloned first, so an unusable one leaves nothing
+  behind. A project that
   already exists, even an empty one, is never pushed to: its settings (a
   CI configuration path, webhooks) are its owner's. A failed push leaves
   the new project empty, to be deleted before a re-run. A project found

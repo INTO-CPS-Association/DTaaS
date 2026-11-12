@@ -64,9 +64,10 @@ provision=false
 api_url="https://gitlab.com"
 ssl_verify=true
 # The public group holding the templates of the two projects, on
-# template_host: <template_host>/<template_group>/common.git and user1.git.
-# The dtaas host clones each one with git and pushes it. Set both keys, or
-# remove both for accounts and tokens only.
+# template_host (https only): <template_host>/<template_group>/common.git
+# and user1.git. The dtaas host clones each one with git and pushes it.
+# Whoever controls that group controls what every user's projects start
+# with. Set both keys, or remove both for accounts and tokens only.
 template_host="https://gitlab.com"
 template_group="dtaas"
 # The admin PAT that creates the accounts, tokens and projects on api_url

@@ -2,7 +2,6 @@
 
 import click
 from .commands import host_ops, project_ops, service_ops, user_ops
-from .pkg.utils import permission_hint
 
 
 class WorkflowGroup(click.Group):
@@ -13,15 +12,17 @@ class WorkflowGroup(click.Group):
 
 
 class ServicesGroup(WorkflowGroup):
-    """Root group: a file no command could open ends the command with the fix,
-    not a traceback (see ``permission_hint``)."""
+    """Root group: a file no command could open ends the command with its
+    own message, not a traceback. Only the files this CLI keeps under
+    config/ carry a fix in that message (``utils.explain_permission_error``).
+    Any other file, such as one 'host setup' gave to a service's user, is
+    named as it is, with no advice to change its owner."""
 
     def invoke(self, ctx: click.Context):
         try:
             return super().invoke(ctx)
         except PermissionError as exc:
-            message = permission_hint(exc.filename) if exc.filename else str(exc)
-            raise click.ClickException(message) from exc
+            raise click.ClickException(str(exc)) from exc
 
 
 @click.group(cls=ServicesGroup)

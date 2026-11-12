@@ -81,6 +81,7 @@ GROUP_ERROR = (
     "gitlab.template_group must be a GitLab group path, such as dtaas "
     "or dtaas/templates"
 )
+HOST_ERROR = "gitlab.template_host must be an https URL, such as https://gitlab.com"
 
 
 @pytest.mark.parametrize(
@@ -92,15 +93,27 @@ GROUP_ERROR = (
         ({"template_host": HOST}, [TEMPLATES_TOGETHER]),
         (
             {"template_group": "dtaas/", "template_host": "ftp://example.com"},
-            [GROUP_ERROR, "gitlab.template_host must be a valid URL"],
+            [GROUP_ERROR, HOST_ERROR],
+        ),
+        (
+            {"template_group": "dtaas", "template_host": "http://gitlab.com"},
+            [HOST_ERROR],
         ),
         ({"template_group": "dtaas.git"}, [GROUP_ERROR, TEMPLATES_TOGETHER]),
     ],
-    ids=["both", "subgroup", "group-only", "host-only", "both-bad", "bad-and-alone"],
+    ids=[
+        "both",
+        "subgroup",
+        "group-only",
+        "host-only",
+        "both-bad",
+        "plain-http",
+        "bad-and-alone",
+    ],
 )
 def test_gitlab_project_templates(base, templates, expected):
-    """The group is a GitLab group path and the host an http(s) URL, set
-    together or both left out; every problem is listed at once."""
+    """The group is a GitLab group path and the host an https URL, set
+    together or both left out: every problem is listed at once."""
     config = copy.deepcopy(base)
     config["gitlab"] = {
         "provision": True,

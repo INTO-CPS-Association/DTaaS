@@ -1,6 +1,8 @@
 """Tests for how each project's outcome is printed and recorded
 (project_report.py)."""
 
+from dataclasses import replace
+
 import pytest
 from dtaas_services.gitlab_common import ProjectOutcome, ProjectRequest, ProjectResult
 from dtaas_services.pkg.services.gitlab import project_state, tokens_file
@@ -10,34 +12,50 @@ from dtaas_services.pkg.services.gitlab.project_report import (
     UserProgress,
     report,
 )
+from dtaas_services.pkg.services.gitlab.project_state import UserRecord
 # pylint: disable=W0621
 
 COMMON = "https://gitlab.com/dtaas/common.git"
+COMMIT = "299d6e62e3addf074b2bbaffe4c5804ee096255c"
 REQUEST = ProjectRequest(42, "alice", "common", COMMON, RERUN, "fake-user-token")
+RECORD = UserRecord(42, "2026-11-10T09:14:31.123Z", created=True, projects=("user",))
+BOTH = replace(RECORD, projects=("user", "common"))
 
 
 @pytest.fixture
 def alice(mocker, tmp_path):
-    """alice's progress, with 'user' finished, and the project base dir,
-    so the finished projects file, in tmp_path."""
+    """alice's progress, her record (an account this CLI made) with 'user'
+    finished, and the project base dir, so the records file, in tmp_path."""
     mocker.patch.object(tokens_file.Config, "get_base_dir", return_value=tmp_path)
-    return UserProgress(["user"], ProjectTally())
+    return UserProgress(RECORD, ProjectTally())
 
 
-def _finished():
-    """The finished projects as the next run reads them."""
-    return project_state.read_finished()[0]
+def _records():
+    """The records as the next run reads them."""
+    return project_state.read_records()[0]
 
 
-def test_a_created_project_is_recorded_counted_and_named(alice, capsys):
-    """Recorded at once, with the template it was filled from."""
-    assert report(REQUEST, ProjectResult(ProjectOutcome.CREATED), alice) is True
+@pytest.mark.parametrize(
+    "commit,filled_from",
+    [("", COMMON), (COMMIT, f"{COMMON} at commit {COMMIT}")],
+    ids=["default-branch", "pinned"],
+)
+def test_a_created_project_is_recorded_counted_and_named(
+    alice, capsys, commit, filled_from
+):
+    """Added at once to the user's record, which keeps its account and the
+    sign that this CLI made it, and named with the template it was filled
+    from, and its commit when one is pinned."""
+    request = replace(REQUEST, template_commit=commit)
 
-    assert _finished() == {"alice": ["user", "common"]}
+    assert report(request, ProjectResult(ProjectOutcome.CREATED), alice) is True
+
+    assert _records() == {"alice": BOTH}
+    assert alice.record == BOTH
     assert alice.tally == ProjectTally(created=1)
     assert capsys.readouterr().out == (
         "  ✅ GitLab project 'alice/common' created.\n"
-        f"    Private, filled from {COMMON}\n"
+        f"    Private, filled from {filled_from}\n"
     )
 
 
@@ -45,7 +63,7 @@ def test_a_project_with_content_warns_once_and_is_recorded(alice, capsys):
     """Nothing is left to do for it, so a re-run stays quiet about it."""
     assert report(REQUEST, ProjectResult(ProjectOutcome.HAS_CONTENT), alice) is True
 
-    assert _finished() == {"alice": ["user", "common"]}
+    assert _records() == {"alice": BOTH}
     assert alice.tally == ProjectTally()
     assert capsys.readouterr().out == (
         "  ⚠️  Warning: GitLab project 'alice/common' has content.\n"
@@ -58,7 +76,7 @@ def test_an_empty_project_found_keeps_warning(alice, capsys):
     deletes it."""
     assert report(REQUEST, ProjectResult(ProjectOutcome.EMPTY), alice) is True
 
-    assert not _finished()
+    assert not _records()
     out = capsys.readouterr().out
     assert "  ⚠️  Warning: GitLab project 'alice/common' exists but is empty.\n" in out
     assert f"Delete it, then run '{RERUN}' again.\n" in out
@@ -70,7 +88,7 @@ def test_a_failure_is_printed_as_it_is_and_not_recorded(alice, capsys):
 
     assert report(REQUEST, failed, alice) is False
 
-    assert not _finished()
+    assert not _records()
     assert capsys.readouterr().out == (
         "  GitLab project 'alice/common' failed.\n"
         "    Could not clone x.\n"
