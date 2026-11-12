@@ -9,13 +9,16 @@ import AppModule from 'src/app.module';
 import Config from 'src/config/config.service';
 import { configureSignalsApp } from 'src/main';
 import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
-import { PUMP } from 'test/helpers/twins';
+import { PUMP, visualisationOf } from 'test/helpers/twins';
 
 const ALICE_TOKEN = 'alice-oauth-token-0123456789';
 const BOB_TOKEN = 'bob-oauth-token-9876543210';
 const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
 const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
+const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
+const CAROL_TOKEN = 'carol-oauth-token-3333333333';
 const FLOW = 'alice/pump/flow';
+const SPEED = 'carol/fan/speed';
 const RANGE = { paths: [FLOW], channel: 'measured', from: 0, to: 1000 };
 const ENV_KEYS = [
   'SIGNALS_GITLAB_URL',
@@ -46,8 +49,28 @@ describe('Signals gateway e2e', () => {
       },
       [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
       [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
+      [READ_USER_TOKEN]: { ...ALICE, projects: [10], scope: ['read_user'] },
+      [CAROL_TOKEN]: {
+        id: 3,
+        username: 'carol',
+        email: 'carol@example.org',
+        projects: [11],
+      },
     },
-    [{ id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } }],
+    [
+      { id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } },
+      {
+        id: 11,
+        owner: 'carol',
+        sha: 'beef00',
+        // The second twin declares a topic of alice's group, which the
+        // owners file does not give to carol.
+        twins: {
+          fan: visualisationOf([SPEED]),
+          copy: visualisationOf([FLOW]),
+        },
+      },
+    ],
   );
   const logger = new CapturingLogger();
   let app: NestExpressApplication;
@@ -71,7 +94,10 @@ describe('Signals gateway e2e', () => {
     const owners = path.join(dir, 'owners.json');
     await writeFile(
       owners,
-      JSON.stringify({ alice: { group: 'alice', topics: ['alice/'] } }),
+      JSON.stringify({
+        alice: { group: 'alice', topics: ['alice/'] },
+        carol: { group: 'carol', topics: ['carol/'] },
+      }),
     );
     process.env.SIGNALS_OWNERS_FILE = owners;
     const moduleRef = await Test.createTestingModule({
@@ -110,8 +136,8 @@ describe('Signals gateway e2e', () => {
     },
   );
 
-  it.each([EXPIRED_TOKEN, OTHER_APP_TOKEN])(
-    'refuses with 401 an expired token or one of another application',
+  it.each([EXPIRED_TOKEN, OTHER_APP_TOKEN, READ_USER_TOKEN])(
+    'refuses with 401 an expired token, one of another application or one without an API scope',
     async (token) => {
       expect((await post('stream', token, { paths: [FLOW] })).status).toBe(401);
       expect((await post('range', token, RANGE)).status).toBe(401);
@@ -136,6 +162,24 @@ describe('Signals gateway e2e', () => {
     );
     expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
   });
+
+  // Two groups on every route: each reads its own paths and is refused the
+  // other's, also through a twin that declares a topic of the other group.
+  it.each([
+    [ALICE_TOKEN, FLOW, SPEED],
+    [CAROL_TOKEN, SPEED, FLOW],
+  ])(
+    'serves each group its own paths and refuses the other group (%#)',
+    async (token, own, other) => {
+      const range = (p: string) => ({ ...RANGE, paths: [p] });
+      expect((await post('stream', token, { paths: [own] })).status).toBe(501);
+      expect((await post('range', token, range(own))).status).toBe(501);
+      expect((await post('stream', token, { paths: [other] })).status).toBe(
+        403,
+      );
+      expect((await post('range', token, range(other))).status).toBe(403);
+    },
+  );
 
   it('refuses wildcards with 400 and too many paths with 413', async () => {
     expect(
