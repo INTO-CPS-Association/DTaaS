@@ -21,6 +21,15 @@ describe('the origins a visualisation may load from', () => {
     ]);
   });
 
+  it('skips an entry that is not http or https, so null is never allowed', () => {
+    const allowed = allowedOrigins('data:text/html,x, javascript:alert(1)');
+
+    expect(allowed.size).toBe(0);
+    expect(() =>
+      assertAllowedSource('data:text/html,x', allowed, 'https://dtaas.example'),
+    ).toThrow('not an allowed source');
+  });
+
   it('accepts the own origin and listed origins, and refuses others', () => {
     const allowed = allowedOrigins('https://grafana.example');
     const own = 'https://dtaas.example';

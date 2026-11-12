@@ -98,6 +98,24 @@ When the gateway answers 401, `gatewaySession.ts` keeps the refused token. The
 stream and the range do not send that token again, the timeline asks the person
 to sign in again and the next request goes out only with another token.
 
+### Which Token the Gateway Receives
+
+The [gateway plan](../../../docs/developer/plans/signals-gateway.md) gives the
+gateway an OIDC application of its own, with sign-ins that stay transparent
+to the user. The client cannot obtain a token for that application silently
+today. Silent sign-in in a hidden frame needs GitLab inside a frame, which
+GitLab refuses, and the client keeps its tokens in page memory, so a full
+redirect to GitLab for a second application would sign the client out. The
+client therefore sends its own token. The token is read at each request, goes
+only to `REACT_APP_VIZ_SIGNALS_URL` and only in the `Authorization` header,
+and is never logged or stored. Until the client sends a token of the
+gateway's application, the gateway lists the client's application next to
+its own among the applications it accepts. The way to the gateway's own
+token is step 8 of the access plan, a website backend that holds the tokens
+and runs the gateway's sign-in as a redirect the user does not see, since
+GitLab skips the consent screen for an application an administrator marks
+as trusted.
+
 A signal path is the broker topic. A message may be JSON with a `value`, a bare
 number, or the comma-separated line of the DTaaS examples, whose `simulation`
 type is kept on the `simulated` channel.
