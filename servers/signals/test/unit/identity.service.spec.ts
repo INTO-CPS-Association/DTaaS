@@ -12,6 +12,7 @@ function gitlabWith(
   expiresIn: number | null,
   owner = ALICE.id,
   application = 'dtaas-client',
+  scope = ['api', 'openid'],
 ) {
   return new FakeGitLabClient([
     [
@@ -20,13 +21,18 @@ function gitlabWith(
         resource_owner_id: owner,
         expires_in_seconds: expiresIn,
         application: { uid: application },
+        scope,
       }),
     ],
     [/^api\/v4\/user$/, () => ALICE],
   ]);
 }
 
-function serviceWith(gitlab: FakeGitLabClient, ttl = 60_000, clientId = '') {
+function serviceWith(
+  gitlab: FakeGitLabClient,
+  ttl = 60_000,
+  clientId: string[] = [],
+) {
   const config = testConfig({
     'identity-cache-ttl': ttl,
     'gitlab-client-id': clientId,
@@ -92,18 +98,37 @@ describe('IdentityService', () => {
   });
 
   it('accepts only tokens of the configured OAuth application', async () => {
-    const own = await serviceWith(
-      gitlabWith(60),
-      60_000,
+    const own = await serviceWith(gitlabWith(60), 60_000, [
       'dtaas-client',
-    ).resolve('t');
+    ]).resolve('t');
     expect(own.username).toBe('alice');
     await expect(
-      serviceWith(
-        gitlabWith(60, ALICE.id, 'other-app'),
-        60_000,
+      serviceWith(gitlabWith(60, ALICE.id, 'other-app'), 60_000, [
         'dtaas-client',
-      ).resolve('t'),
+      ]).resolve('t'),
     ).rejects.toBeInstanceOf(InvalidTokenError);
+  });
+
+  it('accepts any application of the allow-list, such as the gateway and the client', async () => {
+    const allowed = ['signals-gateway', 'dtaas-client'];
+    const gateway = gitlabWith(60, ALICE.id, 'signals-gateway');
+    const client = gitlabWith(60, ALICE.id, 'dtaas-client');
+    await expect(
+      serviceWith(gateway, 60_000, allowed).resolve('t'),
+    ).resolves.toMatchObject({ username: 'alice' });
+    await expect(
+      serviceWith(client, 60_000, allowed).resolve('t'),
+    ).resolves.toMatchObject({ username: 'alice' });
+  });
+
+  it('refuses a token without a scope that reads the API', async () => {
+    const readUser = gitlabWith(60, ALICE.id, 'dtaas-client', ['read_user']);
+    await expect(serviceWith(readUser).resolve('t')).rejects.toBeInstanceOf(
+      InvalidTokenError,
+    );
+    const readApi = gitlabWith(60, ALICE.id, 'dtaas-client', ['read_api']);
+    await expect(serviceWith(readApi).resolve('t')).resolves.toMatchObject({
+      username: 'alice',
+    });
   });
 });

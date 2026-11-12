@@ -13,7 +13,20 @@ function toBoolean(value: unknown): unknown {
 }
 
 const booleanSchema = z.preprocess(toBoolean, z.boolean());
-const positiveInt = z.coerce.number().int().positive();
+// Environment variables arrive as text, YAML gives numbers. Only digit
+// strings are converted, so `true` or `1e3` is refused and not read as 1.
+const positiveInt = z
+  .union([z.number(), z.string().regex(/^\d+$/).transform(Number)])
+  .pipe(z.number().int().positive());
+const port = positiveInt.pipe(z.number().max(65_535));
+// One name or several, from a YAML list or a comma-separated variable.
+const nameList = z
+  .union([z.string(), z.array(z.string())])
+  .transform((value) =>
+    (typeof value === 'string' ? value.split(',') : value)
+      .map((name) => name.trim())
+      .filter((name) => name !== ''),
+  );
 const text = z.string().trim();
 const httpUrl = z.url({ protocol: /^https?$/ });
 // A password in the URL would end up in logs and process listings, so the
@@ -63,7 +76,7 @@ const DAY = 24 * 60 * MINUTE;
 export const configSchema = z
   .object({
     hostname: text.min(1).default('127.0.0.1'),
-    port: positiveInt.default(4004),
+    port: port.default(4004),
     'cors-allow-origin': z
       .union([text, z.array(text.min(1)).min(1)])
       .default(''),
@@ -75,11 +88,19 @@ export const configSchema = z
     'gitlab-url': z.union([z.literal(''), httpUrl]).default(''),
     'gitlab-group': text.min(1).default('DTaaS'),
     'gitlab-branch': text.min(1).default('master'),
-    'gitlab-min-access-level': positiveInt.default(20),
+    // Reporter (20) at least: a project with internal visibility is readable
+    // by every signed-in user at a lower level, and so would its signals be.
+    'gitlab-min-access-level': positiveInt.pipe(z.number().min(20)).default(20),
     'gitlab-min-write-level': positiveInt.default(30),
     'gitlab-timeout': positiveInt.default(5000),
     'forwarded-user-header': text.toLowerCase().default(''),
-    'gitlab-client-id': text.default(''),
+    // The OAuth applications whose GitLab tokens are accepted: the gateway's
+    // own application, and the DTaaS client's while the client still sends
+    // the token it signed in with.
+    'gitlab-client-id': nameList.default([]),
+    // A GitLab token must carry one of these scopes, since the gateway reads
+    // the user's projects with it. read_api is enough and api includes it.
+    'gitlab-scopes': nameList.default(['read_api', 'api']),
     // Lets the gateway start without gitlab-client-id. Only for a local
     // development stack, never for a deployment that real users reach.
     'allow-any-gitlab-client': booleanSchema.default(false),

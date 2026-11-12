@@ -79,6 +79,10 @@ flowchart LR
     `thomseddon/traefik-forward-auth`.
   - The standards the design is checked against: RFC 9700, RFC 9068, RFC 10017,
     OWASP ASVS 5.0 and NIST SP 800-162 for attribute-based access control.
+- **The gateway's own OIDC application** in each provider, with silent sign-in
+  so the user sees one sign-in for the client, Traefik and the gateway. GitLab
+  tokens are checked with `/oauth/token/info` against that application's
+  `uid` and scopes.
 - **From #1879:** `src/auth/` (`auth.guard.ts`, `identity.service.ts`,
   `gitlab.client.ts` and `ttl-cache.ts`), `socket-address-throttler.guard.ts`,
   `cors.ts` and `startup-warnings.ts` from `src/config/`, `dto/requests.ts`, the
