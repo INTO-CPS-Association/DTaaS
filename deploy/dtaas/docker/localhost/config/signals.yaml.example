@@ -11,10 +11,14 @@ gitlab-url: https://gitlab.com
 # committed visualisation.json files declare the signals.
 gitlab-group: DTaaS
 gitlab-branch: master
-# Replace the placeholder with the Application ID of the DTaaS client OAuth
-# application, REACT_APP_CLIENT_ID in client.js, so a token issued to another
-# OAuth application is refused. Until it is replaced every token is refused.
-gitlab-client-id: '<DTAAS_CLIENT_APPLICATION_ID>'
+# The OAuth applications whose GitLab tokens are accepted. Replace the
+# placeholders with the Application ID of the gateway's own OAuth application
+# and, while the client still sends its own token, of the DTaaS client,
+# REACT_APP_CLIENT_ID in client.js. A token issued to any other OAuth
+# application is refused, and until they are replaced every token is.
+gitlab-client-id:
+  - '<SIGNALS_GATEWAY_APPLICATION_ID>'
+  - '<DTAAS_CLIENT_APPLICATION_ID>'
 # The subnet of the Docker network dtaas_default, where Traefik runs, as
 # 'docker network inspect dtaas_default' prints it. The rate limit then counts
 # each client instead of the proxy. Empty trusts no proxy.

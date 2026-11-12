@@ -23,9 +23,10 @@ package carries `config/signals.yaml.example` with the keys below.
 | `gitlab-url` | The GitLab that validates tokens and answers what a user may read. The user's token is sent to this host and to no other |
 | `gitlab-group` | The group whose projects hold the users' twins, `DTaaS` by default |
 | `gitlab-branch` | The branch whose committed `visualisation.json` files declare the signals, `master` by default |
-| `gitlab-client-id` | The Application ID of the DTaaS client OAuth application, `REACT_APP_CLIENT_ID` in `client.js`. A GitLab token issued to another OAuth application is refused. Left empty, the gateway refuses to start |
+| `gitlab-client-id` | The Application IDs whose GitLab tokens are accepted, as a YAML list or a comma-separated `SIGNALS_GITLAB_CLIENT_ID`: the gateway's own OAuth application and, while the client still sends its own token, the DTaaS client's, `REACT_APP_CLIENT_ID` in `client.js`. A GitLab token issued to another OAuth application is refused. Left empty, the gateway refuses to start |
+| `gitlab-scopes` | A GitLab token must carry one of these scopes, `read_api` and `api` by default. The token is never logged, written to disk or sent anywhere but `gitlab-url` |
 | `allow-any-gitlab-client` | `false` by default. `true` lets the gateway start with an empty `gitlab-client-id` and accept any OAuth application's token. Only for a local development stack |
-| `gitlab-min-access-level` | Lowest GitLab access level that reads a project, `20` (Reporter) by default |
+| `gitlab-min-access-level` | Lowest GitLab access level that reads a project, `20` (Reporter) by default. A lower value is refused, since every signed-in user can read a project with internal visibility |
 | `gitlab-min-write-level` | Lowest GitLab access level that may send data to a twin, `30` (Developer) by default |
 | `forwarded-user-header` | A header that must carry the e-mail of the token's user, `x-forwarded-user` behind traefik-forward-auth. Empty skips the check |
 
@@ -51,8 +52,9 @@ groups are `<owner>_viewer`, `<owner>_member` and `<owner>_admin`, and
 groups are `<gitlab-group>/<owner>:developer`, `:maintainer` or `:owner` and
 each one may also write. A Keycloak or Dex token cannot be sent to GitLab, so
 the gateway reads the twins of these users with its own GitLab token, a token
-with `read_api` in the file that `gitlab-token-file` names. Without that file
-these users read nothing.
+with the `read_api` scope only in the file that `gitlab-token-file` names. It
+reads every project its user can read, so make that user a Reporter of the
+DTaaS group and nothing more. Without that file these users read nothing.
 
 ## Twins and Owners
 
