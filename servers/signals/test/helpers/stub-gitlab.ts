@@ -15,6 +15,8 @@ export type StubUser = {
   expiresIn?: number;
   /** The OAuth application the token was issued to. */
   application?: string;
+  /** The scopes of the token, api unless a test sets them. */
+  scope?: string[];
 };
 
 export const STUB_APPLICATION = 'dtaas-client-id';
@@ -61,6 +63,7 @@ export default class StubGitLab {
           resource_owner_id: u.id,
           expires_in_seconds: u.expiresIn ?? 3600,
           application: { uid: u.application ?? STUB_APPLICATION },
+          scope: u.scope ?? ['api'],
         }),
       },
       {
