@@ -1,0 +1,46 @@
+[
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room1/temperature",
+    "channel": "measured",
+    "ts": 1000,
+    "value": 20.5
+  },
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room1/temperature",
+    "channel": "simulated",
+    "ts": 1000,
+    "value": 21
+  },
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room2/temperature",
+    "channel": "measured",
+    "ts": 1500,
+    "value": 18
+  },
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room1/temperature",
+    "channel": "measured",
+    "ts": 2000,
+    "value": 22.25,
+    "quality": "good"
+  },
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room1/temperature",
+    "channel": "simulated",
+    "ts": 2500,
+    "value": 22
+  },
+  {
+    "twinId": "hello",
+    "signalPath": "hello/room2/temperature",
+    "channel": "measured",
+    "ts": 3000,
+    "value": 19.5,
+    "quality": "stale"
+  }
+]
