@@ -187,3 +187,9 @@ each call so a renewed token is used. The extension passes it to
 copy. The core then removes the push from `credentials.ts`. Adding the
 getter changes the contract, so it waits for the decision on how external
 extensions get the contract types.
+
+The user's token can carry the `api` scope, a full-power credential. A
+getter on `AuthService` would hand it to every extension, including one a
+deployment loads at run time. Adding the pipelines calls to `git`, which
+keeps the token in the core, avoids that. Until one of the two is chosen, no
+extension receives the token, since `git` sends it for them.

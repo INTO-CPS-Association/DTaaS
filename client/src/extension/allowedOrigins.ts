@@ -17,7 +17,10 @@ export function allowedOrigins(
   const origins = (listed ?? '').split(',').flatMap((entry) => {
     if (entry.trim() === '') return [];
     try {
-      return [new URL(entry.trim()).origin];
+      const url = new URL(entry.trim());
+      // Any other scheme has the opaque origin "null", which would then
+      // allow every data: or blob: source.
+      return ['http:', 'https:'].includes(url.protocol) ? [url.origin] : [];
     } catch {
       // An entry that is not an address allows nothing, and the rest stand.
       return [];
