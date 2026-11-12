@@ -140,6 +140,12 @@ and fits `max-message-bytes`. Every other message is dropped and counted in
   unknown device and Telegraf drops that whole batch, so the registration
   command writes the `device` rows and the twin's config file in one step.
   Removing a twin removes its file and its session queue.
+- Each session queue has a length limit (`x-max-length` with the overflow
+  `drop-head`), so a stalled Telegraf cannot fill the broker's disk and stop
+  every publisher with a disk alarm. The oldest readings are dropped first.
+- One Telegraf process holds the accounts of every group. A malformed file
+  stops ingestion for every group. The config check above keeps a bad file out.
+  A process per group stays an option if one process proves too fragile.
 - All history is kept. The `range` route reads with parameterised queries, keeps
   the limits of #1879 (seven days and 10000 points per answer) and downsamples a
   longer series with `date_bin`.
@@ -165,20 +171,58 @@ plans what the SDK gives every extension.
   onto them and onto each service and the glue between Traefik and Keycloak.
   Traefik Proxy has ForwardAuth and no built-in OIDC middleware. DTaaS uses
   `thomseddon/traefik-forward-auth` today.
-- GitLab access tokens are opaque, so the gateway asks GitLab about them, as
-  #1879 does. Keycloak and Dex tokens are JWTs, checked for signature, expiry,
-  issuer and an audience that names the gateway (RFC 9068 and RFC 9700).
+- The gateway has an OIDC application of its own in each provider, as the
+  maintainer asked in review. That keeps it secure as a standalone service
+  and lets other services, such as user workspaces, call it safely. A request
+  of a kit then passes three sign-ins (the client, Traefik forward auth and
+  the gateway). All three stay transparent to the user: the gateway signs
+  in silently with the provider session the client already has.
+- Until then the client sends its own GitLab token. A hidden-frame sign-in
+  needs GitLab inside a frame, which GitLab refuses, and the client keeps its
+  tokens in page memory, so a redirect for a second application would sign
+  it out. In this interim state `gitlab-client-id` lists the client's
+  application next to the gateway's own. Step 8 of the access plan, a
+  website backend that holds the tokens, gives the gateway its own token, and
+  the client's application then leaves the list.
+- GitLab access tokens are opaque and carry no audience, so a successful
+  `GET /user` proves nothing about who the token was issued to. The gateway
+  asks `/oauth/token/info` and accepts only the `application.uid` of its own
+  application and the scopes it needs. Keycloak and Dex tokens are JWTs,
+  checked for signature, expiry, issuer and an audience that names the
+  gateway (RFC 9068 and RFC 9700).
+- A user token can carry the `api` scope, a full-power credential. The gateway
+  never logs it, never writes it to disk and never forwards it. The gateway's
+  own GitLab token, in `gitlab-token-file`, has the `read_api` scope only, and
+  the guide states what it can read.
 - Until step 8 of the access plan moves the tokens to a website backend, the
   browser holds the token and sends it to the gateway. RFC 10017 recommends that
   backend for applications with personal or business data.
 - A path is allowed when a `visualisation.json` committed in a project the
   person can read declares it and the topic starts with a prefix of the
-  owner's group. `dtaas-services` writes the owners file that maps each owner
+  owner's group. "Can read" needs at least the Reporter role: a project with
+  `internal` visibility is readable by every signed-in user, so its signals
+  would otherwise be too. A prefix matches whole topic levels, so `org/groupa`
+  does not match `org/groupab/...`. An empty level or a level that starts
+  with `$` is refused. The check of #1879 that refuses `+`, `#` and `*` stays.
+- Group names from Keycloak or Dex map to GitLab projects by an exact rule on
+  the full path, never by a prefix. A test covers names that collide, such as
+  a Keycloak path `/a/b` and a GitLab group `a-b`, since anyone who can create
+  or rename groups in the provider would otherwise reach another group's
+  signals. `dtaas-services` writes the owners file that maps each owner
   to its group and topic prefixes, from the same data that sets the broker
   topic permissions and names the group database. Without that check a twin
   could declare a topic of another group. Group roles of the access plan come
   next, checked against a cache of at most 60 seconds. Roles carried inside a
   token change only when the token expires. Sending data to a twin needs `member`.
+- `dtaas_signals` reads every topic and `dtaas_signals_ro` every group
+  database, so a fault in the access check would leak across groups. Phases 2
+  and 3 test every route with two groups and check that each one is refused
+  the other's data.
+- `stream`, `range` and `command` are POST routes that take the token in a
+  header, so they are safe from cross-site request forgery today. When step 8
+  of the access plan moves the token into a cookie, they need CSRF protection
+  and a strict CORS allow-list, since `command` writes set points to physical
+  twins.
 
 ### One Source of `visualisation.json` and the API Style (G8, G10)
 
@@ -239,6 +283,8 @@ person's own rights first.
 ## Open Questions
 
 1. Is TimescaleDB used for `reading`, given that all history is kept?
+2. How long are readings kept that can identify a person, such as the
+   occupancy of a room? Keeping them without a limit is a GDPR question.
 
 ## Left for Later
 

@@ -32,6 +32,8 @@ gitlab-group: DTaaS
 # The branch whose committed visualisation.json files declare the signals.
 gitlab-branch: master
 # Lowest GitLab access level that counts as reading a project (20 = Reporter).
+# Lower values are refused, since every signed-in user can read a project
+# with internal visibility.
 gitlab-min-access-level: 20
 # Lowest GitLab access level that may send data to a twin (30 = Developer).
 gitlab-min-write-level: 30
@@ -40,11 +42,17 @@ gitlab-timeout: 5000
 # When set, the request must carry this header with the email of the token's
 # user, as traefik-forward-auth sets it. Leave empty to skip the check.
 forwarded-user-header: ''
-# Only tokens GitLab issued to this OAuth application are accepted. Replace
-# the placeholder with the Application ID of the DTaaS client OAuth
-# application, REACT_APP_CLIENT_ID in client.js. Until it is replaced every
-# token is refused. Left empty, the gateway refuses to start.
-gitlab-client-id: '<DTAAS_CLIENT_APPLICATION_ID>'
+# Only tokens GitLab issued to these OAuth applications are accepted: the
+# gateway's own application, and the DTaaS client's (REACT_APP_CLIENT_ID in
+# client.js) while the client still sends its own token. Until the
+# placeholders are replaced every token is refused. Left empty, the gateway
+# refuses to start. As a variable: a comma-separated list.
+gitlab-client-id:
+  - '<SIGNALS_GATEWAY_APPLICATION_ID>'
+  - '<DTAAS_CLIENT_APPLICATION_ID>'
+# A GitLab token must carry one of these scopes. The token is never logged,
+# written to disk or sent anywhere but gitlab-url.
+gitlab-scopes: [read_api, api]
 # Lets the gateway start with an empty gitlab-client-id, so any OAuth
 # application's token is accepted. Only for a local development stack.
 allow-any-gitlab-client: false
@@ -58,8 +66,10 @@ oidc-providers: []
 #    audience: dtaas-signals
 #    jwks-url: https://foo.com/auth/realms/dtaas/protocol/openid-connect/certs
 #    groups-claim: groups
-# File with a GitLab token that has read_api, used to read the twins of a
-# user signed in through Keycloak or Dex. Mode 600, nothing else in it.
+# File with a GitLab token that has the read_api scope only, used to read the
+# twins of a user signed in through Keycloak or Dex. It can read every
+# project its user can, so that user should be a Reporter of the DTaaS group
+# and nothing more. Mode 600, nothing else in it.
 gitlab-token-file: ''
 # How long an identity and a user's project list are cached (milliseconds).
 identity-cache-ttl: 60000

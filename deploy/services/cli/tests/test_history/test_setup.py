@@ -46,13 +46,40 @@ def test_setup_group_history_reports_a_database_error(mocked):
     mocked["datasource"].assert_not_called()
 
 
-def test_setup_broker_account_reads_projects_and_writes_nothing(mocker):
-    """<group>_telegraf may read the group's projects and publish nowhere"""
+def broker_mocks(mocker, **env):
+    """Mock the broker calls of setup_broker_account and its services.env"""
+    mocker.patch.object(setup, "Config").return_value.env = env
     mocker.patch.object(setup, "ensure_password", return_value="pw")
     mocker.patch.object(setup, "ensure_user", return_value=(True, ""))
     grant = mocker.patch.object(setup, "grant_mqtt_account", return_value=(True, ""))
+    limit = mocker.patch.object(setup, "limit_session_queues", return_value=(True, ""))
+    return grant, limit
+
+
+def test_setup_broker_account_reads_projects_and_writes_nothing(mocker):
+    """<group>_telegraf may read the group's projects and publish nowhere"""
+    grant, limit = broker_mocks(mocker)
     assert setup.setup_broker_account("swim", ["SWiM"]) == (True, "")
     grant.assert_called_once_with("swim_telegraf", "^$", r"^(SWiM)\.")
+    limit.assert_called_once_with("swim_telegraf", setup.DEFAULT_QUEUE_MAX_LENGTH)
+
+
+def test_setup_broker_account_takes_the_queue_limit_of_services_env(mocker):
+    """TELEGRAF_QUEUE_MAX_LENGTH replaces the default"""
+    _, limit = broker_mocks(mocker, TELEGRAF_QUEUE_MAX_LENGTH="500")
+    assert setup.setup_broker_account("swim", ["SWiM"]) == (True, "")
+    limit.assert_called_once_with("swim_telegraf", 500)
+
+
+@pytest.mark.parametrize("value", ["0", "many", "-1"])
+def test_setup_broker_account_refuses_a_bad_queue_limit(mocker, value):
+    """A limit that is not a whole number above 0 changes nothing"""
+    grant, limit = broker_mocks(mocker, TELEGRAF_QUEUE_MAX_LENGTH=value)
+    success, message = setup.setup_broker_account("swim", ["SWiM"])
+    assert not success
+    assert "TELEGRAF_QUEUE_MAX_LENGTH" in message
+    grant.assert_not_called()
+    limit.assert_not_called()
 
 
 def test_setup_database_runs_in_the_group_database(mocker):

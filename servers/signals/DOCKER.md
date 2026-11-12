@@ -16,8 +16,15 @@ services:
     volumes:
       - ./signals.yaml:/dtaas/signals/signals.yaml:ro
     ports:
-      - "4004:4004"
+      - "127.0.0.1:4004:4004"
 ```
+
+The service has no sign-in yet, so the example publishes it on the loopback
+interface only. Put it behind Traefik before opening it to other hosts.
+
+The image sets `SIGNALS_HOSTNAME=0.0.0.0`, and a `SIGNALS_*` variable always
+overrides the same key in `signals.yaml`. A `hostname` in the mounted file
+is therefore ignored inside the container.
 
 The configuration keys are described in the
 [README](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/README.md).

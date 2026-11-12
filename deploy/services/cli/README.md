@@ -319,6 +319,15 @@ readings are buffered (`metric_batch_size = 10`, `max_undelivered_messages =
 10`) and flushes a partial batch every second. Keep these values equal to
 `mqtt.prefetch` if you change it.
 
+Each Telegraf session queue keeps at most `TELEGRAF_QUEUE_MAX_LENGTH`
+readings (100000 by default, in `config/services.env`) while Telegraf is not
+reading. `user add-history` sets the RabbitMQ policy `swim_telegraf-sessions`
+with `max-length` and the overflow `drop-head`, so a stalled Telegraf drops
+the oldest readings and cannot fill the broker's disk, which would block every
+publisher. One Telegraf process holds the accounts of every group, so a
+malformed twin file would stop ingestion for every group. The config check
+above keeps such a file out of `config/telegraf/telegraf.d`.
+
 ```bash
 dtaas-services twin remove -g swim -t room_0224
 ```

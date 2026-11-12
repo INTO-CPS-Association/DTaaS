@@ -1,10 +1,12 @@
 """Set up the history of one group: broker account, database and data source."""
 
+from ..config import Config
 from ..secret_files import ensure_password
 from ..services.rabbitmq_accounts import (
     NOTHING,
     ensure_user,
     grant_mqtt_account,
+    limit_session_queues,
     project_read_pattern,
     validate_projects,
 )
@@ -19,18 +21,43 @@ from .roles import ensure_roles, grant_history
 from .schema import CORE_MIGRATIONS, apply_migrations
 
 
+# Readings one Telegraf session queue keeps while Telegraf is not reading.
+# At one reading a second per device that is about a day for one device.
+DEFAULT_QUEUE_MAX_LENGTH = 100_000
+
+
+def queue_max_length(config: Config) -> int:
+    """The session queue limit of TELEGRAF_QUEUE_MAX_LENGTH, or the default."""
+    value = config.env.get("TELEGRAF_QUEUE_MAX_LENGTH") or str(DEFAULT_QUEUE_MAX_LENGTH)
+    if not value.isdigit() or int(value) < 1:
+        raise ValueError("TELEGRAF_QUEUE_MAX_LENGTH must be a whole number above 0")
+    return int(value)
+
+
 def setup_broker_account(group: str, projects: list[str]) -> tuple[bool, str]:
     """Make <group>_telegraf in RabbitMQ, reading only the group's projects.
+
+    Its session queues get a length limit, so a stalled Telegraf cannot fill
+    the broker's disk.
 
     Returns:
         Tuple of (success, error message if any)
     """
+    try:
+        max_length = queue_max_length(Config())
+    except ValueError as e:
+        return False, str(e)
     account = telegraf_account(group)
     password = ensure_password("telegraf", "rabbitmq", account)
     success, error_msg = ensure_user(account, password)
     if not success:
         return False, error_msg
-    return grant_mqtt_account(account, NOTHING, project_read_pattern(projects))
+    success, error_msg = grant_mqtt_account(
+        account, NOTHING, project_read_pattern(projects)
+    )
+    if not success:
+        return False, error_msg
+    return limit_session_queues(account, max_length)
 
 
 def setup_database(group: str) -> list[str]:
