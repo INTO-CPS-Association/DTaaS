@@ -33,9 +33,9 @@ servers/signals/
 └── test/                          # Unit and end-to-end tests
 ```
 
-## Build, Test and Publish
+## Build and Test
 
 The commands are in `servers/signals/README.md`. The `signals-ms.yml`
-workflow runs the lint, build and tests, checks the health route of the
-built service and of the Docker image. On a push to a `feature/*` or
-`release-v*` branch it publishes the npm package and the `signals-ms` image.
+workflow runs the lint, build and tests, and checks the health route of the
+built service and of the Docker image. The npm package and the image are not
+published yet.

@@ -4,7 +4,8 @@ import type Config from './config.service.js';
 // including one issued to an unrelated OAuth application.
 function acceptsAnyClient(config: Config): boolean {
   return (
-    config.get('gitlab-url') !== '' && config.get('gitlab-client-id') === ''
+    config.get('gitlab-url') !== '' &&
+    config.get('gitlab-client-id').length === 0
   );
 }
 
@@ -60,7 +61,8 @@ export function startupErrors(config: Config): string[] {
   }
   return [
     'gitlab-client-id is not set, so tokens of every OAuth application would be accepted. ' +
-      'Set it to the Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js, ' +
+      "Set it to the Application ID of the gateway's own OAuth application, and while the client still sends its own token, " +
+      'also to the Application ID of the DTaaS client, REACT_APP_CLIENT_ID in client.js, ' +
       'or set allow-any-gitlab-client to true on a local development stack',
   ];
 }

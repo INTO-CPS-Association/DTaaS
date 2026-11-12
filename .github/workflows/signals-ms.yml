@@ -16,7 +16,7 @@ name: Signals microservice
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # Cancel superseded pull request runs, never a publish on push.
+  # Cancel superseded pull request runs.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -27,6 +27,8 @@ permissions:
   contents: read
 
 jobs:
+  # The npm package and the Docker image are not published yet, as the
+  # maintainer asked in #1913. The jobs check the build and the image only.
   test-signals-ms:
     permissions:
       contents: read
@@ -130,112 +132,3 @@ jobs:
     with:
       image-name: signals-ms
       dockerfile: signals.dockerfile
-
-  get-version:
-    permissions:
-      contents: read
-    name: Get version and variables
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout Repository
-        # v7.0.1
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - name: Install jq
-        run: sudo apt-get install -y jq
-      - name: get version
-        id: get-version
-        run: |
-          version=$(jq -r '.version' ./servers/signals/package.json)
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "node-version=$NODE_VERSION" >> "$GITHUB_OUTPUT"
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
-      node-version: ${{ steps.get-version.outputs.node-version }}
-
-  publish-package-github:
-    permissions:
-      contents: read
-      packages: write
-    if: |
-      github.event_name == 'push' &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
-
-    name: Publish to GitHub Packages
-    needs: [test-signals-ms, get-version]
-    uses: ./.github/workflows/publish-npm.yml
-    with:
-      node-version: ${{ needs.get-version.outputs.node-version }}
-      registry-url: 'https://npm.pkg.github.com/'
-      directory: servers/signals
-      package-name: ${{ vars.NPM_SIGNALS_PACKAGE_NAME || '' }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-package-npm:
-    permissions:
-      contents: read
-      packages: write
-    if: |
-      github.event_name == 'push' &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
-
-    name: Publish to NPM
-    needs: [get-version, test-signals-ms]
-    uses: ./.github/workflows/publish-npm.yml
-    with:
-      node-version: ${{ needs.get-version.outputs.node-version }}
-      registry-url: 'https://registry.npmjs.org'
-      directory: servers/signals
-      package-name: ${{ vars.NPM_SIGNALS_PACKAGE_NAME || '' }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish-docker-image-ghcr:
-    permissions:
-      contents: read
-      packages: write
-    if: |
-      github.event_name == 'push' &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
-
-    name: Publish Docker image (GHCR)
-    needs: [get-version, test-signals-ms, build-docker-image]
-    uses: ./.github/workflows/docker-ghcr.yml
-    with:
-      image-name: signals-ms
-      version: ${{ needs.get-version.outputs.version }}
-      dockerfile: signals.dockerfile
-    secrets: inherit
-
-  publish-docker-image-dockerhub:
-    permissions:
-      contents: read
-    if: |
-      github.event_name == 'push' &&
-      (
-        startsWith(github.ref, 'refs/heads/feature/') ||
-        startsWith(github.ref, 'refs/heads/release-v')
-      )
-
-    name: Publish Docker image (DockerHub)
-    needs: [get-version, test-signals-ms, build-docker-image]
-    uses: ./.github/workflows/docker-dockerhub.yml
-    with:
-      image-name: signals-ms
-      version: ${{ needs.get-version.outputs.version }}
-      dockerfile: signals.dockerfile
-      readme-file: servers/signals/DOCKER.md
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_SCOPE: ${{ secrets.DOCKERHUB_SCOPE }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

@@ -8,6 +8,7 @@ import { CONFIG_KEYS, envNameOf } from 'src/config/schema';
 const originalEnv = { ...process.env };
 
 describe('Config', () => {
+  const cwd = process.cwd();
   let tempDir = '';
 
   async function yamlFile(text: string): Promise<string> {
@@ -21,9 +22,12 @@ describe('Config', () => {
     process.env = { ...originalEnv };
     CONFIG_KEYS.forEach((key) => delete process.env[envNameOf(key)]);
     delete process.env.SIGNALS_CONFIG_PATH;
+    // A signals.yaml next to the code must not change the defaults.
+    process.chdir(tempDir);
   });
 
   afterEach(async () => {
+    process.chdir(cwd);
     process.env = { ...originalEnv };
     await rm(tempDir, { recursive: true, force: true });
   });
@@ -50,13 +54,7 @@ describe('Config', () => {
 
   it('reads signals.yaml from the working directory when no file is named', async () => {
     await yamlFile('port: 4400\n');
-    const cwd = process.cwd();
-    process.chdir(tempDir);
-    try {
-      expect(new Config().get('port')).toBe(4400);
-    } finally {
-      process.chdir(cwd);
-    }
+    expect(new Config().get('port')).toBe(4400);
   });
 
   it('lets SIGNALS_* variables override the YAML', async () => {
@@ -73,6 +71,34 @@ describe('Config', () => {
     expect(() => new Config().loadConfig(unknown)).toThrow();
     const badPort = await yamlFile('port: http\n');
     expect(() => new Config().loadConfig(badPort)).toThrow();
+  });
+
+  it.each(['port: 70000\n', 'port: true\n', 'port: 0\n', 'port: 4.5\n'])(
+    'refuses %j as a port',
+    async (text) => {
+      const file = await yamlFile(text);
+      expect(() => new Config().loadConfig(file)).toThrow();
+    },
+  );
+
+  it('reads a port given as text in SIGNALS_PORT', () => {
+    process.env.SIGNALS_PORT = '4500';
+    expect(new Config().get('port')).toBe(4500);
+  });
+
+  it('reads a list of OAuth applications from YAML or a comma-separated variable', async () => {
+    const yamlList = await yamlFile('gitlab-client-id: [gateway, client]\n');
+    const config = new Config();
+    config.loadConfig(yamlList);
+    expect(config.get('gitlab-client-id')).toEqual(['gateway', 'client']);
+    process.env.SIGNALS_GITLAB_CLIENT_ID = 'gateway, client';
+    expect(new Config().get('gitlab-client-id')).toEqual(['gateway', 'client']);
+    delete process.env.SIGNALS_GITLAB_CLIENT_ID;
+  });
+
+  it('refuses an access level below Reporter', async () => {
+    const guest = await yamlFile('gitlab-min-access-level: 10\n');
+    expect(() => new Config().loadConfig(guest)).toThrow();
   });
 
   it('accepts an empty YAML file and refuses a list', async () => {

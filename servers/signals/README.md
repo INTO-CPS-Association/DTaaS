@@ -15,8 +15,13 @@ and decides access first:
 | `GET /signals/stats` | What the user's ended streams forwarded and dropped |
 | `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else past samples as JSON, `502` when the database fails |
 
-A token is either a GitLab token, which GitLab is asked about, or a JWT of
-a Keycloak realm or Dex instance named in `oidc-providers`. A path is
+A token is either a GitLab token or a JWT of a Keycloak realm or Dex
+instance named in `oidc-providers`. GitLab is asked about a GitLab token
+with `/oauth/token/info`, and the token must belong to an application in
+`gitlab-client-id` and carry a scope of `gitlab-scopes`. The token is never
+logged, written to disk or sent anywhere but `gitlab-url`. A project is
+readable with the Reporter role at least, since every signed-in user can
+read a project with internal visibility. A path is
 readable when a twin in a readable project of the DTaaS group declares it
 in its committed `visualisation.json` and the topic starts with a prefix of
 the owner's group in `owners-file`, which `dtaas-services` writes. Every
