@@ -192,8 +192,9 @@ plans what the SDK gives every extension.
   gateway (RFC 9068 and RFC 9700).
 - A user token can carry the `api` scope, a full-power credential. The gateway
   never logs it, never writes it to disk and never forwards it. The gateway's
-  own GitLab token, in `gitlab-token-file`, has the `read_api` scope only, and
-  the guide states what it can read.
+  own GitLab token, in `gitlab-token-file`, has the `read_api` scope only. The
+  gateway warns at start when it has more, and the guide states what it can
+  read.
 - Until step 8 of the access plan moves the tokens to a website backend, the
   browser holds the token and sends it to the gateway. RFC 10017 recommends that
   backend for applications with personal or business data.

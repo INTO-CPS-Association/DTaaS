@@ -9,7 +9,9 @@ import { pathToFileURL } from 'node:url';
 import AppModule from './app.module.js';
 import Config from './config/config.service.js';
 import { buildCorsOptions } from './config/cors.js';
+import GitLabClient from './auth/gitlab.client.js';
 import startupWarnings, { startupErrors } from './config/startup-warnings.js';
+import ownTokenWarnings from './config/token-scope-check.js';
 
 /*
 The js file extension in import is a limitation of typescript.
@@ -61,6 +63,9 @@ async function bootstrap() {
   startupWarnings(config).forEach((warning) => Logger.warn(warning, 'Signals'));
   configureSignalsApp(app, config);
   await app.listen(config.get('port'), config.get('hostname'));
+  // Checked after listen, so a slow GitLab does not delay the start.
+  const tokenWarnings = await ownTokenWarnings(config, app.get(GitLabClient));
+  tokenWarnings.forEach((warning) => Logger.warn(warning, 'Signals'));
 }
 
 if (isEntrypoint(process.argv[1])) {
