@@ -42,7 +42,11 @@ services:
   # needs config/signals.yaml and the three files of config/secrets/,
   # described in CONFIG.md.
   signals:
-    image: intocps/signals-ms:0.1.0
+    # The image is not published yet, so Compose builds it from this checkout
+    build:
+      context: ../../../..
+      dockerfile: developer/check/signals.dockerfile
+    image: dtaas/signals-ms:local
     restart: unless-stopped
     profiles:
       - signals

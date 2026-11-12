@@ -1,6 +1,8 @@
 # Signals Gateway in Docker
 
-The gateway is published as the `intocps/signals-ms` image. It listens on port
+The gateway image is not published yet. Docker Compose builds it as
+`dtaas/signals-ms:local` from `developer/check/signals.dockerfile` in the
+checkout of the repository. It listens on port
 `4004`, serves every route under `/signals` and runs as the unprivileged
 `node` user (uid 1000). It reads its configuration from
 `/dtaas/signals/signals.yaml`.
@@ -88,13 +90,16 @@ certificate of the authority into the container and name it in
 
 ## On Its Own
 
-To run the gateway without a package, mount the configuration and the secrets
-and publish the port:
+To run the gateway without a package, build the image from the root of the
+repository with
+`docker build -f developer/check/signals.dockerfile -t dtaas/signals-ms:local .`,
+mount the configuration and the secrets and publish the port on the loopback
+interface. Put it behind Traefik before other hosts reach it:
 
 ```yaml
 services:
   signals-ms:
-    image: intocps/signals-ms:0.1.0
+    image: dtaas/signals-ms:local
     restart: unless-stopped
     volumes:
       - ./signals.yaml:/dtaas/signals/signals.yaml:ro
@@ -103,7 +108,7 @@ services:
       - postgresql_dtaas_signals_ro_password
       - signals_owners.json
     ports:
-      - "4004:4004"
+      - "127.0.0.1:4004:4004"
 
 secrets:
   rabbitmq_dtaas_signals_password:

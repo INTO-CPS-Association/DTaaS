@@ -1,0 +1,10 @@
+# The image is built from the root of the repository, but only the gateway's
+# sources belong in the context: never local dependencies, build output or a
+# local signals.yaml, which may name secret files.
+*
+!servers/signals
+**/node_modules
+**/dist
+**/coverage
+servers/signals/signals.yaml
+servers/signals/config/signals.yaml
