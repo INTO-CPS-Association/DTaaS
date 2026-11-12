@@ -46,7 +46,10 @@ function useFileUrl(file: string) {
   return url?.file === file ? url : undefined;
 }
 
-function Preview({ mounted, file }: { mounted: MountedPreview; file: string }) {
+function Preview({
+  mounted,
+  file,
+}: Readonly<{ mounted: MountedPreview; file: string }>) {
   const resolved = useFileUrl(file);
   if (!resolved) return <CircularProgress sx={{ m: 2 }} />;
   if (!resolved.url) {
