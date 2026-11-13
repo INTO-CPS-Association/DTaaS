@@ -2,8 +2,8 @@
  * The events of a signals gateway stream, and what each one does.
  *
  * `state` is the gateway's own connection to the broker, `sample` one broker
- * message forwarded as the raw text the broker carried, and `refused` the
- * paths the signed-in user may not read. Anything else, or data that is not
+ * message forwarded as the raw text the broker carried, or a past reading
+ * marked `backfill`, and `refused` the paths the signed-in user may not read. Anything else, or data that is not
  * JSON, is skipped, so a newer gateway can add events.
  */
 
@@ -55,7 +55,10 @@ function deliverSample(data: Record<string, unknown>, target: StreamTarget) {
   const twin = typeof data.twin === 'string' ? data.twin : '';
   const sample = sampleFrom(data.path, data.payload, channel, receivedAt, twin);
   if (!sample) return;
-  recordDelivery({ path: data.path, ts: sample.ts, receivedAt, arrivedAt });
+  // A past reading the gateway sent from its history to fill a gap did not
+  // travel live, so it is left out of the delivery timings.
+  if (data.backfill !== true)
+    recordDelivery({ path: data.path, ts: sample.ts, receivedAt, arrivedAt });
   target.sinksOf(data.path).forEach((sink) => sink(sample));
 }
 
