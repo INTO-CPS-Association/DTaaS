@@ -8,8 +8,10 @@ import path from 'node:path';
 import AppModule from 'src/app.module';
 import { SIGNAL_BROKER } from 'src/broker/broker';
 import Config from 'src/config/config.service';
+import PostgresClient from 'src/history/postgres.client';
 import { configureSignalsApp } from 'src/main';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
+import FakePostgres, { rowsFrom } from 'test/helpers/fake-postgres';
 import { openStream, waitFor } from 'test/helpers/sse-client';
 import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
 import { PUMP, visualisationOf } from 'test/helpers/twins';
@@ -21,8 +23,10 @@ const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
 const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
 const CAROL_TOKEN = 'carol-oauth-token-3333333333';
 const FLOW = 'alice/pump/flow';
-const SPEED = 'carol/fan/speed';
-const RANGE = { paths: [FLOW], channel: 'measured', from: 0, to: 1000 };
+const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
+// History is kept per device, so the cross-group paths are device topics.
+const SPEED = 'carol/CTO/room/0101/seat1/S/S-0002/temperature';
+const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
 const ENV_KEYS = [
   'SIGNALS_GITLAB_URL',
   'SIGNALS_GITLAB_CLIENT_ID',
@@ -61,7 +65,12 @@ describe('Signals gateway e2e', () => {
       },
     },
     [
-      { id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } },
+      {
+        id: 10,
+        owner: 'alice',
+        sha: 'c0ffee',
+        twins: { pump: PUMP, room: visualisationOf([ROOM]) },
+      },
       {
         id: 11,
         owner: 'carol',
@@ -70,12 +79,13 @@ describe('Signals gateway e2e', () => {
         // owners file does not give to carol.
         twins: {
           fan: visualisationOf([SPEED]),
-          copy: visualisationOf([FLOW]),
+          copy: visualisationOf([ROOM]),
         },
       },
     ],
   );
   const broker = new FakeBroker();
+  const postgres = new FakePostgres(() => rowsFrom(0, 2));
   const logger = new CapturingLogger();
   let app: NestExpressApplication;
   let base = '';
@@ -107,6 +117,8 @@ describe('Signals gateway e2e', () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(SIGNAL_BROKER)
       .useValue(broker)
+      .overrideProvider(PostgresClient)
+      .useValue(postgres.asClient())
       .compile();
     app = moduleRef.createNestApplication<NestExpressApplication>({
       bodyParser: false,
@@ -180,17 +192,22 @@ describe('Signals gateway e2e', () => {
     const response = await stats(ALICE_TOKEN);
     await expect(response.json()).resolves.toEqual({
       forwarded: 1,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
   });
 
-  it('answers 501 on range for a declared path of a readable project', async () => {
+  it("serves the history of a readable twin from its group's database", async () => {
     const response = await post('range', ALICE_TOKEN, RANGE);
-    expect(response.status).toBe(501);
+    expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      status: 'not-implemented',
-      route: 'range',
+      samples: [
+        { path: ROOM, channel: 'measured', ts: 0, value: 0, quality: null },
+        { path: ROOM, channel: 'measured', ts: 1, value: 1, quality: null },
+      ],
+      truncated: false,
     });
+    expect(postgres.queries[0].database).toBe('alice');
   });
 
   it('refuses with 403 an undeclared path and a reader without the project', async () => {
@@ -206,11 +223,11 @@ describe('Signals gateway e2e', () => {
   // Two groups on every route: each reads its own paths and is refused the
   // other's, also through a twin that declares a topic of the other group.
   it.each([
-    [ALICE_TOKEN, FLOW, SPEED],
-    [CAROL_TOKEN, SPEED, FLOW],
+    [ALICE_TOKEN, ROOM, SPEED, 'alice'],
+    [CAROL_TOKEN, SPEED, ROOM, 'carol'],
   ])(
     'serves each group its own paths and refuses the other group (%#)',
-    async (token, own, other) => {
+    async (token, own, other, group) => {
       const range = (p: string) => ({ ...RANGE, paths: [p] });
       const stream = await openStream(`${base}/signals/stream`, token, [own]);
       expect(stream.status).toBe(200);
@@ -222,11 +239,16 @@ describe('Signals gateway e2e', () => {
       expect(text).not.toContain(`"path":"${other}"`);
       stream.close();
       await waitFor(() => broker.bindings.length === 0);
-      expect((await post('range', token, range(own))).status).toBe(501);
+      const before = postgres.queries.length;
+      expect((await post('range', token, range(own))).status).toBe(200);
+      expect(
+        postgres.queries.slice(before).map((query) => query.database),
+      ).toEqual([group]);
       expect((await post('stream', token, { paths: [other] })).status).toBe(
         403,
       );
       expect((await post('range', token, range(other))).status).toBe(403);
+      expect(postgres.queries.length).toBe(before + 1);
     },
   );
 
@@ -238,6 +260,52 @@ describe('Signals gateway e2e', () => {
     expect((await post('stream', ALICE_TOKEN, { paths: many })).status).toBe(
       413,
     );
+  });
+
+  it('fills the gap since Last-Event-ID from the history, then goes live', async () => {
+    const lastId = Date.now() - 2000;
+    const before = postgres.queries.length;
+    const stream = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      { 'Last-Event-ID': String(lastId) },
+    );
+    const text = await stream.readUntil('"backfill":true');
+    expect(text.indexOf('"state":"live"')).toBeLessThan(
+      text.indexOf('"backfill":true'),
+    );
+    expect(text).not.toContain('event: gap');
+    const [query] = postgres.queries.slice(before);
+    expect(query.values[2]).toEqual(new Date(lastId - 5000));
+    stream.close();
+    await waitFor(() => broker.bindings.length === 0);
+  });
+
+  it('reports a gap longer than resume-max-gap and ignores a malformed id', async () => {
+    const old = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      {
+        'Last-Event-ID': '1',
+      },
+    );
+    expect(await old.readUntil('event: gap')).toContain('"backfill":true');
+    old.close();
+    const before = postgres.queries.length;
+    const odd = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      {
+        'Last-Event-ID': 'yesterday',
+      },
+    );
+    await odd.readUntil('"state":"live"');
+    odd.close();
+    await waitFor(() => broker.bindings.length === 0);
+    expect(postgres.queries.length).toBe(before);
   });
 
   it('refuses a body above the payload limit', async () => {

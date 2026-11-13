@@ -14,6 +14,8 @@ import { SIGNAL_BROKER } from './broker/broker.js';
 import MqttBroker from './broker/mqtt.broker.js';
 import Config from './config/config.service.js';
 import ConfigModule from './config/config.module.js';
+import HistoryService from './history/history.service.js';
+import PostgresClient from './history/postgres.client.js';
 import SignalsController from './signals.controller.js';
 import SocketAddressThrottlerGuard from './socket-address-throttler.guard.js';
 import DeliveryStats from './stream/delivery-stats.js';
@@ -53,6 +55,8 @@ import StreamSlots from './stream/stream-slots.js';
     StreamSlots,
     DeliveryStats,
     StreamService,
+    PostgresClient,
+    HistoryService,
     { provide: APP_GUARD, useClass: SocketAddressThrottlerGuard },
   ],
 })

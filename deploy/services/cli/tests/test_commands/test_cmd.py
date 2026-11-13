@@ -16,11 +16,17 @@ def _listed_commands(help_output: str) -> list[str]:
 
 
 def test_services_help_lists_nouns_in_workflow_order(runner):
-    """Root help shows only the four nouns, in workflow order"""
+    """Root help shows only the five nouns, in workflow order"""
     result = runner.invoke(services, ["--help"])
     assert result.exit_code == 0
     assert "Manage DTaaS platform services" in result.output
-    assert _listed_commands(result.output) == ["project", "host", "service", "user"]
+    assert _listed_commands(result.output) == [
+        "project",
+        "host",
+        "service",
+        "user",
+        "twin",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -29,7 +35,8 @@ def test_services_help_lists_nouns_in_workflow_order(runner):
         ("project", ["generate"]),
         ("host", ["setup"]),
         ("service", ["clean", "install", "remove", "restart", "start", "status", "stop"]),
-        ("user", ["add", "add-signals", "reset-password"]),
+        ("user", ["add", "add-history", "add-signals", "reset-password"]),
+        ("twin", ["register", "remove"]),
     ],
 )
 def test_noun_help_lists_verbs(runner, noun, verbs):

@@ -204,3 +204,10 @@ def build_clean_status_message(certs: bool) -> str:
     if certs:
         return "[bold yellow]Removing data, log, and cert files...[/bold yellow]"
     return "[bold yellow]Removing data and log files...[/bold yellow]"
+
+
+def projects_option(help_text: str):
+    """The repeatable --project option of the commands that grant topics."""
+    return click.option(
+        "--project", "-p", "projects", multiple=True, required=True, help=help_text
+    )

@@ -1,0 +1,74 @@
+# Telegraf file of the twin $twin of the group $group.
+# Made by dtaas-services twin register from one template. Do not edit by hand:
+# a malformed file stops the whole agent on reload.
+
+# The secrets are the files that the Telegraf container mounts at
+# /run/secrets. TELEGRAF_SECRETS_DIR only serves the check before writing.
+[[secretstores.docker]]
+  id = "$store"
+  path = "$${TELEGRAF_SECRETS_DIR:-/run/secrets}"
+
+[[inputs.mqtt_consumer]]
+  servers = ["$mqtt_server"]
+  tls_server_name = "$tls_server_name"
+  # Exactly eight levels, so command topics with nine never arrive
+  topics = ["$topic"]
+  topic_tag = ""
+  qos = 1
+  # The broker keeps the readings that arrive while the agent reloads
+  persistent_session = true
+  client_id = "$client_id"
+  username = "$account"
+  password = "@{$store:rabbitmq_${account}_password}"
+  name_override = "reading"
+  data_format = "json_v2"
+  # A broker that is down during a reload must not stop the whole agent
+  startup_error_behavior = "retry"
+  # The broker sends at most mqtt.prefetch (10) unacknowledged QoS 1
+  # messages and Telegraf acknowledges them only once the output wrote them.
+  # Ten in flight keeps memory bounded and matches the batch size below.
+  max_undelivered_messages = 10
+
+  [[inputs.mqtt_consumer.topic_parsing]]
+    topic = "$topic"
+    tags = "_/_/_/_/_/_/device_id/quantity"
+
+  [[inputs.mqtt_consumer.json_v2]]
+    timestamp_path = "ts"
+    timestamp_format = "rfc3339"
+    timestamp_timezone = "UTC"
+    [[inputs.mqtt_consumer.json_v2.tag]]
+      path = "unit"
+    [[inputs.mqtt_consumer.json_v2.field]]
+      path = "value"
+      type = "float"
+
+  # The routing tag that the output below accepts
+  [inputs.mqtt_consumer.tags]
+    dtaas_twin = "$route"
+
+  # Tag keys in one tagpass are joined by OR, so the registered devices are
+  # selected here and the twin's routing tag in the output. Together a
+  # reading reaches the database only from a registered device of this twin.
+  [inputs.mqtt_consumer.tagpass]
+    device_id = $device_ids
+
+  [inputs.mqtt_consumer.tagdrop]
+    quantity = ["status"]
+
+[[outputs.postgresql]]
+  connection = "host=$postgres_host port=$postgres_port sslmode=$postgres_sslmode dbname=$group user=$account password=@{$store:postgresql_${account}_password}"
+  timestamp_column_type = "timestamp with time zone"
+  startup_error_behavior = "retry"
+  # A full batch is written at once, so the ten messages in flight are
+  # acknowledged without waiting for the agent's 10 s flush. The 1 s flush
+  # writes a partial batch when a twin publishes less.
+  metric_batch_size = 10
+  flush_interval = "1s"
+  # The tables come from dtaas-services, so Telegraf only inserts
+  create_templates = []
+  add_column_templates = []
+  taginclude = ["device_id", "quantity", "unit"]
+
+  [outputs.postgresql.tagpass]
+    dtaas_twin = ["$route"]

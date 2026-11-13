@@ -46,6 +46,9 @@ services:
     volumes:
       - './data/grafana:/var/lib/grafana'
       - './certs:/etc/ssl/certs:ro'
+      - './config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro'
+      # Passwords of the <group>_view_ro accounts, read through $__file{...}
+      - './secrets/grafana:/run/secrets:ro'
     environment:
       GF_AUTH_BASIC_ENABLED: false
       GF_AUTH_PROXY_ENABLED: false
@@ -114,6 +117,32 @@ services:
         -c ssl_cert_file=/etc/ssl/postgres.crt \
         -c ssl_key_file=/etc/ssl/postgres.key
       '
+    networks:
+      - platform-services
+
+  telegraf:
+    image: 'telegraf:1.40.2'
+    container_name: telegraf
+    restart: always
+    # The secret files are mode 600 and owned by the user that runs
+    # dtaas-services, so Telegraf runs as that user to read them
+    user: '${USERID}:${GROUPID}'
+    command:
+      - telegraf
+      - --config
+      - /etc/telegraf/telegraf.conf
+      - --config-directory
+      - /etc/telegraf/telegraf.d
+      - --watch-config
+      - notify
+    volumes:
+      - './config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro'
+      - './config/telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro'
+      # Passwords of the <group>_telegraf accounts, read by secretstores.docker
+      - './secrets/telegraf:/run/secrets:ro'
+    depends_on:
+      - rabbitmq
+      - postgres
     networks:
       - platform-services
 

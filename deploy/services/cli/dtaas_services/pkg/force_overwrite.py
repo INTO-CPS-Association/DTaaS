@@ -31,6 +31,7 @@ PROTECTED_CONFIG_NAMES = {
     "mongod.conf.secure",
     "rabbitmq.conf",
     "rabbitmq.enabled_plugins",
+    "telegraf.conf",
 }
 
 FORCE_REVIEW_HINT = (
