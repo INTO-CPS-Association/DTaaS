@@ -17,7 +17,12 @@ import SignalsAuthGuard, {
 import AccessService from './authz/access.service.js';
 import type { Action, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
-import { parseRangeRequest, parseStreamRequest } from './dto/requests.js';
+import {
+  parseRangeRequest,
+  parseStreamRequest,
+  twinOf,
+  type TwinRef,
+} from './dto/requests.js';
 
 export type PlaceholderAnswer = {
   status: 'not-implemented';
@@ -55,7 +60,7 @@ export default class SignalsController {
     @Req() request: AuthenticatedRequest,
   ): Promise<PlaceholderAnswer> {
     const paths = parseStreamRequest(body, this.pathLimits());
-    await this.authorise(request, 'stream', paths);
+    await this.authorise(request, 'stream', paths, twinOf(body));
     return { status: 'not-implemented', route: 'stream' };
   }
 
@@ -71,7 +76,7 @@ export default class SignalsController {
       maxSpan: this.config.get('range-max-span'),
     };
     const { paths } = parseRangeRequest(body, limits);
-    await this.authorise(request, 'range', paths);
+    await this.authorise(request, 'range', paths, twinOf(body));
     return { status: 'not-implemented', route: 'range' };
   }
 
@@ -80,11 +85,13 @@ export default class SignalsController {
     request: AuthenticatedRequest,
     action: Action,
     paths: string[],
+    twin?: TwinRef,
   ): Promise<void> {
     const decision = await this.access.decide(
       subjectOf(request),
       action,
       paths,
+      twin,
     );
     if (decision.allowed.length === 0) throw new ForbiddenException();
   }

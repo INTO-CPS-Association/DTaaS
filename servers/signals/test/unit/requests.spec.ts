@@ -1,6 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 import { BadRequestException, PayloadTooLargeException } from '@nestjs/common';
-import { parseRangeRequest, parseStreamRequest } from 'src/dto/requests';
+import {
+  parseRangeRequest,
+  parseStreamRequest,
+  twinOf,
+} from 'src/dto/requests';
 
 const LIMITS = { maxPaths: 3, maxPathLength: 20 };
 const RANGE_LIMITS = { ...LIMITS, maxSpan: 1000 };
@@ -23,6 +27,15 @@ describe('parseStreamRequest', () => {
     ['an over-long path', { paths: ['x'.repeat(21)] }],
     ['a path that is not text', { paths: [42] }],
     ['an unknown field', { paths: ['a'], extra: 1 }],
+    ['a twin without a name', { paths: ['a'], twin: { owner: 'alice' } }],
+    [
+      'a twin name with a slash',
+      { paths: ['a'], twin: { owner: 'a', name: 'b/c' } },
+    ],
+    [
+      'a twin with an unknown field',
+      { paths: ['a'], twin: { owner: 'a', name: 'b', x: 1 } },
+    ],
   ])('refuses %s with 400', (_label, body) => {
     expect(() => parseStreamRequest(body, LIMITS)).toThrow(BadRequestException);
   });
@@ -51,5 +64,28 @@ describe('parseRangeRequest', () => {
     expect(() => parseRangeRequest(body, RANGE_LIMITS)).toThrow(
       BadRequestException,
     );
+  });
+});
+
+describe('twinOf', () => {
+  it('reads the twin a request names', () => {
+    const twin = { owner: 'alice', name: 'pump_twin' };
+    expect(parseStreamRequest({ paths: ['a'], twin }, LIMITS)).toEqual(['a']);
+    expect(twinOf({ paths: ['a'], twin })).toEqual(twin);
+  });
+
+  it('answers undefined for a request without a twin', () => {
+    expect(twinOf({ paths: ['a'] })).toBeUndefined();
+  });
+
+  it('is accepted on a range request too', () => {
+    const body = {
+      paths: ['a/b'],
+      channel: 'measured',
+      from: 0,
+      to: 10,
+      twin: { owner: 'alice', name: 'pump' },
+    };
+    expect(parseRangeRequest(body, RANGE_LIMITS).paths).toEqual(['a/b']);
   });
 });
