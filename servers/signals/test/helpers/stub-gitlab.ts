@@ -15,6 +15,8 @@ export type StubUser = {
   expiresIn?: number;
   /** The OAuth application the token was issued to. */
   application?: string;
+  /** Projects the user may write, Developer or above. All of them unless set. */
+  writable?: number[];
   /** The scopes of the token, api unless a test sets them. */
   scope?: string[];
 };
@@ -71,8 +73,9 @@ export default class StubGitLab {
         answer: (_m, u) => ({ id: u.id, username: u.username, email: u.email }),
       },
       {
-        pattern: /^\/api\/v4\/groups\/DTaaS\/projects\?/,
-        answer: (_m, u) => this.projectsOf(u),
+        pattern: /^\/api\/v4\/groups\/DTaaS\/projects\?(.*)$/,
+        answer: (m, u) =>
+          this.projectsOf(u, m[1].includes('min_access_level=30')),
       },
     ];
   }
@@ -130,9 +133,10 @@ export default class StubGitLab {
     return send(res, 404, { message: '404 Not Found' });
   }
 
-  private projectsOf(user: StubUser) {
+  private projectsOf(user: StubUser, writes: boolean) {
+    const ids = writes ? (user.writable ?? user.projects) : user.projects;
     return this.projects
-      .filter((p) => user.projects.includes(p.id))
+      .filter((p) => ids.includes(p.id))
       .map((p) => ({
         id: p.id,
         path: p.owner,

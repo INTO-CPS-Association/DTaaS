@@ -24,8 +24,12 @@ const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
 const CAROL_TOKEN = 'carol-oauth-token-3333333333';
 const FLOW = 'alice/pump/flow';
 const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
+const VALVE = 'alice/CTO/plant/01/loop1/A/A-0001/position';
+const READER_TOKEN = 'erin-reporter-token-4444444444';
+const GAUGE = 'alice/CTO/plant/01/loop1/A/A-0002/position';
 // History is kept per device, so the cross-group paths are device topics.
 const SPEED = 'carol/CTO/room/0101/seat1/S/S-0002/temperature';
+const DAMPER = 'carol/CTO/plant/02/loop1/A/A-0003/position';
 const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
 const ENV_KEYS = [
   'SIGNALS_GITLAB_URL',
@@ -56,6 +60,13 @@ describe('Signals gateway e2e', () => {
       },
       [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
       [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
+      [READER_TOKEN]: {
+        id: 4,
+        username: 'erin',
+        email: 'erin@example.org',
+        projects: [10],
+        writable: [],
+      },
       [READ_USER_TOKEN]: { ...ALICE, projects: [10], scope: ['read_user'] },
       [CAROL_TOKEN]: {
         id: 3,
@@ -69,7 +80,12 @@ describe('Signals gateway e2e', () => {
         id: 10,
         owner: 'alice',
         sha: 'c0ffee',
-        twins: { pump: PUMP, room: visualisationOf([ROOM]) },
+        twins: {
+          pump: PUMP,
+          room: visualisationOf([ROOM]),
+          valve: visualisationOf([VALVE], 'setpoint'),
+          gauge: visualisationOf([GAUGE]),
+        },
       },
       {
         id: 11,
@@ -79,7 +95,9 @@ describe('Signals gateway e2e', () => {
         // owners file does not give to carol.
         twins: {
           fan: visualisationOf([SPEED]),
+          damper: visualisationOf([DAMPER], 'setpoint'),
           copy: visualisationOf([ROOM]),
+          copy_valve: visualisationOf([VALVE], 'setpoint'),
         },
       },
     ],
@@ -170,7 +188,7 @@ describe('Signals gateway e2e', () => {
     const opening = await stream.readUntil('"state":"live"');
     expect(opening.startsWith('retry: 5000\n\n')).toBe(true);
     expect(opening).toContain('event: refused\ndata: {"paths":["bob/secret"]}');
-    broker.publish(FLOW, reading(3));
+    broker.deliver(FLOW, reading(3));
     const text = await stream.readUntil('event: sample');
     expect(text).toContain(
       '"path":"alice/pump/flow","twin":"pump","channel":"measured"',
@@ -220,6 +238,29 @@ describe('Signals gateway e2e', () => {
     expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
   });
 
+  it('sends a set point of a writer to the command topic of the device', async () => {
+    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
+    const response = await post('command', ALICE_TOKEN, body);
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({
+      status: 'sent',
+      topic: 'alice/CTO/plant/01/loop1/A/A-0001/cmd/set',
+    });
+    expect(JSON.parse(broker.published[0].body)).toMatchObject({ value: 40 });
+  });
+
+  it('refuses a command of a reader, and one to a path that takes none', async () => {
+    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
+    const sent = broker.published.length;
+    expect((await post('command', READER_TOKEN, body)).status).toBe(403);
+    const sensor = { ...body, path: ROOM };
+    expect((await post('command', ALICE_TOKEN, sensor)).status).toBe(400);
+    const readOnly = { ...body, path: GAUGE };
+    expect((await post('command', ALICE_TOKEN, readOnly)).status).toBe(403);
+    expect((await post('command', undefined, body)).status).toBe(401);
+    expect(broker.published).toHaveLength(sent);
+  });
+
   // Two groups on every route: each reads its own paths and is refused the
   // other's, also through a twin that declares a topic of the other group.
   it.each([
@@ -232,8 +273,8 @@ describe('Signals gateway e2e', () => {
       const stream = await openStream(`${base}/signals/stream`, token, [own]);
       expect(stream.status).toBe(200);
       await stream.readUntil('"state":"live"');
-      broker.publish(other, reading(4));
-      broker.publish(own, reading(5));
+      broker.deliver(other, reading(4));
+      broker.deliver(own, reading(5));
       const text = await stream.readUntil('event: sample');
       expect(text).toContain(`"path":"${own}"`);
       expect(text).not.toContain(`"path":"${other}"`);
@@ -249,6 +290,27 @@ describe('Signals gateway e2e', () => {
       );
       expect((await post('range', token, range(other))).status).toBe(403);
       expect(postgres.queries.length).toBe(before + 1);
+    },
+  );
+
+  // A set point to the other group's device is refused, also when a twin of
+  // the sender's own project declares that device.
+  it.each([
+    [ALICE_TOKEN, VALVE, DAMPER],
+    [CAROL_TOKEN, DAMPER, VALVE],
+  ])(
+    'sends each group a set point of its own and refuses the other group (%#)',
+    async (token, own, other) => {
+      const body = (p: string) => ({
+        path: p,
+        command: 'set',
+        value: 40,
+        unit: '%',
+      });
+      const sent = broker.published.length;
+      expect((await post('command', token, body(own))).status).toBe(202);
+      expect((await post('command', token, body(other))).status).toBe(403);
+      expect(broker.published).toHaveLength(sent + 1);
     },
   );
 

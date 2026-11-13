@@ -44,6 +44,12 @@ class FakeClient extends EventEmitter {
     }));
   }
 
+  readonly published: Array<{ topic: string; qos: unknown }> = [];
+
+  async publishAsync(topic: string, _body: string, options: { qos: number }) {
+    this.published.push({ topic, qos: options.qos });
+  }
+
   async unsubscribeAsync(topics: string[]) {
     this.unsubscribed.push(topics);
   }
@@ -199,6 +205,22 @@ describe('MqttBroker', () => {
     expect(() =>
       clients[0].emit('error', new Error('keepalive timeout')),
     ).not.toThrow();
+  });
+
+  it('publishes a command at least once on its own connection, whose loss leaves the streams alone', async () => {
+    const broker = brokerWith();
+    const watcher = listener();
+    await broker.subscribe(['a/b'], watcher.value);
+    await broker.publish('a/A/d/cmd/set', '{}');
+    expect(connections.map((c) => c.options.clientId)).toEqual([
+      expect.stringMatching(/^dtaas_signals_.+_stream$/),
+      expect.stringMatching(/^dtaas_signals_.+_command$/),
+    ]);
+    expect(clients[1].published).toEqual([{ topic: 'a/A/d/cmd/set', qos: 1 }]);
+    clients[1].emit('close');
+    expect(watcher.downs()).toBe(0);
+    await broker.publish('a/A/d/cmd/set', '{}');
+    expect(connections).toHaveLength(3);
   });
 
   it('ends the connection when the module stops', async () => {

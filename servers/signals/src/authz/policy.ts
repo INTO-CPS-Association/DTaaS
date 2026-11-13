@@ -8,17 +8,18 @@ export type Channel = (typeof CHANNELS)[number];
 
 /**
  * Who asks. The token lets a policy ask GitLab with the user's own rights.
- * The owners are set instead for a Keycloak or Dex sign-in.
+ * The owners and writers are set instead for a Keycloak or Dex sign-in.
  */
 export type Subject = {
   id: string;
   username: string;
   token: string;
   owners?: string[];
+  writers?: string[];
 };
 
-/** Both actions only read: live samples, or past samples. */
-export type Action = 'stream' | 'range';
+/** Read live samples, read past samples, or send data to a twin. */
+export type Action = 'stream' | 'range' | 'command';
 
 /**
  * One signal of one owner. Two owners may declare the same topic, so the

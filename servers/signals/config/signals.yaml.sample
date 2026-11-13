@@ -35,6 +35,8 @@ gitlab-branch: master
 # Lower values are refused, since every signed-in user can read a project
 # with internal visibility.
 gitlab-min-access-level: 20
+# Lowest GitLab access level that may send data to a twin (30 = Developer).
+gitlab-min-write-level: 30
 # Timeout of one GitLab call, in milliseconds.
 gitlab-timeout: 5000
 # When set, the request must carry this header with the email of the token's
@@ -98,6 +100,8 @@ mqtt-user: dtaas_signals
 mqtt-password-file: /run/secrets/rabbitmq_dtaas_signals_password
 # Timeout of one connection attempt, in milliseconds.
 mqtt-connect-timeout: 10000
+# How long a command may wait for the broker to take it, in milliseconds.
+command-timeout: 10000
 
 # Limits of one request and one user.
 max-paths-per-stream: 200
