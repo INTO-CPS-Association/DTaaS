@@ -733,6 +733,11 @@ template_host  = "https://gitlab.com"
 template_group = "dtaas"
 ```
 
+Since 2.5.0, `template_host` must be an `https` URL. Version 2.4.0 also
+accepted `http://`. An `http://` value now fails `config validate` and
+`user add` with `gitlab.template_host must be an https URL, such as
+https://gitlab.com`: change it to the `https` address of the same host.
+
 Then export an admin token. It must belong to a GitLab administrator and
 carry the `api` scope, plus `admin_mode` when GitLab Admin Mode is on.
 It creates the accounts, tokens and projects; the templates are pushed
@@ -1293,7 +1298,7 @@ type (see matrix above).
 # ── Metadata (top level) ──────────────────────────────────────────────────────
 # Describes the instance. Only git-repo is checked by validate (an http(s) URL).
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.4.1"
+version  = "2.5.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 

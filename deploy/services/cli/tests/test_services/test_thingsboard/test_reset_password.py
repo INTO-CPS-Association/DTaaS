@@ -3,6 +3,7 @@
 from unittest.mock import Mock
 import httpx
 from dtaas_services.pkg.services.thingsboard import setup as th
+from dtaas_services.pkg.password_store import PasswordNotRecorded
 from .conftest import _setup_thingsboard_error_test
 # pylint: disable=W0212, W0621
 
@@ -245,3 +246,25 @@ def test_reset_sysadmin_credentials_password_fails(mocker):
     )
     assert ok is False
     assert "pw error" in msg
+
+
+def test_reset_thingsboard_password_not_recorded(mocker):
+    """A password ThingsBoard already uses but the CLI could not record is
+    reported as that, with what to add by hand, never as a failed
+    connection."""
+    mocker.patch("dtaas_services.pkg.services.thingsboard.setup.Config")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.build_base_url",
+        return_value="https://localhost:8080",
+    )
+    mocker.patch("dtaas_services.pkg.services.thingsboard.setup._create_session")
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.check_password_configured",
+        return_value="new-pw",
+    )
+    message = "TB_SYSADMIN_CURRENT_PASSWORD could not be recorded."
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._do_password_reset",
+        side_effect=PasswordNotRecorded(message),
+    )
+    assert th.reset_thingsboard_password() == (False, message)

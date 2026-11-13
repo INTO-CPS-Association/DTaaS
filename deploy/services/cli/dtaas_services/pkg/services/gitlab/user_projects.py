@@ -12,15 +12,17 @@ user fails.
 
 A user's finished projects are those of their record in
 config/gitlab_user_projects.json (project_state.py), and only when the
-record belongs to their account. An account this run created, or issued a
-token for, comes with its id and creation time. Any other is looked up by
-username, once per run. A record of another account (GitLab reinstalled, or
-the user deleted and added again) counts as none, so the account gets its
-projects.
+record belongs to their account. Every account comes with its id and
+creation time from the account step, which looks an account that existed
+before the run up by username, once. A record of another account (GitLab
+reinstalled, or the user deleted and added again) counts as none, so the
+account gets its projects.
 
 A project failure fails that user alone: the account stays, and the other
-users are still attempted. How each outcome is reported and recorded is
-project_report.py's.
+users are still attempted. The loop over a user's projects, the wording of
+each outcome and which outcomes are recorded are gitlab_common's
+(ensure_projects), shared with the DTaaS CLI. How a line is printed and
+where a project is recorded is project_report.py's.
 """
 
 from dataclasses import dataclass, field
@@ -29,15 +31,13 @@ from pathlib import Path
 import gitlab
 
 from ....gitlab_common import (
+    ProjectHooks,
     ProjectOutcome,
     ProjectRequest,
-    ProjectResult,
-    UserInfo,
-    ensure_project,
-    find_user,
+    ensure_projects,
     git_problem,
 )
-from .project_report import RERUN, ProjectTally, UserProgress, report, say
+from .project_report import RERUN, ProjectTally, UserProgress, say, show
 from .project_state import UserRecord, read_records
 from .project_templates import ProjectTemplate
 from .tokens_file import USER_TOKENS_FILENAME, read_saved_tokens
@@ -46,11 +46,11 @@ from .tokens_file import USER_TOKENS_FILENAME, read_saved_tokens
 @dataclass(frozen=True)
 class Account:
     """A user whose GitLab account is in place after the account step: its
-    id, token and creation time when this run created it or issued its
-    token, None and "" when it existed and keeps the token saved for it."""
+    id and creation time, and the token this run issued it ("" when it
+    keeps the one saved for it)."""
 
     username: str
-    user_id: int | None = None
+    user_id: int
     token: str = field(default="", repr=False)
     created_at: str = ""
 
@@ -86,37 +86,22 @@ class _Target:
     record: UserRecord
 
 
-def _one_project(
-    gl: gitlab.Gitlab, request: ProjectRequest, progress: UserProgress
-) -> bool:
-    """Provision one project and report it: True unless it failed. A failure
-    the API layer did not expect is this project's alone."""
-    try:
-        result = ensure_project(gl, request)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        result = ProjectResult(ProjectOutcome.FAILED, str(exc))
-    return report(request, result, progress)
-
-
 def _make_projects(context: _Context, target: _Target, token: str) -> bool:
     """Provision the missing projects of *target*, pushing with *token*:
     True when none failed. Every project is attempted: a failed one never
     stops the next."""
     username, user_id = target.account.username, target.record.user_id
-    progress = UserProgress(target.record, context.tally)
-    missing = [
-        item
-        for item in context.run.templates.items()
-        if item[0] not in target.record.projects
-    ]
-    succeeded = True
-    for name, template in missing:
-        request = ProjectRequest(
+    requests = [
+        ProjectRequest(
             user_id, username, name, template.url, RERUN, token, template.commit
         )
-        # The call comes first, so a failure never skips the next project.
-        succeeded = _one_project(context.run.gl, request, progress) and succeeded
-    return succeeded
+        for name, template in context.run.templates.items()
+        if name not in target.record.projects
+    ]
+    hooks = ProjectHooks(show, UserProgress(target.record).save)
+    outcomes = ensure_projects(context.run.gl, requests, hooks)
+    context.tally.created += outcomes.count(ProjectOutcome.CREATED)
+    return ProjectOutcome.FAILED not in outcomes
 
 
 def _token(context: _Context, account: Account) -> str:
@@ -143,33 +128,18 @@ def _user_projects(context: _Context, target: _Target) -> bool:
     return False
 
 
-def _account_info(context: _Context, account: Account) -> tuple[UserInfo | None, str]:
-    """*account*'s GitLab id and creation time: this run's, else looked up
-    by username."""
-    if account.user_id is not None:
-        return UserInfo(account.user_id, account.created_at), ""
-    return find_user(context.run.gl, account.username)
-
-
-def _record_of(context: _Context, username: str, info: UserInfo) -> UserRecord:
-    """*username*'s record when it belongs to the account *info*, else an
-    empty one for that account: a record of another account counts as
-    none."""
-    record = context.records.get(username)
-    if record is not None and record.belongs_to(info.user_id, info.created_at):
+def _record_of(context: _Context, account: Account) -> UserRecord:
+    """*account*'s record when it belongs to that account, else an empty one
+    for it: a record of another account counts as none."""
+    record = context.records.get(account.username)
+    if record is not None and record.belongs_to(account.user_id, account.created_at):
         return record
-    return UserRecord(info.user_id, info.created_at)
+    return UserRecord(account.user_id, account.created_at)
 
 
 def _target(context: _Context, account: Account) -> _Target | None:
-    """*account* as a _Target when it lacks a project, else None. An
-    account GitLab cannot find fails, and gets no project."""
-    info, error = _account_info(context, account)
-    if info is None:
-        say("red", f"GitLab projects for '{account.username}' failed.", error)
-        context.tally.failed.append(account.username)
-        return None
-    record = _record_of(context, account.username, info)
+    """*account* as a _Target when it lacks a project, else None."""
+    record = _record_of(context, account)
     if all(name in record.projects for name in context.run.templates):
         return None
     return _Target(account, record)

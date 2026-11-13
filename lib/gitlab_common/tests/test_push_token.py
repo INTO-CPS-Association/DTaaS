@@ -26,6 +26,7 @@ FIX = (
     "Nothing was created. Replace the token saved for alice with a working "
     f"one with the write_repository scope, then run '{RERUN}' again."
 )
+RETRY = f"Nothing was created. Run '{RERUN}' again once GitLab answers."
 # pylint: disable=redefined-outer-name
 
 
@@ -35,7 +36,8 @@ def api():
     a token of alice's that can push, and an admin client whose lookup of
     the owner answers a regular user."""
     with patch("gitlab_common.push_token.gitlab.Gitlab") as client:
-        client.return_value.http_get.return_value = dict(CAN_PUSH)
+        as_owner = client.return_value.__enter__.return_value
+        as_owner.http_get.return_value = dict(CAN_PUSH)
         admin = SimpleNamespace(
             url="https://gitlab.example.com/gitlab",
             ssl_verify="/certs/ca.pem",
@@ -43,7 +45,7 @@ def api():
             users=MagicMock(),
         )
         admin.users.get.return_value = SimpleNamespace(id=42, username="alice")
-        yield SimpleNamespace(client=client, admin=admin, as_owner=client.return_value)
+        yield SimpleNamespace(client=client, admin=admin, as_owner=as_owner)
 
 
 @pytest.mark.parametrize(
@@ -100,31 +102,67 @@ def test_a_token_that_cannot_push_as_the_owner_is_refused(api, change, problem):
     "failure,detail",
     [
         (GitlabAuthenticationError("401 Unauthorized", 401), "401: 401 Unauthorized"),
-        (requests.ConnectionError("connection reset"), "connection reset"),
-        (GitlabHttpError(ERROR_PAGE, 500), SHORT_PAGE),
+        (GitlabHttpError("403 Forbidden", 403), "403: 403 Forbidden"),
     ],
-    ids=["expired-or-revoked", "unreachable", "error-page"],
+    ids=["expired-or-revoked", "forbidden"],
 )
-def test_a_token_that_cannot_be_checked_is_refused(api, failure, detail):
+def test_a_token_gitlab_refuses_is_to_be_replaced(api, failure, detail):
     """GitLab answers 401 for a token that expired or was revoked: the
-    check fails with GitLab's words (an error page shortened), never
+    check fails with GitLab's words and the hint to replace the token, never
     raises."""
     api.as_owner.http_get.side_effect = failure
 
     assert push_problem(api.admin, REQUEST) == with_hint(
-        f"alice's token could not be checked ({detail}). GitLab answers 401 "
-        "for a token that expired or was revoked.",
+        f"GitLab refused alice's token ({detail}). GitLab answers 401 for a "
+        "token that expired or was revoked.",
         FIX,
+    )
+    api.admin.users.get.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "failure,detail",
+    [
+        (requests.ConnectionError("connection reset"), "connection reset"),
+        (requests.Timeout("read timed out"), "read timed out"),
+        (GitlabHttpError(ERROR_PAGE, 500), SHORT_PAGE),
+        (GitlabHttpError("502 Bad Gateway", 502), "502: 502 Bad Gateway"),
+    ],
+    ids=["connection-reset", "timeout", "error-page", "bad-gateway"],
+)
+def test_a_check_gitlab_could_not_answer_is_to_be_run_again(api, failure, detail):
+    """A dropped connection, a timeout or an error page says nothing about
+    the token: the hint is to run the command again, never to replace it."""
+    api.as_owner.http_get.side_effect = failure
+
+    assert push_problem(api.admin, REQUEST) == with_hint(
+        "alice's token could not be checked: GitLab could not be reached or "
+        f"failed ({detail}).",
+        RETRY,
     )
 
 
-def test_an_answer_without_a_record_is_refused(api):
-    """An answer that is not a token record never passes the check."""
+def test_an_answer_without_a_record_is_to_be_run_again(api):
+    """An answer that is not a token record never passes the check, and
+    does not blame the token."""
     api.as_owner.http_get.return_value = MagicMock()
 
     assert push_problem(api.admin, REQUEST) == with_hint(
-        "GitLab gave no details of alice's token.", FIX
+        "GitLab gave no details of alice's token.", RETRY
     )
+
+
+@pytest.mark.parametrize(
+    "failure", [None, requests.ConnectionError("connection reset")], ids=["read", "failed"]
+)
+def test_the_token_client_is_closed(api, failure):
+    """The client built for the token is closed after its one request,
+    also when the request fails."""
+    api.as_owner.http_get.side_effect = failure
+
+    push_problem(api.admin, REQUEST)
+
+    api.client.return_value.__exit__.assert_called_once()
 
 
 def test_an_administrator_gets_no_project(api):
@@ -140,10 +178,10 @@ def test_an_administrator_gets_no_project(api):
 
 
 def test_an_owner_who_cannot_be_looked_up_gets_no_project(api):
-    """A failed lookup of the owner is reported, never raised."""
+    """A failed lookup of the owner is reported, never raised, with the hint
+    to run the command again."""
     api.admin.users.get.side_effect = GitlabGetError("404 User Not Found", 404)
 
     assert push_problem(api.admin, REQUEST) == with_hint(
-        "Failed to look up GitLab user 42: 404: 404 User Not Found",
-        "Nothing was created.",
+        "Failed to look up GitLab user 42: 404: 404 User Not Found", RETRY
     )

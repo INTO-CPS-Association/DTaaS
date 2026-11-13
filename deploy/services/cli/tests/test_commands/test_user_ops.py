@@ -199,3 +199,24 @@ def test_add_users_all_services_success(runner, mock_user_pkg):
     result = runner.invoke(services, ["user", "add"])
     assert result.exit_code == 0
     assert "Users added successfully" in result.output
+
+
+def test_add_users_refuses_a_username_listed_twice(runner, mock_user_pkg, mocker, tmp_path):
+    """A username on two rows of credentials.csv stops 'user add' before any
+    service is touched, whichever services are named."""
+    creds = tmp_path / "credentials.csv"
+    creds.write_text(
+        "username,password,email\nalice,pw,a@x.io\nAlice,pw,b@x.io\n", encoding="utf-8"
+    )
+    mocker.patch(
+        "dtaas_services.commands.user_ops.get_credentials_path", return_value=creds
+    )
+
+    result = runner.invoke(services, ["user", "add", "-s", "gitlab"])
+
+    assert result.exit_code == 1
+    assert "Error: config/credentials.csv lists the username 'Alice' on line 2" in (
+        result.output
+    )
+    mock_user_pkg["gitlab"].assert_not_called()
+    mock_user_pkg["mongodb"].assert_not_called()

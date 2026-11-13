@@ -53,8 +53,20 @@ def test_the_admin_flag_and_creation_time_are_read_strictly(fields, expected):
 
 
 @pytest.mark.parametrize(
-    "listed", [(), (f"{TEST_USERNAME}2",), (TEST_USERNAME.upper(),)]
+    "listed,wanted",
+    [
+        ((TEST_USERNAME.upper(),), TEST_USERNAME),
+        ((TEST_USERNAME,), TEST_USERNAME.capitalize()),
+    ],
+    ids=["account-in-capitals", "name-in-capitals"],
 )
+def test_the_account_is_found_whatever_the_case(listed, wanted):
+    """GitLab allows one account per name in any case and looks names up
+    ignoring case, so a name that differs only in case is that account."""
+    assert find_user(_gl_listing(*listed), wanted) == (UserInfo(1, CREATED_AT), "")
+
+
+@pytest.mark.parametrize("listed", [(), (f"{TEST_USERNAME}2",)])
 def test_no_exact_match_is_reported(listed):
     """No account, or only a similar name, is never taken for the account."""
     user, error = find_user(_gl_listing(*listed), TEST_USERNAME)

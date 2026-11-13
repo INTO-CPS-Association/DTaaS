@@ -6,7 +6,9 @@ reused unchanged by both consumers. The API calls (client, users, tokens,
 projects, push_token) change no process-global state. The project step's
 git work (git_run, template_checks, repos, project_fill) runs git on this
 host in a temporary folder, and is shared too, so both consumers fill
-projects with the same safeguards. Deployment-specific glue (URL
+projects with the same safeguards. project_run words each project's
+outcome and decides which are recorded, the same for both, and hands the
+printing and the saving back to the consumer. Deployment-specific glue (URL
 derivation, token persistence, credential files, docker, terminal output)
 lives in each consumer instead: ``dtaas_services.pkg.services.gitlab`` and
 the DTaaS CLI's ``pkg.gitlab``.
@@ -21,6 +23,12 @@ from .project_fill import (
     ProjectRequest,
     ProjectResult,
     ensure_project,
+)
+from .project_run import (
+    NoticeLevel,
+    ProjectHooks,
+    ProjectNotice,
+    ensure_projects,
 )
 from .projects import (
     ProjectLookup,
@@ -61,6 +69,7 @@ __all__ = [
     "find_user_project",
     "create_user_project",
     "ensure_project",
+    "ensure_projects",
     "git_problem",
     "template_errors",
     "template_urls",
@@ -78,6 +87,9 @@ __all__ = [
     "ProjectOutcome",
     "ProjectRequest",
     "ProjectResult",
+    "ProjectHooks",
+    "ProjectNotice",
+    "NoticeLevel",
     "TemplateKeys",
     "PROJECT_TEMPLATES",
 ]

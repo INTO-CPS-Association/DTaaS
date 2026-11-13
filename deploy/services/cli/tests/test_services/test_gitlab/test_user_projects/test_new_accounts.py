@@ -39,7 +39,6 @@ def test_a_new_account_gets_both_projects_recorded(gitlab, capsys):
         ProjectRequest(42, "alice", "common", COMMON, RERUN, NEW_TOKEN, COMMIT),
         ProjectRequest(42, "alice", "user", USER, RERUN, NEW_TOKEN, ""),
     ]
-    gitlab.find.assert_not_called()
     assert read_json(gitlab.records) == {
         "alice": record(42, CREATED_AT, ["common", "user"])
     }

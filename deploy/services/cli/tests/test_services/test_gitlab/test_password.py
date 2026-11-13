@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from gitlab.exceptions import GitlabError, GitlabHttpError
 from dtaas_services.pkg.services.gitlab import password
+from dtaas_services.pkg.password_store import PasswordNotRecorded
 # pylint: disable=W0212
 
 TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
@@ -108,6 +109,28 @@ def test_apply_password_reset_success(mocker):
     assert success is True
     assert "updated successfully" in msg
     mock_gl.users.get.assert_called_once_with(password.ROOT_USER_ID)
+
+
+def test_apply_password_reset_not_recorded(mocker):
+    """A password GitLab already uses but the CLI could not record fails
+    the reset with what to add by hand, after the change, never raising."""
+    mock_gl = MagicMock()
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.password.get_gitlab_client",
+        return_value=mock_gl,
+    )
+    not_recorded = PasswordNotRecorded("GITLAB_ROOT_CURRENT_PASSWORD could not be recorded.")
+    mocker.patch(
+        "dtaas_services.pkg.services.gitlab.password.save_password",
+        side_effect=not_recorded,
+    )
+    result = password._apply_password_reset(TEST_TOKEN, TEST_NEW_PASSWORD)
+    assert result == (
+        False,
+        "GitLab root password updated. GITLAB_ROOT_CURRENT_PASSWORD could not be "
+        "recorded.",
+    )
+    mock_gl.users.get.return_value.save.assert_called_once()
 
 
 @pytest.mark.parametrize(

@@ -99,6 +99,7 @@ cli/
 │       ├── cert.py         # TLS certificate operations
 │       ├── formatter.py    # Output formatting utilities
 │       ├── password_store.py # Tracks current service passwords in password.env.current
+│       ├── credentials_check.py # Refuses a username listed twice in credentials.csv
 │       ├── template.py     # Project structure and template file management
 │       ├── force_overwrite.py # --force overwrite policy and protected names
 │       ├── docker_utils.py # Docker command execution with retry logic
@@ -161,6 +162,7 @@ cli/
     ├── test_cert.py
     ├── test_config.py
     ├── test_file_lock.py
+    ├── test_credentials_check.py
     ├── test_formatter.py
     ├── test_template.py
     ├── test_docker_utils.py
@@ -277,12 +279,23 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
 * **`formatter.py`**: Output formatting utilities
 * **`password_store.py`**: Read/write access to `config/password.env.current`;
   tracks the last-known password for each service account so that
-  `reset-password` can be run repeatedly. Each change holds the file's lock
+  `reset-password` can be run repeatedly. Each change holds the file's lock.
+  A record that fails after the service took the password (the lock not
+  released, a root-owned file, a full disk) raises `PasswordNotRecorded`
+  (not an `OSError`), naming the key, the `services.env` key that holds the
+  password (`SOURCE_KEYS`) and the reason. The GitLab and ThingsBoard reset
+  flows return it as their message
+* **`credentials_check.py`**: `duplicate_username_error(path)`: the
+  username that `config/credentials.csv` lists on two rows, ignoring case
+  (GitLab does) and the spaces around it, with both line numbers, or why
+  the file cannot be read. `user add` checks it once before any service
+  and stops with it
 * **`file_lock.py`**: `locked(path)` holds `<path>.lock` (filelock: `flock`
   on Linux and macOS, `LockFileEx` on Windows) around each read, change and
   write of a file under `config/`, so two commands that change the same
   file take turns and lose no entry. A command waits up to 30 seconds, then
-  fails naming the file
+  fails naming the file (`TimeoutError`, printed by the root group in
+  `cmd.py` as `Error: ...`)
 * **`template.py`**: Project structure and template file management
 * **`force_overwrite.py`**: `--force` overwrite policy: overwritable items,
   protected config names, and copies that keep destination permissions
@@ -292,11 +305,12 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
   through a temporary file made 0600 from the start by `tempfile.mkstemp`,
   and `permission_hint`, `folder_permission_hint` with
   `explain_permission_error`, which turn a denied access to a file under
-  `config/` into a message with one `chown` for the file and its `.lock`, or
-  for the folder when a temporary file next to it could not be made. The
-  paths are quoted with `shlex.quote`, and Windows gets no hint, since it
-  has no root. The root group in `cmd.py` prints any other permission error
-  as it is)
+  `config/` into a message with one `chown` for the file and its `.lock`
+  (those that exist), or for the folder when a file could not be made in
+  it: a temporary file next to it, or a lock file that does not exist yet.
+  The paths are quoted with `shlex.quote`, and Windows gets no hint, since
+  it has no root. The root group in `cmd.py` prints any other permission
+  error as it is)
 * **`lib/`**: Core service management modules
   * `manager.py`: Docker Compose service management
   * `docker_executor.py`: Docker command execution
@@ -388,21 +402,28 @@ Commands follow `dtaas-services <noun> <verb>`; `cmd.py` registers the nouns
     runs the project step
   * `accounts.py`: The account step: creates the account, records it in
     `config/gitlab_user_projects.json` (id, creation time, made by this
-    CLI) before its PAT is issued, and for an account this CLI made whose
-    token is missing, looks it up, checks it is that very account and no
-    administrator, revokes its `dtaas` tokens and issues a new one
+    CLI) before its PAT is issued. After a 409 (a username taken, or an
+    email another account uses) it looks the account up by username: none
+    fails the row with GitLab's reason, else the account goes on with its
+    id and creation time. For an account this CLI made whose token is
+    missing, it checks it is that very account and no administrator,
+    revokes its `dtaas` tokens and issues a new one. `users.py` prints
+    each failed row as `GitLab account '<user>' failed.` with why below
   * `project_templates.py`: Reads `GITLAB_TEMPLATE_HOST`,
     `GITLAB_TEMPLATE_GROUP` and the two `GITLAB_TEMPLATE_*_COMMIT` keys and
     checks them with `gitlab_common`'s rules (the host and group rules are
     the DTaaS CLI's too), before any user is touched
   * `user_projects.py`: The project step: which users get the `common` and
     `user` projects, with which GitLab id, record and token, through
-    `gitlab_common.ensure_project`, which checks the token before it
-    creates anything. An account from an earlier run is looked up by
-    username once per run, and its record counts only when it belongs to
-    that very account
-  * `project_report.py`: Prints each project's outcome and adds the
-    finished ones to the user's record
+    `gitlab_common.ensure_projects` (the loop over a user's projects, the
+    outcome wording and which are recorded, shared with the DTaaS CLI),
+    which calls `ensure_project`, which checks the token before it creates
+    anything. Each account carries the id and creation time the account
+    step found, and its record counts only when it belongs to that very
+    account
+  * `project_report.py`: The two callbacks of `ensure_projects`: `show`
+    prints each notice (a mark and colour per level), `UserProgress.save`
+    adds a finished project to the user's record, plus the run's tally
   * `project_state.py`: Reads and writes the records of
     `config/gitlab_user_projects.json`: per user the GitLab id and creation
     time of the account, whether this CLI made it, and its finished
@@ -589,6 +610,8 @@ Stops and removes Docker containers:
   The PAT stored in `config/gitlab_tokens.json` is used for all subsequent API calls.
 * **Credentials File**: GitLab users are created from `config/credentials.csv`
   (columns: `username`, `password`, `email`) using `dtaas-services user add -s gitlab`.
+  `user add` refuses a file that lists a username twice, ignoring case, before
+  any service.
 * **Per-user PATs**: After creating each user, the CLI creates a Personal Access
   Token for that user via the `python-gitlab` admin API with scopes `api`,
   `read_repository`, `write_repository` and a 1-year expiry. Tokens for newly created
@@ -603,14 +626,21 @@ Stops and removes Docker containers:
   failed, could not be saved, or the admin removed it): when a lookup by
   username finds that very account (same id and creation time, which a
   reinstalled GitLab never repeats) and it is no administrator, its active
-  `dtaas` tokens are revoked and a new one is issued.
+  `dtaas` tokens are revoked and a new one is issued. GitLab answers 409
+  both for a username that is taken and for an email another account uses,
+  so after a 409 the account is looked up by username (ignoring case, once
+  per run): when there is none, the row fails with GitLab's reason. Each
+  failed row is printed as it happens, with why below it.
 * **Per-user projects**: When `GITLAB_TEMPLATE_HOST` and `GITLAB_TEMPLATE_GROUP`
   are set, each user whose account is in place also gets the private projects
   `common` and `user` in their own namespace. The work is
+  `gitlab_common.ensure_projects` (each of a user's projects in turn, each
+  outcome worded and recorded as in the DTaaS CLI) and
   `gitlab_common.ensure_project`, shared with the DTaaS CLI: the user's token
   is checked first (`GET /personal_access_tokens/self` with the token itself:
   active, owned by that account, `write_repository` or `api`, and the account
-  no administrator), the template is
+  no administrator, else "replace the token" after a 401 or 403 and "run
+  again" when GitLab could not answer), the template is
   cloned bare on this host, pinned to its commit when one is set, and checked
   (no commits, Git LFS pointers) before
   the project is created by the admin API, then pushed as the user with their
@@ -618,8 +648,8 @@ Stops and removes Docker containers:
   root. A project that already exists is never pushed to: one with content gets
   one `Warning:` and is recorded, an empty one gets a `Warning:` on every run
   until it is deleted. Each git command stops after 15 minutes. An account
-  that existed before the run is looked up by username, once per run, and
-  gets projects only with a token saved for it in
+  that existed before the run (found by the account step) gets projects only
+  with a token saved for it in
   `config/gitlab_user_tokens.json` that passes the check. Finished projects
   are added to the user's record in `config/gitlab_user_projects.json` and
   skipped by later runs, but only for the account the record belongs to: a
@@ -636,7 +666,10 @@ Stops and removes Docker containers:
   `dtaas-services user reset-password -s gitlab`, which reads
   `GITLAB_ROOT_NEW_PASSWORD` from `config/services.env` and updates the account
   via the `python-gitlab` library. The new password is saved to
-  `config/password.env.current` on success.
+  `config/password.env.current` on success. When it cannot be saved (the
+  file's lock not released, a root-owned file, a full disk), the reset
+  fails with `GitLab root password updated.` and what to add to that file
+  by hand.
 * **Token Storage**: The Personal Access Token created during install is written
   to `config/gitlab_tokens.json`. All user-management API calls load the PAT from
   this file at runtime.

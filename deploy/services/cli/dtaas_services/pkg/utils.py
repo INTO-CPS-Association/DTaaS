@@ -213,15 +213,26 @@ def folder_permission_hint(folder: str | os.PathLike) -> str:
     )
 
 
+def _could_not_create(exc: PermissionError, files: tuple[Path, ...]) -> bool:
+    """True when *exc* names a file that does not exist (a lock file not
+    made yet) or one other than *files* (a temporary file next to them):
+    that file could not be created, so the folder is at fault."""
+    if exc.filename is None:
+        return False
+    named = Path(exc.filename)
+    ours = {file.resolve() for file in files}
+    return not os.path.exists(named) or named.resolve() not in ours
+
+
 def _hint_for(exc: PermissionError, path: Path, related: tuple[Path, ...]) -> str:
-    """The fix for *exc*, met while using *path*: a chown of *path* and of
-    those of *related* that exist when the error names one of them (or no
-    file at all), else a chown of the folder, whose other file (a
-    temporary file next to *path*) could not be made."""
-    files = {file.resolve() for file in (path, *related)}
-    if exc.filename is not None and Path(exc.filename).resolve() not in files:
+    """The fix for *exc*, met while using *path*: a chown of the folder when
+    a file could not be created in it, else one chown of *path* and of
+    *related*, those that exist (*path* alone when none does)."""
+    files = (path, *related)
+    if _could_not_create(exc, files):
         return folder_permission_hint(path.parent)
-    return permission_hint(path, *(other for other in related if other.exists()))
+    existing = [file for file in files if os.path.exists(file)]
+    return permission_hint(*(existing or [path]))
 
 
 @contextmanager

@@ -88,15 +88,18 @@ def _raise_inside(exc, path, *related):
         ("x.json.lock", False),
         (None, False),
         (".x.json.k3j2.tmp", True),
+        ("missing.lock", True),
     ],
-    ids=["the-file", "its-lock", "no-file", "a-temporary-file"],
+    ids=["the-file", "its-lock", "no-file", "a-temporary-file", "a-file-not-made"],
 )
 def test_the_fix_names_what_cannot_be_used(tmp_path, named, folder):
     """An error on the file, on a related file such as its lock, or on no
     file names the file and the related ones that exist, in one chown. An
-    error on another file next to it (a temporary file) means the folder
+    error on another file next to it (a temporary file), or on a related
+    file that does not exist (a lock file not made yet), means the folder
     cannot be written, so the folder is named. The original is the cause."""
     path, lock = tmp_path / "x.json", tmp_path / "x.json.lock"
+    path.write_text("{}", encoding="utf-8")
     lock.write_text("", encoding="utf-8")
     filename = None if named is None else str(tmp_path / named)
     original = PermissionError(13, "Permission denied", filename)

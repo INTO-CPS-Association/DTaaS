@@ -52,7 +52,7 @@ not use (see the tables above).
 # Describes the instance. git-repo, the URL of the DTaaS repository, is
 # required for all deployment types; validate checks no other key here.
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.4.1"
+version  = "2.5.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -225,7 +225,7 @@ first, then the current directory) and reports all problems at once:
 | `[gitlab].api_url`                         | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise                         |
 | `[gitlab].pat`                             | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`)                                    |
 | `[gitlab].ssl_verify`                      | When present, `true`, `false`, or a CA-bundle path string                                                     |
-| `[gitlab].template_group`/`template_host`  | When present, a GitLab group path (subgroups with `/`) and an `https` URL: set both, or leave both out        |
+| `[gitlab].template_group`/`template_host`  | When present, a GitLab group path (subgroups with `/`, no segment ending in a dot) and an `https` URL: set both, or leave both out |
 | `[frontend].logger-url`                    | When present, an `http(s)` URL, or `""` to turn remote logging off                                            |
 | Deployment-section URLs                    | When present, must be `http(s)` URLs                                                                          |
 | Deployment-section `default-user`          | When present, must be a valid username                                                                        |
@@ -448,6 +448,11 @@ and `template_group = "dtaas"`, so the templates are
 `https://gitlab.com/dtaas/common.git` and
 `https://gitlab.com/dtaas/user1.git`. To use your own copies, put both
 repositories in a public group and name that group.
+
+Since 2.5.0, `template_host` must be an `https` URL. Version 2.4.0 also
+accepted `http://`. An `http://` value now fails `config validate` and
+`user add` with `gitlab.template_host must be an https URL, such as
+https://gitlab.com`: change it to the `https` address of the same host.
 
 ### Admin token
 

@@ -4,7 +4,7 @@ import json
 from unittest.mock import patch
 
 import pytest
-from src.pkg.gitlab import ProjectOutcome, ProjectRequest, ProjectResult
+from src.gitlab_common import ProjectOutcome, ProjectRequest, ProjectResult
 from src.pkg.registry import load_registry, register_new_users
 from src.pkg.users_gitlab_projects import GitlabRun, provision_projects
 from src.pkg.users_gitlab_targets import GitlabCandidate, GitlabUserResult
@@ -16,6 +16,8 @@ USER = "https://gitlab.com/dtaas/user1.git"
 RERUN = "dtaas user add alice"
 RUN = GitlabRun("gl", {"common": COMMON, "user": USER})
 MODULE = "src.pkg.users_gitlab_projects.gitlabPkg"
+# ensure_project as the shared loop of gitlab_common calls it.
+ENSURE = "src.gitlab_common.project_run.ensure_project"
 CREATED = ProjectResult(ProjectOutcome.CREATED)
 TOKEN_FILE = "gitlab_user_tokens.json"
 SAVED = {"alice": "saved-alice", "bob": "saved-bob"}
@@ -35,7 +37,7 @@ def registry(tmp_path, monkeypatch):
 def gitlab():
     """Patch git's check (git is usable) and ensure_project (creates)."""
     with patch(f"{MODULE}.git_problem", return_value="") as problem, patch(
-        f"{MODULE}.ensure_project", return_value=CREATED
+        ENSURE, return_value=CREATED
     ) as ensure:
         yield {"problem": problem, "ensure": ensure}
 

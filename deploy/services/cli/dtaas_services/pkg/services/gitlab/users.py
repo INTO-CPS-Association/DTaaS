@@ -24,6 +24,7 @@ from ...utils import get_credentials_path
 from ._api import get_gitlab_client
 from .accounts import AccountRun, create_account
 from .personal_token import _load_pat_from_tokens
+from .project_report import say
 from .project_state import get_projects_path, read_records
 from .project_templates import read_templates
 from .tokens_file import (
@@ -46,8 +47,9 @@ def _process_user_row(run: AccountRun, row: dict, accounts: list[Account]) -> st
     return "" if success else error_msg
 
 
-def _collect_user_creation_errors(errors: list[str], row: dict, error_msg: str) -> None:
-    """Collect an error with the associated username for reporting.
+def _report_row_error(errors: list[str], row: dict, error_msg: str) -> None:
+    """Print a failed row as it happens, with why below it (GitLab's own
+    words for a refused account), and collect it for the result message.
 
     Args:
         errors: List to append the error to
@@ -55,6 +57,7 @@ def _collect_user_creation_errors(errors: list[str], row: dict, error_msg: str) 
         error_msg: Error message from processing
     """
     username = (row.get("username") or "").strip() or "<unknown>"
+    say("red", f"GitLab account '{username}' failed.", error_msg)
     errors.append(f"{username}: {error_msg}")
 
 
@@ -62,8 +65,8 @@ def _create_users_from_rows(run: AccountRun, reader) -> Tuple[bool, str, list[Ac
     """Create GitLab users and PATs for each row yielded by a CSV DictReader.
 
     Processes every row regardless of individual failures so that successful
-    tokens are never lost.  Per-row errors are collected and returned as a
-    newline-joined summary.
+    tokens are never lost. Each failed row is printed as it happens, and the
+    errors are also returned as a newline-joined summary.
 
     Args:
         run: The admin client, saved tokens and records of this run
@@ -77,7 +80,7 @@ def _create_users_from_rows(run: AccountRun, reader) -> Tuple[bool, str, list[Ac
     for row in reader:
         error_msg = _process_user_row(run, row, accounts)
         if error_msg:
-            _collect_user_creation_errors(errors, row, error_msg)
+            _report_row_error(errors, row, error_msg)
     return (False, "\n".join(errors), accounts) if errors else (True, "", accounts)
 
 

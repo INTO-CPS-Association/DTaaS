@@ -17,6 +17,7 @@ from tests.test_services.test_gitlab.test_users.conftest import TEMPLATES, TEST_
 # pylint: disable=W0212, W0621
 
 NEW = Account("user1", 1, TEST_TOKEN)
+EXISTING = Account("existing", 2)
 CREATED_AT = "2026-11-10T09:14:31.123Z"
 SAVED_RECORD = {"id": 4, "created_at": CREATED_AT, "created": True, "projects": []}
 
@@ -24,7 +25,7 @@ SAVED_RECORD = {"id": 4, "created_at": CREATED_AT, "created": True, "projects": 
 def test_new_tokens_are_merged_into_the_token_file(setup):
     """A run that adds a user keeps the tokens of the users added before."""
     write_text(setup.tokens, json.dumps({"old": "old-token"}))
-    setup.process.return_value = (True, "", [NEW, Account("existing")])
+    setup.process.return_value = (True, "", [NEW, EXISTING])
 
     success, msg = users.setup_gitlab_users()
 
@@ -101,12 +102,12 @@ def test_tokens_that_cannot_be_saved_after_all_fail_the_step(setup, mocker):
 def test_the_project_step_gets_the_run_and_every_account(setup):
     """The accounts in place, new or existing, go to the project step with
     the admin client, the templates and the user token file."""
-    setup.process.return_value = (True, "", [NEW, Account("existing")])
+    setup.process.return_value = (True, "", [NEW, EXISTING])
 
     users.setup_gitlab_users()
 
     setup.projects.assert_called_once_with(
-        ProjectRun("gl", TEMPLATES, setup.tokens), [NEW, Account("existing")]
+        ProjectRun("gl", TEMPLATES, setup.tokens), [NEW, EXISTING]
     )
 
 

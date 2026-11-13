@@ -1,33 +1,31 @@
-"""Reports and records the outcome of each project of the GitLab project step.
+"""Prints the lines of the GitLab project step and records each finished
+project, for gitlab_common.ensure_projects.
 
-Each outcome gets a line as it happens, with its detail indented below it:
-created, a warning for a project found in place, or a failure. A created
-project, and a project found with content, are added at once to the user's
-record in config/gitlab_user_projects.json (project_state.py), so a re-run
-never recreates, re-pushes or warns about them again. An empty project found
-in place is not recorded: every run that reaches it warns until the admin
-deletes it.
+How each project's outcome is worded, and which outcomes are recorded, is
+gitlab_common's (project_run.py), shared with the DTaaS CLI. This module
+prints each notice as a line with its detail indented below it (a success
+green with a check mark, a warning yellow, an error red), and adds each
+finished project at once to the user's record in
+config/gitlab_user_projects.json (project_state.py), so a re-run never
+recreates, re-pushes or warns about it again. A project found with content
+is recorded too, so it is warned about once. An empty project found in
+place is not, so every run that reaches it warns until the admin deletes
+it.
 """
 
 from dataclasses import dataclass, field, replace
 
 from rich.console import Console
 
-from ....gitlab_common import ProjectOutcome, ProjectRequest, ProjectResult
+from ....gitlab_common import NoticeLevel, ProjectNotice, ProjectRequest
 from .project_state import UserRecord, save_record
 
 RERUN = "dtaas-services user add -s gitlab"
-# A project found in place: (end of the warning line, its detail).
-_FOUND_WARNINGS = {
-    ProjectOutcome.HAS_CONTENT: (
-        "has content",
-        "It was left as it is: no template was pushed into it.",
-    ),
-    ProjectOutcome.EMPTY: (
-        "exists but is empty",
-        "It was not created by this run, so no template was pushed into it. "
-        f"Delete it, then run '{RERUN}' again.",
-    ),
+# How a notice of each level is printed: (style, mark before its line).
+_LOOKS = {
+    NoticeLevel.SUCCESS: ("green", "✅ "),
+    NoticeLevel.WARNING: ("yellow", "⚠️  "),
+    NoticeLevel.ERROR: ("red", ""),
 }
 
 
@@ -53,10 +51,16 @@ class ProjectTally:
 @dataclass
 class UserProgress:
     """One user's record (their account and the projects finished in it),
-    to which each project this run finishes is added, and the run's tally."""
+    to which each project this run finishes is added."""
 
     record: UserRecord
-    tally: ProjectTally
+
+    def save(self, request: ProjectRequest) -> str:
+        """Add *request*'s project to the record and save it: "" or why it
+        could not be saved."""
+        projects = (*self.record.projects, request.name)
+        self.record = replace(self.record, projects=projects)
+        return save_record(request.username, self.record)
 
 
 def say(style: str, headline: str, detail: str = "") -> None:
@@ -68,54 +72,7 @@ def say(style: str, headline: str, detail: str = "") -> None:
         console.print(line, style=style, markup=False, highlight=False, soft_wrap=True)
 
 
-def _record(request: ProjectRequest, progress: UserProgress) -> bool:
-    """Add *request*'s project to the user's record: True once saved."""
-    projects = (*progress.record.projects, request.name)
-    progress.record = replace(progress.record, projects=projects)
-    error = save_record(request.username, progress.record)
-    if error:
-        say(
-            "red",
-            f"GitLab project '{request.path}' not recorded.",
-            f"{error}\nThe next run that reaches it warns that it has content, "
-            "then records it.",
-        )
-    return not error
-
-
-def _created(request: ProjectRequest, progress: UserProgress) -> bool:
-    """Record a created project, then say so: True once it is saved."""
-    if not _record(request, progress):
-        return False
-    progress.tally.created += 1
-    pinned = f" at commit {request.template_commit}" if request.template_commit else ""
-    say(
-        "green",
-        f"✅ GitLab project '{request.path}' created.",
-        f"Private, filled from {request.template_url}{pinned}",
-    )
-    return True
-
-
-def _warn_found(
-    request: ProjectRequest, outcome: ProjectOutcome, progress: UserProgress
-) -> bool:
-    """Warn about a project found in place, which is not a failure. One with
-    content is recorded as well: True unless that record fails."""
-    ending, detail = _FOUND_WARNINGS[outcome]
-    say("yellow", f"⚠️  Warning: GitLab project '{request.path}' {ending}.", detail)
-    if outcome is ProjectOutcome.HAS_CONTENT:
-        return _record(request, progress)
-    return True
-
-
-def report(
-    request: ProjectRequest, result: ProjectResult, progress: UserProgress
-) -> bool:
-    """Print and record one project's *result*: True unless it failed."""
-    if result.outcome is ProjectOutcome.FAILED:
-        say("red", f"GitLab project '{request.path}' failed.", result.message)
-        return False
-    if result.outcome in _FOUND_WARNINGS:
-        return _warn_found(request, result.outcome, progress)
-    return _created(request, progress)
+def show(notice: ProjectNotice) -> None:
+    """Print one of gitlab_common's project notices in its level's look."""
+    style, mark = _LOOKS[notice.level]
+    say(style, f"{mark}{notice.headline}", notice.detail)

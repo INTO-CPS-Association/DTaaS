@@ -18,22 +18,23 @@ from tests.test_services.test_gitlab.test_users.conftest import (
 
 
 @pytest.mark.parametrize(
-    "answers,ok,errors,kept",
+    "answers,errors,kept",
     [
-        ([True, True], True, [], ["user1", "user2"]),
-        ([True, False, True], False, ["user2: user2 failed"], ["user1", "user3"]),
-        ([False, False], False, ["user1: user1 failed", "user2: user2 failed"], []),
-        ([None, True], False, ["user1: user1 failed"], ["user1", "user2"]),
+        ([True, True], [], ["user1", "user2"]),
+        ([True, False, True], ["user2: user2 failed"], ["user1", "user3"]),
+        ([False, False], ["user1: user1 failed", "user2: user2 failed"], []),
+        ([None, True], ["user1: user1 failed"], ["user1", "user2"]),
     ],
     ids=["all-succeed", "one-fails", "all-fail", "failed-but-in-place"],
 )
 def test_every_row_is_processed_and_failures_collected(
-    mocker, answers, ok, errors, kept
+    mocker, capsys, answers, errors, kept
 ):
     """A failed row never stops the next: the accounts in place are kept
     for the token file and the project step (also one whose row failed, as
-    when its record could not be saved), and every error is named. None
-    stands for a failed row whose account is in place."""
+    when its record could not be saved), and every error is named, printed
+    as it happens with why below it. The step succeeds only without one.
+    None stands for a failed row whose account is in place."""
     names = [f"user{index}" for index in range(1, len(answers) + 1)]
     mocker.patch(
         f"{MODULE}.create_account",
@@ -49,8 +50,12 @@ def test_every_row_is_processed_and_failures_collected(
     success, error, accounts = users._create_users_from_rows(
         MagicMock(), iter(csv_rows(*names))
     )
-    assert (success, error) == (ok, "\n".join(errors))
+    assert (success, error) == (not errors, "\n".join(errors))
     assert [account.username for account in accounts] == kept
+    failed = [line.split(":")[0] for line in errors]
+    assert capsys.readouterr().out == "".join(
+        f"  GitLab account '{name}' failed.\n    {name} failed\n" for name in failed
+    )
 
 
 def test_process_credentials_reads_the_csv(mocker, tmp_path):

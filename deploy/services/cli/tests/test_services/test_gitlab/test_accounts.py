@@ -1,6 +1,7 @@
 """Tests for the GitLab account step (accounts.py): an account and a token
-per CSV row, the record of an account this CLI made, and the token issued
-again for such an account when none is saved."""
+per CSV row, the record of an account this CLI made, an account found after
+a 409 (or GitLab's words when there is none), and the token issued again
+for an account this CLI made when none is saved."""
 
 import json
 from types import SimpleNamespace
@@ -8,7 +9,7 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 from gitlab.exceptions import GitlabCreateError, GitlabError
-from dtaas_services.gitlab_common import UserInfo
+from dtaas_services.gitlab_common import UserInfo, with_hint
 from dtaas_services.pkg.services.gitlab import accounts, project_state, tokens_file
 from dtaas_services.pkg.services.gitlab.accounts import AccountRun, create_account
 from dtaas_services.pkg.services.gitlab.project_state import UserRecord
@@ -22,7 +23,8 @@ ROW = {"username": " alice ", "email": "alice@example.com", "password": PASSWORD
 CREATED_AT = "2026-11-10T09:14:31.123Z"
 MADE_HERE = UserRecord(7, CREATED_AT, created=True)
 PAT_FAILED = "Failed to create PAT for 'alice': 500"
-CONFLICT = GitlabCreateError(response_code=409)
+CONFLICT = GitlabCreateError("Username has already been taken", 409)
+FOUND = Account("alice", 7, created_at=CREATED_AT)
 
 
 @pytest.fixture
@@ -149,17 +151,44 @@ def test_a_row_without_an_account_records_nothing(gitlab, row, failure, said):
 )
 def test_an_existing_account_is_left_as_it_is(gitlab, saved, records):
     """No token is issued for an account this CLI did not create, nor for
-    one whose token is saved: it is handed on as it is, with no call."""
+    one whose token is saved: it is looked up once and handed on as it is,
+    with its id and creation time."""
     gitlab.gl.users.create.side_effect = CONFLICT
 
-    assert create_account(_run(gitlab, saved, records), ROW) == (
-        True,
-        "",
-        Account("alice"),
-    )
-    gitlab.find.assert_not_called()
+    assert create_account(_run(gitlab, saved, records), ROW) == (True, "", FOUND)
+    gitlab.find.assert_called_once_with(gitlab.gl, "alice")
     gitlab.revoke.assert_not_called()
     gitlab.pat.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "lookup",
+    [
+        "GitLab has no user named 'alice'.",
+        "Failed to look up GitLab user 'alice': 500: GitLab error page (request ID 01M7)",
+    ],
+    ids=["no-account-of-the-name", "lookup-failed"],
+)
+def test_a_conflict_with_no_account_of_the_name_fails_with_gitlabs_words(
+    gitlab, lookup
+):
+    """GitLab answers 409 also for an email another account uses: when no
+    account of the name can be found, the row fails with GitLab's reason
+    and why the account was not found, and nothing is recorded or issued."""
+    gitlab.gl.users.create.side_effect = GitlabCreateError(
+        "Email has already been taken", 409
+    )
+    gitlab.find.return_value = (None, lookup)
+
+    assert create_account(_run(gitlab), ROW) == (
+        False,
+        with_hint(
+            "GitLab did not create 'alice': 409: Email has already been taken", lookup
+        ),
+        None,
+    )
+    gitlab.pat.assert_not_called()
+    assert not gitlab.records.exists()
 
 
 @pytest.fixture
@@ -199,7 +228,11 @@ def test_another_account_of_the_name_gets_no_token(gitlab, existing, found):
     is, and no token is revoked or issued."""
     gitlab.find.return_value = (found, "")
 
-    assert create_account(existing, ROW) == (True, "", Account("alice"))
+    assert create_account(existing, ROW) == (
+        True,
+        "",
+        Account("alice", found.user_id, created_at=found.created_at),
+    )
     gitlab.revoke.assert_not_called()
     gitlab.pat.assert_not_called()
 
@@ -207,21 +240,20 @@ def test_another_account_of_the_name_gets_no_token(gitlab, existing, found):
 @pytest.mark.parametrize(
     "found,error",
     [
-        ((None, "No user 'alice'."), "No user 'alice'."),
         (
             (UserInfo(7, CREATED_AT, is_admin=True), ""),
             "alice is a GitLab administrator, so no token is issued.",
         ),
         ((UserInfo(7, CREATED_AT), ""), PAT_FAILED),
     ],
-    ids=["lookup-failed", "administrator", "token-refused"],
+    ids=["administrator", "token-refused"],
 )
 def test_a_token_not_issued_again_fails_the_row(
     gitlab, existing, capsys, found, error
 ):
-    """A failed lookup, an account made an administrator since, or a token
-    GitLab refuses fails the row with why, and nothing is said to be
-    issued. Only the very account this CLI made has its tokens revoked."""
+    """An account made an administrator since, or a token GitLab refuses,
+    fails the row with why, and nothing is said to be issued. Only the
+    very account this CLI made has its tokens revoked."""
     gitlab.find.return_value = found
     gitlab.pat.return_value = (False, PAT_FAILED)
 

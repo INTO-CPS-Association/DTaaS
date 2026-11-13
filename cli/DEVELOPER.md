@@ -231,8 +231,12 @@ one owner and one responsibility:
 
 `user add` fills each user's `common` and `user` projects by a clone and
 push from the `dtaas` host (_cli/src/pkg/users_gitlab_projects.py_,
-`gitlab_common/repos.py` and `gitlab_common/project_fill.py`, shared with
-dtaas-services).
+`gitlab_common/repos.py`, `gitlab_common/project_fill.py` and
+`gitlab_common/project_run.py`, shared with dtaas-services). The loop over
+a user's projects, the wording of each outcome and which outcomes are
+recorded are `project_run.ensure_projects`, so both CLIs say and record the
+same: this CLI passes the printing (`echo_hint`) and the saving (the
+registry's `gitlab_projects`) as two callbacks.
 
 - **The user's own token pushes**, the PAT the CLI issued them (this
   run's, or the saved one), through `GIT_CONFIG_COUNT` variables (git
@@ -250,7 +254,10 @@ dtaas-services).
   active, owned by the project's user id and carry `write_repository` or
   `api`, and the owner (looked up with the admin client) must not be an
   administrator. An expired, revoked or misplaced token so fails before a
-  project exists, instead of leaving an empty one.
+  project exists, instead of leaving an empty one. Only a token GitLab
+  refused (401 or 403) or one that cannot push is to be replaced: when
+  GitLab could not be reached or answered with an error page, the hint is
+  to run the command again.
 - **No Git LFS.** The clone is bare; a template holding LFS pointers is
   refused rather than pushed as stubs. A pointer is matched by its format
   (under 1024 bytes, version, oid and size lines), not by `.gitattributes`:

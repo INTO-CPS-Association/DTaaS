@@ -74,14 +74,9 @@ def test_remove_service_passwords_thingsboard_ce_alias():
             "dotenv_values",
             False,
         ),
-        (
-            lambda: ps.save_password("GITLAB_ROOT_CURRENT_PASSWORD", "x"),
-            "set_key",
-            True,
-        ),
         (lambda: ps.remove_service_passwords("gitlab"), "unset_key", True),
     ],
-    ids=["read", "save", "remove"],
+    ids=["read", "remove"],
 )
 def test_a_file_owned_by_root_reports_the_fix(
     patch_base_dir, mocker, call, patched, locks
@@ -97,6 +92,53 @@ def test_a_file_owned_by_root_reports_the_fix(
         call()
     files = (path, lock_path(path)) if locks else (path,)
     assert str(caught.value) == permission_hint(*files)
+
+
+def _not_recorded(key, why):
+    """The message of a password *key* that could not be recorded."""
+    return (
+        f"{key} could not be recorded. The service already uses the password "
+        f"set by {ps.SOURCE_KEYS[key]} in config/services.env: add the line "
+        f"{key}=<that password> to config/password.env.current by hand. "
+        f"Why: {why}"
+    )
+
+
+@pytest.mark.usefixtures("posix_hints")
+def test_a_password_that_root_keeps_from_being_saved_is_reported(
+    patch_base_dir, mocker
+):
+    """The service already uses the password, so the failure says which key
+    of services.env holds it and what to add by hand, with the chown that
+    fixes the file and its lock, and never shows the password."""
+    path = patch_base_dir / "config" / ps.PASSWORDS_FILE
+    path.parent.mkdir(parents=True)
+    path.write_text("", encoding="utf-8")
+    mocker.patch(
+        "dtaas_services.pkg.password_store.set_key", side_effect=denied(path)
+    )
+    expected = _not_recorded(
+        "GITLAB_ROOT_CURRENT_PASSWORD", permission_hint(path, lock_path(path))
+    )
+    with pytest.raises(ps.PasswordNotRecorded) as caught:
+        ps.save_password("GITLAB_ROOT_CURRENT_PASSWORD", "secret-value")
+    assert str(caught.value) == expected
+    assert "secret-value" not in str(caught.value)
+    assert isinstance(caught.value.__cause__, PermissionError)
+
+
+@pytest.mark.parametrize("key", sorted(ps.SOURCE_KEYS))
+def test_a_lock_held_too_long_names_the_key_of_the_password(mocker, key):
+    """A lock another command held past the wait is reported for every
+    recorded password with the services.env key that holds it, and is no
+    OSError, so a handler of connection errors never takes it for one."""
+    timeout = TimeoutError("its lock was not released within 30 seconds.")
+    mocker.patch("dtaas_services.pkg.password_store.locked", side_effect=timeout)
+    with pytest.raises(ps.PasswordNotRecorded) as caught:
+        ps.save_password(key, "secret-value")
+    assert str(caught.value) == _not_recorded(key, timeout)
+    assert caught.value.__cause__ is timeout
+    assert not isinstance(caught.value, OSError)
 
 
 def test_passwords_saved_at_the_same_time_are_all_kept():

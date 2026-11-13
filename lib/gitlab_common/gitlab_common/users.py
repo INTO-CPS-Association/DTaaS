@@ -138,12 +138,16 @@ def find_user(gl: gitlab.Gitlab, username: str) -> Tuple[UserInfo | None, str]:
     an administrator's client (which sees each account's creation time and
     whether it is an administrator): (UserInfo, "") or (None, why not).
 
-    Lists ``GET /users?username=`` and keeps only an exact match, so a
-    similar name is never taken for the account.
+    Lists ``GET /users?username=`` and keeps only the account whose
+    username matches, ignoring case as GitLab does (it allows one account
+    per name in any case), so a similar name is never taken for the account.
     """
+    wanted = username.lower()
     try:
         listed = gl.users.list(username=username, iterator=True)
-        user = next((found for found in listed if found.username == username), None)
+        user = next(
+            (found for found in listed if found.username.lower() == wanted), None
+        )
     except API_ERRORS as exc:
         return (
             None,

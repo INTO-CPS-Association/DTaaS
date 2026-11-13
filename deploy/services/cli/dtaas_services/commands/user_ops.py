@@ -18,6 +18,8 @@ from ..pkg.services.gitlab import (
     is_gitlab_running,
 )
 from ..pkg.services.thingsboard import is_thingsboard_running
+from ..pkg.credentials_check import duplicate_username_error
+from ..pkg.utils import get_credentials_path
 from .utility import parse_service_list
 
 
@@ -119,7 +121,9 @@ def _print_user_add_summary(results: Sequence[bool | None]) -> None:
 def add(service_names):
     """
     Add user accounts to InfluxDB, RabbitMQ, MongoDB, PostgreSQL, ThingsBoard, and GitLab.
-    Reads config/credentials.csv and creates accounts in all services.
+    Reads config/credentials.csv and creates accounts in all services. Each
+    username may be listed once (case is ignored): a repeat stops the
+    command before any service is touched.
     On GitLab, each user also gets the private projects 'common' and 'user',
     filled from the templates that GITLAB_TEMPLATE_HOST and
     GITLAB_TEMPLATE_GROUP name in config/services.env, at the commits that
@@ -132,6 +136,9 @@ def add(service_names):
     console = Console()
     console.print("[bold cyan]Adding users from CSV file...[/bold cyan]")
     service_list = parse_service_list(service_names)
+    error = duplicate_username_error(get_credentials_path())
+    if error:
+        raise click.ClickException(error)
 
     if not service_list:
         results = _setup_all_service_users(console)

@@ -4,13 +4,19 @@ Personal Access Token for each row of config/credentials.csv.
 A new account is recorded in config/gitlab_user_projects.json as made by
 this CLI, with its id and creation time, the moment it exists and before
 its token is issued (project_state.py). That record replaces whatever an
-earlier account of the same name left there. An account that existed before
-the run gets no token: this CLI never issues one for an account it did not
-create. The one exception is an account it did create, in an earlier run,
-with no token saved for it (the token could not be issued or saved, or the
-admin removed it): when GitLab still has that very account (same id and
-creation time) and it is no administrator, its 'dtaas' tokens are revoked,
-so a lost one is never left valid, and a new one is issued.
+earlier account of the same name left there.
+
+GitLab answers 409 both for a username that is taken and for an email that
+another account uses, so after a 409 the account is looked up by username,
+once per run. When GitLab has none, the conflict was another field, and the
+row fails with GitLab's own words. An account that existed before the run
+is handed on with its id and creation time, and gets no token: this CLI
+never issues one for an account it did not create. The one exception is an
+account it did create, in an earlier run, with no token saved for it (the
+token could not be issued or saved, or the admin removed it): when GitLab
+still has that very account (same id and creation time) and it is no
+administrator, its 'dtaas' tokens are revoked, so a lost one is never left
+valid, and a new one is issued.
 """
 
 from dataclasses import dataclass, field
@@ -26,6 +32,7 @@ from ....gitlab_common import (
     create_user_pat,
     find_user,
     revoke_user_pats,
+    with_hint,
 )
 from .project_report import RERUN, say
 from .project_state import UserRecord, save_record
@@ -89,21 +96,6 @@ def _replace_token(run: AccountRun, username: str, info: UserInfo) -> RowResult:
     return True, "", Account(username, info.user_id, token_or_error, info.created_at)
 
 
-def _created_here(
-    run: AccountRun, username: str, record: UserRecord
-) -> Tuple[UserInfo | None, str]:
-    """The account named *username* when it is the one this CLI created, as
-    *record* says, and no administrator: (info, ""). (None, "") when the
-    name belongs to another account now, (None, why) when it cannot be
-    told."""
-    info, error = find_user(run.gl, username)
-    if info is not None and info.is_admin:
-        return None, f"{username} is a GitLab administrator, so no token is issued."
-    if info is None or record.belongs_to(info.user_id, info.created_at):
-        return info, error
-    return None, ""
-
-
 def _has_saved_token(run: AccountRun, username: str) -> bool:
     """True when a token is saved for *username*."""
     saved = run.saved.get(username)
@@ -119,17 +111,28 @@ def _record_to_reissue(run: AccountRun, username: str) -> UserRecord | None:
     return record
 
 
-def _existing_account(run: AccountRun, username: str) -> RowResult:
-    """An account that was there before this run, as it is, unless this CLI
-    created it and no token of it is saved: its token is then issued again.
-    When the name belongs to another account now, it is handed on as it is."""
-    record = _record_to_reissue(run, username)
-    if record is None:
-        return True, "", Account(username)
-    info, error = _created_here(run, username, record)
-    if info is None:
-        return not error, error, None if error else Account(username)
+def _reissue(run: AccountRun, username: str, info: UserInfo) -> RowResult:
+    """Issue again the token of the account *info*, which this CLI created,
+    unless it was made an administrator since."""
+    if info.is_admin:
+        return False, f"{username} is a GitLab administrator, so no token is issued.", None
     return _replace_token(run, username, info)
+
+
+def _existing_account(run: AccountRun, username: str, conflict: str) -> RowResult:
+    """The account GitLab reported *conflict* (its 409) for, looked up by
+    username and handed on as it is, unless this CLI created that very
+    account and no token of it is saved: its token is then issued again.
+    When GitLab has no account of that name, the conflict was another
+    field (an email another account uses), and the row fails with
+    GitLab's words."""
+    info, error = find_user(run.gl, username)
+    if info is None:
+        return False, with_hint(f"GitLab did not create '{username}': {conflict}", error), None
+    record = _record_to_reissue(run, username)
+    if record is None or not record.belongs_to(info.user_id, info.created_at):
+        return True, "", Account(username, info.user_id, created_at=info.created_at)
+    return _reissue(run, username, info)
 
 
 def create_account(run: AccountRun, row: dict) -> RowResult:
@@ -137,14 +140,14 @@ def create_account(run: AccountRun, row: dict) -> RowResult:
 
     Returns:
         Tuple of (success, error, account): the account is None when none is
-        in place for the project step. It carries its id, token and creation
-        time when this run created it or issued its token.
+        in place for the project step. It carries its id and creation time,
+        and its token when this run created it or issued its token.
     """
     fields = _row_fields(row)
     result = create_user(run.gl, **fields)
     if result.outcome is CreateOutcome.FAILED:
         return False, result.error, None
     if result.user_id is None:
-        return _existing_account(run, fields["username"])
+        return _existing_account(run, fields["username"], result.error)
     info = UserInfo(result.user_id, result.created_at)
     return _new_account(run, fields["username"], info)

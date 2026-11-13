@@ -114,7 +114,7 @@ An abridged `dtaas.toml`:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.4.1"
+version="2.5.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -737,6 +737,9 @@ containers are provisioned first; a GitLab failure never undoes them, but
 it does make the command exit non-zero. The `[gitlab]` keys, the password
 sources and the files written are described in
 [GitLab provisioning settings](cli-config.md#gitlab-provisioning-settings).
+Since 2.5.0, `[gitlab].template_host` must be an `https` URL: an
+`http://` value, which 2.4.0 accepted, now fails `config validate` and
+`user add`.
 
 The projects are made on the machine that runs `dtaas`: it clones each
 template with `git` into a temporary folder and pushes it to the new

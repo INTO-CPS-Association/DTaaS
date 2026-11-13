@@ -84,3 +84,17 @@ def test_a_permission_error_ends_with_its_own_message(runner, mocker, exc, shown
     assert result.exit_code == 1
     assert f"Error: {shown}" in result.output
     assert result.output.count("chown") == shown.count("chown")
+
+
+def test_a_lock_held_too_long_ends_with_its_own_message(runner, mocker):
+    """A lock another command held past the wait (file_lock.locked) ends
+    the command with exit code 1 and the lock's own message, never a
+    traceback."""
+    message = f"{PASSWORDS} is being changed by another dtaas-services command."
+    mocker.patch(
+        "dtaas_services.commands.user_ops.parse_service_list",
+        side_effect=TimeoutError(message),
+    )
+    result = runner.invoke(services, ["user", "add"])
+    assert result.exit_code == 1
+    assert f"Error: {message}" in result.output

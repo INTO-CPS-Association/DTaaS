@@ -65,6 +65,7 @@ deploy/services/cli/
 │   │   ├── sanitize.py
 │   │   ├── utils.py
 │   │   ├── password_store.py
+│   │   ├── credentials_check.py
 │   │   ├── lib/
 │   │   │   ├── manager.py
 │   │   │   ├── docker_executor.py
@@ -85,6 +86,7 @@ deploy/services/cli/
 │   │   ├── git_run.py
 │   │   ├── messages.py
 │   │   ├── project_fill.py
+│   │   ├── project_run.py
 │   │   ├── projects.py
 │   │   ├── push_token.py
 │   │   ├── repos.py
@@ -125,6 +127,8 @@ The files in `dtaas_services/pkg/` hold reusable logic:
 - `cert.py`: certificate placement and normalization.
 - `password_store.py`: tracks the current admin password of each
   supported service.
+- `credentials_check.py`: refuses a `credentials.csv` that lists a
+  username twice (ignoring case), checked once by `user add`.
 - `lib/*`: compose command execution and service state management.
 
 ### Service Modules Layer
@@ -142,9 +146,13 @@ The files in `dtaas_services/pkg/` hold reusable logic:
 
 `gitlab_common` holds GitLab operations that do not depend on the
 deployment (`get_gitlab_client`, `validate_user_row`, `create_user`,
-`create_user_pat`, `revoke_user_pats`, `with_hint`). Every function takes
-explicit arguments and changes no environment, filesystem, console or
-process-global state.
+`find_user`, `create_user_pat`, `revoke_user_pats`, `ensure_project`,
+`ensure_projects`, `with_hint`). Every function takes explicit arguments
+and changes no environment, console or process-global state. The project
+functions run `git` on the host in a temporary folder, and
+`ensure_projects` hands the printing and the saving of each project's
+outcome back to the consumer through two callbacks, so both CLIs word and
+record the outcomes the same way.
 
 Its single source of truth is `lib/gitlab_common/`, a standalone Poetry
 package with its own tests. Each consumer **copies** it into its own

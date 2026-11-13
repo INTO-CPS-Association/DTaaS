@@ -25,7 +25,6 @@ def test_without_templates_nothing_happens(gitlab):
     assert provision_projects(run, [NEW_ALICE]) == ProjectTally()
     gitlab.git.assert_not_called()
     gitlab.ensure.assert_not_called()
-    gitlab.find.assert_not_called()
 
 
 def test_without_git_every_user_with_work_fails(gitlab, capsys):

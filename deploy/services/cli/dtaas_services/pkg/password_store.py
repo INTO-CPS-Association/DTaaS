@@ -3,6 +3,11 @@
 Each change reads, edits and writes the file back while its lock is held
 (file_lock.py), so two commands that record passwords at once never lose
 each other's entries.
+
+A password is recorded after the service already uses it, so a record that
+fails (the lock not released in time, a file root owns, a full disk) raises
+PasswordNotRecorded, which each reset flow reports as its result: why, and
+which key of config/services.env holds the password to add by hand.
 """
 
 import logging
@@ -32,6 +37,18 @@ SERVICE_KEYS = {
     ],
 }
 
+# The key of config/services.env that holds each recorded password.
+SOURCE_KEYS = {
+    "TB_SYSADMIN_CURRENT_PASSWORD": "TB_SYSADMIN_NEW_PASSWORD",
+    "TB_TENANT_ADMIN_CURRENT_PASSWORD": "TB_TENANT_ADMIN_PASSWORD",
+    "GITLAB_ROOT_CURRENT_PASSWORD": "GITLAB_ROOT_NEW_PASSWORD",
+}
+
+
+class PasswordNotRecorded(Exception):
+    """A password the service already uses could not be recorded: the
+    message says why, and what to add to the file by hand."""
+
 
 def _get_passwords_path() -> Path:
     """Return the path to config/current.passwords.env."""
@@ -57,14 +74,9 @@ def get_current_password(key: str, default: str = "") -> str:
     return values.get(key) or default
 
 
-def save_password(key: str, value: str) -> None:
-    """Create or update a password entry in current.passwords.env.
-
-    Args:
-        key: Environment variable key
-        value: New password value
-    """
-    path = _get_passwords_path()
+def _write_password(path: Path, key: str, value: str) -> None:
+    """Set *key* to *value* in *path*, made first when missing, while its
+    lock is held. Raises OSError (TimeoutError, PermissionError included)."""
     with locked(path):
         if not path.exists():
             write_secret_file(
@@ -74,6 +86,31 @@ def save_password(key: str, value: str) -> None:
         with explain_permission_error(path, lock_path(path)):
             set_key(str(path), key, value)
             os.chmod(path, 0o600)
+
+
+def save_password(key: str, value: str) -> None:
+    """Create or update a password entry in current.passwords.env.
+
+    Args:
+        key: Environment variable key (one of SOURCE_KEYS)
+        value: New password value
+
+    Raises:
+        PasswordNotRecorded: When the file cannot be changed. It names the
+            key of config/services.env that holds the password, never the
+            password itself, and is no OSError, so a handler of connection
+            errors never reports it as one.
+    """
+    path = _get_passwords_path()
+    try:
+        _write_password(path, key, value)
+    except OSError as exc:
+        raise PasswordNotRecorded(
+            f"{key} could not be recorded. The service already uses the "
+            f"password set by {SOURCE_KEYS[key]} in config/services.env: add "
+            f"the line {key}=<that password> to config/{PASSWORDS_FILE} by "
+            f"hand. Why: {exc}"
+        ) from exc
     logger.debug("Updated %s in %s", key, PASSWORDS_FILE)
 
 
