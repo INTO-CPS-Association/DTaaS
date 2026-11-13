@@ -21,9 +21,13 @@ export default class SseWriter {
     this.write(`retry: ${retryMs}\n\n`);
   }
 
-  /** JSON never holds a raw newline, so the data fits on one 'data:' line. */
-  event(name: string, data: unknown): void {
-    this.write(`event: ${name}\ndata: ${JSON.stringify(data)}\n\n`);
+  /**
+   * JSON never holds a raw newline, so the data fits on one 'data:' line. An
+   * id is sent back by the client as Last-Event-ID when it connects again.
+   */
+  event(name: string, data: unknown, id?: string): void {
+    const idLine = id === undefined ? '' : `id: ${id}\n`;
+    this.write(`${idLine}event: ${name}\ndata: ${JSON.stringify(data)}\n\n`);
   }
 
   comment(text: string): void {

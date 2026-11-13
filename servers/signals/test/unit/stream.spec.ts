@@ -73,7 +73,7 @@ describe('StreamSession', () => {
     broker.publish('alice/pump/flow', reading(1));
     broker.publish('alice/pump/flow', 'x'.repeat(129));
     const samples = response.chunks.filter((chunk) =>
-      chunk.startsWith('event: sample'),
+      chunk.includes('event: sample'),
     );
     expect(samples).toHaveLength(1);
     const data = JSON.parse(samples[0].split('data: ')[1]);
@@ -83,6 +83,7 @@ describe('StreamSession', () => {
       payload: reading(1),
     });
     expect(typeof data.receivedAt).toBe('number');
+    expect(samples[0]).toMatch(new RegExp(`^id: ${data.receivedAt}\n`));
     session.end();
   });
 
@@ -110,6 +111,9 @@ describe('StreamSession', () => {
     expect(response.chunks).toContain(': keep-alive\n\n');
     jest.advanceTimersByTime(600_000);
     await session.done;
+    expect(response.text).toContain(
+      'event: end\ndata: {"reason":"lifetime"}\n\n',
+    );
     expect(response.writableEnded).toBe(true);
     expect(broker.bindings).toHaveLength(0);
   });
