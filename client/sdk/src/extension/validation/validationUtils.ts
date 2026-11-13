@@ -68,6 +68,7 @@ export const LIST_SPECS: readonly ListSpec[] = [
     applies: 'function',
   }),
   topLevel('assetPreviews', 'id', { id: 'string' }),
+  topLevel('provides', 'id', { id: 'string', create: 'function' }),
   nested('anchorKinds', 'kind', {
     kind: 'string',
     substrates: 'array',

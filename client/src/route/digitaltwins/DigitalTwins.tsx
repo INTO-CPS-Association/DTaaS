@@ -6,6 +6,16 @@ import { useURLforDT } from 'util/envUtil';
 import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import PageShell from 'components/PageShell';
 import TabDescription from 'components/tab/TabDescription';
+import extensionHost from 'extension/extensionHost';
+import DigitalTwinTabPage from 'extension/DigitalTwinTabPage';
+
+/** The tabs the domain extensions add, after the core ones. */
+const extensionTabs: TabData[] = extensionHost.digitalTwinTabs.map(
+  (mounted) => ({
+    label: mounted.tab.label,
+    body: <DigitalTwinTabPage mounted={mounted} />,
+  }),
+);
 
 function DTContent() {
   const DTurl = useURLforDT();
@@ -19,6 +29,7 @@ function DTContent() {
       </>
     ),
   }));
+  DTTab.push(...extensionTabs);
 
   return (
     <Layout>

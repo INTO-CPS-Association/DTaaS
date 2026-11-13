@@ -53,12 +53,21 @@ Different test suites can be executed with the following `yarn` commands:
 yarn test:unit  #run unit tests
 yarn test:int   #run integration tests
 yarn test:coverage:int-unit #combine coverage from unit and integration tests
+yarn test:build #scan build/ for secrets, after yarn build and yarn config:*
 
 yarn test:e2e   #run end-to-end tests by launching application on localhost
 yarn test:e2e:ext  #run end-to-end tests against application
                    #  running on external server
 yarn test:all   #run all tests
 ```
+
+`yarn test:build` needs a built client, so it is not part of `test:unit`.
+Run it after `yarn build` and the `yarn config:*` step that writes
+`build/env.js`. It reads every bundle, source map and `env.js` under `build/`
+and fails when one holds a password, a token, a login inside a URL
+(`user:password@`) or a `VIZ_MQTT_*` setting. A finding names the file, the
+line and the kind of secret, never the secret itself. The CI workflow runs it
+right after the build.
 
 ## Authorisation
 

@@ -1,6 +1,9 @@
 import { expect } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { openAuthenticatedApp } from 'test/e2e/setup/appSettings';
+import {
+  openAuthenticatedApp,
+  reloadSignedIn,
+} from 'test/e2e/setup/appSettings';
 
 const DEFAULT_SETTINGS = {
   GROUP_NAME: 'DTaaS',
@@ -31,7 +34,7 @@ test.describe('Account Settings Form', () => {
     await page.getByRole('button', { name: 'Save Settings' }).click();
 
     // Reload settings page
-    await page.reload();
+    await reloadSignedIn(page);
     await page.getByRole('tab', { name: 'Settings' }).click();
 
     // Check that settings were saved

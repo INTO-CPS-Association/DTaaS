@@ -19,6 +19,12 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   notice raises the major number (requirement K10).
 - `ValidateOptions.hostApiVersion`, for a host that implements another version
   than the package it was built with.
+- Services between extensions (requirement K12), API version `1.2.0`: an
+  extension offers services in `provides`, each named `<id>.<name>` and built
+  once by `create(host)`. It names the services it uses in `requires` and
+  reaches them through `HostServices.extensions.get(id)` and never imports the
+  code of another extension. `validateExtension` checks the names and
+  `fakeHostServices` takes a `services` option.
 
 ### Security
 

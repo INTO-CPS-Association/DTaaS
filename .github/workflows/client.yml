@@ -62,6 +62,10 @@ jobs:
           yarn build
           yarn config:test
 
+      - name: Scan the built client for secrets
+        run: |
+          yarn test:build
+
       - name: Run client unit and integration tests
         run: |
           yarn test:int

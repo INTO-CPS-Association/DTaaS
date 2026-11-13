@@ -9,7 +9,7 @@ import {
   clearUsername,
   setAccessToken,
   setUsername,
-} from '@into-cps-association/dt-automation';
+} from 'util/auth/credentials';
 import { useGetAndSetUsername } from 'util/auth/Authentication';
 import { resolveOAuthUsername } from 'util/auth/oauthUserProfile';
 

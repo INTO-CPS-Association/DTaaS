@@ -8,6 +8,7 @@ import {
   checkUniqueness,
 } from './validation/contributionRules';
 import checkNavigation from './validation/navigationRules';
+import checkServices from './validation/serviceRules';
 import { describe, isObject, type Loose } from './validation/validationUtils';
 
 export interface ValidationResult {
@@ -34,6 +35,7 @@ const runRules = (ext: Loose, options: ValidateOptions): string[] => [
   ...checkUniqueness(ext),
   ...checkNavigation(ext),
   ...checkSubstrates(ext),
+  ...checkServices(ext),
   ...checkDetect(ext),
 ];
 

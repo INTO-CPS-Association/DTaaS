@@ -15,6 +15,7 @@ import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import SpeedRoundedIcon from '@mui/icons-material/SpeedRounded';
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
 import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded';
+import WidgetsRoundedIcon from '@mui/icons-material/WidgetsRounded';
 
 export const LibraryIcon = ExtensionRoundedIcon;
 export const DigitalTwinsIcon = PeopleRoundedIcon;
@@ -25,3 +26,5 @@ export const InsightsIcon = InsightsRoundedIcon;
 export const MeasurementIcon = SpeedRoundedIcon;
 export const LogsIcon = ReceiptLongRoundedIcon;
 export const ConfigIcon = FactCheckRoundedIcon;
+/** A page an extension adds without an icon of its own. */
+export const ExtensionPageIcon = WidgetsRoundedIcon;
