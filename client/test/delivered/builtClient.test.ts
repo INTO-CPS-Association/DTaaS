@@ -16,6 +16,14 @@ describe('the built client', () => {
     expect(files.some((name) => name.endsWith('.js.map'))).toBe(true);
   });
 
+  it('bundles the real bim extension and not its test stand-in', () => {
+    const bundles = builtFiles(buildRoot).filter((f) => f.endsWith('.js'));
+    const text = bundles.map((f) => fs.readFileSync(f, 'utf-8')).join('\n');
+
+    expect(text).not.toContain('test-stand-in');
+    expect(text).toContain('Building Models');
+  });
+
   it('holds no password, token, URL login or broker setting', () => {
     expect(scanBuild(buildRoot)).toEqual([]);
   });

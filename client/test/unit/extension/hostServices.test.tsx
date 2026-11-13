@@ -7,7 +7,7 @@ import {
   servicesFor,
   type HostStore,
 } from 'extension/hostServices';
-import unavailableCore from 'extension/unavailableCore';
+import createCore from 'viz/createCore';
 
 jest.mock('@gitbeaker/rest', () => ({ Gitlab: jest.fn() }));
 
@@ -98,9 +98,11 @@ describe('the shared host services', () => {
   });
 
   it('passes on the signals and visualisations of the core', () => {
-    let core: ReturnType<typeof unavailableCore> | undefined;
-    const services = createSharedServices(hostStore(), () => {
-      core = unavailableCore();
+    let core: ReturnType<typeof createCore> | undefined;
+    const services = createSharedServices(hostStore(), (contents) => {
+      core = createCore({}, contents, [], () => {
+        throw new Error('no substrate is built here');
+      });
       return core;
     });
 
@@ -111,7 +113,11 @@ describe('the shared host services', () => {
 });
 
 describe('the services of one extension', () => {
-  const shared = createSharedServices(hostStore(), unavailableCore);
+  const shared = createSharedServices(hostStore(), (contents) =>
+    createCore({}, contents, [], () => {
+      throw new Error('no substrate is built here');
+    }),
+  );
   const noServices = { get: () => undefined as never };
 
   it('reads only its own env.js keys through its config schema', () => {

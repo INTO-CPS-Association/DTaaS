@@ -17,6 +17,8 @@ The options are set in `env.js`, which defines `window.env`.
       REACT_APP_LOGOUT_REDIRECT_URI: 'URL of the homepage for the anonymous users of the website',
       REACT_APP_GITLAB_SCOPES: 'OAuth 2.0 scopes. These should match with the scopes set in GitLab OAuth 2.0 provider',
       LOGGER_URL: 'Endpoint of the logger microservice, including the /logger prefix'(optional),
+      // REACT_APP_VIZ_SIGNALS_URL: 'Address of the signals gateway'(optional),
+      // REACT_APP_VIZ_ALLOWED_ORIGINS: 'Origins for images and embeds'(optional),
     };
   };
 
@@ -68,13 +70,28 @@ by default, and users turn them on in their account settings. When
 browser (IndexedDB). When `LOGGER_URL` is set and remote logging is on,
 the configuration check requests `<LOGGER_URL>/health`.
 
-## Domain Extensions
+## Domain Extensions and Live Signals
 
 These keys are optional. A client without them runs every extension it was built
-with.
+with and shows no live readings.
 
 | Key | What it does |
 | :--- | :--- |
 | `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
 | `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
 | `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
+| `REACT_APP_VIZ_SIGNALS_URL` | The address of the DTaaS signals gateway, for example `https://foo.com/signals` |
+| `REACT_APP_VIZ_ALLOWED_ORIGINS` | Origins besides this site that a `visualisation.json` may load images and embedded pages from, separated by commas, for example `'https://grafana.foo.com'` |
+
+With `REACT_APP_VIZ_SIGNALS_URL` set, the client asks the signals gateway for
+the signals the open pages need and colours the pages with the readings. The
+client proves who the user is with the user's GitLab access token, sent in the
+`Authorization` header. No broker login reaches the browser. When the key is
+set, the configuration check requests `<REACT_APP_VIZ_SIGNALS_URL>/health`.
+Without it the client shows no live readings.
+
+A `visualisation.json` names the sources of its images and embedded pages. A
+`lib://` source from the library and a source on the client's own origin are
+always allowed. An `http` or `https` source on another origin is shown only when
+its origin is listed in `REACT_APP_VIZ_ALLOWED_ORIGINS`. The key is empty by
+default, so another site's page is not framed unless an administrator allows it.

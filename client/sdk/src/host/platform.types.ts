@@ -37,6 +37,11 @@ export interface UiService {
   snackbar(message: string, severity: SnackbarSeverity): void;
   /** The host's page shell, so kit pages match the rest of the client. */
   readonly Page: ComponentType<PageProps>;
+  /**
+   * The host's theme, for what a kit draws into a React root of its own,
+   * such as the controls of a substrate.
+   */
+  readonly Theme?: ComponentType<{ readonly children: ReactNode }>;
 }
 
 export interface Logger {

@@ -7,7 +7,7 @@ export const SDK_MAJOR = 1 as const;
  * contribution point or service raises the minor number, and a change that an
  * existing extension would notice raises the major number (K10).
  */
-export const SDK_VERSION = '1.2.0';
+export const SDK_VERSION = '1.3.0';
 
 /** The value channels every signal can carry (R5). */
 export const CHANNELS = [
@@ -17,10 +17,12 @@ export const CHANNELS = [
   'setpoint',
 ] as const;
 
-/** Substrates owned by the common core; a kit may never register these ids. */
+/**
+ * Substrates owned by the common core. A kit may never register these ids.
+ * `aec` is not one of them: the bim extension contributes it.
+ */
 export const STANDARD_SUBSTRATES = [
   'image',
-  'aec',
   'mesh',
   'video',
   'embed',

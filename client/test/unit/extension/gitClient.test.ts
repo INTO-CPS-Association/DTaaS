@@ -3,6 +3,7 @@ import createGitService, {
   GitFileMissing,
   type GitApi,
 } from 'extension/gitClient';
+import GitSignInNeeded from 'extension/gitSignInNeeded';
 
 jest.mock('@gitbeaker/rest', () => ({ Gitlab: jest.fn() }));
 
@@ -44,6 +45,18 @@ describe('the git service', () => {
       GitFileMissing,
     );
     await expect(git.read('g/r', 'a.txt', 'dev')).rejects.toBe(serverError);
+  });
+
+  it('reports a refused token as a sign-in to do again', async () => {
+    const { api, git } = fakeApi();
+    const unauthorised = Object.assign(new Error('401 Unauthorized'), {
+      cause: { response: { status: 401 } },
+    });
+    api.RepositoryFiles.show.mockRejectedValueOnce(unauthorised);
+
+    await expect(git.read('g/r', 'a.txt', 'dev')).rejects.toBeInstanceOf(
+      GitSignInNeeded,
+    );
   });
 
   it('reads from main when no ref is given', async () => {

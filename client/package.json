@@ -42,6 +42,7 @@
     "test:e2e": "yarn config:test && yarn build && playwright test -c ./playwright.config.ts",
     "test:coverage:int-unit": "npx istanbul-merge --out coverage/all/coverage.json coverage/unit/coverage-final.json coverage/int/coverage-final.json && npx nyc report --reporter=lcov --reporter=text --reporter=json -t coverage/all --report-dir coverage/all",
     "test:int": "jest -c ./jest.config.json --coverage --coverageDirectory=coverage/int ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
+    "test:ext": "jest -c ./extensions/bim/jest.config.json --coverageDirectory=../../coverage/ext tests",
     "test:sdk": "jest -c ./sdk/jest.config.json --coverageDirectory=coverage/sdk tests/unit tests/integration --setupFilesAfterEnv ./tests/unit/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/unit ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
   },
@@ -60,6 +61,7 @@
     "@gitbeaker/rest": "43.8.0",
     "@into-cps-association/bim-kit": "0.2.0",
     "@into-cps-association/dt-automation": "^0.2.0",
+    "@into-cps-association/dtaas-ext-bim": "link:./extensions/bim",
     "@into-cps-association/dtaas-sdk": "link:./sdk",
     "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "9.4.0",
