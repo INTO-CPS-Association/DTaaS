@@ -72,7 +72,7 @@ export default class StreamSession {
       this.options.keepAliveMs,
     );
     const lifetime = setTimeout(
-      () => this.end(),
+      () => this.endOfLife(),
       Math.max(0, this.options.lifetimeMs),
     );
     this.timers.push(keepAlive, lifetime);
@@ -133,13 +133,28 @@ export default class StreamSession {
       return;
     }
     this.counts.forwarded += 1;
-    this.sse.event('sample', {
-      path: target.path,
-      twin: target.twin,
-      channel: target.channel,
-      receivedAt: Date.now(),
-      payload: message.body.toString('utf8'),
-    });
+    const receivedAt = Date.now();
+    // The id is the time the gateway received the message, so a client
+    // that connects again names how far it got.
+    this.sse.event(
+      'sample',
+      {
+        path: target.path,
+        twin: target.twin,
+        channel: target.channel,
+        receivedAt,
+        payload: message.body.toString('utf8'),
+      },
+      String(receivedAt),
+    );
+  }
+
+  // A stream ends at its age on purpose, so the client may open the next
+  // one at once instead of waiting as it does after a failure.
+  private endOfLife(): void {
+    if (this.ended) return;
+    this.sse.event('end', { reason: 'lifetime' });
+    this.end();
   }
 
   private down(): void {
