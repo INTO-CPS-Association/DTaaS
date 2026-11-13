@@ -16,9 +16,12 @@ import {
   SpriteMaterial,
   Vector3,
 } from 'three';
+import { labelOffsets } from './aecLabelPlacement';
 
 const MARKER_SHARE = 0.012;
-const LABEL_SHARE = 0.09;
+// A label is drawn at this share of the model's size. At 0.09 it was too
+// small to read when the viewer is shown in a narrow panel.
+const LABEL_SHARE = 0.13;
 const LABEL_FONT_PX = 48;
 // Labels sit in the scene, whose background is light in both themes.
 const LABEL_BACKGROUND = 'rgba(255, 255, 255, 0.9)';
@@ -83,32 +86,34 @@ export class Markers {
     const label = new Sprite(new SpriteMaterial({ depthTest: false }));
     label.renderOrder = 3;
     writeLabel(label, name, this.labelHeight());
-    label.position.copy(at).add(new Vector3(0, 0, this.labelOffset(at)));
+    label.position.copy(at);
     this.scene.add(dot, label);
     const marker = { name, globalId, dot, label };
     this.all.set(key, marker);
+    this.placeLabels();
     this.changed();
     return marker;
   }
 
-  /**
-   * Where a label sits from its marker, along the depth of the plan: above
-   * it, unless a marker close by already has its label above, and then below
-   * it, so two neighbouring sensors do not cover each other's label.
-   */
-  private labelOffset(at: Vector3): number {
-    const height = this.labelHeight();
-    const crowded = [...this.all.values()].some(
-      (m) =>
-        m.label.position.z < m.dot.position.z &&
-        Math.hypot(m.dot.position.x - at.x, m.dot.position.z - at.z) <
-          height * 4,
+  /** Place every label again, since one label's width moves the others. */
+  private placeLabels() {
+    const markers = [...this.all.values()];
+    const offsets = labelOffsets(
+      markers.map(({ dot, label }) => ({
+        x: dot.position.x,
+        z: dot.position.z,
+        width: label.scale.x,
+        height: label.scale.y,
+      })),
     );
-    return crowded ? height : -height;
+    markers.forEach(({ dot, label }, index) => {
+      label.position.z = dot.position.z + offsets[index];
+    });
   }
 
   relabel(marker: Marker, text: string) {
     writeLabel(marker.label, text, this.labelHeight());
+    this.placeLabels();
     this.changed();
   }
 

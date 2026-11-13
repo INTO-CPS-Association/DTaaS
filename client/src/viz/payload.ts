@@ -4,15 +4,15 @@
  *
  * Three payloads are understood, in the order they are tried:
  *
- * - JSON with a `value`, and optionally `ts` or `timestamp`, `quality` and
- *   `channel`. A `unit` or `run` is not kept, since a `SignalSample` has no
- *   field for either.
+ * - JSON with a `value`, and optionally `ts` or `timestamp`, `quality`,
+ *   `unit` and `channel`. A `run` is not kept, since a `SignalSample` has no
+ *   field for it.
  * - A bare number, such as `21.4`.
  * - The comma-separated line of the DTaaS examples,
  *   `timestamp,measurement,type,unit,value`, as in
  *   `20261013T10:00:00,temperature,simulation,°C,21.40`. A `simulation` type
  *   is the `simulated` channel, so a simulated reading is never shown as a
- *   measured one.
+ *   measured one. The unit of the line is kept.
  *
  * A message carries the time it was measured when it can, and the time it
  * arrived otherwise.
@@ -31,6 +31,7 @@ export interface Decoded {
   readonly ts?: number;
   readonly channel?: Channel;
   readonly quality?: SignalQuality;
+  readonly unit?: string;
 }
 
 /** `20261013T10:00:00`, local time as the publisher wrote it. */
@@ -61,6 +62,16 @@ export function qualityOf(value: unknown): SignalQuality | undefined {
   return QUALITIES.has(value) ? (value as SignalQuality) : undefined;
 }
 
+/** The longest unit kept. Longer text is not a unit, so it is dropped. */
+const UNIT_MAX_LENGTH = 32;
+
+/** The unit a source gave, trimmed, or undefined when it gave none. */
+export function unitOf(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const unit = value.trim();
+  return unit && unit.length <= UNIT_MAX_LENGTH ? unit : undefined;
+}
+
 /** A value of a type the SDK allows: a number, text, a flag or numbers. */
 export function isSignalValue(value: unknown): value is SignalValue {
   if (Array.isArray(value)) return value.every((v) => typeof v === 'number');
@@ -78,6 +89,7 @@ function fromObject(data: Record<string, unknown>): Decoded | undefined {
     ts: timeOf(data.ts ?? data.timestamp),
     channel: channelOf(data.channel),
     quality: qualityOf(data.quality),
+    unit: unitOf(data.unit),
   };
 }
 
@@ -104,6 +116,7 @@ function fromLine(text: string): Decoded | undefined {
     value,
     ts: timeOf(fields[0]),
     channel: fields[2].trim() === 'simulation' ? 'simulated' : undefined,
+    unit: unitOf(fields[3]),
   };
 }
 
@@ -133,5 +146,6 @@ export function sampleFrom(
     ts: decoded.ts ?? now,
     value: decoded.value,
     quality: decoded.quality,
+    unit: decoded.unit,
   };
 }

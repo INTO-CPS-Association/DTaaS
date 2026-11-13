@@ -43,6 +43,9 @@ function NavigationCards({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
+              // ButtonBase centres its content, which in a column pushes a
+              // card with a shorter text down, so the cards start at the top.
+              justifyContent: 'flex-start',
               gap: 1,
             }}
           >

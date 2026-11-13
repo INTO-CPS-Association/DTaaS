@@ -92,8 +92,8 @@ describe('visualisationAssetSchema', () => {
 
   it('refuses a javascript: URL on an http transport', () => {
     const asset = clone();
-    asset.transports = [{ adapter: 'http', url: 'javascript:alert(1)' }];
-    expect(issuePaths(asset)).toEqual([['transports', 0, 'url']]);
+    asset.transports.push({ adapter: 'http', url: 'javascript:alert(1)' });
+    expect(issuePaths(asset)).toEqual([['transports', 3, 'url']]);
   });
 
   it('refuses a data: URL as a substrate source', () => {

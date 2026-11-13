@@ -1,6 +1,6 @@
 import { useHost } from '@into-cps-association/dtaas-sdk';
-import Reading from 'examples/hello-kit/src/react/Reading';
-import configSchema from 'examples/hello-kit/src/dtaas/config';
+import Reading from '../../react/Reading';
+import configSchema from '../config';
 
 const ROOM1 = 'hello/room1/temperature';
 

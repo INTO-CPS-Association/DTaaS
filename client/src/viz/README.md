@@ -16,18 +16,18 @@ architecture in `dtaas-sdk`. The contract it implements,
 | `streamResume.ts`     | 1       | The last event id and a planned end, kept for the next stream                           |
 | `laterTimer.ts`       | 1       | A timer that runs one action later, replaced by the next                                |
 | `gatewayHistory.ts`   | 1       | Past samples of signals from the signals gateway                                        |
-| `gateway.ts`          | 1       | The gateway's address, and the token header of every request                            |
+| `gateway.ts`          | 1       | The gateway's address and the token header of every request                             |
 | `sseStream.ts`        | 1       | Server-sent events read through fetch, so a request has a header                        |
 | `payload.ts`          | 1       | One broker message to one `SignalSample`                                                |
 | `deliveryTimings.ts`  | 1       | The source, gateway and arrival times of the last live samples                          |
 | `sampleStore.ts`      | 2       | Every recent sample of each signal, read by time                                        |
 | `playhead.ts`         | 2       | The one clock every page reads, live or scrubbed                                        |
-| `time.ts`             | 2       | When a playhead counts as live, and the hour the timeline spans                         |
+| `time.ts`             | 2       | When a playhead counts as live and the hour the timeline spans                          |
 | `signals.ts`          | 1 and 2 | The `signals` service: subscriptions, reads and connection state                        |
 | `connection.ts`       | 1       | Whether the transports behind some signals are delivering                               |
 | `encodings.ts`        | 4       | From a value to visual properties, such as a colour, with the colour schemes of the SDK |
 | `resolve.ts`          | 4       | Every encoding of a `visualisation.json` at one instant                                 |
-| `vizService.ts`       | 3 and 5 | The `viz` service: the file, and what extensions contribute                             |
+| `vizService.ts`       | 3 and 5 | The `viz` service: the file and what extensions contribute                              |
 | `createCore.ts`       |         | The core of a deployment, from `env.js`                                                 |
 | `substrates/`         | 3       | The standard `image` and `embed` substrates                                             |
 | `components/`         | 5       | The viewer and the timeline the Visualise tab draws                                     |
@@ -42,7 +42,7 @@ to the substrate, so it is fixed here:
 - `image-region`: a polygon, its corners as in SVG, `"x1,y1 x2,y2 x3,y3"`.
 
 With a `homographyId`, the coordinates are in the world units of the
-calibration of that id, and a homography fitted to its point pairs by least
+calibration of that id and a homography fitted to its point pairs by least
 squares maps them onto the picture.
 
 `embed` shows another tool's page, such as a Grafana dashboard, in a frame.
@@ -62,7 +62,7 @@ only when a visualisation draws a building.
 
 `route/digitaltwins/visualise/` lists the twins in the library, reads the
 `visualisation.json` of the one chosen as committed in GitLab, the copy the
-signals gateway authorises against, and draws it with `TwinViewer`: one
+signals gateway authorises against and draws it with `TwinViewer`: one
 pane per substrate of the layout, every pane on the one playhead, which
 `Timeline` moves.
 
@@ -78,7 +78,7 @@ read through fetch and cut into events in `sseStream.ts`.
 One stream carries every path the open pages use. When the set changes, the
 stream is opened again with the new set, 100 ms later, so a page that
 subscribes to many sensors as it renders opens one stream. A stream that
-fails or ends reads `down`, and the next one opens 5 s later, or after the
+fails or ends reads `down` and the next one opens 5 s later, or after the
 wait the gateway names with `retry:`. A stream the gateway ends at its age
 with an `end` event opens again after 100 ms. Each new stream sends the id of
 the last event as `Last-Event-ID` (`streamResume.ts`), and the gateway first
@@ -88,7 +88,7 @@ for again until no page uses it. A `range` reads the gateway's history into
 the sample store first, so past samples and samples that arrived live come
 back as one series. Nothing connects until a page subscribes. Without an
 address the core still runs: every connection reads `down`, a range holds
-what the client has seen, and visualisations are still read and saved.
+what the client has seen and visualisations are still read and saved.
 
 `historyCoverage.ts` records the stretches of time the store holds for each
 signal and channel: what a range read and, while a path is subscribed, the time
@@ -102,7 +102,7 @@ was cut short, the timeline says that older readings were left out.
 
 When the gateway answers 401, `gatewaySession.ts` keeps the refused token. The
 stream and the range do not send that token again, the timeline asks the person
-to sign in again, and the next request goes out only with another token.
+to sign in again and the next request goes out only with another token.
 
 ### Which Token the Gateway Receives
 
@@ -128,7 +128,7 @@ type is kept on the `simulated` channel.
 
 ## Not Built Yet
 
-- ThingsBoard as a device registry, and the STOMP, HTTP and file transports
+- ThingsBoard as a device registry and the STOMP, HTTP and file transports
   the schema allows.
 - The flow, glyph, field overlay and trajectory encodings, which resolve to
   no properties until a substrate draws them.

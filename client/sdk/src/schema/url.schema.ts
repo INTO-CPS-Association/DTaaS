@@ -41,38 +41,39 @@ const isAllowed = (value: string, rule: UrlRule) => {
   return rule.relative === true && staysOnHost(value);
 };
 
+/**
+ * Whether the URL names a user or a password before its host. A declaration
+ * is committed to a repository, so a password written into it is readable by
+ * everyone who can read the twin.
+ */
+const carriesCredentials = (value: string) => {
+  try {
+    const url = new URL(value, RELATIVE_BASE);
+    return url.username !== '' || url.password !== '';
+  } catch {
+    // A malformed URL is refused by the scheme check.
+    return false;
+  }
+};
+
 const allowedText = (rule: UrlRule) => {
   const schemes = rule.schemes.map((s) => `${s}:`).join(', ');
   return rule.relative ? `${schemes} or a relative path` : schemes;
 };
 
 /**
- * Whether the URL carries no user name and no password. A library asset is
- * read by everyone who can open the repository and reaches the browser, so a
- * login written into `user:password@` would leak.
- */
-const hasNoCredentials = (value: string) => {
-  try {
-    const url = new URL(value);
-    return url.username === '' && url.password === '';
-  } catch {
-    // A relative path names no host, so it carries no login either.
-    return true;
-  }
-};
-
-/**
- * A URL restricted to an allowlist of schemes, with no user name or password.
- * An allowlist, and not a blocklist of `javascript:` or `data:`, keeps a new
- * or obfuscated scheme out by default.
+ * A URL restricted to an allowlist of schemes and without credentials. An
+ * allowlist, and not a blocklist of `javascript:` or `data:`, keeps a new or
+ * obfuscated scheme out by default.
  */
 export const urlSchema = (rule: UrlRule) =>
   nonEmpty
     .refine((value) => isAllowed(value, rule), {
       message: `Expected a URL with scheme ${allowedText(rule)}`,
     })
-    .refine(hasNoCredentials, {
-      message: 'A URL must not carry a user name or password',
+    .refine((value) => !carriesCredentials(value), {
+      message:
+        'A URL must not carry a user name or password. The host keeps credentials',
     });
 
 export default urlSchema;

@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Contract for DTaaS web client extensions: extension and host-service types, visualisation schemas, validation helpers, a test harness and a shareable ESLint config.",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",

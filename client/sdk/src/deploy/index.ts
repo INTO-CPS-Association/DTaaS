@@ -33,6 +33,25 @@ export function sharedGlobalOf(source: string): string | undefined {
   return /^[A-Z]/.test(muiPath[1]) ? `${root}.${muiPath[1]}` : root;
 }
 
+// The helper inside the MUI icons package that every icon calls.
+const MUI_ICON_HELPER =
+  /[\\/]@mui[\\/]icons-material[\\/]utils[\\/]createSvgIcon\.m?js$/;
+
+/**
+ * Every MUI icon calls a helper that re-exports `createSvgIcon` from
+ * `@mui/material/SvgIcon`. That path maps to the shared SvgIcon component,
+ * which lacks the helper, while the shared root has it. This replaces the
+ * helper with a read of the root, so a kit may import any icon of
+ * `@mui/icons-material` and the bundle carries only that icon.
+ */
+export const muiIconsPlugin = {
+  name: 'dtaas-mui-icons',
+  load(id: string) {
+    if (!MUI_ICON_HELPER.test(id)) return null;
+    return `import { createSvgIcon } from '${MUI}';\nexport default createSvgIcon;\n`;
+  },
+};
+
 export interface KitBuildOptions {
   /** The extension's id, as in its `defineExtension` call. */
   readonly id: string;
@@ -60,6 +79,7 @@ export function kitBuildConfig({ id, entry, outDir }: KitBuildOptions) {
     },
     rollupOptions: {
       external: isShared,
+      plugins: [muiIconsPlugin],
       output: {
         globals: (source: string) => sharedGlobalOf(source) ?? source,
         extend: true,

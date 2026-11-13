@@ -67,9 +67,14 @@ export class UploadError extends Error {
   }
 }
 
-/** A workspace request, with the session cookie every one of them needs. */
+/**
+ * A workspace request, with the session cookie every one of them needs.
+ * Jupyter sends Last-Modified without Cache-Control, so a browser would
+ * otherwise reuse an old listing for hours and miss a new twin folder.
+ * `no-cache` asks the server each time and still reuses an unchanged answer.
+ */
 export const credentialed = (url: string, init: RequestInit = {}) =>
-  fetch(url, { credentials: 'include', ...init });
+  fetch(url, { credentials: 'include', cache: 'no-cache', ...init });
 
 /** A workspace request that throws an `UploadError` unless it succeeded. */
 export async function checked(

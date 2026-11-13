@@ -35,8 +35,14 @@ interface Subscription {
   readonly sink: SignalSink;
 }
 
-const toSampled = ({ value, ts, quality }: SignalSample): Sampled =>
-  quality === undefined ? { value, ts } : { value, ts, quality };
+// A field the sample does not carry is left out, so a test compares a
+// reading with exactly what it emitted.
+const toSampled = ({ value, ts, quality, unit }: SignalSample): Sampled => ({
+  value,
+  ts,
+  ...(quality === undefined ? {} : { quality }),
+  ...(unit === undefined ? {} : { unit }),
+});
 
 const latestAtOrBefore = (samples: SignalSample[], t: number) =>
   samples

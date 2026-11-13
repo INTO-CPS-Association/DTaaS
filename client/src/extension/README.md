@@ -41,10 +41,11 @@ To compile one in:
 To deploy one, without a rebuild:
 
 1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
-   which writes one script.
+   which writes one script. `yarn build:kit hello-kit` does this for the
+   example kit in `sdk/examples/`.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
-   `'extensions/soil/index.js'`.
+   `'extensions/hello/index.js'`.
 
 `index.tsx` loads the listed scripts before the client's own modules, because
 the store and the routes read the registry when they are imported. Before the
@@ -94,7 +95,7 @@ offers it, so no extension imports the code of another.
 
 ## When an Extension Is Left Out
 
-The client starts without an extension that fails a check, and writes the
+The client starts without an extension that fails a check and writes the
 reason to the browser console:
 
 - The SDK's `validateExtension` finds it malformed, for example a page that
