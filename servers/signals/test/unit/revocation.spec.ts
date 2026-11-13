@@ -32,6 +32,7 @@ const PROJECT = { id: 10, path: 'alice', path_with_namespace: 'DTaaS/alice' };
 const GITLAB_LATENCY = 500;
 const STEP = 100;
 const REQUEST = {
+  headers: {},
   signalsUser: {
     identity: { id: '7', username: 'alice', email: 'alice@example.org' },
     token: 'token-a',

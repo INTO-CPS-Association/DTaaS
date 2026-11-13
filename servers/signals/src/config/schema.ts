@@ -141,6 +141,11 @@ export const configSchema = z
     'postgres-timeout': positiveInt.default(10_000),
     'range-max-span': positiveInt.default(7 * DAY),
     'range-max-points': positiveInt.default(10_000),
+    // A stream opened with Last-Event-ID is first filled from the history,
+    // from that time less the lookback, which covers readings received out
+    // of order. A gap longer than resume-max-gap is filled from its end.
+    'resume-lookback': positiveInt.default(5000),
+    'resume-max-gap': positiveInt.default(10 * MINUTE),
   })
   .strict();
 

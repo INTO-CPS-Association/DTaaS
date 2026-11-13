@@ -111,10 +111,12 @@ The broker sends all MQTT traffic through the virtual host `/`, as the naming
 convention decided, so the gateway subscribes there. It holds one connection per
 instance, with the client ID `dtaas_signals_<host>`. It makes one subscription
 per path that an open stream asks for. Live samples use QoS 0, since a sample
-lost during a reconnect is still in the history. A message is forwarded only
-when it carries the fields `value`, `ts` and `unit` of the payload convention
-and fits `max-message-bytes`. Every other message is dropped and counted in
-`stats`.
+lost during a reconnect is still in the history. Each sample carries the time
+the gateway received it as its event id, and a stream opened again with
+`Last-Event-ID` is first filled from the history (phase 4). A message is
+forwarded only when it carries the fields `value`, `ts` and `unit` of the
+payload convention and fits `max-message-bytes`. Every other message is
+dropped and counted in `stats`.
 
 ### History Through Telegraf (Phase 4, G4, G11)
 

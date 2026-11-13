@@ -33,6 +33,12 @@ owner's group, which Telegraf writes, read as `dtaas_signals_ro`. A topic of
 eight levels names its series by device and quantity. A range with more
 points than `range-max-points` is averaged in `date_bin` bins.
 
+Each live sample carries the time the gateway received it as its event id,
+and a stream that reaches `stream-max-age` sends an `end` event before it
+closes. A client that opens the stream again with `Last-Event-ID` first gets
+the readings of the gap from the history, marked `backfill`, then the live
+ones. A gap the history cannot fill is reported in a `gap` event.
+
 ## Configuration
 
 Copy [`config/signals.yaml.sample`](config/signals.yaml.sample) to

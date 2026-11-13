@@ -137,3 +137,8 @@ postgres-timeout: 10000
 # longer series is averaged in date_bin bins.
 range-max-span: 604800000
 range-max-points: 10000
+# A stream opened again with Last-Event-ID is first filled from the history,
+# from that time less the lookback, in milliseconds. A longer gap than
+# resume-max-gap is filled only for its last resume-max-gap milliseconds.
+resume-lookback: 5000
+resume-max-gap: 600000

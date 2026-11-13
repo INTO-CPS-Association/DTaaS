@@ -18,7 +18,7 @@ import SignalsAuthGuard, {
   userOf,
 } from './auth/auth.guard.js';
 import AccessService, { type PathDecision } from './authz/access.service.js';
-import type { Action, Subject } from './authz/policy.js';
+import type { Action, SignalTarget, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import {
   parseRangeRequest,
@@ -29,9 +29,19 @@ import {
 import HistoryService, {
   type HistoryAnswer,
 } from './history/history.service.js';
+import type { Backfill, PastSample } from './stream/stream-session.js';
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
 import StreamSlots from './stream/stream-slots.js';
+
+// The id the gateway gave the last sample a client received: a time in
+// milliseconds. Anything else is ignored and the stream starts live.
+function lastEventIdOf(request: AuthenticatedRequest): number | undefined {
+  const header = request.headers['last-event-id'];
+  if (typeof header !== 'string' || !/^\d{1,15}$/.test(header))
+    return undefined;
+  return Number(header);
+}
 
 function subjectOf(request: AuthenticatedRequest): Subject {
   const user = userOf(request);
@@ -76,7 +86,12 @@ export default class SignalsController {
       const recheck = async () =>
         (await this.access.decide(subject, 'stream', allowed, twin)).refused;
       const { identity } = userOf(request);
-      await this.streams.run(response, identity, decision, recheck);
+      const lastId = lastEventIdOf(request);
+      const backfill =
+        lastId === undefined
+          ? undefined
+          : () => this.gapOf(decision.allowed, lastId);
+      await this.streams.run(response, identity, decision, recheck, backfill);
     } finally {
       release();
     }
@@ -114,6 +129,36 @@ export default class SignalsController {
       // gets no detail.
       throw new BadGatewayException();
     }
+  }
+
+  // The readings of the allowed signals since the last sample the client
+  // received, less the lookback, at most resume-max-gap back.
+  private async gapOf(
+    targets: readonly SignalTarget[],
+    lastId: number,
+  ): ReturnType<Backfill> {
+    const to = Date.now();
+    const wanted = lastId - this.config.get('resume-lookback');
+    const from = Math.max(wanted, to - this.config.get('resume-max-gap'));
+    const byPath = new Map(targets.map((target) => [target.path, target]));
+    const channels = [...new Set(targets.map((target) => target.channel))];
+    const answers = await Promise.all(
+      channels.map((channel) =>
+        this.history.range(targets, { channel, from, to }),
+      ),
+    );
+    const samples: PastSample[] = answers
+      .flatMap((answer) => answer.samples)
+      .flatMap((sample) => {
+        const target = byPath.get(sample.path);
+        if (target === undefined) return [];
+        const { path, channel, ts, value } = sample;
+        return [{ path, twin: target.twin, channel, ts, value }];
+      })
+      .sort((a, b) => a.ts - b.ts);
+    const complete =
+      from === wanted && answers.every((answer) => !answer.truncated);
+    return { samples, complete, from, to };
   }
 
   // Nothing the user may read is refused before any work is done.
