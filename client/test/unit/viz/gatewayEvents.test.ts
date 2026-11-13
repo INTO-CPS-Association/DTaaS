@@ -78,4 +78,19 @@ describe('the events of a gateway stream', () => {
       { path: 'alice/pump/flow', ts: 900, receivedAt: 1000, arrivedAt: 1500 },
     ]);
   });
+
+  it('hands on a past reading from the history but leaves it out of the timings', () => {
+    const samples: SignalSample[] = [];
+    eventHandler(targetCollecting(samples))(
+      sampleEvent({
+        path: 'alice/pump/flow',
+        receivedAt: 900,
+        backfill: true,
+        payload: '{"value":3,"ts":"1970-01-01T00:00:00.900Z"}',
+      }),
+    );
+
+    expect(samples).toEqual([expect.objectContaining({ ts: 900, value: 3 })]);
+    expect(deliveryTimings()).toEqual([]);
+  });
 });

@@ -13,6 +13,8 @@ architecture in `dtaas-sdk`. The contract it implements,
 | `transport.ts`        | 1       | What a live transport offers the signals service                                        |
 | `gatewayTransport.ts` | 1       | Live samples from the signals gateway, one stream for every path                        |
 | `gatewayEvents.ts`    | 1       | What each event of a gateway stream does                                                |
+| `streamResume.ts`     | 1       | The last event id and a planned end, kept for the next stream                           |
+| `laterTimer.ts`       | 1       | A timer that runs one action later, replaced by the next                                |
 | `gatewayHistory.ts`   | 1       | Past samples of signals from the signals gateway                                        |
 | `gateway.ts`          | 1       | The gateway's address, and the token header of every request                            |
 | `sseStream.ts`        | 1       | Server-sent events read through fetch, so a request has a header                        |
@@ -77,7 +79,11 @@ One stream carries every path the open pages use. When the set changes, the
 stream is opened again with the new set, 100 ms later, so a page that
 subscribes to many sensors as it renders opens one stream. A stream that
 fails or ends reads `down`, and the next one opens 5 s later, or after the
-wait the gateway names with `retry:`. A path the gateway refuses is not asked
+wait the gateway names with `retry:`. A stream the gateway ends at its age
+with an `end` event opens again after 100 ms. Each new stream sends the id of
+the last event as `Last-Event-ID` (`streamResume.ts`), and the gateway first
+sends the readings of the gap from its history, marked `backfill`, which stay
+out of the delivery timings. A path the gateway refuses is not asked
 for again until no page uses it. A `range` reads the gateway's history into
 the sample store first, so past samples and samples that arrived live come
 back as one series. Nothing connects until a page subscribes. Without an

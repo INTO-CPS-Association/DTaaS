@@ -5,8 +5,9 @@
  * the user's token on every stream. So the stream is a POST read through
  * fetch, and its text is cut into events here by the rules of the event
  * stream format: a blank line ends an event, a line that starts with `:` is a
- * comment (the gateway's keep-alive), and `retry:` names how long to wait
- * before connecting again.
+ * comment (the gateway's keep-alive), `retry:` names how long to wait
+ * before connecting again, and `id:` names the event for a later
+ * `Last-Event-ID`.
  *
  * The body is decoded with a streaming `TextDecoder` and not with a
  * `TextDecoderStream`, because the test environment has no `TextDecoderStream`
@@ -16,6 +17,8 @@
 export interface SseEvent {
   readonly event: string;
   readonly data: string;
+  /** The last `id:` the server sent, kept from one event to the next. */
+  readonly id?: string;
 }
 
 export interface SseResult {
@@ -38,10 +41,11 @@ function eventBuilder(onEvent: (event: SseEvent) => void) {
   let name = '';
   let data: string[] = [];
   let retryMs: number | undefined;
+  let id: string | undefined;
   const line = (text: string) => {
     if (text === '') {
       if (data.length > 0)
-        onEvent({ event: name || 'message', data: data.join('\n') });
+        onEvent({ event: name || 'message', data: data.join('\n'), id });
       name = '';
       data = [];
       return;
@@ -51,6 +55,7 @@ function eventBuilder(onEvent: (event: SseEvent) => void) {
     if (field === 'event') name = value;
     else if (field === 'data') data.push(value);
     else if (field === 'retry' && /^\d+$/.test(value)) retryMs = Number(value);
+    else if (field === 'id' && !value.includes('\0')) id = value;
   };
   return { line, retryMs: () => retryMs };
 }
