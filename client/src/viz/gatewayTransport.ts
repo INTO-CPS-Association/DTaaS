@@ -10,7 +10,9 @@
  * The gateway reports its own connection to the broker in `state` events.
  * A stream that fails or ends reads `down` until the next one opens, five
  * seconds later unless the gateway asked for another wait with `retry:`. A
- * stream whose token the gateway refused is not opened again with that token.
+ * stream the gateway ended at its age opens again at once, and every stream
+ * names the last event received (`streamResume`). A stream whose token the
+ * gateway refused is not opened again with that token.
  */
 
 import type {
@@ -28,6 +30,8 @@ import {
   type GatewaySettings,
 } from 'viz/gateway';
 import type { LiveTransport } from 'viz/transport';
+import createStreamResume, { type StreamResume } from 'viz/streamResume';
+import laterTimer from 'viz/laterTimer';
 
 /** How long a change of paths waits for the next one, in milliseconds. */
 export const REOPEN_DELAY_MS = 100;
@@ -119,18 +123,23 @@ function openStream(
   onEvent: (event: SseEvent) => void,
   signal: AbortSignal,
   refuse: (path: string) => void,
+  resume: StreamResume,
 ): Promise<number | undefined> {
   const token = settings.token();
   if (settings.session?.isRefused(token)) return Promise.resolve(undefined);
+  resume.takePlannedEnd();
   return openSse(
     endpoint(settings, 'stream'),
     { paths },
-    authorization(settings),
+    { ...authorization(settings), ...resume.headers() },
     onEvent,
     signal,
     settings.fetch,
   ).then(
-    (result) => result.retryMs ?? RECONNECT_DELAY_MS,
+    (result) =>
+      resume.takePlannedEnd()
+        ? REOPEN_DELAY_MS
+        : (result.retryMs ?? RECONNECT_DELAY_MS),
     (error: unknown) =>
       retryAfter(settings, token, error, () => paths.forEach(refuse)),
   );
@@ -140,22 +149,6 @@ type Connect = (
   paths: string[],
   signal: AbortSignal,
 ) => Promise<number | undefined>;
-
-/** A timer that runs one action later, replaced by the next, until stopped. */
-function laterTimer() {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  let stopped = false;
-  return {
-    after(delayMs: number, action: () => void) {
-      clearTimeout(timer);
-      if (!stopped) timer = setTimeout(action, delayMs);
-    },
-    stop() {
-      stopped = true;
-      clearTimeout(timer);
-    },
-  };
-}
 
 /**
  * After a stream ends on its own, read down and open the next one later. A
@@ -225,15 +218,18 @@ export default function createGatewayTransport(
   const refused = new Set<string>();
   const channel = settings.channel ?? 'measured';
   const refuse = (path: string) => refused.add(path);
-  const onEvent = eventHandler({
-    sinksOf: book.sinksOf,
-    setState: state.set,
-    refuse,
-    channel,
-  });
+  const resume = createStreamResume();
+  const onEvent = resume.watching(
+    eventHandler({
+      sinksOf: book.sinksOf,
+      setState: state.set,
+      refuse,
+      channel,
+    }),
+  );
   const wanted = () => book.paths().filter((path) => !refused.has(path));
   const connect: Connect = (paths, signal) =>
-    openStream(settings, paths, onEvent, signal, refuse);
+    openStream(settings, paths, onEvent, signal, refuse, resume);
   const stream = streamRunner(wanted, connect, state);
   return {
     id: `signals gateway ${settings.url}`,

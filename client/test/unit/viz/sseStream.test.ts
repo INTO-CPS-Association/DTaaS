@@ -41,6 +41,16 @@ describe('the event stream parser', () => {
     expect(retryMs).toBe(2000);
   });
 
+  it('keeps the last id from one event to the next', () => {
+    const { events } = parse([
+      'id: 17\nevent: sample\ndata: {}\n\n',
+      'event: state\ndata: {}\n\n',
+      'id: 18\u0000\nevent: sample\ndata: {}\n\n',
+    ]);
+
+    expect(events.map((event) => event.id)).toEqual(['17', '17', '17']);
+  });
+
   it('holds an event until the blank line that ends it', () => {
     const { events } = parse(['event: state\ndata: {}\n']);
 

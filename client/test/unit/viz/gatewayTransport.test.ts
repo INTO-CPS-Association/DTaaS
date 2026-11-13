@@ -143,6 +143,27 @@ describe('the signals gateway transport', () => {
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
+  it('opens the next stream at once after a planned end, naming the last event', async () => {
+    const { fetch, streams, transport } = gateway();
+    transport.subscribe(['a'], jest.fn());
+    await jest.advanceTimersByTimeAsync(REOPEN_DELAY_MS);
+    expect(fetch.mock.calls[0][1].headers).not.toHaveProperty('Last-Event-ID');
+
+    streams[0].send('retry: 5000\n\n');
+    streams[0].send(`id: 1700\n${sample('a', '3')}`);
+    streams[0].send('event: end\ndata: {"reason":"lifetime"}\n\n');
+    streams[0].end();
+    await jest.advanceTimersByTimeAsync(REOPEN_DELAY_MS);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[1][1].headers).toMatchObject({
+      'Last-Event-ID': '1700',
+    });
+
+    streams[1].end();
+    await jest.advanceTimersByTimeAsync(RECONNECT_DELAY_MS - 1);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it('stops asking for paths the gateway refused, until they are dropped', async () => {
     const { fetch, streams, transport, bodyOf } = gateway();
     const stopSecret = transport.subscribe(['secret'], jest.fn());
