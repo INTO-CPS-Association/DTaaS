@@ -215,10 +215,19 @@ and the CLI host) are outside this page.
 | K-d | `soil-kit` from the template, with the `soil-profile` substrate, the `soil-depth` anchor and the `soil_sensor` migration run by `dtaas-services`, with the hook that lets every kit bring a migration and extend registration (K11). As the second ported extension, it is the trigger #1912 sets for publishing the contract | A soil reading shows in the profile chart, with no change to the client core, the gateway or Telegraf |
 | K-e | Installed kits chosen in the deployment configuration (K9) | An operator adds `soil-kit` without editing `extensions.ts` |
 
-Loading kits at runtime from a URL is a non-goal of #1912. If it is taken up
-later, it needs a signed manifest with file checksums, an allow-list of kit
-origins, Subresource Integrity and a Content Security Policy, as Grafana does
-for plugins ([Grafana plugin
+Phase K-e is implemented as bundles on the client's own origin. The operator
+places each bundle under `extensions/<id>/` next to `env.js` and lists its path
+in `REACT_APP_EXTENSIONS_DEPLOYED`. The client refuses every entry that is not
+a path of that shape, so no web address is loaded, and an entry may carry a
+`#sha384-<hash>` that the browser checks with Subresource Integrity. The bundle
+is read when the client starts and runs with the rights of the client, as a
+compiled-in kit does. This is a decision for the maintainer to accept or
+refuse, since it loads code that was not part of the client build.
+
+Loading kits at runtime from an arbitrary URL stays a non-goal of #1912. If it
+is taken up later, it needs a signed manifest with file checksums, an
+allow-list of kit origins, Subresource Integrity and a Content Security Policy,
+as Grafana does for plugins ([Grafana plugin
 signing](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin),
 [Subresource
 Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)).

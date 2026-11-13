@@ -50,8 +50,13 @@ implements (`SDK_VERSION`).
 ## The Extension Host
 
 `client/src/extension/` is the host side of the contract. It reads the
-extensions compiled into a build from `client/src/extensions.ts` and decides
-which of them run. An extension is left out, with the reason in the browser
+extensions compiled into a build from `client/src/extensions.ts`, then the
+bundles a deployment lists in `REACT_APP_EXTENSIONS_DEPLOYED`, and decides
+which of them run. A bundle is built with `kitBuildConfig` from the contract's
+`./deploy` entry. It takes React, the router, MUI, zod and the contract from the
+client instead of carrying its own copies, so an operator adds a kit without
+editing the client or rebuilding it, as with the prebuilt extensions of
+JupyterLab. An extension is left out, with the reason in the browser
 console, when it is malformed, when its `apiRange` does not include the host's
 API version, when its id is taken, when `REACT_APP_EXTENSIONS_DISABLED` in
 `env.js` lists it, when its `REACT_APP_EXT_<ID>_*` keys do not satisfy its
@@ -64,9 +69,19 @@ at `/library/preview?file=<path>` and a Redux slice at `state.ext.<id>`. It
 calls `setup` of each extension once and gives each one the SDK's
 `HostServices`: the signed-in user, the library, the workspace files, GitLab,
 the snackbar, the page shell, settings, a logger, its configuration and the
-services of other extensions that it names in `requires`. The GitLab credentials
-stay in the client core. An extension does not import client internals or the
-code of another extension.
+services of other extensions that it names in `requires`. The source of an
+extension does not import client internals or the code of another extension,
+and the SDK's ESLint rules check this when the extension is built.
+
+These services guard against the mistakes of a trusted extension. They do not
+confine a hostile one. The code of an extension, compiled in or deployed, runs
+in the page with the rights of the client, so it can reach what the client
+reaches, including the requests that carry the user's GitLab access token. A
+deployed bundle is therefore accepted only from `extensions/<id>/` on the
+client's own origin, where the operator of the deployment places it, and an
+entry of `REACT_APP_EXTENSIONS_DEPLOYED` may carry a `#sha384-<hash>` that the
+browser checks before it runs the file. Loading a bundle from another address
+is not supported.
 
 ## The Visualisation Core
 
@@ -108,7 +123,8 @@ holds the proposal it came from. In the proposal:
   and configuration. An extension does not import client internals.
 - The client lists the extensions compiled into a build in one file,
   `src/extensions.ts`. A deployment can disable a compiled-in extension
-  in `env.js` with `REACT_APP_EXTENSIONS_DISABLED`.
+  in `env.js` with `REACT_APP_EXTENSIONS_DISABLED` and add a bundled one
+  with `REACT_APP_EXTENSIONS_DEPLOYED`.
 - A common visualisation core, `dtaas-visualisation`, holds the parts
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.

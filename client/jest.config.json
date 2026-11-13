@@ -39,6 +39,7 @@
     "build",
     "extensions",
     "src/index.tsx",
+    "src/startClient.tsx",
     "src/AppProvider.tsx",
     "src/store/store.ts",
     "src/preview/util/gitlabDriver.ts"

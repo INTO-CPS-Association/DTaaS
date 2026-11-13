@@ -31,8 +31,28 @@ npm release `0.1.0` stays the version external extensions build against.
 
 ## Adding an Extension
 
+An extension is either compiled in or deployed.
+
+To compile one in:
+
 1. `yarn add` the extension's package.
 1. Import its `extension` in `src/extensions.ts` and add it to the list.
+
+To deploy one, without a rebuild:
+
+1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
+   which writes one script.
+1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
+1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
+   `'extensions/soil/index.js'`.
+
+`index.tsx` loads the listed scripts before the client's own modules, because
+the store and the routes read the registry when they are imported. Before the
+first script runs, it fills `DTAAS_SHARED` with the client's copy of every
+module in `SHARED_MODULES`, so a deployed extension uses the same React, theme
+and `HostProvider` as the client. A script that fails to load, registers nothing
+or registers another id than its folder is reported in the console and left
+out. A compiled-in extension wins an id clash with a deployed one.
 
 Its pages appear under `/<id>`, its menu items after the core ones, its tabs on
 the Digital Twins page, its Library previews at `/library/preview?file=<path>`,
@@ -47,6 +67,7 @@ in `REACT_APP_EXTENSIONS_DISABLED`, for example `'wind, pump'`.
 | File                     | Role                                                             |
 | :----------------------- | :--------------------------------------------------------------- |
 | `createExtensionHost.ts` | Decides which extensions run and merges what they add            |
+| `deployedExtensions.ts`  | Loads the bundles `env.js` lists, before the client starts       |
 | `extensionRegistry.ts`   | The extensions that run, from the manifest and `env.js`          |
 | `extensionHost.ts`       | The one host of this client, with the services of each extension |
 | `hostServices.ts`        | The services an extension receives, shared and per extension     |
@@ -80,6 +101,8 @@ reason to the browser console:
   is not loaded lazily.
 - Its id is a core route of this client or the id of an earlier extension.
 - `REACT_APP_EXTENSIONS_DISABLED` lists it.
+- It is deployed and its script fails to load, registers no extension or
+  registers an id other than the name of its folder.
 - Its `REACT_APP_EXT_<ID>_*` keys do not satisfy its config schema.
 - Its `apiRange` does not include the API version of this client's SDK.
 - It registers an anchor kind, a preset or a substrate that an earlier
