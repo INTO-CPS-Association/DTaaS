@@ -19,7 +19,12 @@ import SignalsAuthGuard, {
 import AccessService, { type PathDecision } from './authz/access.service.js';
 import type { Action, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
-import { parseRangeRequest, parseStreamRequest } from './dto/requests.js';
+import {
+  parseRangeRequest,
+  parseStreamRequest,
+  twinOf,
+  type TwinRef,
+} from './dto/requests.js';
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
 import StreamSlots from './stream/stream-slots.js';
@@ -65,10 +70,11 @@ export default class SignalsController {
     const subject = subjectOf(request);
     const release = this.slots.acquire(subject.id);
     try {
-      const decision = await this.authorise(subject, 'stream', paths);
+      const twin = twinOf(body);
+      const decision = await this.authorise(subject, 'stream', paths, twin);
       const allowed = decision.allowed.map((target) => target.path);
       const recheck = async () =>
-        (await this.access.decide(subject, 'stream', allowed)).refused;
+        (await this.access.decide(subject, 'stream', allowed, twin)).refused;
       const { identity } = userOf(request);
       await this.streams.run(response, identity, decision, recheck);
     } finally {
@@ -95,7 +101,7 @@ export default class SignalsController {
       maxSpan: this.config.get('range-max-span'),
     };
     const { paths } = parseRangeRequest(body, limits);
-    await this.authorise(subjectOf(request), 'range', paths);
+    await this.authorise(subjectOf(request), 'range', paths, twinOf(body));
     return { status: 'not-implemented', route: 'range' };
   }
 
@@ -104,8 +110,9 @@ export default class SignalsController {
     subject: Subject,
     action: Action,
     paths: string[],
+    twin?: TwinRef,
   ): Promise<PathDecision> {
-    const decision = await this.access.decide(subject, action, paths);
+    const decision = await this.access.decide(subject, action, paths, twin);
     if (decision.allowed.length === 0) throw new ForbiddenException();
     return decision;
   }
