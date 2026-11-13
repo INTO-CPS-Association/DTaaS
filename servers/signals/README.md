@@ -1,6 +1,6 @@
 # Signals Gateway Microservice
 
-The signals gateway will serve the live and past signals of digital twins
+The signals gateway serves the live and past signals of digital twins
 to the DTaaS client, so that no broker or PostgreSQL credential reaches the
 browser. The requirements and the choices behind it are in
 [the plan](../../docs/developer/plans/signals-gateway.md).
@@ -42,6 +42,12 @@ Keycloak, or a role from the GitLab connector of Dex. Commands go on a
 second MQTT connection, since RabbitMQ closes a connection that publishes
 where it may not. A command the broker does not take within
 `command-timeout` answers `504`.
+
+The stream route writes server-sent events by hand on a `POST`, not through
+the `@Sse()` decorator of NestJS. The decorator answers `GET`, and a `GET`
+would carry the list of paths in the URL, where proxies and logs keep it. The
+body of the `POST` carries the paths and the `Authorization` header carries the
+token, so both stay out of URLs.
 
 Each live sample carries the time the gateway received it as its event id,
 and a stream that reaches `stream-max-age` sends an `end` event before it

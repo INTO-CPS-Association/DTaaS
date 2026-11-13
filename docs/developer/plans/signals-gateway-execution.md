@@ -205,3 +205,22 @@ kits](domain-kits.md) page.
 | Many twins mean many reloads of one agent | Persistent sessions keep the readings. Files per domain or user if reloads become a problem |
 | A library has no version older than ten days | The newest older version, stated in the pull request |
 | The plan and the code drift apart | Each phase updates the plan when a choice changes |
+
+## Choices Made in the Code
+
+These choices were made while the phases were implemented and are recorded
+here so that the plan and the code agree.
+
+- **Two MQTT connections.** The gateway opens one connection for samples,
+  with the client id `dtaas_signals_<host>_stream`, and one for commands,
+  with `dtaas_signals_<host>_command`. RabbitMQ closes a connection that
+  publishes where it may not, so a refused command cannot end the live
+  streams of every user.
+- **QoS.** Samples are subscribed with QoS 0, as phase 3 plans. Commands are
+  published with QoS 1, so the gateway answers `202` only once the broker has
+  taken the command, and `504` after `command-timeout`.
+- **The `setpoint` channel.** A path takes a command only when it is an
+  actuator topic of eight levels, with `A` as its sixth level, and a twin
+  declares it on the `setpoint` channel. The command goes to the device topic
+  with `cmd/<command>` in place of the quantity. A path declared only to be
+  read takes no command.

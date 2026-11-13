@@ -38,6 +38,33 @@ services:
       - "traefik.http.routers.logger-ms.rule=PathPrefix(`/logger`)"
       - "traefik.http.routers.logger-ms.priority=100"
 
+  # The signals gateway, started only with the "signals" profile because it
+  # needs config/signals.yaml and the three files of config/secrets/,
+  # described in CONFIG.md.
+  signals:
+    # The image is not published yet, so Compose builds it from this checkout
+    build:
+      context: ../../../..
+      dockerfile: developer/check/signals.dockerfile
+    image: dtaas/signals-ms:local
+    restart: unless-stopped
+    profiles:
+      - signals
+    volumes:
+      - "./config/signals.yaml:/dtaas/signals/signals.yaml:ro"
+    # Each secret is mounted read-only at /run/secrets/<name>, where
+    # signals.yaml names it
+    secrets:
+      - rabbitmq_dtaas_signals_password
+      - postgresql_dtaas_signals_ro_password
+      - signals_owners.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.signals.entryPoints=web"
+      - "traefik.http.services.signals.loadbalancer.server.port=4004"
+      - "traefik.http.routers.signals.rule=PathPrefix(`/signals`)"
+      - "traefik.http.routers.signals.priority=100"
+
   user:
     image: intocps/workspace:main-56c6f68
     restart: unless-stopped
@@ -51,3 +78,11 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user.entryPoints=web"
       - "traefik.http.routers.user.rule=PathPrefix(`/${DEFAULT_USER:-user1}`)"
+
+secrets:
+  rabbitmq_dtaas_signals_password:
+    file: ./config/secrets/rabbitmq_dtaas_signals_password
+  postgresql_dtaas_signals_ro_password:
+    file: ./config/secrets/postgresql_dtaas_signals_ro_password
+  signals_owners.json:
+    file: ./config/secrets/signals_owners.json

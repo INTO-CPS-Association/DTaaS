@@ -62,6 +62,17 @@ mkdir -p logs/logger
 sudo chown -R 1000:1000 logs/logger
 ```
 
+## config/signals.yaml - Signals Gateway
+
+Source: `config/signals.yaml.example`
+
+The signals gateway serves the live and past signals of digital twins at
+`/signals`. It starts only when `COMPOSE_PROFILES=signals` is set in
+`config/.env`. Copy the example to `config/signals.yaml` and the three
+secret files of the platform services to `config/secrets/` (mode 600, owner
+uid 1000), then set `REACT_APP_VIZ_SIGNALS_URL` in `config/client.js`. The
+Signals Gateway pages of the DTaaS documentation give each step.
+
 ## Reload client config
 
 After editing `config/client.js`, reload only the client service:

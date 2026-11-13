@@ -1,6 +1,9 @@
 rule.libms.action=auth
 rule.libms.rule=PathPrefix(`/lib`)
 
+rule.signals.action=auth
+rule.signals.rule=PathPrefix(`/signals`)
+
 rule.onlyu1.action=auth
 rule.onlyu1.rule=PathPrefix(`/user1`)
 rule.onlyu1.whitelist=user1@emailservice.com

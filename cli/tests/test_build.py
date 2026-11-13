@@ -78,6 +78,8 @@ def test_ignore_excludes_locally_populated_secret_files():
         "server.key",
         "server.crt",
         "client.p12",
+        "secrets",
+        "signals.yaml",
     ]
     assert set(_ignore("config", names)) == set(names)
 
@@ -85,7 +87,13 @@ def test_ignore_excludes_locally_populated_secret_files():
 def test_ignore_keeps_example_and_unrelated_files():
     """_ignore only matches exact secret filenames/suffixes, not their .example
     counterparts or unrelated tracked files."""
-    names = [".env.example", "client.js.example", "conf.server.example", "tls.yml"]
+    names = [
+        ".env.example",
+        "client.js.example",
+        "conf.server.example",
+        "signals.yaml.example",
+        "tls.yml",
+    ]
     assert _ignore("config", names) == []
 
 
