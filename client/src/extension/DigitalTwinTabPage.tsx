@@ -51,21 +51,28 @@ function useChosen(tab: MountedTab['tab'], twin: string): Chosen {
   return answer?.twin === twin ? answer.chosen : { state: 'loading' };
 }
 
+/** What the tab shows while the chosen twin is not ready for it. */
+function statusOf(
+  chosen: Exclude<Chosen, { state: 'ready' }>,
+  label: string,
+): React.ReactElement {
+  const shown = {
+    loading: <CircularProgress sx={{ m: 2 }} />,
+    error: <Alert severity="error">The digital twin could not be read.</Alert>,
+    other: (
+      <Alert severity="info">
+        {label} has nothing to show for this digital twin.
+      </Alert>
+    ),
+  };
+  return shown[chosen.state];
+}
+
 function TabBody({
   mounted,
   chosen,
 }: Readonly<{ mounted: MountedTab; chosen: Chosen }>) {
-  if (chosen.state === 'loading') return <CircularProgress sx={{ m: 2 }} />;
-  if (chosen.state === 'error') {
-    return <Alert severity="error">The digital twin could not be read.</Alert>;
-  }
-  if (chosen.state === 'other') {
-    return (
-      <Alert severity="info">
-        {mounted.tab.label} has nothing to show for this digital twin.
-      </Alert>
-    );
-  }
+  if (chosen.state !== 'ready') return statusOf(chosen, mounted.tab.label);
   const Page = mounted.tab.element;
   return (
     <ErrorBoundary>
