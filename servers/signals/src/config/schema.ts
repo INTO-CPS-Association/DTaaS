@@ -29,6 +29,15 @@ const nameList = z
   );
 const text = z.string().trim();
 const httpUrl = z.url({ protocol: /^https?$/ });
+// A password in the URL would end up in logs and process listings, so the
+// URL names only the broker, and the password comes from a file.
+const mqttUrl = z.url({ protocol: /^mqtts?$/ }).refine(
+  (value) => {
+    const url = new URL(value);
+    return url.username === '' && url.password === '';
+  },
+  { message: 'must not carry a user name or password' },
+);
 
 // A Keycloak realm or a Dex instance whose JWTs the gateway accepts.
 const oidcProviderSchema = z
@@ -96,8 +105,19 @@ export const configSchema = z
     // {"jady": {"group": "swim", "topics": ["SWiM/"]}}.
     'owners-file': text.default(''),
     'default-channel': z.enum(CHANNELS).default('measured'),
+    'mqtt-url': mqttUrl.default('mqtt://localhost:1883'),
+    'mqtt-user': text.min(1).default('dtaas_signals'),
+    'mqtt-password-file': text.default(''),
+    'mqtt-connect-timeout': positiveInt.default(10_000),
     'max-paths-per-stream': positiveInt.default(200),
     'max-path-length': positiveInt.default(256),
+    'max-streams-per-user': positiveInt.default(4),
+    'max-message-bytes': positiveInt.default(64 * 1024),
+    'max-backlog-bytes': positiveInt.default(1024 * 1024),
+    'stream-max-age': positiveInt.default(10 * MINUTE),
+    'stream-recheck-interval': positiveInt.default(MINUTE),
+    'keep-alive-interval': positiveInt.default(15_000),
+    'retry-interval': positiveInt.default(5000),
     'range-max-span': positiveInt.default(7 * DAY),
   })
   .strict();

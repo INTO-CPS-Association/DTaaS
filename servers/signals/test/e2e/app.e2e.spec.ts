@@ -6,8 +6,11 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import AppModule from 'src/app.module';
+import { SIGNAL_BROKER } from 'src/broker/broker';
 import Config from 'src/config/config.service';
 import { configureSignalsApp } from 'src/main';
+import FakeBroker, { reading } from 'test/helpers/fake-broker';
+import { openStream, waitFor } from 'test/helpers/sse-client';
 import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
 import { PUMP, visualisationOf } from 'test/helpers/twins';
 
@@ -72,6 +75,7 @@ describe('Signals gateway e2e', () => {
       },
     ],
   );
+  const broker = new FakeBroker();
   const logger = new CapturingLogger();
   let app: NestExpressApplication;
   let base = '';
@@ -100,9 +104,10 @@ describe('Signals gateway e2e', () => {
       }),
     );
     process.env.SIGNALS_OWNERS_FILE = owners;
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(SIGNAL_BROKER)
+      .useValue(broker)
+      .compile();
     app = moduleRef.createNestApplication<NestExpressApplication>({
       bodyParser: false,
     });
@@ -144,14 +149,48 @@ describe('Signals gateway e2e', () => {
     },
   );
 
-  it('accepts a declared path of a readable project, then answers 501', async () => {
-    const stream = await post('stream', ALICE_TOKEN, { paths: [FLOW] });
-    expect(stream.status).toBe(501);
-    await expect(stream.json()).resolves.toEqual({
-      status: 'not-implemented',
-      route: 'stream',
+  it('streams a sample to a reader of the twin and says which paths it refused', async () => {
+    const stream = await openStream(`${base}/signals/stream`, ALICE_TOKEN, [
+      FLOW,
+      'bob/secret',
+    ]);
+    expect(stream.status).toBe(200);
+    const opening = await stream.readUntil('"state":"live"');
+    expect(opening.startsWith('retry: 5000\n\n')).toBe(true);
+    expect(opening).toContain('event: refused\ndata: {"paths":["bob/secret"]}');
+    broker.publish(FLOW, reading(3));
+    const text = await stream.readUntil('event: sample');
+    expect(text).toContain(
+      '"path":"alice/pump/flow","twin":"pump","channel":"measured"',
+    );
+    stream.close();
+    await waitFor(() => broker.bindings.length === 0);
+  });
+
+  it("serves the user's delivery counts only with a token", async () => {
+    await waitFor(() =>
+      logger.lines.some((line) => line.includes('"stream-end"')),
+    );
+    const stats = (token?: string) =>
+      fetch(`${base}/signals/stats`, {
+        headers:
+          token === undefined ? {} : { Authorization: `Bearer ${token}` },
+      });
+    expect((await stats()).status).toBe(401);
+    const response = await stats(ALICE_TOKEN);
+    await expect(response.json()).resolves.toEqual({
+      forwarded: 1,
+      dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
-    expect((await post('range', ALICE_TOKEN, RANGE)).status).toBe(501);
+  });
+
+  it('answers 501 on range for a declared path of a readable project', async () => {
+    const response = await post('range', ALICE_TOKEN, RANGE);
+    expect(response.status).toBe(501);
+    await expect(response.json()).resolves.toEqual({
+      status: 'not-implemented',
+      route: 'range',
+    });
   });
 
   it('refuses with 403 an undeclared path and a reader without the project', async () => {
@@ -160,6 +199,7 @@ describe('Signals gateway e2e', () => {
     expect((await post('stream', BOB_TOKEN, { paths: [FLOW] })).status).toBe(
       403,
     );
+    expect(broker.bindings).toHaveLength(0);
     expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
   });
 
@@ -172,7 +212,16 @@ describe('Signals gateway e2e', () => {
     'serves each group its own paths and refuses the other group (%#)',
     async (token, own, other) => {
       const range = (p: string) => ({ ...RANGE, paths: [p] });
-      expect((await post('stream', token, { paths: [own] })).status).toBe(501);
+      const stream = await openStream(`${base}/signals/stream`, token, [own]);
+      expect(stream.status).toBe(200);
+      await stream.readUntil('"state":"live"');
+      broker.publish(other, reading(4));
+      broker.publish(own, reading(5));
+      const text = await stream.readUntil('event: sample');
+      expect(text).toContain(`"path":"${own}"`);
+      expect(text).not.toContain(`"path":"${other}"`);
+      stream.close();
+      await waitFor(() => broker.bindings.length === 0);
       expect((await post('range', token, range(own))).status).toBe(501);
       expect((await post('stream', token, { paths: [other] })).status).toBe(
         403,

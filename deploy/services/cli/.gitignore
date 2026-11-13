@@ -67,6 +67,9 @@ config/backup_gitlab_tokens.json
 config/gitlab_user_tokens.json
 config/password.env.current
 
+# Passwords of program accounts, mode 600 (user add-signals)
+secrets/
+
 # GitLab runtime directories (Docker compose bind mounts)
 config/gitlab/
 log/gitlab/

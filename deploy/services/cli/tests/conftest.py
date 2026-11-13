@@ -33,3 +33,10 @@ def edited_project(tmp_path, package_root):
     (target_dir / "config" / "services.env.template").write_text("edited")
     (target_dir / "config" / "services.env").write_text(KEPT_ENV)
     return target_dir
+
+
+@pytest.fixture
+def base_dir(tmp_path, mocker):
+    """Point the base directory of the CLI at a temporary folder"""
+    mocker.patch("dtaas_services.pkg.config.Config.get_base_dir", return_value=tmp_path)
+    return tmp_path
