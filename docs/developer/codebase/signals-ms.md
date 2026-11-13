@@ -12,8 +12,8 @@ logger microservice. Every route is under `/signals`:
 | Route | Answer |
 | :--- | :--- |
 | `GET /signals/health` | `{"status":"ok"}` |
-| `POST /signals/stream` | `501`, live samples as server-sent events later |
-| `POST /signals/range` | `501`, past samples as JSON later |
+| `POST /signals/stream` | Sign-in and access check, then `501`. Live samples as server-sent events later |
+| `POST /signals/range` | Sign-in and access check, then `501`. Past samples as JSON later |
 
 ```text
 servers/signals/
@@ -21,6 +21,9 @@ servers/signals/
 │   ├── main.ts                    # Entry point
 │   ├── app.module.ts              # Root module
 │   ├── signals.controller.ts      # The three routes
+│   ├── auth/                      # GitLab, Keycloak and Dex sign-in
+│   ├── authz/                     # Which twins declare which paths
+│   ├── dto/                       # Request validation
 │   └── config/                    # signals.yaml and SIGNALS_* variables
 ├── config/signals.yaml.sample     # Every key with its default
 └── test/                          # Unit and end-to-end tests

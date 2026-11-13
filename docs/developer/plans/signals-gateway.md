@@ -177,6 +177,13 @@ plans what the SDK gives every extension.
   of a kit then passes three sign-ins (the client, Traefik forward auth and
   the gateway). All three stay transparent to the user: the gateway signs
   in silently with the provider session the client already has.
+- Until then the client sends its own GitLab token. A hidden-frame sign-in
+  needs GitLab inside a frame, which GitLab refuses, and the client keeps its
+  tokens in page memory, so a redirect for a second application would sign
+  it out. In this interim state `gitlab-client-id` lists the client's
+  application next to the gateway's own. Step 8 of the access plan, a
+  website backend that holds the tokens, gives the gateway its own token, and
+  the client's application then leaves the list.
 - GitLab access tokens are opaque and carry no audience, so a successful
   `GET /user` proves nothing about who the token was issued to. The gateway
   asks `/oauth/token/info` and accepts only the `application.uid` of its own
@@ -185,8 +192,9 @@ plans what the SDK gives every extension.
   gateway (RFC 9068 and RFC 9700).
 - A user token can carry the `api` scope, a full-power credential. The gateway
   never logs it, never writes it to disk and never forwards it. The gateway's
-  own GitLab token, in `gitlab-token-file`, has the `read_api` scope only, and
-  the guide states what it can read.
+  own GitLab token, in `gitlab-token-file`, has the `read_api` scope only. The
+  gateway warns at start when it has more, and the guide states what it can
+  read.
 - Until step 8 of the access plan moves the tokens to a website backend, the
   browser holds the token and sends it to the gateway. RFC 10017 recommends that
   backend for applications with personal or business data.

@@ -5,17 +5,27 @@ to the DTaaS client, so that no broker or PostgreSQL credential reaches the
 browser. The requirements and the choices behind it are in
 [the plan](../../docs/developer/plans/signals-gateway.md).
 
-This is the skeleton. It has the configuration, the build, the tests and
-the publishing workflow. The routes keep their final paths:
+The routes keep their final paths. Stream and range sign the user in and
+decide access, then answer `501` until their phases fill them in:
 
 | Route | Answer now |
 | :--- | :--- |
 | `GET /signals/health` | `200` with `{"status":"ok"}` |
-| `POST /signals/stream` | `501` with `{"status":"not-implemented","route":"stream"}` |
-| `POST /signals/range` | `501` with `{"status":"not-implemented","route":"range"}` |
+| `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else `501` |
+| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else `501` |
 
-Sign-in and access control come in phase 2 of the plan, live samples over
-MQTT in phase 3 and history from PostgreSQL in phase 4.
+A token is either a GitLab token or a JWT of a Keycloak realm or Dex
+instance named in `oidc-providers`. GitLab is asked about a GitLab token
+with `/oauth/token/info`, and the token must belong to an application in
+`gitlab-client-id` and carry a scope of `gitlab-scopes`. The token is never
+logged, written to disk or sent anywhere but `gitlab-url`. A project is
+readable with the Reporter role at least, since every signed-in user can
+read a project with internal visibility. A path is
+readable when a twin in a readable project of the DTaaS group declares it
+in its committed `visualisation.json` and the topic starts with a prefix of
+the owner's group in `owners-file`, which `dtaas-services` writes. Every
+decision is logged without the token. Live samples over MQTT come in phase 3
+and history from PostgreSQL in phase 4 of the plan.
 
 ## Configuration
 
