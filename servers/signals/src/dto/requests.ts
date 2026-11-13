@@ -6,6 +6,9 @@ import isPlainTopic from '../topic.js';
 export type PathLimits = { maxPaths: number; maxPathLength: number };
 export type RangeLimits = PathLimits & { maxSpan: number };
 
+/** One twin: the project that holds it and the folder of its files. */
+export type TwinRef = { owner: string; name: string };
+
 export type RangeRequest = {
   paths: string[];
   channel: Channel;
@@ -13,7 +16,17 @@ export type RangeRequest = {
   to: number;
 };
 
-const streamSchema = z.object({ paths: z.array(z.unknown()) }).strict();
+// A GitLab project path and a twin folder name, never a path with a slash.
+const namePart = z
+  .string()
+  .min(1)
+  .max(255)
+  .regex(/^[\w.-]+$/);
+const twinSchema = z.object({ owner: namePart, name: namePart }).strict();
+
+const streamSchema = z
+  .object({ paths: z.array(z.unknown()), twin: twinSchema.optional() })
+  .strict();
 
 const rangeSchema = z
   .object({
@@ -21,6 +34,7 @@ const rangeSchema = z
     channel: z.enum(CHANNELS),
     from: z.number().int().nonnegative(),
     to: z.number().int().positive(),
+    twin: twinSchema.optional(),
   })
   .strict();
 
@@ -85,4 +99,14 @@ export function parseCommandRequest(
   if (!parsed.success || !isPlainTopic(parsed.data.path, maxPathLength))
     throw badRequest();
   return parsed.data;
+}
+
+/**
+ * The twin a stream or range request names, or undefined when it names none.
+ * Call it after parseStreamRequest or parseRangeRequest, which refuse a twin
+ * that is not valid.
+ */
+export function twinOf(body: unknown): TwinRef | undefined {
+  const parsed = z.object({ twin: twinSchema }).safeParse(body);
+  return parsed.success ? parsed.data.twin : undefined;
 }

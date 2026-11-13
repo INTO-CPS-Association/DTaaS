@@ -4,7 +4,10 @@ import type { SignalTarget } from 'src/authz/policy';
 import DeliveryStats from 'src/stream/delivery-stats';
 import SseWriter from 'src/stream/sse-writer';
 import StreamService from 'src/stream/stream.service';
-import StreamSession, { type Recheck } from 'src/stream/stream-session';
+import StreamSession, {
+  type Backfill,
+  type Recheck,
+} from 'src/stream/stream-session';
 import StreamSlots from 'src/stream/stream-slots';
 import testConfig from 'test/helpers/config';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
@@ -29,6 +32,7 @@ function sessionWith(
   broker: FakeBroker,
   response = new FakeResponse(),
   recheck?: Recheck,
+  backfill?: Backfill,
 ) {
   const session = new StreamSession(
     new SseWriter(response.asResponse(), MAX_BACKLOG),
@@ -36,6 +40,7 @@ function sessionWith(
     [FLOW],
     OPTIONS,
     recheck,
+    backfill,
   );
   return { session, response };
 }
@@ -73,7 +78,7 @@ describe('StreamSession', () => {
     broker.deliver('alice/pump/flow', reading(1));
     broker.deliver('alice/pump/flow', 'x'.repeat(129));
     const samples = response.chunks.filter((chunk) =>
-      chunk.startsWith('event: sample'),
+      chunk.includes('event: sample'),
     );
     expect(samples).toHaveLength(1);
     const data = JSON.parse(samples[0].split('data: ')[1]);
@@ -83,6 +88,60 @@ describe('StreamSession', () => {
       payload: reading(1),
     });
     expect(typeof data.receivedAt).toBe('number');
+    expect(samples[0]).toMatch(new RegExp(`^id: ${data.receivedAt}\n`));
+    session.end();
+  });
+
+  it('sends past samples without an id after going live, and a gap the history could not fill', async () => {
+    const past = {
+      path: FLOW.path,
+      twin: 'pump',
+      channel: 'measured',
+      ts: 1000,
+      value: 2,
+    };
+    const backfill: Backfill = async () => ({
+      samples: [past],
+      complete: false,
+      from: 500,
+      to: 2000,
+    });
+    const { session, response } = sessionWith(
+      new FakeBroker(),
+      undefined,
+      undefined,
+      backfill,
+    );
+    await session.start([]);
+    const sample = response.chunks.find((chunk) =>
+      chunk.includes('"backfill":true'),
+    );
+    expect(sample?.startsWith('event: sample\n')).toBe(true);
+    expect(JSON.parse(sample?.split('data: ')[1] ?? '{}')).toMatchObject({
+      path: FLOW.path,
+      receivedAt: 1000,
+      payload: '{"value":2,"ts":"1970-01-01T00:00:01.000Z"}',
+    });
+    expect(response.text).toContain('event: gap\ndata: {"from":500,"to":2000}');
+    expect(session.counts.backfilled).toBe(1);
+    session.end();
+  });
+
+  it('reports an unknown gap when the history fails', async () => {
+    const backfill: Backfill = async () => {
+      throw new Error('database down');
+    };
+    const { session, response } = sessionWith(
+      new FakeBroker(),
+      undefined,
+      undefined,
+      backfill,
+    );
+    await session.start([]);
+    expect(response.text).toContain(
+      'event: gap\ndata: {"from":null,"to":null}',
+    );
+    expect(response.text).toContain('"state":"live"');
     session.end();
   });
 
@@ -110,6 +169,9 @@ describe('StreamSession', () => {
     expect(response.chunks).toContain(': keep-alive\n\n');
     jest.advanceTimersByTime(600_000);
     await session.done;
+    expect(response.text).toContain(
+      'event: end\ndata: {"reason":"lifetime"}\n\n',
+    );
     expect(response.writableEnded).toBe(true);
     expect(broker.bindings).toHaveLength(0);
   });
@@ -136,6 +198,7 @@ describe('StreamSession', () => {
     broker.deliver('alice/pump/flow', '{"value":"high"}');
     expect(session.counts).toEqual({
       forwarded: 2,
+      backfilled: 0,
       dropped: { tooLarge: 1, invalid: 1, congested: 1 },
     });
     session.end();
@@ -260,11 +323,13 @@ describe('Delivery stats', () => {
       action: 'stream-end',
       paths: 1,
       forwarded: 1,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
     expect(stats.of('3').forwarded).toBe(1);
     expect(stats.of('4')).toEqual({
       forwarded: 0,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
   });

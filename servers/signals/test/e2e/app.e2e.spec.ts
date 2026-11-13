@@ -210,6 +210,7 @@ describe('Signals gateway e2e', () => {
     const response = await stats(ALICE_TOKEN);
     await expect(response.json()).resolves.toEqual({
       forwarded: 1,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
   });
@@ -321,6 +322,52 @@ describe('Signals gateway e2e', () => {
     expect((await post('stream', ALICE_TOKEN, { paths: many })).status).toBe(
       413,
     );
+  });
+
+  it('fills the gap since Last-Event-ID from the history, then goes live', async () => {
+    const lastId = Date.now() - 2000;
+    const before = postgres.queries.length;
+    const stream = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      { 'Last-Event-ID': String(lastId) },
+    );
+    const text = await stream.readUntil('"backfill":true');
+    expect(text.indexOf('"state":"live"')).toBeLessThan(
+      text.indexOf('"backfill":true'),
+    );
+    expect(text).not.toContain('event: gap');
+    const [query] = postgres.queries.slice(before);
+    expect(query.values[2]).toEqual(new Date(lastId - 5000));
+    stream.close();
+    await waitFor(() => broker.bindings.length === 0);
+  });
+
+  it('reports a gap longer than resume-max-gap and ignores a malformed id', async () => {
+    const old = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      {
+        'Last-Event-ID': '1',
+      },
+    );
+    expect(await old.readUntil('event: gap')).toContain('"backfill":true');
+    old.close();
+    const before = postgres.queries.length;
+    const odd = await openStream(
+      `${base}/signals/stream`,
+      ALICE_TOKEN,
+      [ROOM],
+      {
+        'Last-Event-ID': 'yesterday',
+      },
+    );
+    await odd.readUntil('"state":"live"');
+    odd.close();
+    await waitFor(() => broker.bindings.length === 0);
+    expect(postgres.queries.length).toBe(before);
   });
 
   it('refuses a body above the payload limit', async () => {
