@@ -41,6 +41,37 @@ describe('AccessService', () => {
     expect(decision.allowed[0].twin).toBe('one');
   });
 
+  it('allows only the signals of the twin a request names, under its name', async () => {
+    const service = new AccessService(
+      policyListing([
+        target('a/b', 'one'),
+        target('a/b', 'two'),
+        target('a/c', 'one'),
+        target('a/d', 'two'),
+        target('a/b', 'two', 'bob'),
+      ]),
+    );
+    const twin = { owner: 'alice', name: 'two' };
+    const decision = await service.decide(
+      ALICE,
+      'stream',
+      ['a/b', 'a/c', 'a/d'],
+      twin,
+    );
+    expect(decision.allowed).toEqual([
+      target('a/b', 'two'),
+      target('a/d', 'two'),
+    ]);
+    expect(decision.refused).toEqual(['a/c']);
+  });
+
+  it('refuses every path for a twin the user cannot read', async () => {
+    const service = new AccessService(policyListing([target('a/b', 'one')]));
+    const twin = { owner: 'bob', name: 'one' };
+    const decision = await service.decide(ALICE, 'stream', ['a/b'], twin);
+    expect(decision).toEqual({ allowed: [], refused: ['a/b'] });
+  });
+
   it("prefers the user's own twin when two owners declare a topic", async () => {
     jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
     const service = new AccessService(

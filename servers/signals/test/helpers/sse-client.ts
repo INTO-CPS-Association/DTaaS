@@ -9,11 +9,13 @@ export async function openStream(
   url: string,
   token: string,
   paths: string[],
+  headers: Record<string, string> = {},
 ): Promise<OpenStream> {
   const controller = new AbortController();
   const response = await fetch(url, {
     method: 'POST',
     headers: {
+      ...headers,
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },

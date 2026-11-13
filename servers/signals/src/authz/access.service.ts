@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import type { TwinRef } from '../dto/requests.js';
 import {
   ACCESS_POLICY,
   type AccessPolicy,
@@ -24,12 +25,18 @@ export default class AccessService {
   // eslint-disable-next-line no-useless-constructor
   constructor(@Inject(ACCESS_POLICY) private readonly policy: AccessPolicy) {} // eslint-disable-line no-empty-function
 
+  /**
+   * With a twin, only the signals that twin declares are allowed, and each
+   * carries that twin's name. Without one, a signal carries the name of the
+   * first twin that declares it.
+   */
   async decide(
     subject: Subject,
     action: Action,
     paths: readonly string[],
+    twin?: TwinRef,
   ): Promise<PathDecision> {
-    const readable = await this.readableOf(subject, action);
+    const readable = await this.readableOf(subject, action, twin);
     const decision: PathDecision = { allowed: [], refused: [] };
     for (const path of paths) {
       const target = readable.get(path);
@@ -43,9 +50,17 @@ export default class AccessService {
   private async readableOf(
     subject: Subject,
     action: Action,
+    twin?: TwinRef,
   ): Promise<Map<string, SignalTarget>> {
     try {
-      const targets = await this.policy.listResources(subject, action);
+      const listed = await this.policy.listResources(subject, action);
+      const targets =
+        twin === undefined
+          ? listed
+          : listed.filter(
+              (target) =>
+                target.owner === twin.owner && target.twin === twin.name,
+            );
       const readable = new Map<string, SignalTarget>();
       targets.forEach((target) => {
         const first = readable.get(target.path);

@@ -8,13 +8,13 @@ browser. The requirements and the choices behind it are in
 The routes keep their final paths. Each one except health signs the user in
 and decides access first:
 
-| Route | Answer now |
-| :--- | :--- |
-| `GET /signals/health` | `200` with `{"status":"ok"}` |
-| `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else live samples as server-sent events |
-| `GET /signals/stats` | What the user's ended streams forwarded and dropped |
+| Route                   | Answer now                                                                                                                                                              |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /signals/health`   | `200` with `{"status":"ok"}`                                                                                                                                            |
+| `POST /signals/stream`  | `401` without a valid token, `403` when no path is readable, else live samples as server-sent events                                                                    |
+| `GET /signals/stats`    | What the user's ended streams forwarded and dropped                                                                                                                     |
 | `POST /signals/command` | `401` without a valid token, `400` for a path that takes no command, `403` without write access or a `setpoint` declaration, else `202` once the broker has the command |
-| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else past samples as JSON, `502` when the database fails |
+| `POST /signals/range`   | `401` without a valid token, `403` when no path is readable, else past samples as JSON, `502` when the database fails                                                   |
 
 A token is either a GitLab token or a JWT of a Keycloak realm or Dex
 instance named in `oidc-providers`. GitLab is asked about a GitLab token
@@ -42,6 +42,12 @@ Keycloak, or a role from the GitLab connector of Dex. Commands go on a
 second MQTT connection, since RabbitMQ closes a connection that publishes
 where it may not. A command the broker does not take within
 `command-timeout` answers `504`.
+
+Each live sample carries the time the gateway received it as its event id,
+and a stream that reaches `stream-max-age` sends an `end` event before it
+closes. A client that opens the stream again with `Last-Event-ID` first gets
+the readings of the gap from the history, marked `backfill`, then the live
+ones. A gap the history cannot fill is reported in a `gap` event.
 
 ## Configuration
 
