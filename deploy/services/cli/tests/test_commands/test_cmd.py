@@ -2,6 +2,8 @@
 
 import pytest
 from dtaas_services.cmd import services
+from dtaas_services.pkg.utils import permission_hint
+from tests.conftest import denied
 # pylint: disable=W0621
 
 
@@ -57,3 +59,42 @@ def test_removed_top_level_spellings_are_rejected(runner, old_name):
     result = runner.invoke(services, [old_name])
     assert result.exit_code == 2
     assert f"No such command '{old_name}'" in result.output
+
+
+PASSWORDS = "/srv/config/password.env.current"
+
+
+@pytest.mark.parametrize(
+    "exc,shown",
+    [
+        (PermissionError(permission_hint(PASSWORDS)), permission_hint(PASSWORDS)),
+        (denied(PASSWORDS), f"[Errno 13] Permission denied: '{PASSWORDS}'"),
+    ],
+    ids=["config-file-with-its-fix", "any-other-file"],
+)
+def test_a_permission_error_ends_with_its_own_message(runner, mocker, exc, shown):
+    """A file no command could open ends the command with exit code 1 and
+    the error's own message, never a traceback. Only the files this CLI
+    keeps under config/ carry a chown: no other file, such as one 'host
+    setup' gave to a service's user, gets that advice."""
+    mocker.patch(
+        "dtaas_services.commands.user_ops.parse_service_list", side_effect=exc
+    )
+    result = runner.invoke(services, ["user", "add"])
+    assert result.exit_code == 1
+    assert f"Error: {shown}" in result.output
+    assert result.output.count("chown") == shown.count("chown")
+
+
+def test_a_lock_held_too_long_ends_with_its_own_message(runner, mocker):
+    """A lock another command held past the wait (file_lock.locked) ends
+    the command with exit code 1 and the lock's own message, never a
+    traceback."""
+    message = f"{PASSWORDS} is being changed by another dtaas-services command."
+    mocker.patch(
+        "dtaas_services.commands.user_ops.parse_service_list",
+        side_effect=TimeoutError(message),
+    )
+    result = runner.invoke(services, ["user", "add"])
+    assert result.exit_code == 1
+    assert f"Error: {message}" in result.output

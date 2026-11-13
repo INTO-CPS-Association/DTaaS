@@ -103,6 +103,7 @@ Every per-user name is the CSV username, with its case kept as written.
 | ThingsBoard | Customer in the shared tenant `DTaaS`           | `<username>`   |
 | ThingsBoard | Customer user, signs in with the CSV email      | `<email>`      |
 | GitLab      | User with display name and access token `dtaas` | `<username>`   |
+| GitLab      | Private projects, when the template keys are set | `<username>/common`, `<username>/user` |
 | Grafana     | Nothing, only the administrator account exists  |                |
 
 The administrator accounts and the shared names come from `config/.env`:

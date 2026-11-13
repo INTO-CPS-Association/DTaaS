@@ -36,6 +36,7 @@ MongoDB, InfluxDB, RabbitMQ, Grafana, ThingsBoard and GitLab.
 * Python 3.10 or higher
 * Docker and Docker Compose
 * TLS certificates
+* Git 2.31 or later, for the GitLab projects of `user add`
 
 ## Installation
 
@@ -81,6 +82,20 @@ Commands follow the form `dtaas-services <noun> <verb>`. The nouns are
    * `GITLAB_PORT`: port for the local GitLab instance (default: `8090`)
    * `GITLAB_ROOT_NEW_PASSWORD`: strong password to set for the GitLab
      root admin
+   * `GITLAB_TEMPLATE_HOST` and `GITLAB_TEMPLATE_GROUP`: where the
+     templates of each user's GitLab projects live (default
+     `https://gitlab.com` and `dtaas`). The host must be an `https` URL.
+     Set both, or remove both for GitLab accounts and tokens only. The
+     defaults contact gitlab.com: without internet access, point them at
+     a mirror on a host you control, or remove both
+   * `GITLAB_TEMPLATE_COMMON_COMMIT` and `GITLAB_TEMPLATE_USER_COMMIT`:
+     the full commit id each template is pinned to, so exactly that commit
+     is pushed into every user's project (default: the commits the CLI was
+     tested with). Empty means the template's default branch as it is when
+     the user is added. Whoever controls the template group controls what
+     every user's projects start with, including the CI configuration DTaaS
+     runs when a user starts a digital twin: review a newer commit before
+     you pin it
    * `TB_SYSADMIN_NEW_PASSWORD`: new password for the ThingsBoard
      system admin
    * `TB_TENANT_ADMIN_PASSWORD`: new password for the tenant admin
@@ -127,9 +142,12 @@ overwrites these files, which are reported as kept:
 
 * `services.env`, `credentials.csv`, `gitlab_oauth.json`
 * `gitlab_tokens.json`, `gitlab_user_tokens.json`, `password.env.current`
+* `gitlab_user_projects.json`
 * `mongod.conf.secure`, `rabbitmq.conf`, `rabbitmq.enabled_plugins`
 
-The first six hold your settings and live credentials; the last three are
+The first seven hold your settings, live credentials and the records of
+the GitLab accounts the CLI made and their finished projects. The last
+three are
 service configuration you may have hardened locally. Overwritten files and
 existing directories keep the permissions they already had, so a tightened
 `config/` stays tightened. To adopt the packaged version of a kept file, copy
@@ -214,7 +232,10 @@ only.
 ### User Account Management
 
 1. Edit `config/credentials.csv` with user accounts
-   (format: `username,password,email`).
+   (format: `username,password,email`). List each username once:
+   `user add` stops before any service when a username is on two rows,
+   also when they differ only in case (GitLab ignores case in
+   usernames).
 
 2. Add users to all supported services:
 
@@ -225,7 +246,65 @@ only.
     This creates user accounts in InfluxDB, RabbitMQ, MongoDB, PostgreSQL,
     ThingsBoard and GitLab. A service that is not running is skipped.
     For GitLab, a Personal Access Token is created for each new user and
-    saved to `config/gitlab_user_tokens.json`.
+    saved to `config/gitlab_user_tokens.json` (merged, so the tokens of users
+    added earlier stay). Each account the CLI creates is recorded in
+    `config/gitlab_user_projects.json` with its GitLab id and creation time.
+    When the token of such an account could not be issued or saved, the
+    next run revokes its `dtaas` tokens and issues a new one (`✅ GitLab
+    token issued again for '<user>'.`). Removing a user's entry from
+    `gitlab_user_tokens.json` does the same, so a token that expired can be
+    replaced this way. To cut a user off, revoke their token in GitLab
+    instead. Both files are checked before any account is created: one that
+    cannot be read or written stops the GitLab step at once. An account
+    GitLab refuses gets its own line, with GitLab's reason below it, for
+    example an email that another account uses:
+
+    ```text
+      GitLab account 'user1' failed.
+        GitLab did not create 'user1': 409: Email has already been taken
+          GitLab has no user named 'user1'.
+    ```
+
+    When `GITLAB_TEMPLATE_HOST` and
+    `GITLAB_TEMPLATE_GROUP` are set, each user also gets two private projects
+    in their own namespace, `common` and `user`, filled from
+    `<host>/<group>/common.git` and `.../user1.git`, at the pinned commits.
+    This host clones each
+    template (they must be public) and pushes it as the user, with their own
+    token and no CI pipeline. One line per project says what happened:
+
+    ```text
+      ✅ GitLab project 'user1/common' created.
+        Private, filled from https://gitlab.com/dtaas/common.git at commit 299d6e62e3addf074b2bbaffe4c5804ee096255c
+    ```
+
+    Before a project is created, the user's token is checked with GitLab:
+    it must be valid, belong to that account and carry the
+    `write_repository` or `api` scope, and the account must not be an
+    administrator. Otherwise nothing is created and the line says why:
+    replace the saved token when GitLab refused it, or run the command again
+    when GitLab could not be reached. A project that already exists is never
+    pushed to: it gets a `Warning:` (once when it has content, on every run
+    while it is empty). A failed
+    project fails that user only, and running the command again makes only
+    the missing projects (finished ones are recorded in
+    `config/gitlab_user_projects.json`, for that very account: after a
+    reinstall, or when a user is deleted and added again, the new account
+    gets its projects). A user whose account existed before the run, and
+    was not created by the CLI, gets projects only when a token of theirs is
+    saved in `config/gitlab_user_tokens.json`.
+
+    Upgrading from 1.2.0: that version kept only the tokens of its last run
+    in `gitlab_user_tokens.json`, so a user it added in an earlier run has an
+    account but no saved token, and no record that the CLI created it. The
+    CLI never issues a token for such an account, so every run prints
+    `GitLab projects for '<user>' skipped.` for them. To give them their
+    projects, save a token of theirs by hand: the user creates a personal
+    access token with the `write_repository` scope (User settings, Access
+    tokens), or an administrator creates one for them with
+    `POST /users/:id/personal_access_tokens`. Add `"<user>": "<token>"` to
+    `config/gitlab_user_tokens.json`, then run
+    `dtaas-services user add -s gitlab` again.
 
 3. Add users to a specific service:
 
@@ -427,6 +506,46 @@ docker compose -f compose.gitlab.yml --env-file config/services.env down
 ```bash
 sudo -E env PATH="$PATH" dtaas-services host setup
 ```
+
+`service install` must run as root, so the files it writes under `config/`
+(`gitlab_tokens.json`, `password.env.current` and their `.lock` files)
+belong to root, and so do the files of any command run with `sudo`. A
+later command run as yourself, such as `user add` or `service remove`, then
+stops with `Permission denied: <file>` and the command that fixes it, which
+names the file and its lock file:
+
+```bash
+sudo chown "$USER": config/gitlab_tokens.json config/gitlab_tokens.json.lock
+```
+
+When the `config/` folder itself cannot be written, the message names the
+folder and its `chown` instead (the folder alone, so the files in it keep
+their owners), also when the file it could not make is a lock file that
+does not exist yet. The `chown` names only files that exist. Any other
+file is named as it is, with no advice to change its owner: `host setup`
+gives some files to the users of the services on purpose. On Windows the
+error is shown as it is.
+
+Run `user add` without `sudo` afterwards, so the GitLab projects are pushed
+and the files it writes are owned by you.
+
+Commands that change the same file under `config/` at once take turns on
+its `.lock` file, so no entry is lost. One that waits more than 30 seconds
+stops with `<file> is being changed by another dtaas-services command`.
+
+When `user reset-password` or `service install` changed a password but
+cannot record it in `config/password.env.current` (its lock not released
+in time, a file that belongs to root, a full disk), the service already
+uses the new password and the command says so, naming the key and where
+the password is set, for example:
+
+```text
+GitLab: GitLab root password updated. GITLAB_ROOT_CURRENT_PASSWORD could not be recorded. The service already uses the password set by GITLAB_ROOT_NEW_PASSWORD in config/services.env: add the line GITLAB_ROOT_CURRENT_PASSWORD=<that password> to config/password.env.current by hand. Why: ...
+```
+
+Add that line as it says, or fix the cause and run
+`dtaas-services user reset-password` for that service, which sets the same
+password again and records it.
 
 ### Docker connectivity
 

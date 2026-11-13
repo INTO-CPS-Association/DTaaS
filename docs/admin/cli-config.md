@@ -52,7 +52,7 @@ not use (see the tables above).
 # Describes the instance. git-repo, the URL of the DTaaS repository, is
 # required for all deployment types; validate checks no other key here.
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.4.0"
+version  = "2.5.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -225,7 +225,7 @@ first, then the current directory) and reports all problems at once:
 | `[gitlab].api_url`                         | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise                         |
 | `[gitlab].pat`                             | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`)                                    |
 | `[gitlab].ssl_verify`                      | When present, `true`, `false`, or a CA-bundle path string                                                     |
-| `[gitlab].template_group`/`template_host`  | When present, a GitLab group path (subgroups with `/`) and an `http(s)` URL; set both, or leave both out      |
+| `[gitlab].template_group`/`template_host`  | When present, a GitLab group path (subgroups with `/`, no segment ending in a dot) and an `https` URL: set both, or leave both out |
 | `[frontend].logger-url`                    | When present, an `http(s)` URL, or `""` to turn remote logging off                                            |
 | Deployment-section URLs                    | When present, must be `http(s)` URLs                                                                          |
 | Deployment-section `default-user`          | When present, must be a valid username                                                                        |
@@ -441,13 +441,18 @@ template_group = "dtaas"
 | `pat`            | none    | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty                                    |
 | `ssl_verify`     | `true`  | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off          |
 | `template_group` | none    | Public group holding the templates `common` and `user1`, such as `dtaas`; set with `template_host`      |
-| `template_host`  | none    | GitLab `http(s)` URL that holds `template_group`, such as `https://gitlab.com`; set with the group      |
+| `template_host`  | none    | GitLab `https` URL that holds `template_group`, such as `https://gitlab.com`; set with the group        |
 
 The generated `dtaas.toml` sets `template_host = "https://gitlab.com"`
 and `template_group = "dtaas"`, so the templates are
 `https://gitlab.com/dtaas/common.git` and
 `https://gitlab.com/dtaas/user1.git`. To use your own copies, put both
 repositories in a public group and name that group.
+
+Since 2.5.0, `template_host` must be an `https` URL. Version 2.4.0 also
+accepted `http://`. An `http://` value now fails `config validate` and
+`user add` with `gitlab.template_host must be an https URL, such as
+https://gitlab.com`: change it to the `https` address of the same host.
 
 ### Admin token
 
@@ -470,18 +475,23 @@ the project pushes and a template kept on that same GitLab included.
 
 With both template keys set, every user whose account and token exist
 gets two private projects in their own namespace, `common` and `user`.
-The CLI clones each template with `git` into a temporary folder, creates
-the project empty with the admin token, and pushes the default branch as
-the user, with the token issued to them (this run's, or the one saved in
-`gitlab_user_tokens.json`), asking GitLab to start no CI pipeline
-(`ci.skip`). The push goes to the project path GitLab reports for the
-user's account. A user with no saved token gets no project, and a push
-GitLab refuses fails that project; the admin token never pushes. The machine running
-`dtaas` needs `git` 2.31 or later and network access to the template
-host and to GitLab.
+The CLI first checks the token issued to the user (this run's, or the
+one saved in `gitlab_user_tokens.json`) with GitLab: it must be valid,
+belong to that account and carry `write_repository` or `api`, and the
+account must not be a GitLab administrator. It then clones each template
+with `git` into a temporary folder, creates the project empty with the
+admin token, and pushes the default branch as the user, with that token,
+asking GitLab to start no CI pipeline (`ci.skip`). The push goes to the
+project path GitLab reports for the user's account. A user with no saved
+token gets no project, a token that fails the check creates nothing, and
+a push GitLab refuses fails that project. The admin token never pushes.
+The machine running `dtaas` needs `git` 2.31 or later and network access
+to the template host and to GitLab.
 
-- Templates must be public `http(s)` repositories: they are cloned
-  without a login.
+- Templates must be public `https` repositories: they are cloned
+  without a login. Whoever controls the template group controls what
+  every user's projects start with, including the CI configuration
+  DTaaS runs when a user starts a digital twin.
 - A project that already exists, even an empty one, is never pushed to
   (a `Warning:`): its settings belong to its owner. One with content is
   then recorded as done, so the warning shows once; an empty one warns
@@ -490,9 +500,10 @@ host and to GitLab.
   files in the pointer format) is refused. LFS rules in `.gitattributes`
   alone are not refused, since the files can still be stored whole. A
   template with no commits is refused too.
-- A failure is that user's alone. A template that cannot be cloned
-  fails before the project is created. A failed push leaves the new
-  project empty: delete it, then name the user again. A transfer under
+- A failure is that user's alone. A token that fails the check, or a
+  template that cannot be cloned, fails before the project is created.
+  A push that fails after that leaves the new project empty: delete it,
+  then name the user again. A transfer under
   1000 bytes a second for a minute, or a git command running for 15
   minutes, fails.
 - Created projects, and projects found with content, are recorded in

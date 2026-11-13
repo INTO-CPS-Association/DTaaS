@@ -4,7 +4,7 @@ import json
 from unittest.mock import patch
 
 import pytest
-from src.pkg.gitlab import ProjectOutcome, ProjectRequest, ProjectResult
+from src.gitlab_common import ProjectOutcome, ProjectRequest, ProjectResult
 from src.pkg.registry import load_registry, register_new_users
 from src.pkg.users_gitlab_projects import GitlabRun, provision_projects
 from src.pkg.users_gitlab_targets import GitlabCandidate, GitlabUserResult
@@ -12,8 +12,12 @@ from src.pkg.users_gitlab_targets import GitlabCandidate, GitlabUserResult
 
 COMMON = "https://gitlab.com/dtaas/common.git"
 USER = "https://gitlab.com/dtaas/user1.git"
+# The command a failed push names, to provision alice again.
+RERUN = "dtaas user add alice"
 RUN = GitlabRun("gl", {"common": COMMON, "user": USER})
 MODULE = "src.pkg.users_gitlab_projects.gitlabPkg"
+# ensure_project as the shared loop of gitlab_common calls it.
+ENSURE = "src.gitlab_common.project_run.ensure_project"
 CREATED = ProjectResult(ProjectOutcome.CREATED)
 TOKEN_FILE = "gitlab_user_tokens.json"
 SAVED = {"alice": "saved-alice", "bob": "saved-bob"}
@@ -33,7 +37,7 @@ def registry(tmp_path, monkeypatch):
 def gitlab():
     """Patch git's check (git is usable) and ensure_project (creates)."""
     with patch(f"{MODULE}.git_problem", return_value="") as problem, patch(
-        f"{MODULE}.ensure_project", return_value=CREATED
+        ENSURE, return_value=CREATED
     ) as ensure:
         yield {"problem": problem, "ensure": ensure}
 
@@ -66,8 +70,8 @@ def test_a_new_account_gets_both_projects_recorded(gitlab, capsys):
     makes them again."""
     assert _run(_new("alice", 42)) == []
     assert _requests(gitlab["ensure"]) == [
-        ProjectRequest(42, "alice", "common", COMMON, "new-alice"),
-        ProjectRequest(42, "alice", "user", USER, "new-alice"),
+        ProjectRequest(42, "alice", "common", COMMON, RERUN, "new-alice"),
+        ProjectRequest(42, "alice", "user", USER, RERUN, "new-alice"),
     ]
     assert load_registry()["alice"]["gitlab_projects"] == ["common", "user"]
     out = capsys.readouterr().out
@@ -83,7 +87,7 @@ def test_an_earlier_account_gets_only_the_missing_project(gitlab):
     to the recorded list."""
     assert _run(_earlier("alice", 7, ("common",))) == []
     assert _requests(gitlab["ensure"]) == [
-        ProjectRequest(7, "alice", "user", USER, "saved-alice")
+        ProjectRequest(7, "alice", "user", USER, RERUN, "saved-alice")
     ]
     assert load_registry()["alice"]["gitlab_projects"] == ["common", "user"]
 

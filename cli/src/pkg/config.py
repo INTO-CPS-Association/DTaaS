@@ -2,7 +2,7 @@
 
 from . import utils
 from .config_validate_gitlab import template_errors
-from .constants import GITLAB_PROJECT_TEMPLATES
+from ..gitlab_common import template_urls
 
 
 class Config:
@@ -217,8 +217,4 @@ def _template_urls(section):
     """{project name: template URL} for a checked [gitlab] *section*."""
     if "template_group" not in section:
         return {}
-    base = f"{section['template_host'].rstrip('/')}/{section['template_group']}"
-    return {
-        name: f"{base}/{repository}.git"
-        for name, repository in GITLAB_PROJECT_TEMPLATES.items()
-    }
+    return template_urls(section["template_host"], section["template_group"])

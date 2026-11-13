@@ -48,8 +48,8 @@ The CLI is written in Python and uses the following libraries:
 
 - [git](https://git-scm.com/) 2.31 or later : not a Python dependency but a
   program on the host that runs `dtaas user add` with project templates set.
-  _cli/src/pkg/gitlab/repos.py_ clones each template and pushes it to the
-  user's new project (see
+  _lib/gitlab_common/gitlab_common/repos.py_ clones each template and
+  pushes it to the user's new project (see
   [GitLab Projects: Design Rationale](#gitlab-projects-design-rationale)).
 
 ## Setup
@@ -231,7 +231,12 @@ one owner and one responsibility:
 
 `user add` fills each user's `common` and `user` projects by a clone and
 push from the `dtaas` host (_cli/src/pkg/users_gitlab_projects.py_,
-_cli/src/pkg/gitlab/repos.py_, `gitlab_common/projects.py`).
+`gitlab_common/repos.py`, `gitlab_common/project_fill.py` and
+`gitlab_common/project_run.py`, shared with dtaas-services). The loop over
+a user's projects, the wording of each outcome and which outcomes are
+recorded are `project_run.ensure_projects`, so both CLIs say and record the
+same: this CLI passes the printing (`echo_hint`) and the saving (the
+registry's `gitlab_projects`) as two callbacks.
 
 - **The user's own token pushes**, the PAT the CLI issued them (this
   run's, or the saved one), through `GIT_CONFIG_COUNT` variables (git
@@ -242,12 +247,24 @@ _cli/src/pkg/gitlab/repos.py_, `gitlab_common/projects.py`).
   may refuse the token while the account's password counts as expired
   (CVE-2021-39872 fix); that push fails with a hint, with no fallback to
   the admin.
+- **The token is checked before anything is created**
+  (`gitlab_common/push_token.py`). `GET /personal_access_tokens/self`
+  answers a token of any scope (`GET /user` would refuse the CLI's
+  repository-only tokens) with its owner, scopes and state: it must be
+  active, owned by the project's user id and carry `write_repository` or
+  `api`, and the owner (looked up with the admin client) must not be an
+  administrator. An expired, revoked or misplaced token so fails before a
+  project exists, instead of leaving an empty one. Only a token GitLab
+  refused (401 or 403) or one that cannot push is to be replaced: when
+  GitLab could not be reached or answered with an error page, the hint is
+  to run the command again.
 - **No Git LFS.** The clone is bare; a template holding LFS pointers is
   refused rather than pushed as stubs. A pointer is matched by its format
   (under 1024 bytes, version, oid and size lines), not by `.gitattributes`:
   the default `user1` names LFS there but stores its files whole.
-- **Only a project this run created is filled.** The template is cloned
-  first, so an unusable template leaves nothing behind. A project that
+- **Only a project this run created is filled.** The token is checked
+  and the template cloned first, so an unusable one leaves nothing
+  behind. A project that
   already exists, even an empty one, is never pushed to: its settings (a
   CI configuration path, webhooks) are its owner's. A failed push leaves
   the new project empty, to be deleted before a re-run. A project found

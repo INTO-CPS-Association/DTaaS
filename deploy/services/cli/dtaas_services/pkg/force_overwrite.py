@@ -27,6 +27,7 @@ PROTECTED_CONFIG_NAMES = {
     "gitlab_oauth.json",
     "gitlab_tokens.json",
     "gitlab_user_tokens.json",
+    "gitlab_user_projects.json",
     "current.passwords.env",
     "mongod.conf.secure",
     "rabbitmq.conf",

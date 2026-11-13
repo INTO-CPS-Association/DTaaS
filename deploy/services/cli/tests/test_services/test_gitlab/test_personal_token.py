@@ -1,14 +1,17 @@
 """Tests for GitLab Personal Access Token creation (personal_token.py)."""
 
 import json
+from pathlib import Path
 
 import pytest
 
 from dtaas_services.pkg.services.gitlab import personal_token as pt
+from dtaas_services.pkg.utils import permission_hint
+from tests.conftest import denied
 
 # pylint: disable=W0212,W0621
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 
 
 @pytest.fixture
@@ -64,13 +67,26 @@ def test_read_tokens_file_empty_pat(tmp_path):
     assert "empty" in msg
 
 
-def test_read_tokens_file_invalid_json(tmp_path):
-    """Test reading tokens file with invalid JSON."""
+@pytest.mark.parametrize("text", ["not valid json{{{", "[]"], ids=["invalid", "list"])
+def test_read_tokens_file_invalid_json(tmp_path, text):
+    """A file that is not a JSON object is a failure, never a crash."""
     tokens_file = tmp_path / "tokens.json"
-    tokens_file.write_text("not valid json{{{", encoding="utf-8")
+    tokens_file.write_text(text, encoding="utf-8")
     success, msg = pt._read_tokens_file(tokens_file)
     assert success is False
     assert "Failed to read token file" in msg
+
+
+@pytest.mark.usefixtures("posix_hints")
+def test_read_tokens_file_owned_by_root_reports_the_fix(tmp_path, mocker):
+    """The file 'service install' wrote as root fails 'user add' with the fix"""
+    tokens_file = tmp_path / "gitlab_tokens.json"
+    tokens_file.write_text("{}", encoding="utf-8")
+    mocker.patch.object(Path, "open", side_effect=denied(tokens_file))
+    assert pt._read_tokens_file(tokens_file) == (
+        False,
+        f"Failed to read token file: {permission_hint(tokens_file)}",
+    )
 
 
 def test_load_pat_from_tokens_success(mocker, tmp_path):

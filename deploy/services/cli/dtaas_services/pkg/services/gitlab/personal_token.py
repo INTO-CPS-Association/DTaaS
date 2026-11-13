@@ -1,11 +1,10 @@
 """Create GitLab Personal Access Tokens with gitlab-rails runner."""
 
-import json
 from pathlib import Path
 from typing import Tuple
 
 from ...docker_utils import execute_docker_command, DockerRunOptions
-from .tokens_file import get_tokens_path as _get_tokens_path
+from .tokens_file import get_tokens_path as _get_tokens_path, read_json_object
 
 PAT_NAME = "dtaas-services"
 ROOT_USER_ID = 1
@@ -68,14 +67,13 @@ def _read_tokens_file(tokens_path: Path) -> Tuple[bool, str]:
         Tuple of (success, pat_or_error)
     """
     try:
-        with tokens_path.open("r", encoding="utf-8") as fh:
-            data = json.load(fh)
-        pat = data.get("personal_access_token", "")
-        if not pat:
-            return False, "personal_access_token is empty in token file."
-        return True, pat
-    except (OSError, json.JSONDecodeError, KeyError) as exc:
+        data = read_json_object(tokens_path)
+    except (OSError, ValueError) as exc:
         return False, f"Failed to read token file: {exc}"
+    pat = data.get("personal_access_token", "")
+    if not pat:
+        return False, "personal_access_token is empty in token file."
+    return True, pat
 
 
 def _load_pat_from_tokens() -> Tuple[bool, str]:
