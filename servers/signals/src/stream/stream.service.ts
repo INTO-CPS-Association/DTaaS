@@ -6,7 +6,10 @@ import { SIGNAL_BROKER, type SignalBroker } from '../broker/broker.js';
 import Config from '../config/config.service.js';
 import DeliveryStats from './delivery-stats.js';
 import SseWriter from './sse-writer.js';
-import StreamSession, { type Recheck } from './stream-session.js';
+import StreamSession, {
+  type Backfill,
+  type Recheck,
+} from './stream-session.js';
 
 /** Runs a stream until the client leaves, its age runs out or the token expires. */
 @Injectable()
@@ -25,6 +28,7 @@ export default class StreamService {
     identity: Identity,
     decision: PathDecision,
     recheck?: Recheck,
+    backfill?: Backfill,
   ): Promise<void> {
     // The client may have left while access was decided. A session opened
     // now would hold a slot and a subscription until its age runs out.
@@ -36,6 +40,7 @@ export default class StreamService {
       decision.allowed,
       this.optionsFor(identity),
       recheck,
+      backfill,
     );
     response.on('close', () => session.end());
     await session.start(decision.refused);
@@ -48,6 +53,7 @@ export default class StreamService {
         user: identity.username,
         action: 'stream-end',
         paths: decision.allowed.length,
+        resumed: backfill !== undefined,
         durationMs: Date.now() - startedAt,
         ...session.counts,
       }),
