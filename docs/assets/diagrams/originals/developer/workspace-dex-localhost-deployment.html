@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace package with Dex on localhost</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1040px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Deployment · DTaaS developer docs</p>
+    <h1>Workspace package with Dex on localhost</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1040 784" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="workspace-dex-localhost-deployment-title workspace-dex-localhost-deployment-desc">
+        <title id="workspace-dex-localhost-deployment-title">Workspace package with Dex on localhost</title>
+        <desc id="workspace-dex-localhost-deployment-desc">Deployment of the deploy/workspace/dex/localhost package: Dex is published directly on port 5556 as the OIDC provider of the web client, and Traefik on port 80 routes without forward-auth to the client and one user workspace.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <rect x="40" y="176" width="960" height="496" rx="8" fill="#fafbfb" stroke="#a6b3be" stroke-width="1" stroke-dasharray="5,4"/>
+        <rect x="200" y="168" width="352" height="16" rx="2" fill="#ffffff"/>
+        <text x="376" y="180" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">LOCALHOST · DOCKER COMPOSE · DEFAULT NETWORK</text>
+        <path d="M 128,120 L 128,216" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <path d="M 280,80 L 592,80 Q 600,80 600,88 L 600,216" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <path d="M 560,316 L 560,380" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 680,316 L 680,340 Q 680,348 688,348 L 768,348 Q 776,348 776,356 L 776,380" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 192,316 L 192,592 Q 192,600 200,600 L 400,600" fill="none" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <path d="M 464,480 L 464,560" fill="none" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <path d="M 776,480 L 776,592 Q 776,600 768,600 L 640,600" fill="none" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <rect x="136" y="141" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="178" y="154" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">OIDC:5556</text>
+        <rect x="406" y="56" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="440" y="69" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTP:80</text>
+        <rect x="468" y="339" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="510" y="352" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTP:4000</text>
+        <rect x="784" y="351" width="108" height="18" rx="2" fill="#ffffff"/>
+        <text x="838" y="364" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTP /&lt;USER&gt;</text>
+        <rect x="250" y="576" width="92" height="18" rx="2" fill="#ffffff"/>
+        <text x="296" y="589" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DEX CONFIG</text>
+        <rect x="472" y="511" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="502" y="524" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ENV.JS</text>
+        <rect x="654" y="576" width="108" height="18" rx="2" fill="#ffffff"/>
+        <text x="708" y="589" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">FILES/&lt;USER&gt;</text>
+        <rect x="40" y="40" width="240" height="80" rx="6" fill="#ffffff"/>
+        <rect x="40" y="40" width="240" height="80" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="48" y="48" width="24" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="60" y="60" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">IN</text>
+        <text x="160" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">User browser</text>
+        <text x="160" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">dtaas-web SPA</text>
+        <rect x="72" y="216" width="240" height="100" rx="6" fill="#ffffff"/>
+        <rect x="72" y="216" width="240" height="100" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <rect x="80" y="224" width="32" height="16" rx="2" fill="none" stroke="#00807a" stroke-width="1" opacity="0.6"/>
+        <text x="96" y="236" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">IDP</text>
+        <text x="192" y="262" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Dex · in-memory</text>
+        <rect x="80" y="274" width="224" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="90" y="294" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">dex</text>
+        <text x="294" y="294" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">v2.45.1</text>
+        <rect x="480" y="216" width="240" height="100" rx="6" fill="#ffffff"/>
+        <rect x="480" y="216" width="240" height="100" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="488" y="224" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="500" y="236" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">GW</text>
+        <text x="600" y="262" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Traefik · no auth</text>
+        <rect x="488" y="274" width="224" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="498" y="294" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">traefik</text>
+        <text x="702" y="294" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">v3.7.14</text>
+        <rect x="344" y="380" width="240" height="100" rx="6" fill="#ffffff"/>
+        <rect x="344" y="380" width="240" height="100" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="352" y="388" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="368" y="400" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CTR</text>
+        <text x="464" y="426" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Web client</text>
+        <rect x="352" y="438" width="224" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="362" y="458" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">dtaas-web</text>
+        <text x="566" y="458" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">1.7.1</text>
+        <rect x="648" y="380" width="256" height="100" rx="6" fill="#ffffff"/>
+        <rect x="648" y="380" width="256" height="100" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="656" y="388" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="672" y="400" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CTR</text>
+        <text x="776" y="426" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">User workspace</text>
+        <rect x="656" y="438" width="240" height="30" rx="4" fill="#f2f4f6" stroke="#47536b" stroke-width="1"/>
+        <text x="666" y="458" fill="rgb(0,37,70)" font-size="14" font-family="'Inter', system-ui, sans-serif">workspace</text>
+        <text x="886" y="458" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">main-56c6f68</text>
+        <rect x="400" y="560" width="240" height="80" rx="6" fill="#ffffff"/>
+        <rect x="400" y="560" width="240" height="80" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="408" y="568" width="24" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="420" y="580" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">FS</text>
+        <text x="520" y="605" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Host bind mounts</text>
+        <text x="520" y="625" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">files/ · config/</text>
+        <line x1="40" y1="712" x2="1000" y2="712" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="732" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="748" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Critical</text>
+        <rect x="156" y="748" width="20" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="184" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Container</text>
+        <rect x="280" y="748" width="20" height="14" rx="2" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <text x="308" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Host files</text>
+        <rect x="412" y="748" width="20" height="14" rx="2" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="440" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">External</text>
+        <rect x="528" y="748" width="20" height="14" rx="2" fill="#fafbfb" stroke="#a6b3be" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <text x="556" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Boundary</text>
+        <line x1="644" y1="756" x2="676" y2="756" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <text x="686" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Ingress</text>
+        <line x1="766" y1="756" x2="798" y2="756" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text x="808" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Internal</text>
+        <line x1="896" y1="756" x2="928" y2="756" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <text x="938" y="760" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Mount</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

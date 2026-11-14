@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 616" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cli-architecture-dark-title cli-architecture-dark-desc" id="cli-architecture-dark-root">
+        <title id="cli-architecture-dark-title">DTaaS CLI architecture</title>
+        <desc id="cli-architecture-dark-desc">Internal architecture of the dtaas admin CLI: Click commands dispatch to the config, deployment, user and platform modules, which copy vendored templates into a deployment directory, drive Docker Compose and optionally provision GitLab accounts.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #cli-architecture-dark-root { --color-paper:   #1e2229;
+      --color-ink:     rgb(232,236,243);
+      --color-muted:   #a9b3c6;
+      --color-accent:  #00aba4;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #cli-architecture-dark-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #cli-architecture-dark-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#cli-architecture-dark-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="cli-architecture-dark-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#a9b3c6"/></marker>
+          <marker id="cli-architecture-dark-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00aba4"/></marker>
+          <marker id="cli-architecture-dark-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#8cc8e6"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#1e2229"/>
+        <rect x="24" y="172" width="992" height="144" rx="8" fill="#22262d" stroke="#3a3e45" stroke-width="1"/>
+        <rect x="40" y="164" width="72" height="16" rx="2" fill="#1e2229"/>
+        <text x="76" y="176" fill="#94a0b8" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">SRC/PKG</text>
+        <path d="M 148,120 L 148,204" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 396,120 L 396,204" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 644,120 L 644,204" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 892,120 L 892,204" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 228,420 L 228,368 Q 228,360 236,360 L 336,360 Q 344,360 344,352 L 344,284" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 456,284 L 456,420" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 592,284 L 592,372 Q 592,380 584,380 L 492,380 Q 484,380 484,388 L 484,420" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <path d="M 644,284 L 644,420" fill="none" stroke="#8cc8e6" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#cli-architecture-dark-arrow-link)"/>
+        <path d="M 704,284 L 704,352 Q 704,360 712,360 L 832,360 Q 840,360 840,368 L 840,420" fill="none" stroke="#00aba4" stroke-width="1.8" marker-end="url(#cli-architecture-dark-arrow-accent)"/>
+        <path d="M 952,284 L 952,420" fill="none" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <rect x="156" y="153" width="60" height="18" rx="2" fill="#1e2229"/>
+        <text x="186" y="166" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CONFIG</text>
+        <rect x="404" y="153" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="450" y="166" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DEPLOYMENT</text>
+        <rect x="652" y="153" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="674" y="166" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">USER</text>
+        <rect x="900" y="153" width="76" height="18" rx="2" fill="#1e2229"/>
+        <text x="938" y="166" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PLATFORM</text>
+        <rect x="264" y="336" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="286" y="349" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">COPY</text>
+        <rect x="388" y="391" width="60" height="18" rx="2" fill="#1e2229"/>
+        <text x="418" y="404" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WRITES</text>
+        <rect x="492" y="386" width="120" height="18" rx="2" fill="#1e2229"/>
+        <text x="552" y="399" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">USER SERVICES</text>
+        <rect x="652" y="391" width="108" height="18" rx="2" fill="#1e2229"/>
+        <text x="706" y="404" fill="#8cc8e6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">USERS · PATS</text>
+        <rect x="726" y="336" width="92" height="18" rx="2" fill="#1e2229"/>
+        <text x="772" y="349" fill="#00aba4" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">COMPOSE UP</text>
+        <rect x="836" y="327" width="108" height="18" rx="2" fill="#1e2229"/>
+        <text x="890" y="340" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">START · STOP</text>
+        <rect x="40" y="40" width="960" height="80" rx="6" fill="#1e2229"/>
+        <rect x="40" y="40" width="960" height="80" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="48" y="48" width="32" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="64" y="60" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CLI</text>
+        <text x="520" y="85" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">dtaas commands</text>
+        <text x="520" y="105" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Click · src/cmd*.py · dtaas &lt;noun&gt; &lt;verb&gt;</text>
+        <rect x="40" y="204" width="216" height="80" rx="6" fill="#1e2229"/>
+        <rect x="40" y="204" width="216" height="80" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="48" y="212" width="32" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="64" y="224" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PKG</text>
+        <text x="148" y="249" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Config</text>
+        <text x="148" y="269" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">dtaas.toml · validators</text>
+        <rect x="288" y="204" width="216" height="80" rx="6" fill="#1e2229"/>
+        <rect x="288" y="204" width="216" height="80" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="296" y="212" width="32" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="312" y="224" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PKG</text>
+        <text x="396" y="249" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Deployment generator</text>
+        <text x="396" y="269" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">project · deploy_config</text>
+        <rect x="536" y="204" width="216" height="80" rx="6" fill="#1e2229"/>
+        <rect x="536" y="204" width="216" height="80" rx="6" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <rect x="544" y="212" width="32" height="16" rx="2" fill="none" stroke="#00aba4" stroke-width="1" opacity="0.6"/>
+        <text x="560" y="224" fill="#00aba4" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PKG</text>
+        <text x="644" y="249" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">User provisioning</text>
+        <text x="644" y="269" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">users* · registry · state</text>
+        <rect x="784" y="204" width="216" height="80" rx="6" fill="#1e2229"/>
+        <rect x="784" y="204" width="216" height="80" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="792" y="212" width="32" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="808" y="224" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PKG</text>
+        <text x="892" y="249" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Platform lifecycle</text>
+        <text x="892" y="269" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">deploy.py · lifecycle.py</text>
+        <rect x="40" y="420" width="216" height="100" rx="6" fill="#1e2229"/>
+        <rect x="40" y="420" width="216" height="100" rx="6" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <rect x="48" y="428" width="32" height="16" rx="2" fill="none" stroke="#a9b3c6" stroke-width="1" opacity="0.6"/>
+        <text x="64" y="440" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">TPL</text>
+        <text x="148" y="465" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Deploy templates</text>
+        <text x="148" y="485" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">templates/deploy/&lt;type&gt;</text>
+        <text x="148" y="505" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">vendored by build.py</text>
+        <rect x="288" y="420" width="216" height="100" rx="6" fill="#1e2229"/>
+        <rect x="288" y="420" width="216" height="100" rx="6" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <rect x="296" y="428" width="32" height="16" rx="2" fill="none" stroke="#a9b3c6" stroke-width="1" opacity="0.6"/>
+        <text x="312" y="440" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">DIR</text>
+        <text x="396" y="465" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Deployment directory</text>
+        <text x="396" y="485" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">compose · conf.server</text>
+        <text x="396" y="505" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">registry · state · files/</text>
+        <rect x="536" y="420" width="216" height="100" rx="6" fill="#1e2229"/>
+        <rect x="536" y="420" width="216" height="100" rx="6" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <rect x="544" y="428" width="32" height="16" rx="2" fill="none" stroke="#94a0b8" stroke-width="1" opacity="0.6"/>
+        <text x="560" y="440" fill="#94a0b8" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="644" y="465" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">GitLab API</text>
+        <text x="644" y="485" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">python-gitlab</text>
+        <text x="644" y="505" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">via gitlab_common</text>
+        <rect x="784" y="420" width="216" height="100" rx="6" fill="#1e2229"/>
+        <rect x="784" y="420" width="216" height="100" rx="6" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <rect x="792" y="428" width="32" height="16" rx="2" fill="none" stroke="#94a0b8" stroke-width="1" opacity="0.6"/>
+        <text x="808" y="440" fill="#94a0b8" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="892" y="465" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Docker engine</text>
+        <text x="892" y="485" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">python-on-whales</text>
+        <text x="892" y="505" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">docker compose</text>
+        <line x1="40" y1="544" x2="1000" y2="544" stroke="#3a3e45" stroke-width="1"/>
+        <text x="40" y="564" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="580" width="20" height="14" rx="2" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="68" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Core module</text>
+        <rect x="180" y="580" width="20" height="14" rx="2" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="208" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Module</text>
+        <rect x="280" y="580" width="20" height="14" rx="2" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <text x="308" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Files</text>
+        <rect x="376" y="580" width="20" height="14" rx="2" fill="#24282f" stroke="#83878e" stroke-width="1.2"/>
+        <text x="404" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">External</text>
+        <line x1="492" y1="588" x2="524" y2="588" stroke="#00aba4" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow-accent)"/>
+        <text x="534" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Starts containers</text>
+        <line x1="686" y1="588" x2="718" y2="588" stroke="#a9b3c6" stroke-width="1.4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <text x="728" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Call or write</text>
+        <line x1="852" y1="588" x2="884" y2="588" stroke="#a9b3c6" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#cli-architecture-dark-arrow)"/>
+        <text x="894" y="592" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Optional</text>
+      </svg>

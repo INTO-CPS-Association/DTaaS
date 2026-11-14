@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 840 984" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dtaas-cli-contributor-onboarding-title dtaas-cli-contributor-onboarding-desc" id="dtaas-cli-contributor-onboarding-root">
+        <title id="dtaas-cli-contributor-onboarding-title">Contribute to the dtaas CLI</title>
+        <desc id="dtaas-cli-contributor-onboarding-desc">Onboarding flow for a dtaas CLI contributor: open the repository, install with Poetry, vendor the deploy templates and gitlab_common with build.py, read the code, re-vendor after changing shared code, then run pytest, pylint and pyright and open a pull request.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #dtaas-cli-contributor-onboarding-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #dtaas-cli-contributor-onboarding-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #dtaas-cli-contributor-onboarding-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#dtaas-cli-contributor-onboarding-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="dtaas-cli-contributor-onboarding-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="dtaas-cli-contributor-onboarding-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="dtaas-cli-contributor-onboarding-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <path d="M 230,104 L 230,144" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,208 L 230,248" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,312 L 230,352" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,416 L 230,456" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,568 L 230,608" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,672 L 230,712" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 230,776 L 230,816" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <path d="M 370,512 L 552,512 Q 560,512 560,504 L 560,288 Q 560,280 552,280 L 400,280" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <rect x="238" y="579" width="28" height="18" rx="2" fill="#ffffff"/>
+        <text x="252" y="592" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+        <rect x="405" y="488" width="120" height="18" rx="2" fill="#ffffff"/>
+        <text x="465" y="501" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">YES · REBUILD</text>
+        <rect x="60" y="40" width="340" height="64" rx="28" fill="#ffffff"/>
+        <rect x="60" y="40" width="340" height="64" rx="28" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="230" y="67" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Open the repository</text>
+        <text x="230" y="87" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">developer/devenv or Python 3.10+</text>
+        <rect x="60" y="144" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="144" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="171" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Install</text>
+        <text x="230" y="191" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">cd cli · poetry install</text>
+        <rect x="60" y="248" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="248" width="340" height="64" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="230" y="275" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Vendor shared code</text>
+        <text x="230" y="295" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">poetry run python src/pkg/build.py</text>
+        <rect x="60" y="352" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="352" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="379" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Read the code</text>
+        <text x="230" y="399" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">cmd.py · cmd_*.py · pkg/config.py</text>
+        <polygon points="230,456 370,512 230,568 90,512" fill="#ffffff"/>
+        <polygon points="230,456 370,512 230,568 90,512" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="507" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Changed</text>
+        <text x="230" y="527" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">shared code?</text>
+        <rect x="60" y="608" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="608" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="635" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Run the tests</text>
+        <text x="230" y="655" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">poetry run pytest · CliRunner</text>
+        <rect x="60" y="712" width="340" height="64" rx="6" fill="#ffffff"/>
+        <rect x="60" y="712" width="340" height="64" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="230" y="739" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Lint and type-check</text>
+        <text x="230" y="759" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">pylint ≥ 9.0 · pyright src</text>
+        <rect x="60" y="816" width="340" height="64" rx="28" fill="#ffffff"/>
+        <rect x="60" y="816" width="340" height="64" rx="28" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="230" y="843" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Open a pull request</text>
+        <text x="230" y="863" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">CLI workflow · Sonar · Codecov · Qlty</text>
+        <line x1="40" y1="912" x2="800" y2="912" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="932" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="948" width="28" height="14" rx="7" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="78" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Start or end</text>
+        <rect x="194" y="948" width="28" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="232" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Step</text>
+        <polygon points="292,955 306,948 320,955 306,962" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="330" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Decision</text>
+        <rect x="418" y="948" width="28" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="456" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Required before tests run</text>
+        <line x1="668" y1="956" x2="700" y2="956" stroke="#47536b" stroke-width="1.4" marker-end="url(#dtaas-cli-contributor-onboarding-arrow)"/>
+        <text x="710" y="960" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Next step</text>
+      </svg>
