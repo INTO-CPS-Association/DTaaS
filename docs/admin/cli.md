@@ -114,7 +114,7 @@ An abridged `dtaas.toml`:
 
 ```toml
 name="Digital Twin as a Service (DTaaS)"
-version="2.4.0"
+version="2.5.0"
 owner="The INTO-CPS-Association"
 git-repo="https://github.com/into-cps-association/DTaaS.git"
 
@@ -737,6 +737,9 @@ containers are provisioned first; a GitLab failure never undoes them, but
 it does make the command exit non-zero. The `[gitlab]` keys, the password
 sources and the files written are described in
 [GitLab provisioning settings](cli-config.md#gitlab-provisioning-settings).
+Since 2.5.0, `[gitlab].template_host` must be an `https` URL: an
+`http://` value, which 2.4.0 accepted, now fails `config validate` and
+`user add`.
 
 The projects are made on the machine that runs `dtaas`: it clones each
 template with `git` into a temporary folder and pushes it to the new
@@ -1031,11 +1034,15 @@ GitLab project 'alice/user' failed.
 ```
 
 A template with no commits, or one holding Git LFS pointer files, fails
-the same way. A push that GitLab
+the same way. So does the user's token when GitLab refuses it (expired or
+revoked), when it belongs to another account or lacks the
+`write_repository` and `api` scopes, or when the account is a GitLab
+administrator: each is checked before anything is created. A push that
+GitLab then
 refuses, or that stalls, leaves the new project empty: delete it, then
 name the user again. The push runs with the user's own token, which
 GitLab may refuse until the user has signed in once and set a new
-password; the message says so. A user with no token saved in
+password: the message says so. A user with no token saved in
 `gitlab_user_tokens.json` gets no project (`GitLab projects for 'alice'
 skipped.`) until the token is put back. Without `git` 2.31 or
 later, no project is attempted (`GitLab projects skipped for every

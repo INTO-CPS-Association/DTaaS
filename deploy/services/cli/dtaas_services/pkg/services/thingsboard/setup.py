@@ -24,7 +24,7 @@ from .tenant_admin import (
     TENANT_PW_KEY,
 )
 from .tb_cert import build_base_url
-from ...password_store import get_current_password
+from ...password_store import PasswordNotRecorded, get_current_password
 
 logger = logging.getLogger(__name__)
 
@@ -193,26 +193,36 @@ def _do_password_reset(
     return True, "ThingsBoard credentials updated successfully"
 
 
+def _reset_configured_passwords() -> Tuple[bool, str]:
+    """Load config/services.env, then reset both passwords to its values."""
+    Config()  # Loads config/services.env into environment
+    base_url = build_base_url()
+    session = _create_session()
+    new_pw = check_password_configured()
+    if not new_pw:
+        return False, (
+            "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
+            "Cannot reset password."
+        )
+    return _do_password_reset(base_url, session, new_pw)
+
+
 def reset_thingsboard_password() -> Tuple[bool, str]:
     """Reset ThingsBoard sysadmin and tenant admin passwords.
 
     Reads TB_SYSADMIN_NEW_PASSWORD and TB_TENANT_ADMIN_PASSWORD from
-    config/services.env and changes passwords from their defaults.
+    config/services.env and changes passwords from their defaults. A
+    password ThingsBoard already uses but this CLI could not record is
+    reported as that, with what to add by hand, never as a failed
+    connection.
 
     Returns:
         Tuple of (success, message)
     """
     try:
-        Config()  # Loads config/services.env into environment
-        base_url = build_base_url()
-        session = _create_session()
-        new_pw = check_password_configured()
-        if not new_pw:
-            return False, (
-                "TB_SYSADMIN_NEW_PASSWORD is not set in config/services.env. "
-                "Cannot reset password."
-            )
-        return _do_password_reset(base_url, session, new_pw)
+        return _reset_configured_passwords()
+    except PasswordNotRecorded as e:
+        return False, str(e)
     except (OSError, httpx.HTTPError, ValueError, KeyError) as e:
         logger.error(f"Error resetting ThingsBoard password: {e}")
         return False, (

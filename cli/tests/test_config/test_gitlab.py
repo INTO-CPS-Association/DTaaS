@@ -121,6 +121,7 @@ DEFAULT_TEMPLATES = {
 }
 SHIPPED_TOML = Path(__file__).parents[2] / "src" / "templates" / "dtaas.toml"
 GROUP_PATH_ERROR = "gitlab.template_group must be a GitLab group path"
+HOST_ERROR = "gitlab.template_host must be an https URL, such as https://gitlab.com"
 
 
 @pytest.mark.parametrize(
@@ -168,19 +169,30 @@ def test_the_generated_config_uses_the_dtaas_group(mock_utils):
             GROUP_PATH_ERROR,
         ),
         ({**TEMPLATE_KEYS, "template_group": ""}, GROUP_PATH_ERROR),
+        ({**TEMPLATE_KEYS, "template_group": "../dtaas"}, GROUP_PATH_ERROR),
         (
             {**TEMPLATE_KEYS, "template_host": "git@gitlab.com"},
-            "gitlab.template_host must be a valid URL",
+            HOST_ERROR,
         ),
+        ({**TEMPLATE_KEYS, "template_host": "http://gitlab.com"}, HOST_ERROR),
     ],
-    ids=["group-only", "host-only", "dash-first", "url-as-group", "empty", "ssh"],
+    ids=[
+        "group-only",
+        "host-only",
+        "dash-first",
+        "url-as-group",
+        "empty",
+        "leaves-the-group",
+        "ssh",
+        "plain-http",
+    ],
 )
 def test_get_gitlab_templates_rejects_what_validate_rejects(
     mock_utils, gitlab, message
 ):
     """'user add' does not run 'config validate', so the getter refuses the
     same settings: one key alone, a group GitLab would refuse, or a host
-    that is not an http(s) URL."""
+    that is not an https URL."""
     mock_utils.return_value = ({"gitlab": gitlab}, None)
     templates, err = config.Config().get_gitlab_templates()
     assert templates == {}

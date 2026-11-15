@@ -12,7 +12,10 @@ in the registry (gitlab_projects) at once, so a re-run never recreates or
 re-pushes it. A project that already exists is never filled, only warned
 about: one with content is then recorded too, since nothing is left to do
 for it, so the warning shows once; an empty one is not, so every run that
-reaches it warns until the admin deletes it.
+reaches it warns until the admin deletes it. Those rules, the loop over a
+user's projects and the wording of each outcome are gitlab_common's
+(project_run.py), shared with dtaas-services: this module prints the
+outcomes and keeps the registry.
 """
 
 from dataclasses import dataclass, field
@@ -22,19 +25,6 @@ from .constants import GITLAB_USER_TOKENS_FILE
 from .messages import echo_hint
 from .registry import set_gitlab_projects
 from .users_gitlab_records import load_saved_tokens
-
-# A project found in place: (end of the warning line, its detail).
-_FOUND_WARNINGS = {
-    gitlabPkg.ProjectOutcome.HAS_CONTENT: (
-        "has content",
-        "It was left as it is: no template was pushed into it.",
-    ),
-    gitlabPkg.ProjectOutcome.EMPTY: (
-        "exists but is empty",
-        "It was not created by this run, so no template was pushed into it. "
-        "Delete it, then run 'dtaas user add {username}' again.",
-    ),
-}
 
 
 @dataclass(frozen=True)
@@ -100,82 +90,43 @@ def _targets(run, candidates, results):
     return [target for target in found if target is not None]
 
 
-def _record(request, done):
-    """Add *request*'s project to the registry's gitlab_projects; True once
-    it is saved."""
-    done.append(request.name)
-    try:
-        set_gitlab_projects({request.username: list(done)})
-    except (OSError, ValueError) as exc:
-        echo_hint(
-            f"GitLab project '{request.path}' not recorded.",
-            f"{exc}\nThe next run that reaches it warns that it has content, "
-            "then records it.",
-        )
-        return False
-    return True
+def _show(notice):
+    """Print one project's notice: its line, then its detail underneath."""
+    echo_hint(notice.headline, notice.detail)
 
 
-def _created(request, done):
-    """Record a created project, then say so; True once it is saved."""
-    if not _record(request, done):
-        return False
-    echo_hint(
-        f"GitLab project '{request.path}' created.",
-        f"Private, filled from {request.template_url}",
-    )
-    return True
+@dataclass
+class _Done:
+    """The projects finished for one user, saved to the registry's
+    gitlab_projects as each one is added."""
 
+    projects: list
 
-def _warn_found(request, result, done):
-    """Warn about a project found in place, which is not a failure. One with
-    content is recorded as well; True unless that record fails."""
-    ending, detail = _FOUND_WARNINGS[result.outcome]
-    echo_hint(
-        f"Warning: GitLab project '{request.path}' {ending}.",
-        detail.format(username=request.username),
-    )
-    if result.outcome is gitlabPkg.ProjectOutcome.HAS_CONTENT:
-        return _record(request, done)
-    return True
-
-
-def _report(request, result, done):
-    """Echo one project's outcome; True unless it failed."""
-    if result.outcome is gitlabPkg.ProjectOutcome.FAILED:
-        echo_hint(f"GitLab project '{request.path}' failed.", result.message)
-        return False
-    if result.outcome in _FOUND_WARNINGS:
-        return _warn_found(request, result, done)
-    return _created(request, done)
-
-
-def _one_project(gl, request, done):
-    """Provision one project; True unless it failed.
-
-    A failure the API layer did not expect is this project's alone, as in
-    the account step, so it never ends the run for later users.
-    """
-    try:
-        result = gitlabPkg.ensure_project(gl, request)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        result = gitlabPkg.ProjectResult(gitlabPkg.ProjectOutcome.FAILED, str(exc))
-    return _report(request, result, done)
+    def save(self, request):
+        """Add *request*'s project and save the list: "" or why it failed."""
+        self.projects.append(request.name)
+        try:
+            set_gitlab_projects({request.username: list(self.projects)})
+        except (OSError, ValueError) as exc:
+            return str(exc)
+        return ""
 
 
 def _make_projects(run, target, token):
     """Provision *target*'s missing projects, pushing with *token*; True
     when none failed. Every project is attempted: a failed one never stops
-    the next."""
-    done = list(target.done)
-    succeeded = True
-    for name, url in run.templates.items():
-        if name not in target.done:
-            request = gitlabPkg.ProjectRequest(
-                target.user_id, target.username, name, url, token
-            )
-            succeeded = _one_project(run.gl, request, done) and succeeded
-    return succeeded
+    the next (gitlab_common.ensure_projects)."""
+    rerun = f"dtaas user add {target.username}"
+    requests = [
+        gitlabPkg.ProjectRequest(
+            target.user_id, target.username, name, url, rerun, token
+        )
+        for name, url in run.templates.items()
+        if name not in target.done
+    ]
+    hooks = gitlabPkg.ProjectHooks(_show, _Done(list(target.done)).save)
+    outcomes = gitlabPkg.ensure_projects(run.gl, requests, hooks)
+    return gitlabPkg.ProjectOutcome.FAILED not in outcomes
 
 
 def _saved_tokens():

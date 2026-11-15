@@ -1,6 +1,10 @@
-"""Fixtures shared by the project generation and force overwrite tests."""
+"""Fixtures and helpers shared by the tests: the generated project of the
+project generation and force overwrite tests, a denied access, the
+permission hints on every platform, and threads run at once."""
 
 # pylint: disable=redefined-outer-name
+import threading
+
 import pytest
 from dtaas_services.pkg.template import generate_project_structure
 
@@ -33,3 +37,34 @@ def edited_project(tmp_path, package_root):
     (target_dir / "config" / "services.env.template").write_text("edited")
     (target_dir / "config" / "services.env").write_text(KEPT_ENV)
     return target_dir
+
+
+def denied(path) -> PermissionError:
+    """The error open() raises for a file that belongs to another user."""
+    return PermissionError(13, "Permission denied", str(path))
+
+
+@pytest.fixture
+def posix_hints(mocker):
+    """Give the permission hints of Linux and macOS on every platform, so a
+    test of a hint also runs on Windows, which has no root and no hint."""
+    mocker.patch("dtaas_services.pkg.utils._hints_apply", return_value=True)
+
+
+def run_together(work, args):
+    """Run work(arg) for each of *args* in its own thread, all at once, and
+    wait for them: a failure in any thread fails the test."""
+    errors = []
+
+    def guarded(arg):
+        try:
+            work(arg)
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            errors.append(exc)
+
+    threads = [threading.Thread(target=guarded, args=(arg,)) for arg in args]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert not errors, errors

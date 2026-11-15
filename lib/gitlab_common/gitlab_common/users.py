@@ -1,27 +1,19 @@
-"""GitLab user provisioning: create users, issue and revoke Personal Access Tokens."""
+"""GitLab user provisioning: create users and look them up. Their Personal
+Access Tokens are tokens.py's."""
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Sequence, Tuple
+from typing import Tuple
 
 import gitlab
 import gitlab.exceptions
 
-from .errors import API_ERRORS
+from .errors import API_ERRORS, describe_api_error
 
 from .validators import validate_user_row
 
 logger = logging.getLogger(__name__)
-
-# Least-privilege default: repository access only. ``api`` grants full
-# read/write across everything the user can reach and subsumes both repository
-# scopes, so callers that genuinely need it must ask for it explicitly.
-DEFAULT_PAT_SCOPES = ("read_repository", "write_repository")
-DEFAULT_PAT_NAME = "dtaas"
-DEFAULT_PAT_EXPIRY_DAYS = 365
-
 
 class CreateOutcome(Enum):
     """What happened to a ``create_user`` request."""
@@ -35,9 +27,12 @@ class CreateOutcome(Enum):
 class CreateUserResult:
     """Outcome of ``create_user``.
 
-    ``user_id`` is set only for :attr:`CreateOutcome.CREATED`; it is None for
+    ``user_id`` is set only for :attr:`CreateOutcome.CREATED`. It is None for
     both ALREADY_EXISTS and FAILED, so callers must branch on *outcome*
-    rather than on the id.
+    rather than on the id. ``created_at`` is GitLab's creation time of that
+    account (empty when GitLab gives none). With the id it tells the
+    account apart from a later one of the same name: a reinstalled GitLab
+    hands out the same ids again, never the same creation time.
 
     ``error`` carries GitLab's own words in both of the other cases: why the
     request failed for FAILED, and which conflict it reported for
@@ -50,6 +45,7 @@ class CreateUserResult:
     outcome: CreateOutcome
     user_id: int | None = None
     error: str = ""
+    created_at: str = ""
 
     @property
     def ok(self) -> bool:
@@ -58,15 +54,19 @@ class CreateUserResult:
 
 
 @dataclass(frozen=True)
-class PatOptions:
-    """Name, scopes, and lifetime of a Personal Access Token.
+class UserInfo:
+    """A GitLab account as find_user finds it: its id, its creation time
+    (see CreateUserResult) and whether it is an administrator."""
 
-    Defaults are least-privilege; widen them explicitly per call site.
-    """
+    user_id: int
+    created_at: str
+    is_admin: bool = False
 
-    name: str = DEFAULT_PAT_NAME
-    scopes: Sequence[str] = DEFAULT_PAT_SCOPES
-    expires_days: int = DEFAULT_PAT_EXPIRY_DAYS
+
+def _created_at(user) -> str:
+    """GitLab's creation time of *user*, "" when the answer has none."""
+    created_at = getattr(user, "created_at", "")
+    return created_at if isinstance(created_at, str) else ""
 
 
 def create_user(
@@ -113,85 +113,47 @@ def create_user(
     try:
         user = gl.users.create(payload)
         logger.info("Created GitLab user: %s", username)
-        return CreateUserResult(CreateOutcome.CREATED, user_id=user.id)
+        return CreateUserResult(
+            CreateOutcome.CREATED, user_id=user.id, created_at=_created_at(user)
+        )
     except gitlab.exceptions.GitlabCreateError as exc:
         if exc.response_code == 409:
             logger.info("GitLab reported a conflict for '%s': %s", username, exc)
-            return CreateUserResult(CreateOutcome.ALREADY_EXISTS, error=str(exc))
+            return CreateUserResult(
+                CreateOutcome.ALREADY_EXISTS, error=describe_api_error(exc)
+            )
         return CreateUserResult(
-            CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
+            CreateOutcome.FAILED,
+            error=f"Failed to create user '{username}': {describe_api_error(exc)}",
         )
     except API_ERRORS as exc:
         return CreateUserResult(
-            CreateOutcome.FAILED, error=f"Failed to create user '{username}': {exc}"
+            CreateOutcome.FAILED,
+            error=f"Failed to create user '{username}': {describe_api_error(exc)}",
         )
 
 
-def create_user_pat(
-    gl: gitlab.Gitlab,
-    user_id: int,
-    username: str,
-    options: PatOptions | None = None,
-) -> Tuple[bool, str]:
-    """Create a Personal Access Token for a GitLab user via the admin API.
+def find_user(gl: gitlab.Gitlab, username: str) -> Tuple[UserInfo | None, str]:
+    """Look up the GitLab account whose username is *username*, with *gl*,
+    an administrator's client (which sees each account's creation time and
+    whether it is an administrator): (UserInfo, "") or (None, why not).
 
-    Args:
-        gl: Authenticated gitlab.Gitlab client.
-        user_id: GitLab user ID.
-        username: Username (used in error messages).
-        options: Token name, scopes, and lifetime; least-privilege defaults
-            are used when omitted.
-
-    Returns:
-        Tuple of (success, token_or_error).
+    Lists ``GET /users?username=`` and keeps only the account whose
+    username matches, ignoring case as GitLab does (it allows one account
+    per name in any case), so a similar name is never taken for the account.
     """
-    opts = options or PatOptions()
-    # UTC, since GitLab interprets expires_at against its own clock; naive
-    # local time can land a day off across the boundary.
-    expires_at = (
-        datetime.now(timezone.utc) + timedelta(days=opts.expires_days)
-    ).strftime("%Y-%m-%d")
+    wanted = username.lower()
     try:
-        user = gl.users.get(user_id)
-        pat = user.personal_access_tokens.create(
-            {
-                "name": opts.name,
-                "scopes": list(opts.scopes),
-                "expires_at": expires_at,
-            }
+        listed = gl.users.list(username=username, iterator=True)
+        user = next(
+            (found for found in listed if found.username.lower() == wanted), None
         )
-        token = pat.token
-        if not token:
-            return False, f"Empty token in PAT response for '{username}'"
-        return True, token
     except API_ERRORS as exc:
-        return False, f"Failed to create PAT for '{username}': {exc}"
-
-
-def revoke_user_pats(
-    gl: gitlab.Gitlab, user_id: int, name: str = DEFAULT_PAT_NAME
-) -> Tuple[bool, str]:
-    """Revoke a GitLab user's active Personal Access Tokens named *name*.
-
-    Only tokens with that name are revoked, so a token the user made for
-    themselves under another name keeps working. Finding none is a success:
-    there is nothing left to revoke.
-
-    Args:
-        gl: Authenticated gitlab.Gitlab client, owned by an administrator.
-        user_id: GitLab user ID.
-        name: Name of the tokens to revoke.
-
-    Returns:
-        Tuple of (success, error); *error* is empty on success.
-    """
-    try:
-        tokens = gl.personal_access_tokens.list(
-            user_id=user_id, state="active", get_all=True
+        return (
+            None,
+            f"Failed to look up GitLab user '{username}': {describe_api_error(exc)}",
         )
-        for token in tokens:
-            if token.name == name:
-                gl.personal_access_tokens.delete(token.id)
-        return True, ""
-    except API_ERRORS as exc:
-        return False, f"Failed to revoke the tokens of GitLab user {user_id}: {exc}"
+    if user is None:
+        return None, f"GitLab has no user named '{username}'."
+    is_admin = getattr(user, "is_admin", False) is True
+    return UserInfo(user.id, _created_at(user), is_admin), ""

@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 import pytest
 from src.pkg import users
-from src.pkg.gitlab import ProjectOutcome, ProjectResult
+from src.gitlab_common import ProjectOutcome, ProjectResult
 from src.pkg.gitlab.provisioner import ProvisionResult
 # pylint: disable=redefined-outer-name,unused-argument
 
@@ -32,7 +32,7 @@ def ensure():
     with patch(
         "src.pkg.users_gitlab_projects.gitlabPkg.git_problem", return_value=""
     ), patch(
-        "src.pkg.users_gitlab_projects.gitlabPkg.ensure_project",
+        "src.gitlab_common.project_run.ensure_project",
         return_value=ProjectResult(ProjectOutcome.CREATED),
     ) as mock_ensure:
         yield mock_ensure

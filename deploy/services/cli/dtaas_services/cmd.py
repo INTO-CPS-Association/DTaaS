@@ -11,7 +11,22 @@ class WorkflowGroup(click.Group):
         return list(self.commands)
 
 
-@click.group(cls=WorkflowGroup)
+class ServicesGroup(WorkflowGroup):
+    """Root group: a file no command could open, or one whose lock another
+    command held too long (``file_lock.locked``), ends the command with its
+    own message, not a traceback. Only the files this CLI keeps under
+    config/ carry a fix in that message (``utils.explain_permission_error``).
+    Any other file, such as one 'host setup' gave to a service's user, is
+    named as it is, with no advice to change its owner."""
+
+    def invoke(self, ctx: click.Context):
+        try:
+            return super().invoke(ctx)
+        except (PermissionError, TimeoutError) as exc:
+            raise click.ClickException(str(exc)) from exc
+
+
+@click.group(cls=ServicesGroup)
 def services():
     """Manage DTaaS platform services.
 

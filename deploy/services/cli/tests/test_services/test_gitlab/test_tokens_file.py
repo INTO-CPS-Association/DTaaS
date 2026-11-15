@@ -1,9 +1,12 @@
-"""Tests for reading and merging config/gitlab_tokens.json (tokens_file.py)."""
+"""Tests for the GitLab JSON files under config/ (tokens_file.py)."""
 
 import json
 from pathlib import Path
 import pytest
+from dtaas_services.pkg.file_lock import lock_path
 from dtaas_services.pkg.services.gitlab import tokens_file
+from dtaas_services.pkg.utils import permission_hint
+from tests.conftest import denied, run_together
 from tests.test_services.test_gitlab.conftest import TEST_TOKEN, write_text
 # pylint: disable=W0621
 
@@ -67,3 +70,63 @@ def test_read_saved_tokens_unreadable(tokens_path):
     data, error = tokens_file.read_saved_tokens()
     assert data == {}
     assert error.startswith(f"Failed to read {tokens_path}")
+
+
+def test_get_user_tokens_path(mocker):
+    """The users' tokens live next to the install secrets"""
+    mocker.patch.object(
+        tokens_file.Config, "get_base_dir", return_value=Path("/srv/dtaas")
+    )
+    assert tokens_file.get_user_tokens_path() == Path(
+        "/srv/dtaas/config/gitlab_user_tokens.json"
+    )
+
+
+def test_merge_into_another_file_keeps_its_entries(tokens_path):
+    """The users' token file is merged the same way: a run that adds a user
+    keeps the tokens of the users added before"""
+    user_tokens = tokens_path.with_name("gitlab_user_tokens.json")
+    write_text(user_tokens, json.dumps({"alice": "old-alice"}))
+    assert tokens_file.merge_tokens({"bob": "new-bob"}, user_tokens) == (
+        True,
+        f"Tokens saved to {user_tokens}",
+    )
+    assert tokens_file.read_saved_tokens(user_tokens) == (
+        {"alice": "old-alice", "bob": "new-bob"},
+        "",
+    )
+    assert not tokens_path.exists()
+
+
+@pytest.mark.usefixtures("posix_hints")
+@pytest.mark.parametrize(
+    "call,locks",
+    [
+        (lambda path: tokens_file.read_saved_tokens(path)[1], False),
+        (lambda path: tokens_file.merge_tokens({"k": "v"}, path)[1], True),
+    ],
+    ids=["read", "merge"],
+)
+def test_a_file_owned_by_root_reports_the_fix(tmp_path, mocker, call, locks):
+    """A token file written as root by 'service install' fails with the fix,
+    one chown that also names the lock file a merge holds"""
+    path = tmp_path / "gitlab_tokens.json"
+    write_text(path, "{}")
+    mocker.patch.object(Path, "open", side_effect=denied(path))
+    files = (path, lock_path(path)) if locks else (path,)
+    assert call(path).endswith(permission_hint(*files))
+
+
+def test_merges_at_the_same_time_lose_no_entry(tokens_path):
+    """Two commands merging into the same file at once take turns on its
+    lock, so every entry of both is kept"""
+
+    def merge_many(prefix):
+        for index in range(15):
+            tokens_file.merge_tokens({f"{prefix}{index}": index}, tokens_path)
+
+    run_together(merge_many, "ab")
+
+    saved, error = tokens_file.read_saved_tokens(tokens_path)
+    assert error == ""
+    assert saved == {f"{p}{index}": index for p in "ab" for index in range(15)}

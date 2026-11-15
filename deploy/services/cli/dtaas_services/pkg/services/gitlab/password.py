@@ -7,10 +7,11 @@ from typing import Tuple
 import gitlab
 import gitlab.exceptions
 
+from ....gitlab_common import describe_api_error
 from .personal_token import _load_pat_from_tokens
 from ...config import Config
 from ...docker_utils import execute_docker_command, DockerRunOptions
-from ...password_store import save_password
+from ...password_store import PasswordNotRecorded, save_password
 from ._api import get_gitlab_client
 
 logger = logging.getLogger(__name__)
@@ -118,7 +119,9 @@ def _apply_password_reset(pat: str, new_pw: str) -> Tuple[bool, str]:
         save_password(GITLAB_PW_KEY, new_pw)
         return True, "GitLab root password updated successfully"
     except gitlab.exceptions.GitlabError as exc:
-        return False, f"Failed to reset root password: {exc}"
+        return False, f"Failed to reset root password: {describe_api_error(exc)}"
+    except PasswordNotRecorded as exc:
+        return False, f"GitLab root password updated. {exc}"
 
 
 def reset_gitlab_password() -> Tuple[bool, str]:

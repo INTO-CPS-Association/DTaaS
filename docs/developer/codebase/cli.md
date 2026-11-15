@@ -118,7 +118,9 @@ provisioned user containers.
 
 GitLab provisioning in `pkg/gitlab/` (accounts, tokens and the
 projects filled from templates with `git` clone and push) is built on
-the `gitlab_common` library. `src/pkg/build.py` vendors it from
+the `gitlab_common` library, which also does the `git` work and the loop
+over each user's projects (how each outcome is worded and recorded), and
+is shared with the platform services CLI. `src/pkg/build.py` vendors it from
 `lib/gitlab_common/` into the source tree, so run it before running the
 tests:
 

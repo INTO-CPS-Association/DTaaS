@@ -30,7 +30,7 @@ MOCK_OAUTH_JSON = [
     },
 ]
 SAVED = {
-    "personal_access_token": "glpat-x",
+    "personal_access_token": "fake-admin-token",
     "server_app": {"client_id": "s-cid", "client_secret": "old-s"},
     "client_app": {"client_id": "c-cid", "client_secret": "old-c"},
 }

@@ -1,7 +1,6 @@
 """Tests for token saving and root password removal (setup.py token steps)."""
 
 import json
-from pathlib import Path
 from dtaas_services.pkg.services.gitlab import setup
 from tests.test_services.test_gitlab.conftest import TEST_TOKEN, write_text
 # pylint: disable=W0212, W0621
@@ -39,11 +38,12 @@ def test_step_remove_root_password_success(mock_console, tokens_path):
     assert backup_data["root_password"] == "secret"
 
 
-def test_step_remove_root_password_failure(mocker, mock_console):
-    """Test remove root password step when tokens file is missing."""
+def test_step_remove_root_password_failure(mocker, mock_console, tmp_path):
+    """Test remove root password step when tokens file is missing. The path
+    lies in tmp_path, so the test leaves nothing behind outside it."""
     mocker.patch(
         f"{SETUP}.get_tokens_path",
-        return_value=Path("/nonexistent/gitlab_tokens.json"),
+        return_value=tmp_path / "missing" / "gitlab_tokens.json",
     )
     success, msg = setup._step_remove_root_password_from_tokens(mock_console)
     assert success is False

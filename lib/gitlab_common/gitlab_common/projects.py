@@ -1,8 +1,7 @@
 """GitLab project provisioning: look up a user's project, create one for them.
 
-Only the API half lives here. Filling a new project from a template (git
-clone and push) touches the filesystem and runs processes, so it stays in
-each consuming application, like every other kind of I/O.
+Only the API half lives here. Filling a new project from its template (git
+clone and push) is repos.py's, and project_fill.py decides between the two.
 
 Both functions address the user by GitLab user id and return the project's
 ``path_with_namespace`` as GitLab reports it, so a caller never builds a
@@ -15,7 +14,7 @@ from typing import Tuple
 
 import gitlab
 
-from .errors import API_ERRORS
+from .errors import API_ERRORS, describe_api_error
 
 PRIVATE = "private"
 
@@ -71,7 +70,8 @@ def find_user_project(gl: gitlab.Gitlab, user_id: int, name: str) -> ProjectLook
     except API_ERRORS as exc:
         return ProjectLookup(
             ProjectState.FAILED,
-            f"Failed to look up project '{name}' of GitLab user {user_id}: {exc}",
+            f"Failed to look up project '{name}' of GitLab user {user_id}: "
+            f"{describe_api_error(exc)}",
         )
     if project is None:
         return ProjectLookup(ProjectState.MISSING)
@@ -102,5 +102,6 @@ def create_user_project(gl: gitlab.Gitlab, user_id: int, name: str) -> Tuple[boo
     except API_ERRORS as exc:
         return (
             False,
-            f"Failed to create project '{name}' for GitLab user {user_id}: {exc}",
+            f"Failed to create project '{name}' for GitLab user {user_id}: "
+            f"{describe_api_error(exc)}",
         )
