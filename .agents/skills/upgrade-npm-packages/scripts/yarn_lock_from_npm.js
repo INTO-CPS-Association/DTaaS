@@ -88,19 +88,27 @@ function formatBlock(keys, entry) {
   );
 }
 
+/** The name a pattern installs under: the alias of "alias@npm:name@range". */
+function installedName(pattern) {
+  return pattern.slice(0, pattern.indexOf('@', 1));
+}
+
 /** Build the text of a yarn.lock from a parsed package-lock.json. */
 function yarnLockFromNpm(npmLock) {
   const { packages } = npmLock;
   if (!packages) throw new Error('package-lock.json v2 or later is required');
-  // npm may copy one version into several subtrees; yarn lists it once.
-  const byTarball = new Map();
+  // npm may copy one version into several subtrees; yarn lists it once. An
+  // alias installs under its own name, so yarn keeps it in a block of its
+  // own even when it resolves to the same tarball as the plain name.
+  const byPackage = new Map();
   collectPatterns(packages).forEach((treePath, pattern) => {
     const tarball = packages[treePath].resolved || treePath;
-    const group = byTarball.get(tarball) || { treePath, keys: [] };
+    const key = `${installedName(pattern)} ${tarball}`;
+    const group = byPackage.get(key) || { treePath, keys: [] };
     group.keys.push(pattern);
-    byTarball.set(tarball, group);
+    byPackage.set(key, group);
   });
-  const blocks = [...byTarball.values()].map(({ treePath, keys }) => {
+  const blocks = [...byPackage.values()].map(({ treePath, keys }) => {
     const sortedKeys = keys.sort();
     return { sortedKeys, text: formatBlock(sortedKeys, packages[treePath]) };
   });
