@@ -1,0 +1,4 @@
+#!/bin/sh
+# Ignores SIGTERM, so only SIGKILL after the stop grace period ends it
+trap '' TERM
+while :; do sleep 0.1; done

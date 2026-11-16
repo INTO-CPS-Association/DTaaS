@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs until it is stopped; short sleeps hold the pipes only briefly
+while :; do sleep 0.1; done

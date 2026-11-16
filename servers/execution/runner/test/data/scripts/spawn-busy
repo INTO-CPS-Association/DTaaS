@@ -1,0 +1,6 @@
+#!/bin/sh
+# Starts busy as a child and waits for it, for the tests of the process
+# tree: the script's own shell only waits, so nearly all the CPU time of
+# the run is its child's.
+sh "${0%/*}/busy" &
+wait

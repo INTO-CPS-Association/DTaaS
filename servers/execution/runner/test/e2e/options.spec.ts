@@ -1,8 +1,10 @@
 import { Test } from '@nestjs/testing';
+import supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import AppModule from 'src/app.module';
 import Keyv from 'keyv';
 import Config from 'src/config/configuration.service';
+import { commandNames, UNMEASURED } from 'test/utils';
 import { getRequest, postRequest, queriesJSON, RequestBody } from './util';
 
 const option = async (): Promise<Keyv> => {
@@ -80,8 +82,44 @@ describe('Runner end-to-end tests', () => {
           name: 'none',
           status: 'invalid',
           logs: { stdout: '', stderr: '' },
+          exitCode: null,
+          resources: UNMEASURED,
         },
       }));
+  });
+
+  describe('POST / with an Idempotency-Key header', () => {
+    const post = async (requestKey: string) => {
+      const { status, body } = await supertest(app.getHttpServer())
+        .post('/')
+        .set('Idempotency-Key', requestKey)
+        .send({ name: 'create' });
+      return [status, body.status];
+    };
+
+    it('refuses a key that is too long', () =>
+      supertest(app.getHttpServer())
+        .post('/')
+        .set('Idempotency-Key', 'k'.repeat(256))
+        .send({ name: 'create' })
+        .expect(400, {
+          message: 'Validation Failed',
+          error: 'Bad Request',
+          statusCode: 400,
+        }));
+
+    // two runs of PowerShell take seconds on a loaded Windows host
+    it('runs a repeated request only once', async () => {
+      const replies = [
+        await post('key-1'),
+        await post('key-1'),
+        await post('key-2'),
+      ];
+      const { body } = await supertest(app.getHttpServer()).get('/history');
+
+      expect(replies).toEqual(Array(3).fill([200, 'success']));
+      expect(commandNames(body)).toEqual(['create', 'create']);
+    }, 30000);
   });
 
   describe('GET /history', () => {
@@ -107,17 +145,10 @@ describe('Runner end-to-end tests', () => {
           });
         }),
       );
-      return getRequest({
-        app,
-        route: '/history',
-        HttpStatus: 200,
-        reqBody: {},
-        resBody: [
-          { name: 'create' },
-          { name: 'execute' },
-          { name: 'configure' },
-        ],
-      });
+      const { body } = await supertest(app.getHttpServer())
+        .get('/history')
+        .expect(200);
+      expect(commandNames(body)).toEqual(['create', 'execute', 'configure']);
     });
   });
 });

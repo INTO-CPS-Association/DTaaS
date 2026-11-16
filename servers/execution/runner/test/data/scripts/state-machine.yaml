@@ -1,0 +1,56 @@
+# The state machine of the test scripts, for trying out the state
+# machine and parameters requests of api/dev.api.http and
+# api/dev.mqtt.http
+events:
+  - restart
+  - scope-changed
+  - neighbour-full
+  - fidelity-changed
+parameters:
+  scope:
+    type: enum
+    values: [single, multi]
+    default: single
+    controllable: true
+    # raised when the value changes
+    event: scope-changed
+  capacity:
+    type: number
+    default: 20
+    controllable: false
+  # the fidelity pattern of STATE-MACHINE.md: values from the cheapest to
+  # the most accurate
+  fidelity:
+    type: enum
+    values:
+      - low
+      - medium
+      - high
+    default: medium
+    controllable: true
+    event: fidelity-changed
+states:
+  create:
+    transitions:
+      $success: execute
+  execute:
+    transitions:
+      restart: create
+      scope-changed:
+        state: execute
+        stop: true
+      neighbour-full: create
+      fidelity-changed:
+        state: execute
+        stop: true
+# raises neighbour-full when the peer hospital-2 of runner.yaml enters
+# its state full
+subscriptions:
+  - peer: hospital-2
+    when:
+      state: full
+    event: neighbour-full
+# the commands that a Manager may submit
+manager:
+  commands:
+    - create

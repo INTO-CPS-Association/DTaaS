@@ -1,4 +1,13 @@
+id: 'test-runner'
 port: 5002
-location: 'script'  # directory location of scripts
+# directory location of scripts
+location: 'script'
 commands:
   - create
+  - loop
+  - ignore-term
+  - echo-input
+  - fail
+  - busy
+# milliseconds from SIGTERM to SIGKILL on a stop
+stopGrace: 500

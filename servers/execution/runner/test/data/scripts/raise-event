@@ -1,0 +1,8 @@
+#!/bin/sh
+# Raises the event done and prints the status code of the reply, which
+# is 000 when the runner can not be reached. RUNNER_TOKEN is unset
+# without access control, and the runner then ignores the header.
+curl -sS -o /dev/null -w '%{http_code}' -X POST \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $RUNNER_TOKEN" -d '{"event": "done"}' \
+  "$RUNNER_URL/fsm/event"

@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import Keyv from 'keyv';
 import resolveFile from './util.js';
 
-export const PACKAGE_VERSION: string = '0.3.9';
 const DEFAULT_CONFIG_FILENAME = 'runner.yaml';
 
 export function createCommand(name: string): [Command, Keyv] {
@@ -17,7 +16,6 @@ export default async function CLI(
 ): Promise<Keyv> {
   program
     .description('Remote code execution for humans')
-    .version(PACKAGE_VERSION, '-v --version', 'package version')
     .option(
       '-c --config <string>',
       'runner config file specified in yaml format',
@@ -33,13 +31,10 @@ export default async function CLI(
   if (options.config !== undefined) {
     const configFile: string = options.config;
     const resolvedFilename: string = resolveFile(configFile.toString());
-    console.log(resolvedFilename);
     try {
       readFileSync(resolvedFilename, 'utf8');
     } catch (err) {
-      // eslint-disable-next-line no-console
-      // console.log(chalk.bold.redBright('Config file can not be read. Exiting'));
-      throw new Error('Invalid configuration');
+      throw new Error('Invalid configuration', { cause: err });
     }
     await CLIOptions.set('configFile', resolvedFilename);
   }

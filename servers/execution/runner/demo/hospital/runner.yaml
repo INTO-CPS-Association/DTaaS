@@ -1,0 +1,37 @@
+# The runner of the digital twin of hospital-1, for the bed-management
+# demo; see README.md. record.mjs writes runner.auth.yaml from it, with
+# the publicKey of hospital-2 and an auth section, so the peer's entry
+# stays last.
+id: 'hospital-1'
+attributes:
+  name: 'Hospital 1'
+  city: 'Aarhus'
+  latitude: 56.19
+  longitude: 10.17
+  wards: 2
+port: 5100
+location: 'scripts'
+commands:
+  - open
+  - full
+  - closed
+  - admit
+  - discharge
+stateMachine: 'hospital.fsm.yaml'
+database: 'run/hospital-1/hospital.db'
+# milliseconds from SIGTERM to SIGKILL on a stop
+stopGrace: 1000
+mqtt:
+  url: 'mqtt://127.0.0.1:18830'
+  topic: 'dtaas/hospital-1'
+  # the local aedes broker speaks MQTT 3.1.1 only
+  protocolVersion: 4
+notify:
+  url: 'http://127.0.0.1:18080/dt-events'
+# the peers that this digital twin is willing to interact with
+peers:
+  - id: 'hospital-2'
+    topic: 'dtaas/hospital-2'
+    url: 'http://localhost:5200'
+    attributes:
+      distance: 12.4

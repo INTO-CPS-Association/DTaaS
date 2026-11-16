@@ -1,0 +1,76 @@
+# The state machine of the digital twin of hospital-2. The hospital is
+# open for admissions, full, or closed; each state runs the script of
+# the same name in scripts/.
+events:
+  - full
+  - beds-free
+  - scope-changed
+  - fidelity-changed
+  - close
+  - reopen
+  - neighbour-full
+  - neighbour-down
+parameters:
+  # the shared-policy parameter: a patient goes to the requested ward
+  # only (single), or to any ward with a free bed (multi)
+  scope:
+    type: enum
+    values:
+      - single
+      - multi
+    default: single
+    controllable: true
+    event: scope-changed
+  # beds per ward, which the Manager may read but not change
+  capacity:
+    type: number
+    default: 1
+    controllable: false
+  # how often open samples the beds, from the cheapest to the most
+  # accurate (STATE-MACHINE.md, Pattern: Fidelity)
+  fidelity:
+    type: enum
+    values:
+      - low
+      - medium
+      - high
+    default: medium
+    controllable: true
+    event: fidelity-changed
+env:
+  HINT: '${DT_ID}/${DT_STATE}#${DT_ENTRY} scope=${DT_PARAM_SCOPE}'
+escalation:
+  onFailure: true
+  onNoTransition: true
+manager:
+  commands:
+    - admit
+    - discharge
+states:
+  open:
+    env:
+      POLL_MS: 500
+    transitions:
+      full: full
+      scope-changed:
+        state: open
+        stop: true
+      fidelity-changed:
+        state: open
+        stop: true
+      neighbour-full:
+        state: open
+        stop: true
+      neighbour-down:
+        state: open
+        stop: true
+      close:
+        state: closed
+        stop: true
+      $stopped: closed
+  full:
+    transitions:
+      beds-free: open
+  closed:
+    transitions:
+      reopen: open
