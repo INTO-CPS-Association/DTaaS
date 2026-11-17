@@ -21,7 +21,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.1] - 2026-11-09
 
-### Added
+### Added in 0.1.1
 
 - `./schema` checks that every encoding reads a signal some transport provides.
   An encoding reads its `target` on `measured` or on the `channel` it names, and
