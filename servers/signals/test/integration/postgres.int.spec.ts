@@ -40,12 +40,17 @@ function psql(container: string, sql: string, database = 'swim'): string {
   );
 }
 
+// The image first starts a temporary server on the socket only, runs its
+// init scripts and stops it before the real server starts. Asking over TCP
+// waits for the real server, since the temporary one listens on no port.
 async function waitUntilReady(container: string): Promise<void> {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const ready = spawnSync('docker', [
       'exec',
       container,
       'pg_isready',
+      '-h',
+      '127.0.0.1',
       '-U',
       'postgres',
     ]);
