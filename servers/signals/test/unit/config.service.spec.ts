@@ -86,8 +86,12 @@ describe('Config', () => {
     expect(new Config().get('port')).toBe(4500);
   });
 
-  it('accepts an empty YAML file and refuses a list', async () => {
+  it('accepts an empty YAML file and refuses a list or two documents', async () => {
     expect(new Config().loadConfig(await yamlFile(''))).toBeUndefined();
+    const commentsOnly = await yamlFile('# nothing set\n');
+    expect(new Config().loadConfig(commentsOnly)).toBeUndefined();
+    const twoDocs = await yamlFile('port: 4100\n---\nport: 4200\n');
+    expect(() => new Config().loadConfig(twoDocs)).toThrow(/one YAML/);
     const list = await yamlFile('- a\n- b\n');
     expect(() => new Config().loadConfig(list)).toThrow(/mapping/);
   });

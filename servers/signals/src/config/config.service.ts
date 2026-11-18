@@ -24,7 +24,13 @@ function selectConfigPath(configPath?: string): string | undefined {
 }
 
 function readYaml(configPath: string): RawValues {
-  const loaded = yaml.load(readFileSync(configPath, 'utf8'));
+  // loadAll returns no document for an empty file, where load throws
+  // since js-yaml 5. An empty file means "use the defaults".
+  const documents = yaml.loadAll(readFileSync(configPath, 'utf8'));
+  if (documents.length > 1) {
+    throw new TypeError(`${configPath} must hold one YAML document`);
+  }
+  const loaded = documents[0];
   if (loaded === undefined || loaded === null) return {};
   if (typeof loaded !== 'object' || Array.isArray(loaded)) {
     throw new TypeError(`${configPath} must hold a mapping of keys`);

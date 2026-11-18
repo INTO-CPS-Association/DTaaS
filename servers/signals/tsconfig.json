@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
@@ -9,20 +8,21 @@
     "forceConsistentCasingInFileNames": false,
     "incremental": true,
     "lib": [
-      "ES2024"
+      "ES2025"
     ],
     "module": "ES2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "outDir": "dist",
+    "paths": { "src/*": ["./src/*"] },
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2024",
+    "target": "ES2025",
     "types": ["node", "jest"],
     "typeRoots": [
       "node_modules/@types"
