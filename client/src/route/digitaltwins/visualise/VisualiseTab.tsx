@@ -38,9 +38,9 @@ function Drawing({ loaded }: { readonly loaded: Loaded }) {
   if (loaded.state === 'none') {
     return (
       <Alert severity="info">
-        This twin has no visualisation.json committed in GitLab yet. The
-        View tab and the signals gateway read the committed file, so commit
-        it to the configured branch to see the twin here.
+        This twin has no visualisation.json committed in GitLab yet. The View
+        tab and the signals gateway read the committed file, so commit it to the
+        configured branch to see the twin here.
       </Alert>
     );
   }
