@@ -27,11 +27,10 @@ describe('Digital Twins', () => {
 
     const mainTablist = tablists[0];
     const mainTabs = within(mainTablist).getAllByRole('tab');
-    // The three workspace tabs, then the Visualise tab of the common core.
-    expect(mainTabs.map((tab) => tab.textContent)).toEqual([
-      ...tabs.map((tab) => tab.label),
-      'Visualise',
-    ]);
+    // The workspace tabs only. The View tab is on /preview/digitaltwins.
+    expect(mainTabs.map((tab) => tab.textContent)).toEqual(
+      tabs.map((tab) => tab.label),
+    );
 
     const mainParagraph = screen.getByText(tabs[0].body, { normalizer });
     expect(mainParagraph).toBeInTheDocument();

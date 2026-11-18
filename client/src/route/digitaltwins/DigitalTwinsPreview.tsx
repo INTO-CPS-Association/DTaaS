@@ -12,41 +12,42 @@ import {
 import tabs from 'route/digitaltwins/DigitalTwinTabDataPreview';
 import PageShell from 'components/PageShell';
 import CreatePage from 'route/digitaltwins/create/CreatePage';
+import VisualiseTab from 'route/digitaltwins/visualise/VisualiseTab';
 
 interface DTTabProps {
   readonly newDigitalTwinName: string;
   readonly setNewDigitalTwinName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const createDTTab = ({
-  newDigitalTwinName,
-  setNewDigitalTwinName,
-}: DTTabProps): TabData[] =>
+// The tabs in the order they are shown. Analyze stays in the tab data for
+// the workspace page and is not part of this page.
+const shownTabs = ['Execute', 'View', 'Manage', 'Create'];
+
+function tabContent(label: string, props: DTTabProps): React.ReactNode {
+  if (label === 'Create') {
+    return (
+      <CreatePage
+        newDigitalTwinName={props.newDigitalTwinName}
+        setNewDigitalTwinName={props.setNewDigitalTwinName}
+      />
+    );
+  }
+  if (label === 'View') return <VisualiseTab />;
+  return <AssetBoard tab={label} />;
+}
+
+export const createDTTab = (props: DTTabProps): TabData[] =>
   tabs
-    .filter(
-      (tab) =>
-        tab.label === 'Manage' ||
-        tab.label === 'Execute' ||
-        tab.label === 'Create',
-    )
+    .filter((tab) => shownTabs.includes(tab.label))
     .map((tab) => ({
       label: tab.label,
       loggerContext: { dt: { tab: tab.label.toLowerCase() } },
-      body:
-        tab.label === 'Create' ? (
-          <>
-            <Typography variant="body1">{tab.body}</Typography>
-            <CreatePage
-              newDigitalTwinName={newDigitalTwinName}
-              setNewDigitalTwinName={setNewDigitalTwinName}
-            />
-          </>
-        ) : (
-          <>
-            <Typography variant="body1">{tab.body}</Typography>
-            <AssetBoard tab={tab.label} />
-          </>
-        ),
+      body: (
+        <>
+          <Typography variant="body1">{tab.body}</Typography>
+          {tabContent(tab.label, props)}
+        </>
+      ),
     }));
 
 export const DTContent = () => {

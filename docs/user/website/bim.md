@@ -212,9 +212,9 @@ Without that address the page still opens every model, with no readings. That is
 also the behaviour for a model that declares no sensors. Most architectural
 models declare none.
 
-A building model can also be drawn on the Visualise tab of the Digital Twins
-page, from the `visualisation.json` of a twin, with the `aec` substrate of the
-bim extension.
+A building model can also be drawn on the View tab of the Digital Twins
+preview page (`/preview/digitaltwins`), from the `visualisation.json` of a
+twin, with the `aec` substrate of the bim extension.
 
 ## What Is Not Built Yet
 

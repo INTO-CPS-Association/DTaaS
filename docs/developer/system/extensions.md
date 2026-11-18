@@ -91,8 +91,8 @@ store read by time, holds one playhead for every page, evaluates the encodings
 of a `visualisation.json`, reads and saves that file in the twin's folder and
 draws the standard `image` and `embed` substrates. A domain brings its own
 substrates: the bim extension in `client/extensions/bim/` contributes `aec`, the
-building model in 3D, so the client core holds no building code. The Visualise
-tab of the Digital Twins page draws a twin from the `visualisation.json`
+building model in 3D, so the client core holds no building code. The View
+tab of the Digital Twins preview page draws a twin from the `visualisation.json`
 committed in its folder.
 
 The core reads every signal from the DTaaS signals gateway, at the address in

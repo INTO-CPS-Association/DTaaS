@@ -1,5 +1,5 @@
 /**
- * The Visualise tab of the Digital Twins page: a twin drawn from the
+ * The View tab of the Digital Twins preview page: a twin drawn from the
  * `visualisation.json` committed in its folder, coloured by its live signals,
  * with one timeline for every pane. The committed copy is the one the signals
  * gateway authorises against, so both read the same declaration.
@@ -39,7 +39,7 @@ function Drawing({ loaded }: { readonly loaded: Loaded }) {
     return (
       <Alert severity="info">
         This twin has no visualisation.json committed in GitLab yet. The
-        Visualise tab and the signals gateway read the committed file, so commit
+        View tab and the signals gateway read the committed file, so commit
         it to the configured branch to see the twin here.
       </Alert>
     );
