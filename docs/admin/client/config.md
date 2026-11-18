@@ -116,3 +116,19 @@ A `visualisation.json` names the sources of its images and embedded pages. A
 always allowed. An `http` or `https` source on another origin is shown only when
 its origin is listed in `REACT_APP_VIZ_ALLOWED_ORIGINS`. The key is empty by
 default, so another site's page is not framed unless an administrator allows it.
+
+## Platform Services on the Workbench
+
+The Workbench page lists, under Platform Services, the services installed
+next to DTaaS with the `dtaas-services` command, such as Grafana, InfluxDB,
+RabbitMQ and ThingsBoard. The key is optional. Without it the section is not
+shown.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_PLATFORM_SERVICES` | The services to list, as `<name>=<url>` entries separated by commas, for example `'grafana=https://foo.com:8088,rabbitmq=https://foo.com:8084'` |
+
+Each entry becomes a card that opens its address in a new tab. The names
+`grafana`, `influxdb`, `rabbitmq` and `thingsboard` get their own title,
+description and icon. Any other name is shown as written. An entry without a
+name, or with an address that is not `http` or `https`, is skipped.

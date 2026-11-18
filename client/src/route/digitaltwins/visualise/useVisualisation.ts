@@ -1,5 +1,5 @@
 /**
- * The visualisation of the digital twin chosen on the Visualise tab.
+ * The visualisation of the digital twin chosen on the View tab.
  */
 
 import { useEffect, useState } from 'react';

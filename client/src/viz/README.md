@@ -30,7 +30,7 @@ architecture in `dtaas-sdk`. The contract it implements,
 | `vizService.ts`       | 3 and 5 | The `viz` service: the file and what extensions contribute                              |
 | `createCore.ts`       |         | The core of a deployment, from `env.js`                                                 |
 | `substrates/`         | 3       | The standard `image` and `embed` substrates                                             |
-| `components/`         | 5       | The viewer and the timeline the Visualise tab draws                                     |
+| `components/`         | 5       | The viewer and the timeline the View tab draws                                          |
 
 ## The Standard Substrates
 
@@ -58,7 +58,7 @@ A substrate of a domain comes from its extension. `aec`, the building model in
 3D, is contributed by the bim extension in `client/extensions/bim/` and loaded
 only when a visualisation draws a building.
 
-## The Visualise Tab
+## The View Tab
 
 `route/digitaltwins/visualise/` lists the twins in the library, reads the
 `visualisation.json` of the one chosen as committed in GitLab, the copy the
@@ -95,7 +95,7 @@ signal and channel: what a range read and, while a path is subscribed, the time
 from its subscription on. `historyLoader.ts` asks `POST /signals/range` only for
 the gaps that no running read asks for already, at most seven days back, so each
 instant is requested once. It keeps whether the gateway cut an answer short.
-The viewer of the Visualise tab reads the hour before the playhead, so on open
+The viewer of the View tab reads the hour before the playhead, so on open
 the gateway is asked once for the hour before the page opened. A
 scrub back in time asks only for the stretch the store lacks. When an answer
 was cut short, the timeline says that older readings were left out.

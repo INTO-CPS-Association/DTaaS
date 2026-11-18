@@ -2,16 +2,20 @@ import { ITabs } from 'route/IData';
 
 const tabs: ITabs[] = [
   {
-    label: 'Create',
-    body: `Create and save new digital twins. The new digital twins are saved in the linked gitlab repository. Remember to add valid '.gitlab-ci.yml' configuration as it is used for execution of digital twin.`,
+    label: 'Execute',
+    body: 'Execute existing digital twins using CI/CD pipelines of the linked gitlab repository. Availability of gitlab runners is required for execution of digital twins.',
+  },
+  {
+    label: 'View',
+    body: 'See a digital twin drawn from the visualisation.json in its folder, coloured by the signals it reports, and move back in time.',
   },
   {
     label: 'Manage',
     body: `Explore, edit and delete existing digital twins. The changes get saved in the linked gitlab repository.`,
   },
   {
-    label: 'Execute',
-    body: 'Execute existing digital twins using CI/CD pipelines of the linked gitlab repository. Availability of gitlab runners is required for execution of digital twins.',
+    label: 'Create',
+    body: `Create and save new digital twins. The new digital twins are saved in the linked gitlab repository. Remember to add valid '.gitlab-ci.yml' configuration as it is used for execution of digital twin.`,
   },
   {
     label: 'Analyze',

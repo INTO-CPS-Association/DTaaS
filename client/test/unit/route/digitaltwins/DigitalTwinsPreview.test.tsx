@@ -1,4 +1,6 @@
-import DigitalTwinsPreview from 'route/digitaltwins/DigitalTwinsPreview';
+import DigitalTwinsPreview, {
+  createDTTab,
+} from 'route/digitaltwins/DigitalTwinsPreview';
 import store from 'store/store';
 import { act, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -61,5 +63,18 @@ describe('Digital Twins', () => {
         name: 'Digital Twins Page',
       }).length,
     ).toBeGreaterThan(0);
+  });
+
+  it('shows the tabs in the order Execute, View, Manage and Create', () => {
+    const shown = createDTTab({
+      newDigitalTwinName: '',
+      setNewDigitalTwinName: jest.fn(),
+    });
+    expect(shown.map((tab) => tab.label)).toEqual([
+      'Execute',
+      'View',
+      'Manage',
+      'Create',
+    ]);
   });
 });
