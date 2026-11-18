@@ -32,7 +32,7 @@ export default [
       parserOptions: {
         project: './tsconfig.json',
         requireConfigFile: false,
-        ecmaVersion: 2022,
+        ecmaVersion: 2024,
         ecmaFeatures: { modules: true },
       },
     },
