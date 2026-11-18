@@ -3,7 +3,7 @@
 The common visualisation core of the client: the layers every domain shares,
 built once, which extensions consume through the SDK's `signals` and `viz`
 services and never re-implement. It follows layers 1 to 5 of the modular
-architecture in `dtaas-sdk`. The contract it implements,
+architecture in the `dtaas-extensions` repository. The contract it implements,
 `@into-cps-association/dtaas-sdk`, lives in `client/sdk/`.
 
 ## What Each File Does
@@ -137,4 +137,4 @@ type is kept on the `simulated` channel.
 `test/unit/viz/resolve.test.ts` replays a recorded stream through a
 visualisation and checks the properties at each instant of a scrub, with no
 substrate mounted. That is the exit test of the first phase of the
-[modular architecture](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md).
+[modular architecture](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/dtaas-client-modular-architecture.md).

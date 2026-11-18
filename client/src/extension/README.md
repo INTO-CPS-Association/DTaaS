@@ -20,14 +20,15 @@ from npm, such as `bim-kit`, which imports the published name, resolves to
 the local code. The client builds and tests it from source with its own
 toolchain. `yarn test:sdk` runs its tests.
 
-The plan is to keep the name `dtaas-sdk`, to move the logic part of the
-contract into the client core and to turn the `dtaas-sdk` repository into a
-tool that generates the skeleton of a new extension for extension
-developers. The first part is what `client/sdk/` does. How an external
-extension gets the contract types from now on is an open decision: either a
-types package published from `client/sdk/`, or the types carried by the
-skeleton generator. Until it is decided, nothing here is published and the
-npm release `0.1.0` stays the version external extensions build against.
+The plan is to keep the package name `dtaas-sdk`, to move the logic part
+of the contract into the client core and to keep the example extensions
+and the `hello-kit` template of a new extension in the `dtaas-extensions`
+repository, which was called `dtaas-sdk` before. The first part is what
+`client/sdk/` does. How an external extension gets the contract types from
+now on is an open decision: either a types package published from
+`client/sdk/`, or the types carried by the `hello-kit` template. Until it
+is decided, nothing here is published and the npm release `0.1.0` stays
+the version external extensions build against.
 
 ## Adding an Extension
 

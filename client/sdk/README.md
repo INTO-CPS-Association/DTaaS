@@ -3,8 +3,9 @@
 `@into-cps-association/dtaas-sdk` is the contract between this client and
 its domain extensions: the extension and host-service types, the
 `visualisation.json` schemas, the validation helpers, a test harness and a
-shareable ESLint config. Its code was copied from the `dtaas-sdk`
-repository at the commit published as version `0.1.0`.
+shareable ESLint config. Its code was copied from the `dtaas-extensions`
+repository, then named `dtaas-sdk`, at the commit published as version
+`0.1.0`.
 
 | Import                                    | What It Gives                                                                     |
 | :---------------------------------------- | :-------------------------------------------------------------------------------- |
