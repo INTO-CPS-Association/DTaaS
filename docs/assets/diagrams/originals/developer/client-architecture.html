@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DTaaS web client architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1040px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · DTaaS developer docs</p>
+    <h1>DTaaS web client architecture</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1040 876" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="client-architecture-title client-architecture-desc">
+        <title id="client-architecture-title">DTaaS web client architecture</title>
+        <desc id="client-architecture-desc">Internal architecture of the React web client: pages are guarded by the OIDC auth provider, keep state in Redux, and call the dt-automation package, which drives GitLab pipelines and stores execution history in IndexedDB; workspace tools open in iframes and logs go to the logger service.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <rect x="72" y="188" width="848" height="464" rx="8" fill="#fafbfb" stroke="#dbe0e5" stroke-width="1"/>
+        <rect x="88" y="180" width="168" height="16" rx="2" fill="#ffffff"/>
+        <text x="172" y="192" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">BROWSER · CLIENT/SRC</text>
+        <path d="M 236,220 L 236,120" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <path d="M 96,276 L 64,276 Q 56,276 56,284 L 56,732 Q 56,740 64,740 L 96,740" fill="none" stroke="#0b5fa5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-link)"/>
+        <path d="M 616,244 L 376,244" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 756,220 L 756,140" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <path d="M 820,300 L 820,380" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 236,300 L 236,380" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 376,276 L 488,276 Q 496,276 496,284 L 496,396 Q 496,404 504,404 L 616,404" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 616,436 L 376,436" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <path d="M 896,404 L 968,404 Q 976,404 976,396 L 976,98 Q 976,90 968,90 L 896,90" fill="none" stroke="#00807a" stroke-width="1.8" marker-end="url(#arrow-accent)"/>
+        <path d="M 756,460 L 756,540" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <rect x="244" y="145" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="278" y="158" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">IFRAMES</text>
+        <rect x="64" y="491" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="94" y="504" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">BEACON</text>
+        <rect x="466" y="220" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="496" y="233" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GUARDS</text>
+        <rect x="764" y="161" width="100" height="18" rx="2" fill="#ffffff"/>
+        <text x="814" y="174" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">OIDC · PKCE</text>
+        <rect x="828" y="331" width="52" height="18" rx="2" fill="#ffffff"/>
+        <text x="854" y="344" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">TOKEN</text>
+        <rect x="244" y="331" width="76" height="18" rx="2" fill="#ffffff"/>
+        <text x="282" y="344" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DISPATCH</text>
+        <rect x="504" y="331" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="538" y="344" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ACTIONS</text>
+        <rect x="410" y="442" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="440" y="455" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">SLICES</text>
+        <rect x="884" y="171" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="926" y="184" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PIPELINES</text>
+        <rect x="764" y="491" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="798" y="504" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HISTORY</text>
+        <rect x="96" y="40" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="96" y="40" width="280" height="80" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="104" y="48" width="32" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="120" y="60" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="236" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">User workspace</text>
+        <text x="236" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">/&lt;user&gt;/lab · tree</text>
+        <rect x="616" y="40" width="280" height="100" rx="6" fill="#ffffff"/>
+        <rect x="616" y="40" width="280" height="100" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="624" y="48" width="32" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="640" y="60" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="756" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">GitLab</text>
+        <text x="756" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">OAuth2 authority</text>
+        <text x="756" y="125" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">REST API v4 · CI</text>
+        <rect x="96" y="220" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="96" y="220" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="104" y="228" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="116" y="240" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+        <text x="236" y="265" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Routes and pages</text>
+        <text x="236" y="285" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">route/* · page/*</text>
+        <rect x="616" y="220" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="616" y="220" width="280" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="624" y="228" width="40" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="644" y="240" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">AUTH</text>
+        <text x="756" y="265" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Auth provider</text>
+        <text x="756" y="285" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">react-oidc-context</text>
+        <rect x="96" y="380" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="96" y="380" width="280" height="80" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="104" y="388" width="48" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="128" y="400" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+        <text x="236" y="425" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Redux store</text>
+        <text x="236" y="445" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">store/ · Redux Toolkit</text>
+        <rect x="616" y="380" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="616" y="380" width="280" height="80" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <rect x="624" y="388" width="32" height="16" rx="2" fill="none" stroke="#00807a" stroke-width="1" opacity="0.6"/>
+        <text x="640" y="400" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">NPM</text>
+        <text x="756" y="425" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">dt-automation</text>
+        <text x="756" y="445" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">DT lifecycle · gitbeaker</text>
+        <rect x="616" y="540" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="616" y="540" width="280" height="80" rx="6" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <rect x="624" y="548" width="24" height="16" rx="2" fill="none" stroke="#47536b" stroke-width="1" opacity="0.6"/>
+        <text x="636" y="560" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">DB</text>
+        <text x="756" y="585" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">IndexedDB</text>
+        <text x="756" y="605" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">executionHistory · logs</text>
+        <rect x="96" y="700" width="280" height="80" rx="6" fill="#ffffff"/>
+        <rect x="96" y="700" width="280" height="80" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="104" y="708" width="32" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="120" y="720" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="236" y="745" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Logger service</text>
+        <text x="236" y="765" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">LOGGER_URL · POST /logger</text>
+        <line x1="40" y1="804" x2="1000" y2="804" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="824" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="840" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">DT lifecycle</text>
+        <rect x="184" y="840" width="20" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="212" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Module</text>
+        <rect x="284" y="840" width="20" height="14" rx="2" fill="#f2f4f6" stroke="#47536b" stroke-width="1.2"/>
+        <text x="312" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">State</text>
+        <rect x="380" y="840" width="20" height="14" rx="2" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="408" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">External</text>
+        <line x1="496" y1="848" x2="528" y2="848" stroke="#00807a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <text x="538" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">DT runs</text>
+        <line x1="618" y1="848" x2="650" y2="848" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <text x="660" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">HTTP</text>
+        <line x1="720" y1="848" x2="752" y2="848" stroke="#47536b" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text x="762" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">In-process</text>
+        <line x1="866" y1="848" x2="898" y2="848" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <text x="908" y="852" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Optional</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
