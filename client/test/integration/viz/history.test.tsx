@@ -8,7 +8,7 @@ import TwinViewer from 'viz/components/TwinViewer';
 import createGatewayHistory from 'viz/gatewayHistory';
 import createSignals from 'viz/signals';
 
-// The Visualise tab's viewer, the signals core and the gateway history read
+// The View tab's viewer, the signals core and the gateway history read
 // together, with a fake gateway answering POST /signals/range.
 const HOUR = 3_600_000;
 const opened = 100 * HOUR;
@@ -63,7 +63,7 @@ function fakeGateway() {
   });
 }
 
-describe('past readings on the Visualise tab', () => {
+describe('past readings on the View tab', () => {
   it('reads the hour before the page opened once and shows it when scrubbed back', async () => {
     const fetch = fakeGateway();
     const history = createGatewayHistory({

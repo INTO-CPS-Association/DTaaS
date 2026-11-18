@@ -2,7 +2,7 @@
  * The visualisation.json of a twin as committed in GitLab.
  *
  * The signals gateway decides what a user may read from the committed copy
- * on the configured branch, and never from the workspace. The Visualise tab
+ * on the configured branch, and never from the workspace. The View tab
  * reads the same copy, so the signals it asks for are the ones the gateway
  * serves, and an edit that is not committed yet is not drawn.
  */
