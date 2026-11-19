@@ -119,12 +119,35 @@ def test_create_tenant_setup_success(mocker, monkeypatch):
         return_value=(True, ""),
     )
     mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.apply_device_connectivity",
+        return_value=(True, "ports set"),
+    )
+    mocker.patch(
         "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
         return_value=(True, ""),
     )
     session = Mock()
     ok, _ = th._create_tenant_setup("url", session)
     assert ok is True
+
+
+def test_create_tenant_setup_stops_when_connectivity_fails(mocker):
+    """Test tenant setup stops before the tenant when the ports cannot be set"""
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup._authenticate_as_sysadmin",
+        return_value=(True, ""),
+    )
+    mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.apply_device_connectivity",
+        return_value=(False, "ports missing"),
+    )
+    create = mocker.patch(
+        "dtaas_services.pkg.services.thingsboard.setup.create_tenant_and_admin",
+    )
+    ok, err = th._create_tenant_setup("url", Mock())
+    assert ok is False
+    assert err == "ports missing"
+    create.assert_not_called()
 
 
 def test_create_tenant_setup_sysadmin_fails(mocker):

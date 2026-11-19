@@ -38,7 +38,7 @@ The example publishes the port on the loopback interface only. Put the
 service behind Traefik before opening it to other hosts.
 
 The secret files are mounted under `/run/secrets/`. Give them mode 600 and
-the owner uid 1000. The image sets `SIGNALS_HOSTNAME=0.0.0.0`, and a
+the owner uid 1000. The image sets `SIGNALS_HOSTNAME=0.0.0.0`. A
 `SIGNALS_*` variable always overrides the same key in `signals.yaml`. A
 `hostname` in the mounted file is therefore ignored inside the container.
 

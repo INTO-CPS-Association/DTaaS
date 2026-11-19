@@ -1,54 +1,17 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { GitLabError } from 'src/auth/gitlab.client';
-import GitLabTwinPolicy from 'src/authz/gitlab-twin.policy';
-import TwinReader from 'src/authz/twin-reader';
-import ownersOf from 'test/helpers/owners';
-import testConfig from 'test/helpers/config';
 import FakeGitLabClient from 'test/helpers/fake-gitlab-client';
+import {
+  ALICE,
+  BRANCH,
+  PROJECT,
+  PROJECTS,
+  TREE,
+  TWINS,
+  gitlabFor,
+  policyWith,
+} from 'test/helpers/gitlab-twin';
 import { PUMP, visualisationOf } from 'test/helpers/twins';
-
-const ALICE = { id: '7', username: 'alice', token: 'token-a' };
-const PROJECT = { id: 10, path: 'alice', path_with_namespace: 'DTaaS/alice' };
-
-const TREE = [
-  { name: 'pump', type: 'tree' },
-  { name: 'README.md', type: 'blob' },
-  { name: 'broken', type: 'tree' },
-];
-const PROJECTS =
-  /^api\/v4\/groups\/DTaaS\/projects\?min_access_level=20&simple=true$/;
-const BRANCH = /^api\/v4\/projects\/10\/repository\/branches\/master$/;
-const TWINS =
-  /^api\/v4\/projects\/10\/repository\/tree\?path=digital_twins&ref=/;
-
-function gitlabFor(state: { sha: string; projects: unknown[] }) {
-  return new FakeGitLabClient([
-    [PROJECTS, () => state.projects],
-    [BRANCH, () => ({ commit: { id: state.sha } })],
-    [TWINS, () => TREE],
-    [
-      /files\/digital_twins%2Fpump%2Fvisualisation\.json\/raw\?ref=/,
-      () => PUMP,
-    ],
-    [
-      /files\/digital_twins%2Fbroken%2Fvisualisation\.json\/raw/,
-      () => '{not json',
-    ],
-  ]);
-}
-
-function policyWith(
-  gitlab: FakeGitLabClient,
-  owners?: Record<string, string[]>,
-) {
-  const config = testConfig();
-  return new GitLabTwinPolicy(
-    config,
-    gitlab.asClient(),
-    new TwinReader(config, gitlab.asClient()),
-    ownersOf(owners),
-  );
-}
 
 // Alice can read her own project and Bob's, and both declare one topic.
 function sharedTopicGitLab() {
@@ -141,60 +104,6 @@ describe('GitLabTwinPolicy', () => {
     expect(gitlab.callsTo(/min_access_level=20/)).toBe(0);
   });
 
-  it('rebuilds the index only when the branch moves', async () => {
-    jest.useFakeTimers({ now: 0 });
-    const state = { sha: 's1', projects: [PROJECT] };
-    const gitlab = gitlabFor(state);
-    const policy = policyWith(gitlab);
-    await policy.listResources(ALICE, 'stream');
-    jest.setSystemTime(6000);
-    await policy.listResources(ALICE, 'stream');
-    expect(gitlab.callsTo(/repository\/tree/)).toBe(1);
-    expect(gitlab.callsTo(/repository\/branches/)).toBe(2);
-    state.sha = 's2';
-    jest.setSystemTime(12000);
-    await policy.listResources(ALICE, 'stream');
-    expect(gitlab.callsTo(/repository\/tree/)).toBe(2);
-  });
-
-  it('asks GitLab for the branch once within its short cache', async () => {
-    jest.useFakeTimers({ now: 0 });
-    const gitlab = gitlabFor({ sha: 's1', projects: [PROJECT] });
-    const policy = policyWith(gitlab);
-    await policy.listResources(ALICE, 'stream');
-    jest.setSystemTime(4000);
-    await policy.listResources(ALICE, 'stream');
-    expect(gitlab.callsTo(/repository\/branches/)).toBe(1);
-    // Another token is another question to GitLab, never a shared answer.
-    await policy.listResources({ ...ALICE, token: 'token-b' }, 'stream');
-    expect(gitlab.callsTo(/repository\/branches/)).toBe(2);
-  });
-
-  it('drops a removed project within the project cache, whatever the branch cache holds', async () => {
-    jest.useFakeTimers({ now: 0 });
-    const state = { sha: 's1', projects: [PROJECT] as unknown[] };
-    const gitlab = gitlabFor(state);
-    const config = testConfig({ 'branch-cache-ttl': 10 * 60_000 });
-    const policy = new GitLabTwinPolicy(
-      config,
-      gitlab.asClient(),
-      new TwinReader(config, gitlab.asClient()),
-      ownersOf(),
-    );
-    expect(await policy.listResources(ALICE, 'stream')).not.toEqual([]);
-    state.projects = [];
-    jest.setSystemTime(60_001);
-    expect(await policy.listResources(ALICE, 'stream')).toEqual([]);
-  });
-
-  it('caches the project list per user', async () => {
-    const gitlab = gitlabFor({ sha: 's1', projects: [PROJECT] });
-    const policy = policyWith(gitlab);
-    await policy.listResources(ALICE, 'stream');
-    await policy.listResources(ALICE, 'range');
-    expect(gitlab.callsTo(/groups\/DTaaS\/projects/)).toBe(1);
-  });
-
   it('has no twins for a project without the branch or the folder', async () => {
     const gitlab = new FakeGitLabClient([
       [/groups\/DTaaS\/projects/, () => [PROJECT, { ...PROJECT, id: 11 }]],
@@ -239,24 +148,5 @@ describe('GitLabTwinPolicy', () => {
       target: expect.objectContaining({ owner: 'alice' }),
     });
     expect(ofCarol).toEqual({ allowed: false });
-  });
-
-  it('reads the twins again once their index has expired', async () => {
-    jest.useFakeTimers({ now: 0 });
-    const gitlab = gitlabFor({ sha: 's1', projects: [PROJECT] });
-    const config = testConfig({
-      'twin-index-cache-ttl': 1000,
-      'projects-cache-ttl': 1000,
-    });
-    const policy = new GitLabTwinPolicy(
-      config,
-      gitlab.asClient(),
-      new TwinReader(config, gitlab.asClient()),
-      ownersOf(),
-    );
-    await policy.listResources(ALICE, 'stream');
-    jest.setSystemTime(2000);
-    await policy.listResources(ALICE, 'stream');
-    expect(gitlab.callsTo(/repository\/tree/)).toBe(2);
   });
 });

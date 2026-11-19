@@ -133,6 +133,11 @@ For non-Docker local development, use the logger's direct port:
 LOGGER_URL: "http://localhost:4003/logger";
 ```
 
+An empty `LOGGER_URL` turns remote logging off, and the website then
+hides the option. On a server installed with the DTaaS CLI, set it
+in `dtaas.toml` instead of editing `config/client.js`: see
+[Remote logging](../../../admin/cli-config.md#remote-logging).
+
 The API is specified in
 [`servers/logger/API.md`](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/logger/API.md).
 Installing and configuring the logger is covered in the
