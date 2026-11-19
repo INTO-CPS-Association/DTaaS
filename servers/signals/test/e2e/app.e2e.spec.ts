@@ -127,7 +127,7 @@ describe('Signals gateway e2e', () => {
         403,
       );
       expect((await post('range', token, range(other))).status).toBe(403);
-      expect(postgres.queries.length).toBe(before + 1);
+      expect(postgres.queries).toHaveLength(before + 1);
     },
   );
 
