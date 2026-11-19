@@ -232,6 +232,24 @@ Failures are reported as text on stderr, so a script reads stdout only.
    dtaas-services user add -s rabbitmq
    ```
 
+### Signals Gateway Account
+
+The signals gateway reads live samples over MQTT with the account
+`dtaas_signals`. Create it with the projects the gateway serves, which are the
+first level of the MQTT topics:
+
+```bash
+dtaas-services user add-signals -p SWiM -p Soil
+```
+
+The account may subscribe to every topic of these projects and publish only to
+their command topics, `<project>/<six levels>/cmd/<command>`, in the virtual
+host `/`. Its queue permissions cover only the session queues of client IDs
+that start with `dtaas_signals_`. A random password is written to
+`secrets/signals/rabbitmq_dtaas_signals_password` with mode 600 and reaches
+`rabbitmqctl` through standard input. Running the command again keeps the
+password and replaces the list of projects.
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard
