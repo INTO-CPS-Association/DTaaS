@@ -231,12 +231,7 @@ describe('mountPath', () => {
   });
 
   it('collects the tabs and the library previews of every extension', () => {
-    const tab = {
-      id: 'pid',
-      label: 'P&ID',
-      applies: () => true,
-      element: page,
-    };
+    const tab = { id: 'pid', label: 'PID', applies: () => true, element: page };
     const preview = { id: 'inp', extensions: ['.inp'], element: page };
     const pump = kit('pump', {
       digitalTwinTabs: [tab],
