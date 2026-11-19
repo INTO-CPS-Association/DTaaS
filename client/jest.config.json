@@ -12,7 +12,14 @@
           "allowJs": true,
           "noUnusedLocals": false,
           "types": ["jest", "node", "react"],
-          "esModuleInterop": true
+          "esModuleInterop": true,
+          "baseUrl": ".",
+          "paths": {
+            "*": ["./src/*"],
+            "test/*": ["./test/*"],
+            "@into-cps-association/dtaas-sdk": ["sdk/src/index.ts"],
+            "@into-cps-association/dtaas-sdk/*": ["sdk/src/*/index.ts"]
+          }
         }
       }
     ]
@@ -45,7 +52,9 @@
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts",
-    "^@into-cps-association/bim-kit/react$": "<rootDir>/test/__mocks__/bimViewerMock.tsx"
+    "^@into-cps-association/bim-kit/react$": "<rootDir>/test/__mocks__/bimViewerMock.tsx",
+    "^@into-cps-association/dtaas-sdk$": "<rootDir>/sdk/src/index.ts",
+    "^@into-cps-association/dtaas-sdk/(schema|testing|eslint)$": "<rootDir>/sdk/src/$1/index.ts"
   },
   "maxWorkers": 3,
   "setupFiles": ["<rootDir>/test/setupTests.ts"]

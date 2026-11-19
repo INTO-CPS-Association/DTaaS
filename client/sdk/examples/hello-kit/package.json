@@ -1,0 +1,19 @@
+{
+  "name": "@into-cps-association/hello-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal DTaaS domain extension: the template layout for a kit (architecture §7.2).",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/core/index.js",
+    "./react": "./dist/react/Reading.js",
+    "./dtaas": "./dist/dtaas/index.js"
+  },
+  "peerDependencies": {
+    "@into-cps-association/dtaas-sdk": "^0.1.0",
+    "react": ">=19",
+    "zod": "^4.0.0"
+  }
+}

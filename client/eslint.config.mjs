@@ -185,6 +185,21 @@ export default [
     },
   },
   {
+    // The contract package uses the client's toolchain and test libraries,
+    // so its imports are checked against both package.json files.
+    files: ['sdk/**'],
+
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: true,
+          packageDir: [dirname, path.join(dirname, 'sdk')],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.slice.ts'],
 
     rules: {

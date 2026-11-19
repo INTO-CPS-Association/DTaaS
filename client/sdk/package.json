@@ -1,0 +1,39 @@
+{
+  "name": "@into-cps-association/dtaas-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contract for DTaaS web client extensions: extension and host-service types, visualisation schemas, validation helpers, a test harness and a shareable ESLint config.",
+  "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "sideEffects": false,
+  "// exports": "The client builds and tests this package from its TypeScript source, so the exports name the source files and there is no build step.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./testing": "./src/testing/index.ts",
+    "./eslint": "./src/eslint/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "cd .. && yarn test:sdk"
+  },
+  "peerDependencies": {
+    "@testing-library/react": ">=16",
+    "eslint": ">=9",
+    "react": ">=19",
+    "react-router-dom": ">=7",
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@testing-library/react": {
+      "optional": true
+    },
+    "eslint": {
+      "optional": true
+    },
+    "react-router-dom": {
+      "optional": true
+    }
+  }
+}

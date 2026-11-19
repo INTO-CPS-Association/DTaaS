@@ -41,6 +41,7 @@
     "test:e2e": "yarn config:test && yarn build && playwright test -c ./playwright.config.ts",
     "test:coverage:int-unit": "npx istanbul-merge --out coverage/all/coverage.json coverage/unit/coverage-final.json coverage/int/coverage-final.json && npx nyc report --reporter=lcov --reporter=text --reporter=json -t coverage/all --report-dir coverage/all",
     "test:int": "jest -c ./jest.config.json --coverage --coverageDirectory=coverage/int ../test/integration --setupFilesAfterEnv ./test/integration/jest.setup.ts",
+    "test:sdk": "jest -c ./sdk/jest.config.json --coverageDirectory=coverage/sdk tests/unit tests/integration --setupFilesAfterEnv ./tests/unit/jest.setup.ts",
     "test:unit": "jest -c ./jest.config.json --coverageDirectory=coverage/unit ../test/unit --setupFilesAfterEnv ./test/unit/jest.setup.ts"
   },
   "prettier": {
@@ -57,6 +58,7 @@
     "@fontsource/roboto": "^5.3.0",
     "@into-cps-association/bim-kit": "0.1.1",
     "@into-cps-association/dt-automation": "^0.2.0",
+    "@into-cps-association/dtaas-sdk": "link:./sdk",
     "@monaco-editor/react": "4.7.0",
     "@mui/icons-material": "9.4.0",
     "@mui/material": "9.4.0",
@@ -87,7 +89,7 @@
     "styled-components": "^6.5.3",
     "three": "0.186.1",
     "uuid": "^14.0.2",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@babel/core": "^8.0.6",
