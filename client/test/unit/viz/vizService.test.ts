@@ -64,14 +64,15 @@ describe('the visualisation service', () => {
   it('saves a checked file, and refuses a merge request for now', async () => {
     const { contents, store } = memoryContents();
     const viz = createVizService(contents, [], noHost);
+    const checked = asset as never;
 
-    await viz.save(dt, asset as never);
+    await viz.save(dt, checked);
 
     expect(
       JSON.parse(store.get('digital_twins/junction7/visualisation.json')!).name,
     ).toBe('junction-7');
     await expect(
-      viz.save(dt, asset as never, { viaMergeRequest: true }),
+      viz.save(dt, checked, { viaMergeRequest: true }),
     ).rejects.toThrow('merge request');
   });
 

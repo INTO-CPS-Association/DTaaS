@@ -60,10 +60,11 @@ beforeEach(() => {
     nextFrame = () => callback(0);
     return 0;
   };
-  globalThis.ResizeObserver = jest.fn(() => ({
+  const observer: unknown = jest.fn(() => ({
     observe: jest.fn(),
     disconnect: jest.fn(),
-  })) as unknown as typeof ResizeObserver;
+  }));
+  globalThis.ResizeObserver = observer as typeof ResizeObserver;
 });
 
 describe('the aec scene', () => {
