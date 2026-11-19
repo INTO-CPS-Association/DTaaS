@@ -5,6 +5,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     tsconfigPaths: true,
+    // The client and every extension must share one copy of the contract and
+    // of React. A second copy of the contract brings a second HostProvider
+    // context, which the client never fills, so an extension page throws.
+    dedupe: [
+      '@into-cps-association/dtaas-sdk',
+      'react',
+      'react-dom',
+      'react-router-dom',
+    ],
   },
   // The contract is linked from sdk/, and Vite does not pre-bundle a linked
   // package. bim-kit, which is pre-bundled, would then carry its own copy of

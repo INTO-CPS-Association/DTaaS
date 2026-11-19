@@ -110,7 +110,7 @@ in the [signals gateway plan](../plans/signals-gateway.md).
 The rest of the modular architecture described here is a proposal.
 
 The contract itself is the `client/sdk/` package described above. The
-[dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) repository
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions) repository
 holds the proposal it came from. In the proposal:
 
 - A domain extension is an npm package. It declares what it contributes,
@@ -143,8 +143,8 @@ page is in the client today, as an extension.
 
 The SDK repository documents the proposal in detail:
 
-- [Modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md)
-- [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/extension-authoring.md)
-- [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/host-integration.md)
-- [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/visualisation-schema.md)
-- [The bim-kit port](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/examples/bim/README.md)
+- [Modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/dtaas-client-modular-architecture.md)
+- [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/extension-authoring.md)
+- [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/host-integration.md)
+- [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/visualisation-schema.md)
+- [The bim example](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/examples/bim/README.md)

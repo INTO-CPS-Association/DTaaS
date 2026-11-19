@@ -65,7 +65,12 @@ function insertInto(series: Series, sample: SignalSample, capacity: number) {
 function latestAt(samples: readonly SignalSample[], t: number) {
   const latest = samples[firstAfter(samples, t) - 1];
   return (
-    latest && { value: latest.value, ts: latest.ts, quality: latest.quality }
+    latest && {
+      value: latest.value,
+      ts: latest.ts,
+      quality: latest.quality,
+      unit: latest.unit,
+    }
   );
 }
 

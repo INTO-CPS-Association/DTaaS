@@ -1,5 +1,5 @@
 import type { AnchorKindSpec } from '@into-cps-association/dtaas-sdk';
-import { parseNodeRef } from 'examples/hello-kit/src/core';
+import { parseNodeRef } from '../core';
 
 /** `hello-node` anchors name a node on a photograph: `node:<id>`. */
 const anchorKinds: AnchorKindSpec[] = [

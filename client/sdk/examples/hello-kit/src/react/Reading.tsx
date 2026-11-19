@@ -1,4 +1,4 @@
-import { formatReading } from 'examples/hello-kit/src/core';
+import { formatReading } from '../core';
 
 interface ReadingProps {
   readonly label: string;

@@ -6,14 +6,40 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "sideEffects": false,
-  "exports": {
-    ".": "./dist/core/index.js",
-    "./react": "./dist/react/Reading.js",
-    "./dtaas": "./dist/dtaas/index.js"
+  "dtaas": {
+    "id": "hello"
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "yarn typecheck && jest"
   },
   "peerDependencies": {
-    "@into-cps-association/dtaas-sdk": "^0.1.0",
+    "@into-cps-association/dtaas-sdk": "^0.1.1",
     "react": ">=19",
     "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@into-cps-association/dtaas-sdk": "0.1.1",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/jest": "30.0.0",
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "jest": "30.5.2",
+    "jest-environment-jsdom": "30.5.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router-dom": "7.18.4",
+    "ts-jest": "29.4.14",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "zod": "4.6.7"
+  },
+  "// resolutions": "rolldown is held at 1.2.16, inside the ~1.2.14 range of vite 8.3.5, because later releases are younger than the ten days a dependency waits before it is installed.",
+  "resolutions": {
+    "rolldown": "1.2.16"
   }
 }

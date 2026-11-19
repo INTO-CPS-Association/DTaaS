@@ -3,8 +3,9 @@
 `@into-cps-association/dtaas-sdk` is the contract between this client and
 its domain extensions: the extension and host-service types, the
 `visualisation.json` schemas, the validation helpers, a test harness and a
-shareable ESLint config. Its code was copied from the `dtaas-sdk`
-repository at the commit published as version `0.1.0`.
+shareable ESLint config. Its code was copied from the `dtaas-extensions`
+repository, then named `dtaas-sdk`, at the commit published as version
+`0.1.0`.
 
 | Import                                    | What It Gives                                                                     |
 | :---------------------------------------- | :-------------------------------------------------------------------------------- |
@@ -37,6 +38,11 @@ yarn test:sdk
 client. The tests keep the `src/` and `tests/` aliases of
 `jest.config.json`. `examples/hello-kit/` is the minimal extension the
 integration tests mount.
+
+`yarn build:kit <kit folder>` builds an example kit as a deployed
+extension with `examples/vite.deploy.config.ts`. `hello-kit/README.md`
+explains how a new kit starts from the template. The soil-kit, a second kit
+for soil profiles, lives in a repository of its own.
 
 `client/src/extension/README.md` describes the open decision about how
 external extensions get these types.

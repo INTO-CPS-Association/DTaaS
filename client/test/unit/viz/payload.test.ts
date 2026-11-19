@@ -1,4 +1,4 @@
-import { decodePayload, sampleFrom } from 'viz/payload';
+import { decodePayload, sampleFrom, unitOf } from 'viz/payload';
 
 describe('decoding a broker message', () => {
   it('reads JSON with a value, a time and a quality', () => {
@@ -23,7 +23,15 @@ describe('decoding a broker message', () => {
       value: 21.4,
       ts: new Date(2026, 9, 13, 10, 0, 0).getTime(),
       channel: 'simulated',
+      unit: '°C',
     });
+  });
+
+  it('keeps the unit a JSON payload gives, and drops what is not one', () => {
+    expect(decodePayload('{"value": 40, "unit": " % "}')?.unit).toBe('%');
+    expect(decodePayload('{"value": 40, "unit": 7}')?.unit).toBeUndefined();
+    expect(decodePayload('{"value": 40, "unit": ""}')?.unit).toBeUndefined();
+    expect(unitOf('x'.repeat(33))).toBeUndefined();
   });
 
   it('refuses what it cannot read', () => {
@@ -61,6 +69,15 @@ describe('decoding a broker message', () => {
       value: 7,
     });
     expect(sampleFrom('room/temp', 'hello', 'measured', 1)).toBeUndefined();
+  });
+
+  it('carries the unit of the payload into the sample', () => {
+    expect(
+      sampleFrom('probe/moisture', '{"value": 40, "unit": "%"}', 'measured', 1),
+    ).toMatchObject({ value: 40, unit: '%' });
+    expect(sampleFrom('probe/moisture', '40', 'measured', 1)?.unit).toBe(
+      undefined,
+    );
   });
 
   it('takes the channel a JSON payload names, when the SDK knows it', () => {

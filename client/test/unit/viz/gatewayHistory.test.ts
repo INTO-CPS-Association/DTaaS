@@ -43,7 +43,14 @@ describe('the signals gateway history', () => {
 
   it('keeps the samples it can read, on the channel asked for', async () => {
     const samples = [
-      { path: 'a', channel: 'measured', ts: 10, value: 1, quality: 'good' },
+      {
+        path: 'a',
+        channel: 'measured',
+        ts: 10,
+        value: 1,
+        quality: 'good',
+        unit: 'Cel',
+      },
       { path: 'a', ts: 11, value: { not: 'a value' } },
       { path: 'a', ts: 'late', value: 2 },
       { path: 'b', ts: 12, value: 'on', quality: 'unknown' },
@@ -67,6 +74,7 @@ describe('the signals gateway history', () => {
         ts: 10,
         value: 1,
         quality: 'good',
+        unit: 'Cel',
       },
       {
         twinId: '',
@@ -75,6 +83,7 @@ describe('the signals gateway history', () => {
         ts: 12,
         value: 'on',
         quality: undefined,
+        unit: undefined,
       },
     ]);
   });

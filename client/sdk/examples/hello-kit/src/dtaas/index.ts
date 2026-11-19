@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 import { defineExtension } from '@into-cps-association/dtaas-sdk';
-import { isHelloTwin } from 'examples/hello-kit/src/core';
-import anchorKinds from 'examples/hello-kit/src/dtaas/anchors';
-import configSchema from 'examples/hello-kit/src/dtaas/config';
-import presets from 'examples/hello-kit/src/dtaas/presets';
+import { isHelloTwin } from '../core';
+import anchorKinds from './anchors';
+import configSchema from './config';
+import presets from './presets';
 
 /** The only object the host imports: `import { extension } from '<kit>/dtaas'`. */
 export const extension = defineExtension({
@@ -14,9 +14,7 @@ export const extension = defineExtension({
   routes: [
     {
       path: '',
-      element: lazy(
-        () => import('examples/hello-kit/src/dtaas/pages/HelloPage'),
-      ),
+      element: lazy(() => import('./pages/HelloPage')),
     },
   ],
   navigation: [{ label: 'Hello', path: '/hello', order: 100 }],

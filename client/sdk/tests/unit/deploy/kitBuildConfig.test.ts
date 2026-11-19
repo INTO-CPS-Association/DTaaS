@@ -1,4 +1,4 @@
-import { kitBuildConfig, sharedGlobalOf } from 'src/deploy';
+import { kitBuildConfig, muiIconsPlugin, sharedGlobalOf } from 'src/deploy';
 import { deployedKeyOf, SHARED_MODULES } from 'src/index';
 
 describe('sharedGlobalOf', () => {
@@ -60,6 +60,24 @@ describe('kitBuildConfig', () => {
     expect(
       kitBuildConfig({ id: 'soil', entry: 'x.ts', outDir: 'out' }).outDir,
     ).toBe('out');
+  });
+});
+
+describe('muiIconsPlugin', () => {
+  const { load } = muiIconsPlugin;
+
+  it.each([
+    '/app/node_modules/@mui/icons-material/utils/createSvgIcon.mjs',
+    'C:\\app\\node_modules\\@mui\\icons-material\\utils\\createSvgIcon.js',
+  ])('reads the icon helper %s from the shared root', (id) => {
+    expect(load(id)).toContain("import { createSvgIcon } from '@mui/material'");
+  });
+
+  it.each([
+    '/app/node_modules/@mui/icons-material/Forest.mjs',
+    '/kit/src/utils/createSvgIcon.ts',
+  ])('leaves %s alone', (id) => {
+    expect(load(id)).toBeNull();
   });
 });
 

@@ -23,6 +23,7 @@
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
     "build": "yarn typecheck && vite build --sourcemap",
     "build:fast": "yarn typecheck && vite build",
+    "build:kit": "node sdk/examples/buildKit.mjs",
     "clean": "npx rimraf build/ dist/ coverage/ playwright-report/ test-results/ test.svg src.svg",
     "clean:all": "yarn clean && npx rimraf node_modules/",
     "config:dev": "npx shx cp config/dev.js public/env.js && npx shx cp config/dev.js build/env.js",

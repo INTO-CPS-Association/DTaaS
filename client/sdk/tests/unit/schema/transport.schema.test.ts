@@ -81,9 +81,31 @@ describe('transportSchema', () => {
     },
   );
 
-  it('keeps the MQTT url required', () => {
-    const transport = { adapter: 'mqtt', topics: ['a'] };
+  it('accepts an mqtt transport without a broker url', () => {
+    const transport = { adapter: 'mqtt', topics: ['a/b'] };
+    expect(transportSchema.safeParse(transport).success).toBe(true);
+  });
+
+  it('keeps the stomp url required', () => {
+    const transport = { adapter: 'stomp', destinations: ['/topic/a'] };
     expect(transportSchema.safeParse(transport).success).toBe(false);
+  });
+
+  it('still checks the scheme of a broker url that is given', () => {
+    const transport = { adapter: 'mqtt', url: 'http://broker', topics: ['a'] };
+    expect(transportSchema.safeParse(transport).success).toBe(false);
+  });
+
+  it.each([
+    ['mqtt', 'mqtt://guest:guest@rabbitmq:1883'],
+    ['stomp', 'wss://user@broker/stomp'],
+    ['thingsboard', 'https://tenant:secret@tb'],
+    ['influx', 'http://admin:secret@influx:8086'],
+    ['http', 'https://user:token@logger/api'],
+    ['file', 'https://user:secret@f/run.csv'],
+  ])('refuses a %s URL that carries credentials', (adapter, url) => {
+    const result = transportSchema.safeParse(transportFor(adapter, url));
+    expect(result.success).toBe(false);
   });
 
   it('refuses more than 1000 topics', () => {

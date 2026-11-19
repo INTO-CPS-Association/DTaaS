@@ -20,14 +20,15 @@ from npm, such as `bim-kit`, which imports the published name, resolves to
 the local code. The client builds and tests it from source with its own
 toolchain. `yarn test:sdk` runs its tests.
 
-The plan is to keep the name `dtaas-sdk`, to move the logic part of the
-contract into the client core and to turn the `dtaas-sdk` repository into a
-tool that generates the skeleton of a new extension for extension
-developers. The first part is what `client/sdk/` does. How an external
-extension gets the contract types from now on is an open decision: either a
-types package published from `client/sdk/`, or the types carried by the
-skeleton generator. Until it is decided, nothing here is published and the
-npm release `0.1.0` stays the version external extensions build against.
+The plan is to keep the package name `dtaas-sdk`, to move the logic part
+of the contract into the client core and to keep the example extensions
+and the `hello-kit` template of a new extension in the `dtaas-extensions`
+repository, which was called `dtaas-sdk` before. The first part is what
+`client/sdk/` does. How an external extension gets the contract types from
+now on is an open decision: either a types package published from
+`client/sdk/`, or the types carried by the `hello-kit` template. Until it
+is decided, nothing here is published and the npm release `0.1.0` stays
+the version external extensions build against.
 
 ## Adding an Extension
 
@@ -41,10 +42,11 @@ To compile one in:
 To deploy one, without a rebuild:
 
 1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
-   which writes one script.
+   which writes one script. `yarn build:kit hello-kit` does this for the
+   example kit in `sdk/examples/`.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
-   `'extensions/soil/index.js'`.
+   `'extensions/hello/index.js'`.
 
 `index.tsx` loads the listed scripts before the client's own modules, because
 the store and the routes read the registry when they are imported. Before the
@@ -94,7 +96,7 @@ offers it, so no extension imports the code of another.
 
 ## When an Extension Is Left Out
 
-The client starts without an extension that fails a check, and writes the
+The client starts without an extension that fails a check and writes the
 reason to the browser console:
 
 - The SDK's `validateExtension` finds it malformed, for example a page that
