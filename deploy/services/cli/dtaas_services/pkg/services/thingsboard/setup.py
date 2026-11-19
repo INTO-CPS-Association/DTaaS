@@ -13,6 +13,7 @@ from .sysadmin import (
     change_sysadmin_password,
 )
 from .sysadmin_util import change_sysadmin_email
+from .connectivity import apply_device_connectivity
 from .setup_credentials import process_credentials_file
 from .tenant_admin import (
     change_tenant_admin_password,
@@ -87,6 +88,10 @@ def _create_tenant_setup(base_url: str, session: httpx.Client) -> Tuple[bool, st
     auth_ok, auth_err = _authenticate_as_sysadmin(base_url, session)
     if not auth_ok:
         return False, auth_err
+    conn_ok, conn_msg = apply_device_connectivity(base_url, session)
+    if not conn_ok:
+        return False, conn_msg
+    logger.info(conn_msg)
     tenant_title = os.getenv("TB_TENANT_TITLE", "DTaaS")
     admin_email = os.getenv("TB_TENANT_ADMIN_EMAIL", "")
     ctx = TenantAdminContext(base_url, session, tenant_title)

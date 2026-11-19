@@ -33,26 +33,29 @@ function textReader(response: Response) {
   const reader = response.body?.getReader();
   const decoder = new TextDecoder();
   let text = '';
-  return async (needle: string, timeoutMs = 3000): Promise<string> => {
+  // Reads chunk after chunk by recursion, since each read waits for the last.
+  return (needle: string, timeoutMs = 3000): Promise<string> => {
     const deadline = Date.now() + timeoutMs;
-    while (!text.includes(needle)) {
+    const readMore = async (): Promise<string> => {
+      if (text.includes(needle)) return text;
       if (reader === undefined || Date.now() > deadline)
         throw new Error(`No ${needle} in ${text}`);
       const { value, done } = await reader.read();
       if (done) throw new Error(`Stream ended without ${needle}: ${text}`);
       text += decoder.decode(value, { stream: true });
-    }
-    return text;
+      return readMore();
+    };
+    return readMore();
   };
 }
 
-export async function waitFor(
-  check: () => boolean,
-  timeoutMs = 3000,
-): Promise<void> {
+export function waitFor(check: () => boolean, timeoutMs = 3000): Promise<void> {
   const deadline = Date.now() + timeoutMs;
-  while (!check()) {
+  const poll = async (): Promise<void> => {
+    if (check()) return;
     if (Date.now() > deadline) throw new Error('Timed out waiting');
     await new Promise((resolve) => setTimeout(resolve, 10));
-  }
+    return poll();
+  };
+  return poll();
 }

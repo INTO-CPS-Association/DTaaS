@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 748" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="measurement-data-model-dark-title measurement-data-model-dark-desc" id="measurement-data-model-dark-root">
+        <title id="measurement-data-model-dark-title">Measurement data model</title>
+        <desc id="measurement-data-model-dark-desc">Data model of the measurement feature: settings and five task definitions produce timed tasks, each with N trials of one or two execution results, tracked through active parent and child pipelines while running, and successful tasks saved as measurement records in IndexedDB.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #measurement-data-model-dark-root { --color-paper:   #1e2229;
+      --color-ink:     rgb(232,236,243);
+      --color-muted:   #a9b3c6;
+      --color-accent:  #00aba4;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #measurement-data-model-dark-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #measurement-data-model-dark-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#measurement-data-model-dark-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="measurement-data-model-dark-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#a9b3c6"/></marker>
+          <marker id="measurement-data-model-dark-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00aba4"/></marker>
+          <marker id="measurement-data-model-dark-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#8cc8e6"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#1e2229"/>
+        <path d="M 180,156 L 180,240" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 320,100 L 336,100 Q 344,100 344,108 L 344,264 Q 344,272 352,272 L 368,272" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 368,384 L 352,384 Q 344,384 344,392 L 344,540 Q 344,548 336,548 L 320,548" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 508,176 L 508,240" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 648,328 L 712,328" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 852,376 L 852,480" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <path d="M 712,548 L 648,548" fill="none" stroke="#a9b3c6" stroke-width="1.4"/>
+        <rect x="188" y="163" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="198" y="176" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="188" y="215" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="210" y="228" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1..*</text>
+        <rect x="322" y="76" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="332" y="89" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="346" y="248" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="356" y="261" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="346" y="360" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="356" y="373" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="322" y="524" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="332" y="537" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="516" y="181" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="526" y="194" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="516" y="217" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="526" y="230" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="650" y="304" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="660" y="317" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="690" y="304" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="700" y="317" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">N</text>
+        <rect x="860" y="383" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="870" y="396" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="860" y="455" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="882" y="468" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1..2</text>
+        <rect x="690" y="524" width="20" height="18" rx="2" fill="#1e2229"/>
+        <text x="700" y="537" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">1</text>
+        <rect x="650" y="554" width="44" height="18" rx="2" fill="#1e2229"/>
+        <text x="672" y="567" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">0..2</text>
+        <rect x="40" y="40" width="280" height="116" rx="6" fill="#1e2229"/>
+        <rect x="40" y="40" width="280" height="116" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="48" y="48" width="52" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="60" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="62" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">TaskDefinition</text>
+        <line x1="40" y1="74" x2="320" y2="74" stroke="rgb(232,236,243)" stroke-width="1"/>
+        <text x="54" y="98" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># name: string</text>
+        <text x="54" y="118" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">description: string</text>
+        <text x="54" y="138" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">executions(): Execution[]</text>
+        <rect x="368" y="40" width="280" height="136" rx="6" fill="#1e2229"/>
+        <rect x="368" y="40" width="280" height="136" rx="6" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <rect x="376" y="48" width="52" height="16" rx="2" fill="none" stroke="#a9b3c6" stroke-width="1" opacity="0.6"/>
+        <text x="402" y="60" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="438" y="62" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">MeasurementSettings</text>
+        <line x1="368" y1="74" x2="648" y2="74" stroke="#a9b3c6" stroke-width="1"/>
+        <text x="382" y="98" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">trials: number (default 3)</text>
+        <text x="382" y="118" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">primaryDTName · secondaryDTName</text>
+        <text x="382" y="138" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">secondaryRunnerTag</text>
+        <text x="382" y="158" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">disabledTaskNames: string[]</text>
+        <rect x="40" y="240" width="280" height="96" rx="6" fill="#1e2229"/>
+        <rect x="40" y="240" width="280" height="96" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="48" y="248" width="52" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="260" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="262" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Execution</text>
+        <line x1="40" y1="274" x2="320" y2="274" stroke="rgb(232,236,243)" stroke-width="1"/>
+        <text x="54" y="298" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">dtName: string</text>
+        <text x="54" y="318" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">config: Partial&lt;Configuration&gt;</text>
+        <rect x="368" y="240" width="280" height="176" rx="6" fill="#1e2229"/>
+        <rect x="368" y="240" width="280" height="176" rx="6" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <rect x="376" y="248" width="52" height="16" rx="2" fill="none" stroke="#00aba4" stroke-width="1" opacity="0.6"/>
+        <text x="402" y="260" fill="#00aba4" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="438" y="262" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">TimedTask</text>
+        <line x1="368" y1="274" x2="648" y2="274" stroke="#00aba4" stroke-width="1"/>
+        <text x="382" y="298" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># Task Name · Description</text>
+        <text x="382" y="318" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Status: NOT_STARTED … STOPPED</text>
+        <text x="382" y="338" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Time Start · Time End</text>
+        <text x="382" y="358" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Average Time (s): number</text>
+        <text x="382" y="378" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">ExpectedTrials?: number</text>
+        <text x="382" y="398" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Trials: Trial[]</text>
+        <rect x="712" y="240" width="280" height="136" rx="6" fill="#1e2229"/>
+        <rect x="712" y="240" width="280" height="136" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="720" y="248" width="52" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="746" y="260" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="782" y="262" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">Trial</text>
+        <line x1="712" y1="274" x2="992" y2="274" stroke="rgb(232,236,243)" stroke-width="1"/>
+        <text x="726" y="298" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Time Start · Time End</text>
+        <text x="726" y="318" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Status: SUCCESS|FAILURE|STOPPED</text>
+        <text x="726" y="338" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Execution: ExecutionResult[]</text>
+        <text x="726" y="358" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">Error?: {message, error}</text>
+        <rect x="40" y="480" width="280" height="136" rx="6" fill="#1e2229"/>
+        <rect x="40" y="480" width="280" height="136" rx="6" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <rect x="48" y="488" width="52" height="16" rx="2" fill="none" stroke="#a9b3c6" stroke-width="1" opacity="0.6"/>
+        <text x="74" y="500" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="110" y="502" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">MeasurementRecord</text>
+        <line x1="40" y1="514" x2="320" y2="514" stroke="#a9b3c6" stroke-width="1"/>
+        <text x="54" y="538" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace"># id: &#x27;&lt;taskName&gt;-&lt;ms&gt;&#x27;</text>
+        <text x="54" y="558" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">taskName (index)</text>
+        <text x="54" y="578" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">timestamp (index)</text>
+        <text x="54" y="598" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">task: TimedTask</text>
+        <rect x="368" y="480" width="280" height="136" rx="6" fill="#1e2229"/>
+        <rect x="368" y="480" width="280" height="136" rx="6" fill="#22262d" stroke="#83878e" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <rect x="376" y="488" width="52" height="16" rx="2" fill="none" stroke="#94a0b8" stroke-width="1" opacity="0.6"/>
+        <text x="402" y="500" fill="#94a0b8" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="438" y="502" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">ActivePipeline</text>
+        <line x1="368" y1="514" x2="648" y2="514" stroke="#94a0b8" stroke-width="1"/>
+        <text x="382" y="538" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">pipelineId · childPipelineId?</text>
+        <text x="382" y="558" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">phase: &#x27;parent&#x27; | &#x27;child&#x27;</text>
+        <text x="382" y="578" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">status: string</text>
+        <text x="382" y="598" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">backend: BackendInterface</text>
+        <rect x="712" y="480" width="280" height="156" rx="6" fill="#1e2229"/>
+        <rect x="712" y="480" width="280" height="156" rx="6" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <rect x="720" y="488" width="52" height="16" rx="2" fill="none" stroke="rgb(232,236,243)" stroke-width="1" opacity="0.6"/>
+        <text x="746" y="500" fill="rgb(232,236,243)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">ENTITY</text>
+        <text x="782" y="502" fill="rgb(232,236,243)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif">ExecutionResult</text>
+        <line x1="712" y1="514" x2="992" y2="514" stroke="rgb(232,236,243)" stroke-width="1"/>
+        <text x="726" y="538" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">dtName: string</text>
+        <text x="726" y="558" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">pipelineId: number | null</text>
+        <text x="726" y="578" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">status: GitLab status</text>
+        <text x="726" y="598" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">config: Partial&lt;Configuration&gt;</text>
+        <text x="726" y="618" fill="#a9b3c6" font-size="12" font-family="'Geist Mono', ui-monospace, monospace">executionIndex?: number</text>
+        <line x1="40" y1="676" x2="1000" y2="676" stroke="#3a3e45" stroke-width="1"/>
+        <text x="40" y="696" fill="#a9b3c6" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="712" width="20" height="14" rx="2" fill="#1a353a" stroke="#00aba4" stroke-width="1.2"/>
+        <text x="68" y="724" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Aggregate root</text>
+        <rect x="200" y="712" width="20" height="14" rx="2" fill="#282c33" stroke="#a9b3c6" stroke-width="1.2"/>
+        <text x="228" y="724" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Persisted (IndexedDB, Redux)</text>
+        <rect x="460" y="712" width="20" height="14" rx="2" fill="#262b34" stroke="rgb(232,236,243)" stroke-width="1.2"/>
+        <text x="488" y="724" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">In memory</text>
+        <rect x="584" y="712" width="20" height="14" rx="2" fill="#22262d" stroke="#83878e" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <text x="612" y="724" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Only while running</text>
+        <line x1="772" y1="720" x2="804" y2="720" stroke="#a9b3c6" stroke-width="1.4"/>
+        <text x="814" y="724" fill="#a9b3c6" font-size="13" font-family="'Inter', system-ui, sans-serif">Relationship, cardinality</text>
+      </svg>

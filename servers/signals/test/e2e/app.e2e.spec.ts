@@ -1,158 +1,32 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
-import type { LoggerService } from '@nestjs/common';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { Test } from '@nestjs/testing';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import AppModule from 'src/app.module';
-import { SIGNAL_BROKER } from 'src/broker/broker';
-import Config from 'src/config/config.service';
-import PostgresClient from 'src/history/postgres.client';
-import { configureSignalsApp } from 'src/main';
-import FakeBroker, { reading } from 'test/helpers/fake-broker';
-import FakePostgres, { rowsFrom } from 'test/helpers/fake-postgres';
+import E2eGateway, {
+  ALICE_TOKEN,
+  BOB_TOKEN,
+  CAROL_TOKEN,
+  EXPIRED_TOKEN,
+  FLOW,
+  OTHER_APP_TOKEN,
+  RANGE,
+  READ_USER_TOKEN,
+  ROOM,
+  SPEED,
+} from 'test/helpers/e2e-gateway';
+import { reading } from 'test/helpers/fake-broker';
 import { openStream, waitFor } from 'test/helpers/sse-client';
-import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
-import { PUMP, visualisationOf } from 'test/helpers/twins';
-
-const ALICE_TOKEN = 'alice-oauth-token-0123456789';
-const BOB_TOKEN = 'bob-oauth-token-9876543210';
-const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
-const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
-const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
-const CAROL_TOKEN = 'carol-oauth-token-3333333333';
-const FLOW = 'alice/pump/flow';
-const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
-const VALVE = 'alice/CTO/plant/01/loop1/A/A-0001/position';
-const READER_TOKEN = 'erin-reporter-token-4444444444';
-const GAUGE = 'alice/CTO/plant/01/loop1/A/A-0002/position';
-// History is kept per device, so the cross-group paths are device topics.
-const SPEED = 'carol/CTO/room/0101/seat1/S/S-0002/temperature';
-const DAMPER = 'carol/CTO/plant/02/loop1/A/A-0003/position';
-const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
-const ENV_KEYS = [
-  'SIGNALS_GITLAB_URL',
-  'SIGNALS_GITLAB_CLIENT_ID',
-  'SIGNALS_OWNERS_FILE',
-];
-
-class CapturingLogger implements LoggerService {
-  readonly lines: string[] = [];
-  log = (message: unknown) => this.lines.push(String(message));
-  error = (message: unknown) => this.lines.push(String(message));
-  warn = (message: unknown) => this.lines.push(String(message));
-  debug = (message: unknown) => this.lines.push(String(message));
-  verbose = (message: unknown) => this.lines.push(String(message));
-}
-
-const ALICE = { id: 1, username: 'alice', email: 'alice@example.org' };
 
 describe('Signals gateway e2e', () => {
-  const gitlab = new StubGitLab(
-    {
-      [ALICE_TOKEN]: { ...ALICE, projects: [10] },
-      [BOB_TOKEN]: {
-        id: 2,
-        username: 'bob',
-        email: 'bob@example.org',
-        projects: [],
-      },
-      [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
-      [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
-      [READER_TOKEN]: {
-        id: 4,
-        username: 'erin',
-        email: 'erin@example.org',
-        projects: [10],
-        writable: [],
-      },
-      [READ_USER_TOKEN]: { ...ALICE, projects: [10], scope: ['read_user'] },
-      [CAROL_TOKEN]: {
-        id: 3,
-        username: 'carol',
-        email: 'carol@example.org',
-        projects: [11],
-      },
-    },
-    [
-      {
-        id: 10,
-        owner: 'alice',
-        sha: 'c0ffee',
-        twins: {
-          pump: PUMP,
-          room: visualisationOf([ROOM]),
-          valve: visualisationOf([VALVE], 'setpoint'),
-          gauge: visualisationOf([GAUGE]),
-        },
-      },
-      {
-        id: 11,
-        owner: 'carol',
-        sha: 'beef00',
-        // The second twin declares a topic of alice's group, which the
-        // owners file does not give to carol.
-        twins: {
-          fan: visualisationOf([SPEED]),
-          damper: visualisationOf([DAMPER], 'setpoint'),
-          copy: visualisationOf([ROOM]),
-          copy_valve: visualisationOf([VALVE], 'setpoint'),
-        },
-      },
-    ],
-  );
-  const broker = new FakeBroker();
-  const postgres = new FakePostgres(() => rowsFrom(0, 2));
-  const logger = new CapturingLogger();
-  let app: NestExpressApplication;
+  const gateway = new E2eGateway();
+  const { gitlab, broker, postgres, logger } = gateway;
   let base = '';
-  let dir = '';
-
   const post = (route: string, token: string | undefined, body: unknown) =>
-    fetch(`${base}/signals/${route}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token === undefined ? {} : { Authorization: `Bearer ${token}` }),
-      },
-      body: JSON.stringify(body),
-    });
+    gateway.post(route, token, body);
 
   beforeAll(async () => {
-    process.env.SIGNALS_GITLAB_URL = await gitlab.start();
-    process.env.SIGNALS_GITLAB_CLIENT_ID = STUB_APPLICATION;
-    dir = await mkdtemp(path.join(os.tmpdir(), 'signals-e2e-'));
-    const owners = path.join(dir, 'owners.json');
-    await writeFile(
-      owners,
-      JSON.stringify({
-        alice: { group: 'alice', topics: ['alice/'] },
-        carol: { group: 'carol', topics: ['carol/'] },
-      }),
-    );
-    process.env.SIGNALS_OWNERS_FILE = owners;
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(SIGNAL_BROKER)
-      .useValue(broker)
-      .overrideProvider(PostgresClient)
-      .useValue(postgres.asClient())
-      .compile();
-    app = moduleRef.createNestApplication<NestExpressApplication>({
-      bodyParser: false,
-    });
-    app.useLogger(logger);
-    configureSignalsApp(app, moduleRef.get(Config));
-    await app.listen(0, '127.0.0.1');
-    base = await app.getUrl();
+    await gateway.start();
+    base = gateway.base;
   });
 
-  afterAll(async () => {
-    await app.close();
-    await gitlab.stop();
-    ENV_KEYS.forEach((key) => delete process.env[key]);
-    await rm(dir, { recursive: true, force: true });
-  });
+  afterAll(() => gateway.stop());
 
   it('answers health with no detail and no token', async () => {
     const response = await fetch(`${base}/signals/health`);
@@ -215,19 +89,6 @@ describe('Signals gateway e2e', () => {
     });
   });
 
-  it("serves the history of a readable twin from its group's database", async () => {
-    const response = await post('range', ALICE_TOKEN, RANGE);
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      samples: [
-        { path: ROOM, channel: 'measured', ts: 0, value: 0, quality: null },
-        { path: ROOM, channel: 'measured', ts: 1, value: 1, quality: null },
-      ],
-      truncated: false,
-    });
-    expect(postgres.queries[0].database).toBe('alice');
-  });
-
   it('refuses with 403 an undeclared path and a reader without the project', async () => {
     const undeclared = { paths: ['alice/pump/secret'] };
     expect((await post('stream', ALICE_TOKEN, undeclared)).status).toBe(403);
@@ -236,29 +97,6 @@ describe('Signals gateway e2e', () => {
     );
     expect(broker.bindings).toHaveLength(0);
     expect((await post('range', BOB_TOKEN, RANGE)).status).toBe(403);
-  });
-
-  it('sends a set point of a writer to the command topic of the device', async () => {
-    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
-    const response = await post('command', ALICE_TOKEN, body);
-    expect(response.status).toBe(202);
-    await expect(response.json()).resolves.toEqual({
-      status: 'sent',
-      topic: 'alice/CTO/plant/01/loop1/A/A-0001/cmd/set',
-    });
-    expect(JSON.parse(broker.published[0].body)).toMatchObject({ value: 40 });
-  });
-
-  it('refuses a command of a reader, and one to a path that takes none', async () => {
-    const body = { path: VALVE, command: 'set', value: 40, unit: '%' };
-    const sent = broker.published.length;
-    expect((await post('command', READER_TOKEN, body)).status).toBe(403);
-    const sensor = { ...body, path: ROOM };
-    expect((await post('command', ALICE_TOKEN, sensor)).status).toBe(400);
-    const readOnly = { ...body, path: GAUGE };
-    expect((await post('command', ALICE_TOKEN, readOnly)).status).toBe(403);
-    expect((await post('command', undefined, body)).status).toBe(401);
-    expect(broker.published).toHaveLength(sent);
   });
 
   // Two groups on every route: each reads its own paths and is refused the
@@ -293,27 +131,6 @@ describe('Signals gateway e2e', () => {
     },
   );
 
-  // A set point to the other group's device is refused, also when a twin of
-  // the sender's own project declares that device.
-  it.each([
-    [ALICE_TOKEN, VALVE, DAMPER],
-    [CAROL_TOKEN, DAMPER, VALVE],
-  ])(
-    'sends each group a set point of its own and refuses the other group (%#)',
-    async (token, own, other) => {
-      const body = (p: string) => ({
-        path: p,
-        command: 'set',
-        value: 40,
-        unit: '%',
-      });
-      const sent = broker.published.length;
-      expect((await post('command', token, body(own))).status).toBe(202);
-      expect((await post('command', token, body(other))).status).toBe(403);
-      expect(broker.published).toHaveLength(sent + 1);
-    },
-  );
-
   it('refuses wildcards with 400 and too many paths with 413', async () => {
     expect(
       (await post('stream', ALICE_TOKEN, { paths: ['alice/#'] })).status,
@@ -322,52 +139,6 @@ describe('Signals gateway e2e', () => {
     expect((await post('stream', ALICE_TOKEN, { paths: many })).status).toBe(
       413,
     );
-  });
-
-  it('fills the gap since Last-Event-ID from the history, then goes live', async () => {
-    const lastId = Date.now() - 2000;
-    const before = postgres.queries.length;
-    const stream = await openStream(
-      `${base}/signals/stream`,
-      ALICE_TOKEN,
-      [ROOM],
-      { 'Last-Event-ID': String(lastId) },
-    );
-    const text = await stream.readUntil('"backfill":true');
-    expect(text.indexOf('"state":"live"')).toBeLessThan(
-      text.indexOf('"backfill":true'),
-    );
-    expect(text).not.toContain('event: gap');
-    const [query] = postgres.queries.slice(before);
-    expect(query.values[2]).toEqual(new Date(lastId - 5000));
-    stream.close();
-    await waitFor(() => broker.bindings.length === 0);
-  });
-
-  it('reports a gap longer than resume-max-gap and ignores a malformed id', async () => {
-    const old = await openStream(
-      `${base}/signals/stream`,
-      ALICE_TOKEN,
-      [ROOM],
-      {
-        'Last-Event-ID': '1',
-      },
-    );
-    expect(await old.readUntil('event: gap')).toContain('"backfill":true');
-    old.close();
-    const before = postgres.queries.length;
-    const odd = await openStream(
-      `${base}/signals/stream`,
-      ALICE_TOKEN,
-      [ROOM],
-      {
-        'Last-Event-ID': 'yesterday',
-      },
-    );
-    await odd.readUntil('"state":"live"');
-    odd.close();
-    await waitFor(() => broker.bindings.length === 0);
-    expect(postgres.queries.length).toBe(before);
   });
 
   it('refuses a body above the payload limit', async () => {

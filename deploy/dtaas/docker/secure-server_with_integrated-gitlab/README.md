@@ -57,7 +57,12 @@ The `docker-compose.yml` starts the following services:
 cp config/.env.example       config/.env
 cp config/conf.server.example config/conf.server
 cp config/client.js.example     config/client.js
+chmod 644 config/client.js
 ```
+
+The website container runs as uid 1000 and serves `config/client.js`
+to browsers as `env.js`, so the file must stay readable by all users;
+it holds no secrets. When it is not, the website does not load.
 
 Edit `config/.env` — set `SERVER_DNS`, `USERNAME1`, `USERNAME2`.
 Leave the `OAUTH_*` variables as placeholders for now; they will be

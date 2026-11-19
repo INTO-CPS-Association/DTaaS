@@ -17,7 +17,7 @@ export default class FakeGitLabClient {
     return true;
   }
 
-  async getJson(resource: string, token: string): Promise<unknown> {
+  getJson(resource: string, token: string): Promise<unknown> {
     return this.answer(resource, token);
   }
 
@@ -38,13 +38,16 @@ export default class FakeGitLabClient {
     return this as unknown as GitLabClient;
   }
 
-  private async answer(resource: string, token: string): Promise<unknown> {
+  private answer(resource: string, token: string): Promise<unknown> {
     this.calls.push(resource);
     this.tokens.push(token);
     const found = this.answers.find(([pattern]) => pattern.test(resource));
-    if (found === undefined) throw new GitLabError(404, resource);
+    if (found === undefined) {
+      return Promise.reject(new GitLabError(404, resource));
+    }
     const value = found[1](resource);
-    if (value instanceof Error) throw value;
-    return value;
+    return value instanceof Error
+      ? Promise.reject(value)
+      : Promise.resolve(value);
   }
 }
