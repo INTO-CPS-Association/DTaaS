@@ -82,6 +82,17 @@ export function commitAction(change: FileChange): Record<string, unknown> {
   return action;
 }
 
+/** The error a failed read raises, named when GitLab's status says why. */
+function readFailure(
+  error: unknown,
+  file: { repo: string; path: string; ref: string },
+): unknown {
+  const status = statusOf(error);
+  if (status === 404) return new GitFileMissing(file.repo, file.path, file.ref);
+  if (status === 401) return new GitSignInNeeded(file.repo);
+  return error;
+}
+
 /**
  * The git service. `api` is made per call, so a token refreshed after sign-in
  * is the one used.
@@ -95,10 +106,7 @@ export default function createGitService(
         const file = await api().RepositoryFiles.show(repo, path, ref);
         return fromBase64(file.content);
       } catch (error) {
-        const status = statusOf(error);
-        if (status === 404) throw new GitFileMissing(repo, path, ref);
-        if (status === 401) throw new GitSignInNeeded(repo);
-        throw error;
+        throw readFailure(error, { repo, path, ref });
       }
     },
     async commit(repo, branch, changes, message): Promise<CommitResult> {

@@ -37,6 +37,13 @@ export function channelsOf(
   return [...new Set(named)];
 }
 
+// Only the message is written, so no error object reaches the console.
+function warnNotRead(error: unknown): void {
+  const reason = error instanceof Error ? error.message : String(error);
+  // eslint-disable-next-line no-console
+  console.warn(`The past signals were not read: ${reason}`);
+}
+
 /** Returns a number that changes whenever a read of the past completes. */
 export default function useHistory(
   asset: VisualisationAsset,
@@ -54,13 +61,7 @@ export default function useHistory(
     );
     Promise.all(reads)
       .then(() => current && setLoaded((n) => n + 1))
-      // Only the message is written, so no error object reaches the console.
-      .catch((error: unknown) =>
-        // eslint-disable-next-line no-console
-        console.warn(
-          `The past signals were not read: ${error instanceof Error ? error.message : String(error)}`,
-        ),
-      );
+      .catch(warnNotRead);
     return () => {
       current = false;
     };
