@@ -292,6 +292,19 @@ This command:
 * Changes the tenant admin password from the default (`"tenant"`) to
   `TB_TENANT_ADMIN_PASSWORD`
 
+### Device Connections
+
+Devices send telemetry over HTTPS on `THINGSBOARD_PORT` or over MQTT with
+TLS on `THINGSBOARD_MQTT_SSL_PORT`, both with the certificate in `certs/`.
+The "Check connectivity" page of each device names these two ports, so open
+both in the firewall of the server. Plain HTTP and plain MQTT are not offered.
+
+ThingsBoard stores what that page shows when it is installed, from the
+`DEVICE_CONNECTIVITY_*` variables in `compose.thingsboard.yml`, and an
+existing installation keeps the values it stored. `dtaas-services user add -s
+thingsboard` writes the two published ports into those settings as well, so
+an existing installation gets them too.
+
 ### GitLab Installation
 
 **Prerequisites:**
