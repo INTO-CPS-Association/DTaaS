@@ -7,7 +7,7 @@ import { extension as bim } from '@into-cps-association/dtaas-ext-bim';
  * Adding one is two changes: `yarn add` its package and import its
  * `extension` here. Removing one is the reverse. A deployment can still hide a
  * compiled-in extension without a rebuild, through `REACT_APP_EXTENSIONS_DISABLED`
- * in `env.js`.
+ * in `env.js`, and add a bundled one through `REACT_APP_EXTENSIONS_DEPLOYED`.
  *
  * The client must still build and pass its tests with the list empty.
  */
