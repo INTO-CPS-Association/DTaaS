@@ -52,7 +52,7 @@ not use (see the tables above).
 # Describes the instance. git-repo, the URL of the DTaaS repository, is
 # required for all deployment types; validate checks no other key here.
 name     = "Digital Twin as a Service (DTaaS)"
-version  = "2.2.1"
+version  = "2.4.0"
 owner    = "The INTO-CPS-Association"
 git-repo = "https://github.com/into-cps-association/DTaaS.git"
 
@@ -120,11 +120,18 @@ load_balance = false
 [frontend]
 react-app-client-id = "dtaas-client"
 react-app-oauth-url = "https://gitlab.example.com"
+# Logger microservice URL, with the /logger route prefix ("" turns remote
+# logging off). Without the key, the logger of this installation is used,
+# http(s)://<server-dns>/logger (see "Remote logging" below).
+logger-url          = "https://logs.example.com/logger"
 
 # ── GitLab user provisioning (optional, all types) ───────────────────────────
 # Off by default. When provision = true, `dtaas user add` also creates
 # each new user's GitLab account and a Personal Access Token (see
-# "Add Users" in cli.md). The provisioning token must belong to an
+# "Add Users" in cli.md), and with both *_template keys set, two private
+# projects, common and user, cloned from them with git on this host and
+# pushed. Remove both template keys for accounts and tokens only. The
+# provisioning token must belong to an
 # administrator and carry the api scope (plus admin_mode on an instance with
 # Admin Mode enabled); supply it via the DTAAS_GITLAB_PAT environment variable
 # rather than committing it here. A [gitlab].pat key is the fallback when the
@@ -134,6 +141,8 @@ react-app-oauth-url = "https://gitlab.example.com"
 [gitlab]
 provision  = false
 api_url    = "https://gitlab.example.com"
+template_host  = "https://gitlab.com"   # with template_group: the
+template_group = "dtaas"                # public common and user1 templates
 # pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 
@@ -216,6 +225,8 @@ first, then the current directory) and reports all problems at once:
 | `[gitlab].api_url`                         | Must be an `http(s)` URL; **required** when `provision` is `true`, optional otherwise                         |
 | `[gitlab].pat`                             | When present, must be non-empty (remove the key to use `DTAAS_GITLAB_PAT`)                                    |
 | `[gitlab].ssl_verify`                      | When present, `true`, `false`, or a CA-bundle path string                                                     |
+| `[gitlab].template_group`/`template_host`  | When present, a GitLab group path (subgroups with `/`) and an `http(s)` URL; set both, or leave both out      |
+| `[frontend].logger-url`                    | When present, an `http(s)` URL, or `""` to turn remote logging off                                            |
 | Deployment-section URLs                    | When present, must be `http(s)` URLs                                                                          |
 | Deployment-section `default-user`          | When present, must be a valid username                                                                        |
 
@@ -225,8 +236,14 @@ Deployment-section URLs are `react-app-oauth-url`, `oauth-url`,
 `[secure-server-gitlab]`, `[workspace-localhost]` and
 `[workspace-secure-server]`. Each is checked only when its section is
 present. `config validate` checks every section in the file, while
-`platform update --config` checks only the section of the installed
-deployment type, plus `[frontend]`.
+`deployment generate` and `platform update --config` check only the
+section of the type they write, plus `[frontend]`. Both list every
+problem and stop before they write a file.
+
+`config validate` also prints warnings, which do not make the file
+invalid: a `[frontend]` section whose `logger-url` is missing, empty,
+still the template's example, or a URL whose path does not end in
+`/logger` gets one, see [Remote logging](#remote-logging).
 
 For `workspace-secure-server`, no command writes `client-id` or
 `auth-authority` into `config/client.js`; `auth-authority` is only
@@ -235,7 +252,9 @@ checked to be a URL. Edit
 hand.
 
 `path` and `certs-src` are checked against the local filesystem, so
-run `validate` on the deployment host. If a check fails with a
+run `validate` and `deployment generate` on the deployment host. A
+fresh `dtaas.toml` fails both until `path` names an existing
+directory, and `certs-src` does too or is removed. If a check fails with a
 permission error (for example, `certs-src` under the root-owned
 `/etc/letsencrypt`), the CLI prints the command to re-run with
 `sudo`.
@@ -247,8 +266,9 @@ ignored, but any value that is present is still validated.
 
 ## Configuration substitution
 
-When `dtaas.toml` is present, `deployment generate` substitutes its
-values into the generated files. `platform update --config` repeats
+When `dtaas.toml` is present, `deployment generate` validates it for
+`--type` (see [Validation rules](#validation-rules)), then substitutes
+its values into the generated files. `platform update --config` repeats
 the same substitution on an installed deployment. Each `--type` reads
 from its matching top-level section in `dtaas.toml`. Depending on the
 type, values go into the dotenv files (`config/.env`,
@@ -267,6 +287,57 @@ first two `[[users]]` records fill `USERNAME1` and `USERNAME2`.
 If `dtaas.toml` is not found, the command prints a note and the
 generated files keep their placeholder values.
 
+### Remote logging
+
+The website sends workflow logs to the
+[logger microservice](../user/servers/logger/LOGGER-MS.md) at
+`LOGGER_URL` in `config/client.js`. For the server types,
+`[frontend].logger-url` sets it:
+
+| `[frontend]`                         | `LOGGER_URL`                                                            |
+| :----------------------------------- | :---------------------------------------------------------------------- |
+| No `logger-url`                      | `http(s)://<server-dns>/logger`, the logger every server type runs      |
+| `logger-url = "<url>"`               | `<url>`, which must include the `/logger` route prefix                  |
+| `logger-url = ""`                    | Empty: remote logging is off, and the website hides the option          |
+
+The template ships `logger-url = "https://intocps.org/logger"`, an example
+to replace. `deployment generate` and `config validate` warn while the
+key is missing, empty, still that example, or a URL whose path does not
+end in `/logger`, so you know what the website does. `deployment
+generate` also warns when `secure-server` or `secure-server-gitlab` get
+an `http://` logger, which browsers block as mixed content:
+
+```text
+Warning: frontend.logger-url is not set
+  LOGGER_URL is https://dtaas.example.com/logger, the logger of this installation.
+  Set logger-url in dtaas.toml to choose it explicitly.
+
+Warning: frontend.logger-url is empty
+  Remote logging is off: LOGGER_URL is empty and the website hides
+  the option. Set logger-url in dtaas.toml to turn it on.
+
+Warning: frontend.logger-url is the template example
+  Logs go to https://intocps.org/logger, which is not your logger.
+  Set logger-url to your logger, or to "" to turn remote logging off.
+
+Warning: frontend.logger-url does not end in /logger
+  The logger serves its routes under /logger, so https://logs.example.com/ may
+  not reach it. Ignore this if a proxy in front of it adds the path.
+
+Warning: frontend.logger-url is http on an https site
+  Browsers block the website's requests to http://logs.example.com/logger (mixed
+  content), so no logs arrive. Use an https URL for the logger.
+```
+
+Set `logger-url` to a URL of your own to silence the warning.
+`platform update --config` writes the same value without a warning.
+A deployment generated by a CLI older than 2.3.0 still has the
+`intocps.org` logger of the old template in `config/client.js`; its
+next `platform update --config` replaces it, and any hand edit of
+`LOGGER_URL`, with the value from this table. `localhost` keeps the
+`http://localhost/logger` of its template, and the workspace types
+keep their empty `LOGGER_URL`.
+
 ### TLS certificate placement
 
 For the TLS types (`secure-server`, `secure-server-gitlab`,
@@ -274,6 +345,31 @@ For the TLS types (`secure-server`, `secure-server-gitlab`,
 `certs/` directory in the output. It reads
 `[common.security].certs-src` from `dtaas.toml` and copies the latest
 `fullchain.pem` and `privkey.pem` from there.
+
+### File modes
+
+On Linux and macOS, `deployment generate` sets the mode of the config
+files it copies, on every run and also for files that already exist:
+
+| File                                  | Mode   | Why                                                               |
+| :------------------------------------ | :----- | :---------------------------------------------------------------- |
+| `config/.env`, `config/conf.server`   | `0600` | They hold the OAuth secrets                                       |
+| `config/client.js`                    | `0644` | The website container reads it as uid 1000; it holds no secrets   |
+
+The website container (`intocps/dtaas-web` 1.7.2 and later) runs as
+uid 1000 and serves `config/client.js` to every browser as `env.js`.
+When it cannot read the file, the website does not load: its scripts
+fail in the browser and `env.js` returns `502 Bad Gateway`.
+
+`platform update --config` sets the mode of each file it writes values
+into. It writes none into `config/client.js` for
+`workspace-secure-server`, so it leaves that file's mode as it is.
+
+A deployment generated by a CLI older than 2.3.0 has
+`config/client.js` at `0600`, which breaks the website once the
+deployment runs the 1.7.2 image. Run `chmod 644 config/client.js`
+(or `platform update --config`, for the types it writes the file
+for); no restart is needed.
 
 ## User files
 
@@ -323,24 +419,35 @@ the suspension as the desired state instead of reporting it as drift.
 
 ## GitLab provisioning settings
 
-The `[gitlab]` section turns on GitLab account provisioning for
-`dtaas user add`. For what the command does and prints in each case,
-see [GitLab provisioning](cli.md#gitlab-provisioning-optional).
+The `[gitlab]` section turns on GitLab provisioning for
+`dtaas user add`: each user's account, token and two private projects.
+For what the command does and prints in each case, see
+[GitLab provisioning](cli.md#gitlab-provisioning-optional).
 
 ```toml
 [gitlab]
 provision  = true
 api_url    = "https://gitlab.example.com"
+template_host  = "https://gitlab.com"
+template_group = "dtaas"
 # pat      = "glpat-xxxxxxxxxxxxxxxxxxxx"   # prefer DTAAS_GITLAB_PAT
 # ssl_verify = "/etc/ssl/certs/corp-ca.pem" # or true (default) / false
 ```
 
-| Key          | Default | Meaning                                                                                        |
-| ------------ | ------- | ---------------------------------------------------------------------------------------------- |
-| `provision`  | `false` | `true` makes `user add` create each user's GitLab account and token                            |
-| `api_url`    | none    | The GitLab instance; required when `provision` is `true`                                       |
-| `pat`        | none    | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty                           |
-| `ssl_verify` | `true`  | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off |
+| Key              | Default | Meaning                                                                                                 |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------------------- |
+| `provision`      | `false` | `true` makes `user add` create each user's GitLab account and token                                     |
+| `api_url`        | none    | The GitLab instance; required when `provision` is `true`                                                |
+| `pat`            | none    | The admin token, used only when `DTAAS_GITLAB_PAT` is unset or empty                                    |
+| `ssl_verify`     | `true`  | `true` uses the system trust store, a path uses that CA bundle, `false` turns verification off          |
+| `template_group` | none    | Public group holding the templates `common` and `user1`, such as `dtaas`; set with `template_host`      |
+| `template_host`  | none    | GitLab `http(s)` URL that holds `template_group`, such as `https://gitlab.com`; set with the group      |
+
+The generated `dtaas.toml` sets `template_host = "https://gitlab.com"`
+and `template_group = "dtaas"`, so the templates are
+`https://gitlab.com/dtaas/common.git` and
+`https://gitlab.com/dtaas/user1.git`. To use your own copies, put both
+repositories in a public group and name that group.
 
 ### Admin token
 
@@ -356,6 +463,41 @@ For a self-hosted GitLab behind an internal CA, point `ssl_verify` at
 the CA bundle rather than turning it off. With `ssl_verify = false`,
 the admin token and every user's initial password cross the network
 without certificate checks, and the CLI prints a warning on each run.
+`ssl_verify` also applies to `git` for every URL on the `api_url` host,
+the project pushes and a template kept on that same GitLab included.
+
+### Projects
+
+With both template keys set, every user whose account and token exist
+gets two private projects in their own namespace, `common` and `user`.
+The CLI clones each template with `git` into a temporary folder, creates
+the project empty with the admin token, and pushes the default branch as
+the user, with the token issued to them (this run's, or the one saved in
+`gitlab_user_tokens.json`), asking GitLab to start no CI pipeline
+(`ci.skip`). The push goes to the project path GitLab reports for the
+user's account. A user with no saved token gets no project, and a push
+GitLab refuses fails that project; the admin token never pushes. The machine running
+`dtaas` needs `git` 2.31 or later and network access to the template
+host and to GitLab.
+
+- Templates must be public `http(s)` repositories: they are cloned
+  without a login.
+- A project that already exists, even an empty one, is never pushed to
+  (a `Warning:`): its settings belong to its owner. One with content is
+  then recorded as done, so the warning shows once; an empty one warns
+  on every run until it is deleted.
+- Git LFS is not supported: a template holding LFS pointer files (small
+  files in the pointer format) is refused. LFS rules in `.gitattributes`
+  alone are not refused, since the files can still be stored whole. A
+  template with no commits is refused too.
+- A failure is that user's alone. A template that cannot be cloned
+  fails before the project is created. A failed push leaves the new
+  project empty: delete it, then name the user again. A transfer under
+  1000 bytes a second for a minute, or a git command running for 15
+  minutes, fails.
+- Created projects, and projects found with content, are recorded in
+  `gitlab_projects` (see [Files written](#gitlab-files-written)) and
+  never looked at again.
 
 ### Initial passwords
 
@@ -403,7 +545,7 @@ user's entry ever be replaced, the old token is kept under a
 it in GitLab if it is still active. `user delete` revokes the deleted
 users' tokens on GitLab, starting users' included, and then drops their
 entries; a token that could not be revoked keeps its entry. Their GitLab
-accounts stay.
+accounts and projects stay.
 
 Before creating any account, `user add` checks that this file can be
 read and written, and removes a leftover `gitlab_user_tokens.json.tmp`
@@ -411,14 +553,17 @@ from an interrupted run. A token that still cannot be saved is revoked
 on GitLab at once, and the run issues no further tokens.
 
 `dtaas.users.registry.json` records, per user, the GitLab account id
-(`gitlab_user_id`) and whether a token was issued
-(`gitlab_pat_issued`). That is how a re-run knows what is already done:
-a user with an account id but no token gets a new token for that
-account, with no password needed, after any token an earlier run
-issued but never saved is revoked,
-and a user with a token gets nothing more. Starting users carry the
-same two markers in the separate `starting_users` section, since they
-have no entry under `users`:
+(`gitlab_user_id`), whether a token was issued (`gitlab_pat_issued`)
+and the projects done so far (`gitlab_projects`: created, or found
+with content). That is how a
+re-run knows what is already done: a user with an account id but no
+token gets a new token for that account, with no password needed, after
+any token an earlier run issued but never saved is revoked; a user with
+a token gets no second one, but does get any project not listed yet
+(one that already exists on GitLab gets only a warning);
+and a project listed there is never created or pushed again. Starting
+users carry the same markers in the separate `starting_users` section,
+since they have no entry under `users`:
 
 ```json
 {
@@ -431,17 +576,29 @@ have no entry under `users`:
       "load_balance": true,
       "desired_status": "running",
       "gitlab_user_id": 42,
-      "gitlab_pat_issued": true
+      "gitlab_pat_issued": true,
+      "gitlab_projects": [
+        "common",
+        "user"
+      ]
     }
   },
   "starting_users": {
     "username1": {
       "gitlab_user_id": 7,
-      "gitlab_pat_issued": true
+      "gitlab_pat_issued": true,
+      "gitlab_projects": [
+        "common",
+        "user"
+      ]
     }
   }
 }
 ```
+
+A project found with content is listed after its one warning. An empty
+project found in place is not listed, so every run that names that user
+warns about it until it is deleted.
 
 `dtaas.toml`, `users.csv` and `gitlab_user_tokens.json` are gitignored
 and written with mode `0600`, since they can hold the admin token, user

@@ -1,5 +1,8 @@
 """Per-deployment config file substitution specs used by deploy_config."""
 
+from functools import partial
+from .validators import get_nested
+
 # Placeholder strings that represent unconfigured secrets in template files.
 # check_placeholders warns when any of these survive substitution.
 _SECRET_PLACEHOLDERS = frozenset(
@@ -20,6 +23,21 @@ _SRC_USERNAME2 = "users.username2"
 _DNS = "common.server-dns"
 
 
+def resolve_logger_url(toml_data, scheme):
+    """Return the LOGGER_URL a server deploy type writes, or None.
+
+    A set frontend.logger-url is written as it is, so "" turns remote
+    logging off (the website hides the option). Without the key it is the
+    logger this installation runs, <scheme>://<server-dns>/logger; None,
+    which leaves the template's value, when server-dns is not set either.
+    """
+    url = get_nested(toml_data, "frontend", "logger-url")
+    if url is not None:
+        return str(url)
+    dns = str(get_nested(toml_data, "common", "server-dns") or "").strip()
+    return f"{scheme}://{dns}/logger" if dns else None
+
+
 def _frontend_js(scheme):
     """JS substitution entries for config/client.js using the given URL scheme."""
     return [
@@ -28,6 +46,7 @@ def _frontend_js(scheme):
         ("REACT_APP_URL", _DNS, f"{scheme}://{{}}"),
         ("REACT_APP_REDIRECT_URI", _DNS, f"{scheme}://{{}}/Library"),
         ("REACT_APP_LOGOUT_REDIRECT_URI", _DNS, f"{scheme}://{{}}/"),
+        ("LOGGER_URL", None, partial(resolve_logger_url, scheme=scheme)),
     ]
 
 

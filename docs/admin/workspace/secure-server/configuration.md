@@ -164,7 +164,12 @@ Create a copy of this example file without the example suffix:
 
 ```bash
 cp config/client.js.example config/client.js
+chmod 644 config/client.js
 ```
+
+The website container runs as uid 1000 and serves `config/client.js`
+to browsers as `env.js`, so the file must stay readable by all users;
+it holds no secrets. When it is not, the website does not load.
 
 Then edit the new web client config file and update the following values.
 
