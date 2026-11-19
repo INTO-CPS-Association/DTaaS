@@ -32,10 +32,7 @@ import {
   type NavigationItem,
 } from '@into-cps-association/dtaas-sdk';
 
-/**
- * Core routes of this client. The SDK's default list names every one, and a
- * client route added later joins this list.
- */
+/** Core routes of this client. A core route added later joins this list. */
 export const CORE_ROUTE_IDS: readonly string[] = [...RESERVED_EXTENSION_IDS];
 
 export interface ExtensionProblem {
@@ -128,18 +125,26 @@ export function mountPath(id: string, routePath: string): string {
   return routePath === '' ? `${id}/*` : `${id}/${routePath}`;
 }
 
+function routesOf(enabled: readonly DtaasExtension[]) {
+  return enabled.flatMap((extension) =>
+    (extension.routes ?? []).map((route) => ({
+      extension,
+      path: mountPath(extension.id, route.path),
+      element: route.element,
+    })),
+  );
+}
+
+function navigationOf(enabled: readonly DtaasExtension[]) {
+  return enabled
+    .flatMap((extension) => extension.navigation ?? [])
+    .sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
+}
+
 function mount(enabled: readonly DtaasExtension[]) {
   return {
-    routes: enabled.flatMap((extension) =>
-      (extension.routes ?? []).map((route) => ({
-        extension,
-        path: mountPath(extension.id, route.path),
-        element: route.element,
-      })),
-    ),
-    navigation: enabled
-      .flatMap((extension) => extension.navigation ?? [])
-      .sort((left, right) => (left.order ?? 0) - (right.order ?? 0)),
+    routes: routesOf(enabled),
+    navigation: navigationOf(enabled),
     digitalTwinTabs: enabled.flatMap((extension) =>
       (extension.digitalTwinTabs ?? []).map((tab) => ({ extension, tab })),
     ),

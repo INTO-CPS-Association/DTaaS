@@ -2,13 +2,15 @@
 
 Provider-agnostic [python-gitlab](https://python-gitlab.readthedocs.io/)
 operations shared across DTaaS Python packages: `dtaas-services` (service
-provisioning) and the DTaaS CLI `dtaas` (GitLab account and PAT
+provisioning) and the DTaaS CLI `dtaas` (GitLab account, PAT and project
 provisioning in `dtaas user add`, PAT revocation in `dtaas user delete`).
 
 Every function takes explicit arguments (URL, token, user fields) and performs
 **no** environment, filesystem, console, or process-global-state I/O.
 Deployment-specific glue -- URL derivation, token persistence, credential
-files, docker, and terminal output -- stays in each consuming application.
+files, docker, git clone and push, and terminal output -- stays in each
+consuming application. For example, this package creates a user's empty
+project, and the DTaaS CLI fills it from a template with `git`.
 
 ## This package is not installed as a dependency
 
@@ -48,6 +50,8 @@ dependency on the other, only a shared source location during development.
 | `create_user(gl, *, username, email, password)` | Create a user; returns a `CreateUserResult` with an explicit `CreateOutcome` (CREATED / ALREADY_EXISTS / FAILED) rather than encoding "already exists" as a nullable id. |
 | `create_user_pat(gl, user_id, username, options=None)` | Issue a Personal Access Token. `PatOptions` (name/scopes/expiry) defaults to least-privilege repository scopes; widen explicitly per call site. |
 | `revoke_user_pats(gl, user_id, name="dtaas")` | Revoke the user's active Personal Access Tokens with that name. Finding none counts as success. |
+| `find_user_project(gl, user_id, name)` | Look up the project whose path is `name` among the projects of GitLab user `user_id` (`GET /users/:user_id/projects`); returns a `ProjectLookup` whose `ProjectState` is MISSING (no such project), EMPTY (GitLab reports `empty_repo`), HAS_CONTENT (anything else, an unreported state included) or FAILED (an unknown user id included, with GitLab's words in `error`). `path` holds GitLab's `path_with_namespace` for a project found. |
+| `create_user_project(gl, user_id, name)` | Create an empty private project in the user's namespace through the administrator endpoint `POST /projects/user/:user_id`, with no `import_url`. Returns `(True, path_with_namespace)` or `(False, error)`. |
 | `with_hint(summary, hint)` | Format a message as one short summary line with its detail indented underneath, the shape every message in this package and its consumers follows. |
 
 Every GitLab call in this package catches `errors.API_ERRORS`
