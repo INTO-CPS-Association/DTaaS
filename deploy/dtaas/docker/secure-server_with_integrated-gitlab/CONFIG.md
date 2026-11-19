@@ -96,7 +96,12 @@ configures the DTaaS web application at runtime.
 
 ```bash
 cp config/client.js.example config/client.js
+chmod 644 config/client.js
 ```
+
+The website container runs as uid 1000 and serves `config/client.js`
+to browsers as `env.js`, so the file must stay readable by all users;
+it holds no secrets. When it is not, the website does not load.
 
 ### Variable Reference
 
@@ -380,6 +385,18 @@ Ensure the host has at least 4 GB RAM available for GitLab.
 1. Clear browser cookies for the domain.
 1. Check traefik-forward-auth logs:
    `docker compose --env-file config/.env logs traefik-forward-auth`
+
+### Website Does Not Load
+
+The page opens, but its scripts fail in the browser console
+(`NS_ERROR_CORRUPTED_CONTENT`, or blocked for a disallowed MIME type)
+and `env.js` returns `502 Bad Gateway`. The website container runs as
+uid 1000 and stops when it cannot read `config/client.js`. Make the
+file readable; no restart is needed:
+
+```bash
+chmod 644 config/client.js
+```
 
 ### 404 on User Workspace
 

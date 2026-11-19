@@ -61,10 +61,10 @@ function requestsFor(
   paths: readonly string[],
   channel: Channel,
 ) {
-  const requests = new Map<string, { gap: Interval; paths: string[] }>();
+  const requests = new Map<string, GapRequest>();
   paths.forEach((path) =>
     find(coverageKey(path, channel)).forEach((gap) => {
-      const request = requests.get(gap.join()) ?? { gap, paths: [] };
+      const request = requests.get(gap.join()) ?? { gap, channel, paths: [] };
       request.paths.push(path);
       requests.set(gap.join(), request);
     }),
@@ -101,6 +101,45 @@ function truncation() {
   };
 }
 
+/** What reading a gap needs, and the reads still running. */
+interface Reader {
+  readonly history: SignalHistory;
+  readonly store: SampleStore;
+  readonly coverage: HistoryCoverage;
+  readonly running: Set<Running>;
+}
+
+/** One gap of some paths on one channel, to be read in one request. */
+interface GapRequest {
+  readonly paths: string[];
+  readonly channel: Channel;
+  readonly gap: Interval;
+}
+
+/** Read one gap into the store, and resolve whether the answer was cut. */
+async function read(reader: Reader, { paths, channel, gap }: GapRequest) {
+  const [from, to] = gap;
+  const answer = await reader.history.range(paths, channel, from, to);
+  answer.samples.forEach((sample) => reader.store.insert(sample));
+  // Held only once read, so a failed read is asked again later.
+  paths.forEach((p) => reader.coverage.add(coverageKey(p, channel), from, to));
+  return answer.truncated;
+}
+
+/** Start reading one gap, kept as running until the read settles. */
+function start(reader: Reader, request: GapRequest) {
+  const done = read(reader, request);
+  const entries = request.paths.map((p) => ({
+    key: coverageKey(p, request.channel),
+    stretch: request.gap,
+    done,
+  }));
+  entries.forEach((entry) => reader.running.add(entry));
+  const finish = () => entries.forEach((entry) => reader.running.delete(entry));
+  done.then(finish, finish);
+  return done;
+}
+
 export default function createHistoryLoader(
   history: SignalHistory,
   store: SampleStore,
@@ -108,29 +147,7 @@ export default function createHistoryLoader(
 ): HistoryLoader {
   const cut = truncation();
   const running = new Set<Running>();
-  const read = async (
-    paths: string[],
-    channel: Channel,
-    [from, to]: Interval,
-  ) => {
-    const answer = await history.range(paths, channel, from, to);
-    answer.samples.forEach((sample) => store.insert(sample));
-    // Held only once read, so a failed read is asked again later.
-    paths.forEach((p) => coverage.add(coverageKey(p, channel), from, to));
-    return answer.truncated;
-  };
-  const start = (paths: string[], channel: Channel, gap: Interval) => {
-    const done = read(paths, channel, gap);
-    const entries = paths.map((p) => ({
-      key: coverageKey(p, channel),
-      stretch: gap,
-      done,
-    }));
-    entries.forEach((entry) => running.add(entry));
-    const finish = () => entries.forEach((entry) => running.delete(entry));
-    done.then(finish, finish);
-    return done;
-  };
+  const reader: Reader = { history, store, coverage, running };
   return {
     async load(paths, channel, from, to) {
       const window: Interval = [Math.max(from, to - MAX_SPAN_MS), to];
@@ -139,9 +156,7 @@ export default function createHistoryLoader(
       const earlier = overlapping(running, keys, window).map((r) => r.done);
       const find = (key: string) => missing(coverage, running, key, window);
       const requests = requestsFor(find, paths, channel);
-      const cuts = await Promise.all(
-        requests.map(({ gap, paths: p }) => start(p, channel, gap)),
-      );
+      const cuts = await Promise.all(requests.map((r) => start(reader, r)));
       // Their failures belong to the callers that started them.
       await Promise.all(earlier.map((done) => done.catch(() => false)));
       if (requests.length > 0) cut.set(window[0] > from || cuts.some(Boolean));

@@ -41,7 +41,10 @@ export function recolour(
 ) {
   [...keys].forEach((key) => {
     const marker = view.markers.all.get(key);
-    const material = marker?.dot.material as MeshBasicMaterial | undefined;
+    // Read as unknown first, so the narrowing stays one explicit step also
+    // for a linter that cannot resolve the three.js types.
+    const dotMaterial: unknown = marker?.dot.material;
+    const material = dotMaterial as MeshBasicMaterial | undefined;
     material?.color.set(colours.colourOf(key) ?? NO_READING_COLOUR);
   });
   view.invalidate();
@@ -163,6 +166,13 @@ function modelOf(view: AecScene, colours: MarkerColours) {
   };
 }
 
+/** Show a missing anchor once, since the core may resolve it again. */
+function reportMissingOnce(model: ReturnType<typeof modelOf>, name: string) {
+  if (model.ui.missing.includes(name)) return;
+  model.ui.missing.push(name);
+  model.bump();
+}
+
 /** Put the controls around the canvas and connect them to the scene. */
 export function addControls(
   view: AecScene,
@@ -183,12 +193,7 @@ export function addControls(
       if (colours.record(key, encoding, colour)) model.bump();
       recolour(view, colours, [key]);
     },
-    reportMissing: (name) => {
-      // The core may resolve the same anchor again, so a name is kept once.
-      if (model.ui.missing.includes(name)) return;
-      model.ui.missing.push(name);
-      model.bump();
-    },
+    reportMissing: (name) => reportMissingOnce(model, name),
     dispose: unmount,
   };
 }

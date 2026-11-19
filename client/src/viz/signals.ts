@@ -75,31 +75,45 @@ function deliver(store: SampleStore, listeners: Map<string, Set<Listener>>) {
   };
 }
 
+/** One subscription of every transport per path, opened and closed on use. */
+function liveSubscriptions(
+  transports: readonly LiveTransport[],
+  live: ReturnType<typeof liveCoverage>,
+  received: SignalSink,
+) {
+  const stops = new Map<string, () => void>();
+  return {
+    open(path: string) {
+      if (stops.has(path)) return;
+      live.open(path);
+      const offs = transports.map((t) => t.subscribe([path], received));
+      stops.set(path, () => offs.forEach((off) => off()));
+    },
+    close(path: string) {
+      stops.get(path)?.();
+      stops.delete(path);
+      live.close(path);
+    },
+  };
+}
+
 function fanOut(
   store: SampleStore,
   transports: readonly LiveTransport[],
   live: ReturnType<typeof liveCoverage>,
 ) {
   const listeners = new Map<string, Set<Listener>>();
-  const stops = new Map<string, () => void>();
   const received = deliver(store, listeners);
+  const subscriptions = liveSubscriptions(transports, live, received);
   const add = (path: string, listener: Listener) => {
     const set = listeners.get(path) ?? new Set<Listener>();
     listeners.set(path, set.add(listener));
-    if (!stops.has(path)) {
-      live.open(path);
-      const offs = transports.map((t) => t.subscribe([path], received));
-      stops.set(path, () => offs.forEach((off) => off()));
-    }
+    subscriptions.open(path);
   };
   const remove = (path: string, listener: Listener) => {
     const set = listeners.get(path);
     set?.delete(listener);
-    if (set?.size === 0) {
-      stops.get(path)?.();
-      stops.delete(path);
-      live.close(path);
-    }
+    if (set?.size === 0) subscriptions.close(path);
   };
   return { add, remove };
 }

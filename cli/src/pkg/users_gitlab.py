@@ -1,4 +1,4 @@
-"""Optional GitLab account and PAT provisioning for 'user add'.
+"""Optional GitLab account, PAT and project provisioning for 'user add'.
 
 Split out of users.py to keep both files within a reasonable line count,
 mirroring the users_compose.py / users_utils.py split. Driven by the
@@ -8,8 +8,9 @@ container provisioning users.py has already done.
 Each user gets an account with a Personal Access Token, tracked in the
 registry and persisted as soon as it is issued, so an interrupted run keeps
 what it had already done and a re-run never mints a second token. Who is
-provisioned is decided in users_gitlab_targets.py, and the disk writes live
-in users_gitlab_records.py.
+provisioned is decided in users_gitlab_targets.py, the disk writes live
+in users_gitlab_records.py, and the projects that follow the account step
+in users_gitlab_projects.py.
 """
 
 from dataclasses import dataclass
@@ -18,6 +19,7 @@ from . import gitlab as gitlabPkg
 from . import utils
 from .constants import GITLAB_USER_TOKENS_FILE
 from .messages import echo_hint, with_hint
+from .users_gitlab_projects import GitlabRun, has_project_work, provision_projects
 from .users_gitlab_records import check_token_file, persist_account_result
 from .users_gitlab_targets import GitlabUserResult, changed_user_id
 
@@ -151,14 +153,17 @@ def _persisted(gl, candidate, result):
     return result
 
 
-def _attemptable(candidates):
-    """The candidates a run would create an account or a token for."""
-    return [c.username for c in candidates if _has_work(c)]
+def _attemptable(candidates, templates):
+    """The candidates a run would create an account, a token or a project
+    for."""
+    return [
+        c.username for c in candidates if _has_work(c) or has_project_work(c, templates)
+    ]
 
 
-def _skip_rest(candidates):
+def _skip_rest(candidates, templates):
     """Fail the candidates left once tokens can no longer be saved."""
-    pending = _attemptable(candidates)
+    pending = _attemptable(candidates, templates)
     if pending:
         echo_hint(
             "GitLab provisioning stopped for: " + ", ".join(pending),
@@ -168,14 +173,14 @@ def _skip_rest(candidates):
     return [GitlabUserResult(name, None, None, True) for name in pending]
 
 
-def _provision_all(gl, candidates):
-    """Provision each candidate in turn, stopping once a token could not be
-    saved: every later save would fail the same way."""
+def _provision_all(run, candidates):
+    """Provision each candidate's account in turn, stopping once a token
+    could not be saved: every later save would fail the same way."""
     results = []
     for index, candidate in enumerate(candidates):
-        results.append(_provision_one_gitlab_user(gl, candidate))
+        results.append(_provision_one_gitlab_user(run.gl, candidate))
         if results[-1].token_lost:
-            return results + _skip_rest(candidates[index + 1 :])
+            return results + _skip_rest(candidates[index + 1 :], run.templates)
     return results
 
 
@@ -192,27 +197,32 @@ def _gitlab_client(config_obj):
 
 
 def provision_gitlab_users(config_obj, candidates):
-    """Create each candidate's GitLab account and PAT, when provisioning is
-    enabled.
+    """Create each candidate's GitLab account and PAT, then its projects,
+    when provisioning is enabled.
 
     Container provisioning is unaffected by a GitLab failure. Returns the
     usernames that could not be provisioned, so add_users can surface a
     command failure (a missing password is not counted). A candidate with a
     registry-stored gitlab_user_id retries PAT issuance directly against it
     rather than calling create_user again; any new id is persisted. A
-    candidate already marked gitlab_pat_issued is skipped, so re-running the
-    command never mints a second token for the same account. Nothing is
+    candidate already marked gitlab_pat_issued gets no second token, but
+    still gets any project it lacks (users_gitlab_projects). Nothing is
     attempted while the token file cannot be read or written.
     """
     provision, err = config_obj.get_gitlab_provision()
     utils.check_error(err)
     if not provision or not candidates:
         return []
+    templates, err = config_obj.get_gitlab_templates()
+    utils.check_error(err)
     gl, err = _gitlab_client(config_obj)
     if err is not None:
         echo_hint("GitLab provisioning skipped for every user.", err)
-        return _attemptable(candidates)
-    return [r.username for r in _provision_all(gl, candidates) if r.failed]
+        return _attemptable(candidates, templates)
+    run = GitlabRun(gl, templates)
+    results = _provision_all(run, candidates)
+    failed = [r.username for r in results if r.failed]
+    return failed + provision_projects(run, candidates, results)
 
 
 def gitlab_failure_exc(failed):

@@ -56,10 +56,22 @@ function answerOf(answer: unknown, channel: Channel): HistoryAnswer {
   };
 }
 
+/** Posts one range query to the gateway, with the user's token. */
+function postRange(settings: GatewaySettings, query: object) {
+  const request = settings.fetch ?? ((url, init) => fetch(url, init));
+  return request(endpoint(settings, 'range'), {
+    method: 'POST',
+    headers: {
+      ...authorization(settings),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(query),
+  });
+}
+
 export default function createGatewayHistory(
   settings: GatewaySettings,
 ): SignalHistory {
-  const request = settings.fetch ?? ((url, init) => fetch(url, init));
   return {
     async range(paths, channel, from, to) {
       const token = settings.token();
@@ -67,14 +79,7 @@ export default function createGatewayHistory(
       if (settings.session?.isRefused(token)) {
         throw new Error('The signals gateway refused the sign-in');
       }
-      const response = await request(endpoint(settings, 'range'), {
-        method: 'POST',
-        headers: {
-          ...authorization(settings),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ paths, channel, from, to }),
-      });
+      const response = await postRange(settings, { paths, channel, from, to });
       if (response.status === UNAUTHORISED) settings.session?.refuse(token);
       if (!response.ok) {
         throw new Error(

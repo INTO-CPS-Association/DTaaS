@@ -37,6 +37,7 @@ The repository provides these skills:
 | `capture-docs-screenshots`        | Retake the user documentation screenshots from a running installation                                  |
 | `update-docs-diagrams`            | Edit, restyle and export the documentation diagrams                                                    |
 | `review-pull-request`             | Check that a pull request passes every quality gate before merge                                       |
+| `ship-audit`                      | Audit a branch, with evidence for each gate, before it is offered for review                           |
 | `check-code-quality`              | Review the code quality of one component                                                               |
 | `plan-before-coding`              | Analyse the codebase and requirements before implementing                                              |
 | `architecture-design`             | Design an architecture and its diagrams and documentation                                              |
@@ -70,3 +71,12 @@ pull requests. Disclose code that a coding agent generated, particularly
 when it carries significant program logic. Understand every line you
 contribute: review generated code before submitting it, and keep the
 critical thinking for yourself.
+
+Commits name people only. The `no-tool-attribution` hook in
+`.pre-commit-config.yaml` runs at the `commit-msg` stage and refuses a
+message that credits a coding tool as co-author, for example a
+`Co-Authored-By` trailer that names one. `pre-commit install` installs it
+together with the other hooks. Disclose agent use in the pull request
+description instead. The `Commit Checks` workflow runs the same check on
+every commit of a pull request, because `git commit --no-verify` skips the
+local hook.
