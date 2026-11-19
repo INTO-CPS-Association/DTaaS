@@ -19,7 +19,7 @@ flowchart LR
     B --> HS[Host services]
     K --> HS
   end
-  SDK[dtaas-sdk: contract, template, fake host] -.-> B
+  SDK[dtaas-extensions: contract, template, fake host] -.-> B
   SDK -.-> K
   S[Sensors and twins] -->|MQTT| R[RabbitMQ]
   R -->|MQTT, live| G[Signals gateway]
@@ -40,8 +40,11 @@ flowchart LR
 - A kit owns its domain model, its anchor kinds, its substrates and, where it
   needs them, its own metadata tables.
 - The SDK gives every kit the contract, a template and a fake host for tests. It
-  is `dtaas-sdk` today. #1912 proposes the name `dtaas-extension-api` and
-  decides it.
+  lives in the `dtaas-extensions` repository, named `dtaas-sdk` until
+  18 November 2026, next to the example kits `bim` and `soil-kit` and the
+  `hello-kit` template. The npm package keeps the name
+  `@into-cps-association/dtaas-sdk`. #1912 proposes the name
+  `dtaas-extension-api` and decides it.
 
 ## What a Kit Is
 
@@ -109,7 +112,7 @@ substrate.
 | K5 | Kits may add substrates with new ids | `STANDARD_SUBSTRATES` reserves `image`, `aec`, `mesh`, `video`, `embed`, `geo` and `field` for the core and `aec` lives in the client core, so no kit owns a substrate yet. #1912 (section 10.2) places `aec` in `bim` and `geo` and `field` in their own extensions |
 | K6 | An anchor is `{signalPath, kind, ref}` in `visualisation.json` | No thing template, so each kit invents its own model |
 | K7 | Signals are scalar values on topic paths | No shared notion of platform, sensor or depth |
-| K8 | `client/sdk/src/testing` has `fakeHostServices`, `fakeSignals` and `checkConformance`. `dtaas-sdk` has the example kits `hello-kit` and `bim` | No template or generator that starts a new kit |
+| K8 | `client/sdk/src/testing` has `fakeHostServices`, `fakeSignals` and `checkConformance`. `dtaas-extensions` has the example kits `bim` and `soil-kit` and the `hello-kit` template | No template or generator that starts a new kit |
 | K9 | `const extensions = [bim]` in `client/src/extensions.ts`, plus `REACT_APP_EXTENSIONS_DISABLED` | Adding a kit needs a source edit and a rebuild |
 | K10 | `visualisation.json` has `schemaVersion` | The contract package is private and not published. #1912 keeps it unpublished until a second extension is ported, which `soil-kit` would be |
 | K11 | `dtaas-services` creates the shared databases | No way for a kit to bring its own migration |
@@ -228,6 +231,13 @@ Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Int
 1. Each kit may create its own metadata tables, as long as they follow the
    naming convention and join with the shared tables and the tables of other
    kits through `device_id` (K11).
+2. The kits live in the `dtaas-extensions` repository, as `examples/bim` and
+   `examples/soil-kit`, decided with the maintainer on 18 November 2026.
+   `bim-kit` leaves the `ifc-utils` repository and `soil-kit` leaves its own
+   repository.
+3. The Digital Twins page has the tabs Execute, View, Manage and Create, on
+   `/preview/digitaltwins`. View draws a twin from its `visualisation.json`
+   with the substrates of the kits.
 
 ## Open Questions
 
@@ -243,3 +253,5 @@ Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Int
    own extension?
 5. Are kits named `<domain>-kit`, as `bim-kit` is today, or
    `dtaas-ext-<domain>`, as #1912 proposes?
+6. Does `aec` draw the building with the scene view of `bim-kit`, so that one
+   3D renderer serves both the Buildings page and the View tab?

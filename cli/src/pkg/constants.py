@@ -13,6 +13,11 @@ STATE_FILE = ".dtaas.state.json"
 # For pkg/users.py: GitLab provisioning token storage
 GITLAB_USER_TOKENS_FILE = "gitlab_user_tokens.json"
 
+# For pkg/users_gitlab_projects.py: each GitLab project 'user add' creates in
+# a provisioned user's namespace, and the template repository it is filled
+# from, in [gitlab].template_group on template_host.
+GITLAB_PROJECT_TEMPLATES = {"common": "common", "user": "user1"}
+
 # For utils.py
 LOCALHOST_SERVER = "localhost"
 
@@ -38,6 +43,9 @@ USERNAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 URL_RE = re.compile(r"^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~%/+-]*)?$")
 SIZE_RE = re.compile(r"^\d+(\.\d+)?\s*([kmgt]i?b?|b)$", re.IGNORECASE)
 NUMERIC_HOST_RE = re.compile(r"^[0-9.]+$")
+# One segment of a GitLab group path (used with fullmatch): letters, digits,
+# _ . and -, not starting with -, at most 255 characters.
+NAMESPACE_SEGMENT_RE = re.compile(r"[A-Za-z0-9_.][A-Za-z0-9_.-]{0,254}")
 
 # For users_utils.py: rule.onlyu<N>. prefixes in config/conf.server.
 CONF_SERVER_RULE_NUM_RE = re.compile(r"rule\.onlyu(\d+)\.")
@@ -46,15 +54,14 @@ CONF_SERVER_RULE_NUM_RE = re.compile(r"rule\.onlyu(\d+)\.")
 USER_PSEUDO_KEY_RE = re.compile(r"(username|email)(\d+)$")
 
 # Credential-bearing files. These must never reach the packaged wheel
-# (build.py) and are chmod'd 0600 wherever the CLI writes them (project.py,
-# deploy_config.py): dtaas.toml can carry the GitLab provisioning PAT,
-# users.csv an optional plaintext password column, and gitlab_user_tokens.json
-# the PATs issued to provisioned users.
+# (build.py) and are chmod'd 0600 wherever the CLI writes them (file_modes.py):
+# dtaas.toml can carry the GitLab provisioning PAT, users.csv an optional
+# plaintext password column, and gitlab_user_tokens.json the PATs issued to
+# provisioned users.
 SECRET_FILENAMES = frozenset(
     {
         ".env",
         "conf.server",
-        "client.js",
         "forward-auth-conf",
         "dtaas.toml",
         "users.csv",
@@ -62,3 +69,10 @@ SECRET_FILENAMES = frozenset(
     }
 )
 SECRET_SUFFIXES = (".pem", ".key", ".crt", ".p12")
+
+# Local config files that are not secret but are read by a container running
+# as a non-root user: dtaas-web serves config/client.js to every browser as
+# /env.js, as uid 1000. They never reach the packaged wheel either (build.py)
+# and are chmod'd 0644 wherever the CLI writes them (file_modes.py); at 0600
+# the website's server crashes on its first /env.js request (#1861).
+PUBLIC_CONFIG_FILENAMES = frozenset({"client.js"})
