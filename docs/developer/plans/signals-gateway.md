@@ -63,7 +63,7 @@ The client parts follow the increments of discussion #1912 (its section 14). The
 | 1 | Extension API core | 2 | The contract now in `client/sdk` |
 | 2 | Web extension host | 3 | Host services, extension registration in `extensions.ts`, menu, routes and the credentials held in the client core |
 | 3 | `bim` as an extension | 5 | The Buildings page moved out of the client into its own package |
-| 4 | Visualisation | 6 | The common core, the Visualise tab, the substrate registry and the `image` and `embed` substrates, with `aec` moved into `bim`, reading signals through the gateway after phase 3 |
+| 4 | Visualisation | 6 | The common core, the View tab of the Digital Twins page, the substrate registry and the `image` and `embed` substrates, with `aec` moved into `bim`, reading signals through the gateway after phase 3 |
 
 ## Who Reads and Writes Signals
 

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 964" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="platform-architecture-title platform-architecture-desc" id="platform-architecture-root">
+        <title id="platform-architecture-title">DTaaS platform architecture</title>
+        <desc id="platform-architecture-desc">Runtime architecture of the DTaaS platform: the browser client reaches the library, logger and per-user workspaces through the Traefik gateway, and drives digital twin execution directly against GitLab, while two admin CLIs provision the workspaces and the platform services.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #platform-architecture-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #platform-architecture-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #platform-architecture-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#platform-architecture-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="platform-architecture-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#47536b"/></marker>
+          <marker id="platform-architecture-arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#00807a"/></marker>
+          <marker id="platform-architecture-arrow-link" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#0b5fa5"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <rect x="272" y="196" width="552" height="404" rx="8" fill="#fafbfb" stroke="#dbe0e5" stroke-width="1"/>
+        <rect x="420" y="188" width="252" height="16" rx="2" fill="#ffffff"/>
+        <text x="546" y="200" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">DTAAS PLATFORM · DOCKER COMPOSE</text>
+        <rect x="280" y="740" width="720" height="128" rx="8" fill="#fafbfb" stroke="#dbe0e5" stroke-width="1"/>
+        <rect x="296" y="732" width="92" height="16" rx="2" fill="#ffffff"/>
+        <text x="342" y="744" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">ADMIN HOST</text>
+        <path d="M 140,348 L 140,98 Q 140,90 148,90 L 560,90" fill="none" stroke="#00807a" stroke-width="1.8" marker-end="url(#platform-architecture-arrow-accent)"/>
+        <path d="M 404,348 L 404,126 Q 404,118 412,118 L 560,118" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#platform-architecture-arrow-link)"/>
+        <path d="M 680,228 L 680,140" fill="none" stroke="#0b5fa5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#platform-architecture-arrow-link)"/>
+        <path d="M 240,388 L 304,388" fill="none" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#platform-architecture-arrow-link)"/>
+        <path d="M 504,372 L 528,372 Q 536,372 536,364 L 536,276 Q 536,268 544,268 L 568,268" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 504,388 L 568,388" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 504,404 L 528,404 Q 536,404 536,412 L 536,500 Q 536,508 544,508 L 568,508" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 680,568 L 680,620" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 960,140 L 960,620" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 416,772 L 416,548 Q 416,540 424,540 L 568,540" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <path d="M 800,772 L 800,700" fill="none" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <rect x="336" y="66" width="128" height="18" rx="2" fill="#ffffff"/>
+        <text x="400" y="79" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">TRIGGER · POLL</text>
+        <rect x="450" y="124" width="60" height="18" rx="2" fill="#ffffff"/>
+        <text x="480" y="137" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">OAUTH2</text>
+        <rect x="688" y="175" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="730" y="188" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GIT CLONE</text>
+        <rect x="246" y="364" width="52" height="18" rx="2" fill="#ffffff"/>
+        <text x="272" y="377" fill="#0b5fa5" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTPS</text>
+        <rect x="688" y="585" width="100" height="18" rx="2" fill="#ffffff"/>
+        <text x="738" y="598" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">MQTT · AMQP</text>
+        <rect x="884" y="371" width="68" height="18" rx="2" fill="#ffffff"/>
+        <text x="918" y="384" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CI JOBS</text>
+        <rect x="324" y="651" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="366" y="664" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ADD USERS</text>
+        <rect x="808" y="727" width="84" height="18" rx="2" fill="#ffffff"/>
+        <text x="850" y="740" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PROVISION</text>
+        <rect x="560" y="40" width="440" height="100" rx="6" fill="#ffffff"/>
+        <rect x="560" y="40" width="440" height="100" rx="6" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <rect x="568" y="48" width="32" height="16" rx="2" fill="none" stroke="#00807a" stroke-width="1" opacity="0.6"/>
+        <text x="584" y="60" fill="#00807a" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="780" y="85" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">GitLab</text>
+        <text x="780" y="105" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">OAuth2 · DT repos · CI pipelines</text>
+        <text x="780" y="125" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">with GitLab runner</text>
+        <rect x="40" y="348" width="200" height="80" rx="6" fill="#ffffff"/>
+        <rect x="40" y="348" width="200" height="80" rx="6" fill="#edeef0" stroke="#5f6b85" stroke-width="1.2"/>
+        <rect x="48" y="356" width="32" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="64" y="368" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SPA</text>
+        <text x="140" y="393" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">DTaaS web client</text>
+        <text x="140" y="413" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">React · runs in browser</text>
+        <rect x="304" y="348" width="200" height="80" rx="6" fill="#ffffff"/>
+        <rect x="304" y="348" width="200" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="312" y="356" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="324" y="368" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">GW</text>
+        <text x="404" y="393" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Traefik gateway</text>
+        <text x="404" y="413" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">routes · forward-auth</text>
+        <rect x="568" y="228" width="224" height="80" rx="6" fill="#ffffff"/>
+        <rect x="568" y="228" width="224" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="576" y="236" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="588" y="248" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">MS</text>
+        <text x="680" y="273" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Library service</text>
+        <text x="680" y="293" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">libms · GraphQL · /lib</text>
+        <rect x="568" y="348" width="224" height="80" rx="6" fill="#ffffff"/>
+        <rect x="568" y="348" width="224" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="576" y="356" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="588" y="368" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">MS</text>
+        <text x="680" y="393" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Logger service</text>
+        <text x="680" y="413" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">logger-ms · /logger</text>
+        <rect x="568" y="468" width="224" height="100" rx="6" fill="#ffffff"/>
+        <rect x="568" y="468" width="224" height="100" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="576" y="476" width="24" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="588" y="488" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">WS</text>
+        <text x="680" y="513" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">User workspaces</text>
+        <text x="680" y="533" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">/&lt;user&gt; · Jupyter · VNC</text>
+        <text x="680" y="553" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">optional DT runner</text>
+        <rect x="600" y="620" width="400" height="80" rx="6" fill="#ffffff"/>
+        <rect x="600" y="620" width="400" height="80" rx="6" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <rect x="608" y="628" width="32" height="16" rx="2" fill="none" stroke="#5f6b85" stroke-width="1" opacity="0.6"/>
+        <text x="624" y="640" fill="#5f6b85" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+        <text x="800" y="665" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Platform services</text>
+        <text x="800" y="685" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">RabbitMQ · InfluxDB · Grafana …</text>
+        <rect x="304" y="772" width="224" height="80" rx="6" fill="#ffffff"/>
+        <rect x="304" y="772" width="224" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="312" y="780" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="328" y="792" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CLI</text>
+        <text x="416" y="817" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">DTaaS CLI</text>
+        <text x="416" y="837" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">dtaas · cli/</text>
+        <rect x="696" y="772" width="224" height="80" rx="6" fill="#ffffff"/>
+        <rect x="696" y="772" width="224" height="80" rx="6" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <rect x="704" y="780" width="32" height="16" rx="2" fill="none" stroke="rgb(0,37,70)" stroke-width="1" opacity="0.6"/>
+        <text x="720" y="792" fill="rgb(0,37,70)" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CLI</text>
+        <text x="808" y="817" fill="rgb(0,37,70)" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Services CLI</text>
+        <text x="808" y="837" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">dtaas-services</text>
+        <line x1="40" y1="892" x2="1000" y2="892" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="912" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="40" y="928" width="20" height="14" rx="2" fill="#e6f7f6" stroke="#00807a" stroke-width="1.2"/>
+        <text x="68" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">GitLab backend</text>
+        <rect x="200" y="928" width="20" height="14" rx="2" fill="#ffffff" stroke="rgb(0,37,70)" stroke-width="1.2"/>
+        <text x="228" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Component</text>
+        <rect x="324" y="928" width="20" height="14" rx="2" fill="#edeef0" stroke="#5f6b85" stroke-width="1.2"/>
+        <text x="352" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Browser</text>
+        <rect x="432" y="928" width="20" height="14" rx="2" fill="#f7f8f9" stroke="#8092a2" stroke-width="1.2"/>
+        <text x="460" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Separate</text>
+        <line x1="548" y1="936" x2="580" y2="936" stroke="#00807a" stroke-width="1.4" marker-end="url(#platform-architecture-arrow-accent)"/>
+        <text x="590" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">DT runs</text>
+        <line x1="670" y1="936" x2="702" y2="936" stroke="#0b5fa5" stroke-width="1.4" marker-end="url(#platform-architecture-arrow-link)"/>
+        <text x="712" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">HTTP</text>
+        <line x1="772" y1="936" x2="804" y2="936" stroke="#47536b" stroke-width="1.4" marker-end="url(#platform-architecture-arrow)"/>
+        <text x="814" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Internal</text>
+        <line x1="902" y1="936" x2="934" y2="936" stroke="#47536b" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#platform-architecture-arrow)"/>
+        <text x="944" y="940" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Optional</text>
+      </svg>

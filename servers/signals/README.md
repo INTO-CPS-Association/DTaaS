@@ -2,8 +2,7 @@
 
 The signals gateway will serve the live and past signals of digital twins
 to the DTaaS client, so that no broker or PostgreSQL credential reaches the
-browser. The requirements and the choices behind it are in
-[the plan](../../docs/developer/plans/signals-gateway.md).
+browser.
 
 The routes keep their final paths. Stream and range sign the user in and
 decide access, then answer `501` until their phases fill them in:
@@ -17,31 +16,123 @@ decide access, then answer `501` until their phases fill them in:
 A token is either a GitLab token or a JWT of a Keycloak realm or Dex
 instance named in `oidc-providers`. GitLab is asked about a GitLab token
 with `/oauth/token/info`, and the token must belong to an application in
-`gitlab-client-id` and carry a scope of `gitlab-scopes`. The token is never
-logged, written to disk or sent anywhere but `gitlab-url`. A project is
-readable with the Reporter role at least, since every signed-in user can
-read a project with internal visibility. A path is
-readable when a twin in a readable project of the DTaaS group declares it
-in its committed `visualisation.json` and the topic starts with a prefix of
-the owner's group in `owners-file`, which `dtaas-services` writes. Every
-decision is logged without the token. Live samples over MQTT come in phase 3
-and history from PostgreSQL in phase 4 of the plan.
+`gitlab-client-id` and carry a scope of `gitlab-scopes`. The token is
+never logged, written to disk or sent anywhere but `gitlab-url`. A project
+is readable with the Reporter role at least, since every signed-in user
+can read a project with internal visibility. A path is readable when a
+twin in a readable project of the DTaaS group declares it in its committed
+`visualisation.json` and the topic starts with a prefix of the owner's
+group in `owners-file`, which `dtaas-services` writes. Every decision is
+logged without the token. Live samples over MQTT and history from
+PostgreSQL come in later versions of the service.
 
 ## Configuration
 
-Copy [`config/signals.yaml.sample`](config/signals.yaml.sample) to
-`signals.yaml` and adjust it. Every key can also be set with an environment
-variable: `SIGNALS_` and the key in upper case with `_` for `-`, for example
-`SIGNALS_PORT`. The service reads the file named by `SIGNALS_CONFIG_PATH`,
-or `signals.yaml` in the working directory when that variable is not set.
+The service reads the YAML file named by the `SIGNALS_CONFIG_PATH`
+environment variable, or `signals.yaml` in the working directory when that
+variable is not set. Every key can also be set with an environment
+variable: `SIGNALS_` and the key in upper case with `_` for `-`, for
+example `SIGNALS_PORT`. Environment variables override the file.
 
-## Development
+Save this as `signals.yaml` and adjust it. It lists every key with its
+default value, except `gitlab-url`, `gitlab-client-id` and `owners-file`,
+which have no default and show an example:
 
-```bash
-yarn install
-yarn syntax:check
-yarn format:check
-yarn build
-yarn test
-yarn start
+```yaml
+# Where the service listens.
+hostname: 127.0.0.1
+port: 4004
+
+# Off by default: behind Traefik the client is served from the same origin.
+# Set an origin only when the client runs elsewhere.
+cors-allow-origin: ''
+cors-allow-credentials: false
+
+# Largest JSON request body, in bytes.
+max-payload-bytes: 65536
+# Requests per TCP peer per window (milliseconds). Behind a reverse proxy
+# this is a budget shared by every user.
+throttle-ttl: 60000
+throttle-limit: 120
+# Addresses or CIDR ranges of the reverse proxies in front of the gateway,
+# such as Traefik. The client address is then taken from X-Forwarded-For as
+# the proxy appended it, so the limit counts each client. Empty trusts none.
+# The gateway warns at startup when forwarded-user-header is set and this
+# list is empty, since every user then shares one limit.
+trusted-proxies: []
+
+# The one GitLab that validates tokens and answers what a user may read.
+# The user's token is sent to this host and to no other.
+gitlab-url: https://foo.com/gitlab
+# The group whose projects hold the users' twins, one project per user.
+gitlab-group: DTaaS
+# The branch whose committed visualisation.json files declare the signals.
+gitlab-branch: master
+# Lowest GitLab access level that counts as reading a project (20 = Reporter).
+# Lower values are refused, since every signed-in user can read a project
+# with internal visibility.
+gitlab-min-access-level: 20
+# Timeout of one GitLab call, in milliseconds.
+gitlab-timeout: 5000
+# When set, the request must carry this header with the email of the token's
+# user, as traefik-forward-auth sets it. Leave empty to skip the check.
+forwarded-user-header: ''
+# Only tokens GitLab issued to these OAuth applications are accepted: the
+# gateway's own application, and the DTaaS client's (REACT_APP_CLIENT_ID in
+# client.js) while the client still sends its own token. Until the
+# placeholders are replaced every token is refused. Left empty, the gateway
+# refuses to start. As a variable: a comma-separated list.
+gitlab-client-id:
+  - '<SIGNALS_GATEWAY_APPLICATION_ID>'
+  - '<DTAAS_CLIENT_APPLICATION_ID>'
+# A GitLab token must carry one of these scopes. The token is never logged,
+# written to disk or sent anywhere but gitlab-url.
+gitlab-scopes: [read_api, api]
+# Lets the gateway start with an empty gitlab-client-id, so any OAuth
+# application's token is accepted. Only for a local development stack.
+allow-any-gitlab-client: false
+# Keycloak realms or Dex instances whose JWTs are accepted, besides GitLab
+# tokens. Each JWT must name the issuer, carry the audience and be signed by
+# a key of jwks-url. Its groups name the projects the user may read:
+# '<owner>_viewer', '<owner>_member' or '<owner>_admin' from Keycloak, or
+# '<gitlab-group>/<owner>:developer' from the GitLab connector of Dex.
+oidc-providers: []
+#  - issuer: https://foo.com/auth/realms/dtaas
+#    audience: dtaas-signals
+#    jwks-url: https://foo.com/auth/realms/dtaas/protocol/openid-connect/certs
+#    groups-claim: groups
+# File with a GitLab token that has the read_api scope only, used to read the
+# twins of a user signed in through Keycloak or Dex. It can read every
+# project its user can, so that user should be a Reporter of the DTaaS group
+# and nothing more. Mode 600, nothing else in it. The gateway warns at start
+# when the token has a scope beyond read_api.
+gitlab-token-file: ''
+# How long an identity and a user's project list are cached (milliseconds).
+identity-cache-ttl: 60000
+projects-cache-ttl: 60000
+# How long the signals read from one project's committed twins are kept
+# (milliseconds). A new commit on gitlab-branch replaces them sooner.
+twin-index-cache-ttl: 600000
+# How long the commit of gitlab-branch is kept for one user and project
+# (milliseconds). A new commit is seen this much later at most.
+branch-cache-ttl: 5000
+# The folder of each project that holds one folder per twin.
+twins-folder: digital_twins
+# JSON file mapping each owner (the project path in gitlab-group) to its
+# group and the topic prefixes of that group, written by dtaas-services with
+# the broker accounts and the database: {"jady": {"group": "swim",
+# "topics": ["SWiM/"]}}. A twin's topic outside its owner's prefixes is not
+# served. Without the file no topic is served.
+owners-file: /run/secrets/signals_owners.json
+# The channel of a topic whose mqtt transport names none.
+default-channel: measured
+
+# Limits of one request.
+max-paths-per-stream: 200
+max-path-length: 256
+# Longest history range a request may ask for, in milliseconds.
+range-max-span: 604800000
 ```
+
+Set `hostname: 0.0.0.0` when the service runs in a container or behind a
+reverse proxy.

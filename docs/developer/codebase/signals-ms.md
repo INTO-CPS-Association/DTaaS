@@ -25,13 +25,14 @@ servers/signals/
 │   ├── authz/                     # Which twins declare which paths
 │   ├── dto/                       # Request validation
 │   └── config/                    # signals.yaml and SIGNALS_* variables
-├── config/signals.yaml.sample     # Every key with its default
+├── README.md                      # Routes and configuration
+├── DEVELOPER.md                   # Commands to build, test and run
 └── test/                          # Unit and end-to-end tests
 ```
 
 ## Build and Test
 
-The commands are in `servers/signals/README.md`. The `signals-ms.yml`
-workflow runs the lint, build and tests, and checks the health route of the
+The commands are in `servers/signals/DEVELOPER.md`. The `signals-ms.yml`
+workflow runs the lint, build and tests. It also checks the health route of the
 built service and of the Docker image. The npm package and the image are not
 published yet.

@@ -101,21 +101,38 @@ describe('Config', () => {
     expect(() => new Config().loadConfig(guest)).toThrow();
   });
 
-  it('accepts an empty YAML file and refuses a list', async () => {
+  it('accepts an empty YAML file and refuses a list or two documents', async () => {
     expect(new Config().loadConfig(await yamlFile(''))).toBeUndefined();
+    const commentsOnly = await yamlFile('# nothing set\n');
+    expect(new Config().loadConfig(commentsOnly)).toBeUndefined();
+    const twoDocs = await yamlFile('port: 4100\n---\nport: 4200\n');
+    expect(() => new Config().loadConfig(twoDocs)).toThrow(/one YAML/);
     const list = await yamlFile('- a\n- b\n');
     expect(() => new Config().loadConfig(list)).toThrow(/mapping/);
   });
 });
 
-describe('config/signals.yaml.sample', () => {
-  const samplePath = path.resolve('config/signals.yaml.sample');
+describe('the YAML example in README.md', () => {
+  // The README is the one place the example configuration lives, so the
+  // test reads its first yaml code block.
+  async function readmeExample(): Promise<string> {
+    const readme = await readFile(path.resolve('README.md'), 'utf8');
+    const block = /```yaml\n([\s\S]*?)```/.exec(readme);
+    if (block === null) throw new Error('README.md has no yaml code block');
+    return block[1];
+  }
 
   it('loads, and documents every key', async () => {
     CONFIG_KEYS.forEach((key) => delete process.env[envNameOf(key)]);
-    const config = new Config();
-    expect(() => config.loadConfig(samplePath)).not.toThrow();
-    const text = await readFile(samplePath, 'utf8');
-    CONFIG_KEYS.forEach((key) => expect(text).toContain(`\n${key}:`));
+    const text = await readmeExample();
+    const dir = await mkdtemp(path.join(os.tmpdir(), 'dtaas-signals-readme-'));
+    const yamlPath = path.join(dir, 'signals.yaml');
+    await writeFile(yamlPath, text, 'utf8');
+    try {
+      expect(() => new Config().loadConfig(yamlPath)).not.toThrow();
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+    CONFIG_KEYS.forEach((key) => expect(`\n${text}`).toContain(`\n${key}:`));
   });
 });
