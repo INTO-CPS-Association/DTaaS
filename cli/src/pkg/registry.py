@@ -6,10 +6,10 @@ mutated atomically by the CLI and never hand-edited, the way useradd owns
 
 Shape: {"users": {"alice": {"email": ..., "groups": [...],
 "load_balance": bool, "desired_status": "running", "gitlab_user_id": 42,
-"gitlab_pat_issued": true}},
+"gitlab_pat_issued": true, "gitlab_projects": ["common", "user"]}},
 "starting_users": {"foo": {"gitlab_user_id": 7, ...}}}. See
-set_desired_status()/set_gitlab_user_ids()/set_gitlab_pat_issued() for the
-GitLab fields.
+set_desired_status()/set_gitlab_user_ids()/set_gitlab_pat_issued()/
+set_gitlab_projects() for the GitLab fields.
 
 The second section holds nothing but those GitLab markers, for the dtaas.toml
 starting users that 'user add' has provisioned on GitLab. They are kept apart
@@ -209,3 +209,14 @@ def set_gitlab_pat_issued(usernames, path=REGISTRY_FILE):
     usernames already in the registry are updated; persisted atomically.
     """
     return _apply_user_field("gitlab_pat_issued", dict.fromkeys(usernames, True), path)
+
+
+def set_gitlab_projects(projects, path=REGISTRY_FILE):
+    """Record the GitLab projects 'user add' has filled for each username.
+
+    *projects* maps a username to the names of its finished projects, which
+    replace any list already recorded. A re-run never recreates or re-pushes
+    a project named there. Only usernames already in the registry are
+    updated; persisted atomically.
+    """
+    return _apply_user_field("gitlab_projects", projects, path)

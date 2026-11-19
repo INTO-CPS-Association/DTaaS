@@ -1,3 +1,5 @@
+import type { SignalTarget } from 'src/authz/policy';
+
 /** A visualisation.json with one MQTT transport. */
 export function visualisationOf(
   topics: string[],
@@ -13,3 +15,11 @@ export function visualisationOf(
 }
 
 export const PUMP = visualisationOf(['alice/pump/flow', 'alice/pump/pressure']);
+
+/** One readable signal of the pump twin. */
+export const FLOW: SignalTarget = {
+  path: 'alice/pump/flow',
+  owner: 'alice',
+  twin: 'pump',
+  channel: 'measured',
+};

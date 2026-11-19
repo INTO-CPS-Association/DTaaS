@@ -13,7 +13,7 @@ from src.pkg.gitlab.provisioner import (
 USERNAME = "alice"
 EMAIL = "alice@example.org"
 PASSWORD = "S3cur3-p4ss"  # noqa: S105 # NOSONAR
-TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 
 
 def _user(username=USERNAME, existing_user_id=None):

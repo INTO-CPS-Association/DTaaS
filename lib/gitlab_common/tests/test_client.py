@@ -5,7 +5,7 @@ import warnings
 import gitlab
 from gitlab_common import get_gitlab_client
 
-TEST_TOKEN = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+TEST_TOKEN = "fake-admin-token"  # noqa: S105 # NOSONAR
 TEST_URL = "https://services.intocps.org:8090/gitlab"
 
 

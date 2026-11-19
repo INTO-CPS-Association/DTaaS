@@ -5,7 +5,7 @@ import pytest
 from src.pkg.gitlab.client import PAT_ENV_VAR, resolve_client, resolve_pat
 
 API_URL = "https://gitlab.example.com"
-PAT = "glpat-test-token-1234567890"  # noqa: S105 # NOSONAR
+PAT = "fake-admin-token"  # noqa: S105 # NOSONAR
 
 
 def _config(api_url=API_URL, pat="", ssl_verify=True, pat_err=None, url_err=None):

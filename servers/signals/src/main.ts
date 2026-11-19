@@ -52,7 +52,8 @@ export function isEntrypoint(entrypoint: string | undefined): boolean {
   return import.meta.url === pathToFileURL(realpathSync(entrypoint)).href;
 }
 
-async function bootstrap() {
+// Returns the running application, so a test can start it and close it.
+export async function bootstrap(): Promise<NestExpressApplication> {
   // Settings the gateway refuses stop it before anything is started.
   const errors = startupErrors(new Config());
   if (errors.length > 0) throw new Error(errors.join('\n'));
@@ -66,6 +67,7 @@ async function bootstrap() {
   // Checked after listen, so a slow GitLab does not delay the start.
   const tokenWarnings = await ownTokenWarnings(config, app.get(GitLabClient));
   tokenWarnings.forEach((warning) => Logger.warn(warning, 'Signals'));
+  return app;
 }
 
 if (isEntrypoint(process.argv[1])) {
