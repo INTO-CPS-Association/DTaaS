@@ -35,10 +35,13 @@ export interface GitApi {
 
 /** A GitLab client for the signed-in user, made when a call needs it. */
 export function sessionApi(): GitApi {
-  return new Gitlab({
+  // Typed as unknown first so the narrowing to GitApi stays one explicit
+  // step, also for a linter that cannot resolve the gitbeaker types.
+  const api: unknown = new Gitlab({
     host: getAuthority(),
     oauthToken: getAccessToken(),
-  }) as unknown as GitApi;
+  });
+  return api as GitApi;
 }
 
 /** A file that is not in the repository at the ref asked for. */

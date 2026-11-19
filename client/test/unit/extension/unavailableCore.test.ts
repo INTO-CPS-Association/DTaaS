@@ -27,9 +27,10 @@ describe('a client without the visualisation core', () => {
 
   it('reads no visualisation and refuses to save one', async () => {
     const dt = { name: 'a', path: 'digital_twins/a', files: [] };
+    const noVisualisation = {} as never;
 
     expect(await viz.load(dt)).toBeNull();
-    await expect(viz.save(dt, {} as never)).rejects.toThrow(
+    await expect(viz.save(dt, noVisualisation)).rejects.toThrow(
       'This client has no visualisation core',
     );
     await expect(viz.substrates.get('image')).rejects.toThrow();
