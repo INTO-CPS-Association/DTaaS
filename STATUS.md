@@ -9,6 +9,7 @@ Quality and CI indicators for the DTaaS repository.
 [![Library Microservice](https://github.com/into-cps-association/dtaas/actions/workflows/lib-ms.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/lib-ms.yml)
 [![DT Runner](https://github.com/into-cps-association/dtaas/actions/workflows/runner.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/runner.yml)
 [![Logger Microservice](https://github.com/into-cps-association/dtaas/actions/workflows/logger-ms.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/logger-ms.yml)
+[![Signals Microservice](https://github.com/into-cps-association/dtaas/actions/workflows/signals-ms.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/signals-ms.yml)
 [![DT Automation](https://github.com/into-cps-association/dtaas/actions/workflows/dt-automation.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/dt-automation.yml)
 [![gitlab-common](https://github.com/into-cps-association/dtaas/actions/workflows/gitlab-common.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/gitlab-common.yml)
 [![DTaaS CLI](https://github.com/into-cps-association/dtaas/actions/workflows/python-cli.yml/badge.svg)](https://github.com/into-cps-association/dtaas/actions/workflows/python-cli.yml)

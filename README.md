@@ -70,6 +70,7 @@ This repository is a monorepo.
 | [servers/lib](servers/lib) | Library microservice | TypeScript, NestJS |
 | [servers/execution/runner](servers/execution/runner) | Runner microservice | TypeScript, NestJS |
 | [servers/logger](servers/logger) | Logger microservice | TypeScript, NestJS |
+| [servers/signals](servers/signals) | Signals gateway microservice | TypeScript, NestJS |
 | [lib/dt-automation](lib/dt-automation) | dt-automation npm package | TypeScript |
 | [lib/gitlab_common](lib/gitlab_common) | GitLab operations shared by the two CLIs | Python |
 | [cli](cli) | DTaaS CLI | Python |

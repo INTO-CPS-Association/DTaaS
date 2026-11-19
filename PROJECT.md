@@ -36,6 +36,7 @@ Non-obvious. Use these rather than guessing a script name.
 | `client` | `yarn build && yarn config:test && yarn test:unit && yarn test:int` |
 | `servers/lib` | `yarn build && yarn test:all` |
 | `servers/logger` | `yarn test` |
+| `servers/signals` | `yarn build && yarn test` |
 | `lib/dt-automation` | `yarn test:unit` |
 | `cli` | `poetry run python src/pkg/build.py && poetry run pytest` |
 | `lib/gitlab_common` | `poetry run pytest` |
@@ -139,7 +140,8 @@ Conventions the linters do not enforce, which the existing code follows:
   Redux Toolkit slices; unit and integration tests with Jest and React
   Testing Library, end-to-end tests with Playwright.
 - **`servers/`**: NestJS services. `lib` is the library microservice,
-  `execution/runner` the runner, and `logger` the logger microservice.
+  `execution/runner` the runner, `logger` the logger microservice and
+  `signals` the signals gateway.
 - **`docs/`**: MkDocs with the Material theme. `mkdocs.yml` and
   `mkdocs-github.yml` carry the same navigation; change both together.
   `mkdocs.yml` builds only on Linux; on Windows, build with
