@@ -16,6 +16,9 @@ import NotFound from 'page/NotFound';
 import Automation from 'route/automation/Automation';
 import Insights from 'route/insights/Insights';
 import InsightsConfig from 'route/insights/InsightsConfig';
+import extensionHost from 'extension/extensionHost';
+import ExtensionPage from 'extension/ExtensionPage';
+import AssetPreviewPage from 'extension/AssetPreviewPage';
 
 /**
  * The only route loaded on demand.
@@ -26,6 +29,23 @@ import InsightsConfig from 'route/insights/InsightsConfig';
  * internally, where it would regress silently on a version bump.
  */
 const Bim = lazy(() => import('route/bim/Bim'));
+
+/**
+ * The pages of the domain extensions in `src/extensions.ts`, mounted under
+ * each extension's id. They are private pages like the core ones, and each is
+ * loaded on demand, so a renderer or a WebAssembly kernel an extension needs
+ * stays out of the entry chunk.
+ */
+const extensionRoutes = extensionHost.routes.map(
+  ({ extension, path, element }) => ({
+    path,
+    element: (
+      <PrivateRoute>
+        <ExtensionPage extension={extension} page={element} />
+      </PrivateRoute>
+    ),
+  }),
+);
 
 export const routes = [
   {
@@ -57,6 +77,15 @@ export const routes = [
     element: (
       <PrivateRoute>
         <Library />
+      </PrivateRoute>
+    ),
+  },
+  {
+    // A library file shown by the extension that previews its type.
+    path: 'library/preview',
+    element: (
+      <PrivateRoute>
+        <AssetPreviewPage />
       </PrivateRoute>
     ),
   },
@@ -159,6 +188,7 @@ export const routes = [
       </PrivateRoute>
     ),
   },
+  ...extensionRoutes,
   // Anything the list above does not match. Without it the router falls back
   // to its own developer-facing error screen.
   {

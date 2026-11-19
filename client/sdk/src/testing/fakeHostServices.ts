@@ -32,6 +32,8 @@ export interface FakeHostOptions {
   readonly files?: Record<string, Uint8Array | string>;
   readonly entities?: readonly TbEntity[];
   readonly viz?: FakeVizOptions;
+  /** Services of other extensions `extensions.get` returns, by id. */
+  readonly services?: Readonly<Record<string, unknown>>;
   /** Replace whole services, e.g. with jest mocks. */
   readonly overrides?: Partial<HostServices>;
 }
@@ -112,6 +114,15 @@ const createSettings = (settings: Readonly<Record<string, unknown>> = {}) => ({
   get: <T>(key: string) => settings[key] as T | undefined,
 });
 
+const createExtensionServices = (
+  services: Readonly<Record<string, unknown>> = {},
+) => ({
+  get: <T>(id: string): T => {
+    if (!(id in services)) throw new Error(`No service ${id} in this host`);
+    return services[id] as T;
+  },
+});
+
 /** A complete, in-memory `HostServices` for testing a kit without DTaaS. */
 const fakeHostServices = (options: FakeHostOptions = {}): FakeHostServices => {
   const recorded = createRecorded();
@@ -127,6 +138,7 @@ const fakeHostServices = (options: FakeHostOptions = {}): FakeHostServices => {
     ui: createUi(recorded),
     logger: createLogger(recorded),
     settings: createSettings(options.settings),
+    extensions: createExtensionServices(options.services),
     config: createConfig(options.extensionId ?? 'test', options.env ?? {}),
     recorded,
     ...options.overrides,

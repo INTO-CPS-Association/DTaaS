@@ -2,6 +2,7 @@ import { expect, Locator } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
 import {
   openAuthenticatedApp,
+  reloadSignedIn,
   saveRunnerSettings,
 } from 'test/e2e/setup/appSettings';
 import DEBOUNCE_TIME from 'test/e2e/tests/constants';
@@ -157,7 +158,7 @@ test.describe('Concurrent Execution', () => {
     await expect(preReloadHistoryDialog).not.toBeVisible();
 
     // Reload the page after execution has started
-    await page.reload();
+    await reloadSignedIn(page);
 
     // Wait for the page to load
     await page.waitForLoadState('networkidle');

@@ -74,3 +74,13 @@ serves the mounted `env.js` to every browser, so the file on the host
 mode `0644`. It holds no secrets. When the container cannot read it,
 the website does not load: its scripts fail in the browser and `env.js`
 returns `502 Bad Gateway`.
+
+## Domain Extensions
+
+These keys are optional. A client without them runs every extension it was built
+with.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
+| `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |

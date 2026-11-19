@@ -37,8 +37,8 @@ describe('Automation', () => {
 
     const library = screen.getByRole('link', { name: /Library/ });
     expect(library).toHaveAttribute('href', '/preview/library');
-    // No new tab: a new tab starts with an empty sessionStorage, where the OIDC
-    // session lives, so the route guard would bounce the person to sign in.
+    // No new tab: a new tab starts without the OIDC session, which lives in
+    // the memory of the page, so the route guard would ask for a sign-in.
     expect(library).not.toHaveAttribute('target');
 
     const digitalTwins = screen.getByRole('link', { name: /Digital Twins/ });

@@ -3,9 +3,9 @@
  *
  * The Automation and Insights pages are both a short list of in-application
  * destinations, so they share one card. Each card follows its route with the
- * router, never a new tab: a new tab starts with an empty sessionStorage, where
- * the OIDC session is kept, so the route guard would send the person to sign in
- * again.
+ * router, never a new tab: a new tab starts without the OIDC session, which
+ * lives in the memory of the page, so the route guard would send the person to
+ * sign in again.
  */
 
 import Box from '@mui/material/Box';

@@ -1,6 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 import test from 'test/e2e/setup/fixtures';
-import { restoreSessionStorage } from 'test/e2e/setup/authStorage';
 
 export const PRIMARY_RUNNER = process.env.PRIMARY_RUNNER ?? 'linux';
 export const SECONDARY_RUNNER = process.env.SECONDARY_RUNNER ?? 'windows';
@@ -46,7 +45,33 @@ export async function authorizeIfAsked(page: Page) {
 }
 
 /**
- * Open the signed-in website directly at the page a test needs.
+ * Sign in from the start page with the GitLab session the setup saved.
+ *
+ * The website keeps the signed-in user in the memory of the page, so every
+ * new page starts signed out. GitLab still holds its own session in the
+ * cookies of `user.json`, so it sends the browser straight back.
+ */
+export async function signIn(page: Page) {
+  await page.getByRole('button', { name: 'Sign In' }).click({ timeout: 30000 });
+  await authorizeIfAsked(page);
+}
+
+/**
+ * Go to an address inside the running application, as a link would.
+ *
+ * Loading the address would start a new page, which starts signed out, so
+ * the router is moved instead.
+ */
+export async function openInApp(page: Page, path: string) {
+  const target = new URL(path, page.url());
+  await page.evaluate((address) => {
+    globalThis.history.pushState({}, '', address);
+    globalThis.dispatchEvent(new PopStateEvent('popstate'));
+  }, `${target.pathname}${target.search}`);
+}
+
+/**
+ * Open the signed-in website at the page a test needs.
  *
  * Tests move on from there by clicking, as a person does, and not by loading
  * a second address. Loading one unloads the running application, and the
@@ -56,11 +81,20 @@ export async function authorizeIfAsked(page: Page) {
  * driver's, not the website's.
  */
 export async function openAuthenticatedApp(page: Page, path = './Library') {
-  await restoreSessionStorage(page);
-  await page.goto(path);
+  await page.goto('./');
+  await signIn(page);
+  if (path !== './Library') await openInApp(page, path);
   await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible(
     { timeout: 30000 },
   );
+}
+
+/** Reload the page, sign in again, and return to the same address. */
+export async function reloadSignedIn(page: Page) {
+  const address = new URL(page.url());
+  await page.reload();
+  await signIn(page);
+  await openInApp(page, `${address.pathname}${address.search}`);
 }
 
 export async function saveRunnerSettings(

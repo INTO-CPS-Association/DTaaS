@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  clearAccessToken,
-  clearUsername,
-} from '@into-cps-association/dt-automation';
+import { clearAccessToken, clearUsername } from 'util/auth/credentials';
 import { useNavigate } from 'react-router-dom';
 
 import { wait } from 'util/auth/Authentication';

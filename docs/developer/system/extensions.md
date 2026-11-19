@@ -51,10 +51,31 @@ of the API it works with as a semver range (`apiRange`, such as `^1.1`). A host
 refuses an extension whose range does not include the API version the host
 implements (`SDK_VERSION`).
 
+## The Extension Host
+
+`client/src/extension/` is the host side of the contract. It reads the
+extensions compiled into a build from `client/src/extensions.ts`, an empty list
+today, and decides which of them run. An extension is left out, with the reason
+in the browser console, when it is malformed, when its `apiRange` does not
+include the host's API version, when its id is taken, when
+`REACT_APP_EXTENSIONS_DISABLED` in `env.js` lists it, when its
+`REACT_APP_EXT_<ID>_*` keys do not satisfy its configuration schema or when it
+requires a service that no enabled extension provides.
+
+The host mounts every contribution point of the contract: pages under `/<id>`,
+menu items after the core ones, tabs on the Digital Twins page, Library previews
+at `/library/preview?file=<path>` and a Redux slice at `state.ext.<id>`. It
+calls `setup` of each extension once and gives each one the SDK's
+`HostServices`: the signed-in user, the library, the workspace files, GitLab,
+the snackbar, the page shell, settings, a logger, its configuration and the
+services of other extensions that it names in `requires`. The GitLab credentials
+stay in the client core. An extension does not import client internals or the
+code of another extension. Until the common visualisation core joins the client,
+the `signals` service delivers nothing and reports every connection as down.
+
 ## Proposed Modular Architecture
 
-The rest of the modular architecture described here is a proposal. The client
-does not load extensions yet.
+The rest of the modular architecture described here is a proposal.
 
 The contract itself is the `client/sdk/` package described above. The
 [dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) repository

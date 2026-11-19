@@ -40,12 +40,27 @@ export function useUsername(): string {
  * @param endpoint (optional). Example `bar` Any leading or trailing slashes will be removed.
  * @returns a complete URL: `baseUrl` / `username` / `endpoint`
  */
-const useUserLink = (baseURL: string, endpoint?: string): string => {
-  const username = useUsername();
-  const cleanBaseURL = cleanURL(baseURL);
-  const cleanEndpoint = cleanURL(endpoint ?? '');
-  return `${cleanBaseURL}/${username}/${cleanEndpoint}`;
-};
+const userLink = (baseURL: string, username: string, endpoint?: string) =>
+  `${cleanURL(baseURL)}/${username}/${cleanURL(endpoint ?? '')}`;
+
+const useUserLink = (baseURL: string, endpoint?: string): string =>
+  userLink(baseURL, useUsername(), endpoint);
+
+/** The application's own address, outside React. */
+export function applicationURL(): string {
+  return `${cleanURL(globalThis.env.REACT_APP_URL)}/${cleanURL(
+    globalThis.env.REACT_APP_URL_BASENAME,
+  )}`;
+}
+
+/** A user's library address, outside React, as `useURLforLIB` builds it. */
+export function libraryURLFor(username: string): string {
+  return userLink(
+    applicationURL(),
+    username,
+    globalThis.env.REACT_APP_URL_LIBLINK,
+  );
+}
 
 export function useURLforDT(): string {
   return useUserLink(useAppURL(), globalThis.env.REACT_APP_URL_DTLINK);
@@ -60,7 +75,7 @@ export function useURLforLIB(): string {
 }
 
 export function useAppURL(): string {
-  return `${cleanURL(globalThis.env.REACT_APP_URL)}/${useURLbasename()}`;
+  return applicationURL();
 }
 
 export interface KeyLinkPair {
