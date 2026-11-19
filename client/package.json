@@ -58,7 +58,7 @@
     "@fontsource/inter": "5.3.0",
     "@fontsource/roboto": "^5.3.0",
     "@gitbeaker/rest": "43.8.0",
-    "@into-cps-association/bim-kit": "0.1.1",
+    "@into-cps-association/bim-kit": "0.2.0",
     "@into-cps-association/dt-automation": "^0.2.0",
     "@into-cps-association/dtaas-sdk": "link:./sdk",
     "@monaco-editor/react": "4.7.0",

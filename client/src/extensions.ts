@@ -1,4 +1,5 @@
 import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import { extension as bim } from '@into-cps-association/bim-kit/dtaas';
 
 /**
  * Every domain extension compiled into this client, in menu order.
@@ -10,6 +11,6 @@ import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
  *
  * The client must still build and pass its tests with the list empty.
  */
-const extensions: readonly DtaasExtension[] = [];
+const extensions: readonly DtaasExtension[] = [bim];
 
 export default extensions;

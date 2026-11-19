@@ -7,7 +7,6 @@ import {
   DigitalTwinsIcon,
   AutomationIcon,
   WorkbenchIcon,
-  BuildingModelsIcon,
   InsightsIcon,
   ExtensionPageIcon,
 } from 'components/appIcons';
@@ -37,18 +36,12 @@ const coreItems: MenuItemEntry[] = [
   },
   {
     index: 4,
-    name: 'Buildings',
-    icon: <BuildingModelsIcon />,
-    link: '/bim',
-  },
-  {
-    index: 5,
     name: 'Workbench',
     icon: <WorkbenchIcon />,
     link: '/workbench',
   },
   {
-    index: 6,
+    index: 5,
     name: 'Insights',
     icon: <InsightsIcon />,
     link: '/insights',

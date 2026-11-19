@@ -11,7 +11,7 @@ pages.
 | Package                               | Source                                                         | Role in the client                                                                                                                                                    |
 | :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
-| `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | IFC to glTF conversion in the browser, the binding manifest and the viewer of the [Building Models](../../user/website/bim.md) page. The client pins version `0.1.1`. |
+| `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
 | `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
 
 The [client page](../codebase/client.md) describes the classes of
@@ -20,20 +20,14 @@ describes how it is released.
 
 ## The Building Models Page
 
-The domain logic of the Building Models page lives in `bim-kit`. The
-client holds three wiring files in `client/src/route/bim/`:
-
-- `Bim.tsx` places the page in the DTaaS layout and hands the viewer the
-  library URL of the signed-in user.
-- `library.ts` names the folder that holds the models, `common/models`.
-- `persistGeometry.ts` writes a model converted in the browser back to
-  the library, so that each model is converted once.
-
-A change to how a model is drawn reaches DTaaS as a new version of
-`bim-kit`. The page is still wired into the client by hand, in the route
-table (`src/routes.tsx`), the menu (`src/page/MenuItems.tsx`), the icon
-registry (`src/components/appIcons.tsx`) and `package.json`. A page for
-another domain would have to edit the same files.
+The Building Models page is the first extension. `client/src/extensions.ts`
+imports it from the `./dtaas` entry of `bim-kit`, so the page, the model
+conversion and the writing of converted models back to the library live in that
+package and its tests run there. A change to the page reaches DTaaS as a new
+version of `bim-kit` and not as a pull request against this repository. The
+client unit tests replace the extension with a stand-in that declares the same
+id, page, menu label and icon, since the real one pulls in a renderer and a
+WebAssembly geometry kernel.
 
 ## The Extension Contract
 
@@ -54,13 +48,13 @@ implements (`SDK_VERSION`).
 ## The Extension Host
 
 `client/src/extension/` is the host side of the contract. It reads the
-extensions compiled into a build from `client/src/extensions.ts`, an empty list
-today, and decides which of them run. An extension is left out, with the reason
-in the browser console, when it is malformed, when its `apiRange` does not
-include the host's API version, when its id is taken, when
-`REACT_APP_EXTENSIONS_DISABLED` in `env.js` lists it, when its
-`REACT_APP_EXT_<ID>_*` keys do not satisfy its configuration schema or when it
-requires a service that no enabled extension provides.
+extensions compiled into a build from `client/src/extensions.ts` and decides
+which of them run. An extension is left out, with the reason in the browser
+console, when it is malformed, when its `apiRange` does not include the host's
+API version, when its id is taken, when `REACT_APP_EXTENSIONS_DISABLED` in
+`env.js` lists it, when its `REACT_APP_EXT_<ID>_*` keys do not satisfy its
+configuration schema or when it requires a service that no enabled extension
+provides.
 
 The host mounts every contribution point of the contract: pages under `/<id>`,
 menu items after the core ones, tabs on the Digital Twins page, Library previews
@@ -95,8 +89,6 @@ holds the proposal it came from. In the proposal:
 - A common visualisation core, `dtaas-visualisation`, holds the parts
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.
-- `bim-kit` is moved onto the contract, and the wiring files in
-  `client/src/route/bim/` move into it.
 
 The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1 onto the
 contract as a private package.
@@ -105,7 +97,7 @@ The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are
 grouped into a generic set and a set for each domain, such as IFC for
 construction and buildings. Of the two extensions drawn, the Buildings
-page exists in the client today, as a hand-wired route.
+page is in the client today, as an extension.
 
 ![Multi-domain digital twins](multi-domain.png#only-light)
 ![Multi-domain digital twins](multi-domain-dark.png#only-dark)

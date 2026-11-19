@@ -8,9 +8,10 @@ Open it from **Buildings** in the menu.
 ![Building Models page](images/buildings.png)
 
 This page describes the asset layout, the binding manifest and the conversion
-workflow. It is the user documentation for DTaaS issue 1762. The developer
-documentation, covering what the route contains and what it leaves out, is in
-`client/src/route/bim/README.md`.
+workflow. It is the user documentation for DTaaS issue 1762. The page is a
+client extension that comes from the `bim-kit` package, and
+[Client Extensions](../../developer/system/extensions.md) describes how the
+client loads it.
 
 ## What the Page Needs
 

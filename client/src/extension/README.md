@@ -6,8 +6,9 @@ that adds pages to this client without changing its code. The SDK is the
 contract between the two: the types an extension implements and the
 services the client gives it.
 
-No extension is compiled in yet: `src/extensions.ts` is an empty list and the
-client builds and passes its tests that way.
+The Buildings page is the first extension, from the `./dtaas` entry of
+`@into-cps-association/bim-kit`. The client must still build and pass its tests
+with the list in `src/extensions.ts` empty.
 
 ## Where the Contract Lives
 
