@@ -29,14 +29,12 @@ jest.mock('extension/extensionHost', () => {
   const { createPlatformServices } = jest.requireActual(
     'extension/hostServices',
   );
-  const { default: unavailableCore } = jest.requireActual(
-    'extension/unavailableCore',
-  );
+  const { default: createSignals } = jest.requireActual('viz/signals');
   const platform = createPlatformServices({
     getState: () => ({ auth: { userName: 'user1' }, settings: {} }),
     notify: jest.fn(),
   });
-  const services = { ...platform, ...unavailableCore() };
+  const services = { ...platform, signals: createSignals([]), viz: {} };
   return {
     __esModule: true,
     env: {},

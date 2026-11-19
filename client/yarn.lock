@@ -817,6 +817,10 @@
     "@reduxjs/toolkit" "^2.13.0"
     uuid "^14.0.2"
 
+"@into-cps-association/dtaas-ext-bim@link:./extensions/bim":
+  version "0.0.0"
+  uid ""
+
 "@into-cps-association/dtaas-sdk@link:./sdk":
   version "0.0.0"
   uid ""

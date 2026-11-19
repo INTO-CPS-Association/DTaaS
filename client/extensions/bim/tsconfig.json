@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true, // Raise errors for implicit any types.
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default exports.
+    "esModuleInterop": true, // Interoperate with CommonJS packages in tests.
+    "target": "ES2019",
+    "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error"],
+    "jsx": "react-jsx", // Use the React 17+ JSX runtime.
+    "types": [], // Keep the package free from test framework globals.
+    "module": "esnext", // Emit ES modules.
+    "moduleResolution": "bundler", // Resolve imports as a bundler does.
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "src/*": ["./src/*"],
+      "tests/*": ["./tests/*"],
+      "@into-cps-association/dtaas-sdk": ["../../sdk/src/index.ts"],
+      "@into-cps-association/dtaas-sdk/*": ["../../sdk/src/*/index.ts"]
+    }
+  },
+  "exclude": ["**/node_modules/*", "dist"]
+}

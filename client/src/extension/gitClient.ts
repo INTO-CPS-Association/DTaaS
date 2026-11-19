@@ -10,6 +10,7 @@
 
 import { Gitlab } from '@gitbeaker/rest';
 import { getAccessToken } from 'util/auth/credentials';
+import GitSignInNeeded from 'extension/gitSignInNeeded';
 import type {
   CommitResult,
   FileChange,
@@ -52,12 +53,13 @@ export class GitFileMissing extends Error {
   }
 }
 
-// GitLab answers a missing file, branch or project with 404. Gitbeaker keeps
-// the response on the error's cause, so the status is read from there.
-function isNotFound(error: unknown): boolean {
+// GitLab answers a missing file, branch or project with 404 and a refused
+// token with 401. Gitbeaker keeps the response on the error's cause, so the
+// status is read from there.
+function statusOf(error: unknown): unknown {
   const cause = (error as { cause?: { response?: { status?: unknown } } })
     ?.cause;
-  return cause?.response?.status === 404;
+  return cause?.response?.status;
 }
 
 function fromBase64(content: string): Uint8Array {
@@ -80,6 +82,17 @@ export function commitAction(change: FileChange): Record<string, unknown> {
   return action;
 }
 
+/** The error a failed read raises, named when GitLab's status says why. */
+function readFailure(
+  error: unknown,
+  file: { repo: string; path: string; ref: string },
+): unknown {
+  const status = statusOf(error);
+  if (status === 404) return new GitFileMissing(file.repo, file.path, file.ref);
+  if (status === 401) return new GitSignInNeeded(file.repo);
+  return error;
+}
+
 /**
  * The git service. `api` is made per call, so a token refreshed after sign-in
  * is the one used.
@@ -93,8 +106,7 @@ export default function createGitService(
         const file = await api().RepositoryFiles.show(repo, path, ref);
         return fromBase64(file.content);
       } catch (error) {
-        if (isNotFound(error)) throw new GitFileMissing(repo, path, ref);
-        throw error;
+        throw readFailure(error, { repo, path, ref });
       }
     },
     async commit(repo, branch, changes, message): Promise<CommitResult> {

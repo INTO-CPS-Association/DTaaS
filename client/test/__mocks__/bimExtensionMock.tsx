@@ -19,7 +19,8 @@ const BuildingsPage = lazy(async () => ({
 export const extension: DtaasExtension = {
   id: 'bim',
   name: 'Buildings',
-  version: '0.2.0',
+  // Marks the stand-in, so the build scan can refuse a bundle that has it.
+  version: '0.2.0-test-stand-in',
   sdk: 1,
   routes: [{ path: '', element: BuildingsPage }],
   navigation: [

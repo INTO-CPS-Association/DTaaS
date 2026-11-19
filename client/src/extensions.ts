@@ -1,5 +1,5 @@
 import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
-import { extension as bim } from '@into-cps-association/bim-kit/dtaas';
+import { extension as bim } from '@into-cps-association/dtaas-ext-bim';
 
 /**
  * Every domain extension compiled into this client, in menu order.
