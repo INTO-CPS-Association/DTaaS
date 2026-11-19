@@ -23,18 +23,11 @@ const { contents, library, signals, viz } = sharedServices;
 const DIRECTORY = library.conventions.digitalTwinsDirectory;
 const readCommitted = committedReader(sharedServices);
 
-function Drawing({ loaded }: { readonly loaded: Loaded }) {
+type NotReady = Exclude<Loaded, { state: 'ready' }>;
+
+/** What the tab shows while the twin's visualisation is not ready. */
+function Waiting({ loaded }: { readonly loaded: NotReady }) {
   if (loaded.state === 'loading') return <CircularProgress sx={{ m: 2 }} />;
-  if (loaded.state === 'error' && loaded.signIn) {
-    return (
-      <Alert severity="warning">
-        Your GitLab session has ended. Sign in again to see this twin.
-      </Alert>
-    );
-  }
-  if (loaded.state === 'error') {
-    return <Alert severity="error">The visualisation could not be read.</Alert>;
-  }
   if (loaded.state === 'none') {
     return (
       <Alert severity="info">
@@ -44,6 +37,18 @@ function Drawing({ loaded }: { readonly loaded: Loaded }) {
       </Alert>
     );
   }
+  if (loaded.signIn) {
+    return (
+      <Alert severity="warning">
+        Your GitLab session has ended. Sign in again to see this twin.
+      </Alert>
+    );
+  }
+  return <Alert severity="error">The visualisation could not be read.</Alert>;
+}
+
+function Drawing({ loaded }: { readonly loaded: Loaded }) {
+  if (loaded.state !== 'ready') return <Waiting loaded={loaded} />;
   const paths = [...new Set(loaded.asset.encodings.map((e) => e.target))];
   return (
     <>

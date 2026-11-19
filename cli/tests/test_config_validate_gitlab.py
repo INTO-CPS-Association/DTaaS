@@ -5,7 +5,9 @@ every problem at once, so these cover the section as a user meets it.
 """
 
 import copy
+import pytest
 from src.pkg.config_validate import collect_errors
+from src.pkg.config_validate_gitlab import TEMPLATES_TOGETHER
 
 
 def test_gitlab_section_not_a_table(base):
@@ -39,8 +41,9 @@ def test_gitlab_empty_pat_rejected(base):
     """A [gitlab].pat key that is present but blank is a config mistake."""
     bad = copy.deepcopy(base)
     bad["gitlab"] = {"pat": "   "}
-    assert "gitlab.pat is set but empty: remove it or set a real token" in collect_errors(
-        bad
+    assert (
+        "gitlab.pat is set but empty: remove it or set a real token"
+        in collect_errors(bad)
     )
 
 
@@ -71,3 +74,37 @@ def test_gitlab_provisioning_with_only_an_api_url_validates(base):
     ok = copy.deepcopy(base)
     ok["gitlab"] = {"provision": True, "api_url": "https://gitlab.example.com"}
     assert collect_errors(ok) == []
+
+
+HOST = "https://gitlab.com"
+GROUP_ERROR = (
+    "gitlab.template_group must be a GitLab group path, such as dtaas "
+    "or dtaas/templates"
+)
+
+
+@pytest.mark.parametrize(
+    "templates,expected",
+    [
+        ({"template_group": "dtaas", "template_host": HOST}, []),
+        ({"template_group": "dt/templates", "template_host": HOST}, []),
+        ({"template_group": "dtaas"}, [TEMPLATES_TOGETHER]),
+        ({"template_host": HOST}, [TEMPLATES_TOGETHER]),
+        (
+            {"template_group": "dtaas/", "template_host": "ftp://example.com"},
+            [GROUP_ERROR, "gitlab.template_host must be a valid URL"],
+        ),
+        ({"template_group": "dtaas.git"}, [GROUP_ERROR, TEMPLATES_TOGETHER]),
+    ],
+    ids=["both", "subgroup", "group-only", "host-only", "both-bad", "bad-and-alone"],
+)
+def test_gitlab_project_templates(base, templates, expected):
+    """The group is a GitLab group path and the host an http(s) URL, set
+    together or both left out; every problem is listed at once."""
+    config = copy.deepcopy(base)
+    config["gitlab"] = {
+        "provision": True,
+        "api_url": "https://gitlab.example.com",
+        **templates,
+    }
+    assert collect_errors(config) == expected

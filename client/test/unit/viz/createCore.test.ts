@@ -16,11 +16,12 @@ const GATEWAY = { REACT_APP_VIZ_SIGNALS_URL: 'https://signals.example' };
 
 describe('the core of a deployment', () => {
   beforeEach(() => {
-    globalThis.fetch = jest.fn(async () => ({
+    const answer: unknown = jest.fn(async () => ({
       ok: true,
       status: 200,
       json: async () => ({ samples: [] }),
-    })) as unknown as typeof fetch;
+    }));
+    globalThis.fetch = answer as typeof fetch;
   });
 
   afterEach(() => {

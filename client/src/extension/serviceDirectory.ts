@@ -34,16 +34,18 @@ function offersOf(enabled: readonly DtaasExtension[]) {
   );
 }
 
-export default function createServiceDirectory(
-  enabled: readonly DtaasExtension[],
+/**
+ * Builds each service once, on first use. The services being built are kept
+ * in order, so a service that needs itself through `requires` is named
+ * instead of overflowing the stack.
+ */
+function serviceBuilder(
+  offers: ReadonlyMap<string, Offer>,
   hostOf: (ext: DtaasExtension) => HostServices,
-): ServiceDirectory {
-  const offers = offersOf(enabled);
+) {
   const built = new Map<string, unknown>();
-  // The services being built, in order, so a service that needs itself
-  // through `requires` is named instead of overflowing the stack.
   const building: string[] = [];
-  const build = (id: string) => {
+  return (id: string) => {
     const offer = offers.get(id);
     if (!offer) throw new Error(`No enabled extension provides ${id}`);
     if (building.includes(id)) {
@@ -60,6 +62,13 @@ export default function createServiceDirectory(
     }
     return built.get(id);
   };
+}
+
+export default function createServiceDirectory(
+  enabled: readonly DtaasExtension[],
+  hostOf: (ext: DtaasExtension) => HostServices,
+): ServiceDirectory {
+  const build = serviceBuilder(offersOf(enabled), hostOf);
   return {
     forExtension: (ext) => ({
       get: <T>(id: string): T => {

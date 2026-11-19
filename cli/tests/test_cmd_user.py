@@ -18,6 +18,7 @@ def mock_user_pkg():
     ):
         mock_cfg.return_value = MagicMock()
         mock_cfg.return_value.get_gitlab_provision.return_value = (False, None)
+        mock_cfg.return_value.get_gitlab_templates.return_value = ({}, None)
         mock_cfg.return_value.get_starting_users.return_value = ([], None)
         yield {"add": mock_add, "delete": mock_delete, "config": mock_cfg}
 
@@ -116,6 +117,22 @@ def test_add_users_gitlab_provision_check_error(runner, mock_user_pkg):
 
     assert result.exit_code != 0
     assert "Error while adding users\n  bad gitlab section" in result.output
+
+
+def test_add_refuses_bad_project_templates_before_staging(runner, mock_user_pkg):
+    """With provisioning on, a template setting 'config validate' would
+    reject stops 'user add' before any user is registered."""
+    config_obj = mock_user_pkg["config"].return_value
+    config_obj.get_gitlab_provision.return_value = (True, None)
+    config_obj.get_gitlab_templates.return_value = ({}, Exception("must both be set"))
+
+    with patch("src.cmd_user.stage_users_for_add") as mock_stage:
+        result = runner.invoke(dtaas, ["user", "add", "alice", "--email", "a@x.io"])
+
+    assert result.exit_code != 0
+    assert "must both be set" in result.output
+    mock_stage.assert_not_called()
+    mock_user_pkg["add"].assert_not_called()
 
 
 def test_add_names_a_registered_user_for_the_gitlab_step(

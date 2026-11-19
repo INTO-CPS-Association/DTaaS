@@ -1,4 +1,4 @@
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
   - repo: local
@@ -44,6 +44,12 @@ repos:
         args: ["-c", "cd servers/lib && yarn build && yarn test:all"]
         stages: [pre-push]
 
+      - id: no-tool-attribution
+        name: commit message credits no coding tool
+        entry: python script/hooks/commit_msg_check.py
+        language: python
+        stages: [commit-msg]
+
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
@@ -77,6 +83,13 @@ repos:
         files: '.*'
         stages: [pre-commit]
 
+  # Pinned to the commit of the v8.30.1 tag, since a tag can be moved.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e  # frozen: v8.30.1
+    hooks:
+      - id: gitleaks
+        stages: [pre-commit]
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -85,4 +98,12 @@ repos:
         stages: [pre-commit]
       - id: check-yaml
         files: '^(docs|deploy|script|ssl)/.*'
+        stages: [pre-commit]
+      # Files tracked by Git LFS are exempt, so this catches a binary
+      # added before its extension was named in .gitattributes.
+      - id: check-added-large-files
+        stages: [pre-commit]
+      - id: check-merge-conflict
+        stages: [pre-commit]
+      - id: detect-private-key
         stages: [pre-commit]

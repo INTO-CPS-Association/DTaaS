@@ -53,16 +53,15 @@ describe('the Platform Services section of the workbench', () => {
   const original = globalThis.env[PLATFORM_SERVICES_KEY];
 
   beforeEach(() => {
-    (useDispatch as jest.MockedFunction<typeof useDispatch>).mockReturnValue(
-      jest.fn(),
-    );
-    (useSelector as jest.MockedFunction<typeof useSelector>).mockImplementation(
-      (selector: (state: object) => unknown) =>
+    jest.mocked(useDispatch).mockReturnValue(jest.fn());
+    jest
+      .mocked(useSelector)
+      .mockImplementation((selector: (state: object) => unknown) =>
         selector({
           auth: { userName: 'username' },
           workbench: { status: 'succeeded', services: {} },
         }),
-    );
+      );
   });
 
   afterEach(() => {

@@ -21,7 +21,8 @@ const preset: EncodingPreset = {
 function assetWith(
   encodings: VisualisationAsset['encodings'],
 ): VisualisationAsset {
-  return { encodings } as unknown as VisualisationAsset;
+  const asset: unknown = { encodings };
+  return asset as VisualisationAsset;
 }
 
 describe('channelsOf', () => {

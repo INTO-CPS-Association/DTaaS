@@ -15,12 +15,13 @@
  * gateway refused is not opened again with that token.
  */
 
-import type {
-  Channel,
-  ConnectionState,
-  SignalSink,
-} from '@into-cps-association/dtaas-sdk';
-import { openSse, RefusedError, type SseEvent } from 'viz/sseStream';
+import type { Channel } from '@into-cps-association/dtaas-sdk';
+import {
+  openSse,
+  RefusedError,
+  type SseEvent,
+  type SseResult,
+} from 'viz/sseStream';
 import eventHandler from 'viz/gatewayEvents';
 import {
   authorization,
@@ -32,61 +33,17 @@ import {
 import type { LiveTransport } from 'viz/transport';
 import createStreamResume, { type StreamResume } from 'viz/streamResume';
 import laterTimer from 'viz/laterTimer';
+import {
+  pathBook,
+  stateCell,
+  type PathBook,
+  type StateCell,
+} from 'viz/transportState';
 
 /** How long a change of paths waits for the next one, in milliseconds. */
 export const REOPEN_DELAY_MS = 100;
 /** How long a failed or ended stream waits before the next one. */
 export const RECONNECT_DELAY_MS = 5000;
-
-/** The sinks of each path, and whether a change altered the set of paths. */
-function pathBook() {
-  const sinks = new Map<string, Set<SignalSink>>();
-  // Every path gets the sink, so the loop must not stop at the first new one.
-  const add = (paths: readonly string[], sink: SignalSink) => {
-    let changed = false;
-    paths.forEach((path) => {
-      const set = sinks.get(path) ?? new Set<SignalSink>();
-      sinks.set(path, set.add(sink));
-      if (set.size === 1) changed = true;
-    });
-    return changed;
-  };
-  const remove = (paths: readonly string[], sink: SignalSink) =>
-    paths.filter((path) => {
-      const set = sinks.get(path);
-      if (!set?.delete(sink) || set.size > 0) return false;
-      return sinks.delete(path);
-    });
-  return {
-    add,
-    remove,
-    paths: () => [...sinks.keys()],
-    sinksOf: (path: string) => sinks.get(path) ?? new Set<SignalSink>(),
-  };
-}
-
-type PathBook = ReturnType<typeof pathBook>;
-
-function stateCell() {
-  let current: ConnectionState = 'connecting';
-  const listeners = new Set<() => void>();
-  return {
-    get: () => current,
-    set(next: ConnectionState) {
-      if (next === current) return;
-      current = next;
-      listeners.forEach((listener) => listener());
-    },
-    on(listener: () => void) {
-      listeners.add(listener);
-      return () => {
-        listeners.delete(listener);
-      };
-    },
-  };
-}
-
-type StateCell = ReturnType<typeof stateCell>;
 
 interface Stream {
   schedule(delayMs: number): void;
@@ -116,6 +73,13 @@ function retryAfter(
   return RECONNECT_DELAY_MS;
 }
 
+/** How long to wait after a stream ended without an error. */
+function delayAfterEnd(resume: StreamResume, result: SseResult) {
+  return resume.takePlannedEnd()
+    ? REOPEN_DELAY_MS
+    : (result.retryMs ?? RECONNECT_DELAY_MS);
+}
+
 /** Open one stream, and resolve how long to wait before the next one. */
 function openStream(
   settings: GatewaySettings,
@@ -136,10 +100,7 @@ function openStream(
     signal,
     settings.fetch,
   ).then(
-    (result) =>
-      resume.takePlannedEnd()
-        ? REOPEN_DELAY_MS
-        : (result.retryMs ?? RECONNECT_DELAY_MS),
+    (result) => delayAfterEnd(resume, result),
     (error: unknown) =>
       retryAfter(settings, token, error, () => paths.forEach(refuse)),
   );
@@ -210,22 +171,29 @@ function subscriber(
   };
 }
 
+/** Deliver the events of a stream to the sinks of their paths. */
+function liveHandler(
+  settings: GatewaySettings & { readonly channel?: Channel },
+  live: { book: PathBook; state: StateCell; refuse: (path: string) => void },
+) {
+  return eventHandler({
+    sinksOf: live.book.sinksOf,
+    setState: live.state.set,
+    refuse: live.refuse,
+    channel: settings.channel ?? 'measured',
+  });
+}
+
 export default function createGatewayTransport(
   settings: GatewaySettings & { readonly channel?: Channel },
 ): LiveTransport {
   const book = pathBook();
   const state = stateCell();
   const refused = new Set<string>();
-  const channel = settings.channel ?? 'measured';
   const refuse = (path: string) => refused.add(path);
   const resume = createStreamResume();
   const onEvent = resume.watching(
-    eventHandler({
-      sinksOf: book.sinksOf,
-      setState: state.set,
-      refuse,
-      channel,
-    }),
+    liveHandler(settings, { book, state, refuse }),
   );
   const wanted = () => book.paths().filter((path) => !refused.has(path));
   const connect: Connect = (paths, signal) =>

@@ -29,13 +29,15 @@ export function isEntrypoint(entrypoint: string | undefined): boolean {
   return import.meta.url === pathToFileURL(realpathSync(entrypoint)).href;
 }
 
-async function bootstrap() {
+// Returns the running application, so a test can start it and close it.
+export async function bootstrap(): Promise<NestExpressApplication> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
   });
   const config = app.get(Config);
   configureSignalsApp(app, config);
   await app.listen(config.get('port'), config.get('hostname'));
+  return app;
 }
 
 if (isEntrypoint(process.argv[1])) {

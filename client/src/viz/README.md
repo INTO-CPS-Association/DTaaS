@@ -13,6 +13,7 @@ architecture in the `dtaas-extensions` repository. The contract it implements,
 | `transport.ts`        | 1       | What a live transport offers the signals service                                        |
 | `gatewayTransport.ts` | 1       | Live samples from the signals gateway, one stream for every path                        |
 | `gatewayEvents.ts`    | 1       | What each event of a gateway stream does                                                |
+| `transportState.ts`   | 1       | The sinks of each streamed path, and the state of the connection                        |
 | `streamResume.ts`     | 1       | The last event id and a planned end, kept for the next stream                           |
 | `laterTimer.ts`       | 1       | A timer that runs one action later, replaced by the next                                |
 | `gatewayHistory.ts`   | 1       | Past samples of signals from the signals gateway                                        |
