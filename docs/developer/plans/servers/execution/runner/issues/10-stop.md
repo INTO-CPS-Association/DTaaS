@@ -2,11 +2,11 @@
 
 ## Spec
 
-A parameter update (04) or a DT's removal may need the current script
-to end. D10 of the design document says the runner cannot cancel a
-script: `ExecaRunner.run` awaits execa and keeps no handle
-(`src/execa-runner.ts:20-32`), and a long state is left only by an
-event while its script keeps running. This feature adds a stop.
+A parameter update ([04](04-parameters.md)) or a DT's removal may need
+the current script to end. D10 of the design document says the runner
+cannot cancel a script: `ExecaRunner.run` awaits execa and keeps no
+handle (`src/execa-runner.ts:20-32`), and a long state is left only by
+an event while its script keeps running. This feature adds a stop.
 
 ### Mechanism
 
@@ -27,10 +27,10 @@ The README says both.
 
 ### Configuration
 
-`stopGrace` in `runner.yaml`, in milliseconds, default `5000`. Until 01
-merges it is an optional key of today's `ConfigValues` with a
-`getStopGrace()` getter; on the rebase after 01 it moves into 01's
-schema.
+`stopGrace` in `runner.yaml`, in milliseconds, default `5000`. Until
+[01](01-dt-identity.md) merges it is an optional key of today's
+`ConfigValues` with a `getStopGrace()` getter; on the rebase after
+[01](01-dt-identity.md) it moves into [01](01-dt-identity.md)'s schema.
 
 ### Outcome
 
@@ -49,7 +49,8 @@ A stopped script of the current entry completes with a new completion
 event, `$stopped`, next to `$success` and `$failure`, and the script
 status becomes `stopped` (a new `ScriptStatus`). A state with no
 `$stopped` transition stays idle in that state. A deliberate stop never
-looks like a crash: it does not count for `onFailure` escalation (06).
+looks like a crash: it does not count for `onFailure` escalation
+([06](06-escalation.md)).
 The completion-cycle check leaves `$stopped` out: it fires only after
 an outside `POST /stop`, so a loop through it cannot run by itself.
 
@@ -152,8 +153,9 @@ machine moves on and is busy again.
    guidance, the pipe and Windows limits; API; MQTT API), and the
    design document (replace D10, amend D7 and D8, add decisions for
    `$stopped` and `RunOutcome`).
-1. Bump the minor version in `package.json` (0.6.0 after 01's 0.5.0)
-   and note the new `stopped` reply of `POST /` in the README.
+1. Bump the minor version in `package.json` (0.6.0 after
+   [01](01-dt-identity.md)'s 0.5.0) and note the new `stopped` reply of
+   `POST /` in the README.
 
 ## Tasks
 

@@ -5,7 +5,8 @@
 The Manager of a DT network runs a Monitor that collects the states of the DTs.
 Today it can only poll. This feature publishes the state document of DT
 whenever it changes, over MQTT and over an optional HTTP webhook, and
-gives 06 and 07 the same path for their notifications.
+gives [06](06-escalation.md) and [07](07-presence.md) the same path for
+their notifications.
 
 ### When
 
@@ -16,8 +17,10 @@ A notification is sent when the state document changes:
   status is set);
 - any command starts or finishes, including a plain `POST /` without a
   state machine (`Queue.enqueue`, `Queue.complete`);
-- a parameter value changes (04, once both are merged);
-- the runner has started (and, with 09, restored its state).
+- a parameter value changes ([04](04-parameters.md), once both are
+  merged);
+- the runner has started (and, with [09](09-persistence.md), restored
+  its state).
 
 A document equal to the last one sent, ignoring `time`, is not sent
 again, so the entry of a state, which also starts a command, sends one
@@ -36,8 +39,9 @@ Every notification, over both transports, is one JSON object:
 }
 ```
 
-`kind` is `state`, `escalation` (06) or `presence` (07). `id` repeats
-the document's; for `state`, `time` is the document's own `time`.
+`kind` is `state`, `escalation` ([06](06-escalation.md)) or `presence`
+([07](07-presence.md)). `id` repeats the document's; for `state`, `time`
+is the document's own `time`.
 Documents of one entry built within the same millisecond can share
 `time`; a receiver that needs a strict order takes the last one it got
 over MQTT, which delivers them in order.
@@ -116,9 +120,10 @@ observation.
    through `DescriptorService.onChange` on module init, skips a
    document equal to the last `state` document sent ignoring `time`,
    builds the envelope, publishes with the retain table, and posts to
-   the webhook. It exposes `send(kind, data)` for 06 and 07, whose
-   envelope takes `id` from `DescriptorService.describe()`, and sends
-   the startup document from `onApplicationBootstrap`. It sends nothing once
+   the webhook. It exposes `send(kind, data)` for [06](06-escalation.md)
+   and [07](07-presence.md), whose envelope takes `id` from
+   `DescriptorService.describe()`, and sends the startup document from
+   `onApplicationBootstrap`. It sends nothing once
    `beforeApplicationShutdown` has run.
 1. Register the units in `src/app.module.ts`.
 1. In `test/e2e/mqtt.util.ts`, call `MqttService.start()` before
@@ -127,10 +132,11 @@ observation.
 1. Document the topics, the `notify` key, the envelope, the dedup rule
    and the offline queue in `README.md`; amend D16 and A4 ("the runner
    publishes its state unasked") in `docs/state-machine-design.md`; add
-   a subscription example to `api/dev.mqtt.http`. Note in 07's plan
-   that its shutdown presence post needs a signal of its own, as
-   `WebhookClient` aborts its shared one at shutdown.
-1. When 04 is merged first, or on the rebase of the later of the two:
+   a subscription example to `api/dev.mqtt.http`. Note in
+   [07](07-presence.md)'s plan that its shutdown presence post needs a
+   signal of its own, as `WebhookClient` aborts its shared one at shutdown.
+1. When [04](04-parameters.md) is merged first, or on the rebase of the
+   later of the two:
    `FsmService.setParameters` emits once after it commits the values.
 
 ## Tasks
@@ -179,8 +185,9 @@ observation.
 - An injected emitter would have given `FsmService` and the notifier a
   fourth constructor parameter and a dependency cycle; a plain `Changes`
   object owned by `FsmService` and `Queue`, forwarded by
-  `DescriptorService.onChange`, needs none. 06 and 07 follow the same
-  pattern for escalations and the MQTT connection.
+  `DescriptorService.onChange`, needs none. [06](06-escalation.md) and
+  [07](07-presence.md) follow the same pattern for escalations and the
+  MQTT connection.
 - One document per state entry depends on `run` enqueueing its command
   synchronously, so the queue signals first and the notifier skips the
   entry's own, unchanged, document. An `await` before `enqueue` would
@@ -192,7 +199,7 @@ observation.
   in `ExecaManager.onApplicationShutdown`, after every
   `beforeApplicationShutdown` hook. Those hooks start in one pass, in
   provider order, so `MqttService` is already disconnecting when a later
-  hook runs (07 depends on this).
+  hook runs ([07](07-presence.md) depends on this).
 - Pending webhook retries kept Jest alive until they were aborted at
   shutdown and their timers `unref()`-ed.
 - The broker test runs only in CI against Mosquitto with MQTT 5; the

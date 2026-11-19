@@ -2,10 +2,10 @@
 
 ## Spec
 
-Requirement [R1][dtn-requirements] asks each DT to make its state observable to the
-Manager in one place. Today the machine's state is on `GET /fsm` and
+Requirement [R1][dtn-requirements] asks each DT to make its state observable to
+the Manager in one place. Today the machine's state is on `GET /fsm` and
 the last command on `GET /`. This feature adds a document that joins
-them, which 03 publishes on every change.
+them, which [03](03-state-notifications.md) publishes on every change.
 
 ### API
 
@@ -37,25 +37,27 @@ machine or not:
   `StateMachine`, so a Manager can tell two entries into the same state
   apart. `state` is `null` and `entry` `0` before the first transition.
   The document reuses `FsmStateDto` rather than copying its fields, and
-  `machine.status` is its `ScriptStatus`, so `stopped` (10) and later
-  `interrupted` (09) flow through with one change in `fsm.dto.ts`.
+  `machine.status` is its `ScriptStatus`, so `stopped` ([10](10-stop.md))
+  and later `interrupted` ([09](09-persistence.md)) flow through with one
+  change in `fsm.dto.ts`.
 - `parameters` maps names to values (`string`, `number` or `boolean`).
-  It is `{}` until 04 fills it; the key and its type exist from the
-  start so the shape does not change.
+  It is `{}` until [04](04-parameters.md) fills it; the key and its type
+  exist from the start so the shape does not change.
 - `command` is the most recent command, or `null` before the first.
   `ExecaManager` runs commands by name side by side (A7), so it may be a
   finished manual `POST /` while the machine's script runs; a Manager
   reads the machine's script from `machine.status`. `command.status` is
   `running` while the command has not finished, else the stored
   status: `valid`, `invalid` or `stopped` (`interrupted` arrives with
-  09). `finishedAt` is `null` while it runs. Logs stay on `GET /`: the
-  document is published on every change and script output can be
-  large.
+  [09](09-persistence.md)). `finishedAt` is `null` while it runs. Logs
+  stay on `GET /`: the document is published on every change and script
+  output can be large.
 - `receivedAt` and `finishedAt` are ISO 8601 UTC. The database keeps
   SQLite's `YYYY-MM-DD HH:MM:SS`; the runner converts on read, so
   existing database files need no migration.
-- `time` is when the document was built, ISO 8601 UTC. 03's envelope
-  repeats it; `GET /state` has no envelope, so the document carries it.
+- `time` is when the document was built, ISO 8601 UTC.
+  [03](03-state-notifications.md)'s envelope repeats it; `GET /state` has
+  no envelope, so the document carries it.
 
 `GET /` and `GET /history` stay as they are.
 
@@ -77,13 +79,15 @@ machine or not:
    example.
 1. Add `src/dto/state.dto.ts` with `StateDocumentDto`, a
    `CommandState` type for `command`, and the status union
-   (`running | valid | invalid | stopped`), so 09 adds one member.
+   (`running | valid | invalid | stopped`), so [09](09-persistence.md)
+   adds one member.
 1. Build the document in `DescriptorService` (`src/descriptor.service.ts`),
    which gains `Queue` as its third constructor parameter and a
    `state(): StateDocumentDto` next to `describe()`, reading
    `Queue.activeCommand()` directly. Neither `AppController` nor
    `MqttRequestHandler` gains a constructor parameter: both already hold
-   the descriptor service. 03 consumes `state()`.
+   the descriptor service. [03](03-state-notifications.md) consumes
+   `state()`.
 1. Add `GET /state` to `src/app.controller.ts` and the `state` route to
    `src/mqtt/mqtt.config.ts` and `src/mqtt/mqtt-request.handler.ts`.
 1. Update `api/dev.api.http`, `api/dev.mqtt.http`, `README.md` (API and
@@ -123,7 +127,8 @@ machine or not:
 
 - `CREATE TABLE IF NOT EXISTS` never changes an existing database file,
   so new fields come from converting on read (`strftime` in the query)
-  or from a guarded `ALTER TABLE` (as 05 will need for its new columns),
+  or from a guarded `ALTER TABLE` (as [05](05-command-input.md) will need
+  for its new columns),
   never from a new column default.
 - `strftime('%Y-%m-%dT%H:%M:%fZ', …)` gives the same shape as
   `toISOString()`, milliseconds included, for rows SQLite wrote with

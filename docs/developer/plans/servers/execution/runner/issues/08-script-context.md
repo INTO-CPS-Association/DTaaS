@@ -12,13 +12,13 @@ scripts their context and makes the contract explicit.
 
 ### Runner variables
 
-| Variable          | Value                                                                |
-| :---------------- | :------------------------------------------------------------------- |
-| `RUNNER_URL`      | `http://127.0.0.1:<port>`, with the port the HTTP server listens on  |
-| `DT_ID`           | `id` of `runner.yaml`                                                |
-| `DT_STATE`        | a state, as below                                                    |
-| `DT_ENTRY`        | an entry number, as below                                            |
-| `DT_PARAM_<NAME>` | each parameter value of 04 at the script's start, as `String(value)` |
+| Variable          | Value                                                                                    |
+| :---------------- | :--------------------------------------------------------------------------------------- |
+| `RUNNER_URL`      | `http://127.0.0.1:<port>`, with the port the HTTP server listens on                      |
+| `DT_ID`           | `id` of `runner.yaml`                                                                    |
+| `DT_STATE`        | a state, as below                                                                        |
+| `DT_ENTRY`        | an entry number, as below                                                                |
+| `DT_PARAM_<NAME>` | each parameter value of [04](04-parameters.md) at the script's start, as `String(value)` |
 
 `DT_PARAM_<NAME>` is `variableName()` of `src/fsm/parameters.ts`. For a
 script the machine starts, `DT_STATE` and `DT_ENTRY` describe the entry
@@ -50,8 +50,9 @@ states:
 ```
 
 - Names follow `/^[A-Z][A-Z0-9_]*$/` and may not start with `DT_` or
-  `RUNNER_`. Values are strings, numbers (finite, as in 04) or
-  booleans, stringified; `null` and nested values are refused.
+  `RUNNER_`. Values are strings, numbers (finite, as in
+  [04](04-parameters.md)) or booleans, stringified; `null` and nested
+  values are refused.
 - A value may interpolate `${NAME}` from the known-name set:
   `RUNNER_URL`, `DT_ID`, `DT_STATE`, `DT_ENTRY` and the `variableName()`
   of each declared parameter. Any other name, such as another declared
@@ -87,29 +88,33 @@ be reached); a PowerShell 5.1 example catches the exception that
 `-SkipHttpErrorCheck` (`0` when unreachable). Both are in the README,
 Raising Events From Scripts.
 
-A script reads parameters with `GET ${RUNNER_URL}/parameters` (04), or
-from the `DT_PARAM_*` variables as they were at its start.
-`POST /escalate` is not documented: 06 is not built and adds it. There
-is no stdout protocol (non-goal in the index).
+A script reads parameters with `GET ${RUNNER_URL}/parameters`
+([04](04-parameters.md)), or from the `DT_PARAM_*` variables as they
+were at its start. `POST /escalate` is not documented:
+[06](06-escalation.md) is not built and adds it. There is no stdout
+protocol (non-goal in the index).
 
 ## Plan
 
-1. Make room, behaviour unchanged, with the names and shapes of 05,
-   which makes the same moves. `src/fsm/definition.ts` (239 lines):
-   `LOOPING_EVENTS`, `completionTargets`, `findCycle` and
-   `completionCycle` (130-165) go to `src/fsm/completion-cycle.ts`.
-   `src/fsm/fsm.service.ts` (249 after 03): `check()` returns
-   `this.machine?.describe(this.status)`, a new `StateMachine` method
-   (05's); `follow()` is inlined into `event()`; and `runIfCurrent`
+1. Make room, behaviour unchanged, with the names and shapes of
+   [05](05-command-input.md), which makes the same moves.
+   `src/fsm/definition.ts` (239 lines): `LOOPING_EVENTS`,
+   `completionTargets`, `findCycle` and `completionCycle` (130-165) go
+   to `src/fsm/completion-cycle.ts`.
+   `src/fsm/fsm.service.ts` (249 after [03](03-state-notifications.md)):
+   `check()` returns `this.machine?.describe(this.status)`, a new
+   `StateMachine` method ([05](05-command-input.md)'s); `follow()` is
+   inlined into `event()`; and `runIfCurrent`
    (205-215) folds into `run`, which returns early when the entry is
    no longer current (the stop path) and otherwise calls `newCommand`
    synchronously, as the `enter` path needs; a test asserts both.
-1. Options shared with 05:
+1. Options shared with [05](05-command-input.md):
    `export type RunOptions = { input?: string; env?: Record<string, string> }`
    in `src/interfaces/runner.interface.ts`, and
-   `Runner.run(options?: RunOptions)`; whichever of 05 and 08 merges
-   second drops its duplicate. `ExecaRunner.run` passes
-   `env: options?.env` and `extendEnv: options?.env === undefined` to
+   `Runner.run(options?: RunOptions)`; whichever of
+   [05](05-command-input.md) and 08 merges second drops its duplicate.
+   `ExecaRunner.run` passes `env: options?.env` and
+   `extendEnv: options?.env === undefined` to
    execa, whose own merge would restore a Windows name the builder
    dropped. `RunnerFactory.create` is unchanged.
 1. `ExecaManager.newCommand(name, key?, options?: RunOptions)` hands the
@@ -221,9 +226,10 @@ is no stdout protocol (non-goal in the index).
 
 ## Learnings
 
-- Issue 03 left `fsm.service.ts` at 249 lines, so a private builder
-  call did not fit: `RunnerContext` holds the id, URL, definition and
-  parameters, and with the moves of step 1 the service ends at 248.
+- Issue [03](03-state-notifications.md) left `fsm.service.ts` at 249
+  lines, so a private builder call did not fit: `RunnerContext` holds
+  the id, URL, definition and parameters, and with the moves of step 1
+  the service ends at 248.
 - zod 4 reports a refused record key only as "Invalid key in record",
   so `envSchema` checks the names in a `superRefine` to name the rule.
 - `extendEnv: false` gives the child nothing but the env passed, so the
@@ -238,9 +244,10 @@ is no stdout protocol (non-goal in the index).
   MQTT, as the notifier sends it at bootstrap; the order was restored.
 - `app.controller.spec.ts` did not await `loadConfig`; it now awaits it
   and loads `FsmService`, whose environment needs the id.
-- For 05: `scriptOutcome` takes `{ state, env }` and `POST /` passes
-  `{ env }`, so 05 adds `input` to that object; `completionCycle` is a
-  default export. For 06: escalation belongs in the README's Raising
-  Events From Scripts.
+- For [05](05-command-input.md): `scriptOutcome` takes
+  `{ state, env }` and `POST /` passes `{ env }`, so
+  [05](05-command-input.md) adds `input` to that object;
+  `completionCycle` is a default export. For [06](06-escalation.md):
+  escalation belongs in the README's Raising Events From Scripts.
 
 [dtn-concepts]: ../../../../../system/servers/execution/runner/DT-networks.md#concepts

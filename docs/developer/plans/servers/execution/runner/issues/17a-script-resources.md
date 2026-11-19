@@ -6,9 +6,9 @@ DTs compete for the computational resources of the shared
 infrastructure, and a DT Orchestrator adjusts their fidelity to load.
 Placement of DTs is left to the platform, not to the Manager. The runner therefore
 reports what each script used and decides nothing: an Orchestrator or a
-Manager reads the figures and acts. 17 is split in three; this file
-measures the direct child process of every script run, the commands of
-`POST /` and the scripts of states alike. Size M.
+Manager reads the figures and acts. [17](README.md#status) is split in
+three; this file measures the direct child process of every script run,
+the commands of `POST /` and the scripts of states alike. Size M.
 
 ### What Is Measured
 
@@ -27,7 +27,7 @@ child is `powershell.exe -File <name>.ps1`
 (`src/runner-factory.service.ts:13-19`), so the figures are PowerShell's
 own plus the script's: an idle PowerShell loop on a Windows 11 host
 peaked at 115 646 464 bytes. Processes the script starts are not counted
-on either platform; that is 17b.
+on either platform; that is [17b](17b-process-tree.md).
 
 ### Sampling and Its Limits
 
@@ -48,7 +48,8 @@ it while it runs and reports the last successful sample.
   Windows 11 with Windows PowerShell 5.1). It prints nothing for a
   process whose `StartTime` is later than the run's start, since
   Windows reuses a pid quickly. One PowerShell per run, not per sample:
-  a start takes about a second, 1.4 to 3.4 s under load (05).
+  a start takes about a second, 1.4 to 3.4 s under load
+  ([05](05-command-input.md)).
 - **End of a run.** When execa resolves, the runner takes the latest
   sample it holds, stops the timer or kills the sampler, and waits for
   nothing. The figures are lower bounds: up to one interval of use
@@ -62,10 +63,10 @@ it while it runs and reports the last successful sample.
 ### Replies
 
 The two figures sit in a `resources` object (this plan's call), so that
-17b can add to it without crowding the record. Both are `null` when not
-measured: other platforms, a failed read, a refused command, a row
-written before 17a. `POST /` and MQTT `execute` add it to `result`;
-`admit` of the API reference becomes:
+[17b](17b-process-tree.md) can add to it without crowding the record.
+Both are `null` when not measured: other platforms, a failed read, a
+refused command, a row written before 17a. `POST /` and MQTT `execute`
+add it to `result`; `admit` of the API reference becomes:
 
 ```json
 {
@@ -81,9 +82,10 @@ written before 17a. `POST /` and MQTT `execute` add it to `result`;
 
 `GET /` and MQTT `status` add `resources` after `exitCode`, with both
 `null` before the first command and while the latest one runs; each
-record of 11's `GET /history` adds it after `by`. `GET /state` is
-unchanged (this plan's call), so a measurement raises no state
-notification. 11's `GET /metrics` gains a top-level `resources` object
+record of [11](11-history-metrics.md)'s `GET /history` adds it after
+`by`. `GET /state` is unchanged (this plan's call), so a measurement
+raises no state notification. [11](11-history-metrics.md)'s
+`GET /metrics` gains a top-level `resources` object
 next to its `commands` counts (this plan's call on the shape):
 
 ```json
@@ -105,20 +107,22 @@ measured run is left out, so the object is `{}` before any.
 The `commands` table gains `cpu_seconds REAL` and
 `peak_rss_bytes INTEGER`, `NULL` when not measured, added to an older
 database file as `exit_code` was (`src/queue.service.ts:68-74`, which
-11 turns into `addColumn`). A replayed request key gets the stored
-figures; an `interrupted` row has `null`.
+[11](11-history-metrics.md) turns into `addColumn`). A replayed request
+key gets the stored figures; an `interrupted` row has `null`.
 
 A read that fails (permission, process gone, unparsable output, a
 sampler that does not start) logs once per run at debug level and
 leaves that sample out. Measurement never fails, delays or blocks a run
 or a stop: the sampler is not awaited, and the timer is `unref`'d.
 
-No shape breaks, so no bump is due; the version stays 11's.
+No shape breaks, so no bump is due; the version stays
+[11](11-history-metrics.md)'s.
 
 ### What 17b and 17c Add
 
-17b measures the process tree, so Windows figures become the script's
-and children count; 17c documents a `fidelity` parameter convention.
+[17b](17b-process-tree.md) measures the process tree, so Windows
+figures become the script's and children count; [17c](17c-fidelity.md)
+documents a `fidelity` parameter convention.
 
 ### Considered and Set Aside
 
@@ -174,17 +178,20 @@ and children count; 17c documents a `fidelity` parameter convention.
    `createStatus` (`:188-198`) and `checkStatus` (`:200-211`) add it;
    `storedResult` (`src/command-result.ts:16-28`) returns the stored
    figures.
-1. Queue, after 11, which moves `RECORD`, `RECORD_BY_KEY` and
-   `toRecord` to `src/queue.history.ts` and makes `addExitCode` an
-   `addColumn(db, column, type)`: `connect`
+1. Queue, after [11](11-history-metrics.md), which moves `RECORD`,
+   `RECORD_BY_KEY` and `toRecord` to `src/queue.history.ts` and makes
+   `addExitCode` an `addColumn(db, column, type)`: `connect`
    (`src/queue.service.ts:124-129`) adds the two columns, `RECORD` and
-   11's `HISTORY` select them, and `complete` (`:151-165`) writes them.
+   [11](11-history-metrics.md)'s `HISTORY` select them, and `complete`
+   (`:151-165`) writes them.
    If `queue.service.ts` is still over 240 lines, `SCHEMA` (`:23-47`)
    moves to `src/queue.history.ts` too.
 1. `CommandResultDto` and `resultDto` (`src/dto/command.dto.ts:62-75`)
-   add `resources`, as does 11's `HistoryEntryDto`.
-1. Metrics: `RESOURCE_TOTALS` next to 11's `COMMAND_COUNTS` in
-   `src/queue.history.ts` (rows above the start's highest id,
+   add `resources`, as does [11](11-history-metrics.md)'s
+   `HistoryEntryDto`.
+1. Metrics: `RESOURCE_TOTALS` next to [11](11-history-metrics.md)'s
+   `COMMAND_COUNTS` in `src/queue.history.ts` (rows above the start's
+   highest id,
    `SUM(cpu_seconds)` and `MAX(peak_rss_bytes)` by name, rows with both
    `NULL` left out); `Queue.resourceTotals()` returns it,
    `DescriptorService.metrics()` adds it and `MetricsDto` types it.
@@ -212,8 +219,9 @@ and children count; 17c documents a `fidelity` parameter convention.
       meter. Check: `test/integration/execa-runner.resources.spec.ts`
       (new; the Linux case on `linux` only, the Windows case on `win32`
       only, so CI runs the first).
-- [x] The queue adds both columns once to a file of 11's version,
-      returns `null` for its old rows, and stores and replays new
+- [x] The queue adds both columns once to a file of
+      [11](11-history-metrics.md)'s version, returns `null` for its old
+      rows, and stores and replays new
       figures. Check: `test/integration/queue.migration.spec.ts`,
       `test/integration/queue.resources.spec.ts` (new, as
       `queue.service.spec.ts` is at 249 lines).
@@ -221,7 +229,8 @@ and children count; 17c documents a `fidelity` parameter convention.
       and `history` carry `resources`; `GET /metrics` sums by name;
       fakes and tuples of `CommandResult` gain `NO_RESOURCES`. Check:
       `test/e2e/command-input.spec.ts`,
-      `test/unit/mqtt-request.execute.spec.ts`, 11's metrics specs,
+      `test/unit/mqtt-request.execute.spec.ts`,
+      [11](11-history-metrics.md)'s metrics specs,
       `test/unit/fsm.fixture.ts`, and `test/e2e/mqtt.broker.spec.ts`
       grepped for the old shapes (CI only).
 - [x] README (POST /, GET /, GET /history, Resources), `DEVELOPER.md`
@@ -240,7 +249,8 @@ and children count; 17c documents a `fidelity` parameter convention.
 
 ## Learnings
 
-- **Drift.** 11 had already moved `RECORD`, `RECORD_BY_KEY` and
+- **Drift.** [11](11-history-metrics.md) had already moved `RECORD`,
+  `RECORD_BY_KEY` and
   `toRecord` to `src/queue.history.ts`, and `SCHEMA` and `addColumn`
   to `src/queue.schema.ts`, so `connect` calls `createSchema`, where
   the two columns were added; `queue.service.ts` went from 226 lines
@@ -271,9 +281,9 @@ and children count; 17c documents a `fidelity` parameter convention.
   without `VmHWM` fails as a whole. `ExecaRunner` takes the meter in
   `{ stopGrace, meter }` and exposes it as a public `options`, like
   `command` and `args`, so the factory test reads it without bracket
-  access. `readLinux` takes the `/proc` root as a parameter, as 17b
-  plans for its tree, so its test runs on every platform against a
-  temporary directory.
+  access. `readLinux` takes the `/proc` root as a parameter, as
+  [17b](17b-process-tree.md) plans for its tree, so its test runs on
+  every platform against a temporary directory.
 - **`busy`.** The POSIX script reads `/proc/uptime` with the `read`
   builtin, as a command substitution or `date` would start a process
   that is not measured; under dash in WSL (Ubuntu 26.04) it used
@@ -305,5 +315,6 @@ and children count; 17c documents a `fidelity` parameter convention.
   never takes, so `readClockTicks` takes the program as a parameter
   and a test names one that does not exist.
 - **Version and decision.** No shape breaks, so the version stays
-  0.10.0, as the Spec says. 11, 13 and 15b took D30 to D32, so this
-  decision is D33.
+  0.10.0, as the Spec says. [11](11-history-metrics.md),
+  [13](13-peers.md) and [15b](15b-signed-output.md) took D30 to D32, so
+  this decision is D33.

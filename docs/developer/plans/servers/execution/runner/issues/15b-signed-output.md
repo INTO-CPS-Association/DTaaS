@@ -3,10 +3,11 @@
 ## Spec
 
 An open DT network must guard against the introduction of malevolent
-DTs, and its DTs must be able to trust each other. 15a lets the
-runner verify who calls it; nothing yet lets a receiver verify the
-runner. 16 must know that a state document came
-from the peer it lists, and a Manager must know that an escalation came
+DTs, and its DTs must be able to trust each other.
+[15a](15a-access-control.md) lets the runner verify who calls it;
+nothing yet lets a receiver verify the runner. [16](16-peer-events.md)
+must know that a state document came from the peer it lists, and a
+Manager must know that an escalation came
 from the DT, not from anyone who can publish on the broker. This
 feature signs everything the runner sends on its own or in reply, with
 a private key of the DT, so that a receiver holding the public key can
@@ -20,16 +21,18 @@ auth:
   key: 'keys/hospital-1.key'
 ```
 
-`auth.key` sits in the `auth` section of 15a and is independent of
-`auth.principals`: a runner may sign without verifying callers, and the
-reverse. 15a's rule that `auth` needs one principal at least becomes
-"`principals` or `key`", so a stray `auth:` still fails (this plan's
+`auth.key` sits in the `auth` section of [15a](15a-access-control.md)
+and is independent of `auth.principals`: a runner may sign without
+verifying callers, and the reverse. [15a](15a-access-control.md)'s rule
+that `auth` needs one principal at least becomes "`principals` or
+`key`", so a stray `auth:` still fails (this plan's
 call). The path is resolved against the directory of `runner.yaml` with
 `path.resolve`, so an absolute path works too, as for `stateMachine`
 (this plan's call: a key often lives in a mounted secret directory).
-The `keygen.mjs` of 15a generates the file: `NAME.key` beside
-`NAME.pub`. A file that cannot be read, an encrypted key, or a key that
-is not Ed25519 is a startup error naming the file, never its content.
+The `keygen.mjs` of [15a](15a-access-control.md) generates the file:
+`NAME.key` beside `NAME.pub`. A file that cannot be read, an encrypted
+key, or a key that is not Ed25519 is a startup error naming the file,
+never its content.
 
 Without `auth.key` nothing changes: every payload is plain JSON, as
 today.
@@ -49,8 +52,8 @@ payload is exactly today's JSON, the bytes of `JSON.stringify`:
 
 The JWS protected header is `{"alg":"Ed25519","kid":"<id>"}`, `kid`
 being the DT's `id` and `alg` the fully specified name of RFC 9864, as
-in 15a. No claim is added to the payload: the payload is
-the envelope of S7, and its `id` and `time` bind it to the DT and the
+in [15a](15a-access-control.md). No claim is added to the payload: the
+payload is the envelope of S7, and its `id` and `time` bind it to the DT and the
 moment. There is no `exp`, because notifications are retained and must
 stay verifiable: a Manager that connects hours later reads the retained
 state document and must still check it. The will keeps `time: null`;
@@ -61,9 +64,10 @@ The webhook body is `application/jose`, the media type RFC 7515
 registers for the compact serialisation (this plan's call).
 `application/jwt` (RFC 7519) declares the payload a JWT claims set,
 which the envelope is not; a JWT library would look for claims such as
-`exp`. The `notify.token` bearer of 03 stays: it authenticates the
-runner to the webhook, and the signature lets the receiver check every
-body, including those it stores or forwards.
+`exp`. The `notify.token` bearer of [03](03-state-notifications.md)
+stays: it authenticates the runner to the webhook, and the signature
+lets the receiver check every body, including those it stores or
+forwards.
 
 Ed25519 is deterministic, so a notification signed for MQTT and again
 for the webhook gives the same JWS. A signed state document grows from
@@ -72,7 +76,8 @@ for the webhook gives the same JWS. A signed state document grows from
 Not signed, with the reason:
 
 - HTTP replies: the caller chose the endpoint, TLS and the DTaaS
-  gateway protect the reply, and 15a authenticates the caller.
+  gateway protect the reply, and [15a](15a-access-control.md)
+  authenticates the caller.
 - Freshness: a signature proves origin and integrity, not that a
   message is new. Anyone who can publish on the notification topics
   could replay an old signed document or will; broker access control
@@ -131,8 +136,9 @@ The signature is 86 base64url characters, the 64 bytes of Ed25519.
 ### Verifying
 
 A consumer verifies with the public key its operator gave it: a peer's
-`peers[].publicKey` of 13, or a Manager's own list. The encoding of
-15a is the base64url of the 32 raw bytes, the JWK's `x`, so in Node
+`peers[].publicKey` of [13](13-peers.md), or a Manager's own list. The
+encoding of [15a](15a-access-control.md) is the base64url of the 32 raw
+bytes, the JWK's `x`, so in Node
 `key` is `createPublicKey({ key: { kty: 'OKP', crv: 'Ed25519', x },
 format: 'jwk' })`:
 
@@ -155,16 +161,18 @@ export function unwrap(text, key, id) {
 ```
 
 A payload that starts with `{` is plain JSON from a runner without a
-key; whether to accept it is the consumer's choice (16 accepts it only
-from a peer listed without a key).
+key; whether to accept it is the consumer's choice
+([16](16-peer-events.md) accepts it only from a peer listed without a
+key).
 
 ### Descriptor
 
 `GET /dt`, the MQTT `dt` route and the online notice gain `publicKey`:
-the runner's public key in the encoding of 15a with `auth.key`, `null`
-without (this plan's call, from the intent that an operator can copy it
-into a peer's configuration). An operator who copies it over plain HTTP
-trusts that connection; `keygen.mjs` prints the same key.
+the runner's public key in the encoding of [15a](15a-access-control.md)
+with `auth.key`, `null` without (this plan's call, from the intent that
+an operator can copy it into a peer's configuration). An operator who
+copies it over plain HTTP trusts that connection; `keygen.mjs` prints
+the same key.
 
 ### Considered and Set Aside
 
@@ -176,30 +184,33 @@ trusts that connection; `keygen.mjs` prints the same key.
   change.
 - Signing HTTP replies: see "Not signed" above.
 - A `typ` header (this plan's call): a notification cannot pass for a
-  request token of 15a, which needs `aud`, `exp` and `jti`, so the
-  header stays at `alg` and `kid`.
+  request token of [15a](15a-access-control.md), which needs `aud`,
+  `exp` and `jti`, so the header stays at `alg` and `kid`.
 - An MQTT 5 `contentType` of `application/jose` on signed publishes
   (set aside in review): the demo's broker speaks MQTT 3.1.1, which has
   no such property, and a payload that parses as JSON is plain, as a
   JWS never does, which already tells the two apart.
 
 Signing is opt-in and breaks no route; the descriptor gains a field.
-The version stays as 15a leaves it, as for 07. The Notifications
-section of API.md describes an optional encoding, not a changed one,
-so it does not count as a change (recommendation).
+The version stays as [15a](15a-access-control.md) leaves it, as for
+[07](07-presence.md). The Notifications section of API.md describes an
+optional encoding, not a changed one, so it does not count as a change
+(recommendation).
 
 ## Plan
 
-1. Review this plan against the code as 15a left it: the `auth`
-   schema, its directory (assumed `src/auth/`), the public key encoding
-   and the line counts below.
-1. `src/mqtt/mqtt.service.ts` is at 239 lines. 15a moves `requestKey`
-   and `publishOptions` to `src/mqtt/mqtt-request.ts`; before adding
-   anything, move `responseTopic` (lines 211-223 today) there too, as
-   the pure `responseTopic(topic, packet, routes)`.
-1. `src/auth/signer.ts`, beside 15a's `jws.ts`, whose base64url and
-   header helpers it reuses: a plain, non-injectable `Signer` built
-   from a `KeyObject | undefined` and the `kid`. It encodes the header
+1. Review this plan against the code as [15a](15a-access-control.md)
+   left it: the `auth` schema, its directory (assumed `src/auth/`), the
+   public key encoding and the line counts below.
+1. `src/mqtt/mqtt.service.ts` is at 239 lines.
+   [15a](15a-access-control.md) moves `requestKey` and `publishOptions`
+   to `src/mqtt/mqtt-request.ts`; before adding anything, move
+   `responseTopic` (lines 211-223 today) there too, as the pure
+   `responseTopic(topic, packet, routes)`.
+1. `src/auth/signer.ts`, beside [15a](15a-access-control.md)'s
+   `jws.ts`, whose base64url and header helpers it reuses: a plain,
+   non-injectable `Signer` built from a `KeyObject | undefined` and the
+   `kid`. It encodes the header
    once, and has `encode(value): string` (JSON without a key, JWS with
    one, through `crypto.sign(null, …)`), `contentType()` and
    `publicKey()`
@@ -207,9 +218,10 @@ so it does not count as a change (recommendation).
    a `Signer` without a key when `file` is undefined; otherwise it reads
    the PEM, calls `createPrivateKey` and checks
    `asymmetricKeyType === 'ed25519'`.
-1. 15a's `auth` schema (`src/auth/auth.config.ts`) gains
-   `key: z.string().min(1).optional()`, and its rule of one principal
-   at least becomes "`principals` or `key`".
+1. [15a](15a-access-control.md)'s `auth` schema
+   (`src/auth/auth.config.ts`) gains `key: z.string().min(1).optional()`,
+   and its rule of one principal at least becomes "`principals` or
+   `key`".
    `src/config/configuration.service.ts`: `loadConfig` builds
    `this.signer` with `Signer.load`; `getSigner(): Signer`; the field
    starts as a `Signer` without a key for the default configuration.
@@ -219,7 +231,8 @@ so it does not count as a change (recommendation).
    `clientOptions(options, id, signer)` encode the will with the
    signer. `mqtt.service.ts`: `start` passes `config.getSigner()`;
    `respond` (line 179) and `notify` (line 202) publish
-   `config.getSigner().encode(body)`; so does any publish 15a added.
+   `config.getSigner().encode(body)`; so does any publish
+   [15a](15a-access-control.md) added.
 1. `src/notify/webhook.client.ts`: `post` and `sendOnce` encode with
    the signer; the module-level `headers(token)` becomes a private
    method that adds the signer's content type, so `attempt` keeps three
@@ -238,14 +251,15 @@ so it does not count as a change (recommendation).
    call it and keep the raw text beside the body. Descriptor equalities
    gain `publicKey: null`.
 1. Demo: `demo/hospital/tools/jws.mjs` unwraps and verifies with the
-   public key in `run/keys/hospital-1.pub`, which `keygen.mjs` of 15a
-   writes, when that file exists; `services.mjs`
-   and `mq.mjs` prefix each line with `verified` or `UNSIGNED`, and a
+   public key in `run/keys/hospital-1.pub`, which `keygen.mjs` of
+   [15a](15a-access-control.md) writes, when that file exists;
+   `services.mjs` and `mq.mjs` prefix each line with `verified` or
+   `UNSIGNED`, and a
    JWS that fails, or has no key to check it, prints `INVALID` and is
    not summarised (this plan's call). The demo's `runner.yaml` stays
    unsigned, as the recording is; `demo/hospital/README.md` says how to
-   turn signing on (a key in `run/keys/` and `auth.key` in 15a's
-   `runner.auth.yaml`).
+   turn signing on (a key in `run/keys/` and `auth.key` in
+   [15a](15a-access-control.md)'s `runner.auth.yaml`).
 1. Documents: see the sweep tasks.
 
 ## Tasks
@@ -287,9 +301,9 @@ so it does not count as a change (recommendation).
 - [x] Demo tools print `verified`, `UNSIGNED` or `INVALID`. Check: run
       the demo once with and once without `auth.key` and read
       `run/mqtt.log` and `run/webhook.log`.
-- [x] `README.md`: `auth.key` in 15a's configuration section, the
-      "MQTT", "Webhook" and "Notifications" sections. Check: those
-      sections.
+- [x] `README.md`: `auth.key` in [15a](15a-access-control.md)'s
+      configuration section, the "MQTT", "Webhook" and "Notifications"
+      sections. Check: those sections.
 - [x] `api/API.md`: the `publicKey` row of `GET /dt`, "Responses",
       "Over a Webhook" and a "Signatures" subsection of
       "Notifications" with the example above. Check: those sections.
@@ -311,26 +325,31 @@ so it does not count as a change (recommendation).
 
 ## Learnings
 
-- **Drift.** `mqtt.service.ts` had 232 lines, not 239, after 15a, with
-  `responseTopic` at lines 219-231, `respond`'s publish at 169-173 and
-  `notify`'s at 210; `test/unit/mqtt.service.spec.ts` had 221 lines.
-  `DescriptorService` is `src/descriptor.service.ts`. 15a tests a
+- **Drift.** `mqtt.service.ts` had 232 lines, not 239, after
+  [15a](15a-access-control.md), with `responseTopic` at lines 219-231,
+  `respond`'s publish at 169-173 and `notify`'s at 210;
+  `test/unit/mqtt.service.spec.ts` had 221 lines. `DescriptorService` is
+  `src/descriptor.service.ts`. [15a](15a-access-control.md) tests a
   configuration that reads files in `test/integration/`
   (`config.auth.spec.ts`), so `config.key.spec.ts` went there, not to
   `test/unit/`. The other references held.
-- **`responseTopic` and 13.** The branch of 13 had already moved
-  `responseTopic` as `responseTopic(topic, packet, isRequest)`, with a
-  predicate instead of the plan's map of routes. 15b took the same
-  signature and the identical hunk in `mqtt-request.ts`, so that the
+- **`responseTopic` and [13](13-peers.md).** The branch of
+  [13](13-peers.md) had already moved `responseTopic` as
+  `responseTopic(topic, packet, isRequest)`, with a predicate instead of
+  the plan's map of routes. 15b took the same signature and the
+  identical hunk in `mqtt-request.ts`, so that the
   move merges; `mqtt.service.ts` still conflicts, as both change its
-  imports and the publish in `respond`. Whichever of 13 and 15b merges
-  second rebases there. 13 merged first, and the merge took the move
-  as one hunk; only the publish in `respond` conflicted.
-- **Decision number.** 11 and 13 both recorded their decision as D30,
-  and the second to merge renumbers to D31, so 15b's decision is D32;
-  the table skips D30 and D31 until both merge. The row of D32 is kept
-  within the width of the Reason column, so prettier does not re-pad
-  the whole table, which would conflict with 11 and 13.
+  imports and the publish in `respond`. Whichever of [13](13-peers.md)
+  and 15b merges second rebases there. [13](13-peers.md) merged first,
+  and the merge took the move as one hunk; only the publish in
+  `respond` conflicted.
+- **Decision number.** [11](11-history-metrics.md) and
+  [13](13-peers.md) both recorded their decision as D30, and the second
+  to merge renumbers to D31, so 15b's decision is D32; the table skips
+  D30 and D31 until both merge. The row of D32 is kept within the width
+  of the Reason column, so prettier does not re-pad the whole table,
+  which would conflict with [11](11-history-metrics.md) and
+  [13](13-peers.md).
 - **The spec's example.** Its header segment
   `eyJhbGciOiJFZERTQSIs…` decodes to `"alg":"EdDSA"`, not `Ed25519`.
   The real one is `eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiaG9zcGl0YWwtMSJ9`,
@@ -381,14 +400,16 @@ so it does not count as a change (recommendation).
   restored after each run; the recording stays as it is, so API.md's
   logged outputs gained the marks only where the tools print them
   today.
-- **Merging 13.** 15b merged `feature/distributed-demo` twice, after
-  11 and after 13, rather than rebasing, as its pull request was open.
+- **Merging [13](13-peers.md).** 15b merged `feature/distributed-demo`
+  twice, after [11](11-history-metrics.md) and after [13](13-peers.md),
+  rather than rebasing, as its pull request was open.
   The second merge conflicted in twelve files: the descriptor got
   both `peers` and `publicKey`, in that order, in the type, the
   service, every descriptor equality and the documents; Signed Output
   and Peers both stayed in the README, `auth.key` before `peers` in the
-  sample, and D31 before D32. 13's `readNotice` verifies a peer's
-  notice with the peer's id as `kid`, the `kid` that `Config` gives the
+  sample, and D31 before D32. [13](13-peers.md)'s `readNotice` verifies
+  a peer's notice with the peer's id as `kid`, the `kid` that `Config`
+  gives the
   `Signer`, but its tests signed with `test/sign.util.ts`; so
   `test/unit/peer-notice.signed.spec.ts` feeds it what `Signer`
   encodes, the will included, and `test/e2e/mqtt.peers.signed.spec.ts`
@@ -417,6 +438,7 @@ so it does not count as a change (recommendation).
   any payload that parses as JSON as plain, since a JWS never does,
   and API.md says so.
 - **Version.** The plan keeps the version as the earlier issues leave
-  it. 11 merged first and took the runner to 0.10.0, so 15b stays at
-  0.10.0, merged with `feature/distributed-demo` rather than rebased,
-  as the pull request was already open.
+  it. [11](11-history-metrics.md) merged first and took the runner to
+  0.10.0, so 15b stays at 0.10.0, merged with
+  `feature/distributed-demo` rather than rebased, as the pull request
+  was already open.

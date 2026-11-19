@@ -70,13 +70,15 @@ permitted) or `stopped`, and a new `exit_code` column holds the code:
 
 - `GET /` and MQTT `status` may show `failed` and gain `exitCode`
   (`null` before the first command); `command.status` of `GET /state`
-  may be `failed` (`CommandStateStatus` of 02, `src/dto/state.dto.ts`).
+  may be `failed` (`CommandStateStatus` of [02](02-state-document.md),
+  `src/dto/state.dto.ts`).
 - A replayed key (`storedResult`) gets `failed` with the stored
   `result`; a row that never finished, as after a crash, now replays as
   `failed` with `exitCode: null`. Rows from before 0.7.0 keep `invalid`
   for failed scripts and replay as `invalid command`, as they did.
-- `GET /history` stays as it is (11 extends it). `GET /fsm` keeps
-  `invalid` for a failed script: `ScriptStatus` is the machine's, and
+- `GET /history` stays as it is ([11](11-history-metrics.md) extends
+  it). `GET /fsm` keeps `invalid` for a failed script: `ScriptStatus` is
+  the machine's, and
   `FsmService` is left alone.
 
 ### Exposure
@@ -91,18 +93,20 @@ manager:
 Each must be in `commands` of `runner.yaml`, or the runner does not
 start. `GET /dt` gains `"manager": { "commands": ["admit"] }`, with
 `[]` without a machine or a list, as for a bare `manager:`. Nothing
-enforces the list until 15; the README says so.
+enforces the list until [15a](15a-access-control.md); the README says
+so.
 
 ## Plan
 
 As implemented; deviations from the signed-off plan are marked _(changed)_.
 
-1. `RunOptions` of `runner.interface.ts` carries `input` next to 08's
-   `env`; `Runner` gets `run(options?: RunOptions)` and
-   `checkExitCode()`. `CommandResult` gains the exit code as a third
-   tuple element, so `const [outcome] = await manager.newCommand(state)`
-   in `scriptOutcome` keeps compiling; `CommandRecord`, `CommandStatus`
-   and `Manager.newCommand(name, requestKey?, options?)` follow.
+1. `RunOptions` of `runner.interface.ts` carries `input` next to
+   [08](08-script-context.md)'s `env`; `Runner` gets
+   `run(options?: RunOptions)` and `checkExitCode()`. `CommandResult`
+   gains the exit code as a third tuple element, so
+   `const [outcome] = await manager.newCommand(state)` in `scriptOutcome`
+   keeps compiling; `CommandRecord`, `CommandStatus` and
+   `Manager.newCommand(name, requestKey?, options?)` follow.
 1. `ExecaRunner.run` passes `input: options?.input ?? ''` and
    `reject: false`, keeps the logs whatever the outcome, and the exit
    code unless stopped. `stop()` lost its `.catch`, as the subprocess no
@@ -125,22 +129,23 @@ As implemented; deviations from the signed-off plan are marked _(changed)_.
    `complete()` does. `CommandStateStatus` gains `failed`.
 1. `AppController` and the MQTT `execute` route answer
    `executeReply(newCommand(name, key, runOptions(dto, env)))`, where
-   `env` is 08's `FsmService.environment(name)`, the controller with
-   `EXECUTE_STATUS_CODES[reply.status]`.
+   `env` is [08](08-script-context.md)'s `FsmService.environment(name)`,
+   the controller with `EXECUTE_STATUS_CODES[reply.status]`.
 1. `src/fsm/manager.ts` holds `managerSchema`, nullish like
    `stateSchema`, with a nullish `commands` too _(changed)_, and
    `managerProblems`. `definition.ts` gains the key, `managerCommands`,
    `manager?.commands ?? []` and one call in `crossCheck`; the
    completion-cycle search moved to `src/fsm/completion-cycle.ts` as a
-   default export, as 08 has it.
-1. `StateMachine.describe(status)`, which 08 also added, holds the body
-   of `check()`, and `StateMachine.managerCommands` feeds
-   `FsmService.managerCommands()`. `DescriptorService` reads
-   `check() !== undefined` instead of `hasMachine()`, as 06 also does,
-   and adds `manager`, as does `DescriptorDto`. With 06 merged,
-   `FsmService` would have reached 254 lines, so `raise()` moved into
-   06's `Requests` as `requests.raise(event, handle, logger)`
-   _(changed)_ (249 lines).
+   default export, as [08](08-script-context.md) has it.
+1. `StateMachine.describe(status)`, which [08](08-script-context.md)
+   also added, holds the body of `check()`, and
+   `StateMachine.managerCommands` feeds `FsmService.managerCommands()`.
+   `DescriptorService` reads `check() !== undefined` instead of
+   `hasMachine()`, as [06](06-escalation.md) also does, and adds
+   `manager`, as does `DescriptorDto`. With [06](06-escalation.md)
+   merged, `FsmService` would have reached 254 lines, so `raise()` moved
+   into [06](06-escalation.md)'s `Requests` as
+   `requests.raise(event, handle, logger)` _(changed)_ (249 lines).
 1. Test scripts `echo-input`, `fail` and their `.ps1` versions (shell
    ones 100755) join `test/config/runner.test.yaml`, whose inline
    comments moved to their own lines for prettier _(changed)_, and
@@ -149,8 +154,9 @@ As implemented; deviations from the signed-off plan are marked _(changed)_.
 1. README (Create Commands, Manager Commands, POST /, GET /, GET /dt,
    GET /state, Repeated Requests, MQTT API, the 0.7.0 note),
    `api/*.http` and `api/README.md`, the design document (Validation,
-   Components, D24 and D27, as 08 took D23 and 06 and 07 hold D25 and
-   D26) and `package.json` at `0.7.0`. The pull
+   Components, D24 and D27, as [08](08-script-context.md) took D23 and
+   [06](06-escalation.md) and [07](07-presence.md) hold D25 and D26) and
+   `package.json` at `0.7.0`. The pull
    request lists `docs/developer/codebase/runner.md` and the user
    documentation copy of the README as stale.
 
@@ -206,7 +212,7 @@ As implemented; deviations from the signed-off plan are marked _(changed)_.
   execa ignores the broken pipe.
 - `CREATE TABLE IF NOT EXISTS` never adds a column to an existing
   table; a new column needs `PRAGMA table_info` and `ALTER TABLE`
-  after it, the pattern for 09.
+  after it, the pattern for [09](09-persistence.md).
 - An unfinished row keeps the default status `invalid`, so
   `storedResult` checks `finished` before reading `invalid` as a
   refusal.
@@ -215,23 +221,24 @@ As implemented; deviations from the signed-off plan are marked _(changed)_.
   pipe runs.
 - `RunOutcome` has no value for a request that ran nothing, so
   refusals reject with `CommandRefused`; a new caller of `newCommand`
-  (06) must turn that into a reply or let `scriptOutcome` count it as
+  ([06](06-escalation.md)) must turn that into a reply or let
+  `scriptOutcome` count it as
   failed.
 - A PowerShell start took 1.4 to 3.4 s on the loaded host whether
   stdin was closed or not; tests that run two scripts in sequence need
   the 30 s timeout of the other script specs.
 - `fsm.service.ts` is at 249 lines and `queue.service.spec.ts` at
-  249: 09 moves something out of the service before adding, and puts
-  new queue tests in new files.
+  249: [09](09-persistence.md) moves something out of the service before
+  adding, and puts new queue tests in new files.
 - zod 4's `z.record` copies an object and drops an own `__proto__`
   key, so the script would get other input than the client sent and
   the size check would measure the copy. `input` is checked as received
   with `z.custom` and refuses that key (found in review).
 - supertest sends a request only when `then` is called on it, so a
   test that starts a long request before polling must call it.
-- 08's tests fake a runner and assert the old reply body; a change to
-  `Runner` or to the reply updates them too.
-- 06 can tell a crash (`failed`, with `exitCode`) from a refusal
+- [08](08-script-context.md)'s tests fake a runner and assert the old
+  reply body; a change to `Runner` or to the reply updates them too.
+- [06](06-escalation.md) can tell a crash (`failed`, with `exitCode`) from a refusal
   (`invalid`).
 
 [dtn-concepts]: ../../../../../system/servers/execution/runner/DT-networks.md#concepts

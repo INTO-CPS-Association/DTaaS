@@ -60,16 +60,19 @@ nav:
           - Create: user/digital-twins/create.md
           - Lifecycle: user/digital-twins/lifecycle.md
           - DevOps:
-              - Digital Twin Structure:
-                  user/digital-twins/devops/file-structure.md
+              - Digital Twin Structure: user/digital-twins/devops/file-structure.md
               - User Interface: user/digital-twins/devops/ui.md
               - Settings: user/digital-twins/devops/execution-settings.md
               - Capabilities: user/digital-twins/devops/capabilities.md
-              - Concurrent Execution:
-                  user/digital-twins/devops/concurrent-execution.md
+              - Concurrent Execution: user/digital-twins/devops/concurrent-execution.md
               - Performance: user/digital-twins/devops/measurement.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
-      - Runner: user/servers/execution/runner/readme.md
+      - Runner:
+          - Usage: user/servers/execution/runner/readme.md
+          - Configuration: user/servers/execution/runner/config.md
+          - State Machine: user/servers/execution/runner/state-machine.md
+          - Security Model: user/servers/execution/runner/security-model.md
+          - Privilege Setup: user/servers/execution/runner/privilege-setup.md
       - Examples:
           - Overview: user/examples/index.md
           - Workspace:
@@ -78,41 +81,28 @@ nav:
               - Water Tank Fault Injection: user/examples/workspace/water_tank_FI/README.md
               - Water Tank Model Swap: user/examples/workspace/water_tank_swap/README.md
               - Heart Digital Twin: user/examples/workspace/heart_dt/README.md
-              - Desktop Robotti and RabbitMQ:
-                  user/examples/workspace/drobotti-rmqfmu/README.md
+              - Desktop Robotti and RabbitMQ: user/examples/workspace/drobotti-rmqfmu/README.md
               - Water Plant and OPC-UA: user/examples/workspace/opc-ua-waterplant/README.md
-              - Water Plant and OPC-UA (Complete):
-                  user/examples/workspace/opc-ua-waterplant-complete/README.md
+              - Water Plant and OPC-UA (Complete): user/examples/workspace/opc-ua-waterplant-complete/README.md
               - Three Water Tanks: user/examples/workspace/three-tank/README.md
               - Flex Cell: user/examples/workspace/flex-cell/README.md
               - Incubator: user/examples/workspace/incubator/README.md
               - Firefighters: user/examples/workspace/o5g/README.md
-              - Mass Spring Damper with NuRV:
-                  user/examples/workspace/mass-spring-damper-monitor/README.md
-              - Water Tank Fault Injection with NuRV:
-                  user/examples/workspace/water_tank_FI_monitor/README.md
-              - Incubator Co-Sim with NuRV:
-                  user/examples/workspace/incubator-NuRV-monitor-validation/README.md
-              - Incubator with NuRV Service:
-                  user/examples/workspace/incubator-NuRV-monitor-service/README.md
-              - Incubator with NuRV FMU Service:
-                  user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
-              - Incubator with TeSSLa Service:
-                  user/examples/workspace/incubator-TeSSLa-monitor-service/README.md
-              - Incubator with TeSSLa Active Control:
-                  user/examples/workspace/incubator-TeSSLa-active-control/README.md
+              - Mass Spring Damper with NuRV: user/examples/workspace/mass-spring-damper-monitor/README.md
+              - Water Tank Fault Injection with NuRV: user/examples/workspace/water_tank_FI_monitor/README.md
+              - Incubator Co-Sim with NuRV: user/examples/workspace/incubator-NuRV-monitor-validation/README.md
+              - Incubator with NuRV Service: user/examples/workspace/incubator-NuRV-monitor-service/README.md
+              - Incubator with NuRV FMU Service: user/examples/workspace/incubator-NuRV-fmu-monitor-service/README.md
+              - Incubator with TeSSLa Service: user/examples/workspace/incubator-TeSSLa-monitor-service/README.md
+              - Incubator with TeSSLa Active Control: user/examples/workspace/incubator-TeSSLa-active-control/README.md
               - BIM Building Model: user/examples/workspace/fzk_haus/README.md
           - Codebase: https://github.com/INTO-CPS-Association/DTaaS-examples
           - Automation:
               - Overview: user/examples/automation/index.md
-              - Mass Spring Damper:
-                  user/examples/automation/mass-spring-damper/README.md
-              - Structural Health Monitoring:
-                  user/examples/automation/shm/README.md
-              - Heart Digital Twin:
-                  user/examples/automation/heart-dt/README.md
-              - Heart Digital Twin (PaaS):
-                  user/examples/automation/heart-dt-paas/README.md
+              - Mass Spring Damper: user/examples/automation/mass-spring-damper/README.md
+              - Structural Health Monitoring: user/examples/automation/shm/README.md
+              - Heart Digital Twin: user/examples/automation/heart-dt/README.md
+              - Heart Digital Twin (PaaS): user/examples/automation/heart-dt-paas/README.md
   - Admin:
       - Overview: admin/overview.md
       - Auto Installation:
@@ -136,10 +126,8 @@ nav:
                   - Custom User: admin/workspace/localhost/custom-user.md
               - Secure Server:
                   - Install: admin/workspace/secure-server/install.md
-                  - Configuration:
-                      admin/workspace/secure-server/configuration.md
-                  - Keycloak Setup:
-                      admin/workspace/secure-server/keycloak-setup.md
+                  - Configuration: admin/workspace/secure-server/configuration.md
+                  - Keycloak Setup: admin/workspace/secure-server/keycloak-setup.md
                   - Design: admin/workspace/secure-server/design.md
       - Platform Services: admin/services/cli.md
       - GitLab:
@@ -158,8 +146,7 @@ nav:
               - NPM: admin/servers/logger/npm.md
               - Docker: admin/servers/logger/docker.md
       - Guides:
-          - Localhost on Portainer:
-              admin/guides/localhost-on-portainer/install.md
+          - Localhost on Portainer: admin/guides/localhost-on-portainer/install.md
           - Check Config: admin/guides/check_config.md
           - Common Assets: admin/guides/common_workspace_readonly.md
           - Renew Certificates: admin/guides/renew_certs.md
@@ -180,17 +167,13 @@ nav:
               - Firecracker microVMs: developer/system/servers/execution/runner/Firecracker.md
           - Code Review:
               - Overview: developer/system/review/index.md
-              - Architecture Review:
-                  developer/system/review/architecture-review.md
+              - Architecture Review: developer/system/review/architecture-review.md
               - Design Review: developer/system/review/design-review.md
-              - Systemic Issues:
-                  developer/system/review/systemic-issues.md
+              - Systemic Issues: developer/system/review/systemic-issues.md
               - Improvements: developer/system/review/improvements.md
       - Technical Concepts:
-          - OAuth 2.0 and Keycloak:
-              developer/technical-concepts/oauth-keycloak.md
-          - OAuth 2.0 Concepts:
-              developer/technical-concepts/oauth/oauth2.0.md
+          - OAuth 2.0 and Keycloak: developer/technical-concepts/oauth-keycloak.md
+          - OAuth 2.0 Concepts: developer/technical-concepts/oauth/oauth2.0.md
           - Auth System Design: developer/technical-concepts/oauth/design.md
           - Auth Microservice: developer/technical-concepts/oauth/authms.md
           - DevOps: developer/technical-concepts/gitlab.md

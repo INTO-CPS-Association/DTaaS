@@ -5,8 +5,9 @@
 Requirement [R2][dtn-requirements]: a DT declares which of its shared-policy
 parameters the Manager may change. The DT author declares them in the
 state machine file; the Manager reads and sets them over the API; the
-values reach scripts as environment variables (08) and appear in the
-state document (02).
+values reach scripts as environment variables
+([08](08-script-context.md)) and appear in the state document
+([02](02-state-document.md)).
 
 ### Declaration
 
@@ -46,8 +47,9 @@ states:
   be set over the API; the others are read-only configuration the DT
   shares with the Manager.
 - `event`, if present, must be in `events`.
-- Two parameters whose environment variable names (08) collide, such as
-  `a-b` and `a_b`, are a startup error.
+- Two parameters whose environment variable names
+  ([08](08-script-context.md)) collide, such as `a-b` and `a_b`, are a
+  startup error.
 - Parameters require a state machine file, as decided in the design
   summary (S4); a DT without one has none.
 
@@ -57,7 +59,7 @@ states:
 
 1. Validate the whole body; on any problem change nothing.
 1. Store and apply every changed value, so a script that a following
-   transition starts sees the new values (08).
+   transition starts sees the new values ([08](08-script-context.md)).
 1. Raise the declared events of the changed parameters, in declaration
    order, each against the state the previous one produced; an event
    that two changed parameters declare is raised once, so a
@@ -104,13 +106,15 @@ value equal to the current one changes nothing and raises no event.
   idempotent and takes no request key. Over MQTT the reply bodies are
   the same, including the `400` bodies.
 
-Each change is recorded with an ISO timestamp, so 09 can restore values
-and 11 can report them.
+Each change is recorded with an ISO timestamp, so
+[09](09-persistence.md) can restore values and
+[11](11-history-metrics.md) can report them.
 
 ### State document
 
-After the rebase onto 02, `parameters` in the state document becomes
-`{ "scope": "multi", "capacity": 20 }`: names to current values only.
+After the rebase onto [02](02-state-document.md), `parameters` in the
+state document becomes `{ "scope": "multi", "capacity": 20 }`: names to
+current values only.
 
 ## Plan
 
@@ -157,7 +161,8 @@ After the rebase onto 02, `parameters` in the state document becomes
    `src/mqtt/mqtt-request.handler.ts`, through `this.fsm`; the MQTT
    route returns the exception's `getResponse()` rather than a `500`.
    No constructor gains a parameter.
-1. After rebasing onto 02: `DescriptorService.state()` sets
+1. After rebasing onto [02](02-state-document.md):
+   `DescriptorService.state()` sets
    `parameters: this.fsm.parameters()?.values() ?? {}`; one line, no
    constructor change. `Queue.setParameters(changes)` stores the
    changes of one request in a transaction, so a database failure part
@@ -170,7 +175,8 @@ After the rebase onto 02, `parameters` in the state document becomes
    author opting into a restart; the runner never restarts on its own),
    and the design document (the Validation section that
    says the file holds only `events` and `states`; new decisions for
-   declaration placement and change effect, S6). In 08 and 09, replace
+   declaration placement and change effect, S6). In
+   [08](08-script-context.md) and [09](09-persistence.md), replace
    `ParametersService` with `FsmService.parameters()`.
 
 ## Tasks
@@ -199,11 +205,13 @@ After the rebase onto 02, `parameters` in the state document becomes
 - [x] MQTT routes return the same bodies, including `400`. Check:
       `test/unit/mqtt-request.parameters.spec.ts` (new; the handler
       spec is near 250 lines), `test/e2e/mqtt.spec.ts`.
-- [x] After the rebase onto 02, `GET /state` shows the current values.
+- [x] After the rebase onto [02](02-state-document.md), `GET /state`
+      shows the current values.
       Check: `test/e2e/parameters.spec.ts`,
       `test/unit/descriptor.service.spec.ts`.
 - [x] README, `DEVELOPER.md`, design document, request files and the
-      08 and 09 plans updated. Check: from the repository root,
+      [08](08-script-context.md) and [09](09-persistence.md) plans
+      updated. Check: from the repository root,
       `npx markdownlint-cli -c .markdownlint.yaml` on them.
 - [x] `yarn build` and `yarn test` pass,
       `npx tsc --noEmit --noUnusedLocals` is clean, and no function
@@ -225,7 +233,9 @@ After the rebase onto 02, `parameters` in the state document becomes
   inline comment; yamllint wants neither. YAML test data uses block
   mappings and comments on their own line, or CI fails one of the two.
 - `fsm.service.ts` reached 249 lines; `RecentReplies.resolve` and
-  `Parameters.apply` made room for 03, and 06, 08 and 09 must each say
-  what they move out before adding to it.
+  `Parameters.apply` made room for [03](03-state-notifications.md), and
+  [06](06-escalation.md), [08](08-script-context.md) and
+  [09](09-persistence.md) must each say what they move out before adding
+  to it.
 
 [dtn-requirements]: ../../../../../system/servers/execution/runner/DT-networks.md#requirements-on-a-managed-dt

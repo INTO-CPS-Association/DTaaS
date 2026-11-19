@@ -32,7 +32,8 @@ whether the DT is doing its job.
 - `uptime` is whole seconds since the process started
   (`process.uptime()`).
 - The reply carries no version and no state machine information; the
-  descriptor of 01 (`GET /dt`) says whether a machine is loaded.
+  descriptor of [01](01-dt-identity.md) (`GET /dt`) says whether a
+  machine is loaded.
 
 Over MQTT the route can answer only while connected, so its reply
 always says `connected`; that a reply arrives at all is the liveness
@@ -119,8 +120,8 @@ the `beforeApplicationShutdown` hooks, before the scripts drain, so a
   observed and was dropped.
 - The runner image has neither curl nor wget; the container health check
   uses `node -e fetch(…)`.
-- Rebasing onto 01 would have given `AppController` and the MQTT handler
-  a fourth constructor parameter; an own `HealthController` and a pure
-  `healthReport()` avoided it.
+- Rebasing onto [01](01-dt-identity.md) would have given `AppController`
+  and the MQTT handler a fourth constructor parameter; an own
+  `HealthController` and a pure `healthReport()` avoided it.
 - Test fakes moved into a shared fixture count as new code for
   SonarCloud, which then flagged `async` arrows without `await`.

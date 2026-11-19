@@ -3,8 +3,9 @@
 ## Spec
 
 The Manager of a DT network sees the network state
-`O = (s_1, …, s_n, R)`, where `R ⊆ D × D` relates DTs and mirrors the
-relationships of the physical world; in the hospital example `R` is
+\(O = (s_1, \ldots, s_n, R)\), where \(R \subseteq D \times D\) relates
+DTs and mirrors the relationships of the physical world; in the
+hospital example \(R\) is
 the distances between hospitals (see the
 [Concepts][dtn-concepts]). The runner knows
 no other runner (A1), so neither a Manager nor the DT itself can read
@@ -38,17 +39,19 @@ peers:
   flat map of strings, numbers and booleans, no `__proto__`. A
   relationship such as `distance` is an attribute, which the runner
   never reads. This answers open question 8.
-- `enabled` defaults to `true`; `publicKey` is the peer's 15b key in
-  15a's encoding.
+- `enabled` defaults to `true`; `publicKey` is the peer's
+  [15b](15b-signed-output.md) key in [15a](15a-access-control.md)'s
+  encoding.
 
 ### Following Peers
 
 With an `mqtt` section, the runner subscribes with QoS 1, over its
 existing client, to `<peer topic>/notify/presence` and
 `<peer topic>/notify/state` of every enabled peer with a `topic`. Every
-runner publishes both retained since 03 and 07, so they arrive on
-subscribe and the runner knows at once whether the peer is online, its
-descriptor and its last state document. Per peer it remembers `online`,
+runner publishes both retained since [03](03-state-notifications.md)
+and [07](07-presence.md), so they arrive on subscribe and the runner
+knows at once whether the peer is online, its descriptor and its last
+state document. Per peer it remembers `online`,
 `descriptor` (of the last online notice; an offline notice keeps it)
 and `state` (the `data` of the last state notice). mqtt.js subscribes
 again on reconnect.
@@ -62,7 +65,7 @@ unsigned one dropped. A peer without one is taken as is, so a signed
 payload does not parse and is dropped (this plan's call: taken
 unverified, it would look verified). Without `mqtt`, peers are listed
 but never observed. A peer's notice raises no event and sends no
-notification; 16 adds reactions.
+notification; [16](16-peer-events.md) adds reactions.
 
 ### API
 
@@ -105,9 +108,10 @@ or `url` is `null`; `publicKey` is not shown (this plan's call). With
 }
 ```
 
-`PUT /peers` (MQTT `set-peers`), for 15a's roles `manager` and
-`client`, enables and disables listed peers. The body maps ids to
-booleans; one that is not an object is `400 Validation Failed`. The
+`PUT /peers` (MQTT `set-peers`), for [15a](15a-access-control.md)'s
+roles `manager` and `client`, enables and disables listed peers. The
+body maps ids to booleans; one that is not an object is
+`400 Validation Failed`. The
 whole body is checked first; an unknown id or a non-boolean is refused
 with `400` and every problem in `message`, as `PUT /parameters` does:
 
@@ -143,14 +147,17 @@ in file order, `[]` without any, so a Manager learns `R` from the DTs.
 The state document does not change. As `PUT /peers` notifies nothing,
 the retained presence notice keeps the list of the last connect;
 `GET /dt` is current (this plan's call). Scripts read the list through
-`GET $RUNNER_URL/peers` (D23) with 15a's `script` role.
+`GET $RUNNER_URL/peers` (D23) with [15a](15a-access-control.md)'s
+`script` role.
 
-16 builds on what 13 remembers: `subscriptions` in the state machine
-file, with `when` on a peer's `state` or `online`, raise local events
+[16](16-peer-events.md) builds on what 13 remembers: `subscriptions` in
+the state machine file, with `when` on a peer's `state` or `online`,
+raise local events
 edge-triggered, and a document from a peer with a `publicKey` counts
 only when it verifies, which 13 already enforces. New routes, an
 optional key and a descriptor field break no route, so the version
-stays where 15a leaves it (the delivery rules bump only for a break).
+stays where [15a](15a-access-control.md) leaves it (the delivery rules
+bump only for a break).
 
 ### Considered and Set Aside
 
@@ -161,7 +168,7 @@ stays where 15a leaves it (the delivery rules bump only for a break).
   HTTP API, and a file is stale after a `PUT /peers`.
 - The state machine file as the home of the list: addresses are the
   operator's deployment facts (S4); the DT author's reactions go there
-  in 16.
+  in [16](16-peer-events.md).
 - A Manager that adds peers: it would decide the DT's trust for it.
 
 ## Plan
@@ -169,12 +176,13 @@ stays where 15a leaves it (the delivery rules bump only for a break).
 1. `src/config/attributes.ts`: `attributesSchema` and `Attributes`
    move out of `src/config/config.schema.ts:8-13`, so that
    `config.schema.ts` and `src/peers/peers.config.ts` share them without
-   an import cycle (04's lesson); `baseTopic`
+   an import cycle ([04](04-parameters.md)'s lesson); `baseTopic`
    (`src/mqtt/mqtt.config.ts:7-12`) is exported.
 1. `src/peers/peers.config.ts`: the strict `peerSchema` (`topic` or
-   `url`; `publicKey` with 15a's key schema), `peersSchema` (unique ids
-   and topics) and `PeerConfig`. `config.schema.ts` adds
-   `peers: peersSchema.default([])` and a refinement against the own
+   `url`; `publicKey` with [15a](15a-access-control.md)'s key schema),
+   `peersSchema` (unique ids and topics) and `PeerConfig`.
+   `config.schema.ts` adds `peers: peersSchema.default([])` and a
+   refinement against the own
    `id` and `mqtt.topic`.
 1. `src/config/configuration.service.ts`: `getPeers()`; `parseConfig`
    (`:33-43`) calls a `protoProblem(content)` helper that also checks
@@ -194,13 +202,15 @@ stays where 15a leaves it (the delivery rules bump only for a break).
    switches and what was received: `load(list, store)`, `enabledIds()`,
    `document()`, `set(body): string[]` (check all, store, apply,
    signal), `observe(id, kind, data)` and `onEnabled(listener)`, the
-   name 16 expects; `load` signals each enabled peer. 16 adds
-   `onDocument`.
+   name [16](16-peer-events.md) expects; `load` signals each enabled
+   peer. [16](16-peer-events.md) adds `onDocument`.
 1. `src/peers/peer-notice.ts`: `readNotice(peer, kind, payload)` gives
    the data, `null` for an empty payload, or a reason to drop. It
-   reuses 15a's `src/auth/jws.ts` (Ed25519 through `node:crypto`), with
-   `kid` the peer's id as 15b signs: this plan's call, as 15a verifies
-   JWS already and 15b may not be merged.
+   reuses [15a](15a-access-control.md)'s `src/auth/jws.ts` (Ed25519
+   through `node:crypto`), with `kid` the peer's id as
+   [15b](15b-signed-output.md) signs: this plan's call, as
+   [15a](15a-access-control.md) verifies JWS already and
+   [15b](15b-signed-output.md) may not be merged.
 1. `src/mqtt/follows.ts`: a plain topic-to-listener map, `Follows`.
    `src/mqtt/mqtt.service.ts` (constructor unchanged) gains
    `follow(topics, listener)` and `unfollow(topics)`, which subscribe
@@ -210,9 +220,10 @@ stays where 15a leaves it (the delivery rules bump only for a break).
    `respond`, whose `routes.get` (`:161-164`) still ignores unknown
    topics. A map rather than a listener per peer: one dispatch keeps
    notices apart from requests, and `unfollow` needs no listener
-   references. The room comes from 15a, which moves `requestKey` and
-   `publishOptions` (`:225-238`) to `src/mqtt/mqtt-request.ts`; if 15b
-   has not yet moved `responseTopic` (`:211-223`) there, 13 does.
+   references. The room comes from [15a](15a-access-control.md), which
+   moves `requestKey` and `publishOptions` (`:225-238`) to
+   `src/mqtt/mqtt-request.ts`; if [15b](15b-signed-output.md) has not
+   yet moved `responseTopic` (`:211-223`) there, 13 does.
 1. `src/peers/peer-watch.ts`: an injectable `PeerWatch`
    (`DescriptorService`, `MqttService`) that registers `onEnabled` in
    its constructor, so the order of `onModuleInit` hooks does not
@@ -229,8 +240,9 @@ stays where 15a leaves it (the delivery rules bump only for a break).
    `PUT /peers` after `src/parameters.controller.ts`; the `peers` and
    `set-peers` routes in `mqtt.config.ts` and `mqtt-request.handler.ts`
    through `this.descriptor.peers()`; rows `peers` (every role) and
-   `set-peers` (`client`, `manager`) in 15a's `ROUTE_ROLES`
-   (`src/auth/roles.ts`), with `@AccessRoute` on both handlers;
+   `set-peers` (`client`, `manager`) in [15a](15a-access-control.md)'s
+   `ROUTE_ROLES` (`src/auth/roles.ts`), with `@AccessRoute` on both
+   handlers;
    `src/app.module.ts` registers the controller and `PeerWatch`.
 1. `demo/hospital/runner.yaml` lists `hospital-2` as in the Spec; the
    demo runs one runner, so it stays `online: null` (this plan's call).
@@ -268,9 +280,11 @@ stays where 15a leaves it (the delivery rules bump only for a break).
 - [x] `GET` and `PUT /peers` as specified, including `{}`, `400` with
       every problem, and a switch kept across a restart. Check:
       `test/e2e/peers.spec.ts`.
-- [x] The MQTT routes give the same bodies and 15a's roles hold. Check:
+- [x] The MQTT routes give the same bodies and
+      [15a](15a-access-control.md)'s roles hold. Check:
       `test/unit/mqtt-request.peers.spec.ts`, the route list of
-      `test/unit/mqtt.config.spec.ts`, 15a's role tests.
+      `test/unit/mqtt.config.spec.ts`, [15a](15a-access-control.md)'s
+      role tests.
 - [x] Against aedes, retained notices published before the start show
       in `GET /peers`, a second runner started by `startRunner` (with
       its `getId` spied) is seen online with its state, and disabling
@@ -295,10 +309,12 @@ stays where 15a leaves it (the delivery rules bump only for a break).
 
 ## Learnings
 
-- **Drift.** `nameSchema` lives in `src/fsm/name.ts` since 15a, so
-  `src/config/attributes.ts` imports it from there. `src/queue.service.ts`
+- **Drift.** `nameSchema` lives in `src/fsm/name.ts` since
+  [15a](15a-access-control.md), so `src/config/attributes.ts` imports it
+  from there. `src/queue.service.ts`
   had 211 lines, not 245: `RECORD`, `RECORD_BY_KEY` and `toRecord` stay
-  where they are, as 11 moves them to `src/queue.history.ts` and a
+  where they are, as [11](11-history-metrics.md) moves them to
+  `src/queue.history.ts` and a
   second move to `src/queue.record.ts` would only conflict, and
   `inTransaction` is a function of `queue.service.ts`, which ends at 233
   lines. `src/mqtt/mqtt.service.ts` had 232 lines; 13 moved
@@ -346,26 +362,31 @@ stays where 15a leaves it (the delivery rules bump only for a break).
   `refuseSelf` at complexity 5, as the two `if`s and the `&&` inside its
   `forEach` callback count towards it. It now loops over the keys `id`
   and `topic` with an `indexesOf` helper, like `repeats`.
-- **Version and decision.** The version stays where 11 left it, 0.10.0,
-  as the Spec says: new routes, an optional key and a descriptor field
-  break no route. 11 took D30, so the peer list is D31.
-- **Rebase onto 11.** 11 merged first (#91), and the rebase conflicted
-  in five places. `queue.service.ts`: 11 had moved `RECORD` and
+- **Version and decision.** The version stays where
+  [11](11-history-metrics.md) left it, 0.10.0, as the Spec says: new
+  routes, an optional key and a descriptor field break no route.
+  [11](11-history-metrics.md) took D30, so the peer list is D31.
+- **Rebase onto [11](11-history-metrics.md).**
+  [11](11-history-metrics.md) merged first (#91), and the rebase
+  conflicted in five places. `queue.service.ts`:
+  [11](11-history-metrics.md) had moved `RECORD` and
   `toRecord` to `queue.history.ts`, so only `inTransaction` stays above
   `Queue` and the file ends at 226 lines.
   `DescriptorService.onModuleInit` now starts the metrics and then
   loads the peers. `mqttRoutes` and the subscription list of
   `mqtt.service.spec.ts` keep `metrics` before `peers` and `set-peers`.
-  In `README.md`, `api/API.md` and the design document, 11's text was
-  kept and 13's edits applied again on top, the decision renumbered
-  to D31. Both descriptor unit tests needed new fakes: 11's
-  `onModuleInit` calls `fsm.onChange` and `fsm.onAnswer`, and 13's
+  In `README.md`, `api/API.md` and the design document,
+  [11](11-history-metrics.md)'s text was kept and 13's edits applied
+  again on top, the decision renumbered to D31. Both descriptor unit
+  tests needed new fakes: [11](11-history-metrics.md)'s `onModuleInit`
+  calls `fsm.onChange` and `fsm.onAnswer`, and 13's
   calls `config.getPeers` and `queue.peerSwitches`.
 - **Left for later.** `hospital.cast` was not recorded again, so its
   `GET /dt` shows no `peers`; API.md shows `"peers": ["hospital-2"]`,
-  which the demo's `runner.yaml` now gives, and 16 re-captures the
-  examples. `docs/developer/codebase/runner.md`, whose class diagram
-  lacks `DescriptorService` already, does not show `Peers`,
+  which the demo's `runner.yaml` now gives, and
+  [16](16-peer-events.md) re-captures the examples.
+  `docs/developer/codebase/runner.md`, whose class diagram lacks
+  `DescriptorService` already, does not show `Peers`,
   `PeerWatch` or `PeersController`; that is for a separate change.
 
 [dtn-concepts]: ../../../../../system/servers/execution/runner/DT-networks.md#concepts

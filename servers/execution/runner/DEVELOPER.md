@@ -42,7 +42,7 @@ _echo-input_ writes its stdin back, for the tests of command input, and
 _fail_ exits with code 3, for those of a failed command.
 
 The _busy_ script spins for about a second of CPU time, for the tests
-of the [resources](README.md#resources) of a run. The POSIX version
+of the [resources](api/API.md#resources) of a run. The POSIX version
 reads `/proc/uptime` with the `read` builtin, so it starts no process
 and runs on Linux only; the PowerShell version spins for three seconds,
 as the sampler of a run is a second PowerShell that needs time to
@@ -69,10 +69,10 @@ declares three parameters, for trying out the parameters requests, one
 of them the `fidelity` of the
 [fidelity pattern](STATE-MACHINE.md#pattern-fidelity), and
 subscribes to the state `full` of the peer `hospital-2`, for trying out
-[peer events](README.md#peer-events) with the `peerFull` request of
-`api/dev.mqtt.http`. The
-[state machine design](docs/state-machine-design.md) explains the file
-and the decisions behind it.
+[peer events](STATE-MACHINE.md#subscriptions-to-peers) with the
+`peerFull` request of `api/dev.mqtt.http`. The
+[state machine design](../../../docs/developer/system/servers/execution/runner/State-Machine.md)
+explains the file and the decisions behind it.
 
 ## Developer Commands
 
@@ -110,13 +110,13 @@ The tests use topics with a random part, so runs do not interfere on a
 shared broker. The GitHub Actions workflow runs them against a
 Mosquitto container.
 
-`test/e2e/mqtt.peers.spec.ts` checks [peers](README.md#peers) against
+`test/e2e/mqtt.peers.spec.ts` checks [peers](CONFIG.md#peers) against
 aedes with two runners in one process: `startRunner` of
 `test/e2e/mqtt.util.ts` takes a `prepare` hook that spies `getId` and
 `getPeers`, so `hospital-1` lists `hospital-2` and each runner has its
 own base topic on the same broker.
 
-`test/e2e/peer-events.spec.ts` checks [peer events](README.md#peer-events)
+`test/e2e/peer-events.spec.ts` checks [peer events](STATE-MACHINE.md#subscriptions-to-peers)
 on aedes with one runner, built from a state machine file by
 `digitalTwin` of `test/e2e/fsm.util.ts`, and a plain MQTT client that
 publishes the notices of the peer `hospital-2`, a will among them. The
@@ -126,7 +126,7 @@ unit tests replay the worked example of issue 16 on `PeerEvents`
 
 ### Access Control Tests
 
-The tests of [access control](README.md#access-control) generate their
+The tests of [access control](CONFIG.md#access-control) generate their
 Ed25519 keys at run time with `test/sign.util.ts`, which also signs
 HTTP tokens and MQTT envelopes; no key file is committed. The end-to-end
 tests start the runner from a configuration without `auth` and spy
@@ -150,7 +150,7 @@ tells how the request files sign with it.
 
 ### Signed Output Tests
 
-The tests of [signed output](README.md#signed-output) also generate
+The tests of [signed output](CONFIG.md#signed-output) also generate
 their keys at run time, with `generateKeyPairSync('ed25519')`, and
 write a key file only to a temporary directory. The unit fakes of
 `Config` give `getSigner()`, a `Signer` without a key unless a test
@@ -168,7 +168,7 @@ that signs, as a peer of 13 does.
 
 ### Script User Tests
 
-The checks of the [script user](README.md#script-user) run everywhere
+The checks of the [script user](CONFIG.md#script-user) run everywhere
 on fakes: `test/unit/scripts.*.spec.ts` pass the texts of
 `/etc/passwd`, `/etc/group` and `/proc/self/status`, and a fake file
 system of `test/unit/scripts.fake-fs.ts` with modes, owners and links.

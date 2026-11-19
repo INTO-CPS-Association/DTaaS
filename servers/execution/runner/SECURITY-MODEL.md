@@ -3,20 +3,13 @@
 This guide is for operators who deploy the runner and for the
 developers who work on the separation of the runner from its scripts.
 It states what the runner protects, from whom, and what it leaves to
-the system that starts it. It records a design that the owner settled
-on 2026-10-27. Access control (issue 15a), signed output (issue 15b)
-and the second account of the scripts, C1 below (issue 18,
-[docs/issues/18-script-user.md](../../../docs/developer/plans/servers/execution/runner/issues/18-script-user.md)), are
-implemented; B3 is the orchestrator's. How to set up the second account
+the system that starts it. The execution scripts require a second account
+and see how to set up the second account
 is in [PRIVILEGE-SETUP.md](PRIVILEGE-SETUP.md).
 
-The research behind the design is in
-[docs/sandbox-runtime-research.md](docs/sandbox-runtime-research.md)
-and [docs/firecracker-research.md](docs/firecracker-research.md). Where
-this guide states how the runner works today, it names the source file.
-The account switch was tried on WSL Ubuntu 26.04, kernel 6.18, on
-2026-10-27, after the design was settled; statements that rest on that
-experiment say so. Statements that could not be checked against a
+Where this guide states how the runner works today, it names the source file.
+The account switch was tried on WSL Ubuntu 26.04, kernel 6.18.
+Statements that could not be checked against a
 source or the experiment are marked _unverified_.
 
 ## Terms
@@ -554,7 +547,7 @@ written:
   keeps `--reset-env`, as the runner reads none of compose's variables.
 
 Further reading:
-[docs/sandbox-runtime-research.md](docs/sandbox-runtime-research.md),
-[docs/firecracker-research.md](docs/firecracker-research.md), and
-issue 18 in
-[docs/issues/18-script-user.md](../../../docs/developer/plans/servers/execution/runner/issues/18-script-user.md).
+[the script sandbox research](../../../docs/developer/system/servers/execution/runner/Sandbox.md),
+[the Firecracker microVM research](../../../docs/developer/system/servers/execution/runner/Firecracker.md),
+and the
+[plan of the script account](../../../docs/developer/plans/servers/execution/runner/issues/18-script-user.md).

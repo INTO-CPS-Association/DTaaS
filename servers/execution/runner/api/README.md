@@ -104,7 +104,7 @@ the request files. httpyac uses these file variables even when its
 ## Access Control
 
 A runner with `principals` in its `auth` section
-([README](../README.md#access-control)) answers the unsigned requests
+([CONFIG.md](../CONFIG.md#access-control)) answers the unsigned requests
 with `401`; an `auth` section with only a `key` leaves them open. Write
 a key pair, from the runner directory:
 
@@ -127,7 +127,7 @@ and list the printed public keys under `auth` in
 
 A token is valid for 30 s and once only, so each send signs anew.
 
-With `auth.key` ([README](../README.md#signed-output)), the runner
+With `auth.key` ([CONFIG.md](../CONFIG.md#signed-output)), the runner
 signs its MQTT responses and notifications, so httpYac shows each as
 the text of a compact JWS rather than as JSON; its middle part is the
 base64url of the JSON. The HTTP replies stay JSON.
@@ -142,5 +142,6 @@ the cancel button in VS Code or Ctrl+C on the command line.
 httpYac publishes MQTT requests without MQTT 5 properties. So
 `dev.mqtt.http` can not send a request key or a response topic of its
 own, and the responses go to the default response topics, which every
-subscriber receives. The [runner README](../README.md#mqtt-api) shows
-how to send a request key with `mosquitto_pub`.
+subscriber receives.
+[API.md](API.md#request-keys-and-delivery) shows how to send a request
+key with `mosquitto_pub`.

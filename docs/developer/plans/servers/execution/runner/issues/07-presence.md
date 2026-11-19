@@ -6,11 +6,13 @@ DTs join and leave a DT network at runtime, and its Manager keeps a
 database of DT addresses. Today nothing is published without a
 request, so a Manager learns of a runner only when it asks. This
 feature announces the runner when it connects and when it leaves, over
-the transports of 03, as notifications of kind `presence`.
+the transports of [03](03-state-notifications.md), as notifications of
+kind `presence`.
 
 ### Envelope
 
-The online notice carries the descriptor of 01 (`GET /dt`):
+The online notice carries the descriptor of [01](01-dt-identity.md)
+(`GET /dt`):
 
 ```json
 {
@@ -61,10 +63,11 @@ at most 4 s to the shutdown.
 ### Webhook
 
 With `notify.url`, the online notice is posted once at startup with the
-retries of 03. The offline notice is posted once at shutdown, with one
-attempt and a timeout of 2 s, so the retry schedule of 03 cannot hold
-the shutdown. Nest runs the `beforeApplicationShutdown` hooks of the
-module concurrently, so the webhook's 2 s overlap the MQTT wait.
+retries of [03](03-state-notifications.md). The offline notice is posted
+once at shutdown, with one attempt and a timeout of 2 s, so the retry
+schedule of [03](03-state-notifications.md) cannot hold the shutdown.
+Nest runs the `beforeApplicationShutdown` hooks of the module
+concurrently, so the webhook's 2 s overlap the MQTT wait.
 
 Without MQTT and without a webhook, nothing is announced. Presence
 adds a kind and a topic and breaks no route, so the version stays.
@@ -79,9 +82,10 @@ built from `Config` alone (`getId()`, `new Date()`).
 
 The online notice needs the descriptor, which `MqttService` cannot
 reach without a fourth constructor parameter. So `MqttService` gains
-`onConnect(listener)`, backed by a `Changes` instance of 03 and emitted
-from its `connect` handler; `Notifier.onModuleInit` subscribes and
-publishes through `MqttService.notify`. No constructor changes.
+`onConnect(listener)`, backed by a `Changes` instance of
+[03](03-state-notifications.md) and emitted from its `connect` handler;
+`Notifier.onModuleInit` subscribes and publishes through
+`MqttService.notify`. No constructor changes.
 
 `main.ts` calls `start()` right before `app.listen()`, which runs
 `app.init()`, and `test/e2e/mqtt.util.ts` calls it before `app.init()`.
@@ -189,7 +193,8 @@ true, so a missed first `connect` still announces the runner.
   well under 250 as planned: the shutdown sequence and `onConnect`
   outweigh the moved `clientOptions`. `settles` moved to
   `src/mqtt/settles.ts` in review, which leaves the service at 240
-  lines for 05, 06 and 08.
+  lines for [05](05-command-input.md), [06](06-escalation.md) and
+  [08](08-script-context.md).
 - The will-and-reconnect test cuts the runner's connection on the
   broker's side, through the typed `conn` of the aedes `Client` that
   the `clientReady` event hands over. That needs neither bracket access
@@ -209,12 +214,15 @@ true, so a missed first `connect` still announces the runner.
   and use the prototype spy.
 - The webhook e2e test closes the runner inside the test to see the
   offline post, so `app` became optional, as in the broker test.
-- The presence decision is D26: 08 took D23, and 05 and 06 claim D24
-  and D25. It is worded to fit the existing column widths of the
-  decision table, so prettier does not realign every row and conflict
-  with 05 and 06, which add decisions in parallel.
-- 08 (PR #81) keeps `start()` before `app.listen()`, so the order the
-  Ownership paragraph relies on holds; were `start()` ever moved after
+- The presence decision is D26: [08](08-script-context.md) took D23, and
+  [05](05-command-input.md) and [06](06-escalation.md) claim D24 and
+  D25. It is worded to fit the existing column widths of the decision
+  table, so prettier does not realign every row and conflict with
+  [05](05-command-input.md) and [06](06-escalation.md), which add
+  decisions in parallel.
+- [08](08-script-context.md) (PR #81) keeps `start()` before
+  `app.listen()`, so the order the Ownership paragraph relies on holds;
+  were `start()` ever moved after
   `listen()`, `onConnect` registers the listener before the client
   exists and the first `connect` still announces the runner.
 - The version stays at 0.6.0, as the Spec says: presence adds a kind

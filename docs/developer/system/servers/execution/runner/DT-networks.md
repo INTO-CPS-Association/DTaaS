@@ -14,27 +14,27 @@ and records what the runner offered before those features.
 A DTN is an ensemble of interconnected DTs that exchange information
 to address tasks beyond the scope of any single DT. It is typically
 operated by a single organisation. This page writes a DTN as
-`N = (P, D, R, I, C)`:
+\(N = (P, D, R, I, C)\):
 
-- `P`, the physical twins (PTs);
-- `D`, the DTs, one per PT;
-- `R ⊆ D × D`, the relationships between DTs, which capture the
+- \(P\), the physical twins (PTs);
+- \(D\), the DTs, one per PT;
+- \(R \subseteq D \times D\), the relationships between DTs, which capture the
   dependencies and interactions among DTs that mirror those of the
   physical world;
-- `I`, the communication infrastructure, assumed reliable;
-- `C`, the computational resources the DTs share.
+- \(I\), the communication infrastructure, assumed reliable;
+- \(C\), the computational resources the DTs share.
 
 DTs join and leave the network at runtime, as PTs come and go. To stay
 interoperable, all DTs expose a common communication interface. They
-also compete for the shared resources `C`, so the adaptation of one DT
+also compete for the shared resources \(C\), so the adaptation of one DT
 can degrade the quality of service of others. This is why adaptation is
 needed at the level of the network and not only inside each DT.
 
 ### Adaptation of a Single DT
 
-A DT `d_i = (M_i, s_i, K_i, α_i)` has models `M_i`, a state `s_i`, a
-set of commands `K_i` it can issue to its PT, and an adaptation policy
-`α_i`. It adapts in three ways:
+A DT \(d_i = (M_i, s_i, K_i, \alpha_i)\) has models \(M_i\), a state \(s_i\), a
+set of commands \(K_i\) it can issue to its PT, and an adaptation policy
+\(\alpha_i\). It adapts in three ways:
 
 - **model adaptation** recalibrates a model or replaces it;
 - **resource adaptation** trades accuracy for computational cost, for
@@ -46,28 +46,29 @@ Adaptation is commonly structured as a MAPE-K loop: Monitor, Analyse,
 Plan and Execute over shared Knowledge. In a DT the Monitor step
 collects data from the linked PT and from other DTs, and the Execute
 step adapts the DT itself rather than controlling the PT. The loop can
-itself serve as the adaptation policy `α_i`.
+itself serve as the adaptation policy \(\alpha_i\).
 
-The state of a DT is `s_i = (x_i, λ_i, θ_i)`:
+The state of a DT is \(s_i = (x_i, \lambda_i, \theta_i)\):
 
-- `x_i`, the state mirrored from the PT;
-- `λ_i`, the active local policy, chosen from the DT's _local
-  adaptation space_ `Λ_i`;
-- `θ_i`, the parameters of the shared policy (below) that the DT
+- \(x_i\), the state mirrored from the PT;
+- \(\lambda_i\), the active local policy, chosen from the DT's _local
+  adaptation space_ \(\Lambda_i\);
+- \(\theta_i\), the parameters of the shared policy (below) that the DT
   applies.
 
-A local goal `γ_i` says whether a policy is good enough for the DT. A
-DT is _exhausted_ when no policy in `Λ_i` satisfies `γ_i`. The
-adaptation policy maps the state to a _proposal_ `(λ', θ')`: the local
-policy and the shared parameters the DT would like next.
+A local goal \(\gamma_i\) says whether a policy is good enough for the DT. A
+DT is _exhausted_ when no policy in \(\Lambda_i\) satisfies \(\gamma_i\). The
+adaptation policy maps the state to a _proposal_ \((\lambda', \theta')\):
+the local policy and the shared parameters the DT would like next.
 
 ### Shared Policies and the Manager
 
 In a DTN, an application policy is often _shared_: its effects, and
 often its parameters, span several DTs. The shared policy is
-`σ = (θ_1, …, θ_n)`. A DT that adapts for its own good may relieve its
-own PT at the cost of shifting load onto its neighbours, so shared
-policies need coordination. Coordination takes one of three forms:
+\(\sigma = (\theta_1, \ldots, \theta_n)\). A DT that adapts for its own
+good may relieve its own PT at the cost of shifting load onto its
+neighbours, so shared policies need coordination. Coordination takes
+one of three forms:
 
 - **decentralised**: the DTs coordinate through peer-to-peer
   communication and adapt on the collective knowledge of the network;
@@ -76,12 +77,12 @@ policies need coordination. Coordination takes one of three forms:
   the low-level adaptation.
 
 The Manager runs a second MAPE-K loop on top of the local loops of the
-DTs. It knows the network state `O = (s_1, …, s_n, R)`, the network
-goals `G` and the shared policy `σ`. Its Monitor collects the states
-and escalations of the DTs, Analyse evaluates `G`, Plan computes a
-_network-level adaptation_ `u`, and Execute applies it. An adaptation
-`u` assigns shared-policy parameters from the subset `Θ_i^c` that each
-DT exposes, and submits commands from the subset `K_i^c` that each DT
+DTs. It knows the network state \(O = (s_1, \ldots, s_n, R)\), the network
+goals \(G\) and the shared policy \(\sigma\). Its Monitor collects the states
+and escalations of the DTs, Analyse evaluates \(G\), Plan computes a
+_network-level adaptation_ \(u\), and Execute applies it. An adaptation
+\(u\) assigns shared-policy parameters from the subset \(\Theta_i^c\) that each
+DT exposes, and submits commands from the subset \(K_i^c\) that each DT
 exposes. An update writes no local policy. The Manager also keeps a
 database of the addresses, locations and identifiers of the DTs.
 
@@ -104,11 +105,11 @@ Centralised coordination places four requirements on each DT:
 
 The two triggers of R3 are:
 
-- **endogenous** (`e_i`): the DT signals the Manager when it is
+- **endogenous** (\(e_i\)): the DT signals the Manager when it is
   exhausted, or when its proposal needs shared parameters other than
   the ones it has;
-- **exogenous** (`e_M(O)`): the Manager sees a network goal violated
-  in `O`, or in a forecast of `O` within a horizon `H`, and takes
+- **exogenous** (\(e_M(O)\)): the Manager sees a network goal violated
+  in \(O\), or in a forecast of \(O\) within a horizon \(H\), and takes
   responsibility for the adaptation.
 
 Consistent enactment of policy changes across DTs, and stability under
@@ -117,12 +118,12 @@ repeated adaptations, are outside these requirements.
 ### Example: Hospital Bed Management
 
 Several hospitals each have a DT whose state includes the pending
-requests to allocate a patient to a bed. The relationships `R` are the
+requests to allocate a patient to a bed. The relationships \(R\) are the
 distances between hospitals. The shared-policy parameter is the
 allocation scope, `single` ward or `multi` ward. The only command
 exposed to the Manager is `admit(p)`, which asks a hospital's DT to
-allocate patient `p` with its own local policy; a hospital may fail to
-allocate `p`, in which case the Manager tries the next one.
+allocate patient \(p\) with its own local policy; a hospital may fail to
+allocate \(p\), in which case the Manager tries the next one.
 
 On a request, the Manager:
 
@@ -142,23 +143,23 @@ hospitals.
 
 ### Vocabulary Against the Runner
 
-| Symbol or term            | Meaning                                                       | Runner before these features                                                         |
-| :------------------------ | :------------------------------------------------------------ | :----------------------------------------------------------------------------------- |
-| `P`, PT                   | physical twins                                                | Unknown to the runner; scripts talk to the PT.                                       |
-| `D`, DT                   | one DT per PT                                                 | One runner per DT (`docs/state-machine-design.md:192`).                              |
-| `R`                       | relationships between DTs                                     | None.                                                                                |
-| `I`                       | communication infrastructure                                  | HTTP, and an MQTT broker when configured.                                            |
-| `C`                       | shared compute                                                | The host; placement is the platform's.                                               |
-| `M_i`                     | models                                                        | _Inference_: the scripts and files in `location`.                                    |
-| `s_i`, `x_i`              | state; mirrored PT state                                      | Command history and machine state; no `x_i`.                                         |
-| `λ_i`, `Λ_i`              | active local policy; local adaptation space                   | _Inference_: the current state; the set of states.                                   |
-| `θ_i`, `Θ_i^c`            | shared parameters; controllable subset                        | None.                                                                                |
-| `K_i`, `K_i^c`            | controls; commands the Manager may submit                     | `commands` allowlist; anyone may run any of them.                                    |
-| `α_i`                     | adaptation policy                                             | `state-machine.yaml` transitions, driven by client events and script exit.           |
-| `γ_i`, exhausted, `e_i`   | local goal; no policy meets it; endogenous trigger            | None; `no transition` and `$failure` are the nearest observable signals.             |
-| `O`, `G`, `σ`, `e_M`, `u` | Manager-side knowledge, goals, shared policy, trigger, update | Not the runner's concern, except that `u` arrives as parameter updates and commands. |
-| MAPE-K                    | the loop of a DT and of the Manager                           | No loop in the runner; a script may implement one.                                   |
-| Orchestrator              | deploys and removes DTs, allocates resources                  | The DTaaS platform; the runner is what it would deploy.                              |
+| Symbol or term                           | Meaning                                                       | Runner before these features                                                           |
+| :--------------------------------------- | :------------------------------------------------------------ | :------------------------------------------------------------------------------------- |
+| \(P\), PT                                | physical twins                                                | Unknown to the runner; scripts talk to the PT.                                         |
+| \(D\), DT                                | one DT per PT                                                 | One runner per DT (`docs/state-machine-design.md:192`).                                |
+| \(R\)                                    | relationships between DTs                                     | None.                                                                                  |
+| \(I\)                                    | communication infrastructure                                  | HTTP, and an MQTT broker when configured.                                              |
+| \(C\)                                    | shared compute                                                | The host; placement is the platform's.                                                 |
+| \(M_i\)                                  | models                                                        | _Inference_: the scripts and files in `location`.                                      |
+| \(s_i\), \(x_i\)                         | state; mirrored PT state                                      | Command history and machine state; no \(x_i\).                                         |
+| \(\lambda_i\), \(\Lambda_i\)             | active local policy; local adaptation space                   | _Inference_: the current state; the set of states.                                     |
+| \(\theta_i\), \(\Theta_i^c\)             | shared parameters; controllable subset                        | None.                                                                                  |
+| \(K_i\), \(K_i^c\)                       | controls; commands the Manager may submit                     | `commands` allowlist; anyone may run any of them.                                      |
+| \(\alpha_i\)                             | adaptation policy                                             | `state-machine.yaml` transitions, driven by client events and script exit.             |
+| \(\gamma_i\), exhausted, \(e_i\)         | local goal; no policy meets it; endogenous trigger            | None; `no transition` and `$failure` are the nearest observable signals.               |
+| \(O\), \(G\), \(\sigma\), \(e_M\), \(u\) | Manager-side knowledge, goals, shared policy, trigger, update | Not the runner's concern, except that \(u\) arrives as parameter updates and commands. |
+| MAPE-K                                   | the loop of a DT and of the Manager                           | No loop in the runner; a script may implement one.                                     |
+| Orchestrator                             | deploys and removes DTs, allocates resources                  | The DTaaS platform; the runner is what it would deploy.                                |
 
 ## Suggestions at a Glance
 
@@ -176,7 +177,7 @@ hospitals.
 | 10  | Stop a running script                    | DT-level state & lifecycle | Parameter updates and DT removal need a way to end the current script.      |
 | 11  | Richer history and metrics               | Observability              | A Manager judges the network from the outcomes of commands over time.       |
 | 12  | Health endpoint                          | Observability              | Liveness for the Manager and the platform.                                  |
-| 13  | Peer list and relationships              | DTN: decentralised         | Models the relationships `R` between DTs; the runner knew none.             |
+| 13  | Peer list and relationships              | DTN: decentralised         | Models the relationships \(R\) between DTs; the runner knew none.           |
 | 14  | Machine-readable API description         | API/protocol               | DTs expose a common communication interface; `api/` had request files only. |
 | 15  | Access control by role                   | API/protocol               | Define roles for clients and identify Manager-submitted commands.           |
 | 16  | React to peer state                      | DTN: decentralised         | Peer-to-peer coordination of DTs, as events raised by peer notifications.   |
@@ -206,10 +207,10 @@ does not know the physical twin, only the scripts do).
 
 **Why.** R1 asks each DT to make its state, its active local policy
 and the shared-policy parameters it applies observable to the Manager:
-`s_i = (x_i, λ_i, θ_i)`. Before this feature, `GET /fsm` returned the
+\(s_i = (x_i, \lambda_i, \theta_i)\). Before this feature, `GET /fsm` returned the
 machine state, script status and events, and `GET /` the last command
 (`src/execa-manager.service.ts:132-142`): the runner knew something
-like `λ_i`, but had no `θ_i` and no `x_i`.
+like \(\lambda_i\), but had no \(\theta_i\) and no \(x_i\).
 
 **Size.** M.
 
@@ -237,9 +238,10 @@ environment variables. Optionally let a parameter declare an event to
 raise when it changes, so the machine can react.
 
 **Why.** R2 asks each DT to declare which of its shared-policy
-parameters may be changed: each DT exposes a subset `Θ_i^c ⊆ Θ_i` that
-the Manager may assign. R4 says the Manager never replaces a local
-policy, so a parameter update must not rewrite `state-machine.yaml`.
+parameters may be changed: each DT exposes a subset
+\(\Theta_i^c \subseteq \Theta_i\) that the Manager may assign. R4 says
+the Manager never replaces a local policy, so a parameter update must
+not rewrite `state-machine.yaml`.
 
 ### 5. Command Input, Outcome and Exposure
 
@@ -250,13 +252,13 @@ arguments, and recorded in the history. Return the script's result in
 the reply, for example `stdout` or a `result` field, since the caller
 of a command needs to know its outcome and not only that it ran. Mark
 each command with who may submit it: a `manager` list in the
-descriptor names the commands `K_i^c` (enforcement needs item 15).
+descriptor names the commands \(K_i^c\) (enforcement needs item 15).
 
-**Why.** R2 lets the Manager submit a subset `K_i^c ⊆ K_i` of
+**Why.** R2 lets the Manager submit a subset \(K_i^c \subseteq K_i\) of
 commands, which the DT carries out through its active local policy;
 the policy fixes any detail the command leaves open. In the hospital
-example `K_i^c = {admit(p)}`, which asks the DT to allocate patient
-`p`; a hospital may fail to allocate `p`, and the Manager then tries
+example \(K_i^c = \{\mathit{admit}(p)\}\), which asks the DT to allocate patient
+\(p\); a hospital may fail to allocate \(p\), and the Manager then tries
 the next one. The Manager therefore depends on the outcome of each
 command and on its input, the patient.
 
@@ -320,12 +322,7 @@ with status `interrupted` and wait for a transition, or re-enter a
 declared `recover` state (open question). Record transitions in the
 history as well.
 
-**Touches.** `src/queue.service.ts` (schema, lines 11-26),
-`src/fsm/state-machine.ts:7-9`, `src/fsm/fsm.service.ts:35-41`,
-`src/main.ts:22-31` (the machine loads before the database opens, at
-lines 26-27, which would have to swap).
-
-**Why.** R1 makes the DT's policy observable; a DT that forgets `λ_i`
+**Why.** R1 makes the DT's policy observable; a DT that forgets \(\lambda_i\)
 on restart reports a wrong state. DTs are connected over a network
 that may be volatile, so they face intermittent connections, and the
 Orchestrator moves and restarts DTs at runtime. The design document's
@@ -343,11 +340,7 @@ add a way to end it: `POST /stop` for the current command, and a
 current state. Decide whether a stopped script raises `$failure` or a
 new completion event such as `$stopped` (open question).
 
-**Touches.** `src/execa-runner.ts:20-32`, `src/execa-manager.service.ts`
-(`running`, line 30, `start`, lines 84-96), `src/fsm/fsm.service.ts`,
-`src/interfaces/runner.interface.ts`.
-
-**Why.** A network-level update sets `θ_j := θ_j'` and makes the DT
+**Why.** A network-level update sets \(\theta_j := \theta_j'\) and makes the DT
 carry out commands through its active local policy, which may require
 the policy's script to restart with the new value. The Orchestrator
 removes DTs and adjusts their fidelity, and a multi-fidelity DT
@@ -369,10 +362,6 @@ counts of commands by status, transitions, completion events and
 escalations, and the time spent in each state, in Prometheus text
 format or JSON (open question).
 
-**Touches.** `src/queue.service.ts` (`checkHistory`, lines 111-116),
-`src/dto/command.dto.ts`, `src/app.controller.ts:26-29`,
-`src/fsm/fsm.service.ts`.
-
 **Why.** A network is judged by measures such as the fallbacks,
 patient distribution, travel distance and placement score of the
 hospital example. Such measures come from the outcomes of DT commands
@@ -391,9 +380,6 @@ history returned names only (`src/queue.service.ts:111-116`,
 client is connected, whether a state machine is loaded and whether the
 database is open; `<topic>/health` over MQTT.
 
-**Touches.** `src/app.controller.ts`, `src/mqtt/mqtt.service.ts`
-(expose the connection state), `src/mqtt/mqtt.config.ts`.
-
 **Why.** The Manager's Monitor must distinguish a silent DT from a
 dead one. Robustness is a concern of every DTN, since DTs share a
 possibly volatile network and a centralised Manager is a single point
@@ -410,14 +396,10 @@ an HTTP `url` or an MQTT `topic`, and an `attributes` map (for example
 JSON file named in `DT_PEERS`. Later, discover peers from their
 presence messages (item 7), which needs a shared base topic convention.
 
-**Touches.** `src/config/config.interface.ts`,
-`src/config/configuration.service.ts`, `src/app.controller.ts`,
-`src/execa-manager.service.ts`.
-
-**Why.** The Manager sees the network state `O = (s_1, …, s_n, R)`,
+**Why.** The Manager sees the network state \(O = (s_1, \ldots, s_n, R)\),
 and R1 says it knows the relationships among DTs. In the hospital
-example `R` is the distances between hospitals, which drive the order
-in which the Manager tries them. More generally, `R ⊆ D × D` captures
+example \(R\) is the distances between hospitals, which drive the order
+in which the Manager tries them. More generally, \(R \subseteq D \times D\) captures
 the dependencies and interactions among DTs that mirror those of the
 physical world. In decentralised coordination the DTs talk to each
 other directly to share data and coordinate their adaptation. The
@@ -432,8 +414,6 @@ serves one DT" (`docs/state-machine-design.md:192`).
 for the MQTT topics in `api/`, kept in step with the controllers by a
 test, and served at `GET /openapi.json`. The descriptor of item 1 links
 to them.
-
-**Touches.** `api/`, `src/app.controller.ts`, `test/e2e/`.
 
 **Why.** All DTs of a DTN expose a common communication interface over
 standard data and protocol interfaces (W3C standards, RFCs), and
@@ -452,10 +432,7 @@ document, although the API was documented in prose in
 **Add.** Optional bearer tokens (or mutual TLS) for HTTP with two roles,
 `manager` and `client`, and a documented mapping to broker ACLs for
 MQTT. The `manager` role alone may call `PUT /parameters` (item 4) and
-the commands listed as `K_i^c` (item 5).
-
-**Touches.** `src/config/`, a NestJS guard, `src/mqtt/mqtt.service.ts`
-(MQTT 5 user properties or per-topic ACL documentation), `README.md`.
+the commands listed as \(K_i^c\) (item 5).
 
 **Why.** An open network of DTs needs protection against external
 malevolent parties and against malevolent DTs introduced into the
@@ -477,10 +454,6 @@ the `notify/state` topic of each named peer (items 3 and 13) and raises
 the event through the existing `event` path, with rate limiting against
 notification storms.
 
-**Touches.** `src/fsm/definition.ts`, `src/fsm/fsm.service.ts`,
-`src/mqtt/mqtt.service.ts` (`subscribe`, line 62, `respond`, lines
-106-136).
-
 **Why.** In decentralised coordination the DTs coordinate their
 adaptation through peer-to-peer communication, adapting on the
 collective knowledge of the network rather than on a Manager's
@@ -499,9 +472,6 @@ one way to express peer-to-peer coordination without a new channel
 and include them in the history and metrics; let a DT declare a
 `fidelity` parameter that scripts read. Child process metrics need a
 dependency or platform-specific reads, so this is a design of its own.
-
-**Touches.** `src/execa-runner.ts`, `src/queue.service.ts`,
-`src/fsm/parameters.ts` (item 4).
 
 **Why.** DTs compete for the computational resources of the shared
 infrastructure, which is one reason a DTN adapts at the network level.
@@ -609,7 +579,7 @@ machine-readable interface description.
    Consistent enactment of policy changes across DTs is outside the
    requirements.
 1. **What "exhausted" means for a script-based DT.** It is defined
-   through the local goal `γ_i`, which the runner cannot evaluate.
+   through the local goal \(\gamma_i\), which the runner cannot evaluate.
    Candidates: an event with no transition, `$failure` with no
    transition, or an explicit call from the script.
 1. **Trust and multi-tenancy.** How a Manager authenticates to many

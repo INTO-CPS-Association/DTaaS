@@ -5,8 +5,8 @@ who run them. It explains how to write the state machine file of a DT,
 how to start and drive the machine, and what each request answers. You
 need no knowledge of the runner's code. The design and implementation
 are described for runner developers in
-[docs/state-machine-design.md](docs/state-machine-design.md), and the
-whole API, including the routes that only run commands, in
+[the design document](../../../docs/developer/system/servers/execution/runner/State-Machine.md),
+and the whole API, including the routes that only run commands, in
 [API.md](api/API.md).
 
 ## What the State Machine Does
@@ -169,7 +169,7 @@ Manager trade accuracy for computing power.
 
 Each script inherits the runner's environment and gets these
 variables. When the operator runs the scripts as a second account
-([Script User](README.md#script-user)), a script inherits only
+([Script User](CONFIG.md#script-user)), a script inherits only
 `TMPDIR` and `LANG`, gets `HOME`, `USER` and `LOGNAME` of that account
 and a fixed `PATH`, and runs in the run directory, the one place where
 it may write.
@@ -206,8 +206,8 @@ states:
   the runner's variables and environment.
 - With a script account, a name that the dynamic loader or the C
   library reads a file from, such as `LD_PRELOAD`, `LANG` or `LC_ALL`,
-  stops the runner at startup; the README lists them under
-  [Declared Environment](README.md#declared-environment).
+  stops the runner at startup; [CONFIG.md](CONFIG.md#script-user)
+  lists them.
 
 The scripts of the state machine get no input on stdin; stdin is empty
 and closed.
@@ -240,14 +240,14 @@ manager:
 
 The commands that a Manager may submit with `POST /`. Each must be one
 of the `commands` of _runner.yaml_. `GET /dt` shows the list. With
-access control ([README](README.md#access-control)), a principal in the
+access control ([CONFIG.md](CONFIG.md#access-control)), a principal in the
 role `manager` may run only these commands; without it, the list is not
 enforced.
 
 ### Subscriptions to Peers
 
 A DT can react to its peers, the DTs that the operator lists under
-`peers` in _runner.yaml_ ([README](README.md#peers)). Each subscription
+`peers` in _runner.yaml_ ([CONFIG.md](CONFIG.md#peers)). Each subscription
 names a peer, a condition on what the peer last reported, and the
 event that the runner raises when the condition turns true:
 
@@ -671,7 +671,7 @@ With access control, the payload of each request but `health` is a
 signed token instead of the JSON
 ([API reference](api/API.md#mqtt-access-control)); with a signing key,
 each response and notification is a JWS of the JSON
-([README](README.md#signed-output)).
+([CONFIG.md](CONFIG.md#signed-output)).
 
 ## Example: A Pipeline
 
@@ -802,7 +802,7 @@ again:
 
 The [hospital demo](demo/hospital/README.md) runs the DTs of two
 hospitals, `hospital-1` and `hospital-2`, each with two wards, which
-are [peers](README.md#peers) of each other and which a Manager of a
+are [peers](CONFIG.md#peers) of each other and which a Manager of a
 network of hospitals steers. Its recording,
 [demo-windows-manager.cast](demo/hospital/demo-windows-manager.cast)
 and [demo-windows-network.cast](demo/hospital/demo-windows-network.cast)
@@ -958,7 +958,7 @@ its Manager choose the trade. The runner has no feature for this, and
 no parameter name means anything to it. Fidelity is a convention
 between DT authors and Managers, made of [Parameters](#parameters),
 [Stop Transitions](#stop-transitions), the [Environment](#environment)
-and the [resources](README.md#resources) that the runner reports.
+and the [resources](api/API.md#resources) that the runner reports.
 
 ### The Convention
 
@@ -1092,7 +1092,7 @@ The Manager sees the effect in the `resources` of each run, in
 - `GET /metrics` sums the CPU seconds of all runs of `simulate` and
   keeps the largest peak, at whatever fidelity they ran, so it shows
   the load over time rather than the effect of one change.
-- The figures are lower bounds, and [resources](README.md#resources)
+- The figures are lower bounds, and [resources](api/API.md#resources)
   tells which processes they count. A model that the shell script
   `exec`s is the script's own process, so it counts in any case.
 

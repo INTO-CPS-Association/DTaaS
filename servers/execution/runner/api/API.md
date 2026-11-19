@@ -348,7 +348,7 @@ as in [POST /](#post-).
 - `commands` counts the records of [GET /history](#get-history) that
   arrived since the start, by status, with `running` for unfinished
   ones; `interrupted` counts the commands that this start found
-  unfinished (see [Restarts](../README.md#restarts)). Every key is
+  unfinished (see [Restarts](../STATE-MACHINE.md#restarts)). Every key is
   always present.
 - `resources` has a key for each command with a measured run among the
   same records: `cpuSeconds` sums its runs, to the millisecond,
@@ -446,7 +446,7 @@ reported with the exit code of `powershell.exe`, and a script killed
 from outside with 1. A refused request has no `result`.
 
 `resources` holds what the script used, as the runner sampled it while
-it ran; the [README](../README.md#resources) tells how each platform
+it ran; [Resources](#resources) tells how each platform
 measures. `cpuSeconds` is user plus system CPU time in seconds, to the
 millisecond, `peakRssBytes` the peak resident memory in bytes, and
 `processes` the most processes seen at once. They cover the process
@@ -679,6 +679,56 @@ the state machine follows its `$stopped` transition. In the demo that
 leads from `open` to `closed`. The reply does not wait for that, so
 `GET /fsm` straight after it may still show the old state for a
 moment. A stop takes no request key: a repeat finds nothing running.
+
+### Resources
+
+The runner measures what each script run uses, the commands of
+`POST /` and the scripts of the state machine alike, and reports it as
+`resources` on `POST /`, `GET /`, `GET /history` and `GET /metrics`.
+The figures cover the process tree of a run: the process that the
+runner starts and every process below it. `cpuSeconds` is the user plus
+system CPU time of every process seen in the tree, rounded to the
+millisecond. `peakRssBytes` is the largest resident memory of the tree
+in one sample, summed over its processes. `processes` is the largest
+number of processes seen in one sample, the first one included. The
+runner reports the figures and decides nothing; a Manager reads them
+and acts.
+
+| Platform | Tree found through                                                                                        | CPU time and memory of each process                                                 | Root of the tree                    |
+| :------- | :-------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- | :---------------------------------- |
+| Linux    | `/proc/<pid>/task/*/children`, or the parent in every `/proc/<pid>/stat` where the kernel lacks that file | fields 14 and 15 of `/proc/<pid>/stat`; `VmRSS` and `VmHWM` of `/proc/<pid>/status` | the script                          |
+| Windows  | one `Get-CimInstance Win32_Process` per sample                                                            | `UserModeTime` and `KernelModeTime`; `WorkingSetSize` and `PeakWorkingSetSize`      | `powershell.exe` running the script |
+| other    | none                                                                                                      | `null`                                                                              | none                                |
+
+On Windows the tree holds `powershell.exe`, the `conhost.exe` that
+Windows gives it, and the processes that the script starts, so the
+figures include PowerShell's own: an idle PowerShell loop peaks at
+about 110 MB, and `processes` is at least 2. On Linux every account
+may read these files, so a script that runs as another account is
+measured the same way.
+
+A process that has exited can no longer be read, so the runner samples
+the tree while it runs, finding it afresh each time: on Linux at the
+start and every 500 ms, on Windows through one `powershell.exe` per
+run, which needs a second or more to start and about half a second for
+each query. A pid and a start time name a process, so a pid reused
+during a run counts as a new process. The figures are lower bounds:
+
+- A process that starts and exits between two samples is never seen,
+  and one that exits loses the CPU time it used after the last sample
+  that saw it. A script that runs many short commands loses most of
+  them; their CPU time is small.
+- A spike in memory shorter than the interval is missed, but the peak
+  is never below the peak that the system kept for one process
+  (`VmHWM`, `PeakWorkingSetSize`).
+- A process whose parent exits leaves the tree, and so does every
+  process once the script's own process exits, when sampling ends.
+
+Resident memory counts shared pages, such as libraries, once for each
+process, so the sum over a tree overstates them. A script that ends
+before its first sample, such as a short PowerShell script, reports
+`null`, as does a refused command and a command that is still running.
+Measuring never fails, delays or stops a script.
 
 ## State Machine
 
@@ -919,7 +969,7 @@ through a `subscriptions` entry of the state machine file, when the
 entry's condition on the peer's `state` or `online` turns true; the
 event then takes the path of [POST /fsm/event](#post-fsmevent) without
 a request key, and nothing replies
-([README](../README.md#peer-events)). In the demo, `hospital-1`
+([STATE-MACHINE.md](../STATE-MACHINE.md#subscriptions-to-peers)). In the demo, `hospital-1`
 subscribes to the state `full` and to `online: false` of `hospital-2`,
 and the runner logs each event it raises:
 

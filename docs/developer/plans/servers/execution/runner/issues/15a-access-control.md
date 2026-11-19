@@ -6,11 +6,12 @@ An open DT network needs protection against both external malevolent
 parties and the introduction of malevolent DTs, and R2 opens only some
 commands and parameters to the Manager. Today anyone who reaches the
 port or the request topics drives the machine, and the
-`manager.commands` of 05 are declared but not enforced (D24). This
-issue lets the operator list who may call the runner, in which role,
-and amends A8 of the design document ("Anyone who can call the API can
-drive the machine"). 15b, which signs what the runner sends, and 13
-follow its key encoding.
+`manager.commands` of [05](05-command-input.md) are declared but not
+enforced (D24). This issue lets the operator list who may call the
+runner, in which role, and amends A8 of the design document ("Anyone
+who can call the API can drive the machine").
+[15b](15b-signed-output.md), which signs what the runner sends, and
+[13](13-peers.md) follow its key encoding.
 
 ### Behaviour
 
@@ -26,8 +27,9 @@ follow its key encoding.
 - `POST /` and MQTT `execute` store the caller in a new `by` column of
   the `commands` table: a principal's name, `script`, or `NULL` without
   `auth`. A state's script that the machine starts has `NULL` too, as
-  no caller submitted it (this plan's call). Issue 11 shows `by` in the
-  history; this issue shows it nowhere new.
+  no caller submitted it (this plan's call). Issue
+  [11](11-history-metrics.md) shows `by` in the history; this issue
+  shows it nowhere new.
 
 ### Configuration
 
@@ -143,26 +145,26 @@ call).
 
 ### Roles
 
-| HTTP                   | MQTT route       | client | manager            | script |
-| :--------------------- | :--------------- | :----- | :----------------- | :----- |
-| `GET /health`          | `health`         | open   | open               | open   |
-| `GET /dt`              | `dt`             | yes    | yes                | yes    |
-| `GET /state`           | `state`          | yes    | yes                | yes    |
-| `GET /`                | `status`         | yes    | yes                | yes    |
-| `GET /history`         | `history`        | yes    | yes                | yes    |
-| `GET /fsm`             | `fsm`            | yes    | yes                | yes    |
-| `GET /parameters`      | `parameters`     | yes    | yes                | yes    |
-| `POST /`               | `execute`        | yes    | `manager.commands` | no     |
-| `POST /stop`           | `stop`           | yes    | no                 | no     |
-| `POST /fsm/transition` | `transition`     | yes    | no                 | no     |
-| `POST /fsm/event`      | `event`          | yes    | no                 | yes    |
-| `POST /escalate`       | `escalate`       | yes    | no                 | yes    |
-| `PUT /parameters`      | `set-parameters` | yes    | yes                | no     |
-| `PUT /peers` (13)      | `set-peers`      | yes    | yes                | no     |
+| HTTP                             | MQTT route       | client | manager            | script |
+| :------------------------------- | :--------------- | :----- | :----------------- | :----- |
+| `GET /health`                    | `health`         | open   | open               | open   |
+| `GET /dt`                        | `dt`             | yes    | yes                | yes    |
+| `GET /state`                     | `state`          | yes    | yes                | yes    |
+| `GET /`                          | `status`         | yes    | yes                | yes    |
+| `GET /history`                   | `history`        | yes    | yes                | yes    |
+| `GET /fsm`                       | `fsm`            | yes    | yes                | yes    |
+| `GET /parameters`                | `parameters`     | yes    | yes                | yes    |
+| `POST /`                         | `execute`        | yes    | `manager.commands` | no     |
+| `POST /stop`                     | `stop`           | yes    | no                 | no     |
+| `POST /fsm/transition`           | `transition`     | yes    | no                 | no     |
+| `POST /fsm/event`                | `event`          | yes    | no                 | yes    |
+| `POST /escalate`                 | `escalate`       | yes    | no                 | yes    |
+| `PUT /parameters`                | `set-parameters` | yes    | yes                | no     |
+| `PUT /peers` ([13](13-peers.md)) | `set-peers`      | yes    | yes                | no     |
 
-13's `GET /peers` (`peers`) is open to all three roles, as every
-`GET`. There is no `peer` role: a peer that calls a runner is a
-principal like any other. A manager's command outside
+[13](13-peers.md)'s `GET /peers` (`peers`) is open to all three roles,
+as every `GET`. There is no `peer` role: a peer that calls a runner is
+a principal like any other. A manager's command outside
 `manager.commands` gets 403, so D24's "declared but not enforced"
 becomes enforced.
 
@@ -206,7 +208,8 @@ format for MQTT under `auth`.
 ## Plan
 
 1. `src/auth/auth.config.ts`: the schema, an exported
-   `publicKeySchema` for 13 and 15b, `Role` and `Principal`
+   `publicKeySchema` for [13](13-peers.md) and
+   [15b](15b-signed-output.md), `Role` and `Principal`
    (`{ name, role }`). `src/config/config.schema.ts:16-35` gains
    `auth`; `Config.loadConfig` (`configuration.service.ts:97-102`)
    builds an `Access` and `access()` returns it. `MqttService`,
@@ -319,12 +322,13 @@ format for MQTT under `auth`.
       access. Check: markdownlint and yamllint.
 - [x] `api/API.md`: Conventions, Routes (roles), MQTT Access Control
       (envelope), Calls From Scripts (`RUNNER_TOKEN`); the examples
-      note the header and are re-captured in 16. The request files as
-      planned. Check: markdownlint; one request of each file by hand.
+      note the header and are re-captured in [16](16-peer-events.md).
+      The request files as planned. Check: markdownlint; one request of
+      each file by hand.
 - [x] `docs/state-machine-design.md`: a decision with the next free D
       number when the PR is opened, A8 amended, D24 enforced.
-      `docs/issues/README.md`: a 15a row; 15 leaves Deferred and
-      Non-Goals. Check: markdownlint.
+      `docs/issues/README.md`: a 15a row; [15](README.md#status) leaves
+      Deferred and Non-Goals. Check: markdownlint.
 - [x] `yarn syntax`, `yarn build`, `yarn test --maxWorkers=2` and
       `npx tsc --noEmit --noUnusedLocals --noUnusedParameters` pass;
       changed files stay under 250 lines, functions under 25. Check:
@@ -344,7 +348,7 @@ format for MQTT under `auth`.
 - **`by` is an SQL keyword** (`ORDER BY`), yet SQLite takes it unquoted
   as a column name in `CREATE`, `ALTER`, `INSERT` and `SELECT`, so the
   queries need no quotes. `CommandRecord` and `toRecord` do not read it
-  yet; 11 adds it to the history.
+  yet; [11](11-history-metrics.md) adds it to the history.
 - **Qlty shaped two signatures.** `authorize(principal, route, listed)`
   takes a boolean that `listedCommand(managerCommands, body)` computes,
   rather than the list and the body, to stay at three parameters; the
@@ -371,7 +375,8 @@ credential`, as the spec's "after `iat` by at most 60 s" implies.
   call fixes it.
 - **The recording rewrites `hospital.cast`.** The check of the demo ran
   `record.mjs` (no 401 or 403 in `run/transcript.txt`), and the cast
-  was restored afterwards: 16 re-captures the examples.
+  was restored afterwards: [16](16-peer-events.md) re-captures the
+  examples.
 - **httpYac** runs a `{{@request}}` script of the global region before
   every request, with `request.body` as the string sent and `require`
   and `__dirname` available; a signed run of `dev.api.http` gave no
@@ -382,11 +387,13 @@ credential`, as the spec's "after `iat` by at most 60 s" implies.
   `case` branches in the demo's `tools/shell.sh`. A full test run while
   Qlty ran timed out once in `test/e2e/options.spec.ts`, which passed on
   a run without other load.
-- **Version.** The recommended bump took the runner to 0.9.0, so 11,
-  which planned 0.9.0, goes to 0.10.0.
-- **For 13 and 15b.** `src/auth/auth.config.ts` exports
-  `publicKeySchema` and `publicKeyObject(x)`; `src/auth/jws.ts` exports
-  `ALG`, `encodeSegment`, `parseJws` and `verifyJws(jws, keyOf)`, which
-  13 calls with a `keyOf` that knows only the peer's `kid`;
-  `ROUTE_ROLES` in `src/auth/roles.ts` is a `Record<MqttRoute, …>`, so
-  13's new routes need their rows to compile.
+- **Version.** The recommended bump took the runner to 0.9.0, so
+  [11](11-history-metrics.md), which planned 0.9.0, goes to 0.10.0.
+- **For [13](13-peers.md) and [15b](15b-signed-output.md).**
+  `src/auth/auth.config.ts` exports `publicKeySchema` and
+  `publicKeyObject(x)`; `src/auth/jws.ts` exports `ALG`,
+  `encodeSegment`, `parseJws` and `verifyJws(jws, keyOf)`, which
+  [13](13-peers.md) calls with a `keyOf` that knows only the peer's
+  `kid`; `ROUTE_ROLES` in `src/auth/roles.ts` is a
+  `Record<MqttRoute, …>`, so [13](13-peers.md)'s new routes need their
+  rows to compile.

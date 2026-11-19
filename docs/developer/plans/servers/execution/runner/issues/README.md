@@ -3,36 +3,36 @@
 Specifications, plans and task lists for the work that turns the runner
 into a stateful manager of one digital twin (DT) that an external
 Manager can observe and steer. The features come from
-[DT Networks][dtn];
+[DT Networks](../../../../../system/servers/execution/runner/DT-networks.md);
 each file here is one feature, numbered by its item in DT Networks page so that
-the two documents cross-reference by one number. Items 15 and 17 are split into
-sub-issues with a letter suffix. Item 14 is deferred (see below) and has
-no file.
+the two documents cross-reference by one number. Items [15](#status)
+and [17](#status) are split into sub-issues with a letter suffix. Item
+14 is deferred (see below) and has no file.
 
 ## Status
 
-| File                                                   | Feature                     | Size | Status    |
-| :----------------------------------------------------- | :-------------------------- | :--- | :-------- |
-| [01-dt-identity.md](01-dt-identity.md)                 | DT identity and descriptor  | S    | done      |
-| [02-state-document.md](02-state-document.md)           | One state document          | M    | done      |
-| [03-state-notifications.md](03-state-notifications.md) | State change notifications  | M    | done      |
-| [04-parameters.md](04-parameters.md)                   | Declared parameters         | M    | done      |
-| [05-command-input.md](05-command-input.md)             | Command input and outcome   | M    | done      |
-| [06-escalation.md](06-escalation.md)                   | Escalation signal           | M    | done      |
-| [07-presence.md](07-presence.md)                       | Presence: join and leave    | S    | done      |
-| [08-script-context.md](08-script-context.md)           | Runner context for scripts  | S    | done      |
-| [09-persistence.md](09-persistence.md)                 | Persist the machine         | M    | done      |
-| [10-stop.md](10-stop.md)                               | Stop a running script       | M    | done      |
-| [11-history-metrics.md](11-history-metrics.md)         | Richer history and metrics  | M    | done      |
-| [12-health.md](12-health.md)                           | Health endpoint             | S    | done      |
-| [13-peers.md](13-peers.md)                             | Peer list and relationships | M    | done      |
-| [15a-access-control.md](15a-access-control.md)         | Access control by role      | M    | done      |
-| [15b-signed-output.md](15b-signed-output.md)           | Signed notifications        | M    | done      |
-| [16-peer-events.md](16-peer-events.md)                 | React to peer state         | L    | in review |
-| [17a-script-resources.md](17a-script-resources.md)     | Script resource usage       | M    | done      |
-| [17b-process-tree.md](17b-process-tree.md)             | Process tree usage          | M    | done      |
-| [17c-fidelity.md](17c-fidelity.md)                     | Fidelity convention         | S    | done      |
-| [18-script-user.md](18-script-user.md)                 | Scripts as a second account | L    | in review |
+| File                                                   | Feature                     | Size |
+| :----------------------------------------------------- | :-------------------------- | :--- |
+| [01-dt-identity.md](01-dt-identity.md)                 | DT identity and descriptor  | S    |
+| [02-state-document.md](02-state-document.md)           | One state document          | M    |
+| [03-state-notifications.md](03-state-notifications.md) | State change notifications  | M    |
+| [04-parameters.md](04-parameters.md)                   | Declared parameters         | M    |
+| [05-command-input.md](05-command-input.md)             | Command input and outcome   | M    |
+| [06-escalation.md](06-escalation.md)                   | Escalation signal           | M    |
+| [07-presence.md](07-presence.md)                       | Presence: join and leave    | S    |
+| [08-script-context.md](08-script-context.md)           | Runner context for scripts  | S    |
+| [09-persistence.md](09-persistence.md)                 | Persist the machine         | M    |
+| [10-stop.md](10-stop.md)                               | Stop a running script       | M    |
+| [11-history-metrics.md](11-history-metrics.md)         | Richer history and metrics  | M    |
+| [12-health.md](12-health.md)                           | Health endpoint             | S    |
+| [13-peers.md](13-peers.md)                             | Peer list and relationships | M    |
+| [15a-access-control.md](15a-access-control.md)         | Access control by role      | M    |
+| [15b-signed-output.md](15b-signed-output.md)           | Signed notifications        | M    |
+| [16-peer-events.md](16-peer-events.md)                 | React to peer state         | L    |
+| [17a-script-resources.md](17a-script-resources.md)     | Script resource usage       | M    |
+| [17b-process-tree.md](17b-process-tree.md)             | Process tree usage          | M    |
+| [17c-fidelity.md](17c-fidelity.md)                     | Fidelity convention         | S    |
+| [18-script-user.md](18-script-user.md)                 | Scripts as a second account | L    |
 
 Sizes: S is a day or less, M a few days with tests and documentation, L
 a week or more.
@@ -51,10 +51,13 @@ A feature starts when the features it depends on are merged.
 12 health
 ```
 
-02 comes before 04 because the state document is where parameter values
-are first exposed; 10 before 09 because an `interrupted` script needs
-the stop path to exist before recovery is designed around it. 07 needs
-03's notifier for its webhook, so in practice it follows 03.
+[02](02-state-document.md) comes before [04](04-parameters.md) because
+the state document is where parameter values are first exposed;
+[10](10-stop.md) before [09](09-persistence.md) because an
+`interrupted` script needs the stop path to exist before recovery is
+designed around it. [07](07-presence.md) needs
+[03](03-state-notifications.md)'s notifier for its webhook, so in
+practice it follows [03](03-state-notifications.md).
 
 The second round, planned on 2026-10-26, after all of the above:
 
@@ -66,11 +69,14 @@ The second round, planned on 2026-10-26, after all of the above:
                                             └─> 17c fidelity
 ```
 
-15a and 11 start together. 11 shows the principal name that 15a
-stores with each command; whichever merges second adds the column. 13
-needs 15a because `PUT /peers` is a Manager route, and 16 needs 15b so
-that a peer's state documents can be verified. 17a extends the records
-and metrics of 11.
+[15a](15a-access-control.md) and [11](11-history-metrics.md) start
+together. [11](11-history-metrics.md) shows the principal name that
+[15a](15a-access-control.md) stores with each command; whichever merges
+second adds the column. [13](13-peers.md) needs
+[15a](15a-access-control.md) because `PUT /peers` is a Manager route,
+and [16](16-peer-events.md) needs [15b](15b-signed-output.md) so that a
+peer's state documents can be verified. [17a](17a-script-resources.md)
+extends the records and metrics of [11](11-history-metrics.md).
 
 ## Delivery
 
@@ -127,7 +133,9 @@ open) or `done`.
 
 ## Lessons for Every Issue
 
-From implementing 01, 02, 03, 04, 10 and 12:
+From implementing [01](01-dt-identity.md), [02](02-state-document.md),
+[03](03-state-notifications.md), [04](04-parameters.md),
+[10](10-stop.md) and [12](12-health.md):
 
 - Plans written before the code go stale. Before implementing, review
   the plan against the current code: names, line numbers, file sizes
@@ -155,8 +163,9 @@ From implementing 01, 02, 03, 04, 10 and 12:
   Linux CI is the authority.
 - `test/e2e/dist.spec.ts` starts the built runner; ts-jest hides a
   relative import without its `.js` suffix, which breaks the build.
-- Jest runs test files that do not type-check (seen in 06), so the
-  `tsc` check above is the only gate for type errors in tests too.
+- Jest runs test files that do not type-check (seen in
+  [06](06-escalation.md)), so the `tsc` check above is the only gate for
+  type errors in tests too.
 - Before merging, read every CI conclusion and the Qlty status's
   blocking count, not only the checks that pass; a PR retargeted after
   its first push needs a new run (close and reopen) so Qlty compares
@@ -172,7 +181,8 @@ From implementing 01, 02, 03, 04, 10 and 12:
   `qlty check --upstream <base>` locally does.
 - `test/e2e/mqtt.broker.spec.ts` runs only in CI, against Mosquitto,
   so a change to a reply, status or stored shape passes locally and
-  fails there (05's first run); grep it for the old shapes.
+  fails there ([05](05-command-input.md)'s first run); grep it for the
+  old shapes.
 - On Windows, `yarn test -t` with a pattern of two words breaks the
   command line before Jest sees it; use a one-word pattern.
 - Render every Mermaid diagram with mermaid-cli and look at the image:
@@ -212,15 +222,18 @@ From implementing 15b:
 
 ## Deferred
 
-From [DT Networks][dtn], with the decision that blocks each:
+From
+[DT Networks](../../../../../system/servers/execution/runner/DT-networks.md),
+with the decision that blocks each:
 
 - **14 Machine-readable API description**: skipped by the owner on
   2026-10-26. The API is documented in prose in `api/API.md`; whether
   to generate OpenAPI from the controllers or write it by hand stays
   open until a consumer needs the document.
 
-Items 11, 13, 15, 16 and 17 left this list on 2026-10-26, when the
-decisions that blocked them were taken (S8 to S15).
+Items [11](11-history-metrics.md), [13](13-peers.md), [15](#status),
+[16](16-peer-events.md) and [17](#status) left this list on 2026-10-26,
+when the decisions that blocked them were taken (S8 to S15).
 
 ## Non-Goals
 
@@ -230,10 +243,10 @@ Item and question numbers refer to DT Networks.
 
 - More than one DT per runner (S2).
 - The runner as Manager, or any runner-side policy evaluation such as
-  the local goal `γ_i` (open question 2).
+  the local goal \(\gamma_i\) (open question 2).
 - Forecasts and exogenous triggers, which are the Manager's.
-- Server-sent events as a push transport (item 3); the webhook of 03
-  covers HTTP.
+- Server-sent events as a push transport (item 3); the webhook of
+  [03](03-state-notifications.md) covers HTTP.
 - A stdout line protocol for scripts to raise events (item 8, open
   question 6); scripts use the HTTP API.
 - A script that mirrors physical-twin state into the state document
@@ -244,5 +257,3 @@ Item and question numbers refer to DT Networks.
 - A `peer` role, mutual TLS, or signed HTTP replies (S10, S12).
 - Prometheus text format for the metrics (S14).
 - Showing DTN state in the DTaaS client or library.
-
-[dtn]: ../../../../../system/servers/execution/runner/DT-networks.md

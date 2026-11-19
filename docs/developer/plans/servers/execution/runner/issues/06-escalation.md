@@ -28,8 +28,8 @@ startup error.
   `failed` and the state has no `$failure` transition. A `$failure`
   whose transition exists but is refused (`script running`) has a
   transition, is logged as today, and does not escalate. `$stopped`
-  (10) and `$success` never escalate. Each entry completes once, so
-  `failure` needs no deduplication.
+  ([10](10-stop.md)) and `$success` never escalate. Each entry completes
+  once, so `failure` needs no deduplication.
 - `no-transition`, with `onNoTransition`: a client event, over
   `POST /fsm/event` or the `event` MQTT route, gets `no transition`
   in a started machine. It escalates at most once per entry and event,
@@ -37,7 +37,8 @@ startup error.
   record resets when the machine enters a state. Nothing escalates
   before the first transition (state `null`), for an `invalid event`,
   for a request refused as `stopping`, or for an event that a
-  parameter change raises (04). The reply stays `409 no transition`.
+  parameter change raises ([04](04-parameters.md)). The reply stays
+  `409 no transition`.
 
 ### Explicit request
 
@@ -49,11 +50,12 @@ startup error.
 
 - `reason` is a required, non-empty string. `proposal` is an optional
   JSON object, by convention the parameter values the DT would like
-  (the `θ'` of the DT's proposal); the runner forwards it as received and does not
-  interpret it. Each value is measured as
-  `Buffer.byteLength(JSON.stringify(value), 'utf8')`, the rule of 05:
-  `reason` up to 1 KiB (1024 bytes), `proposal` up to 4 KiB. Any other
-  body is `400 Validation Failed`; over MQTT, the same body.
+  (the \(\theta'\) of the DT's proposal); the runner forwards it as
+  received and does not interpret it. Each value is measured as
+  `Buffer.byteLength(JSON.stringify(value), 'utf8')`, the rule of
+  [05](05-command-input.md): `reason` up to 1 KiB (1024 bytes),
+  `proposal` up to 4 KiB. Any other body is `400 Validation Failed`;
+  over MQTT, the same body.
 - Reply `202 { "status": "accepted" }`, with or without a state
   machine, so a plain DT can escalate too. Without a machine, or before
   its first transition, the notification has `state: null, entry: 0`.
@@ -66,8 +68,9 @@ startup error.
 
 ### Notification
 
-Sent through the notifier of 03 as `kind: "escalation"` on
-`<base>/notify/escalation`, QoS 1, not retained, and to the webhook.
+Sent through the notifier of [03](03-state-notifications.md) as
+`kind: "escalation"` on `<base>/notify/escalation`, QoS 1, not retained,
+and to the webhook.
 `data` holds `trigger` (`failure`, `no-transition` or `request`),
 `state` and `entry` of the machine when the trigger fired, `event`
 (the client event of `no-transition`, else `null`), `reason` (the
@@ -89,9 +92,9 @@ has begun the notifier sends nothing; a request is still answered
 1. Add `src/dto/escalation.dto.ts`: `escalateSchema`, whose `proposal`
    is a refinement on `z.unknown()` for an object that is not an array
    (`z.record` drops a `__proto__` key silently), a `fits(limit)`
-   helper for the byte rule (05 has the same rule; once both are
-   merged, one copy stays), `EscalateBody`, `EscalateReplyDto` and
-   `EscalationData`.
+   helper for the byte rule ([05](05-command-input.md) has the same
+   rule; once both are merged, one copy stays), `EscalateBody`,
+   `EscalateReplyDto` and `EscalationData`.
 1. Add `src/fsm/escalation.ts`: `escalationSchema` (strict, with
    `.prefault({})`), `Escalation`, `EscalationListener`, and a plain
    class `Escalations` with `on`, `declare(flags)` (called from
@@ -120,9 +123,10 @@ has begun the notifier sends nothing; a request is still answered
    in one runner. Retention is checked on the broker (aedes's retained
    stream), as `lateSubscriber` resolves on the first message.
 1. Sweep `README.md`, `api/dev.api.http`, `api/dev.mqtt.http`,
-   `docs/state-machine-design.md` (Validation, A4, D25; D23 is 08's,
-   D24 05's), the comment of `src/dto/notify.dto.ts` (only presence is
-   left, for 07) and the 06 row of the index.
+   `docs/state-machine-design.md` (Validation, A4, D25; D23 is
+   [08](08-script-context.md)'s, D24 [05](05-command-input.md)'s), the
+   comment of `src/dto/notify.dto.ts` (only presence is left, for
+   [07](07-presence.md)) and the 06 row of the index.
 
 ## Tasks
 
@@ -176,25 +180,28 @@ has begun the notifier sends nothing; a request is still answered
 ## Learnings
 
 - The plan's line numbers for the cycle search were stale (it named
-  256-291; the code was at 130-165). 08 merged first and moved it to
-  `src/fsm/completion-cycle.ts`, so `definition.ts` is 222 lines with
-  both the `env` and `escalation` sections.
-- 08 merged first with its own `request`, `reply`, `follow` and
-  `StateMachine.describe`. The rebase keeps 08's `follow` and
-  `describe`, replaces `request` and `reply` with `Requests`, and
-  drops `hasMachine()` for `check() !== undefined` in
-  `DescriptorService`. `fsm.service.ts` is then at 249 lines, with no
-  room left: 09 must move something out before it adds, for example
-  the script runs (`enter`, `enterStopping`, `run`, `complete`).
+  256-291; the code was at 130-165). [08](08-script-context.md) merged
+  first and moved it to `src/fsm/completion-cycle.ts`, so
+  `definition.ts` is 222 lines with both the `env` and `escalation`
+  sections.
+- [08](08-script-context.md) merged first with its own `request`,
+  `reply`, `follow` and `StateMachine.describe`. The rebase keeps
+  [08](08-script-context.md)'s `follow` and `describe`, replaces
+  `request` and `reply` with `Requests`, and drops `hasMachine()` for
+  `check() !== undefined` in `DescriptorService`. `fsm.service.ts` is
+  then at 249 lines, with no room left: [09](09-persistence.md) must
+  move something out before it adds, for example the script runs
+  (`enter`, `enterStopping`, `run`, `complete`).
 - `startRunner` of `test/e2e/util.ts` does not start `MqttService`.
   Starting it after `app.init()` misses the startup state notification,
   so the end-to-end test makes a transition first to have a retained
   state.
-- 07 merged before 06 and made the same moves of `startBroker`,
-  `stopBroker` and the `Webhook` server; the rebase keeps 07's
-  `mqtt.util.ts`, and `webhook.util.ts` holds 07's `received` and
-  `presence` with a public `first`. With 07, the broker retains the
-  presence and state topics, and still not the escalation one.
+- [07](07-presence.md) merged before 06 and made the same moves of
+  `startBroker`, `stopBroker` and the `Webhook` server; the rebase keeps
+  [07](07-presence.md)'s `mqtt.util.ts`, and `webhook.util.ts` holds
+  [07](07-presence.md)'s `received` and `presence` with a public
+  `first`. With [07](07-presence.md), the broker retains the presence
+  and state topics, and still not the escalation one.
 - aedes 1.x does not declare `persistence` in its types; the
   broker-side retained check casts to `{ createRetainedStream }` and
   reads the stream with `Readable.toArray()`. Setting `escalation`

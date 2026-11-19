@@ -11,8 +11,9 @@ nothing asked for recovery; this feature stores it and restores it.
 
 The machine's state, entry counter and script status, as one row of a
 new `machine` table in `Queue`'s SQLite database, written on every
-entry and every completion; parameter values are stored since 04. With
-`database` in `runner.yaml` the store survives a restart; in memory
+entry and every completion; parameter values are stored since
+[04](04-parameters.md). With `database` in `runner.yaml` the store
+survives a restart; in memory
 nothing is restored. The reply does not depend on the write: a
 failed write is logged. During a graceful shutdown (D14 stands), a
 script that finishes still has its status stored and only its
@@ -44,15 +45,17 @@ request reaches the machine before `restore()`, which:
    parameter, changed type, removed enum value) are dropped with one
    warning, at each start until set again, and start at the default.
    Controllability is not checked; no declared event is raised (S6).
-1. Sends no notification of its own: 03's `Notifier` subscribes in
-   `onModuleInit` and sends the startup document from
+1. Sends no notification of its own: [03](03-state-notifications.md)'s
+   `Notifier` subscribes in `onModuleInit` and sends the startup
+   document from
    `onApplicationBootstrap`, both run by `listen` (`app.init()` in
    tests) after `restore()`, so that document is the restored one.
 
 `interrupted` is a new `ScriptStatus` and `CommandStateStatus`. The
 machine is idle in it (D7: transitions and events move it on). No
 script starts on recovery, so a crash loop cannot rerun one forever.
-Transitions are not added to the history (11).
+Transitions are not added to the history
+([11](11-history-metrics.md)).
 
 After a restart, `GET /fsm` of a runner killed while `execute` ran:
 
@@ -62,11 +65,13 @@ After a restart, `GET /fsm` of a runner killed while `execute` ran:
 
 `GET /` and `GET /state` show its command as `interrupted`; a repeat of
 its request key is `failed` at the manager (`storedResult` maps an
-unknown status so): `400 invalid command` before 05, `200 failed` after.
+unknown status so): `400 invalid command` before
+[05](05-command-input.md), `200 failed` after.
 
 ## Plan
 
-1. Start after 06 and 08 merge; make room first in
+1. Start after [06](06-escalation.md) and [08](08-script-context.md)
+   merge; make room first in
    `src/fsm/fsm.service.ts` (249 lines), behaviour unchanged:
    - `isCurrent` folds into the start check of `run`;
    - the refusal logging of `raise` and `complete` becomes one
@@ -80,9 +85,10 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
      script of `left` has exited ("manager.stop never rejects");
    - `enterStopping` folds into `enter(machine, state, left?)`, guarded
      by `left !== state && this.manager.isRunning(state)`;
-   - (changed) 08's `follow`, the one caller of `enter` with `left`,
-     folds into `move`, which drops the `Transition` import. 05 moved
-     `raise` into `Requests.raise`, which now calls `logStay`, and
+   - (changed) [08](08-script-context.md)'s `follow`, the one caller of
+     `enter` with `left`, folds into `move`, which drops the
+     `Transition` import. [05](05-command-input.md) moved `raise` into
+     `Requests.raise`, which now calls `logStay`, and
      added `managerCommands`: the merge came to 252 lines, so
      `StopChain.after(left?, run)` also runs `run` at once without
      `left`, and `enter` loses its branch. The service ends at 248.
@@ -96,8 +102,9 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
    `markInterrupted(time)` (`finished_at = datetime(?)` on unfinished
    rows); none emits a change. `CREATE TABLE IF NOT EXISTS machine`
    (`id` fixed to 1 by a `CHECK`) joins `SCHEMA`: no `ALTER` is needed.
-   (changed) The SQL is in `src/queue.machine.ts` from the start: 05
-   took the service from 197 to 221 lines, and with 09's 24 it is at 245.
+   (changed) The SQL is in `src/queue.machine.ts` from the start:
+   [05](05-command-input.md) took the service from 197 to 221 lines, and
+   with 09's 24 it is at 245.
 1. `src/fsm/recovery.ts`, pure: `recover(definition, stored?)` returns
    `Recovered = StoredMachine & { warning? }` by the four rules,
    complexity 3, two returns, with the `running` to `interrupted`
@@ -106,8 +113,8 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
    `(definition, current?, entries = 0)`.
    `Parameters.restore(values): string[]` commits the values of
    declared parameters that fit, and returns the other names.
-   (changed) 08's `RunnerContext` keeps the definition private, so
-   `FsmService.load()` keeps it in a field.
+   (changed) [08](08-script-context.md)'s `RunnerContext` keeps the
+   definition private, so `FsmService.load()` keeps it in a field.
 1. `src/fsm/machine-store.ts`: a plain `MachineStore(queue, logger)`
    with `save` (a try/catch that logs) and
    `restore(definition?, parameters?)`, which marks the commands, logs
@@ -140,8 +147,9 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
    and Repeated Requests, the Parameters text on defaults, a 0.8.0
    line); `docs/state-machine-design.md` (D12 replaced, D28 for
    `interrupted`, a Behaviour item, Components, Error Handling, Out of
-   Scope); the index row and the Order diagram; version `0.8.0` (05
-   claims `0.7.0`, D24 and D27). `api/*.http` and `DEVELOPER.md` are
+   Scope); the index row and the Order diagram; version `0.8.0`
+   ([05](05-command-input.md) claims `0.7.0`, D24 and D27). `api/*.http`
+   and `DEVELOPER.md` are
    unchanged. (changed) At the owner's request: a user guide,
    `STATE-MACHINE.md`, with two worked examples, linked from the
    README; the design document rewritten for runner developers, with
@@ -159,8 +167,9 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
 - [x] A repeat of the key of an interrupted command gets `failed`;
       `onApplicationShutdown` closes the database only after a write
       three microtasks after a run's result (fails without the
-      `setImmediate`). Check (changed, as 05 left the planned file at
-      231 lines): `test/integration/execa-manager.restart.spec.ts`.
+      `setImmediate`). Check (changed, as [05](05-command-input.md) left
+      the planned file at 231 lines):
+      `test/integration/execa-manager.restart.spec.ts`.
 - [x] `recover`: each rule and each kept status. Check:
       `test/unit/fsm.recovery.spec.ts`. A `StateMachine` built with a
       state and entry follows its transitions and numbers the next
@@ -195,19 +204,22 @@ unknown status so): `400 invalid command` before 05, `200 failed` after.
 
 ## Learnings
 
-- The plan put the stop transition in `move`; 08 had added `follow`
-  between them, and folding it in paid for the definition field and
+- The plan put the stop transition in `move`; [08](08-script-context.md)
+  had added `follow` between them, and folding it in paid for the
+  definition field and
   `restore`. A `Definition` import that pushed the line past 80
   characters would have cost five lines.
-- 05 and 09 together bring `queue.service.ts` to 245 lines, so the
-  machine SQL went to `queue.machine.ts` at once; the `machine` table
-  joins `SCHEMA` through a template, and the rebase onto 05 merged the
-  file without a conflict.
-- The rebase onto 05 conflicted in `fsm.service.ts` (05's `raise` move
-  against 09's `logStay`), `execa-manager.service.ts` (05 moved
-  `OUTCOME` to `command-result.ts`, where the comment now goes), the
-  `CommandStateStatus` union, the README and the decision table, whose
-  columns 05's D27 had widened.
+- [05](05-command-input.md) and 09 together bring `queue.service.ts` to
+  245 lines, so the machine SQL went to `queue.machine.ts` at once; the
+  `machine` table joins `SCHEMA` through a template, and the rebase onto
+  [05](05-command-input.md) merged the file without a conflict.
+- The rebase onto [05](05-command-input.md) conflicted in
+  `fsm.service.ts` ([05](05-command-input.md)'s `raise` move against
+  09's `logStay`), `execa-manager.service.ts`
+  ([05](05-command-input.md) moved `OUTCOME` to `command-result.ts`,
+  where the comment now goes), the `CommandStateStatus` union, the
+  README and the decision table, whose columns
+  [05](05-command-input.md)'s D27 had widened.
 - The order at shutdown hangs on microtasks: the run of the manager
   settles a few microtasks before `FsmService.run` writes. Both the
   integration test and the graceful e2e test fail without the

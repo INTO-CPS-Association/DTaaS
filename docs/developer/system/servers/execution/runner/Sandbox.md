@@ -529,13 +529,6 @@ Settled by the owner on 2026-10-27, round 1:
 
 ## Outcome
 
-Settled by the owner on 2026-10-27, after reading this note and
-[firecracker-research.md](Firecracker.md). The design is
-written up in
-[SECURITY-MODEL.md](../../../../../../../servers/execution/runner/SECURITY-MODEL.md),
-and issue 18
-implements it ([18-script-user.md](../../../../plans/servers/execution/runner/issues/18-script-user.md)).
-
 - **Threat model.** Two adversaries: a caller who abuses a permitted
   script through its input, and a hostile DT author. The DT author
   controls only the scripts and the state machine file; everything else

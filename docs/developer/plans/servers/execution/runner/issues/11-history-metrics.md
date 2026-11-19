@@ -16,15 +16,15 @@ following every notification.
 
 `GET /history` (MQTT `history`) returns full records, oldest first:
 
-| Field        | Value                                                           |
-| :----------- | :-------------------------------------------------------------- |
-| `id`         | the row id, which grows with each request                       |
-| `name`       | the command                                                     |
-| `status`     | `running` while unfinished, then as `GET /state` reports it     |
-| `exitCode`   | as `GET /`; `null` while running                                |
-| `receivedAt` | ISO 8601, to the second, as in the Conventions                  |
-| `finishedAt` | the same, `null` while running                                  |
-| `by`         | the principal of the request (15a): a name, `script`, or `null` |
+| Field        | Value                                                                                    |
+| :----------- | :--------------------------------------------------------------------------------------- |
+| `id`         | the row id, which grows with each request                                                |
+| `name`       | the command                                                                              |
+| `status`     | `running` while unfinished, then as `GET /state` reports it                              |
+| `exitCode`   | as `GET /`; `null` while running                                                         |
+| `receivedAt` | ISO 8601, to the second, as in the Conventions                                           |
+| `finishedAt` | the same, `null` while running                                                           |
+| `by`         | the principal of the request ([15a](15a-access-control.md)): a name, `script`, or `null` |
 
 No logs (they stay on `GET /`) and no input (D27). The duration that item 11 of
 [DT Networks][dtn] lists is left out: it is `finishedAt - receivedAt` (this plan's
@@ -117,7 +117,7 @@ step; values worked out from the session, times of the re-run):
   whole seconds, as on `GET /health`.
 - `commands` counts the rows received since the start by status, with
   `running` for unfinished ones; `interrupted` counts the rows that this
-  start marked (09). Every key is always present.
+  start marked ([09](09-persistence.md)). Every key is always present.
 - `machine` is `null` without a state machine. `entries` and `seconds`
   have a key for each state entered since the start, and for the state
   a restored machine starts in, which counts from `since` without an
@@ -141,8 +141,9 @@ publishes nothing.
 
 ### Version
 
-Both changes alter replies, so the runner goes to `0.10.0` (15a took
-`0.9.0`), with a README line, per the delivery rules.
+Both changes alter replies, so the runner goes to `0.10.0`
+([15a](15a-access-control.md) took `0.9.0`), with a README line, per
+the delivery rules.
 
 ### Considered and Set Aside
 
@@ -157,17 +158,19 @@ Both changes alter replies, so the runner goes to `0.10.0` (15a took
 
 ## Plan
 
-1. `by` column: if 15a is merged, use its column. Otherwise add it with
-   15a's migration: `addExitCode` (`src/queue.service.ts:68-74`)
-   becomes `addColumn(db, column, type)`, called for `exit_code` and
-   `by TEXT`; `by` stays `NULL` until 15a fills it.
+1. `by` column: if [15a](15a-access-control.md) is merged, use its
+   column. Otherwise add it with [15a](15a-access-control.md)'s
+   migration: `addExitCode` (`src/queue.service.ts:68-74`) becomes
+   `addColumn(db, column, type)`, called for `exit_code` and `by TEXT`;
+   `by` stays `NULL` until [15a](15a-access-control.md) fills it.
 1. Make room in `src/queue.service.ts` (245 lines), behaviour
    unchanged: `RECORD`, `RECORD_BY_KEY` and `toRecord` (lines 49-58,
    76-93) move to a new `src/queue.history.ts`, like
    `src/queue.machine.ts`.
-1. `src/dto/history.dto.ts`: `HistoryEntryDto` (the fields above; 17a
-   adds CPU seconds and peak memory to it, so it is extended, not
-   replaced), and `historyQuerySchema`: `since` as
+1. `src/dto/history.dto.ts`: `HistoryEntryDto` (the fields above;
+   [17a](17a-script-resources.md) adds CPU seconds and peak memory to
+   it, so it is extended, not replaced), and `historyQuerySchema`:
+   `since` as
    `z.iso.datetime({ offset: true }).optional()`, `limit` as
    `z.coerce.number().int().min(1).max(1000).default(100)`, the object
    with `.prefault({})` (zod 4's `.default` would skip the inner
@@ -216,8 +219,9 @@ Both changes alter replies, so the runner goes to `0.10.0` (15a took
 1. `src/descriptor.service.ts` owns a `Metrics` (no constructor gains a
    parameter, so the MQTT handler reaches it through `descriptor`). It
    implements `OnModuleInit`, which `listen` runs after `restore()`,
-   as for the `Notifier` (09): it subscribes to `fsm.onChange`,
-   `fsm.onAnswer` and `fsm.onEscalation` and starts the baseline from
+   as for the `Notifier` ([09](09-persistence.md)): it subscribes to
+   `fsm.onChange`, `fsm.onAnswer` and `fsm.onEscalation` and starts the
+   baseline from
    `fsm.check()` at `since`. `metrics()` adds `since`, `uptime` and
    `queue.commandCounts()`, and `machine: null` without a machine.
 1. Routes: `@Get('metrics')` in `src/app.controller.ts`; `metrics` in
@@ -237,7 +241,8 @@ Both changes alter replies, so the runner goes to `0.10.0` (15a took
 - [x] Room made in `queue.service.ts` and `fsm.service.ts` with no
       change of behaviour. Check: the existing suite passes, and
       `wc -l` shows both under 250.
-- [x] `by` column (unless 15a added it) on a new and an old file;
+- [x] `by` column (unless [15a](15a-access-control.md) added it) on a
+      new and an old file;
       `history` returns every field, `running` while unfinished,
       `since` with `Z` and an offset at the second, `limit` newest yet
       oldest first; `commandCounts` above the watermark and the marked
@@ -278,12 +283,13 @@ Both changes alter replies, so the runner goes to `0.10.0` (15a took
 
 ## Learnings
 
-- **Drift.** 15a merged first, so step 1 fell away: `HISTORY` reads
-  its `by` column, and no migration was added. `queue.service.ts` had
-  211 lines, not 245, and went to 182 when the record SQL moved out,
+- **Drift.** [15a](15a-access-control.md) merged first, so step 1 fell
+  away: `HISTORY` reads its `by` column, and no migration was added.
+  `queue.service.ts` had 211 lines, not 245, and went to 182 when the
+  record SQL moved out,
   204 at the end; `fsm.service.ts` went from 248 to 244 and is back at
-  248 with `onAnswer`. 15a took `0.9.0`, so this issue bumps to
-  `0.10.0`.
+  248 with `onAnswer`. [15a](15a-access-control.md) took `0.9.0`, so
+  this issue bumps to `0.10.0`.
 - **SQLite's `datetime()` does the parsing of `since`.** It turns `Z`,
   an offset and a fraction of a second into the stored
   `YYYY-MM-DD HH:MM:SS` in UTC, so one statement compares to the second
@@ -301,9 +307,10 @@ Both changes alter replies, so the runner goes to `0.10.0` (15a took
   `z.coerce.number()` and `z.iso.datetime()` refuse, so the plan's
   "given twice" needed no code; unknown parameters pass because the
   object schema strips them.
-- **Signed requests and query strings.** The `htu` claim of 15a is
-  compared to the path without the query, so a JWS for `GET /history`
-  also authorizes `GET /history?limit=1`; `test/e2e/auth.spec.ts`
+- **Signed requests and query strings.** The `htu` claim of
+  [15a](15a-access-control.md) is compared to the path without the
+  query, so a JWS for `GET /history` also authorizes
+  `GET /history?limit=1`; `test/e2e/auth.spec.ts`
   shows it, with `by` set to the manager's name.
 - **Times of the metrics** use `performance.timeOrigin +
 performance.now()`, a monotonic clock, so a change of the wall clock
@@ -322,9 +329,10 @@ performance.now()`, a monotonic clock, so a change of the wall clock
   and `COMPLETION`. The documents now tell that the `+` of an offset is
   `%2B` in a URL, and that a stop transition counts no `$stopped`, as
   it leaves the entry before the stopped script ends.
-- **For 17a.** `HistoryEntryDto` and `toHistoryEntry` take the CPU
-  seconds and peak memory as two more fields, and `HISTORY` two more
-  columns; `Metrics.report` is where totals per state would go.
+- **For [17a](17a-script-resources.md).** `HistoryEntryDto` and
+  `toHistoryEntry` take the CPU seconds and peak memory as two more
+  fields, and `HISTORY` two more columns; `Metrics.report` is where
+  totals per state would go.
 
 [dtn-concepts]: ../../../../../system/servers/execution/runner/DT-networks.md#concepts
 [dtn]: ../../../../../system/servers/execution/runner/DT-networks.md

@@ -5,13 +5,15 @@
 Today a script runs as the runner's own account, in the runner's
 working directory, with the runner's whole environment
 (`src/fsm/script-context.ts:152-158`, `inherited = process.env`). It
-can read `runner.yaml` with the MQTT password, the signing key of 15b,
-the database and `/proc/<runner pid>/environ`, and it can rewrite the
+can read `runner.yaml` with the MQTT password, the signing key of
+[15b](15b-signed-output.md), the database and
+`/proc/<runner pid>/environ`, and it can rewrite the
 scripts that later runs execute. This feature lets an operator run the
 scripts as a second account on Linux, so that a script reaches none of
 these. It implements choice C1 of
-[SECURITY-MODEL.md](../../../../../../../servers/execution/runner/SECURITY-MODEL.md); B3, a microVM or a
-container around the whole runner, stays the orchestrator's. Size L.
+[SECURITY-MODEL.md](../../../../../../user/servers/execution/runner/security-model.md);
+B3, a microVM or a container around the whole runner, stays the
+orchestrator's. Size L.
 
 The owner settled the design on 2026-10-27. Each part below is marked
 as the owner's decision, or as this plan's call where the plan fills a
@@ -23,7 +25,8 @@ The owner's decision:
 
 - **A caller who abuses a permitted script through its input**: the
   JSON on stdin, the parameter values of `DT_PARAM_*`, the choice of
-  script. 15a decides who may call; this is a caller who may.
+  script. [15a](15a-access-control.md) decides who may call; this is a
+  caller who may.
 - **A hostile DT author.** The author controls only the scripts
   directory and the state machine file. `runner.yaml`, the signing key,
   the MQTT credentials and the database belong to the uid and gid that
@@ -106,9 +109,9 @@ this plan's call).
    is 0 refuses.
 1. **The launcher.** `/usr/bin/setpriv` must exist and be executable
    (`fs.accessSync` with `X_OK`). The absolute path is this plan's
-   call: SonarCloud flagged the `PATH` lookup of `getconf` in 17a
-   (S4036), and util-linux installs `setpriv` there on Debian and
-   Ubuntu.
+   call: SonarCloud flagged the `PATH` lookup of `getconf` in
+   [17a](17a-script-resources.md) (S4036), and util-linux installs
+   `setpriv` there on Debian and Ubuntu.
 1. **Capabilities** (owner's decision, widened by this plan). The
    runner reads `/proc/self/status` and requires bits 7 (`CAP_SETUID`),
    6 (`CAP_SETGID`) and 5 (`CAP_KILL`), the mask `e0`, in `CapEff`
@@ -250,8 +253,9 @@ builds today (`join(location, name)`,
   reaches the script unchanged (owner's decision). `CAP_KILL` in the
   runner's effective set is what lets it signal a process of another
   uid.
-- **Measurement.** 17a's meter reads `/proc/<pid>/stat` and
-  `/proc/<pid>/status`, which are mode `444` whatever the account, so
+- **Measurement.** [17a](17a-script-resources.md)'s meter reads
+  `/proc/<pid>/stat` and `/proc/<pid>/status`, which are mode `444`
+  whatever the account, so
   it measures the script; a first sample taken before the `execve`
   measures `setpriv` for a moment.
 - **A failed launch**, where `setpriv` cannot switch, is a failed run
@@ -337,9 +341,11 @@ metrics, signing or peers.
 
 ### Linux Demo
 
-Postponed to the recording of issue 16 (owner's decision, after this
-plan): once 17b, 17c and 18 are merged, 16's recording records both
-platforms with the setting on. The plan below stands for it.
+Postponed to the recording of issue [16](16-peer-events.md) (owner's
+decision, after this plan): once [17b](17b-process-tree.md),
+[17c](17c-fidelity.md) and 18 are merged, [16](16-peer-events.md)'s
+recording records both platforms with the setting on. The plan below
+stands for it.
 
 The owner's decision: a shell variant of the hospital scripts, recorded
 in WSL with the setting on as a second cast beside the Windows one,
@@ -435,7 +441,7 @@ is what SECURITY-MODEL.md asks for too.
   runner's uid (verified).
 - **`sudo` as the helper** (C2): a setuid binary and its rules on every
   host, and a process between the runner and the script, which a stop
-  signals and 17a measures.
+  signals and [17a](17a-script-resources.md) measures.
 - **A long-lived script host** (C3): re-implements spawning, stop and
   measurement across a process boundary.
 - **srt or a Firecracker microVM per script** (A1, A2, A3): set aside
@@ -466,8 +472,9 @@ is what SECURITY-MODEL.md asks for too.
 
 `GET /health` and MQTT `health` gain a field and no route changes
 shape, so under the delivery rules of the issues' README no bump is
-due, as for 15b's `publicKey` and 17a's `resources`; the owner's call
-of no bump stands. Tests that compare the whole health reply gain
+due, as for [15b](15b-signed-output.md)'s `publicKey` and
+[17a](17a-script-resources.md)'s `resources`; the owner's call of no
+bump stands. Tests that compare the whole health reply gain
 `scripts: null`.
 
 The implementing pull request adds to `docs/state-machine-design.md`:
@@ -615,7 +622,8 @@ The implementing pull request adds to `docs/state-machine-design.md`:
 ### Deferred to 16
 
 The owner postponed the Linux demo after this plan was written: it is
-recorded with issue 16's recording, after 17b, 17c and 18 are merged,
+recorded with issue [16](16-peer-events.md)'s recording, after
+[17b](17b-process-tree.md), [17c](17c-fidelity.md) and 18 are merged,
 for both platforms with the setting on. Its step, as planned:
 
 1. Demo, in `demo/hospital`: the five commands and `scripts/ward.sh` of
@@ -686,9 +694,9 @@ for both platforms with the setting on. Its step, as planned:
       Windows and on Linux without `CI=true` and `sudo -n`. Check:
       `test/e2e/script-user.spec.ts` in the CI log, and its skip in a
       local run.
-- [ ] Postponed to 16's recording. The Linux variant of the demo
-      records in WSL from
-      `/srv/dtaas-demo` with the setting on; `hospital.cast` is
+- [ ] Postponed to [16](16-peer-events.md)'s recording. The Linux
+      variant of the demo records in WSL from `/srv/dtaas-demo` with
+      the setting on; `hospital.cast` is
       unchanged; `hospital-linux.cast` and its MP4 are added. Check:
       `node tools/check-cast.mjs` on both casts, and `run/ward/ward.log`
       showing `dt-script` and zero capabilities.
@@ -710,12 +718,13 @@ for both platforms with the setting on. Its step, as planned:
       those sections.
 - [x] `docs/state-machine-design.md`: D35 as the Spec words it, and
       Components lists `src/scripts/`. Check: markdownlint-cli and the
-      widths of the table (the lesson of 15b on prettier).
+      widths of the table (the lesson of [15b](15b-signed-output.md) on
+      prettier).
 - [x] `config/runner.yaml.sample` has a commented `scripts` section;
       `DEVELOPER.md` describes `script-user.spec.ts` and how to run it
       in WSL. Check: yamllint, markdownlint-cli and prettier.
-- [ ] Postponed to 16's recording. The demo README describes both
-      recordings and the privileged commands. Check: markdownlint-cli
+- [ ] Postponed to [16](16-peer-events.md)'s recording. The demo README
+      describes both recordings and the privileged commands. Check: markdownlint-cli
       and prettier.
 - [x] `docs/issues/README.md`: the row of 18 moves to `in review` with
       the pull request. Check: the table.
@@ -733,8 +742,9 @@ for both platforms with the setting on. Its step, as planned:
   grows from 208 to 237 and `execa-manager.service.ts` from 233 to 241.
   No body moved out of `FsmService.load`.
 - **Scope.** The owner postponed the Linux demo after this plan was
-  written: issue 16's recording, after 17b, 17c and 18 merge, records
-  both platforms with the setting on. Its step moved under
+  written: issue [16](16-peer-events.md)'s recording, after
+  [17b](17b-process-tree.md), [17c](17c-fidelity.md) and 18 merge,
+  records both platforms with the setting on. Its step moved under
   [Deferred to 16](#deferred-to-16), its two task boxes stay open, and
   `demo/hospital` is unchanged.
 - **Readings this plan left open.**
@@ -812,9 +822,10 @@ for both platforms with the setting on. Its step, as planned:
   stays open.
 - **Tests and checks.** On the merge base, the whole suite on Windows
   with `--maxWorkers=2` gave 111 suites and 1007 tests (10 skipped),
-  with one failure, the 5 s timeout of `options.spec.ts` that 16 also
-  saw. On this branch, before the last two tests were added, it gave
-  121 suites and 1140 tests: 119 suites passed and 2 were skipped
+  with one failure, the 5 s timeout of `options.spec.ts` that
+  [16](16-peer-events.md) also saw. On this branch, before the last two
+  tests were added, it gave 121 suites and 1140 tests: 119 suites
+  passed and 2 were skipped
   (`script-user.spec.ts` and `mqtt.broker.spec.ts`), 1126 tests passed
   and 14 were skipped, with no failure; `options.spec.ts` passed. The
   new sources are covered to 100% but for the real adapters of `HOST`

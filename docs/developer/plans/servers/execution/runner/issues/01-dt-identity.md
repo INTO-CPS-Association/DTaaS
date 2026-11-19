@@ -63,8 +63,9 @@ commands:
 
 `attributes` is `{}` when none are configured (the schema defaults it);
 `stateMachine` says
-whether a machine is loaded. Later features add `manager` (05) to this
-document. The descriptor carries no runner version.
+whether a machine is loaded. Later features add `manager`
+([05](05-command-input.md)) to this document. The descriptor carries no
+runner version.
 
 ## Plan
 
