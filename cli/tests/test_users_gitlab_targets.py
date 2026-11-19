@@ -34,11 +34,17 @@ def test_target_usernames_adds_a_retry_for_a_user_not_being_started(password):
 def test_gitlab_candidates_carry_what_the_registry_records():
     """The registry's markers reach the candidate, so a finished account is
     skipped rather than created again."""
-    details = {"email": "a@x.io", "gitlab_user_id": 42, "gitlab_pat_issued": True}
+    details = {
+        "email": "a@x.io",
+        "gitlab_user_id": 42,
+        "gitlab_pat_issued": True,
+        "gitlab_projects": ["common"],
+    }
     candidate = gitlab_candidates(_ctx(details), ["alice"], {"alice": "pw"})[0]
     assert (candidate.username, candidate.email) == ("alice", "a@x.io")
     assert (candidate.existing_user_id, candidate.password) == (42, "pw")
     assert candidate.pat_issued is True
+    assert candidate.projects == ("common",)
 
 
 def test_gitlab_candidates_keep_a_missing_password_as_none():
@@ -47,6 +53,7 @@ def test_gitlab_candidates_keep_a_missing_password_as_none():
     candidate = gitlab_candidates(_ctx(), ["alice"], {})[0]
     assert candidate.password is None
     assert candidate.pat_issued is False
+    assert candidate.projects == ()
 
 
 def test_a_named_starting_user_is_a_candidate_without_being_a_registry_user():

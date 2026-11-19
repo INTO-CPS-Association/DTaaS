@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 476" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="features-timeline-all-title features-timeline-all-desc" id="features-timeline-all-root">
+        <title id="features-timeline-all-title">DTaaS features since 2022</title>
+        <desc id="features-timeline-all-desc">Release timeline of DTaaS from the first commit in August 2022 to release v1.1 in October 2026, naming the main feature each release shipped, from the library microservice and digital twin runner to the new user workspace in v1.0 and the Material UI redesign in v1.1.</desc>
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #features-timeline-all-root { --color-paper:   #ffffff;
+      --color-ink:     rgb(0,37,70);
+      --color-muted:   #47536b;
+      --color-accent:  #00807a;
+      --font-sans:     'Inter', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #features-timeline-all-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #features-timeline-all-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#features-timeline-all-root .diagram-container { overflow-x: visible; }
+}</style>
+  </defs>
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <line x1="60" y1="196" x2="1000" y2="196" stroke="#a6b3be" stroke-width="1.4"/>
+        <line x1="60" y1="188" x2="60" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="60" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="start" letter-spacing="0.06em">AUG 2022</text>
+        <line x1="154" y1="188" x2="154" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="154" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">2023</text>
+        <line x1="379.6" y1="188" x2="379.6" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="379.6" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">2024</text>
+        <line x1="605.2" y1="188" x2="605.2" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="605.2" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">2025</text>
+        <line x1="830.8" y1="188" x2="830.8" y2="204" stroke="#a6b3be" stroke-width="1"/>
+        <text x="830.8" y="222" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">2026</text>
+        <line x1="210.4" y1="188" x2="210.4" y2="154" stroke="#8c9dac" stroke-width="1"/>
+        <text x="210.4" y="104" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.1 · APR 2023</text>
+        <text x="210.4" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Library microservice</text>
+        <text x="210.4" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">first alpha · React website</text>
+        <line x1="342" y1="204" x2="342" y2="230" stroke="#8c9dac" stroke-width="1"/>
+        <text x="342" y="246" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.3 · NOV 2023</text>
+        <text x="342" y="268" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Digital twin runner</text>
+        <text x="342" y="288" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">libms npm package</text>
+        <line x1="417.2" y1="188" x2="417.2" y2="82" stroke="#8c9dac" stroke-width="1"/>
+        <text x="417.2" y="32" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.4 · MAR 2024</text>
+        <text x="417.2" y="54" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Docker containers</text>
+        <text x="417.2" y="74" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">localhost install · auth</text>
+        <line x1="473.6" y1="204" x2="473.6" y2="302" stroke="#8c9dac" stroke-width="1"/>
+        <text x="473.6" y="318" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.5 · JUN 2024</text>
+        <text x="473.6" y="340" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">DTaaS CLI</text>
+        <text x="473.6" y="360" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">user management</text>
+        <line x1="567.6" y1="188" x2="567.6" y2="154" stroke="#8c9dac" stroke-width="1"/>
+        <text x="567.6" y="104" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.6 · NOV 2024</text>
+        <text x="567.6" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">DevOps in the browser</text>
+        <text x="567.6" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">GitLab pipelines · Execute</text>
+        <line x1="699.2" y1="204" x2="699.2" y2="230" stroke="#8c9dac" stroke-width="1"/>
+        <text x="699.2" y="246" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.7 · JUN 2025</text>
+        <text x="699.2" y="268" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Git-mode library</text>
+        <text x="699.2" y="288" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Create tab · GitLab Runner</text>
+        <line x1="830.8" y1="188" x2="830.8" y2="82" stroke="#8c9dac" stroke-width="1"/>
+        <text x="830.8" y="32" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.8 · JAN 2026</text>
+        <text x="830.8" y="54" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Platform services CLI</text>
+        <text x="830.8" y="74" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">concurrent executions</text>
+        <line x1="924.8" y1="206" x2="924.8" y2="302" stroke="#00807a" stroke-width="1.4"/>
+        <text x="1004.8" y="318" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end" letter-spacing="0.06em">v1.0 · JUN 2026</text>
+        <text x="1004.8" y="340" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="end">New user workspace</text>
+        <text x="1004.8" y="360" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">generic sign-in · Keycloak</text>
+        <line x1="1000" y1="186" x2="1000" y2="154" stroke="#00807a" stroke-width="1.4"/>
+        <text x="1020" y="104" fill="#00807a" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end" letter-spacing="0.06em">v1.1 · OCT 2026</text>
+        <text x="1020" y="126" fill="#002546" font-size="16" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="end">Material UI redesign</text>
+        <text x="1020" y="146" fill="#47536b" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">logger · BIM page</text>
+        <circle cx="210.4" cy="196" r="6" fill="#002546"/>
+        <circle cx="342" cy="196" r="6" fill="#002546"/>
+        <circle cx="417.2" cy="196" r="6" fill="#002546"/>
+        <circle cx="473.6" cy="196" r="6" fill="#002546"/>
+        <circle cx="567.6" cy="196" r="6" fill="#002546"/>
+        <circle cx="699.2" cy="196" r="6" fill="#002546"/>
+        <circle cx="830.8" cy="196" r="6" fill="#002546"/>
+        <circle cx="924.8" cy="196" r="9" fill="#00807a"/>
+        <circle cx="1000" cy="196" r="9" fill="#00807a"/>
+        <circle cx="248" cy="196" r="6" fill="#ffffff" stroke="#47536b" stroke-width="1.4"/>
+        <text x="248" y="178" fill="#5f6b85" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">v0.2</text>
+        <line x1="40" y1="404" x2="1000" y2="404" stroke="#dbe0e5" stroke-width="1"/>
+        <text x="40" y="424" fill="#47536b" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGEND</text>
+        <circle cx="46" cy="447" r="6" fill="#002546"/>
+        <text x="64" y="452" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Release</text>
+        <circle cx="154" cy="447" r="8" fill="#00807a"/>
+        <text x="170" y="452" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Milestone release</text>
+        <circle cx="331" cy="447" r="6" fill="#ffffff" stroke="#47536b" stroke-width="1.4"/>
+        <text x="349" y="452" fill="#47536b" font-size="13" font-family="'Inter', system-ui, sans-serif">Other release</text>
+        <text x="475" y="452" fill="#47536b" font-size="13" font-style="italic" font-family="'Inter', system-ui, sans-serif">Spacing is proportional to elapsed time.</text>
+      </svg>
