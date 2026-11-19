@@ -10,6 +10,7 @@ from src.pkg.registry import (
     remove_from_registry,
     set_desired_status,
     set_gitlab_pat_issued,
+    set_gitlab_projects,
     set_gitlab_user_ids,
 )
 # pylint: disable=protected-access
@@ -149,6 +150,23 @@ def test_gitlab_markers_route_to_the_section_holding_the_user(tmp_path):
     assert load_registry(path)["alice"]["gitlab_user_id"] == 42
     markers = load_starting_gitlab(path)["foo"]
     assert markers == {"gitlab_user_id": 7, "gitlab_pat_issued": True}
+
+
+def test_set_gitlab_projects_replaces_the_list_in_either_section(tmp_path):
+    """The finished project names replace the recorded list, for an
+    additional user and a starting user alike; unknown names are skipped."""
+    path = str(tmp_path / "dtaas.users.registry.json")
+    register_new_users({"alice": {"email": "a@x.io"}}, [], path)
+    register_starting_users(["foo"], path)
+    set_gitlab_projects({"alice": ["common"]}, path)
+
+    updated = set_gitlab_projects(
+        {"alice": ["common", "user"], "foo": ["common"], "ghost": ["user"]}, path
+    )
+
+    assert sorted(updated) == ["alice", "foo"]
+    assert load_registry(path)["alice"]["gitlab_projects"] == ["common", "user"]
+    assert load_starting_gitlab(path) == {"foo": {"gitlab_projects": ["common"]}}
 
 
 def test_a_foreign_top_level_key_survives_a_write(tmp_path):

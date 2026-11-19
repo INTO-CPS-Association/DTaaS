@@ -10,6 +10,8 @@ import click
 from .pkg import host_dirs as hostDirsPkg
 from .pkg import certs as certsPkg
 from .pkg import config_update as configUpdatePkg
+from .pkg import config_validate as configValidatePkg
+from .pkg import config_validate_frontend as frontendPkg
 from .pkg import deploy_config as deployConfigPkg
 from .pkg import utils as utilsPkg
 from .pkg.users_utils import is_valid_username
@@ -52,15 +54,42 @@ def _find_toml(output_dir):
     return utilsPkg.find_toml(output_dir)
 
 
-def apply_deploy_config(deploy_type, output_dir, force=False):
-    """Read dtaas.toml and substitute values into generated deployment files."""
+def _read_toml(output_dir):
+    """Return the data of dtaas.toml near *output_dir*, or None without one.
+
+    Raises ClickException when the file cannot be parsed.
+    """
     toml_path = _find_toml(output_dir)
     if toml_path is None:
-        click.echo("Note: dtaas.toml not found; template values not substituted.")
-        return
+        return None
     toml_data, err = utilsPkg.import_toml(str(toml_path))
     if err is not None:
         raise click.ClickException(f"Error reading dtaas.toml: {err}")
+    return toml_data
+
+
+def validate_deploy_config(deploy_type, output_dir):
+    """Refuse a dtaas.toml with problems for *deploy_type*, before any file is written.
+
+    The checks are those of 'platform update --config', so generate never
+    writes a value that validation rejects. Without dtaas.toml there is
+    nothing to check.
+    """
+    toml_data = _read_toml(output_dir)
+    if toml_data is None:
+        return
+    try:
+        configValidatePkg.require_valid(toml_data, deploy_type)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+
+def apply_deploy_config(deploy_type, output_dir, force=False):
+    """Read dtaas.toml and substitute values into generated deployment files."""
+    toml_data = _read_toml(output_dir)
+    if toml_data is None:
+        click.echo("Note: dtaas.toml not found; template values not substituted.")
+        return
     _substitute_config(deploy_type, output_dir, toml_data)
     _create_user_dirs(output_dir, toml_data)
     spec = certsPkg.CertsCopySpec(deploy_type, _certs_src(toml_data), force)
@@ -74,7 +103,9 @@ def _substitute_config(deploy_type, output_dir, toml_data):
         deployConfigPkg.apply_config(output_dir, specs)
     except (OSError, ValueError, TypeError) as exc:
         raise click.ClickException(f"Error substituting config values: {exc}") from exc
-    for warning in deployConfigPkg.check_placeholders(output_dir, specs):
+    warnings = deployConfigPkg.check_placeholders(output_dir, specs)
+    warnings += frontendPkg.generate_warnings(toml_data, specs)
+    for warning in warnings:
         click.echo(warning)
 
 
@@ -118,12 +149,9 @@ def _create_user_dirs(output_dir, toml_data):
 
 def provision_user_files(output_dir):
     """Ensure per-user workspace directories exist and are owned 1000:100."""
-    toml_path = _find_toml(output_dir)
-    if toml_path is None:
+    toml_data = _read_toml(output_dir)
+    if toml_data is None:
         return
-    toml_data, err = utilsPkg.import_toml(str(toml_path))
-    if err is not None:
-        raise click.ClickException(f"Error reading dtaas.toml: {err}")
     _create_user_dirs(output_dir, toml_data)
     hostDirsPkg.set_files_permissions(output_dir)
 

@@ -15,7 +15,7 @@ from src.pkg.build import (
     _DEST_ROOT,
     _GITLAB_COMMON_DEST,
 )
-from src.pkg.constants import SECRET_FILENAMES, SECRET_SUFFIXES
+from src.pkg.constants import PUBLIC_CONFIG_FILENAMES, SECRET_FILENAMES, SECRET_SUFFIXES
 
 
 def _force_remove(func, path, _excinfo):
@@ -95,6 +95,9 @@ def test_build_never_copies_excluded_secret_filenames():
     for path in _DEST_ROOT.rglob("*"):
         if path.is_file():
             assert path.name not in SECRET_FILENAMES, f"Excluded file leaked: {path}"
+            assert (
+                path.name not in PUBLIC_CONFIG_FILENAMES
+            ), f"Excluded file leaked: {path}"
             assert not path.name.endswith(
                 SECRET_SUFFIXES
             ), f"Excluded file leaked: {path}"

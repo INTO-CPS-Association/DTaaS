@@ -1,49 +1,11 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { HttpException, Logger } from '@nestjs/common';
-import type { SignalTarget } from 'src/authz/policy';
 import DeliveryStats from 'src/stream/delivery-stats';
-import SseWriter from 'src/stream/sse-writer';
 import StreamService from 'src/stream/stream.service';
-import StreamSession, {
-  type Backfill,
-  type Recheck,
-} from 'src/stream/stream-session';
-import StreamSlots from 'src/stream/stream-slots';
 import testConfig from 'test/helpers/config';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
 import FakeResponse from 'test/helpers/fake-response';
-
-const FLOW: SignalTarget = {
-  path: 'alice/pump/flow',
-  owner: 'alice',
-  twin: 'pump',
-  channel: 'measured',
-};
-const OPTIONS = {
-  retryMs: 5000,
-  keepAliveMs: 15_000,
-  lifetimeMs: 600_000,
-  maxMessageBytes: 128,
-  recheckMs: 60_000,
-};
-const MAX_BACKLOG = 1024 * 1024;
-
-function sessionWith(
-  broker: FakeBroker,
-  response = new FakeResponse(),
-  recheck?: Recheck,
-  backfill?: Backfill,
-) {
-  const session = new StreamSession(
-    new SseWriter(response.asResponse(), MAX_BACKLOG),
-    broker,
-    [FLOW],
-    OPTIONS,
-    recheck,
-    backfill,
-  );
-  return { session, response };
-}
+import sessionWith, { MAX_BACKLOG } from 'test/helpers/stream-session';
+import { FLOW } from 'test/helpers/twins';
 
 function serviceWith(broker = new FakeBroker(), stats = new DeliveryStats()) {
   return new StreamService(testConfig(), broker, stats);
@@ -89,59 +51,6 @@ describe('StreamSession', () => {
     });
     expect(typeof data.receivedAt).toBe('number');
     expect(samples[0]).toMatch(new RegExp(`^id: ${data.receivedAt}\n`));
-    session.end();
-  });
-
-  it('sends past samples without an id after going live, and a gap the history could not fill', async () => {
-    const past = {
-      path: FLOW.path,
-      twin: 'pump',
-      channel: 'measured',
-      ts: 1000,
-      value: 2,
-    };
-    const backfill: Backfill = async () => ({
-      samples: [past],
-      complete: false,
-      from: 500,
-      to: 2000,
-    });
-    const { session, response } = sessionWith(
-      new FakeBroker(),
-      undefined,
-      undefined,
-      backfill,
-    );
-    await session.start([]);
-    const sample = response.chunks.find((chunk) =>
-      chunk.includes('"backfill":true'),
-    );
-    expect(sample?.startsWith('event: sample\n')).toBe(true);
-    expect(JSON.parse(sample?.split('data: ')[1] ?? '{}')).toMatchObject({
-      path: FLOW.path,
-      receivedAt: 1000,
-      payload: '{"value":2,"ts":"1970-01-01T00:00:01.000Z"}',
-    });
-    expect(response.text).toContain('event: gap\ndata: {"from":500,"to":2000}');
-    expect(session.counts.backfilled).toBe(1);
-    session.end();
-  });
-
-  it('reports an unknown gap when the history fails', async () => {
-    const backfill: Backfill = async () => {
-      throw new Error('database down');
-    };
-    const { session, response } = sessionWith(
-      new FakeBroker(),
-      undefined,
-      undefined,
-      backfill,
-    );
-    await session.start([]);
-    expect(response.text).toContain(
-      'event: gap\ndata: {"from":null,"to":null}',
-    );
-    expect(response.text).toContain('"state":"live"');
     session.end();
   });
 
@@ -229,17 +138,6 @@ describe('StreamSession', () => {
   });
 });
 
-describe('SseWriter', () => {
-  it('is congested only past the configured backlog', () => {
-    const response = new FakeResponse();
-    const writer = new SseWriter(response.asResponse(), 10);
-    response.writableLength = 10;
-    expect(writer.isCongested()).toBe(false);
-    response.writableLength = 11;
-    expect(writer.isCongested()).toBe(true);
-  });
-});
-
 describe('StreamService', () => {
   it('opens no session for a client that left while access was decided', async () => {
     const broker = new FakeBroker();
@@ -290,61 +188,5 @@ describe('StreamService', () => {
     response.emit('close');
     await running;
     expect(response.writableEnded).toBe(true);
-  });
-});
-
-describe('Delivery stats', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('logs one line per ended stream and adds it to the user totals', async () => {
-    const lines: string[] = [];
-    jest
-      .spyOn(Logger.prototype, 'log')
-      .mockImplementation((message: unknown) => {
-        lines.push(String(message));
-      });
-    const broker = new FakeBroker();
-    const stats = new DeliveryStats();
-    const response = new FakeResponse();
-    const identity = { id: '3', username: 'alice', email: '' };
-    const running = serviceWith(broker, stats).run(
-      response.asResponse(),
-      identity,
-      { allowed: [FLOW], refused: [] },
-    );
-    await new Promise((resolve) => setImmediate(resolve));
-    broker.publish('alice/pump/flow', reading(1));
-    response.emit('close');
-    await running;
-    expect(JSON.parse(lines[0])).toMatchObject({
-      user: 'alice',
-      action: 'stream-end',
-      paths: 1,
-      forwarded: 1,
-      backfilled: 0,
-      dropped: { tooLarge: 0, invalid: 0, congested: 0 },
-    });
-    expect(stats.of('3').forwarded).toBe(1);
-    expect(stats.of('4')).toEqual({
-      forwarded: 0,
-      backfilled: 0,
-      dropped: { tooLarge: 0, invalid: 0, congested: 0 },
-    });
-  });
-});
-
-describe('StreamSlots', () => {
-  it('refuses a stream past the limit with 429 and frees a slot on release', () => {
-    const slots = new StreamSlots(testConfig({ 'max-streams-per-user': 2 }));
-    const first = slots.acquire('1');
-    slots.acquire('1');
-    expect(() => slots.acquire('1')).toThrow(HttpException);
-    expect(slots.acquire('2')).toBeDefined();
-    first();
-    first();
-    expect(slots.acquire('1')).toBeDefined();
-    expect(() => slots.acquire('1')).toThrow(HttpException);
   });
 });
