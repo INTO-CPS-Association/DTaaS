@@ -3,7 +3,6 @@ import DeliveryStats from 'src/stream/delivery-stats';
 import SseWriter from 'src/stream/sse-writer';
 import StreamService from 'src/stream/stream.service';
 import StreamSession, { type Recheck } from 'src/stream/stream-session';
-import StreamSlots from 'src/stream/stream-slots';
 import testConfig from 'test/helpers/config';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
 import FakeResponse from 'test/helpers/fake-response';

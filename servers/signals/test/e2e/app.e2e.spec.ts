@@ -1,5 +1,4 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
-import type { LoggerService } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
@@ -9,6 +8,7 @@ import AppModule from 'src/app.module';
 import { SIGNAL_BROKER } from 'src/broker/broker';
 import Config from 'src/config/config.service';
 import { configureSignalsApp } from 'src/main';
+import { CapturingLogger, postSignals } from 'test/helpers/e2e';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
 import { openStream, waitFor } from 'test/helpers/sse-client';
 import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
@@ -28,15 +28,6 @@ const ENV_KEYS = [
   'SIGNALS_GITLAB_CLIENT_ID',
   'SIGNALS_OWNERS_FILE',
 ];
-
-class CapturingLogger implements LoggerService {
-  readonly lines: string[] = [];
-  log = (message: unknown) => this.lines.push(String(message));
-  error = (message: unknown) => this.lines.push(String(message));
-  warn = (message: unknown) => this.lines.push(String(message));
-  debug = (message: unknown) => this.lines.push(String(message));
-  verbose = (message: unknown) => this.lines.push(String(message));
-}
 
 const ALICE = { id: 1, username: 'alice', email: 'alice@example.org' };
 
@@ -82,14 +73,7 @@ describe('Signals gateway e2e', () => {
   let dir = '';
 
   const post = (route: string, token: string | undefined, body: unknown) =>
-    fetch(`${base}/signals/${route}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token === undefined ? {} : { Authorization: `Bearer ${token}` }),
-      },
-      body: JSON.stringify(body),
-    });
+    postSignals(base, route, token, body);
 
   beforeAll(async () => {
     process.env.SIGNALS_GITLAB_URL = await gitlab.start();
