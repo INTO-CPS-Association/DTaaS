@@ -19,6 +19,23 @@ export type SessionOptions = {
 /** Asks the policy again, and answers the allowed paths now refused. */
 export type Recheck = () => Promise<readonly string[]>;
 
+/** A past reading sent to a stream that opened again after a gap. */
+export type PastSample = {
+  path: string;
+  twin: string;
+  channel: string;
+  ts: number;
+  value: number;
+};
+
+/** Readings of the gap, and whether the history held all of them. */
+export type Backfill = () => Promise<{
+  samples: PastSample[];
+  complete: boolean;
+  from: number;
+  to: number;
+}>;
+
 /** One open stream: the allowed signals of one request, until it ends. */
 export default class StreamSession {
   readonly done: Promise<void>;
@@ -35,6 +52,7 @@ export default class StreamSession {
     private readonly targets: readonly SignalTarget[],
     private readonly options: SessionOptions,
     private readonly recheck?: Recheck,
+    private readonly backfill?: Backfill,
   ) {
     this.done = new Promise((resolve) => {
       this.finish = resolve;
@@ -53,6 +71,38 @@ export default class StreamSession {
       return;
     }
     if (!this.ended) this.sse.event('state', { state: 'live' });
+    // After the subscription, so a reading published while the history is
+    // read comes live and is not lost between the two.
+    if (this.backfill !== undefined) await this.fillGap(this.backfill);
+  }
+
+  // Past samples carry no id, so a stream cut while it fills the gap is
+  // opened again from the same Last-Event-ID and fills it again.
+  private async fillGap(backfill: Backfill): Promise<void> {
+    try {
+      const gap = await backfill();
+      gap.samples.forEach((sample) => this.sendPast(sample));
+      if (!gap.complete && !this.ended)
+        this.sse.event('gap', { from: gap.from, to: gap.to });
+    } catch {
+      if (!this.ended) this.sse.event('gap', { from: null, to: null });
+    }
+  }
+
+  private sendPast(sample: PastSample): void {
+    if (this.ended) return;
+    this.counts.backfilled += 1;
+    this.sse.event('sample', {
+      path: sample.path,
+      twin: sample.twin,
+      channel: sample.channel,
+      receivedAt: sample.ts,
+      backfill: true,
+      payload: JSON.stringify({
+        value: sample.value,
+        ts: new Date(sample.ts).toISOString(),
+      }),
+    });
   }
 
   end(): void {

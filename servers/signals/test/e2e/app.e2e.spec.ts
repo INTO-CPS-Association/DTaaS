@@ -1,112 +1,32 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { Test } from '@nestjs/testing';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import AppModule from 'src/app.module';
-import { SIGNAL_BROKER } from 'src/broker/broker';
-import Config from 'src/config/config.service';
-import { configureSignalsApp } from 'src/main';
-import { CapturingLogger, postSignals } from 'test/helpers/e2e';
-import FakeBroker, { reading } from 'test/helpers/fake-broker';
+import E2eGateway, {
+  ALICE_TOKEN,
+  BOB_TOKEN,
+  CAROL_TOKEN,
+  EXPIRED_TOKEN,
+  FLOW,
+  OTHER_APP_TOKEN,
+  RANGE,
+  READ_USER_TOKEN,
+  ROOM,
+  SPEED,
+} from 'test/helpers/e2e-gateway';
+import { reading } from 'test/helpers/fake-broker';
 import { openStream, waitFor } from 'test/helpers/sse-client';
-import StubGitLab, { STUB_APPLICATION } from 'test/helpers/stub-gitlab';
-import { PUMP, visualisationOf } from 'test/helpers/twins';
-
-const ALICE_TOKEN = 'alice-oauth-token-0123456789';
-const BOB_TOKEN = 'bob-oauth-token-9876543210';
-const EXPIRED_TOKEN = 'alice-expired-token-0000000000';
-const OTHER_APP_TOKEN = 'alice-other-app-token-1111111111';
-const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
-const CAROL_TOKEN = 'carol-oauth-token-3333333333';
-const FLOW = 'alice/pump/flow';
-const SPEED = 'carol/fan/speed';
-const RANGE = { paths: [FLOW], channel: 'measured', from: 0, to: 1000 };
-const ENV_KEYS = [
-  'SIGNALS_GITLAB_URL',
-  'SIGNALS_GITLAB_CLIENT_ID',
-  'SIGNALS_OWNERS_FILE',
-];
-
-const ALICE = { id: 1, username: 'alice', email: 'alice@example.org' };
 
 describe('Signals gateway e2e', () => {
-  const gitlab = new StubGitLab(
-    {
-      [ALICE_TOKEN]: { ...ALICE, projects: [10] },
-      [BOB_TOKEN]: {
-        id: 2,
-        username: 'bob',
-        email: 'bob@example.org',
-        projects: [],
-      },
-      [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
-      [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
-      [READ_USER_TOKEN]: { ...ALICE, projects: [10], scope: ['read_user'] },
-      [CAROL_TOKEN]: {
-        id: 3,
-        username: 'carol',
-        email: 'carol@example.org',
-        projects: [11],
-      },
-    },
-    [
-      { id: 10, owner: 'alice', sha: 'c0ffee', twins: { pump: PUMP } },
-      {
-        id: 11,
-        owner: 'carol',
-        sha: 'beef00',
-        // The second twin declares a topic of alice's group, which the
-        // owners file does not give to carol.
-        twins: {
-          fan: visualisationOf([SPEED]),
-          copy: visualisationOf([FLOW]),
-        },
-      },
-    ],
-  );
-  const broker = new FakeBroker();
-  const logger = new CapturingLogger();
-  let app: NestExpressApplication;
+  const gateway = new E2eGateway();
+  const { gitlab, broker, postgres, logger } = gateway;
   let base = '';
-  let dir = '';
-
   const post = (route: string, token: string | undefined, body: unknown) =>
-    postSignals(base, route, token, body);
+    gateway.post(route, token, body);
 
   beforeAll(async () => {
-    process.env.SIGNALS_GITLAB_URL = await gitlab.start();
-    process.env.SIGNALS_GITLAB_CLIENT_ID = STUB_APPLICATION;
-    dir = await mkdtemp(path.join(os.tmpdir(), 'signals-e2e-'));
-    const owners = path.join(dir, 'owners.json');
-    await writeFile(
-      owners,
-      JSON.stringify({
-        alice: { group: 'alice', topics: ['alice/'] },
-        carol: { group: 'carol', topics: ['carol/'] },
-      }),
-    );
-    process.env.SIGNALS_OWNERS_FILE = owners;
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(SIGNAL_BROKER)
-      .useValue(broker)
-      .compile();
-    app = moduleRef.createNestApplication<NestExpressApplication>({
-      bodyParser: false,
-    });
-    app.useLogger(logger);
-    configureSignalsApp(app, moduleRef.get(Config));
-    await app.listen(0, '127.0.0.1');
-    base = await app.getUrl();
+    await gateway.start();
+    base = gateway.base;
   });
 
-  afterAll(async () => {
-    await app.close();
-    await gitlab.stop();
-    ENV_KEYS.forEach((key) => delete process.env[key]);
-    await rm(dir, { recursive: true, force: true });
-  });
+  afterAll(() => gateway.stop());
 
   it('answers health with no detail and no token', async () => {
     const response = await fetch(`${base}/signals/health`);
@@ -164,16 +84,8 @@ describe('Signals gateway e2e', () => {
     const response = await stats(ALICE_TOKEN);
     await expect(response.json()).resolves.toEqual({
       forwarded: 1,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
-    });
-  });
-
-  it('answers 501 on range for a declared path of a readable project', async () => {
-    const response = await post('range', ALICE_TOKEN, RANGE);
-    expect(response.status).toBe(501);
-    await expect(response.json()).resolves.toEqual({
-      status: 'not-implemented',
-      route: 'range',
     });
   });
 
@@ -190,11 +102,11 @@ describe('Signals gateway e2e', () => {
   // Two groups on every route: each reads its own paths and is refused the
   // other's, also through a twin that declares a topic of the other group.
   it.each([
-    [ALICE_TOKEN, FLOW, SPEED],
-    [CAROL_TOKEN, SPEED, FLOW],
+    [ALICE_TOKEN, ROOM, SPEED, 'alice'],
+    [CAROL_TOKEN, SPEED, ROOM, 'carol'],
   ])(
     'serves each group its own paths and refuses the other group (%#)',
-    async (token, own, other) => {
+    async (token, own, other, group) => {
       const range = (p: string) => ({ ...RANGE, paths: [p] });
       const stream = await openStream(`${base}/signals/stream`, token, [own]);
       expect(stream.status).toBe(200);
@@ -206,11 +118,16 @@ describe('Signals gateway e2e', () => {
       expect(text).not.toContain(`"path":"${other}"`);
       stream.close();
       await waitFor(() => broker.bindings.length === 0);
-      expect((await post('range', token, range(own))).status).toBe(501);
+      const before = postgres.queries.length;
+      expect((await post('range', token, range(own))).status).toBe(200);
+      expect(
+        postgres.queries.slice(before).map((query) => query.database),
+      ).toEqual([group]);
       expect((await post('stream', token, { paths: [other] })).status).toBe(
         403,
       );
       expect((await post('range', token, range(other))).status).toBe(403);
+      expect(postgres.queries).toHaveLength(before + 1);
     },
   );
 

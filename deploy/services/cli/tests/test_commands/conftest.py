@@ -46,3 +46,11 @@ def mock_service_setup(mocker):
         "rabbitmq": mock_rabbitmq,
         "thingsboard": mock_thingsboard,
     }
+
+
+@pytest.fixture
+def twin_file_path(tmp_path):
+    """Any existing file, for options that need one"""
+    path = tmp_path / "twin.json"
+    path.write_text("{}", encoding="utf-8")
+    return path

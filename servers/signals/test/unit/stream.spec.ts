@@ -1,36 +1,11 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import DeliveryStats from 'src/stream/delivery-stats';
-import SseWriter from 'src/stream/sse-writer';
 import StreamService from 'src/stream/stream.service';
-import StreamSession, { type Recheck } from 'src/stream/stream-session';
 import testConfig from 'test/helpers/config';
 import FakeBroker, { reading } from 'test/helpers/fake-broker';
 import FakeResponse from 'test/helpers/fake-response';
+import sessionWith, { MAX_BACKLOG } from 'test/helpers/stream-session';
 import { FLOW } from 'test/helpers/twins';
-
-const OPTIONS = {
-  retryMs: 5000,
-  keepAliveMs: 15_000,
-  lifetimeMs: 600_000,
-  maxMessageBytes: 128,
-  recheckMs: 60_000,
-};
-const MAX_BACKLOG = 1024 * 1024;
-
-function sessionWith(
-  broker: FakeBroker,
-  response = new FakeResponse(),
-  recheck?: Recheck,
-) {
-  const session = new StreamSession(
-    new SseWriter(response.asResponse(), MAX_BACKLOG),
-    broker,
-    [FLOW],
-    OPTIONS,
-    recheck,
-  );
-  return { session, response };
-}
 
 function serviceWith(broker = new FakeBroker(), stats = new DeliveryStats()) {
   return new StreamService(testConfig(), broker, stats);
@@ -132,6 +107,7 @@ describe('StreamSession', () => {
     broker.publish('alice/pump/flow', '{"value":"high"}');
     expect(session.counts).toEqual({
       forwarded: 2,
+      backfilled: 0,
       dropped: { tooLarge: 1, invalid: 1, congested: 1 },
     });
     session.end();

@@ -55,6 +55,21 @@ const oidcProviderSchema = z
 
 export type OidcProvider = z.infer<typeof oidcProviderSchema>;
 
+const postgresUrl = z.url({ protocol: /^postgres(ql)?$/ }).refine(
+  (value) => {
+    const url = new URL(value);
+    return (
+      url.username === '' && url.password === '' && url.pathname.length <= 1
+    );
+  },
+  { message: 'must name only the host and port' },
+);
+// A template without the group would put every group's history in one
+// database, where a twin of one group could read another group's readings.
+const groupTemplate = text.refine((value) => value.includes('{group}'), {
+  message: 'must contain {group}, so each group has its own database',
+});
+
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
 
@@ -118,7 +133,19 @@ export const configSchema = z
     'stream-recheck-interval': positiveInt.default(MINUTE),
     'keep-alive-interval': positiveInt.default(15_000),
     'retry-interval': positiveInt.default(5000),
+    'postgres-url': postgresUrl.default('postgres://localhost:5432'),
+    'postgres-user': text.min(1).default('dtaas_signals_ro'),
+    'postgres-password-file': text.default(''),
+    'postgres-database-template': groupTemplate.default('{group}'),
+    'postgres-tls': booleanSchema.default(false),
+    'postgres-timeout': positiveInt.default(10_000),
     'range-max-span': positiveInt.default(7 * DAY),
+    'range-max-points': positiveInt.default(10_000),
+    // A stream opened with Last-Event-ID is first filled from the history,
+    // from that time less the lookback, which covers readings received out
+    // of order. A gap longer than resume-max-gap is filled from its end.
+    'resume-lookback': positiveInt.default(5000),
+    'resume-max-gap': positiveInt.default(10 * MINUTE),
   })
   .strict();
 

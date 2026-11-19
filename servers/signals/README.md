@@ -12,7 +12,7 @@ and decides access first:
 | `GET /signals/health` | `200` with `{"status":"ok"}` |
 | `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else live samples as server-sent events |
 | `GET /signals/stats` | What the user's ended streams forwarded and dropped |
-| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else `501` |
+| `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else past samples as JSON, `502` when the database fails |
 
 A token is either a GitLab token or a JWT of a Keycloak realm or Dex
 instance named in `oidc-providers`. GitLab is asked about a GitLab token
@@ -27,7 +27,16 @@ group in `owners-file`, which `dtaas-services` writes. Every decision is
 logged without the token. Live samples come from RabbitMQ over MQTT, on
 one connection of the service account `dtaas_signals`. A message outside
 the payload convention (`value`, `ts` and `unit`) is dropped and counted.
-History from PostgreSQL comes in a later version of the service.
+Past samples come from the `reading` table of the database of the owner's
+group, which Telegraf writes, read as `dtaas_signals_ro`. A topic of eight
+levels names its series by device and quantity. A range with more points
+than `range-max-points` is averaged in `date_bin` bins.
+
+Each live sample carries the time the gateway received it as its event id,
+and a stream that reaches `stream-max-age` sends an `end` event before it
+closes. A client that opens the stream again with `Last-Event-ID` first gets
+the readings of the gap from the history, marked `backfill`, then the live
+ones. A gap the history cannot fill is reported in a `gap` event.
 
 ## Configuration
 
@@ -38,8 +47,9 @@ variable: `SIGNALS_` and the key in upper case with `_` for `-`, for
 example `SIGNALS_PORT`. Environment variables override the file.
 
 Save this as `signals.yaml` and adjust it. It lists every key with its
-default value, except `gitlab-url`, `gitlab-client-id`, `owners-file` and
-`mqtt-password-file`, which have no default and show an example:
+default value, except `gitlab-url`, `gitlab-client-id`, `owners-file`,
+`mqtt-password-file` and `postgres-password-file`, which have no default
+and show an example:
 
 ```yaml
 # Where the service listens.
@@ -160,8 +170,28 @@ stream-recheck-interval: 60000
 keep-alive-interval: 15000
 # The reconnect wait sent to the client as 'retry:', in milliseconds.
 retry-interval: 5000
-# Longest history range a request may ask for, in milliseconds.
+# PostgreSQL, read for the history of a signal as the read-only account.
+# The URL names only the host and port. Each group has its own database,
+# named by the template filled with the owner of the twin.
+postgres-url: postgres://localhost:5432
+postgres-user: dtaas_signals_ro
+# File holding the account's password, and nothing else. Mode 600.
+postgres-password-file: /run/secrets/postgresql_dtaas_signals_ro_password
+postgres-database-template: '{group}'
+# Verify the server certificate over TLS. Turn on outside the Docker network.
+postgres-tls: false
+# Timeout of one connection and one query, in milliseconds.
+postgres-timeout: 10000
+
+# Longest history range (milliseconds) and most points in one answer. A
+# longer series is averaged in date_bin bins.
 range-max-span: 604800000
+range-max-points: 10000
+# A stream opened again with Last-Event-ID is first filled from the history,
+# from that time less the lookback, in milliseconds. A longer gap than
+# resume-max-gap is filled only for its last resume-max-gap milliseconds.
+resume-lookback: 5000
+resume-max-gap: 600000
 ```
 
 Set `hostname: 0.0.0.0` when the service runs in a container or behind a

@@ -1,7 +1,14 @@
 """DTaaS Services CLI main entry point."""
 
 import click
-from .commands import host_ops, project_ops, service_ops, signals_ops, user_ops
+from .commands import (
+    history_ops,
+    host_ops,
+    project_ops,
+    service_ops,
+    signals_ops,
+    user_ops,
+)
 
 
 class WorkflowGroup(click.Group):
@@ -16,11 +23,11 @@ def services():
     """Manage DTaaS platform services.
 
     Commands follow `dtaas-services <noun> <verb>` and are listed in
-    install order: project, host, service, user.
+    install order: project, host, service, user, twin.
     """
 
 
-# Nouns are registered in workflow order: project, host, service, user
+# Nouns are registered in workflow order: project, host, service, user, twin
 @services.group()
 def project():
     """Project scaffold: config, data and log folders, and compose files."""
@@ -62,6 +69,16 @@ def user():
 user.add_command(user_ops.add)
 user.add_command(user_ops.reset_password)
 user.add_command(signals_ops.add_signals)
+user.add_command(history_ops.add_history)
+
+
+@services.group(cls=WorkflowGroup)
+def twin():
+    """Digital twins whose readings are stored: register and remove."""
+
+
+twin.add_command(history_ops.register)
+twin.add_command(history_ops.remove)
 
 
 if __name__ == "__main__":
