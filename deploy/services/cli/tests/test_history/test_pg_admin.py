@@ -85,8 +85,9 @@ def test_settings_read_services_env(mocker):
 )
 def test_settings_refuse_unsafe_values(mocker, reader, key, value):
     """A lower iteration count, an unknown mode or a bad address is refused"""
+    config = config_with(mocker, **{key: value})
     with pytest.raises(ValueError):
-        reader(config_with(mocker, **{key: value}))
+        reader(config)
 
 
 def test_ensure_login_role_creates_with_a_verifier_only():

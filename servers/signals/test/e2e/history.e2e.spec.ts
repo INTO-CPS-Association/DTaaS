@@ -72,6 +72,6 @@ describe('Signals gateway history e2e', () => {
     await odd.readUntil('"state":"live"');
     odd.close();
     await waitFor(() => broker.bindings.length === 0);
-    expect(postgres.queries.length).toBe(before);
+    expect(postgres.queries).toHaveLength(before);
   });
 });
