@@ -8,7 +8,13 @@
  */
 export type GroupsFormat = 'access-plan' | 'dex-gitlab';
 
+/** The owners a token's groups let the user read, and those it may write. */
+export type Grants = { readers: string[]; writers: string[] };
+
+type Grant = { owner: string; canWrite: boolean };
+
 const ACCESS_PLAN_LEVEL = /^\/?([^/]+)_(viewer|member|admin)$/;
+// Dex has no Reporter role, so every role it adds lets the user write.
 const DEX_ROLE = /^(.+):(developer|maintainer|owner)$/;
 // The characters GitLab allows in a project path.
 const OWNER_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -22,25 +28,35 @@ function ownerOfDexGroup(
   return path.slice(prefix.length);
 }
 
-function ownerOfGroup(
+function grantOfGroup(
   name: string,
   format: GroupsFormat,
   gitlabGroup: string,
-): string | undefined {
-  if (format === 'access-plan') return ACCESS_PLAN_LEVEL.exec(name)?.[1];
+): Grant | undefined {
+  if (format === 'access-plan') {
+    const level = ACCESS_PLAN_LEVEL.exec(name);
+    return level === null
+      ? undefined
+      : { owner: level[1], canWrite: level[2] !== 'viewer' };
+  }
   const role = DEX_ROLE.exec(name);
-  return role === null ? undefined : ownerOfDexGroup(role[1], gitlabGroup);
+  const owner =
+    role === null ? undefined : ownerOfDexGroup(role[1], gitlabGroup);
+  return owner === undefined ? undefined : { owner, canWrite: true };
 }
 
-/** The owners whose projects the groups of a token let the user read. */
-export default function ownersOfGroups(
+export default function grantsOfGroups(
   groups: readonly string[],
   format: GroupsFormat,
   gitlabGroup: string,
-): string[] {
-  const owners = groups.flatMap((name) => {
-    const owner = ownerOfGroup(name, format, gitlabGroup);
-    return owner !== undefined && OWNER_NAME.test(owner) ? [owner] : [];
+): Grants {
+  const grants = groups.flatMap((name) => {
+    const grant = grantOfGroup(name, format, gitlabGroup);
+    return grant !== undefined && OWNER_NAME.test(grant.owner) ? [grant] : [];
   });
-  return [...new Set(owners)];
+  const owners = (list: Grant[]) => [...new Set(list.map((g) => g.owner))];
+  return {
+    readers: owners(grants),
+    writers: owners(grants.filter((grant) => grant.canWrite)),
+  };
 }

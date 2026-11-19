@@ -91,6 +91,7 @@ export const configSchema = z
     // Reporter (20) at least: a project with internal visibility is readable
     // by every signed-in user at a lower level, and so would its signals be.
     'gitlab-min-access-level': positiveInt.pipe(z.number().min(20)).default(20),
+    'gitlab-min-write-level': positiveInt.default(30),
     'gitlab-timeout': positiveInt.default(5000),
     'forwarded-user-header': text.toLowerCase().default(''),
     // The OAuth applications whose GitLab tokens are accepted: the gateway's
@@ -124,6 +125,7 @@ export const configSchema = z
     'mqtt-user': text.min(1).default('dtaas_signals'),
     'mqtt-password-file': text.default(''),
     'mqtt-connect-timeout': positiveInt.default(10_000),
+    'command-timeout': positiveInt.default(10_000),
     'max-paths-per-stream': positiveInt.default(200),
     'max-path-length': positiveInt.default(256),
     'max-streams-per-user': positiveInt.default(4),

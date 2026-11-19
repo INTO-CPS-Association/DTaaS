@@ -37,8 +37,8 @@ describe('StreamSession', () => {
     const broker = new FakeBroker();
     const { session, response } = sessionWith(broker);
     await session.start([]);
-    broker.publish('alice/pump/flow', reading(1));
-    broker.publish('alice/pump/flow', 'x'.repeat(129));
+    broker.deliver('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', 'x'.repeat(129));
     const samples = response.chunks.filter((chunk) =>
       chunk.includes('event: sample'),
     );
@@ -90,7 +90,7 @@ describe('StreamSession', () => {
     const { session, response } = sessionWith(broker);
     await session.start([]);
     response.writableLength = 2 * 1024 * 1024;
-    broker.publish('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', reading(1));
     expect(response.text).not.toContain('event: sample');
     session.end();
   });
@@ -99,12 +99,12 @@ describe('StreamSession', () => {
     const broker = new FakeBroker();
     const { session, response } = sessionWith(broker);
     await session.start([]);
-    broker.publish('alice/pump/flow', reading(1));
-    broker.publish('alice/pump/flow', reading(2));
-    broker.publish('alice/pump/flow', 'x'.repeat(129));
+    broker.deliver('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', reading(2));
+    broker.deliver('alice/pump/flow', 'x'.repeat(129));
     response.writableLength = MAX_BACKLOG + 1;
-    broker.publish('alice/pump/flow', reading(3));
-    broker.publish('alice/pump/flow', '{"value":"high"}');
+    broker.deliver('alice/pump/flow', reading(3));
+    broker.deliver('alice/pump/flow', '{"value":"high"}');
     expect(session.counts).toEqual({
       forwarded: 2,
       backfilled: 0,
@@ -133,7 +133,7 @@ describe('StreamSession', () => {
     );
     expect(response.text).toContain('{"state":"down"}');
     expect(broker.bindings).toHaveLength(0);
-    broker.publish('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', reading(1));
     expect(response.text).not.toContain('event: sample');
   });
 });

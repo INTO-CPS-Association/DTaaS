@@ -42,7 +42,7 @@ describe('Delivery stats', () => {
       { allowed: [FLOW], refused: [] },
     );
     await new Promise((resolve) => setImmediate(resolve));
-    broker.publish('alice/pump/flow', reading(1));
+    broker.deliver('alice/pump/flow', reading(1));
     response.emit('close');
     await running;
     expect(JSON.parse(lines[0])).toMatchObject({

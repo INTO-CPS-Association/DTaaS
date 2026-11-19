@@ -64,7 +64,7 @@ function createUsers(container: string, passwords: Record<string, string>) {
     DEVICE_USER,
     'amq.topic',
     '^alice\\.',
-    '^$',
+    '^alice\\..*\\.cmd\\.',
   ]);
 }
 
@@ -128,6 +128,40 @@ describeWithDocker('MqttBroker against RabbitMQ', () => {
     });
     await device.endAsync();
     await subscription.close();
+  }, 30_000);
+
+  it('delivers a command to the device and refuses one outside cmd', async () => {
+    const received: BrokerMessage[] = [];
+    const stream = await broker.subscribe(['alice/pump/flow'], {
+      onMessage: (message) => received.push(message),
+      onDown: () => undefined,
+    });
+    const commands: string[] = [];
+    const device = await mqtt.connectAsync(url, {
+      username: DEVICE_USER,
+      password: passwords[DEVICE_USER],
+      clientId: `${DEVICE_USER}_valve`,
+    });
+    device.on('message', (topic) => commands.push(topic));
+    await device.subscribeAsync('alice/CTO/plant/01/loop1/A/A-0001/cmd/set');
+    await broker.publish(
+      'alice/CTO/plant/01/loop1/A/A-0001/cmd/set',
+      reading(40),
+    );
+    await waitFor(() => commands.length === 1);
+    await expect(
+      Promise.race([
+        broker.publish('alice/pump/flow', reading(1)),
+        new Promise((_resolve, reject) => {
+          setTimeout(() => reject(new Error('no answer')), 5000);
+        }),
+      ]),
+    ).rejects.toThrow(/^(?!no answer)/);
+    // Over MQTT 5 the refusal keeps the connection, so open streams go on.
+    await device.publishAsync('alice/pump/flow', reading(2));
+    await waitFor(() => received.length === 1);
+    await stream.close();
+    await device.endAsync();
   }, 30_000);
 
   it('refuses a topic outside the read permission of the gateway', async () => {

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import Config from '../config/config.service.js';
 import GitLabClient from './gitlab.client.js';
-import ownersOfGroups from './group-claims.js';
+import grantsOfGroups from './group-claims.js';
 import OidcVerifier from './oidc.verifier.js';
 import TtlCache from './ttl-cache.js';
 
@@ -15,9 +15,11 @@ export type Identity = {
   expiresAt?: number;
   /**
    * Set for a Keycloak or Dex sign-in: the owners whose projects the groups
-   * of the token let the user read. A GitLab sign-in asks GitLab instead.
+   * of the token let the user read, and write. A GitLab sign-in asks GitLab
+   * instead.
    */
   owners?: string[];
+  writers?: string[];
 };
 
 export class InvalidTokenError extends Error {
@@ -83,13 +85,20 @@ export default class IdentityService {
     const claims = await this.oidc.verify(token, provider).catch(() => {
       throw new InvalidTokenError();
     });
-    const owners = ownersOfGroups(
+    const { readers, writers } = grantsOfGroups(
       claims.groups,
       provider['groups-format'],
       this.config.get('gitlab-group'),
     );
     const { subject, username, email, expiresAt } = claims;
-    return { id: subject, username, email, expiresAt, owners };
+    return {
+      id: subject,
+      username,
+      email,
+      expiresAt,
+      owners: readers,
+      writers,
+    };
   }
 
   private async lookUpGitLab(token: string, now: number): Promise<Identity> {

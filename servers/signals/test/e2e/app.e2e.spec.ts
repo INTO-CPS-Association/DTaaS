@@ -62,7 +62,7 @@ describe('Signals gateway e2e', () => {
     const opening = await stream.readUntil('"state":"live"');
     expect(opening.startsWith('retry: 5000\n\n')).toBe(true);
     expect(opening).toContain('event: refused\ndata: {"paths":["bob/secret"]}');
-    broker.publish(FLOW, reading(3));
+    broker.deliver(FLOW, reading(3));
     const text = await stream.readUntil('event: sample');
     expect(text).toContain(
       '"path":"alice/pump/flow","twin":"pump","channel":"measured"',
@@ -111,8 +111,8 @@ describe('Signals gateway e2e', () => {
       const stream = await openStream(`${base}/signals/stream`, token, [own]);
       expect(stream.status).toBe(200);
       await stream.readUntil('"state":"live"');
-      broker.publish(other, reading(4));
-      broker.publish(own, reading(5));
+      broker.deliver(other, reading(4));
+      broker.deliver(own, reading(5));
       const text = await stream.readUntil('event: sample');
       expect(text).toContain(`"path":"${own}"`);
       expect(text).not.toContain(`"path":"${other}"`);

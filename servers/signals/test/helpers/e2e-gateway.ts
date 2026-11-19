@@ -22,8 +22,12 @@ export const READ_USER_TOKEN = 'alice-read-user-token-2222222222';
 export const CAROL_TOKEN = 'carol-oauth-token-3333333333';
 export const FLOW = 'alice/pump/flow';
 export const ROOM = 'alice/CTO/room/0224/seat48A/S/S-0001/temperature';
+export const VALVE = 'alice/CTO/plant/01/loop1/A/A-0001/position';
+export const READER_TOKEN = 'erin-reporter-token-4444444444';
+export const GAUGE = 'alice/CTO/plant/01/loop1/A/A-0002/position';
 // History is kept per device, so the cross-group paths are device topics.
 export const SPEED = 'carol/CTO/room/0101/seat1/S/S-0002/temperature';
+export const DAMPER = 'carol/CTO/plant/02/loop1/A/A-0003/position';
 export const RANGE = { paths: [ROOM], channel: 'measured', from: 0, to: 1000 };
 
 const ENV_KEYS = [
@@ -45,6 +49,13 @@ function stubGitLab(): StubGitLab {
       },
       [EXPIRED_TOKEN]: { ...ALICE, projects: [10], expiresIn: 0 },
       [OTHER_APP_TOKEN]: { ...ALICE, projects: [10], application: 'other' },
+      [READER_TOKEN]: {
+        id: 4,
+        username: 'erin',
+        email: 'erin@example.org',
+        projects: [10],
+        writable: [],
+      },
       [READ_USER_TOKEN]: { ...ALICE, projects: [10], scope: ['read_user'] },
       [CAROL_TOKEN]: {
         id: 3,
@@ -58,7 +69,12 @@ function stubGitLab(): StubGitLab {
         id: 10,
         owner: 'alice',
         sha: 'c0ffee',
-        twins: { pump: PUMP, room: visualisationOf([ROOM]) },
+        twins: {
+          pump: PUMP,
+          room: visualisationOf([ROOM]),
+          valve: visualisationOf([VALVE], 'setpoint'),
+          gauge: visualisationOf([GAUGE]),
+        },
       },
       {
         id: 11,
@@ -68,7 +84,9 @@ function stubGitLab(): StubGitLab {
         // owners file does not give to carol.
         twins: {
           fan: visualisationOf([SPEED]),
+          damper: visualisationOf([DAMPER], 'setpoint'),
           copy: visualisationOf([ROOM]),
+          copy_valve: visualisationOf([VALVE], 'setpoint'),
         },
       },
     ],

@@ -27,7 +27,8 @@ yarn clean         # Delete node_modules, coverage, dist and graph files
 
 `yarn test:int` starts RabbitMQ 4.4.0 with the MQTT plugin and PostgreSQL
 18.6 in Docker. It checks that the gateway receives a device's reading, is
-refused a topic outside its read permission, reads and bins the history and
+refused a topic outside its read permission, delivers a command and is
+refused a publication outside `cmd`, reads and bins the history and
 cannot write with its read-only account. It is skipped when Docker is not
 running.
 
