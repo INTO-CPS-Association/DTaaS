@@ -15,14 +15,15 @@ topic without the quantity, seven levels, which must start with the prefix:
 """
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from ..services.rabbitmq_accounts import TOPIC_LEVEL
 from .names import validate_name
 
 DEVICE_LEVELS = 7
 DEVICE_TYPES = ("S", "A")
-KNOWN_KEYS = {"group", "twin", "topic_prefix", "devices"}
+KNOWN_KEYS = {"group", "twin", "topic_prefix", "devices", "kits"}
+SCALARS = (str, int, float, bool, type(None))
 LEVEL_NAMES = ("project", "building", "level", "unit_id", "area", "device_type")
 
 
@@ -58,6 +59,8 @@ class Twin:
     name: str
     prefix: tuple[str, ...]
     devices: tuple[Device, ...]
+    # {kit: {table: [row, ...]}}, filled by kit registration hooks
+    kit_rows: dict = field(default_factory=dict)
 
 
 def _levels(topic: str) -> tuple[str, ...]:
@@ -98,6 +101,35 @@ def _check_names(data: dict) -> None:
             raise TwinFileError(error_msg)
 
 
+def _kit_row(row: object, device_ids: set[str]) -> dict:
+    if not isinstance(row, dict) or row.get("device_id") not in device_ids:
+        raise TwinFileError("Each kit row needs the device_id of a twin device")
+    if not all(isinstance(value, SCALARS) for value in row.values()):
+        raise TwinFileError("Kit row values must be text, numbers or null")
+    return row
+
+
+def _table_rows(where: str, rows: object, device_ids: set[str]) -> list[dict]:
+    if not isinstance(rows, list):
+        raise TwinFileError(f"kits.{where} must be a list of rows")
+    return [_kit_row(row, device_ids) for row in rows]
+
+
+def _kit_rows(raw: object, device_ids: set[str]) -> dict:
+    """Validate {kit: {table: [row, ...]}}, the rows the kit hooks write."""
+    if not isinstance(raw, dict):
+        raise TwinFileError("kits must map each kit to its tables")
+    kit_rows = {}
+    for kit, tables in raw.items():
+        if not isinstance(tables, dict):
+            raise TwinFileError(f"kits.{kit} must map each table to its rows")
+        kit_rows[kit] = {
+            table: _table_rows(f"{kit}.{table}", rows, device_ids)
+            for table, rows in tables.items()
+        }
+    return kit_rows
+
+
 def parse_twin(data: dict) -> Twin:
     """Validate the content of a twin file."""
     unknown = set(data) - KNOWN_KEYS
@@ -114,7 +146,8 @@ def parse_twin(data: dict) -> Twin:
     ids = [device.device_id for device in devices]
     if len(set(ids)) != len(ids):
         raise TwinFileError("A device_id appears twice")
-    return Twin(data["group"], data["twin"], prefix, devices)
+    kit_rows = _kit_rows(data.get("kits", {}), {d.device_id for d in devices})
+    return Twin(data["group"], data["twin"], prefix, devices, kit_rows)
 
 
 def load_twin(path: Path) -> Twin:

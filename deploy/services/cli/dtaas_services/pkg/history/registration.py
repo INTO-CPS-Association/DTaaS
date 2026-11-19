@@ -12,6 +12,9 @@ from psycopg import sql
 from ..secret_files import secret_path
 from ..services.rabbitmq_accounts import delete_session_queue
 from .names import telegraf_account, telegraf_client_id, validate_name
+from .kit_hooks import write_kit_rows
+from .errors import HANDLED, describe
+from .kits import load_kits
 from .pg_admin import connect
 from .telegraf_config import check, install, reload_telegraf, render, twin_file
 from .twin import Device, Twin, TwinFileError, load_twin
@@ -43,9 +46,11 @@ def write_devices(conn: psycopg.Connection, devices: tuple[Device, ...]) -> None
 
 
 def _store(twin: Twin, text: str) -> Path:
-    """Write the device rows, then move the checked file into place."""
+    """Write the device and kit rows, then move the checked file into place."""
+    kits = load_kits()
     with connect(twin.group) as conn:
         write_devices(conn, twin.devices)
+        write_kit_rows(conn, twin, kits)
     destination = twin_file(twin.group, twin.name)
     install(text, destination)
     return destination
@@ -70,10 +75,8 @@ def register_twin(path: Path) -> tuple[bool, str]:
         return False, error_msg
     try:
         destination = _store(twin, text)
-    except psycopg.Error as e:
-        return False, f"PostgreSQL: {type(e).__name__}: {e}"
-    except OSError as e:
-        return False, f"Cannot write the Telegraf file: {type(e).__name__}"
+    except HANDLED as e:
+        return False, describe(e)
     count = len(twin.devices)
     return True, f"Registered {count} device(s) of {twin.name}, file {destination}"
 

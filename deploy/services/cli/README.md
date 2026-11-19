@@ -338,6 +338,45 @@ session queue and then deletes that queue. Devices and readings are kept. If
 the queue still has a consumer, for example because the container was not
 reachable, run `docker kill -s HUP telegraf` and the command again.
 
+### Kit Tables
+
+A kit may keep its own metadata in the group database, keyed by `device_id`
+so it joins with `device`, `reading` and the tables of other kits. Install a
+kit by placing its folder under `config/kits/<kit>/`:
+
+```text
+config/kits/soil/
+  kit.json
+  migrations/0001_soil_sensor.sql
+```
+
+`kit.json` names the kit and declares its tables with the columns a twin
+file may fill:
+
+```json
+{"name": "soil", "tables": {"soil_sensor": ["depth_from", "depth_to"]}}
+```
+
+`user add-history` runs the new migrations of every installed kit after the
+shared tables, in the same transaction, as the role `<group>_kit_<kit>`. That
+role may only create tables and reference `device (device_id)`, which keeps
+an honest migration from changing `device` or `reading` by mistake. It is
+not a boundary against a hostile kit: the migration runs on the
+administrator's connection, so `RESET ROLE` in it gives back the
+administrator's rights. Install only kits whose migrations you have read.
+Each declared table must have `device_id` and its declared columns, and
+`<group>_view_ro` may select from it.
+
+A twin file fills kit tables under `kits`. Registration replaces the rows of
+the twin's devices in each table, in the transaction that writes the devices:
+
+```json
+"kits": {"soil": {"soil_sensor": [
+  {"device_id": "S-SWiM-AU-field-plot1-p1-VWC-0001",
+   "depth_from": 0.1, "depth_to": 0.3}
+]}}
+```
+
 ## ThingsBoard
 
 It is recommended to install the third-party software ThingsBoard
