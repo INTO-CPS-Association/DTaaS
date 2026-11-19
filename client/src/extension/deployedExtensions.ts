@@ -64,19 +64,22 @@ export interface DeployedResult {
   readonly problems: readonly ExtensionProblem[];
 }
 
+/** The entries of the deployed list, trimmed, without empty ones. */
+function listedEntries(env: EnvRecord): string[] {
+  const list = env[EXTENSIONS_DEPLOYED_KEY];
+  if (typeof list !== 'string') return [];
+  return list
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
 /** The listed paths that are well formed, and a problem for each other one. */
 export function deployedPaths(env: EnvRecord): {
   paths: DeployedPath[];
   problems: ExtensionProblem[];
 } {
-  const list = env[EXTENSIONS_DEPLOYED_KEY];
-  const entries =
-    typeof list === 'string'
-      ? list
-          .split(',')
-          .map((entry) => entry.trim())
-          .filter(Boolean)
-      : [];
+  const entries = listedEntries(env);
   const paths: DeployedPath[] = [];
   const problems: ExtensionProblem[] = [];
   entries.forEach((entry) => {
