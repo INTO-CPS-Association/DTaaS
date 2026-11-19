@@ -1,6 +1,6 @@
 # Signals gateway configuration of this package. Copy it to signals.yaml.
-# servers/signals/config/signals.yaml.sample in the DTaaS repository
-# documents every key. The gateway refuses a key it does not know.
+# The configuration section of servers/signals/README.md in the DTaaS
+# repository documents every key. The gateway refuses a key it does not know.
 # No secret is written here: Docker Compose mounts the three files of
 # config/secrets/ under /run/secrets/, where the keys below name them.
 

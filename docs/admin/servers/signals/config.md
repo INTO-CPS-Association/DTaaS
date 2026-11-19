@@ -7,14 +7,15 @@ reads RabbitMQ and PostgreSQL with service accounts kept on the server.
 
 ## The Configuration File
 
-The gateway reads the file named by `SIGNALS_CONFIG_PATH`, or `signals.yaml`
-in its working directory, `/dtaas/signals` in the Docker image. The
-[sample configuration](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/config/signals.yaml.sample)
-documents every key and the gateway refuses a key it does not know. Each key
-can also be set with an environment variable: `SIGNALS_` and the key in upper
-case with `_` for `-`, for example `SIGNALS_GITLAB_URL` for `gitlab-url`. An
-environment variable takes precedence over the file. Each DTaaS Docker
-package carries `config/signals.yaml.example` with the keys below.
+The gateway reads the file named by `SIGNALS_CONFIG_PATH`, or `signals.yaml` in
+its working directory, `/dtaas/signals` in the Docker image. The configuration
+section of the [README of the
+gateway](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/signals/README.md#configuration)
+lists every key with its default and the gateway refuses a key it does not
+know. Each key can also be set with an environment variable: `SIGNALS_` and the
+key in upper case with `_` for `-`, for example `SIGNALS_GITLAB_URL` for
+`gitlab-url`. An environment variable takes precedence over the file. Each
+DTaaS Docker package carries `config/signals.yaml.example` with the keys below.
 
 ## Sign-In
 
