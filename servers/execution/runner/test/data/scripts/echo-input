@@ -1,0 +1,3 @@
+#!/bin/sh
+# Writes its input back, for the command input tests
+cat

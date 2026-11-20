@@ -1,0 +1,339 @@
+// MQTT requests for testing the runner during development, with the
+// httpYac extension of VS Code or the httpyac command line tool.
+// See README.md in this directory.
+//
+// The runner needs an mqtt section in its configuration with the broker
+// and base topic below. Each request subscribes to the response topic of
+// its route and publishes the request. The "=== wait-for-server" line
+// keeps the connection open until the response arrives, and the empty
+// {{ "" }} part after it sends nothing.
+
+@broker = mqtt://localhost:1883
+@topic = dtaas/user1/runner
+
+###
+
+# @name status
+MQTT {{broker}}
+Subscribe: {{topic}}/status/response
+Publish: {{topic}}/status
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name history
+MQTT {{broker}}
+Subscribe: {{topic}}/history/response
+Publish: {{topic}}/history
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name historySince
+MQTT {{broker}}
+Subscribe: {{topic}}/history/response
+Publish: {{topic}}/history
+QoS: 1
+
+{"since": "2026-10-26T14:56:00Z", "limit": 2}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name metrics
+MQTT {{broker}}
+Subscribe: {{topic}}/metrics/response
+Publish: {{topic}}/metrics
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name execute
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "create"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name executeWithInput
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "echo-input", "input": {"patient": "p-17", "ward": "B"}}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name failedCommand
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "fail"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name invalidCommand
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"name": "configure"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name validationError
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{"command": "create"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name dt
+MQTT {{broker}}
+Subscribe: {{topic}}/dt/response
+Publish: {{topic}}/dt
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name state
+MQTT {{broker}}
+Subscribe: {{topic}}/state/response
+Publish: {{topic}}/state
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name fsm
+MQTT {{broker}}
+Subscribe: {{topic}}/fsm/response
+Publish: {{topic}}/fsm
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name transition
+MQTT {{broker}}
+Subscribe: {{topic}}/transition/response
+Publish: {{topic}}/transition
+QoS: 1
+
+{"state": "create"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name event
+MQTT {{broker}}
+Subscribe: {{topic}}/event/response
+Publish: {{topic}}/event
+QoS: 1
+
+{"event": "restart"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name health
+MQTT {{broker}}
+Subscribe: {{topic}}/health/response
+Publish: {{topic}}/health
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name stop
+MQTT {{broker}}
+Subscribe: {{topic}}/stop/response
+Publish: {{topic}}/stop
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name parameters
+MQTT {{broker}}
+Subscribe: {{topic}}/parameters/response
+Publish: {{topic}}/parameters
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name set-parameters
+MQTT {{broker}}
+Subscribe: {{topic}}/set-parameters/response
+Publish: {{topic}}/set-parameters
+QoS: 1
+
+{"scope": "multi"}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name peerFull
+# Publishes, as the peer hospital-2 of config/runner.test.yaml would, a
+# retained state document in state full. The runner raises
+# neighbour-full, which takes execute to create, whose success leads
+# back to execute: GET /fsm of dev.api.http shows the entry count grown
+# by two. In state create the event has no transition, which GET
+# /metrics counts. It is raised again only after peerOpen, and not
+# while set-peers below has disabled the peer.
+MQTT {{broker}}
+Publish: dtaas/user1/hospital-2/notify/state
+QoS: 1
+Retain: true
+
+{"kind": "state", "id": "hospital-2", "time": null, "data": {"id": "hospital-2", "machine": {"state": "full"}}}
+
+###
+
+# @name peerOpen
+MQTT {{broker}}
+Publish: dtaas/user1/hospital-2/notify/state
+QoS: 1
+Retain: true
+
+{"kind": "state", "id": "hospital-2", "time": null, "data": {"id": "hospital-2", "machine": {"state": "open"}}}
+
+###
+
+# @name peers
+MQTT {{broker}}
+Subscribe: {{topic}}/peers/response
+Publish: {{topic}}/peers
+QoS: 1
+
+{}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name set-peers
+MQTT {{broker}}
+Subscribe: {{topic}}/set-peers/response
+Publish: {{topic}}/set-peers
+QoS: 1
+
+{"hospital-2": false}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name escalate
+MQTT {{broker}}
+Subscribe: {{topic}}/escalate/response
+Publish: {{topic}}/escalate
+QoS: 1
+
+{"reason": "capacity", "proposal": {"scope": "multi"}}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name signedExecute
+# For a runner with access control, whose requests above get 401: the
+# payload is a signed envelope (API.md, "MQTT Access Control"), which
+# tools/sign.mjs makes from the plain request, here as
+# @principal with the key @keyDir/<principal>.key for the DT @dtId
+@keyDir = keys
+@principal = manager-1
+@dtId = test-dt
+{{
+  const { execFileSync } = require('node:child_process');
+  const { join } = require('node:path');
+  const signer = join(__dirname, '../tools/sign.mjs');
+  const plain = '{"name": "create"}';
+  const env = {
+    ...process.env,
+    DT_ID: dtId,
+    DT_BASE: topic,
+    DT_KEYS: keyDir,
+    DT_AS: principal,
+  };
+  const args = [signer, 'mqtt', 'execute', plain];
+  exports.envelope = execFileSync(process.execPath, args, { env }).toString();
+}}
+MQTT {{broker}}
+Subscribe: {{topic}}/execute/response
+Publish: {{topic}}/execute
+QoS: 1
+
+{{envelope}}
+=== wait-for-server
+{{ "" }}
+
+###
+
+# @name notifications
+# Subscribes to the notifications of the runner and publishes nothing;
+# the broker hands over the retained state document and presence
+# notice at once. With auth.key in runner.yaml each payload is a
+# compact JWS of the JSON (API.md, "Signatures"), as is each response.
+MQTT {{broker}}
+Subscribe: {{topic}}/notify/+
+QoS: 1
+
+=== wait-for-server
+{{ "" }}

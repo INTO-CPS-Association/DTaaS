@@ -1,0 +1,11 @@
+#!/bin/sh
+# Spins for 1.5 s of its own CPU time, for the resource tests. It
+# starts no process, so that its figures are its own: read is a builtin
+# and the loop forks nothing. Fields 14 and 15 of /proc/self/stat give
+# the CPU time in hundredths of a second (USER_HZ), whatever the load of
+# the host.
+while :; do
+  read -r stat </proc/self/stat
+  set -- ${stat#*) }
+  [ $((${12} + ${13})) -ge 150 ] && break
+done

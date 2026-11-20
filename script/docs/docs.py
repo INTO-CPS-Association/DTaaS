@@ -22,7 +22,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pages
+try:
+    import pages
+except ModuleNotFoundError as missing:  # pages loads MkDocs through its hooks
+    sys.exit(
+        f"error: Python module {missing.name} is missing from {sys.executable}; "
+        "activate the virtual environment of DOCS.md and install "
+        "script/docs/mkdocs-requirements-github.txt into it"
+    )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_DIR = REPO_ROOT / "docs"

@@ -1,6 +1,43 @@
+id: 'my-dt'  # names the digital twin; letters, digits, _, . or -, up to 64
+# attributes:  # optional; facts about the digital twin for a Manager
+#   city: 'Aarhus'  # values are strings, numbers or booleans
+#   beds: 120
 port: 5000
 location: 'scripts'  # directory of scripts, relative to this config file
 commands:  # list of permitted scripts
   - create
   - execute
   - terminate
+# stateMachine: 'scripts/state-machine.yaml'  # optional, relative to this file
+# database: 'runner.db'  # optional; keeps the command history in a file
+# stopGrace: 5000  # optional; milliseconds from SIGTERM to SIGKILL on a stop
+# mqtt:  # optional; serves the API over MQTT as well
+#   url: 'mqtt://localhost:1883'
+#   topic: 'dtaas/user1/runner'  # base topic, unique to this runner
+#   username: 'runner'
+#   password: 'secret'
+#   protocolVersion: 5  # 4 for brokers that support only MQTT 3.1.1
+# notify:  # optional; the webhook that receives the notifications
+#   url: 'https://manager.example.org/dt-events'
+#   token: 'secret'  # optional; sent as a bearer token
+# auth:  # optional; without it every route is open to anyone
+#   principals:  # the callers, each with an Ed25519 public key
+#     - name: 'manager-1'
+#       role: 'manager'  # manager or client
+#       publicKey: 'mCpoaytWvGJ9K0lxNlSNw6sjUG7UezRWtxPvL1pyxKA'
+#   # optional; an Ed25519 private key, PEM PKCS#8, relative to this
+#   # file, with which the runner signs its notifications and MQTT
+#   # responses
+#   key: 'keys/my-dt.key'
+# peers:  # optional; the digital twins that this one interacts with
+#   - id: 'dt-2'  # the peer's id, not that of this runner
+#     topic: 'dtaas/user1/dt-2'  # its MQTT base topic on this broker
+#     url: 'http://localhost:5200'  # its HTTP base URL; topic, url or both
+#     attributes:  # optional; relationships, which the runner never reads
+#       distance: 12.4
+#     enabled: true  # optional; PUT /peers overrides it
+#     publicKey: 'mCpoaytWvGJ9K0lxNlSNw6sjUG7UezRWtxPvL1pyxKA'  # optional
+# scripts:  # optional, Linux only; runs the scripts as a second account
+#   user: 'dt-script'  # a name or a uid of /etc/passwd
+#   group: 'dt-script'  # optional; instead of the account's primary group
+#   runDirectory: '/var/lib/dt/my-dt/run'  # the scripts' working directory

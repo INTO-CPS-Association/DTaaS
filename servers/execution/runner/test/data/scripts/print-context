@@ -1,0 +1,3 @@
+#!/bin/sh
+# Prints the runner context of the script on one line
+printf '%s %s %s %s %s\n' "$DT_ID" "$DT_STATE" "$DT_ENTRY" "$DT_PARAM_SCOPE" "$HINT"

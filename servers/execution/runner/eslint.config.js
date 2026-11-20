@@ -7,9 +7,14 @@ import tsParser from '@typescript-eslint/parser';
 import imprt from 'eslint-plugin-import'; // 'import' is ambiguous & prettier has trouble
 
 export default [
+  // Global ignores: ESLint does not walk into these directories, so a
+  // concurrent yarn test that creates and removes script/ can not break it
+  {
+    ignores: ['build/', 'coverage/', 'dist/', 'node_modules/', 'script/'],
+  },
   {
     ...js.configs.recommended,
-    files: ['src/**', 'test/**'],
+    files: ['src/**/*.ts', 'test/**/*.ts'],
   },
   prettier,
   {
@@ -28,7 +33,7 @@ export default [
         ecmaFeatures: { modules: true },
       },
     },
-    files: ['src/**', 'test/**'],
+    files: ['src/**/*.ts', 'test/**/*.ts'],
     plugins: { jest, '@typescript-eslint': ts, import: imprt, ts },
     rules: {
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
@@ -38,7 +43,14 @@ export default [
       'import/no-unresolved': 'off', // Whatever IDE will pass an error if if the module is not found, so no reason for this..
       'import/extensions': 'off', // That includes the production build.. We use linter for code checking / clean code optimization..
       'no-use-before-define': 'off',
-      'no-unused-vars': 'warn',
+      // the core rules misread TypeScript: tsc checks undefined names, and
+      // the core no-unused-vars flags parameter properties and signatures
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
     ignores: [
       'api/*',

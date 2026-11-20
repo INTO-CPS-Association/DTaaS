@@ -67,7 +67,12 @@ nav:
               - Concurrent Execution: user/digital-twins/devops/concurrent-execution.md
               - Performance: user/digital-twins/devops/measurement.md
       - Gitlab Tutorial: user/gitlab/tutorial.md
-      - Runner: user/servers/execution/runner/readme.md
+      - Runner:
+          - Usage: user/servers/execution/runner/readme.md
+          - Configuration: user/servers/execution/runner/config.md
+          - State Machine: user/servers/execution/runner/state-machine.md
+          - Security Model: user/servers/execution/runner/security-model.md
+          - Privilege Setup: user/servers/execution/runner/privilege-setup.md
       - Examples:
           - Overview: user/examples/index.md
           - Workspace:
@@ -155,6 +160,11 @@ nav:
           - Current Status: developer/system/current-status.md
           - Client Extensions: developer/system/extensions.md
           - Research Overview: developer/system/research-overview.md
+          - DT Runner:
+              - DT Networks: developer/system/servers/execution/runner/DT-networks.md
+              - State Machine: developer/system/servers/execution/runner/State-Machine.md
+              - Script Sandbox: developer/system/servers/execution/runner/Sandbox.md
+              - Firecracker microVMs: developer/system/servers/execution/runner/Firecracker.md
           - Code Review:
               - Overview: developer/system/review/index.md
               - Architecture Review: developer/system/review/architecture-review.md

@@ -1,4 +1,7 @@
 config/*
 !config/*.sample
 script/
+scripts/
 runner.test.yaml
+# key pairs of principals for trying access control (api/README.md)
+keys/

@@ -9,3 +9,11 @@ services:
       - ./scripts:/dtaas/runner/scripts  # must be readable by uid 1000
     ports:
       - "5000:5000"
+    # node, as the image has neither curl nor wget; keep the port of
+    # runner.yaml. A degraded runner answers 200 too: liveness only.
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:5000/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"

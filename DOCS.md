@@ -22,6 +22,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r script/docs/mkdocs-requirements.txt
 # On Windows pdf converter is not available, use
+.venv\bin\activate
 pip install -r script/docs/mkdocs-requirements-github.txt
 ```
 

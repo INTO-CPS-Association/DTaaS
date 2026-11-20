@@ -4,7 +4,41 @@
 @port = 5000
 @ContentType = application/json
 
-### 
+// For a runner with access control, @keyFile names the PKCS#8 key of a
+// principal of its auth section (tools/keygen.mjs writes
+// one) and @dtId its id. httpYac then signs every request as
+// @principal with the script below; REST Client does not run it. An
+// empty @keyFile sends the requests unsigned.
+@keyFile =
+@principal = alice
+@dtId = test-dt
+
+{{@request
+  if (keyFile) {
+    const crypto = require('node:crypto');
+    const part = (value) =>
+      Buffer.from(JSON.stringify(value)).toString('base64url');
+    const body = typeof request.body === 'string' ? request.body : '';
+    const iat = Math.floor(Date.now() / 1000);
+    const claims = {
+      aud: dtId,
+      iat,
+      exp: iat + 30,
+      jti: crypto.randomBytes(16).toString('base64url'),
+      htm: request.method,
+      htu: new URL(request.url).pathname,
+      bh: crypto.createHash('sha256').update(body).digest('base64url'),
+    };
+    const header = { alg: 'Ed25519', kid: principal };
+    const input = `${part(header)}.${part(claims)}`;
+    const key = crypto.createPrivateKey(require('node:fs').readFileSync(keyFile));
+    const signature = crypto.sign(null, Buffer.from(input), key);
+    request.headers.Authorization =
+      `Bearer ${input}.${signature.toString('base64url')}`;
+  }
+}}
+
+###
 GET http://{{hostname}}:{{port}} HTTP/1.1
 content-type: {{ContentType}}
 
@@ -34,11 +68,52 @@ content-type: {{ContentType}}
 
 ###
 
+// the two newest commands received since the time
+GET http://{{hostname}}:{{port}}/history?since=2026-10-26T14:56:00Z&limit=2 HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+// spins for a second, three on Windows; the reply and GET /metrics
+// show the resources it used
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "busy"
+}
+
+###
+
+GET http://{{hostname}}:{{port}}/metrics HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
 POST http://{{hostname}}:{{port}} HTTP/1.1
 content-type: {{ContentType}}
 
 {
     "name": "configure"
+}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "echo-input",
+    "input": { "patient": "p-17", "ward": "B" }
+}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "fail"
 }
 
 ###
@@ -69,3 +144,119 @@ content-type: {{ContentType}}
 
 GET http://{{hostname}}:{{port}}/history HTTP/1.1
 content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}} HTTP/1.1
+content-type: {{ContentType}}
+Idempotency-Key: 7d1e4a36-0b8a-4c51-9c0e-2b8f1e6f2a10
+
+{
+    "name": "create"
+}
+
+### Descriptor of the digital twin
+
+GET http://{{hostname}}:{{port}}/dt HTTP/1.1
+content-type: {{ContentType}}
+
+### State of the digital twin
+
+GET http://{{hostname}}:{{port}}/state HTTP/1.1
+content-type: {{ContentType}}
+
+### Health of the runner
+
+GET http://{{hostname}}:{{port}}/health HTTP/1.1
+content-type: {{ContentType}}
+
+### State machine of test/data/scripts/state-machine.yaml
+
+GET http://{{hostname}}:{{port}}/fsm HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+POST http://{{hostname}}:{{port}}/fsm/transition HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "state": "create"
+}
+
+###
+
+POST http://{{hostname}}:{{port}}/fsm/event HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "event": "restart"
+}
+
+###
+
+POST http://{{hostname}}:{{port}}/fsm/event HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "event": "stop"
+}
+
+### Parameters of test/data/scripts/state-machine.yaml
+
+GET http://{{hostname}}:{{port}}/parameters HTTP/1.1
+content-type: {{ContentType}}
+
+###
+
+PUT http://{{hostname}}:{{port}}/parameters HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "scope": "multi"
+}
+
+### The machine after peerFull of dev.mqtt.http: create ran again
+
+GET http://{{hostname}}:{{port}}/fsm HTTP/1.1
+content-type: {{ContentType}}
+
+### Peers of runner.yaml, {} without a peers section
+
+GET http://{{hostname}}:{{port}}/peers HTTP/1.1
+content-type: {{ContentType}}
+
+### Disable a listed peer; an unknown id gets 400
+
+PUT http://{{hostname}}:{{port}}/peers HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "hospital-2": false
+}
+
+### Escalate to the Manager, with or without a state machine
+
+POST http://{{hostname}}:{{port}}/escalate HTTP/1.1
+content-type: {{ContentType}}
+Idempotency-Key: 3f2b9c4e
+
+{
+    "reason": "capacity",
+    "proposal": {
+        "scope": "multi"
+    }
+}
+
+### Stop every running command
+
+POST http://{{hostname}}:{{port}}/stop HTTP/1.1
+
+###
+
+POST http://{{hostname}}:{{port}}/stop HTTP/1.1
+content-type: {{ContentType}}
+
+{
+    "name": "execute"
+}

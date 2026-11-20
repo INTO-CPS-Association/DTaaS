@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fails with an exit code and a message, for the command outcome tests
+echo 'no free bed' >&2
+exit 3
