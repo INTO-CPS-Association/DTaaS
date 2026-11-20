@@ -136,12 +136,12 @@ read it on every request. `test/e2e/auth.script.spec.ts` checks that a
 state's script raises an event with `RUNNER_TOKEN`, so _raise-event_
 always sends `Authorization: Bearer $RUNNER_TOKEN`.
 
-To try a runner with access control by hand, write a key pair with the
-demo's tool and list its public key under `auth` in
-`config/runner.test.yaml`:
+To try a runner with access control by hand, write a key pair with
+[tools/keygen.mjs](tools/keygen.mjs) and list its public key under
+`auth` in `config/runner.test.yaml`:
 
 ```bash
-node demo/hospital/tools/keygen.mjs alice keys
+node tools/keygen.mjs alice keys
 ```
 
 It writes `keys/alice.key` (PKCS#8 PEM) and `keys/alice.pub`, and

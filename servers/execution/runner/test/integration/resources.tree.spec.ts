@@ -16,6 +16,11 @@ const describeMeasured = ['linux', 'win32'].includes(process.platform)
 // powershell.exe, which uses well under a second to start
 const SHELL_SECONDS = process.platform === 'win32' ? 1 : 0.1;
 
+// Linux samples at the start; on Windows the first sample waits for the
+// sampler's own powershell.exe, which takes several seconds on a host
+// loaded by the other test workers
+const FIRST_SAMPLE_MS = process.platform === 'win32' ? 10000 : 3000;
+
 const script = (name: string, stopGrace?: number) =>
   RunnerFactory.create(resolve('script', name), { stopGrace });
 
@@ -37,7 +42,7 @@ describeMeasured('Resources of a process tree', () => {
   it('Should report the figures of a stopped run', async () => {
     const runner = script('loop', 500);
     const run = runner.run();
-    await delay(3000);
+    await delay(FIRST_SAMPLE_MS);
 
     const started = Date.now();
     await runner.stop();

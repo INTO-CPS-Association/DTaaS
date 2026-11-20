@@ -137,9 +137,9 @@ A multi-ward placement is a _fallback_. The network goals are to
 allocate every patient, avoid fallbacks and keep travel short. A
 network is judged by the number of fallbacks, the distribution of
 patients over hospitals, the travel distance and a placement score.
-The hospital demo of the runner, in
-`servers/execution/runner/demo/hospital/`, plays this example with two
-hospitals.
+The hospital example of the runner's
+[state machine guide](../../../../../user/servers/execution/runner/state-machine.md#example-hospital-bed-management)
+plays this example with two hospitals.
 
 ### Vocabulary Against the Runner
 

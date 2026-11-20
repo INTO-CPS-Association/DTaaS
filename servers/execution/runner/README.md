@@ -30,8 +30,9 @@ holds the full documentation:
   system that starts it.
 - [PRIVILEGE-SETUP.md](https://github.com/INTO-CPS-Association/DTaaS/blob/feature/distributed-demo/servers/execution/runner/PRIVILEGE-SETUP.md):
   running the scripts as a second account on Linux.
-- [The hospital demo](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/execution/runner/demo/hospital):
-  two digital twins of hospitals, steered by a Manager.
+- [tools/](https://github.com/INTO-CPS-Association/DTaaS/tree/feature/distributed-demo/servers/execution/runner/tools):
+  `keygen.mjs` writes an Ed25519 key pair for access control and
+  signing, and `sign.mjs` signs a request with it.
 
 ## Install
 

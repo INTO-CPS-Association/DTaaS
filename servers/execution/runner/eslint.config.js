@@ -7,6 +7,11 @@ import tsParser from '@typescript-eslint/parser';
 import imprt from 'eslint-plugin-import'; // 'import' is ambiguous & prettier has trouble
 
 export default [
+  // Global ignores: ESLint does not walk into these directories, so a
+  // concurrent yarn test that creates and removes script/ can not break it
+  {
+    ignores: ['build/', 'coverage/', 'dist/', 'node_modules/', 'script/'],
+  },
   {
     ...js.configs.recommended,
     files: ['src/**/*.ts', 'test/**/*.ts'],

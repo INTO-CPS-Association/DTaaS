@@ -800,15 +800,10 @@ again:
 
 ## Example: Hospital Bed Management
 
-The [hospital demo](demo/hospital/README.md) runs the DTs of two
-hospitals, `hospital-1` and `hospital-2`, each with two wards, which
-are [peers](CONFIG.md#peers) of each other and which a Manager of a
-network of hospitals steers. Its recording,
-[demo-windows-manager.cast](demo/hospital/demo-windows-manager.cast)
-and [demo-windows-network.cast](demo/hospital/demo-windows-network.cast)
-side by side in [demo-windows.mp4](demo/hospital/demo-windows.mp4),
-shows every request below. The state machine of `hospital-1` is
-[hospital.fsm.yaml](demo/hospital/hospital.fsm.yaml):
+This example has the DTs of two hospitals, `hospital-1` and
+`hospital-2`, each with two wards, which are [peers](CONFIG.md#peers)
+of each other and which a Manager of a network of hospitals steers.
+The state machine of `hospital-1` is:
 
 ```yaml
 events:
@@ -896,8 +891,8 @@ states:
       reopen: open
 ```
 
-[hospital-2.fsm.yaml](demo/hospital/hospital-2.fsm.yaml) is the same
-with `capacity` 1 and without `subscriptions`.
+The state machine of `hospital-2` is the same, with `capacity` 1 and
+without `subscriptions`.
 
 ```mermaid
 stateDiagram-v2
@@ -931,7 +926,7 @@ As above, `transition` starts the machine and `(stop)` marks
 - The Manager runs `admit` and `discharge` with `POST /` and an
   `input` object; `discharge` raises `beds-free`.
 
-The requests of the recording to `hospital-1`, with their replies:
+A session of requests to `hospital-1`, with their replies:
 
 | Request                                                             | Reply                                                                                                                                                    |
 | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -946,9 +941,6 @@ The requests of the recording to `hospital-1`, with their replies:
 | `PUT /peers` `{"hospital-2": false}`, then `true`                   | the retained `full` of `hospital-2` counts as a change again: `neighbour-full` restarts _open_ as entry 7                                                |
 | the runner of `hospital-2` is killed                                | its will says offline: `neighbour-down` restarts _open_ as entry 8                                                                                       |
 | `POST /stop` `{"name": "open"}`                                     | `200` `{"stopped": ["open"]}`; `$stopped` leads to `closed`, entry 9, then `valid`                                                                       |
-
-The demo's [README](demo/hospital/README.md) tells how to record it
-again.
 
 ## Pattern: Fidelity
 
@@ -975,9 +967,9 @@ and the [resources](api/API.md#resources) that the runner reports.
 1. Scripts read `DT_PARAM_FIDELITY` and choose a model, a step size or a
    sample rate from it.
 
-The [hospital demo](#example-hospital-bed-management) follows it: its
-_open_ samples the beds every 2000, 500 or 100 ms at `low`, `medium`
-or `high`, and its recording shows a change and the figures of the run
+The [hospital example](#example-hospital-bed-management) follows it:
+its _open_ samples the beds every 2000, 500 or 100 ms at `low`, `medium`
+or `high`, and its session shows a change and the figures of the run
 that it stopped.
 
 ```yaml

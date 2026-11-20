@@ -295,7 +295,7 @@ QoS: 1
 # @name signedExecute
 # For a runner with access control, whose requests above get 401: the
 # payload is a signed envelope (API.md, "MQTT Access Control"), which
-# demo/hospital/tools/sign.mjs makes from the plain request, here as
+# tools/sign.mjs makes from the plain request, here as
 # @principal with the key @keyDir/<principal>.key for the DT @dtId
 @keyDir = keys
 @principal = manager-1
@@ -303,7 +303,7 @@ QoS: 1
 {{
   const { execFileSync } = require('node:child_process');
   const { join } = require('node:path');
-  const signer = join(__dirname, '../demo/hospital/tools/sign.mjs');
+  const signer = join(__dirname, '../tools/sign.mjs');
   const plain = '{"name": "create"}';
   const env = {
     ...process.env,

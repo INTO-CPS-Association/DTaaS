@@ -171,8 +171,8 @@ the container, so it is not loosened.
   its own, so `RUNNER_URL` at `127.0.0.1` no longer reaches the runner.
   The script context, stdin, the output and the exit code all need an
   agent in the guest over vsock. 17a and 17b would measure the VMM,
-  not the script. A VM per run can not share the run files that the
-  hospital demo's scripts keep between runs. Each is larger than any
+  not the script. A VM per run can not share the run files that a
+  DT's scripts keep between runs. Each is larger than any
   runner issue planned.
 - **B1 and B2** are the orchestrator's options. They need no runner
   work, and they keep the runner's files open to its scripts, which is
@@ -526,10 +526,6 @@ written:
   the setting on, and `scripts: null` without it.
 - Issue 18's decision is D35, and it does not bump the runner's
   version.
-- The hospital demo gets a Linux shell variant, recorded in WSL with
-  the setting on, from a copy of the demo inside the WSL filesystem.
-  Postponed from issue 18 to the recording of issue 16, which records
-  both platforms with the setting on.
 - The deploy issue is one issue with three deliverables: the compose
   files and image of today, a systemd unit for a bare host, and the
   microVM (B3) contract that a future Execution Manager must provide.

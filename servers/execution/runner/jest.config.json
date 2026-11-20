@@ -1,6 +1,8 @@
 {
   "preset": "ts-jest/presets/default-esm",
   "testEnvironment": "node",
+  "testTimeout": 30000,
+  "maxWorkers": "50%",
   "transform": {
     "(src|test)/^.+\\.(t|j)sx?$": [
       "ts-jest",

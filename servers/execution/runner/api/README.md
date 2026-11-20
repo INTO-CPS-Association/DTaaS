@@ -2,7 +2,7 @@
 
 This directory has request files for trying out the HTTP and MQTT APIs
 of a runner on the developer computer. [API.md](API.md) is the
-reference of both APIs, with examples from the hospital demo.
+reference of both APIs, with examples.
 
 | File            | Protocol | VS Code extension      |
 | :-------------- | :------- | :--------------------- |
@@ -109,8 +109,8 @@ with `401`; an `auth` section with only a `key` leaves them open. Write
 a key pair, from the runner directory:
 
 ```bash
-node demo/hospital/tools/keygen.mjs alice keys
-node demo/hospital/tools/keygen.mjs manager-1 keys
+node tools/keygen.mjs alice keys
+node tools/keygen.mjs manager-1 keys
 ```
 
 and list the printed public keys under `auth` in
@@ -121,7 +121,7 @@ and list the printed public keys under `auth` in
   every request with the `{{@request}}` script at the top of the file;
   REST Client does not run scripts, so it sends them unsigned.
 - In `dev.mqtt.http`, the `signedExecute` request publishes the
-  envelope that the demo's `tools/sign.mjs` makes with
+  envelope that [tools/sign.mjs](../tools/sign.mjs) makes with
   `keys/manager-1.key`; `@keyDir` is relative to the directory httpyac
   runs in. The other MQTT requests stay plain.
 

@@ -6,24 +6,22 @@ the request, the reply and the status of each outcome, and the
 notifications that the runner sends on its own. It is the reference for
 a DT Manager, a script or any other client of the runner.
 
-The examples come from the
-[hospital bed-management demo](../demo/hospital/README.md). Most are
-requests typed in its recording on Windows against version 0.10.0,
-with the replies that the runner gave, so the values fit together from
-one example to the next; the notifications are those that its MQTT
-subscriber received in the same run, decoded. The text says where an
-example comes from elsewhere. The
-[Example Session](#example-session) at the end retells the recording as
+The examples follow one session with two hospital digital twins,
+described in [The Example Setup](#the-example-setup). Most are requests
+sent to a runner on Windows, with the replies that it gave, so the
+values fit together from one example to the next; the notifications
+are those that an MQTT subscriber received in the same session,
+decoded. The text says where an example comes from elsewhere. The
+[Example Session](#example-session) at the end retells the session as
 one story.
 
-## The Demo Setup
+## The Example Setup
 
-The demo runs two runners, of the hospitals `hospital-1` and
+The example runs two runners, of the hospitals `hospital-1` and
 `hospital-2` in Aarhus, which are [peers](#peers) of each other. Each
 has two wards, cardiology and maternity, of two beds at `hospital-1`
 and one at `hospital-2`. Most examples ask `hospital-1`, whose
-configuration, [demo/hospital/runner.yaml](../demo/hospital/runner.yaml),
-gives the addresses that the examples use:
+configuration gives the addresses that the examples use:
 
 | Setting            | `hospital-1`                                   | `hospital-2`               |
 | :----------------- | :--------------------------------------------- | :------------------------- |
@@ -35,10 +33,40 @@ gives the addresses that the examples use:
 | Manager commands   | `admit`, `discharge`                           | the same                   |
 | Peers              | `hospital-2`, 12.4 km away                     | `hospital-1`, 12.4 km away |
 
-The state machine,
-[demo/hospital/hospital.fsm.yaml](../demo/hospital/hospital.fsm.yaml), has
-three states, `open`, `full` and `closed`, each running the script of
-the same name. It declares the events `full`, `beds-free`,
+The _runner.yaml_ of `hospital-1`, without its `auth` section:
+
+```yaml
+id: 'hospital-1'
+attributes:
+  name: 'Hospital 1'
+  city: 'Aarhus'
+  latitude: 56.19
+  longitude: 10.17
+  wards: 2
+port: 5100
+location: 'scripts'
+commands: [open, full, closed, admit, discharge]
+stateMachine: 'hospital.fsm.yaml'
+database: 'run/hospital-1/hospital.db'
+stopGrace: 1000
+mqtt:
+  url: 'mqtt://127.0.0.1:18830'
+  topic: 'dtaas/hospital-1'
+  protocolVersion: 4 # the local broker speaks MQTT 3.1.1 only
+notify:
+  url: 'http://127.0.0.1:18080/dt-events'
+peers:
+  - id: 'hospital-2'
+    topic: 'dtaas/hospital-2'
+    url: 'http://localhost:5200'
+    attributes:
+      distance: 12.4
+```
+
+The state machine, _hospital.fsm.yaml_, is listed in full in
+[STATE-MACHINE.md](../STATE-MACHINE.md#example-hospital-bed-management).
+It has three states, `open`, `full` and `closed`, each running the
+script of the same name. It declares the events `full`, `beds-free`,
 `scope-changed`, `fidelity-changed`, `close`, `reopen`,
 `neighbour-full` and `neighbour-down`, and three parameters: `scope`,
 of values `single` and `multi`, which the Manager controls; `capacity`,
@@ -48,22 +76,19 @@ subscriptions raise `neighbour-full` when `hospital-2` is `full` and
 `neighbour-down` when it goes offline. The scripts run on Windows in
 PowerShell, so their output ends lines with `\r\n`.
 
-The demo runs with [access control](#access-control) and
+The example runs with [access control](#access-control) and
 [signatures](#signatures): each runner lists the principals `alice`
 (role `client`) and `manager-1` (role `manager`), signs its output with
-its own key, and lists the other's public key with the peer. In the
-recording, `dt1 PATH [CURL OPTIONS]` is `curl -s` against
-`http://localhost:5100`, signed as `alice`, which prints the reply and
-then its HTTP status; `dt2` is the same for `hospital-2`. The examples
-below show the plain `curl` command instead, with
+its own key, and lists the other's public key with the peer. The
+examples show the plain `curl` command, with
 `-H "Authorization: Bearer $JWS"`, where `$JWS` is a token for that
-request, which the demo's
-[tools/sign.mjs](../demo/hospital/tools/sign.mjs) makes (see
+request, which [tools/sign.mjs](../tools/sign.mjs) makes (see
 [Token](#token)). `--json` (curl 7.82 or later) sends a POST with the
 given body as `application/json`; with an older curl, write
 `-H 'Content-Type: application/json' -d '<body>'`, and add `-X PUT` for
-a PUT. `mq1 ROUTE [JSON]` and `mq2` publish an MQTT request, signed as
-`manager-1`, and print the response, as described in [MQTT](#mqtt).
+a PUT. `mq1 ROUTE [JSON]` and `mq2` stand for an MQTT request to
+`hospital-1` and `hospital-2`, signed as `manager-1`, whose response is
+printed, as described in [MQTT](#mqtt).
 
 ## Routes
 
@@ -188,7 +213,7 @@ Returns the whole state of the DT in one document, with status 200
 whether or not a state machine is loaded. MQTT route: `state`. This is
 the document of the [state notifications](#state-notifications).
 
-After the first transition of the demo, into `open`:
+After the first transition of the example, into `open`:
 
 ```bash
 curl -s http://localhost:5100/state -H "Authorization: Bearer $JWS"
@@ -282,7 +307,7 @@ curl -s http://localhost:5100/health
 }
 ```
 
-The demo runs on Windows, where the runner refuses `scripts.user`, so
+The example runs on Windows, where the runner refuses `scripts.user`, so
 `scripts` is `null`; a Linux runner with that setting answers
 `"scripts": { "user": "dt-script" }`.
 
@@ -308,7 +333,7 @@ Counts what the runner did since it started. MQTT route: `metrics`.
 curl -s http://localhost:5100/metrics -H "Authorization: Bearer $JWS"
 ```
 
-`200`, in the section History and Metrics of the demo, after
+`200`, in the section History and Metrics of the example, after
 `hospital-2` went offline (see the [Example Session](#example-session)):
 
 ```json
@@ -456,7 +481,7 @@ bounds, and `null` when not measured: on a platform other than Linux
 and Windows, or for a script that ended before its first sample. On
 Windows the sampler is a `powershell.exe` of its own, which needs a
 second or more to start, so a short script such as `admit.ps1` above
-ends unmeasured. A run of `open` in the demo, which lasted five
+ends unmeasured. A run of `open` in the example, which lasted five
 seconds, reports its tree: `powershell.exe`, which ran `open.ps1`, and
 its `conhost.exe`, most of the 100 MB being PowerShell's own:
 
@@ -557,7 +582,7 @@ refused with `command running` do not. MQTT route: `history`.
 curl -s http://localhost:5100/history -H "Authorization: Bearer $JWS"
 ```
 
-`200`, after the change of `fidelity` in the demo, the newest two of
+`200`, after the change of `fidelity` in the example, the newest two of
 six records, with `limit=2` (see below):
 
 ```json
@@ -610,7 +635,7 @@ Neither the logs, which stay on [GET /](#get-), nor the input are part
 of the history. The duration of a command is
 `finishedAt - receivedAt`.
 
-At the end of the demo, `GET /history` had fourteen records: five sent
+At the end of the example, `GET /history` had fourteen records: five sent
 by `alice`, the `discharge` that `manager-1` sent over MQTT, and eight
 scripts of states, whose `by` is `null`.
 
@@ -623,7 +648,7 @@ and an empty payload takes the defaults.
 | `since`   | ISO 8601 with `Z` or an offset; the records received at that second or later                 |
 | `limit`   | an integer from 1 to 1000, by default 100; the newest records of the selection, oldest first |
 
-The demo asked for the records of the last 90 seconds, at most two:
+The example asked for the records of the last 90 seconds, at most two:
 
 ```bash
 since=$(date -u -d '-90 sec' +%FT%TZ)
@@ -654,7 +679,7 @@ payload or `{}` to stop every command.
 
 The runner sends the script `SIGTERM`, and `SIGKILL` if it still runs
 after `stopGrace` milliseconds of the configuration. On Windows, as in
-the demo, it ends `powershell.exe` at once. It answers once the scripts
+the example, it ends `powershell.exe` at once. It answers once the scripts
 have exited, which can take the grace period and more. Only the
 script's own process is signalled; on Windows the processes that the
 script started keep running. The stopped run reports the `resources`
@@ -675,7 +700,7 @@ curl -s http://localhost:5100/stop -H "Authorization: Bearer $JWS" \
 `stopped` lists the commands that were stopped; it is empty when
 nothing of that name was running. A request waiting on a stopped run
 gets `stopped`. When the stopped script is that of the current state,
-the state machine follows its `$stopped` transition. In the demo that
+the state machine follows its `$stopped` transition. In the example that
 leads from `open` to `closed`. The reply does not wait for that, so
 `GET /fsm` straight after it may still show the old state for a
 moment. A stop takes no request key: a repeat finds nothing running.
@@ -780,7 +805,7 @@ curl -s http://localhost:5100/fsm/event -H "Authorization: Bearer $JWS" \
 { "status": "no transition", "state": "full" }
 ```
 
-With `escalation.onNoTransition` set, as in the demo, the runner also
+With `escalation.onNoTransition` set, as in the example, the runner also
 [escalates](#escalation-notifications), once per entry into the state.
 The same request again gets the same reply and escalates nothing.
 
@@ -932,7 +957,7 @@ curl -s -X PUT http://localhost:5100/parameters -H "Authorization: Bearer $JWS" 
 
 The Manager sets `scope` to `multi`, which raises `scope-changed`. In
 `open` that is a `stop: true` self-transition, so the runner stops the
-script of `open` and starts it again, at entry 2. The demo sent it over
+script of `open` and starts it again, at entry 2. The example sent it over
 MQTT, as `manager-1` (see [MQTT](#mqtt)); over HTTP it is:
 
 ```bash
@@ -969,9 +994,10 @@ through a `subscriptions` entry of the state machine file, when the
 entry's condition on the peer's `state` or `online` turns true; the
 event then takes the path of [POST /fsm/event](#post-fsmevent) without
 a request key, and nothing replies
-([STATE-MACHINE.md](../STATE-MACHINE.md#subscriptions-to-peers)). In the demo, `hospital-1`
-subscribes to the state `full` and to `online: false` of `hospital-2`,
-and the runner logs each event it raises:
+([STATE-MACHINE.md](../STATE-MACHINE.md#subscriptions-to-peers)).
+In the example, `hospital-1` subscribes to the state `full` and to
+`online: false` of `hospital-2`, and the runner logs each event it
+raises:
 
 ```text
 Raised neighbour-full on state full of peer hospital-2: entered open
@@ -1102,7 +1128,7 @@ A body that is not an object gets the [validation error](#conventions).
 }
 ```
 
-In the demo, `{"hospital-2": true}` then brought back the retained
+In the example, `{"hospital-2": true}` then brought back the retained
 state `full` of `hospital-2`, which counted as a change for the
 subscription of `hospital-1`, so `neighbour-full` restarted `open`
 once more. The runner stores the changes of a body together, or
@@ -1136,7 +1162,7 @@ Sends an escalation to the Manager. MQTT route: `escalate`.
 
 Each size is that of the value as JSON text, in bytes of UTF-8, quotes
 included. The runner passes `proposal` on as it was received and does
-not read it. In the demo, `admit.ps1` escalates when it finds no bed,
+not read it. In the example, `admit.ps1` escalates when it finds no bed,
 with this body:
 
 ```bash
@@ -1175,7 +1201,7 @@ key.
   escalate nothing, even with another body. These keys are kept apart
   from the others, the latest 256 in memory.
 
-The demo sends the admission of `p-1` twice with the key `admit-p-1`.
+The example sends the admission of `p-1` twice with the key `admit-p-1`.
 Both replies are the `success` shown under [POST /](#post-), and the
 runner log shows that `admit` ran once:
 
@@ -1212,7 +1238,7 @@ auth:
 
 `publicKey` is an Ed25519 public key as the base64url of its 32 raw
 bytes, the `x` of its JWK (RFC 8037); the caller keeps the private key.
-The demo's [tools/keygen.mjs](../demo/hospital/tools/keygen.mjs) writes
+[tools/keygen.mjs](../tools/keygen.mjs) writes
 a key pair, `NAME.key` in PKCS#8 PEM and `NAME.pub` in this encoding.
 `GET /health` and MQTT `health` stay open. The runner logs each
 accepted request with its principal at `debug` level, and stores the
@@ -1344,7 +1370,7 @@ is `invalid credential`; an MQTT payload that is neither empty nor
 starts with `{` is read as a JWS, and is `malformed credential` if it
 is not one.
 
-A manager that runs `open` of the demo gets:
+A manager that runs `open` of the example gets:
 
 ```json
 {
@@ -1416,12 +1442,12 @@ limit, but its `input` has the 64 KiB limit of `POST /`.
 
 ### Example: Descriptor and Discharge
 
-In the demo, `mq1 dt` subscribes to `dtaas/hospital-1/dt/response`,
+In the example, `mq1 dt` subscribes to `dtaas/hospital-1/dt/response`,
 publishes a signed payload on `dtaas/hospital-1/dt`, and prints the
 response topic, whether the payload is `verified`, `UNSIGNED` or
 `INVALID` (see [Signatures](#signatures)), and the payload, here the
-body of [GET /dt](#get-dt). The demo shows the line of its `publicKey`
-beside the key file with which the tools verified the response:
+body of [GET /dt](#get-dt). Its `publicKey` is the line of the key
+file with which the subscriber verified the response:
 
 ```text
 dtaas/hospital-1/dt/response (verified)
@@ -1488,7 +1514,7 @@ mosquitto_pub -h 127.0.0.1 -p 18830 -t 'dtaas/hospital-1/execute' \
 The broker may deliver a request twice, as the runner subscribes with
 QoS 1. An MQTT 5 request with an `idempotency-key` user property acts
 once, as in [Repeated Requests](#repeated-requests); MQTT 3.1.1, which
-the demo broker speaks, has no user properties. With an MQTT 5 broker:
+the example broker speaks, has no user properties. With an MQTT 5 broker:
 
 ```bash
 mosquitto_pub -h localhost -V mqttv5 -t 'dtaas/hospital-1/execute' \
@@ -1508,7 +1534,7 @@ compact JWS, signed as for HTTP (see [Token](#token)), whose claims are
 JSON of the plain request, absent for a route without one. The runner
 verifies the token, compares `topic` with the topic the request came
 on, and handles `body` as it handles a plain payload. This works over
-MQTT 3.1.1 and MQTT 5 alike. The Manager's `execute` of the demo, as
+MQTT 3.1.1 and MQTT 5 alike. The Manager's `execute` of the example, as
 claims:
 
 ```json
@@ -1525,8 +1551,8 @@ claims:
 A plain payload gets the `401` body `missing credential`, and a refused
 credential or role its [error](#errors) body, on the response topic as
 any response. The request key stays an MQTT 5 user property. The
-demo's [tools/sign.mjs](../demo/hospital/tools/sign.mjs) prints such a
-payload: `node tools/sign.mjs mqtt execute '<json>'`.
+[tools/sign.mjs](../tools/sign.mjs) prints such a payload:
+`DT_ID=hospital-1 node tools/sign.mjs mqtt execute '<json>'`.
 
 The broker's access control remains the outer wall: `auth` decides who
 may act, the broker who may publish on the request topics and read the
@@ -1548,10 +1574,9 @@ is one JSON object, or with `auth.key` a JWS of it
 | `time` | the time of the notification; `null` only in the MQTT will |
 | `data` | the content, which depends on `kind`                       |
 
-The payloads below are those that the subscriber of the demo received
-in the recording, each a JWS that it verified with the public key of
-its DT, shown decoded. The recording's network pane shows each
-notification as a one-line summary only.
+The payloads below are those that the subscriber of the example
+received, each a JWS that it verified with the public key of its DT,
+shown decoded.
 
 ### State Notifications
 
@@ -1562,7 +1587,7 @@ changes, and once at startup. A document that differs from the last
 one sent only in its `time` is not sent again. `data` is the document,
 and `id` and `time` are its own.
 
-The first notification of the demo, at the startup of `hospital-1`:
+The first notification of the example, at the startup of `hospital-1`:
 
 ```json
 {
@@ -1716,7 +1741,7 @@ Over MQTT, the runner also connects with a will on the presence topic:
 the offline notice with `"time": null`, as the will is fixed when the
 runner connects. The broker publishes the will only when the runner
 disappears without leaving: a crash, a kill or a lost connection. The
-demo kills the runner of `hospital-2`, and the broker publishes its
+example kills the runner of `hospital-2`, and the broker publishes its
 will, signed when the runner connected:
 
 ```json
@@ -1748,7 +1773,7 @@ The runner publishes each notification with QoS 1 on
 The online notice is published each time the runner connects, the first
 time and after each reconnect. The notification topics are two levels
 under the base topic, so `<topic>/+/response` does not match them; the
-demo's subscriber takes those of every DT with `dtaas/+/notify/+`:
+example's subscriber takes those of every DT with `dtaas/+/notify/+`:
 
 ```bash
 mosquitto_sub -h 127.0.0.1 -p 18830 -v -t 'dtaas/+/notify/+'
@@ -1757,9 +1782,9 @@ mosquitto_sub -h 127.0.0.1 -p 18830 -v -t 'dtaas/+/notify/+'
 While the broker is unreachable, the runner queues the notifications in
 memory and publishes them in order when it connects again.
 
-In the demo, `mq retained` subscribes after the shutdown of
-`hospital-1`. It gets the retained state and presence of both DTs, the
-will of `hospital-2` among them, and no escalation:
+In the example, a new subscriber to `dtaas/+/notify/+` connects after
+the shutdown of `hospital-1`. It gets the retained state and presence
+of both DTs, the will of `hospital-2` among them, and no escalation:
 
 ```text
 retained 19:22:04 hospital-1 verified closed#9 valid | closed:valid | scope=multi fidelity=high
@@ -1785,7 +1810,7 @@ succeeds again.
 The webhook gets the online notice once at startup, not on a
 reconnect, and the offline notice once at shutdown; the will goes over
 MQTT only. At shutdown the runner abandons the posts still in progress
-or waiting for a retry. Both runners of the demo post to one receiver,
+or waiting for a retry. Both runners of the example post to one receiver,
 which logged the notifications other than state documents, before the
 shutdown, as below, each verified with the key of the DT that the
 payload names:
@@ -1878,11 +1903,10 @@ export function unwrap(text, key, id) {
 A payload that parses as JSON is plain JSON from a runner without a
 key: a notification starts with `{`, and a response may also be an
 array, such as that of `history`. A JWS never parses as JSON. Whether
-to accept a plain payload is the consumer's choice. The demo's
-[tools/jws.mjs](../demo/hospital/tools/jws.mjs) marks each message
-`verified`, `UNSIGNED`, or `INVALID` with the reason: no key file, an
-unreadable key file, a malformed JWS, a wrong `alg` or `kid`, or a bad
-signature. It prints an `INVALID` payload as it came, marked
+to accept a plain payload is the consumer's choice. The subscriber of
+the example marks each message `verified`, `UNSIGNED`, or `INVALID`
+with the reason: no key, a malformed JWS, a wrong `alg` or `kid`, or a
+bad signature. It prints an `INVALID` payload as it came, marked
 unverified, so that a refusal of a signed runner still shows.
 
 Not signed, with the reason:
@@ -1917,7 +1941,7 @@ own address and the context of the DT in environment variables.
 
 ### Script Environment
 
-| Variable          | Value in the demo, in state `open` at entry 1                              |
+| Variable          | Value in the example, in state `open` at entry 1                              |
 | :---------------- | :------------------------------------------------------------------------- |
 | `RUNNER_URL`      | `http://127.0.0.1:5100`                                                    |
 | `RUNNER_TOKEN`    | the bearer token, with `auth.principals` only                              |
@@ -1950,8 +1974,8 @@ escalates with `POST $RUNNER_URL/escalate`, with the header
 start of the runner, and a script that sends it acts in the role
 `script` (see [Roles](#roles)). Without `auth.principals` the variable is unset
 and the runner ignores the header, so a script may always send it. The
-token is for HTTP only. The demo scripts use this PowerShell helper,
-from [scripts/ward.ps1](../demo/hospital/scripts/ward.ps1):
+token is for HTTP only. The scripts of the example use this
+PowerShell helper:
 
 ```powershell
 # RUNNER_TOKEN is unset without access control, and the header ignored
@@ -1992,42 +2016,33 @@ raised it still runs.
 
 ## Example Session
 
-The recording, in order, as requests and what they did. Times are
-those of the markers in
-[demo-windows-manager.cast](../demo/hospital/demo-windows-manager.cast),
-which [demo-windows-network.cast](../demo/hospital/demo-windows-network.cast)
-shares. `hospital-1` is asked unless the request names `hospital-2`.
+The session of the examples, in order, as requests and what they did.
+`hospital-1` is asked unless the request names `hospital-2`.
 
-| Time | Request                                                                        | Outcome                                                                                                        |
+| Step | Request                                                                        | Outcome                                                                                                        |
 | ---: | :----------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- |
-| 0:37 | both runners start                                                             | presence online and the first state document of each, signed, over MQTT and the webhook                        |
-| 0:56 | `GET /dt`; `GET /health`; `GET /dt` unsigned; `POST /` `open` as `manager-1`   | the descriptor with `peers` and `publicKey`; `ok`, `scripts` `null`; `401 missing credential`; `403`           |
-| 1:16 | MQTT `dt`                                                                      | the descriptor, `verified` with the runner's public key                                                        |
-| 1:23 | `POST /fsm/transition` to `open`, `hospital-2` first; `GET /state`             | `202 accepted`; `open.ps1` logs its environment, its fidelity and overflow to `hospital-2`                     |
-| 1:46 | `GET /peers`; `PUT /peers` with an unknown peer and a string                   | `hospital-2` online in `open`, with its descriptor and state; `400` with two problems                          |
-| 1:59 | `POST /` `admit` `p-1`, key `admit-p-1`, twice; then `open` with input         | `success` both times, and `admit` ran once; `409 command running`                                              |
-| 2:29 | `POST /` `admit` `p-2`, then `p-3`; `GET /`                                    | `success`, then `failed` with exit code 3 and a `request` escalation; the failed `admit`                       |
-| 2:57 | `GET /parameters`; `PUT` `capacity`; MQTT `set-parameters` `scope`; `fidelity` | the declarations; `400 not controllable`; `open` restarts at entries 2 and 3; `GET /history` shows both runs   |
-| 3:36 | `hospital-2`: MQTT `execute` `admit` `p-5`, `POST /` `admit` `p-6`             | `hospital-2` goes `full` and its `full` succeeds; `neighbour-full` restarts `open` at entry 4                  |
-| 4:03 | `POST /` `admit` `p-3`, then `p-4`                                             | `success`; `open.ps1` raises `full`, the script of `full` finds no open peer and fails, a `failure` escalation |
-| 4:29 | `POST /fsm/event` `close`, twice                                               | `409 no transition` twice, one `no-transition` escalation                                                      |
-| 4:46 | MQTT `execute` `discharge` `p-1`; MQTT `fsm`                                   | `success`; `beds-free` takes the machine to `open` at entry 6                                                  |
-| 4:59 | `PUT /peers` `hospital-2` `false`, then `true`                                 | the entry empties; the retained `full` raises `neighbour-full` again, `open` at entry 7                        |
-| 5:20 | the runner of `hospital-2` is killed; `GET /peers`                             | the will, offline with `time` `null`; `neighbour-down` restarts `open` at entry 8                              |
-| 5:36 | `GET /history` with `since` and `limit`; `GET /history`; `GET /metrics`        | two records; fourteen, by `alice`, `manager-1` and none; the counters                                          |
-| 5:52 | `POST /stop` `open`                                                            | `stopped: ["open"]`; `$stopped` leads to `closed` at entry 9                                                   |
-| 6:08 | the webhook log                                                                | presence and escalations of both DTs, `verified`                                                               |
-| 6:13 | graceful shutdown of `hospital-1`; MQTT `retained`                             | presence offline; the retained state and presence of both DTs                                                  |
+|    1 | both runners start                                                             | presence online and the first state document of each, signed, over MQTT and the webhook                        |
+|    2 | `GET /dt`; `GET /health`; `GET /dt` unsigned; `POST /` `open` as `manager-1`   | the descriptor with `peers` and `publicKey`; `ok`, `scripts` `null`; `401 missing credential`; `403`           |
+|    3 | MQTT `dt`                                                                      | the descriptor, `verified` with the runner's public key                                                        |
+|    4 | `POST /fsm/transition` to `open`, `hospital-2` first; `GET /state`             | `202 accepted`; `open.ps1` logs its environment, its fidelity and overflow to `hospital-2`                     |
+|    5 | `GET /peers`; `PUT /peers` with an unknown peer and a string                   | `hospital-2` online in `open`, with its descriptor and state; `400` with two problems                          |
+|    6 | `POST /` `admit` `p-1`, key `admit-p-1`, twice; then `open` with input         | `success` both times, and `admit` ran once; `409 command running`                                              |
+|    7 | `POST /` `admit` `p-2`, then `p-3`; `GET /`                                    | `success`, then `failed` with exit code 3 and a `request` escalation; the failed `admit`                       |
+|    8 | `GET /parameters`; `PUT` `capacity`; MQTT `set-parameters` `scope`; `fidelity` | the declarations; `400 not controllable`; `open` restarts at entries 2 and 3; `GET /history` shows both runs   |
+|    9 | `hospital-2`: MQTT `execute` `admit` `p-5`, `POST /` `admit` `p-6`             | `hospital-2` goes `full` and its `full` succeeds; `neighbour-full` restarts `open` at entry 4                  |
+|   10 | `POST /` `admit` `p-3`, then `p-4`                                             | `success`; `open.ps1` raises `full`, the script of `full` finds no open peer and fails, a `failure` escalation |
+|   11 | `POST /fsm/event` `close`, twice                                               | `409 no transition` twice, one `no-transition` escalation                                                      |
+|   12 | MQTT `execute` `discharge` `p-1`; MQTT `fsm`                                   | `success`; `beds-free` takes the machine to `open` at entry 6                                                  |
+|   13 | `PUT /peers` `hospital-2` `false`, then `true`                                 | the entry empties; the retained `full` raises `neighbour-full` again, `open` at entry 7                        |
+|   14 | the runner of `hospital-2` is killed; `GET /peers`                             | the will, offline with `time` `null`; `neighbour-down` restarts `open` at entry 8                              |
+|   15 | `GET /history` with `since` and `limit`; `GET /history`; `GET /metrics`        | two records; fourteen, by `alice`, `manager-1` and none; the counters                                          |
+|   16 | `POST /stop` `open`                                                            | `stopped: ["open"]`; `$stopped` leads to `closed` at entry 9                                                   |
+|   17 | the webhook log                                                                | presence and escalations of both DTs, `verified`                                                               |
+|   18 | graceful shutdown of `hospital-1`; MQTT `retained`                             | presence offline; the retained state and presence of both DTs                                                  |
 
 ## Version
 
-This document describes runner version 0.10.0, which made
-[GET /history](#get-history) return full records and added
-[GET /metrics](#get-metrics); 0.9.0 added
-[access control](#access-control). The optional
-[signatures](#signatures), the `resources` of the commands, the
-[peers](#peers) and the subscriptions to them came without a version
-change. The
+This document describes runner version 1.0.0. The
 [README](../README.md#use) tells how to install, configure and start the
 runner, and the [state machine guide](../STATE-MACHINE.md) how to write a
 state machine file.

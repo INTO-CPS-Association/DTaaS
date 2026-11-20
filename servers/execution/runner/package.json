@@ -19,10 +19,10 @@
     "posttest": "npx rimraf runner.test.yaml script",
     "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true",
     "test:broker": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false --verbose=true test/e2e/mqtt.broker && yarn posttest",
-    "test:e2e": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/e2e && yarn posttest",
-    "test:int": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/integration && yarn posttest",
+    "test:e2e": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --coverageThreshold={} --verbose=true test/e2e && yarn posttest",
+    "test:int": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --coverageThreshold={} --verbose=true test/integration && yarn posttest",
     "test:nocov": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=false && yarn posttest",
-    "test:unit": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --verbose=true test/unit && yarn posttest",
+    "test:unit": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --coverageThreshold={} --verbose=true test/unit && yarn posttest",
     "test:watchAll": "yarn pretest && npx cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --coverage=true --watchAll && yarn posttest",
     "graph": "npx madge --image src.svg src && npx madge --image test.svg test"
   },

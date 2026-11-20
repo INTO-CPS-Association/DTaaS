@@ -226,13 +226,16 @@ auth:
 - `publicKey` is an Ed25519 public key as the base64url of its 32 raw
   bytes, the `x` of its JWK. The caller keeps the private key; the file
   holds no secret, and deleting a principal revokes it at the next
-  start. The demo's
-  [tools/keygen.mjs](demo/hospital/tools/keygen.mjs) writes a key pair.
+  start. [tools/keygen.mjs](tools/keygen.mjs), in the runner's source
+  directory, writes a key pair: `node tools/keygen.mjs alice keys`
+  gives `keys/alice.key` and prints the public key.
 
 Each request carries `Authorization: Bearer <token>`, a token that the
 caller signs for that one request and at most one minute; over MQTT the
 request payload is the token. [API.md](api/API.md#access-control) gives
-the token format and a signing example. `GET /health` and the MQTT
+the token format and a signing example, and
+[tools/sign.mjs](tools/sign.mjs) signs a request with a key of
+_keygen.mjs_. `GET /health` and the MQTT
 `health` topic stay open, for liveness probes. A request without a
 valid token gets `401`, and a role that may not call the route `403`.
 The runner logs each accepted request with its principal at `debug`
@@ -257,8 +260,8 @@ auth:
   verifying its callers, and the reverse. An `auth` section needs one
   of the two at least. An absolute path, such as one in a mounted
   secret directory, works too.
-- [tools/keygen.mjs](demo/hospital/tools/keygen.mjs) writes the key:
-  `node keygen.mjs hospital-1 keys` gives `keys/hospital-1.key` and
+- [tools/keygen.mjs](tools/keygen.mjs) writes the key:
+  `node tools/keygen.mjs hospital-1 keys` gives `keys/hospital-1.key` and
   prints the public key, which it also writes to `keys/hospital-1.pub`.
 - The runner does not start when the file cannot be read, is
   encrypted, or holds a key that is not an Ed25519 private key; the
@@ -488,9 +491,6 @@ peers:
   peer reports the state `full`.
 - The broker password and webhook token are secrets: keep
   _runner.yaml_ readable by the runner's account only.
-
-The [hospital demo](demo/hospital/README.md) runs two such runners,
-with a local broker, on one computer.
 
 ### 4. A Hardened Runner on Linux
 

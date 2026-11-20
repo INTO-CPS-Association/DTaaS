@@ -5,7 +5,7 @@
 @ContentType = application/json
 
 // For a runner with access control, @keyFile names the PKCS#8 key of a
-// principal of its auth section (demo/hospital/tools/keygen.mjs writes
+// principal of its auth section (tools/keygen.mjs writes
 // one) and @dtId its id. httpYac then signs every request as
 // @principal with the script below; REST Client does not run it. An
 // empty @keyFile sends the requests unsigned.
