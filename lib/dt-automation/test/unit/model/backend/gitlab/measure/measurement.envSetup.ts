@@ -119,16 +119,17 @@ export function createStatusCheckingMock() {
   };
 }
 
-export function setupSessionStorage() {
-  Object.defineProperty(globalThis, 'sessionStorage', {
-    value: {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    },
-    writable: true,
-  });
+export function createTestStorage(items: Record<string, string> = {}) {
+  const stored = new Map(Object.entries(items));
+  return {
+    getItem: jest.fn((key: string) => stored.get(key) ?? null),
+    setItem: jest.fn((key: string, value: string) => {
+      stored.set(key, value);
+    }),
+    removeItem: jest.fn((key: string) => {
+      stored.delete(key);
+    }),
+  };
 }
 
 export function setupCredentials(token = 'test-token', username = 'test-user') {
@@ -148,38 +149,4 @@ export async function clearDatabase(measurementDBService: {
   } catch (error) {
     throw new Error(`Failed to clear database: ${error}`, { cause: error });
   }
-}
-
-export function setupMockDownload() {
-  const mockClick = jest.fn();
-  const mockLink = { href: '', download: '', click: mockClick };
-  const originalCreateObjectURL = URL.createObjectURL;
-  const originalRevokeObjectURL = URL.revokeObjectURL;
-  const originalCreateElement = document.createElement.bind(document);
-
-  (URL as { createObjectURL: typeof URL.createObjectURL }).createObjectURL =
-    jest.fn().mockReturnValue('blob:test-url');
-  (URL as { revokeObjectURL: typeof URL.revokeObjectURL }).revokeObjectURL =
-    jest.fn();
-
-  jest
-    .spyOn(document, 'createElement')
-    .mockImplementation((tagName: string) => {
-      if (tagName === 'a') {
-        return mockLink as unknown as HTMLAnchorElement;
-      }
-      return originalCreateElement(tagName);
-    });
-
-  return {
-    mockClick,
-    mockLink,
-    restore: () => {
-      (URL as { createObjectURL: typeof URL.createObjectURL }).createObjectURL =
-        originalCreateObjectURL;
-      (URL as { revokeObjectURL: typeof URL.revokeObjectURL }).revokeObjectURL =
-        originalRevokeObjectURL;
-      jest.restoreAllMocks();
-    },
-  };
 }

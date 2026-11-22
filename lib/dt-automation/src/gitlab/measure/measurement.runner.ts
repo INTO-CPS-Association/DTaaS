@@ -271,7 +271,7 @@ export async function restartMeasurement(
 }
 
 export function handleBeforeUnload(
-  event: BeforeUnloadEvent,
+  event: { preventDefault(): void },
   isRunningRef: MutableRef<boolean>,
 ): void {
   if (isRunningRef.current && measurementState.activePipelines.length > 0) {

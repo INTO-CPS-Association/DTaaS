@@ -7,6 +7,7 @@ import {
   Execution,
   Configuration,
 } from 'src/gitlab/measure/measurement.execution';
+import type { MeasurementExport } from 'src/gitlab/measure/measurement.types';
 
 export function isTaskComplete(item: { Status: Status }): boolean {
   return item.Status === 'SUCCESS' || item.Status === 'FAILURE';
@@ -72,16 +73,12 @@ function timestampSlug(): string {
   return new Date().toISOString().slice(0, 19).split(':').join('-');
 }
 
-function triggerJsonDownload(data: unknown, filename: string): void {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: 'application/json',
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
+function toJsonExport(data: unknown, fileName: string): MeasurementExport {
+  return {
+    fileName,
+    content: JSON.stringify(data, null, 2),
+    mimeType: 'application/json',
+  };
 }
 
 function serializeTask(task: TimedTask) {
@@ -115,15 +112,15 @@ function serializeTask(task: TimedTask) {
   };
 }
 
-export function downloadResultsJson(results: TimedTask[]): void {
+export function buildResultsExport(results: TimedTask[]): MeasurementExport {
   const data = {
     totalTimeSeconds: getTotalTime(results),
     tasks: results.map(serializeTask),
   };
-  triggerJsonDownload(data, `measurement-${timestampSlug()}.json`);
+  return toJsonExport(data, `measurement-${timestampSlug()}.json`);
 }
 
-export function downloadTaskResultJson(task: TimedTask): void {
+export function buildTaskResultExport(task: TimedTask): MeasurementExport {
   const data = {
     totalTimeSeconds: round3(
       secondsDifference(task['Time Start'], task['Time End']),
@@ -131,7 +128,7 @@ export function downloadTaskResultJson(task: TimedTask): void {
     task: serializeTask(task),
   };
   const taskNameSlug = task['Task Name'].toLowerCase().split(/\s+/).join('-');
-  triggerJsonDownload(
+  return toJsonExport(
     data,
     `measurement-${taskNameSlug}-${timestampSlug()}.json`,
   );

@@ -33,6 +33,18 @@ export type MeasurementStore = {
   ) => void;
 };
 
+export type MeasurementResultsStorage = {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+};
+
+export type MeasurementExport = {
+  fileName: string;
+  content: string;
+  mimeType: 'application/json';
+};
+
 export type Configuration = ExternalConfiguration;
 
 export type Status =

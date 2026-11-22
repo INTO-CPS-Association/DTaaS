@@ -5,7 +5,6 @@ import {
   setMeasurementStore,
 } from 'src/gitlab/measure/measurement.execution';
 import { createMockStoreState } from 'test/unit/model/backend/gitlab/measure/measurement.testUtil';
-import { setupSessionStorage } from 'test/unit/model/backend/gitlab/measure/measurement.envSetup';
 
 describe('measurement.execution', () => {
   const mockGetState = jest.fn();
@@ -23,8 +22,6 @@ describe('measurement.execution', () => {
     measurementState.executionResults = [];
     measurementState.currentMeasurementPromise = null;
     measurementState.currentTrialMinPipelineId = null;
-
-    setupSessionStorage();
 
     mockGetState.mockReturnValue(
       createMockStoreState({

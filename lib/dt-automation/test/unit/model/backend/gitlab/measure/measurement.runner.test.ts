@@ -242,10 +242,7 @@ describe('measurement.runner', () => {
       ];
 
       const preventDefault = jest.fn();
-      handleBeforeUnload(
-        { preventDefault, returnValue: '' } as unknown as BeforeUnloadEvent,
-        harness.isRunningRef,
-      );
+      handleBeforeUnload({ preventDefault }, harness.isRunningRef);
 
       expect(preventDefault).toHaveBeenCalled();
       expect(mockBackend.api.cancelPipeline).not.toHaveBeenCalled();
@@ -255,10 +252,7 @@ describe('measurement.runner', () => {
       harness.isRunningRef.current = false;
       const preventDefault = jest.fn();
 
-      handleBeforeUnload(
-        { preventDefault, returnValue: '' } as unknown as BeforeUnloadEvent,
-        harness.isRunningRef,
-      );
+      handleBeforeUnload({ preventDefault }, harness.isRunningRef);
 
       expect(preventDefault).not.toHaveBeenCalled();
     });

@@ -9,8 +9,8 @@ GitLab, files, pipelines, execution history, and measurements.
 It has no React dependency. React components, hooks, and other UI-specific code
 belong in the consuming application.
 
-**NOTE**: Some features use browser APIs such as `sessionStorage`, `document`,
-`Blob`, and object URLs.
+The package runs in browsers and in Node.js 24 and later. See
+[Using from Node.js](#using-from-nodejs).
 
 ## Install
 
@@ -33,13 +33,13 @@ API.
 
 Register the services required by the features used by the application.
 
-| Feature           | Setup                                                                  |
-| :---------------- | :--------------------------------------------------------------------- |
-| Environment       | `setEnvironmentStore`                                                  |
-| GitLab settings   | `setSettingsStore`                                                     |
-| Authentication    | `setUsername` and `setAccessToken`                                     |
-| Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB` |
-| Measurements      | `setMeasurementStore`, `setMeasurementDB`                              |
+| Feature           | Setup                                                                                |
+| :---------------- | :----------------------------------------------------------------------------------- |
+| Environment       | `setEnvironmentStore`                                                                |
+| GitLab settings   | `setSettingsStore`                                                                   |
+| Authentication    | `setUsername` and `setAccessToken`                                                   |
+| Execution history | `setStorageService`, `setExecutionHistoryDB`, `setPipelineExecutionDB`               |
+| Measurements      | `setMeasurementStore`, `setMeasurementDB`, `setMeasurementResultsStorage` (optional) |
 
 ### Environment
 
@@ -144,8 +144,74 @@ The package root exports the following selectors:
 Register `setMeasurementStore` and `setMeasurementDB` when using measurement
 features.
 
+Results stay in memory unless a storage is registered with
+`setMeasurementResultsStorage`. A browser application can pass
+`sessionStorage` to keep the results across a page reload. Register the
+storage before the first call that starts, restarts, stops or purges a
+measurement. The package restores the saved results only while it holds no
+results in memory.
+
 The measurement API provides operations for starting and stopping measurements,
-managing active pipelines, storing results, and downloading measurement data.
+managing active pipelines, and storing results.
+
+`buildResultsExport` and `buildTaskResultExport` build the results file and
+return its `fileName`, `content` and `mimeType`. The application saves the
+file: a browser can offer it as a download, and a Node.js application can
+return or store it.
+
+## Using from Node.js
+
+A Node.js application registers the same services as a browser application,
+listed under [Application Setup](#application-setup). Plain objects can stand
+in for the Redux stores. The environment and settings stores need only `getState()`.
+The measurement store also needs the `restoreRunnerTag`, `restoreBranchName`,
+`restoreSecondaryRunnerTag` and `showSnackbar` callbacks.
+
+```ts
+import {
+  BRANCH_NAME,
+  COMMON_LIBRARY_PROJECT_NAME,
+  DT_DIRECTORY,
+  GROUP_NAME,
+  RUNNER_TAG,
+  setEnvironmentStore,
+  setSettingsStore,
+} from '@into-cps-association/dt-automation';
+
+const settings = {
+  GROUP_NAME,
+  DT_DIRECTORY,
+  COMMON_LIBRARY_PROJECT_NAME,
+  RUNNER_TAG,
+  BRANCH_NAME,
+  loggingEnabled: false,
+  remoteLoggingEnabled: false,
+};
+
+setEnvironmentStore({
+  getState: () => ({ environment: { AUTH_AUTHORITY: gitlabUrl } }),
+});
+setSettingsStore({ getState: () => ({ settings }) });
+```
+
+Register an execution history storage service that implements
+`IExecutionHistory`, as under [Execution History](#execution-history), before
+executing a Digital Twin. Without it, `DigitalTwin.execute()` starts the
+pipeline but does not record the run, and returns `null`.
+
+The package keeps its state in module variables:
+
+* the credentials
+* the registered services
+* the measurement state
+
+A loaded copy of the package
+therefore serves one user. A Node.js application with several users loads one
+copy per user session, for example in a worker thread or a child process.
+
+On shutdown, `await stopAllPipelines()` to cancel the pipelines of a running
+measurement. `handleUnload` starts the cancellations without waiting for
+them.
 
 ## Backend Architecture
 

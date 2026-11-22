@@ -235,6 +235,21 @@ describe('GitlabAPI', () => {
 
       expect(result).toEqual({ content: 'decoded content' });
     });
+
+    it('should decode non-ASCII repository file content as UTF-8', async () => {
+      // 'Grüße ✓' encoded as UTF-8, as the Repository Files API returns it.
+      mockClient.RepositoryFiles.show.mockResolvedValue({
+        content: 'R3LDvMOfZSDinJM=',
+      });
+
+      const result = await api.getRepositoryFileContent(
+        1,
+        'path/file.txt',
+        'main',
+      );
+
+      expect(result).toEqual({ content: 'Grüße ✓' });
+    });
   });
 
   describe('listRepositoryFiles', () => {
