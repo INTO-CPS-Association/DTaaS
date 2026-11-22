@@ -66,6 +66,21 @@ updates:
     cooldown:
       default-days: 3
 
+  - package-ecosystem: "npm"
+    directory: "/servers/execution/manager"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    assignees:
+      - "prasadtalasila"
+    commit-message:
+      prefix: "manager-npm: "
+    target-branch: "dependabot-merge"
+    pull-request-branch-name:
+      separator: "-"
+    cooldown:
+      default-days: 3
+
   # The image and font tools of the update-docs-diagrams agent skill, pinned
   # with hashes. A release waits ten days, as for every tool the diagrams use.
   - package-ecosystem: "pip"

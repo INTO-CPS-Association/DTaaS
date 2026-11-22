@@ -1,0 +1,4 @@
+**/node_modules
+**/dist
+**/coverage
+servers/execution/manager/config/execution-manager.yaml
