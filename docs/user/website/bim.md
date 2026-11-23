@@ -9,8 +9,8 @@ Open it from **Buildings** in the menu.
 
 This page describes the asset layout, the binding manifest and the conversion
 workflow. It is the user documentation for DTaaS issue 1762. The page is a
-client extension that comes from the `bim-kit` package, and
-[Client Extensions](../../developer/system/extensions.md) describes how the
+client extension that comes from the `bim-kit` package as a deployed bundle,
+and [Client Extensions](../../developer/system/extensions.md) describes how the
 client loads it.
 
 ## What the Page Needs
@@ -214,7 +214,8 @@ models declare none.
 
 A building model can also be drawn on the View tab of the Digital Twins
 preview page (`/preview/digitaltwins`), from the `visualisation.json` of a
-twin, with the `aec` substrate of the bim extension.
+twin, with the `aec` substrate of `bim-kit`, which has the toolbar, the floor
+picker and the panels of this page.
 
 ## What Is Not Built Yet
 

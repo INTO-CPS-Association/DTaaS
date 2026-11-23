@@ -45,6 +45,7 @@ const SHARED_IMPORTS: Record<SharedKey, () => Promise<unknown>> = {
   react: () => import('react'),
   reactJsxRuntime: () => import('react/jsx-runtime'),
   reactDom: () => import('react-dom'),
+  reactDomClient: () => import('react-dom/client'),
   reactRouterDom: () => import('react-router-dom'),
   muiMaterial: () => import('@mui/material'),
   dtaasSdk: () => import('@into-cps-association/dtaas-sdk'),

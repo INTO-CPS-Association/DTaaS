@@ -87,6 +87,8 @@ export const SHARED_MODULES = {
   react: 'react',
   'react/jsx-runtime': 'reactJsxRuntime',
   'react-dom': 'reactDom',
+  // A kit that draws the controls of a substrate starts a React root of its own.
+  'react-dom/client': 'reactDomClient',
   'react-router-dom': 'reactRouterDom',
   '@mui/material': 'muiMaterial',
   '@into-cps-association/dtaas-sdk': 'dtaasSdk',

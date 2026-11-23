@@ -17,9 +17,6 @@
           "paths": {
             "*": ["./src/*"],
             "test/*": ["./test/*"],
-            "@into-cps-association/dtaas-ext-bim": [
-              "extensions/bim/src/index.ts"
-            ],
             "@into-cps-association/dtaas-sdk": ["sdk/src/index.ts"],
             "@into-cps-association/dtaas-sdk/*": ["sdk/src/*/index.ts"]
           }
@@ -57,8 +54,6 @@
     "^test/(.*)$": "<rootDir>/test/$1",
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts",
-    "^@into-cps-association/bim-kit/dtaas$": "<rootDir>/test/__mocks__/bimExtensionMock.tsx",
-    "^@into-cps-association/dtaas-ext-bim$": "<rootDir>/extensions/bim/src/index.ts",
     "^@into-cps-association/dtaas-sdk$": "<rootDir>/sdk/src/index.ts",
     "^@into-cps-association/dtaas-sdk/(schema|testing|eslint)$": "<rootDir>/sdk/src/$1/index.ts"
   },

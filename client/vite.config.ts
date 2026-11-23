@@ -16,9 +16,10 @@ export default defineConfig({
     ],
   },
   // The contract is linked from sdk/, and Vite does not pre-bundle a linked
-  // package. bim-kit, which is pre-bundled, would then carry its own copy of
-  // the contract in the dev server, with a second HostProvider context that
-  // the client never fills. Pre-bundling the contract too gives both one copy.
+  // package. An extension compiled in from npm, which is pre-bundled, would
+  // then carry its own copy of the contract in the dev server, with a second
+  // HostProvider context that the client never fills. Pre-bundling the
+  // contract too gives both one copy.
   optimizeDeps: {
     include: [
       '@into-cps-association/dtaas-sdk',

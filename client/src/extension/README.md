@@ -6,10 +6,11 @@ that adds pages to this client without changing its code. The SDK is the
 contract between the two: the types an extension implements and the
 services the client gives it.
 
-The Buildings page is the first extension: `extensions/bim/`, which takes the
-extension of the `./dtaas` entry of `@into-cps-association/bim-kit` and adds the
-`aec` substrate. The client must still build and pass its tests with the list in
-`src/extensions.ts` empty.
+The client compiles in no domain extension: the list in `src/extensions.ts`
+is empty. Each domain comes from its kit as a deployed bundle, so the client
+carries no domain code that could drift from the kit. The Buildings page and
+the `aec` substrate come from `@into-cps-association/bim-kit` and the Soil page
+from `soil-kit`.
 
 ## Where the Contract Lives
 

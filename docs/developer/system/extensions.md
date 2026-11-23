@@ -11,9 +11,7 @@ pages.
 | Package                               | Source                                                         | Role in the client                                                                                                                                                    |
 | :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
-| `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
 | `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
-| `@into-cps-association/dtaas-ext-bim` | `client/extensions/bim/` in this repository                    | The `bim` extension the client loads: the extension of `bim-kit` with the `aec` substrate. The client links the local package (`link:./extensions/bim`). |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -21,15 +19,20 @@ describes how it is released.
 
 ## The Building Models Page
 
-The Building Models page is the first extension. `client/src/extensions.ts`
-imports it from `client/extensions/bim/`, which takes the extension of the
-`./dtaas` entry of `bim-kit` and adds the `aec` substrate. The page, the model
-conversion and the writing of converted models back to the library live in that
-package and its tests run there. A change to the page reaches DTaaS as a new
-version of `bim-kit` and not as a pull request against this repository. The
-client unit tests replace the extension with a stand-in that declares the same
-id, page, menu label and icon, since the real one pulls in a renderer and a
-WebAssembly geometry kernel.
+The Building Models page and the `aec` substrate come from
+`@into-cps-association/bim-kit`, in the `examples/bim` folder of the
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
+repository. The client compiles in no domain extension, so it carries no
+building code that could drift from the kit. A deployment builds the kit as one
+script with `yarn build:kit`, copies it to `extensions/bim/index.js` next to
+`env.js` and lists it in `REACT_APP_EXTENSIONS_DEPLOYED` with its SHA-384 hash.
+The page, the model conversion, the writing of converted models back to the
+library and the `aec` substrate live in that package and its tests run there. A
+change to any of them reaches DTaaS as a new version of `bim-kit` and not as a
+pull request against this repository. The `aec` substrate draws its controls
+with the components of the Buildings page, in a React root of its own started
+with the host's `react-dom/client`, which the client shares with every deployed
+bundle.
 
 ## The Extension Contract
 
@@ -90,8 +93,8 @@ through the `signals` and `viz` services. It keeps every sample in a temporal
 store read by time, holds one playhead for every page, evaluates the encodings
 of a `visualisation.json`, reads and saves that file in the twin's folder and
 draws the standard `image` and `embed` substrates. A domain brings its own
-substrates: the bim extension in `client/extensions/bim/` contributes `aec`, the
-building model in 3D, so the client core holds no building code. The View
+substrates: the deployed bundle of `bim-kit` contributes `aec`, the building
+model in 3D, so the client holds no building code. The View
 tab of the Digital Twins preview page draws a twin from the `visualisation.json`
 committed in its folder.
 
@@ -136,7 +139,7 @@ The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are
 grouped into a generic set and a set for each domain, such as IFC for
 construction and buildings. Of the two extensions drawn, the Buildings
-page is in the client today, as an extension.
+page runs today, as the deployed bundle of `bim-kit`.
 
 ![Multi-domain digital twins](multi-domain.png#only-light)
 ![Multi-domain digital twins](multi-domain-dark.png#only-dark)

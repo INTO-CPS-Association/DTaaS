@@ -56,8 +56,10 @@ the library (`lib://`) runs in an opaque origin, so it cannot act as the DTaaS
 site on the user's behalf.
 
 A substrate of a domain comes from its extension. `aec`, the building model in
-3D, is contributed by the bim extension in `client/extensions/bim/` and loaded
-only when a visualisation draws a building.
+3D, is contributed by the deployed bundle of `bim-kit` and loaded only when a
+visualisation draws a building. It draws its controls with the components of
+the Buildings page, in a React root of its own started with the host's
+`react-dom/client` and wrapped in the host's theme.
 
 ## The View Tab
 

@@ -1,16 +1,12 @@
 import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
-import { extension as bim } from '@into-cps-association/dtaas-ext-bim';
 
 /**
  * Every domain extension compiled into this client, in menu order.
  *
- * Adding one is two changes: `yarn add` its package and import its
- * `extension` here. Removing one is the reverse. A deployment can still hide a
- * compiled-in extension without a rebuild, through `REACT_APP_EXTENSIONS_DISABLED`
- * in `env.js`, and add a bundled one through `REACT_APP_EXTENSIONS_DEPLOYED`.
- *
- * The client must still build and pass its tests with the list empty.
+ * Empty in the local preview: every domain extension comes from its kit as a
+ * deployed bundle, listed in REACT_APP_EXTENSIONS_DEPLOYED in env.js, so the
+ * client carries no domain code that could drift from the kit.
  */
-const extensions: readonly DtaasExtension[] = [bim];
+const extensions: readonly DtaasExtension[] = [];
 
 export default extensions;
