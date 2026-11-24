@@ -117,7 +117,7 @@ export async function saveRunnerSettings(
  * Skip the tests of the enclosing describe block unless the whole platform
  * runs.
  *
- * Library, Building Models and the Workbench read the signed-in user's
+ * Library and the Workbench read the signed-in user's
  * workspace, which a deployment serves on the same origin as the website.
  * When the tests start the website on its own at localhost:4000, those
  * addresses are answered by the website itself, so these tests would fail for

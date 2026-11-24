@@ -140,12 +140,10 @@ example values above are only examples. A tag no runner carries leaves the
 pipeline of that task queued, and the measurement test waits for a status that
 never arrives, which reads as a slow test and is a missing runner.
 
-Two tests write to that account and remove what they wrote. The digital twin
+One test writes to that account and removes what it wrote. The digital twin
 lifecycle test creates a twin named `e2e-<browser>-<time>` in the GitLab
-project, reconfigures it and deletes it. The Building Models test uploads an
-IFC file named `e2e_<browser>_<time>.ifc` to `common/models` in the workspace
-and deletes it with the geometry it stored. A run stopped part way can leave
-one of them behind, and it is safe to delete by hand.
+project, reconfigures it and deletes it. A run stopped part way can leave the
+twin behind, and it is safe to delete by hand.
 
 The following is an example `test/.env` for a setup where tests run on
 the developer machine and the DTaaS client application runs on a remote
@@ -181,7 +179,7 @@ The client application is terminated at the end of end-to-end tests.
 
 ## Testing Against a Local Deployment of the Whole Platform
 
-The two setups above serve the website alone. The Library and Building Models
+The two setups above serve the website alone. The Library and Workbench
 pages also read the signed-in user's workspace, which is served by the same
 origin as the website in a deployment, so those pages only work when the whole
 platform runs, and not when the website runs on its own at `localhost:4000`.
@@ -197,9 +195,9 @@ FULL_PLATFORM=true
 ```
 
 Without `FULL_PLATFORM=true`, the tests that read the workspace are skipped,
-and the skip names what to start: the Workspace Pages tests, three of the
-Building Models tests, the two Workbench link tests in Menu and the Automation
-test that reads the workbench. They would fail against the website alone, for
+and the skip names what to start: the Workspace Pages tests, the two
+Workbench link tests in Menu and the Automation test that reads the
+workbench. They would fail against the website alone, for
 a reason that is not a defect.
 
 ```bash
@@ -237,7 +235,7 @@ variations, all from the `client` directory:
 
 ```bash
 ext=true npx playwright test --retries=0              # everything, no retry
-ext=true npx playwright test Bim --project=chromium   # one file, one browser
+ext=true npx playwright test Menu --project=chromium  # one file, one browser
 ext=true npx playwright test --ui                     # step through in a window
 ```
 
