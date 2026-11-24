@@ -1,24 +1,22 @@
 /**
- * `yarn build:kit <kit> [outDir]`: build the example kit in the folder <kit>
- * as a deployed extension, with the settings of `vite.deploy.config.ts`.
- * Without an output folder the bundle goes to
- * `examples/<kit>/dist/deploy/<id>/index.js`.
+ * `node tests/fixtures/kit/build.mjs <outDir>`: build the fixture kit as a
+ * deployed extension with the SDK's own `kitBuildConfig`, from its TypeScript
+ * source, so the SDK tests its `./deploy` entry without depending on a kit.
  */
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
-const [kit, outDir] = process.argv.slice(2);
-if (!kit) {
-  process.stderr.write('Usage: yarn build:kit <kit folder> [output folder]\n');
+const [outDir] = process.argv.slice(2);
+if (!outDir) {
+  process.stderr.write('Usage: node tests/fixtures/kit/build.mjs <outDir>\n');
   process.exit(2);
 }
 
-// The configuration reads the kit from the environment, since Vite takes no
-// arguments of its own for a configuration file.
-process.env.DTAAS_KIT = kit;
-if (outDir) process.env.DTAAS_KIT_OUT = path.resolve(outDir);
+// The configuration reads the output folder from the environment, since Vite
+// takes no arguments of its own for a configuration file.
+process.env.DTAAS_KIT_OUT = path.resolve(outDir);
 
 // A deployed bundle is always a production build. In another mode, such as
 // the `test` that Jest sets, JSX compiles to `react/jsx-dev-runtime`, which
@@ -34,6 +32,6 @@ await build({
   mode: 'production',
   configFile: path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    'vite.deploy.config.ts',
+    'vite.config.ts',
   ),
 });

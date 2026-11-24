@@ -12,6 +12,16 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   unit a source gave with a value. A kit compares it with the unit it expects
   and no longer has to assume one from the name of the quantity. A host that
   does not know the unit leaves the field out.
+- `react-dom/client` among the shared modules, under `reactDomClient`, so a
+  kit that draws the controls of a substrate starts its React root with the
+  host's copy. A host fills the key from its own `react-dom/client`.
+- `tests/fixtures/kit`, the smallest kit, which `kitBundle.test.ts` builds with
+  `kitBuildConfig` and mounts.
+
+### Changed
+
+- The `hello-kit` example and `yarn build:kit` leave this folder. Every kit is
+  a package of its own in the `kits/` folder of the dtaas-extensions repository.
 
 ### Fixed
 
@@ -66,7 +76,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   builds an example kit inside this repository and
   `tests/integration/kitBundle.test.ts` mounts the bundle on a fake host.
 
-### Changed
+### Changed in 0.1.1
 
 - `./schema` makes the `url` of an `mqtt` transport optional. A host with a
   signals gateway serves the topics itself, so a `visualisation.json` can name
@@ -77,7 +87,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   contributes it, so a preset that names `aec` needs an extension that
   contributes the substrate.
 
-### Security
+### Security in 0.1.1
 
 - `./schema` refuses a transport `url` or a substrate `source` that carries a
   user name or password, such as `mqtt://user:secret@broker`, so a

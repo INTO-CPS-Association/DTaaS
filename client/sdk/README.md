@@ -36,13 +36,12 @@ yarn test:sdk
 
 `src/` imports its own files by relative paths, so it compiles inside the
 client. The tests keep the `src/` and `tests/` aliases of
-`jest.config.json`. `examples/hello-kit/` is the minimal extension the
-integration tests mount.
+`jest.config.json`. `tests/fixtures/kit/` is the smallest kit, which the
+integration tests build with `kitBuildConfig` and mount.
 
-`yarn build:kit <kit folder>` builds an example kit as a deployed
-extension with `examples/vite.deploy.config.ts`. `hello-kit/README.md`
-explains how a new kit starts from the template. The soil-kit, a second kit
-for soil profiles, lives in a repository of its own.
+The kits, `hello-kit` (the template of a new kit), `soil-kit` and `bim`, are
+not part of the client. Each is a package of its own in the `kits/` folder of
+the dtaas-extensions repository and builds its deployed bundle there.
 
 `client/src/extension/README.md` describes the open decision about how
 external extensions get these types.

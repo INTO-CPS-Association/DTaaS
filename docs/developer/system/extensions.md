@@ -20,7 +20,7 @@ describes how it is released.
 ## The Building Models Page
 
 The Building Models page and the `aec` substrate come from
-`@into-cps-association/bim-kit`, in the `examples/bim` folder of the
+`@into-cps-association/bim-kit`, in the `kits/bim` folder of the
 [dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
 repository. The client compiles in no domain extension, so it carries no
 building code that could drift from the kit. A deployment builds the kit as one
@@ -132,8 +132,9 @@ holds the proposal it came from. In the proposal:
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.
 
-The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1 onto the
-contract as a private package.
+The `kits/` folder of the SDK repository holds the kits, each a package of its
+own: `bim` with the source of `bim-kit`, `soil-kit` and the `hello-kit`
+template.
 
 The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are
@@ -150,4 +151,4 @@ The SDK repository documents the proposal in detail:
 - [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/extension-authoring.md)
 - [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/host-integration.md)
 - [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/visualisation-schema.md)
-- [The bim example](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/examples/bim/README.md)
+- [The bim kit](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/kits/bim/README.md)

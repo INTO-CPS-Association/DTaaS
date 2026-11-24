@@ -240,8 +240,9 @@ Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Int
 1. Each kit may create its own metadata tables, as long as they follow the
    naming convention and join with the shared tables and the tables of other
    kits through `device_id` (K11).
-2. The kits live in the `dtaas-extensions` repository, as `examples/bim` and
-   `examples/soil-kit`, decided with the maintainer on 18 November 2026.
+2. The kits live in the `dtaas-extensions` repository, decided with the
+   maintainer on 18 November 2026, each a package of its own under `kits/`:
+   `kits/bim` and `kits/soil-kit`.
    `bim-kit` leaves the `ifc-utils` repository and `soil-kit` leaves its own
    repository.
 3. The Digital Twins page has the tabs Execute, View, Manage and Create, on

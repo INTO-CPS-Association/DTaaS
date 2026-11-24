@@ -43,8 +43,8 @@ To compile one in:
 To deploy one, without a rebuild:
 
 1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
-   which writes one script. `yarn build:kit hello-kit` does this for the
-   example kit in `sdk/examples/`.
+   which writes one script. Every kit of the `kits/` folder of the
+   dtaas-extensions repository does this with its own `yarn build:kit`.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
    `'extensions/hello/index.js'`.
