@@ -118,17 +118,18 @@ flowchart LR
 - **Left out:** `amqp.broker.ts`, `vhost-link.ts`, the `fake-amqp` helper and
   the `amqplib` dependency. AMQP stays in Left for Later.
 - **New:** `mqtt.broker.ts` behind the same `Broker` interface, built on the
-  `mqtt` library. One connection per instance with the client ID
-  `dtaas_signals_<host>`, one subscription per path that an open stream asks for
-  and QoS 0. A message outside the payload convention or above
-  `max-message-bytes` is dropped and counted.
+  `mqtt` library. One connection per owner served, signed in as
+  `<owner>:dtaas_signals` with the client ID `dtaas_signals_<host>_<owner>`,
+  one subscription per path that an open stream asks for and QoS 0. A message
+  outside the payload convention or above `max-message-bytes` is dropped and
+  counted.
 - **Configuration:** `rabbitmq-user` becomes `dtaas_signals`, a new `mqtt-url`
   uses `mqtts://` outside the Docker network and the password is read from
   `/run/secrets/rabbitmq_dtaas_signals_password`.
 - **`dtaas-services`:** `user add-signals` makes `dtaas_signals` with topic
-  permissions in the virtual host `/`, read on the prefixes of the projects
-  served and write only on `.../cmd/`. Its InfluxDB part is removed. Tests use
-  Click's `CliRunner`.
+  permissions in the virtual host of each owner served, read on the prefixes
+  of the projects served and write only on `.../cmd/`. Its InfluxDB part is
+  removed. Tests use Click's `CliRunner`.
 - **Integration test:** `rabbitmq.int.spec.ts` is rewritten for MQTT, against
   `rabbitmq:4.4.0-management` with the MQTT plugin.
 - **Done when:** a reading published by a test device reaches a browser stream
