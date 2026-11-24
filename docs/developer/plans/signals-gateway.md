@@ -47,7 +47,7 @@ the new code and the checks.
 | :---- | :----------- | :------ | :-------- |
 | 1 | Design and skeleton | This plan, `servers/signals` with its configuration, the health route, `stream` and `range` routes that answer 501, the Docker image and the workflow that publishes the package and the image | The image answers 200 on health and 501 on the other routes |
 | 2 | Security architecture | A mapping of the RBAC and attribute-based access control that GitLab, Keycloak and Dex can provide, the Traefik glue, then sign-in from each provider to the gateway, `AccessPolicy` over the committed `visualisation.json`, rate limits and the decision log | The mapping is reviewed. For each provider, tests refuse a token issued to another application or audience, an expired token and an undeclared path |
-| 3 | Live samples over MQTT | MQTT subscription in the virtual host `/`, `POST /signals/stream` as server-sent events, the account `dtaas_signals` with topic permissions, made by `dtaas-services` | A reading published by a test device reaches a browser stream and a path of another group is refused |
+| 3 | Live samples over MQTT | MQTT subscription in the virtual host of each owner, `POST /signals/stream` as server-sent events, the account `dtaas_signals` with topic permissions, made by `dtaas-services` | A reading published by a test device reaches a browser stream and a path of another group is refused |
 | 4 | History | Telegraf with one config file per twin, the `reading` and `device` tables, twin registration in `dtaas-services`, the PostgreSQL roles, `POST /signals/range` and the Grafana data source | A reading published in phase 3 is returned by `range` and shown in Grafana |
 | 5 | Data to a twin | `POST /signals/command`, published to `.../cmd/<command>` for a person with the `member` role | A set point reaches a test twin and a `viewer` is refused |
 | 6 | Packages and guides | The four docker packages, the administrator pages, the user guide and the comparison with ThingsBoard and Eclipse Ditto | A fresh installation streams, stores and shows a reading |
@@ -107,10 +107,14 @@ protection.
 
 ### Live Samples Over MQTT (Phase 3, G11)
 
-The broker sends all MQTT traffic through the virtual host `/`, as the naming
-convention decided, so the gateway subscribes there. It holds one connection per
-instance, with the client ID `dtaas_signals_<host>`. It makes one subscription
-per path that an open stream asks for. Live samples use QoS 0, since a sample
+Virtual hosts separate the data flows of users, so each owner of a twin (a user
+or a GitLab group) publishes in its own virtual host `<owner>`. An MQTT client
+names that virtual host in its username, as `<owner>:<account>`. The broker's
+`mqtt.vhost = /` applies only to a client that names no virtual host
+([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)). The gateway holds
+one connection per owner it serves, with the client ID
+`dtaas_signals_<host>_<owner>`. It makes one subscription per path that an open
+stream asks for. Live samples use QoS 0, since a sample
 lost during a reconnect is still in the history. A message is forwarded only
 when it carries the fields `value`, `ts` and `unit` of the payload convention
 and fits `max-message-bytes`. Every other message is dropped and counted in
@@ -238,12 +242,12 @@ only sends GET requests.
 
 | Account | Service | May | Secret file |
 | :------ | :------ | :-- | :---------- |
-| `dtaas_signals` | RabbitMQ, MQTT in `/` | Read the topics of the projects served, write only `.../cmd/<command>` | `rabbitmq_dtaas_signals_password` |
+| `dtaas_signals` | RabbitMQ, MQTT in the virtual host of each owner served | Read the topics of the projects served, write only `.../cmd/<command>` | `rabbitmq_dtaas_signals_password` |
 | `dtaas_signals_ro` | PostgreSQL, every group database | Select from `reading` and `device` | `postgresql_dtaas_signals_ro_password` |
-| `<group>_telegraf` | RabbitMQ, MQTT in `/` | Read the topics of the group's projects | `rabbitmq_<group>_telegraf_password` |
+| `<group>_telegraf` | RabbitMQ, MQTT in the virtual host `<group>` | Read the topics of the group's projects | `rabbitmq_<group>_telegraf_password` |
 | `<group>_telegraf` | PostgreSQL, database `<group>` | Insert into `reading` | `postgresql_<group>_telegraf_password` |
 | `<group>_view_ro` | PostgreSQL, database `<group>` | Select, for the Grafana data source `postgresql_<group>` | `postgresql_<group>_view_ro_password` |
-| Device or partner | RabbitMQ, MQTT in `/` | Write the topics of one project | Kept by the site |
+| Device or partner | RabbitMQ, MQTT in the virtual host of the project's owner | Write the topics of one project | Kept by the site |
 
 The gateway's two accounts are the exception to G4, because they serve every
 user. Their access is limited as above and every request is checked against the
@@ -264,8 +268,9 @@ person's own rights first.
 
 ## Decided in Review
 
-1. Virtual hosts separate the data flows of users. MQTT stays in `/` with topic
-   permissions per project.
+1. Virtual hosts separate the data flows of users. Each owner has its own
+   virtual host, MQTT clients sign in as `<owner>:<account>` and topic
+   permissions inside it limit each account to its projects.
 2. Dashboards read the services directly. Only the data exchanged in both
    directions between the client and the twins goes through the gateway.
 3. A runner uses a CI/CD variable for now.
@@ -277,18 +282,27 @@ person's own rights first.
 7. A device is registered before it publishes.
 8. Telegraf has one config file per twin, or per domain or user if that works
    better in practice.
-9. All history is kept.
+9. History of quantities that cannot identify a person, such as temperature
+   and humidity, is kept in full. Retention is set per quantity.
 10. Security has its own pull request, which starts with the mapping of the
     providers and with sign-in from each provider to the gateway.
-
-## Open Questions
-
-1. Is TimescaleDB used for `reading`, given that all history is kept?
-2. How long are readings kept that can identify a person, such as the
-   occupancy of a room? Keeping them without a limit is a GDPR question.
+11. `reading` lives in plain PostgreSQL 18, as `dtaas-services` installs it,
+    with the index `reading_device_id_time_idx`. One sensor of room 02-24
+    publishes two quantities every 3 seconds, about 57,600 rows a day. The
+    compression and continuous aggregates of TimescaleDB are under the Timescale
+    License, which does not allow offering TimescaleDB as a service to third
+    parties ([TimescaleDB editions](https://www.tigerdata.com/docs/about/latest/timescaledb-editions)).
 
 ## Left for Later
 
+- Readings that can identify a person, such as the occupancy of a room, are
+  personal data and are kept no longer than their purpose needs
+  ([GDPR Article 5(1)(e)](https://gdpr-info.eu/art-5-gdpr/)). The period, and
+  the aggregates that may be kept after it, follow the GDPR review at the
+  university that runs the installation. No phase stores them before then.
+- TimescaleDB for `reading`, if the volume needs it and its licence allows the
+  installation. The `time` column lets `create_hypertable` convert the table
+  with its data.
 - A runner's job could sign in to RabbitMQ with its GitLab ID token through the
   RabbitMQ OAuth 2.0 plugin, so the credential ends with the job.
 - Live samples over AMQP, for twins that publish to a virtual host of their own.
