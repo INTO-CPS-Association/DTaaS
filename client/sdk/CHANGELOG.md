@@ -15,6 +15,8 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `react-dom/client` among the shared modules, under `reactDomClient`, so a
   kit that draws the controls of a substrate starts its React root with the
   host's copy. A host fills the key from its own `react-dom/client`.
+- `./testing` gives `runDeployedBundle`, which runs the code of a deployed
+  bundle with the modules the host shares and returns what it registered.
 - `tests/fixtures/kit`, the smallest kit, which `kitBundle.test.ts` builds with
   `kitBuildConfig` and mounts.
 

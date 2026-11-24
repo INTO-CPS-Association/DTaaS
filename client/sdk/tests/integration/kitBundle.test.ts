@@ -14,12 +14,12 @@ import * as dtaasSdkSchema from '@into-cps-association/dtaas-sdk/schema';
 import {
   checkConformance,
   fakeHostServices,
+  runDeployedBundle,
+  type DeployedRegistry,
 } from '@into-cps-association/dtaas-sdk/testing';
 import {
-  DEPLOYED_EXTENSIONS_GLOBAL,
   SHARED_MODULES_GLOBAL,
   validateExtension,
-  type DtaasExtension,
 } from '@into-cps-association/dtaas-sdk';
 
 // The modules the host shares, by their keys under DTAAS_SHARED.
@@ -52,31 +52,13 @@ function build(): string {
   return path.join(out, 'index.js');
 }
 
-/** Run a bundle as the browser would and return what it registered. */
-function evaluate(
-  bundle: string,
-): Record<string, { extension: DtaasExtension }> {
-  const window: Record<string, unknown> = {};
-  // A classic script runs with `this` as the window; the Function constructor
-  // runs the bundle the same way, with the shared modules as its one global.
-  // eslint-disable-next-line no-new-func
-  new Function(SHARED_MODULES_GLOBAL, readFileSync(bundle, 'utf-8')).call(
-    window,
-    SHARED,
-  );
-  return window[DEPLOYED_EXTENSIONS_GLOBAL] as Record<
-    string,
-    { extension: DtaasExtension }
-  >;
-}
-
 describe('the deployed bundle of a kit', () => {
-  let registered: Record<string, { extension: DtaasExtension }>;
+  let registered: DeployedRegistry;
   let bundle: string;
 
   beforeAll(() => {
     bundle = build();
-    registered = evaluate(bundle);
+    registered = runDeployedBundle(readFileSync(bundle, 'utf-8'), SHARED);
   }, 60_000);
 
   it('is one script that takes the shared modules from the host', () => {

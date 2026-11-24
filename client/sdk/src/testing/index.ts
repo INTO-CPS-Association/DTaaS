@@ -25,6 +25,8 @@ export { default as renderWithHost } from './renderWithHost';
 export type { RenderWithHostOptions } from './renderWithHost';
 export { default as replayFixture } from './replayFixture';
 export type { ReplayFrame, ReplayOptions } from './replayFixture';
+export { default as runDeployedBundle } from './runDeployedBundle';
+export type { DeployedRegistry } from './runDeployedBundle';
 
 // Conformance
 export { default as checkConformance } from './checkConformance';

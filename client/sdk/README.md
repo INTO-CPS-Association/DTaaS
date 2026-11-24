@@ -39,7 +39,7 @@ client. The tests keep the `src/` and `tests/` aliases of
 `jest.config.json`. `tests/fixtures/kit/` is the smallest kit, which the
 integration tests build with `kitBuildConfig` and mount.
 
-The kits, `hello-kit` (the template of a new kit), `soil-kit` and `bim`, are
+The kits, `hello-kit` (the template of a new kit), `soil-kit` and `bim-kit`, are
 not part of the client. Each is a package of its own in the `kits/` folder of
 the dtaas-extensions repository and builds its deployed bundle there.
 

@@ -242,7 +242,7 @@ Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Int
    kits through `device_id` (K11).
 2. The kits live in the `dtaas-extensions` repository, decided with the
    maintainer on 18 November 2026, each a package of its own under `kits/`:
-   `kits/bim` and `kits/soil-kit`.
+   `kits/bim-kit` and `kits/soil-kit`.
    `bim-kit` leaves the `ifc-utils` repository and `soil-kit` leaves its own
    repository.
 3. The Digital Twins page has the tabs Execute, View, Manage and Create, on
