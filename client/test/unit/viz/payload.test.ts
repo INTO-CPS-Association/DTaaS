@@ -75,9 +75,9 @@ describe('decoding a broker message', () => {
     expect(
       sampleFrom('probe/moisture', '{"value": 40, "unit": "%"}', 'measured', 1),
     ).toMatchObject({ value: 40, unit: '%' });
-    expect(sampleFrom('probe/moisture', '40', 'measured', 1)?.unit).toBe(
-      undefined,
-    );
+    expect(
+      sampleFrom('probe/moisture', '40', 'measured', 1)?.unit,
+    ).toBeUndefined();
   });
 
   it('takes the channel a JSON payload names, when the SDK knows it', () => {

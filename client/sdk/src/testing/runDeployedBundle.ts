@@ -21,7 +21,8 @@ export default function runDeployedBundle(
   const window: Record<string, unknown> = {};
   // A classic script runs with `this` as the window. The Function constructor
   // runs the bundle the same way, with the shared modules as its one global.
+  // It runs only the bundle a test built itself, never input from a user.
   // eslint-disable-next-line no-new-func
-  new Function(SHARED_MODULES_GLOBAL, code).call(window, shared);
+  new Function(SHARED_MODULES_GLOBAL, code).call(window, shared); // NOSONAR
   return (window[DEPLOYED_EXTENSIONS_GLOBAL] ?? {}) as DeployedRegistry;
 }
