@@ -4,13 +4,14 @@ The signals gateway will serve the live and past signals of digital twins
 to the DTaaS client, so that no broker or PostgreSQL credential reaches the
 browser.
 
-The routes keep their final paths. Stream and range sign the user in and
-decide access, then answer `501` until their phases fill them in:
+The routes keep their final paths. Each one except health signs the user in
+and decides access first:
 
 | Route | Answer now |
 | :--- | :--- |
 | `GET /signals/health` | `200` with `{"status":"ok"}` |
-| `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else `501` |
+| `POST /signals/stream` | `401` without a valid token, `403` when no path is readable, else live samples as server-sent events |
+| `GET /signals/stats` | What the user's ended streams forwarded and dropped |
 | `POST /signals/range` | `401` without a valid token, `403` when no path is readable, else `501` |
 
 A token is either a GitLab token or a JWT of a Keycloak realm or Dex
@@ -23,8 +24,10 @@ can read a project with internal visibility. A path is readable when a
 twin in a readable project of the DTaaS group declares it in its committed
 `visualisation.json` and the topic starts with a prefix of the owner's
 group in `owners-file`, which `dtaas-services` writes. Every decision is
-logged without the token. Live samples over MQTT and history from
-PostgreSQL come in later versions of the service.
+logged without the token. Live samples come from RabbitMQ over MQTT, on
+one connection of the service account `dtaas_signals`. A message outside
+the payload convention (`value`, `ts` and `unit`) is dropped and counted.
+History from PostgreSQL comes in a later version of the service.
 
 ## Configuration
 
@@ -35,8 +38,8 @@ variable: `SIGNALS_` and the key in upper case with `_` for `-`, for
 example `SIGNALS_PORT`. Environment variables override the file.
 
 Save this as `signals.yaml` and adjust it. It lists every key with its
-default value, except `gitlab-url`, `gitlab-client-id` and `owners-file`,
-which have no default and show an example:
+default value, except `gitlab-url`, `gitlab-client-id`, `owners-file` and
+`mqtt-password-file`, which have no default and show an example:
 
 ```yaml
 # Where the service listens.
@@ -127,9 +130,36 @@ owners-file: /run/secrets/signals_owners.json
 # The channel of a topic whose mqtt transport names none.
 default-channel: measured
 
-# Limits of one request.
+# RabbitMQ over MQTT, with the service account of the gateway. mqtts://
+# verifies the broker certificate. No user name or password in the URL.
+mqtt-url: mqtt://localhost:1883
+mqtt-user: dtaas_signals
+# File holding the account's password, and nothing else. Mode 600.
+mqtt-password-file: /run/secrets/rabbitmq_dtaas_signals_password
+# Timeout of one connection attempt, in milliseconds.
+mqtt-connect-timeout: 10000
+
+# Limits of one request and one user.
 max-paths-per-stream: 200
 max-path-length: 256
+max-streams-per-user: 4
+# Broker messages larger than this many bytes are dropped. So is a message
+# outside the payload convention: a number value, an RFC 3339 ts and a unit.
+max-message-bytes: 65536
+# Bytes a stream may hold unsent while the client reads slower than samples
+# arrive. Past this, new samples are dropped and counted as congested.
+max-backlog-bytes: 1048576
+# A stream closes after this many milliseconds, or when the token expires.
+stream-max-age: 600000
+# Milliseconds between two checks that the user may still read every signal
+# of an open stream. A revoked signal ends the stream. The check reads the
+# project list cached for projects-cache-ttl, so a revocation takes effect
+# within this interval plus projects-cache-ttl.
+stream-recheck-interval: 60000
+# Milliseconds between ': keep-alive' comments on a stream.
+keep-alive-interval: 15000
+# The reconnect wait sent to the client as 'retry:', in milliseconds.
+retry-interval: 5000
 # Longest history range a request may ask for, in milliseconds.
 range-max-span: 604800000
 ```

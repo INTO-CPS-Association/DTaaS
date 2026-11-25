@@ -1,0 +1,38 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import Config from '../config/config.service.js';
+
+/** How many streams each user has open, bounded by max-streams-per-user. */
+@Injectable()
+export default class StreamSlots {
+  private readonly counts = new Map<string, number>();
+
+  // eslint-disable-next-line no-useless-constructor, no-empty-function
+  constructor(private readonly config: Config) {}
+
+  /** Take a slot, or refuse with 429. The function returned gives it back. */
+  acquire(userId: string): () => void {
+    const open = this.counts.get(userId) ?? 0;
+    if (open >= this.config.get('max-streams-per-user')) {
+      throw new HttpException('Too many streams', HttpStatus.TOO_MANY_REQUESTS);
+    }
+    this.counts.set(userId, open + 1);
+    return this.releaseOnce(userId);
+  }
+
+  // A stream may end through more than one path, close and end of life,
+  // so the slot is given back once however often the function is called.
+  private releaseOnce(userId: string): () => void {
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      this.release(userId);
+    };
+  }
+
+  private release(userId: string): void {
+    const left = (this.counts.get(userId) ?? 1) - 1;
+    if (left > 0) this.counts.set(userId, left);
+    else this.counts.delete(userId);
+  }
+}

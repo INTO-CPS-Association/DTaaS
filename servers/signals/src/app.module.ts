@@ -10,10 +10,15 @@ import GitLabTwinPolicy from './authz/gitlab-twin.policy.js';
 import Owners from './authz/owners.js';
 import { ACCESS_POLICY } from './authz/policy.js';
 import TwinReader from './authz/twin-reader.js';
+import { SIGNAL_BROKER } from './broker/broker.js';
+import MqttBroker from './broker/mqtt.broker.js';
 import Config from './config/config.service.js';
 import ConfigModule from './config/config.module.js';
 import SignalsController from './signals.controller.js';
 import SocketAddressThrottlerGuard from './socket-address-throttler.guard.js';
+import DeliveryStats from './stream/delivery-stats.js';
+import StreamService from './stream/stream.service.js';
+import StreamSlots from './stream/stream-slots.js';
 
 @Module({
   imports: [
@@ -40,6 +45,14 @@ import SocketAddressThrottlerGuard from './socket-address-throttler.guard.js';
     Owners,
     { provide: ACCESS_POLICY, useClass: GitLabTwinPolicy },
     AccessService,
+    {
+      provide: SIGNAL_BROKER,
+      useFactory: (config: Config) => new MqttBroker(config),
+      inject: [Config],
+    },
+    StreamSlots,
+    DeliveryStats,
+    StreamService,
     { provide: APP_GUARD, useClass: SocketAddressThrottlerGuard },
   ],
 })
