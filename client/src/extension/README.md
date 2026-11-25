@@ -21,7 +21,10 @@ The same package is published from the `dtaas-extensions` repository under
 that name from version 0.2.0 on. It was `@into-cps-association/dtaas-sdk`
 before. Once that version is published, the client depends on it from npm and
 `client/sdk/` is removed. Until then an extension installed from npm that
-imports the package name resolves to the local copy.
+imports the package name resolves to the local copy. `bim-kit` 0.2.0 still
+imports the former name, so `vite.config.ts` aliases
+`@into-cps-association/dtaas-sdk` to the same local copy until a `bim-kit`
+release imports the new name.
 
 ## Adding an Extension
 
