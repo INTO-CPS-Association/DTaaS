@@ -6,13 +6,6 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Changed
-
-- The package is named `@into-cps-association/dtaas-extensions`, the name the
-  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
-  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
-  uses the new name.
-
 ### Added
 
 - `DtaasExtension.apiRange`: the range of the extension API an extension works
@@ -39,6 +32,10 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The package is named `@into-cps-association/dtaas-extensions`, the name the
+  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
+  uses the new name.
 - `aec` is no longer a standard substrate (requirement K5). The bim extension
   contributes it, so a preset that names `aec` needs an extension that
   contributes the substrate.

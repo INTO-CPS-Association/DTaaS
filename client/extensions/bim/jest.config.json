@@ -13,8 +13,12 @@
           "paths": {
             "src/*": ["./src/*"],
             "tests/*": ["./tests/*"],
-            "@into-cps-association/dtaas-extensions": ["../../sdk/src/index.ts"],
-            "@into-cps-association/dtaas-extensions/*": ["../../sdk/src/*/index.ts"]
+            "@into-cps-association/dtaas-extensions": [
+              "../../sdk/src/index.ts"
+            ],
+            "@into-cps-association/dtaas-extensions/*": [
+              "../../sdk/src/*/index.ts"
+            ]
           }
         }
       }
