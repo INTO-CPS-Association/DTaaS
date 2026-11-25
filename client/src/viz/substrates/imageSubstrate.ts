@@ -51,27 +51,29 @@ function shapeFor(points: readonly (readonly [number, number])[]): Shape {
   return { mark: region, label };
 }
 
+/** Show or hide both parts of a shape. */
+function paintVisibility({ mark, label }: Shape, visible: unknown) {
+  const shown = visible !== false;
+  [mark, label].forEach((e) =>
+    e.setAttribute('visibility', shown ? 'visible' : 'hidden'),
+  );
+}
+
+/** Draw or clear the outline that asks for attention. */
+function paintAttention(mark: SVGElement, attention: unknown) {
+  mark.setAttribute('stroke', attention ? ATTENTION_STROKE : 'none');
+  mark.setAttribute('stroke-width', attention ? '6' : '0');
+}
+
 /** Apply the visual properties of one resolved encoding to a shape. */
-export function paint(
-  { mark, label }: Shape,
-  properties: Record<string, unknown>,
-) {
+export function paint(shape: Shape, properties: Record<string, unknown>) {
   const colour = (properties.fill ?? properties.color) as string | undefined;
-  if (colour) mark.setAttribute('fill', colour);
-  if ('visible' in properties) {
-    const shown = properties.visible !== false;
-    [mark, label].forEach((e) =>
-      e.setAttribute('visibility', shown ? 'visible' : 'hidden'),
-    );
-  }
-  if (typeof properties.text === 'string') label.textContent = properties.text;
-  if ('attention' in properties) {
-    mark.setAttribute(
-      'stroke',
-      properties.attention ? ATTENTION_STROKE : 'none',
-    );
-    mark.setAttribute('stroke-width', properties.attention ? '6' : '0');
-  }
+  if (colour) shape.mark.setAttribute('fill', colour);
+  if ('visible' in properties) paintVisibility(shape, properties.visible);
+  if (typeof properties.text === 'string')
+    shape.label.textContent = properties.text;
+  if ('attention' in properties)
+    paintAttention(shape.mark, properties.attention);
 }
 
 /** A sentence naming the picture, for a person who cannot see it. */

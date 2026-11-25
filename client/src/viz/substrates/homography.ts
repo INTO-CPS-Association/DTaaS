@@ -30,6 +30,15 @@ function backSubstitute(m: number[][]): number[] {
   return x;
 }
 
+/** Subtract row `col` from every row below it, to clear column `col`. */
+function eliminateBelow(m: number[][], col: number) {
+  const n = m.length;
+  for (let r = col + 1; r < n; r += 1) {
+    const factor = m[r][col] / m[col][col];
+    for (let c = col; c <= n; c += 1) m[r][c] -= factor * m[col][c];
+  }
+}
+
 /** Solve `a x = b` by Gaussian elimination with partial pivoting. */
 function solve(a: number[][], b: number[]): number[] {
   const n = b.length;
@@ -39,10 +48,7 @@ function solve(a: number[][], b: number[]): number[] {
     [m[col], m[pivot]] = [m[pivot], m[col]];
     if (Math.abs(m[col][col]) < 1e-12)
       throw new Error('Degenerate calibration');
-    for (let r = col + 1; r < n; r += 1) {
-      const factor = m[r][col] / m[col][col];
-      for (let c = col; c <= n; c += 1) m[r][c] -= factor * m[col][c];
-    }
+    eliminateBelow(m, col);
   }
   return backSubstitute(m);
 }
