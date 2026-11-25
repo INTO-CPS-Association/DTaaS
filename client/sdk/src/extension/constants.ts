@@ -75,8 +75,8 @@ export const SHARED_MODULES = {
   'react-dom': 'reactDom',
   'react-router-dom': 'reactRouterDom',
   '@mui/material': 'muiMaterial',
-  '@into-cps-association/dtaas-sdk': 'dtaasSdk',
-  '@into-cps-association/dtaas-sdk/schema': 'dtaasSdkSchema',
+  '@into-cps-association/dtaas-extensions': 'dtaasSdk',
+  '@into-cps-association/dtaas-extensions/schema': 'dtaasSdkSchema',
   zod: 'zod',
 } as const;
 

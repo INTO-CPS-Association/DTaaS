@@ -38,7 +38,7 @@ To compile one in:
 
 To deploy one, without a rebuild:
 
-1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`,
+1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-extensions/deploy`,
    which writes one script.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
