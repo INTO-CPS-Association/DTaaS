@@ -1,6 +1,5 @@
 """Set up the history of one group: broker account, database and data source."""
 
-import psycopg
 from ..config import Config
 from ..secret_files import ensure_password
 from ..services.rabbitmq_accounts import (
@@ -11,15 +10,12 @@ from ..services.rabbitmq_accounts import (
     project_read_pattern,
     validate_projects,
 )
+from .errors import HANDLED, describe
 from .grafana import write_datasource
+from .kit_hooks import apply_kits
+from .kits import load_kits
 from .names import telegraf_account, validate_name
-from .owners import (
-    GroupGrant,
-    OwnersError,
-    merge_owners,
-    read_owners,
-    write_owners,
-)
+from .owners import GroupGrant, merge_owners, read_owners, write_owners
 from .pg_admin import connect, ensure_database
 from .roles import ensure_roles, grant_history
 from .schema import CORE_MIGRATIONS, apply_migrations
@@ -67,14 +63,19 @@ def setup_broker_account(group: str, projects: list[str]) -> tuple[bool, str]:
 def setup_database(group: str) -> list[str]:
     """Create the group database, its tables and its roles in one transaction.
 
+    The migrations of the installed kits run in the same transaction, so a
+    kit whose migration fails leaves the database as it was.
+
     Returns:
         Names of the migrations applied by this call
     """
+    kits = load_kits()
     ensure_database(group)
     with connect(group) as conn:
         ensure_roles(conn, group)
         applied = apply_migrations(conn, CORE_MIGRATIONS)
         grant_history(conn, group)
+        applied += apply_kits(conn, group, kits)
     return applied
 
 
@@ -94,15 +95,6 @@ def _setup_services(group: str, projects: list[str]) -> tuple[bool, str]:
     path = write_datasource(group)
     migrations = ", ".join(applied) or "none new"
     return True, f"Group {group} ready. Migrations: {migrations}. Data source: {path}"
-
-
-def _failure_message(error: Exception) -> str:
-    """What to show for an error that stopped the group setup."""
-    if isinstance(error, psycopg.Error):
-        return f"PostgreSQL: {type(error).__name__}: {error}"
-    if isinstance(error, OSError):
-        return f"Cannot write a file: {type(error).__name__}"
-    return str(error)
 
 
 def _setup_with_owners(
@@ -128,5 +120,5 @@ def setup_group_history(
         return False, error_msg
     try:
         return _setup_with_owners(group, projects, owners)
-    except (OwnersError, psycopg.Error, OSError) as e:
-        return False, _failure_message(e)
+    except HANDLED as e:
+        return False, describe(e)
