@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import type {
   AssetPreviewProps,
   DtaasExtension,
-} from '@into-cps-association/dtaas-sdk';
-import AssetPreviewPage, { previewFor } from 'extension/AssetPreviewPage';
+} from '@into-cps-association/dtaas-extensions';
+import AssetPreviewPage, { previewFor } from 'route/extension/AssetPreviewPage';
 
 jest.mock('page/Layout', () => ({
   __esModule: true,
@@ -26,7 +26,7 @@ const mockPump = { id: 'pump' } as DtaasExtension;
 
 jest.mock('extension/extensionHost', () => {
   const { fakeHostServices } = jest.requireActual(
-    '@into-cps-association/dtaas-sdk/testing',
+    '@into-cps-association/dtaas-extensions/testing',
   );
   const services = fakeHostServices({ baseUrl: 'https://lib.example' });
   return {

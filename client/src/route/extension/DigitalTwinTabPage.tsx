@@ -11,7 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {
   HostProvider,
   type DigitalTwinSummary,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import ErrorBoundary from 'components/ErrorBoundary';
 import { hostFor, sharedServices } from 'extension/extensionHost';
 import type { MountedTab } from 'extension/createExtensionHost';
