@@ -137,6 +137,18 @@ def install(text: str, destination: Path) -> None:
     staging.replace(destination)
 
 
+def _send_hup() -> bool:
+    """Send SIGHUP when the Telegraf container runs. True when it was sent."""
+    inspect = ["docker", "inspect", "-f", "{{.State.Running}}", TELEGRAF_CONTAINER]
+    kill = ["docker", "kill", "--signal", "HUP", TELEGRAF_CONTAINER]
+    running = subprocess.run(inspect, capture_output=True, text=True,
+                             check=False, timeout=30)  # fmt: skip
+    if running.returncode != 0 or running.stdout.strip() != "true":
+        return False
+    sent = subprocess.run(kill, capture_output=True, check=False, timeout=30)
+    return sent.returncode == 0
+
+
 def reload_telegraf() -> bool:
     """Send SIGHUP to the Telegraf container when it runs under Docker.
 
@@ -148,14 +160,7 @@ def reload_telegraf() -> bool:
     """
     if not shutil.which("docker"):
         return False
-    inspect = ["docker", "inspect", "-f", "{{.State.Running}}", TELEGRAF_CONTAINER]
-    kill = ["docker", "kill", "--signal", "HUP", TELEGRAF_CONTAINER]
     try:
-        running = subprocess.run(inspect, capture_output=True, text=True,
-                                 check=False, timeout=30)  # fmt: skip
-        if running.returncode != 0 or running.stdout.strip() != "true":
-            return False
-        sent = subprocess.run(kill, capture_output=True, check=False, timeout=30)
+        return _send_hup()
     except (OSError, subprocess.TimeoutExpired):
         return False
-    return sent.returncode == 0

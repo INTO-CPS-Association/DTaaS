@@ -23,12 +23,18 @@ export function emptyCounts(): DeliveryCounts {
   };
 }
 
+const DROP_REASONS: readonly DropReason[] = [
+  'tooLarge',
+  'invalid',
+  'congested',
+];
+
 function addTo(total: DeliveryCounts, counts: DeliveryCounts): void {
   total.forwarded += counts.forwarded;
   total.backfilled += counts.backfilled;
-  total.dropped.tooLarge += counts.dropped.tooLarge;
-  total.dropped.invalid += counts.dropped.invalid;
-  total.dropped.congested += counts.dropped.congested;
+  DROP_REASONS.forEach((reason) => {
+    total.dropped[reason] += counts.dropped[reason];
+  });
 }
 
 /**

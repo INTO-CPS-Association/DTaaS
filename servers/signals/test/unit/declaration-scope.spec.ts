@@ -66,7 +66,7 @@ describe('The scope of a grant', () => {
       boiler: visualisationOf(['alice/boiler/temperature']),
     });
     const access = new AccessService(policyOf(gitlab));
-    const decision = await access.decide(CAROL, 'stream', [
+    const decision = await access.decide({ subject: CAROL, action: 'stream' }, [
       'alice/pump/flow',
       'alice/boiler/temperature',
     ]);
@@ -144,7 +144,7 @@ describe('A Keycloak or Dex sign-in', () => {
     await writeFile(tokenFile, 'service-token\n', { mode: 0o600 });
     const gitlab = groupWithAlice();
     const access = new AccessService(claimsPolicy(gitlab, tokenFile));
-    const decision = await access.decide(DAVE, 'range', [
+    const decision = await access.decide({ subject: DAVE, action: 'range' }, [
       'alice/pump/flow',
       'bob/x',
     ]);
@@ -168,7 +168,9 @@ describe('A Keycloak or Dex sign-in', () => {
 
   it('refuses every path when the token file is missing', async () => {
     const access = new AccessService(claimsPolicy(groupWithAlice(), ''));
-    const decision = await access.decide(DAVE, 'stream', ['alice/pump/flow']);
+    const decision = await access.decide({ subject: DAVE, action: 'stream' }, [
+      'alice/pump/flow',
+    ]);
     expect(decision.allowed).toEqual([]);
   });
 });

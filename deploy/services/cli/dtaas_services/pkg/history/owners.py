@@ -12,6 +12,7 @@ never refused there.
 
 import json
 import re
+from typing import NamedTuple
 from ..secret_files import SECRETS_DIR
 from ..config import Config
 from ..utils import write_secret_file
@@ -24,6 +25,14 @@ PREFIX = re.compile(r"^[^+#*\s]+/$")
 
 class OwnersError(ValueError):
     """The owners file or an owner given to the command is not valid."""
+
+
+class GroupGrant(NamedTuple):
+    """Owners to map to a group, and the projects whose topics they read."""
+
+    group: str
+    names: list[str]
+    projects: list[str]
 
 
 def owners_path():
@@ -50,23 +59,22 @@ def _check(owner: str, group: str, topics: list[str]) -> None:
         raise OwnersError(f"Invalid owner {owner!r}: use a GitLab project path")
     if not GROUP.match(group):
         raise OwnersError(f"Invalid group {group!r}")
-    for topic in topics:
-        if not PREFIX.match(topic):
-            raise OwnersError(f"Invalid topic prefix {topic!r}")
+    invalid = [topic for topic in topics if not PREFIX.match(topic)]
+    if invalid:
+        raise OwnersError(f"Invalid topic prefix {invalid[0]!r}")
 
 
-def merge_owners(
-    owners: dict, group: str, names: list[str], projects: list[str]
-) -> dict:
+def merge_owners(owners: dict, grant: GroupGrant) -> dict:
     """Return the owners mapping with each name mapped to group and projects.
 
     An owner already in the file keeps its topics and gains the new ones. An
     owner mapped to another group is refused, so no project's twins can read
     the topics of a group it does not belong to.
     """
-    topics = [f"{project}/" for project in projects]
+    group = grant.group
+    topics = [f"{project}/" for project in grant.projects]
     merged = dict(owners)
-    for name in names:
+    for name in grant.names:
         _check(name, group, topics)
         current = merged.get(name) or {"group": group, "topics": []}
         if current.get("group") != group:

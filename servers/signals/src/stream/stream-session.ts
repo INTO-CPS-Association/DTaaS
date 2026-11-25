@@ -4,7 +4,11 @@ import type {
   BrokerSubscription,
   SignalBroker,
 } from '../broker/broker.js';
-import { type DeliveryCounts, emptyCounts } from './delivery-stats.js';
+import {
+  type DeliveryCounts,
+  type DropReason,
+  emptyCounts,
+} from './delivery-stats.js';
 import followsConvention from './payload.js';
 import type SseWriter from './sse-writer.js';
 
@@ -36,6 +40,17 @@ export type Backfill = () => Promise<{
   to: number;
 }>;
 
+/**
+ * What one session streams: the allowed signals, its limits, the recheck
+ * and, for a stream that opens again, the backfill.
+ */
+export type SessionSpec = {
+  targets: readonly SignalTarget[];
+  options: SessionOptions;
+  recheck?: Recheck;
+  backfill?: Backfill;
+};
+
 /** One open stream: the allowed signals of one request, until it ends. */
 export default class StreamSession {
   readonly done: Promise<void>;
@@ -45,15 +60,20 @@ export default class StreamSession {
   private ended = false;
   private rechecking = false;
   private finish: () => void = () => undefined;
+  private readonly targets: readonly SignalTarget[];
+  private readonly options: SessionOptions;
+  private readonly recheck?: Recheck;
+  private readonly backfill?: Backfill;
 
   constructor(
     private readonly sse: SseWriter,
     private readonly broker: SignalBroker,
-    private readonly targets: readonly SignalTarget[],
-    private readonly options: SessionOptions,
-    private readonly recheck?: Recheck,
-    private readonly backfill?: Backfill,
+    spec: SessionSpec,
   ) {
+    this.targets = spec.targets;
+    this.options = spec.options;
+    this.recheck = spec.recheck;
+    this.backfill = spec.backfill;
     this.done = new Promise((resolve) => {
       this.finish = resolve;
     });
@@ -82,11 +102,15 @@ export default class StreamSession {
     try {
       const gap = await backfill();
       gap.samples.forEach((sample) => this.sendPast(sample));
-      if (!gap.complete && !this.ended)
-        this.sse.event('gap', { from: gap.from, to: gap.to });
+      if (!gap.complete) this.sendGap(gap.from, gap.to);
     } catch {
-      if (!this.ended) this.sse.event('gap', { from: null, to: null });
+      this.sendGap(null, null);
     }
+  }
+
+  // A gap the history could not fill, or null bounds when it was not read.
+  private sendGap(from: number | null, to: number | null): void {
+    if (!this.ended) this.sse.event('gap', { from, to });
   }
 
   private sendPast(sample: PastSample): void {
@@ -170,18 +194,23 @@ export default class StreamSession {
     message: BrokerMessage,
   ): void {
     if (target === undefined || this.ended) return;
-    if (message.body.length > this.options.maxMessageBytes) {
-      this.counts.dropped.tooLarge += 1;
-      return;
-    }
-    if (!followsConvention(message.body)) {
-      this.counts.dropped.invalid += 1;
-      return;
-    }
-    if (this.sse.isCongested()) {
-      this.counts.dropped.congested += 1;
-      return;
-    }
+    const reason = this.dropReasonOf(message.body);
+    if (reason === undefined) this.sendLive(target, message.body);
+    else this.counts.dropped[reason] += 1;
+  }
+
+  // The checks run in order and stop at the first that fails, so a message
+  // too large for the limit is never parsed.
+  private dropReasonOf(body: Buffer): DropReason | undefined {
+    const checks: [DropReason, () => boolean][] = [
+      ['tooLarge', () => body.length > this.options.maxMessageBytes],
+      ['invalid', () => !followsConvention(body)],
+      ['congested', () => this.sse.isCongested()],
+    ];
+    return checks.find(([, fails]) => fails())?.[0];
+  }
+
+  private sendLive(target: SignalTarget, body: Buffer): void {
     this.counts.forwarded += 1;
     const receivedAt = Date.now();
     // The id is the time the gateway received the message, so a client
@@ -193,7 +222,7 @@ export default class StreamSession {
         twin: target.twin,
         channel: target.channel,
         receivedAt,
-        payload: message.body.toString('utf8'),
+        payload: body.toString('utf8'),
       },
       String(receivedAt),
     );

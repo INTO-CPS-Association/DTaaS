@@ -9,7 +9,8 @@ from dtaas_services.pkg.history import owners, setup
 
 def test_merge_owners_maps_each_owner_to_group_and_topics():
     """Each owner gets the group and one prefix ending in / per project"""
-    merged = owners.merge_owners({}, "swim", ["jady", "team.x"], ["SWiM", "Soil"])
+    grant = owners.GroupGrant("swim", ["jady", "team.x"], ["SWiM", "Soil"])
+    merged = owners.merge_owners({}, grant)
     assert merged == {
         "jady": {"group": "swim", "topics": ["SWiM/", "Soil/"]},
         "team.x": {"group": "swim", "topics": ["SWiM/", "Soil/"]},
@@ -22,7 +23,8 @@ def test_merge_owners_keeps_known_topics_and_other_owners():
         "jady": {"group": "swim", "topics": ["SWiM/"]},
         "bob": {"group": "soil", "topics": ["Soil/"]},
     }
-    merged = owners.merge_owners(current, "swim", ["jady"], ["SWiM", "Lab"])
+    grant = owners.GroupGrant("swim", ["jady"], ["SWiM", "Lab"])
+    merged = owners.merge_owners(current, grant)
     assert merged["jady"] == {"group": "swim", "topics": ["SWiM/", "Lab/"]}
     assert merged["bob"] == current["bob"]
 
@@ -31,14 +33,14 @@ def test_merge_owners_refuses_an_owner_of_another_group():
     """An owner mapped to another group is a clear error"""
     current = {"jady": {"group": "soil", "topics": ["Soil/"]}}
     with pytest.raises(owners.OwnersError, match="mapped to group soil, not swim"):
-        owners.merge_owners(current, "swim", ["jady"], ["SWiM"])
+        owners.merge_owners(current, owners.GroupGrant("swim", ["jady"], ["SWiM"]))
 
 
 @pytest.mark.parametrize("owner", ["", "-jady", "ja dy", "a/b", "jady*"])
 def test_merge_owners_refuses_an_invalid_owner(owner):
     """Owners follow the pattern the gateway checks"""
     with pytest.raises(owners.OwnersError, match="Invalid owner"):
-        owners.merge_owners({}, "swim", [owner], ["SWiM"])
+        owners.merge_owners({}, owners.GroupGrant("swim", [owner], ["SWiM"]))
 
 
 def test_patterns_match_the_gateway():

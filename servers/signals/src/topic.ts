@@ -10,6 +10,12 @@ const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
 // is reserved by the broker. dtaas-services refuses both for the same reason.
 const DOT = /\./;
 
+function hasPlainCharacters(topic: string): boolean {
+  return [WILDCARDS, CONTROL_CHARACTERS, DOT].every(
+    (pattern) => !pattern.test(topic),
+  );
+}
+
 function hasPlainLevels(topic: string): boolean {
   return topic
     .split('/')
@@ -24,14 +30,8 @@ export default function isPlainTopic(
   topic: string,
   maxLength: number,
 ): boolean {
-  return (
-    topic.length > 0 &&
-    topic.length <= maxLength &&
-    !WILDCARDS.test(topic) &&
-    !CONTROL_CHARACTERS.test(topic) &&
-    !DOT.test(topic) &&
-    hasPlainLevels(topic)
-  );
+  const fits = topic.length > 0 && topic.length <= maxLength;
+  return fits && hasPlainCharacters(topic) && hasPlainLevels(topic);
 }
 
 const COMMAND_NAME = /^[a-z][a-z0-9_]{0,31}$/;

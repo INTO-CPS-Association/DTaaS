@@ -17,8 +17,11 @@ import SignalsAuthGuard, {
   type AuthenticatedRequest,
   userOf,
 } from './auth/auth.guard.js';
-import AccessService, { type PathDecision } from './authz/access.service.js';
-import type { Action, SignalTarget, Subject } from './authz/policy.js';
+import AccessService, {
+  type AccessScope,
+  type PathDecision,
+} from './authz/access.service.js';
+import type { SignalTarget, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import CommandService, {
   type CommandAnswer,
@@ -28,7 +31,6 @@ import {
   parseRangeRequest,
   parseStreamRequest,
   twinOf,
-  type TwinRef,
 } from './dto/requests.js';
 import HistoryService, {
   type HistoryAnswer,
@@ -87,18 +89,27 @@ export default class SignalsController {
     const subject = subjectOf(request);
     const release = this.slots.acquire(subject.id);
     try {
-      const twin = twinOf(body);
-      const decision = await this.authorise(subject, 'stream', paths, twin);
+      const scope: AccessScope = {
+        subject,
+        action: 'stream',
+        twin: twinOf(body),
+      };
+      const decision = await this.authorise(scope, paths);
       const allowed = decision.allowed.map((target) => target.path);
       const recheck = async () =>
-        (await this.access.decide(subject, 'stream', allowed, twin)).refused;
+        (await this.access.decide(scope, allowed)).refused;
       const { identity } = userOf(request);
       const lastId = lastEventIdOf(request);
       const backfill =
         lastId === undefined
           ? undefined
           : () => this.gapOf(decision.allowed, lastId);
-      await this.streams.run(response, identity, decision, recheck, backfill);
+      await this.streams.run(response, {
+        identity,
+        decision,
+        recheck,
+        backfill,
+      });
     } finally {
       release();
     }
@@ -123,11 +134,10 @@ export default class SignalsController {
       maxSpan: this.config.get('range-max-span'),
     };
     const { paths, ...span } = parseRangeRequest(body, limits);
+    const twin = twinOf(body);
     const decision = await this.authorise(
-      subjectOf(request),
-      'range',
+      { subject: subjectOf(request), action: 'range', twin },
       paths,
-      twinOf(body),
     );
     try {
       return await this.history.range(decision.allowed, span);
@@ -197,12 +207,10 @@ export default class SignalsController {
 
   // Nothing the user may read is refused before any work is done.
   private async authorise(
-    subject: Subject,
-    action: Action,
+    scope: AccessScope,
     paths: string[],
-    twin?: TwinRef,
   ): Promise<PathDecision> {
-    const decision = await this.access.decide(subject, action, paths, twin);
+    const decision = await this.access.decide(scope, paths);
     if (decision.allowed.length === 0) throw new ForbiddenException();
     return decision;
   }
