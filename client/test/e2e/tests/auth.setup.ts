@@ -5,7 +5,6 @@ import {
   authorizeIfAsked,
   disableRemoteLogging,
 } from 'test/e2e/setup/appSettings';
-import { saveSessionStorage } from 'test/e2e/setup/authStorage';
 
 // Use absolute path for reliable environment variable loading
 const envPath = path.join(process.cwd(), 'client/test/.env');
@@ -27,7 +26,6 @@ setup('authenticate', async ({ page }) => {
 
   await authorizeIfAsked(page);
   await disableRemoteLogging(page);
-  await saveSessionStorage(page);
   const storage = await page.context().storageState();
 
   storage.cookies = storage.cookies.map((cookie) => {

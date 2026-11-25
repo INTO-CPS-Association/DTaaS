@@ -9,7 +9,9 @@ import {
   WorkbenchIcon,
   BuildingModelsIcon,
   InsightsIcon,
+  ExtensionPageIcon,
 } from 'components/appIcons';
+import extensionHost from 'extension/extensionHost';
 import { Link, useLocation } from 'react-router-dom';
 
 interface MenuItemEntry {
@@ -19,7 +21,7 @@ interface MenuItemEntry {
   link: string;
 }
 
-const menuItems: MenuItemEntry[] = [
+const coreItems: MenuItemEntry[] = [
   { index: 1, name: 'Library', icon: <LibraryIcon />, link: '/library' },
   {
     index: 2,
@@ -51,6 +53,20 @@ const menuItems: MenuItemEntry[] = [
     icon: <InsightsIcon />,
     link: '/insights',
   },
+];
+
+/** The core items, then those of the domain extensions in their own order. */
+const menuItems: MenuItemEntry[] = [
+  ...coreItems,
+  ...extensionHost.navigation.map((item, position) => {
+    const Icon = item.icon ?? ExtensionPageIcon;
+    return {
+      index: coreItems.length + position + 1,
+      name: item.label,
+      icon: <Icon />,
+      link: item.path,
+    };
+  }),
 ];
 
 /**

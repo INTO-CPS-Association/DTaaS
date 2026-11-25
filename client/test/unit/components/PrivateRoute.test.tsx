@@ -9,7 +9,7 @@ import {
   clearUsername,
   getAccessToken,
   getUsername,
-} from '@into-cps-association/dt-automation';
+} from 'util/auth/credentials';
 import { useDispatch } from 'react-redux';
 import { setUserName } from 'store/auth.slice';
 

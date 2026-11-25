@@ -64,6 +64,17 @@ export interface ExtensionConfigSpec<T = unknown> {
   readonly schema: ZodType<T>;
 }
 
+/**
+ * A service one extension offers to the others through the host (K12), so
+ * that no extension imports the code of another.
+ */
+export interface ProvidedService<T = unknown> {
+  /** `<extension id>.<name>`, so two extensions never claim the same id. */
+  readonly id: string;
+  /** Builds the service once, with the services of the providing extension. */
+  create(host: HostServices): T;
+}
+
 /** What a domain extension contributes to the host. */
 export interface DtaasExtension<S = unknown> {
   /** Stable, lowercase; a route prefix, Redux key and env.js key. */
@@ -85,6 +96,14 @@ export interface DtaasExtension<S = unknown> {
   /** Redux slice mounted at `state.ext.<id>`. */
   readonly reducer?: ExtensionReducer<S>;
   readonly config?: ExtensionConfigSpec;
+  /** Services this extension offers to other extensions. */
+  readonly provides?: readonly ProvidedService[];
+  /**
+   * Ids of the services of other extensions this one uses. The host refuses
+   * the extension when no enabled extension provides one of them, and
+   * `host.extensions.get` gives only the services named here.
+   */
+  readonly requires?: readonly string[];
   /** Called once after the store exists and host services are ready. */
   setup?(host: HostServices): void | Promise<void>;
   readonly visualisation?: DomainContribution;

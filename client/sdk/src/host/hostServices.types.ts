@@ -1,6 +1,7 @@
 import type { ZodType } from 'zod';
 import type {
   AuthService,
+  ExtensionServices,
   LibraryService,
   Logger,
   SettingsService,
@@ -23,6 +24,8 @@ export interface HostServices {
   readonly ui: UiService;
   readonly logger: Logger;
   readonly settings: SettingsService;
+  /** Services of other extensions, by the ids in this one's `requires`. */
+  readonly extensions: ExtensionServices;
   /** Parse this extension's `REACT_APP_EXT_<ID>_*` keys; throws if invalid. */
   config<T>(schema: ZodType<T>): T;
 }

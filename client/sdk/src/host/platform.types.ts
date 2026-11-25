@@ -46,6 +46,12 @@ export interface Logger {
   error(...args: unknown[]): void;
 }
 
+/** The services other extensions provide, as this extension declared them. */
+export interface ExtensionServices {
+  /** The service with this id. Throws when it is not in `requires`. */
+  get<T>(id: string): T;
+}
+
 export interface SettingsService {
   get<T>(key: string): T | undefined;
 }

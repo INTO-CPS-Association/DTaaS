@@ -40,3 +40,6 @@ client. The tests keep the `src/` and `tests/` aliases of
 of the
 [dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
 repository with its own tests.
+
+`client/src/extension/README.md` describes the open decision about how
+external extensions get these types.

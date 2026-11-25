@@ -38,6 +38,7 @@ export type {
   ExtensionRoute,
   LazyPage,
   NavigationItem,
+  ProvidedService,
 } from './extension/extension.types';
 
 // Host services
@@ -46,6 +47,7 @@ export type { HostProviderProps } from './host/HostProvider';
 export type { HostServices } from './host/hostServices.types';
 export type {
   AuthService,
+  ExtensionServices,
   LibraryConventions,
   LibraryService,
   Logger,
