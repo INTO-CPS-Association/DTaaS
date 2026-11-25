@@ -6,7 +6,7 @@ import {
   useHost,
   type DigitalTwinTabProps,
   type DtaasExtension,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 // Hoisted by ts-jest above the imports, so the page loads the real tabs.
 jest.unmock('components/tab/TabComponent');
@@ -44,7 +44,7 @@ const mockPump: DtaasExtension = {
 
 jest.mock('extension/extensionHost', () => {
   const { fakeHostServices } = jest.requireActual(
-    '@into-cps-association/dtaas-sdk/testing',
+    '@into-cps-association/dtaas-extensions/testing',
   );
   const services = fakeHostServices({
     extensionId: 'pump',

@@ -1,7 +1,7 @@
 import type {
   DtaasExtension,
   HostServices,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import createServiceDirectory from 'extension/serviceDirectory';
 
 const kit = (id: string, more: Partial<DtaasExtension> = {}) =>

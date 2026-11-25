@@ -1,4 +1,4 @@
-import type { ExtensionReducer } from '@into-cps-association/dtaas-sdk';
+import type { ExtensionReducer } from '@into-cps-association/dtaas-extensions';
 import extensionState from 'extension/extensionState';
 
 describe('extensionState', () => {

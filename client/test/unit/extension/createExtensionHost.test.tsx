@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { z } from 'zod';
-import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import type { DtaasExtension } from '@into-cps-association/dtaas-extensions';
 import createExtensionHost, { mountPath } from 'extension/createExtensionHost';
 
 const page = lazy(async () => ({ default: () => null }));

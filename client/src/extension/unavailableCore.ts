@@ -8,7 +8,7 @@
 import type {
   SignalsService,
   VizService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 const UNAVAILABLE = 'This client has no visualisation core';
 
