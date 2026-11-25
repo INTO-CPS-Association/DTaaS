@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import type {
   ContentsService,
   DigitalTwinSummary,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 /**
  * The detail of a failure goes to the console, where a developer looks, and

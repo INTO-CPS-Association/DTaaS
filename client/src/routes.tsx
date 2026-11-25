@@ -15,8 +15,8 @@ import Automation from 'route/automation/Automation';
 import Insights from 'route/insights/Insights';
 import InsightsConfig from 'route/insights/InsightsConfig';
 import extensionHost from 'extension/extensionHost';
-import ExtensionPage from 'extension/ExtensionPage';
-import AssetPreviewPage from 'extension/AssetPreviewPage';
+import ExtensionPage from 'route/extension/ExtensionPage';
+import AssetPreviewPage from 'route/extension/AssetPreviewPage';
 
 /**
  * The pages of the domain extensions in `src/extensions.ts`, mounted under

@@ -36,14 +36,22 @@ describe('validateExtension', () => {
     ]);
   });
 
-  it('rejects an id reserved by a core route', () => {
+  it('reserves no id when the host gives none', () => {
     expect(errorsOf({ ...looseExtension(), id: 'library' })).toEqual([
+      'navigation[0].path "/demo" must be under "/library"',
+    ]);
+  });
+
+  it('rejects an id the host reserves', () => {
+    expect(
+      errorsOf({ ...looseExtension(), id: 'library' }, ['library']),
+    ).toEqual([
       'id "library" is reserved by the host',
       'navigation[0].path "/demo" must be under "/library"',
     ]);
   });
 
-  it('uses custom reserved ids when given', () => {
+  it('checks only the reserved ids the host gives', () => {
     expect(errorsOf({ ...looseExtension(), id: 'library' }, ['demo2'])).toEqual(
       ['navigation[0].path "/demo" must be under "/library"'],
     );

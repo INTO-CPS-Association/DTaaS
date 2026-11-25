@@ -15,7 +15,7 @@ import type {
   CommitResult,
   FileChange,
   GitService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { getAuthority } from 'util/envUtil';
 import { toBase64 } from 'extension/contentsUpload';
 

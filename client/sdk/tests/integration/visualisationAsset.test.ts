@@ -1,9 +1,9 @@
-import { fakeHostServices } from '@into-cps-association/dtaas-sdk/testing';
+import { fakeHostServices } from '@into-cps-association/dtaas-extensions/testing';
 import {
   parseVisualisationAsset,
   visualisationAssetSchema,
-} from '@into-cps-association/dtaas-sdk/schema';
-import type { DigitalTwinSummary } from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions/schema';
+import type { DigitalTwinSummary } from '@into-cps-association/dtaas-extensions';
 import junction7 from 'tests/fixtures/junction7.visualisation.json';
 
 const dt: DigitalTwinSummary = {

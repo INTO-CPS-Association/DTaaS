@@ -7,7 +7,7 @@ import tabs from 'route/digitaltwins/DigitalTwinTabData';
 import PageShell from 'components/PageShell';
 import TabDescription from 'components/tab/TabDescription';
 import extensionHost from 'extension/extensionHost';
-import DigitalTwinTabPage from 'extension/DigitalTwinTabPage';
+import DigitalTwinTabPage from 'route/extension/DigitalTwinTabPage';
 
 /** The tabs the domain extensions add, after the core ones. */
 const extensionTabs: TabData[] = extensionHost.digitalTwinTabs.map(
