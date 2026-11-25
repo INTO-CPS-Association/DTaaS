@@ -23,11 +23,32 @@ export type SessionOptions = {
 /** Asks the policy again, and answers the allowed paths now refused. */
 export type Recheck = () => Promise<readonly string[]>;
 
-/** What one session streams: the allowed signals, its limits and recheck. */
+/** A past reading sent to a stream that opened again after a gap. */
+export type PastSample = {
+  path: string;
+  twin: string;
+  channel: string;
+  ts: number;
+  value: number;
+};
+
+/** Readings of the gap, and whether the history held all of them. */
+export type Backfill = () => Promise<{
+  samples: PastSample[];
+  complete: boolean;
+  from: number;
+  to: number;
+}>;
+
+/**
+ * What one session streams: the allowed signals, its limits, the recheck
+ * and, for a stream that opens again, the backfill.
+ */
 export type SessionSpec = {
   targets: readonly SignalTarget[];
   options: SessionOptions;
   recheck?: Recheck;
+  backfill?: Backfill;
 };
 
 /** One open stream: the allowed signals of one request, until it ends. */
@@ -42,6 +63,7 @@ export default class StreamSession {
   private readonly targets: readonly SignalTarget[];
   private readonly options: SessionOptions;
   private readonly recheck?: Recheck;
+  private readonly backfill?: Backfill;
 
   constructor(
     private readonly sse: SseWriter,
@@ -51,6 +73,7 @@ export default class StreamSession {
     this.targets = spec.targets;
     this.options = spec.options;
     this.recheck = spec.recheck;
+    this.backfill = spec.backfill;
     this.done = new Promise((resolve) => {
       this.finish = resolve;
     });
@@ -68,6 +91,42 @@ export default class StreamSession {
       return;
     }
     if (!this.ended) this.sse.event('state', { state: 'live' });
+    // After the subscription, so a reading published while the history is
+    // read comes live and is not lost between the two.
+    if (this.backfill !== undefined) await this.fillGap(this.backfill);
+  }
+
+  // Past samples carry no id, so a stream cut while it fills the gap is
+  // opened again from the same Last-Event-ID and fills it again.
+  private async fillGap(backfill: Backfill): Promise<void> {
+    try {
+      const gap = await backfill();
+      gap.samples.forEach((sample) => this.sendPast(sample));
+      if (!gap.complete) this.sendGap(gap.from, gap.to);
+    } catch {
+      this.sendGap(null, null);
+    }
+  }
+
+  // A gap the history could not fill, or null bounds when it was not read.
+  private sendGap(from: number | null, to: number | null): void {
+    if (!this.ended) this.sse.event('gap', { from, to });
+  }
+
+  private sendPast(sample: PastSample): void {
+    if (this.ended) return;
+    this.counts.backfilled += 1;
+    this.sse.event('sample', {
+      path: sample.path,
+      twin: sample.twin,
+      channel: sample.channel,
+      receivedAt: sample.ts,
+      backfill: true,
+      payload: JSON.stringify({
+        value: sample.value,
+        ts: new Date(sample.ts).toISOString(),
+      }),
+    });
   }
 
   end(): void {

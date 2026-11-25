@@ -8,8 +8,10 @@ which routing keys it may publish and subscribe to
 (https://www.rabbitmq.com/docs/access-control#topic-authorisation).
 """
 
+import json
 import re
 import subprocess
+import time
 
 RABBITMQ_CONTAINER = "rabbitmq"
 MQTT_VHOST = "/"
@@ -123,3 +125,73 @@ def grant_mqtt_account(
         + [topic_write, topic_read]
     )
     return (True, "") if success else (False, output)
+
+
+def limit_session_queues(account: str, max_length: int) -> tuple[bool, str]:
+    """Cap the MQTT session queues of an account and drop the oldest first.
+
+    A stalled reader with a persistent QoS 1 session keeps its queue growing,
+    and a full disk makes RabbitMQ block every publisher with a disk alarm
+    (https://www.rabbitmq.com/docs/maxlength). The policy is named after the
+    account, so each account has one and setting it again replaces it.
+
+    Returns:
+        Tuple of (success, error message if any)
+    """
+    definition = json.dumps({"max-length": max_length, "overflow": "drop-head"})
+    success, output = rabbitmqctl(
+        ["set_policy", "-p", MQTT_VHOST, "--apply-to", "queues"]
+        + [f"{account}-sessions", f"^mqtt-subscription-{account}_.*$", definition]
+    )
+    return (True, "") if success else (False, output)
+
+
+def _queue_consumers(queue: str) -> tuple[bool, int | None, str]:
+    """Return (success, consumers or None when the queue is gone, error)."""
+    success, output = rabbitmqctl(
+        ["list_queues", "-p", MQTT_VHOST, "name", "consumers"]
+        + ["--quiet", "--no-table-headers"]
+    )
+    if not success:
+        return False, None, output
+    rows = (line.partition("\t") for line in output.splitlines())
+    count = {name: count for name, _, count in rows}.get(queue)
+    return True, None if count is None else int(count or 0), ""
+
+
+def _wait_for_idle(queue: str, wait_seconds: int) -> tuple[bool, int | None, str]:
+    """Poll until the queue has no consumer, is gone or the wait runs out.
+
+    Returns the last answer of _queue_consumers.
+    """
+    deadline = time.monotonic() + wait_seconds
+    success, consumers, error_msg = _queue_consumers(queue)
+    while success and consumers and time.monotonic() <= deadline:
+        time.sleep(2)
+        success, consumers, error_msg = _queue_consumers(queue)
+    return success, consumers, error_msg
+
+
+def _not_idle_answer(queue: str, consumers: int | None) -> tuple[bool, str]:
+    """The answer for a queue that is gone, or that kept its consumer."""
+    if consumers is None:
+        return True, f"No session queue {queue}"
+    return False, f"{queue} still has a consumer, run the command again"
+
+
+def delete_session_queue(client_id: str, wait_seconds: int = 60) -> tuple[bool, str]:
+    """Delete the QoS 1 session queue of an MQTT client once it is idle.
+
+    This waits until the client has left the queue, since deleting a queue
+    that a client still reads would only make it subscribe again.
+    """
+    queue = f"mqtt-subscription-{client_id}qos1"
+    success, consumers, error_msg = _wait_for_idle(queue, wait_seconds)
+    if not success:
+        return False, error_msg
+    if consumers != 0:
+        return _not_idle_answer(queue, consumers)
+    success, output = rabbitmqctl(
+        ["delete_queue", "-p", MQTT_VHOST, queue, "--if-unused"]
+    )
+    return (True, f"Deleted {queue}") if success else (False, output)

@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   Body,
   Controller,
   ForbiddenException,
@@ -20,21 +21,29 @@ import AccessService, {
   type AccessScope,
   type PathDecision,
 } from './authz/access.service.js';
-import type { Subject } from './authz/policy.js';
+import type { SignalTarget, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import {
   parseRangeRequest,
   parseStreamRequest,
   twinOf,
 } from './dto/requests.js';
+import HistoryService, {
+  type HistoryAnswer,
+} from './history/history.service.js';
+import type { Backfill, PastSample } from './stream/stream-session.js';
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
 import StreamSlots from './stream/stream-slots.js';
 
-export type PlaceholderAnswer = {
-  status: 'not-implemented';
-  route: 'range';
-};
+// The id the gateway gave the last sample a client received: a time in
+// milliseconds. Anything else is ignored and the stream starts live.
+function lastEventIdOf(request: AuthenticatedRequest): number | undefined {
+  const header = request.headers['last-event-id'];
+  if (typeof header !== 'string' || !/^\d{1,15}$/.test(header))
+    return undefined;
+  return Number(header);
+}
 
 function subjectOf(request: AuthenticatedRequest): Subject {
   const user = userOf(request);
@@ -42,8 +51,8 @@ function subjectOf(request: AuthenticatedRequest): Subject {
   return { id, username, token: user.token, owners };
 }
 
-// Stream serves live samples as server-sent events. Range signs the user in
-// and decides access, then answers 501 until the history phase fills it in.
+// Stream serves live samples as server-sent events and range serves past
+// samples as JSON, both behind the sign-in and the access decision.
 @Controller('signals')
 export default class SignalsController {
   // eslint-disable-next-line no-useless-constructor
@@ -53,6 +62,7 @@ export default class SignalsController {
     private readonly streams: StreamService,
     private readonly slots: StreamSlots,
     private readonly stats: DeliveryStats,
+    private readonly history: HistoryService,
   ) {} // eslint-disable-line no-empty-function
 
   @Get('health')
@@ -82,7 +92,17 @@ export default class SignalsController {
       const recheck = async () =>
         (await this.access.decide(scope, allowed)).refused;
       const { identity } = userOf(request);
-      await this.streams.run(response, { identity, decision, recheck });
+      const lastId = lastEventIdOf(request);
+      const backfill =
+        lastId === undefined
+          ? undefined
+          : () => this.gapOf(decision.allowed, lastId);
+      await this.streams.run(response, {
+        identity,
+        decision,
+        recheck,
+        backfill,
+      });
     } finally {
       release();
     }
@@ -96,23 +116,59 @@ export default class SignalsController {
   }
 
   @Post('range')
-  @HttpCode(HttpStatus.NOT_IMPLEMENTED)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(SignalsAuthGuard)
   async range(
     @Body() body: unknown,
     @Req() request: AuthenticatedRequest,
-  ): Promise<PlaceholderAnswer> {
+  ): Promise<HistoryAnswer> {
     const limits = {
       ...this.pathLimits(),
       maxSpan: this.config.get('range-max-span'),
     };
-    const { paths } = parseRangeRequest(body, limits);
+    const { paths, ...span } = parseRangeRequest(body, limits);
     const twin = twinOf(body);
-    await this.authorise(
+    const decision = await this.authorise(
       { subject: subjectOf(request), action: 'range', twin },
       paths,
     );
-    return { status: 'not-implemented', route: 'range' };
+    try {
+      return await this.history.range(decision.allowed, span);
+    } catch {
+      // The database's own message may name a host or a role, so the client
+      // gets no detail.
+      throw new BadGatewayException();
+    }
+  }
+
+  // The readings of the allowed signals since the last sample the client
+  // received, less the lookback, at most resume-max-gap back.
+  private async gapOf(
+    targets: readonly SignalTarget[],
+    lastId: number,
+  ): ReturnType<Backfill> {
+    const to = Date.now();
+    const wanted = lastId - this.config.get('resume-lookback');
+    const from = Math.max(wanted, to - this.config.get('resume-max-gap'));
+    const byPath = new Map(targets.map((target) => [target.path, target]));
+    const channels = [...new Set(targets.map((target) => target.channel))];
+    const answers = await Promise.all(
+      channels.map((channel) =>
+        this.history.range(targets, { channel, from, to }),
+      ),
+    );
+    const samples: PastSample[] = answers
+      .flatMap((answer) => answer.samples)
+      .flatMap((sample) => {
+        const target = byPath.get(sample.path);
+        if (target === undefined) return [];
+        const { path, channel, ts, value } = sample;
+        return [{ path, twin: target.twin, channel, ts, value }];
+      })
+      .sort((a, b) => a.ts - b.ts);
+    const complete =
+      from === wanted && answers.every((answer) => !answer.truncated);
+    return { samples, complete, from, to };
   }
 
   // Nothing the user may read is refused before any work is done.

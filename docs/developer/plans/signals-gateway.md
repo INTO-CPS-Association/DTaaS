@@ -107,18 +107,24 @@ protection.
 
 ### Live Samples Over MQTT (Phase 3, G11)
 
-Virtual hosts separate the data flows of users, so each owner of a twin (a user
-or a GitLab group) publishes in its own virtual host `<owner>`. An MQTT client
-names that virtual host in its username, as `<owner>:<account>`. The broker's
-`mqtt.vhost = /` applies only to a client that names no virtual host
-([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)). The gateway holds
-one connection per owner it serves, with the client ID
-`dtaas_signals_<host>_<owner>`. It makes one subscription per path that an open
-stream asks for. Live samples use QoS 0, since a sample
-lost during a reconnect is still in the history. A message is forwarded only
-when it carries the fields `value`, `ts` and `unit` of the payload convention
-and fits `max-message-bytes`. Every other message is dropped and counted in
-`stats`.
+The broker sends all MQTT traffic through the virtual host `/`, so the gateway
+subscribes there. MQTT clients know only the topic and not the virtual host, and
+the data of each owner of a twin (a user or a GitLab group) is separated by
+topic, as the maintainer decided on 24 November 2026. An earlier version of
+this plan gave each owner its own virtual host `<owner>`, named in the MQTT
+username as `<owner>:<account>`, with one gateway connection per owner. That
+design is not used. The broker's `mqtt.vhost = /` applies to every client that
+names no virtual host
+([RabbitMQ MQTT plugin](https://www.rabbitmq.com/docs/mqtt)), so the
+separation rests on the topic permissions of each account. The gateway holds one
+connection per instance, with the client ID `dtaas_signals_<host>`. It makes one
+subscription per path that an open stream asks for. Live samples use QoS 0,
+since a sample lost during a reconnect is still in the history. Each sample
+carries the time the gateway received it as its event id, and a stream opened
+again with `Last-Event-ID` is first filled from the history (phase 4). A message
+is forwarded only when it carries the fields `value`, `ts` and `unit` of the
+payload convention and fits `max-message-bytes`. Every other message is dropped
+and counted in `stats`.
 
 ### History Through Telegraf (Phase 4, G4, G11)
 
@@ -268,9 +274,10 @@ person's own rights first.
 
 ## Decided in Review
 
-1. Virtual hosts separate the data flows of users. Each owner has its own
-   virtual host, MQTT clients sign in as `<owner>:<account>` and topic
-   permissions inside it limit each account to its projects.
+1. Topics separate the data flows of users. All MQTT traffic uses the virtual
+   host `/`, since MQTT clients know only the topic, and topic permissions
+   limit each account to the topics of its projects. This replaces the earlier
+   decision of one virtual host per owner (maintainer, 24 November 2026).
 2. Dashboards read the services directly. Only the data exchanged in both
    directions between the client and the twins goes through the gateway.
 3. A runner uses a CI/CD variable for now.

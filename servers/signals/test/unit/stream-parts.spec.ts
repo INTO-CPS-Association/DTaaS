@@ -49,11 +49,13 @@ describe('Delivery stats', () => {
       action: 'stream-end',
       paths: 1,
       forwarded: 1,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
     expect(stats.of('3').forwarded).toBe(1);
     expect(stats.of('4')).toEqual({
       forwarded: 0,
+      backfilled: 0,
       dropped: { tooLarge: 0, invalid: 0, congested: 0 },
     });
   });

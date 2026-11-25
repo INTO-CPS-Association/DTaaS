@@ -6,13 +6,20 @@ import { SIGNAL_BROKER, type SignalBroker } from '../broker/broker.js';
 import Config from '../config/config.service.js';
 import DeliveryStats from './delivery-stats.js';
 import SseWriter from './sse-writer.js';
-import StreamSession, { type Recheck } from './stream-session.js';
+import StreamSession, {
+  type Backfill,
+  type Recheck,
+} from './stream-session.js';
 
-/** Who opened a stream, what access allowed and how to ask again. */
+/**
+ * Who opened a stream, what access allowed, how to ask again and, for a
+ * stream that opens again, how to fill the gap.
+ */
 export type StreamRequest = {
   identity: Identity;
   decision: PathDecision;
   recheck?: Recheck;
+  backfill?: Backfill;
 };
 
 /** Runs a stream until the client leaves, its age runs out or the token expires. */
@@ -28,7 +35,7 @@ export default class StreamService {
   ) {} // eslint-disable-line no-empty-function
 
   async run(response: Response, request: StreamRequest): Promise<void> {
-    const { identity, decision, recheck } = request;
+    const { identity, decision, recheck, backfill } = request;
     // The client may have left while access was decided. A session opened
     // now would hold a slot and a subscription until its age runs out.
     if (response.destroyed || response.writableEnded) return;
@@ -40,6 +47,7 @@ export default class StreamService {
         targets: decision.allowed,
         options: this.optionsFor(identity),
         recheck,
+        backfill,
       },
     );
     response.on('close', () => session.end());
@@ -53,6 +61,7 @@ export default class StreamService {
         user: identity.username,
         action: 'stream-end',
         paths: decision.allowed.length,
+        resumed: backfill !== undefined,
         durationMs: Date.now() - startedAt,
         ...session.counts,
       }),
