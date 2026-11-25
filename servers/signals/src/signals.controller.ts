@@ -14,14 +14,13 @@ import SignalsAuthGuard, {
   type AuthenticatedRequest,
   userOf,
 } from './auth/auth.guard.js';
-import AccessService from './authz/access.service.js';
+import AccessService, { type AccessScope } from './authz/access.service.js';
 import type { Action, Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import {
   parseRangeRequest,
   parseStreamRequest,
   twinOf,
-  type TwinRef,
 } from './dto/requests.js';
 
 export type PlaceholderAnswer = {
@@ -60,7 +59,11 @@ export default class SignalsController {
     @Req() request: AuthenticatedRequest,
   ): Promise<PlaceholderAnswer> {
     const paths = parseStreamRequest(body, this.pathLimits());
-    await this.authorise(request, 'stream', paths, twinOf(body));
+    const twin = twinOf(body);
+    await this.authorise(
+      { subject: subjectOf(request), action: 'stream', twin },
+      paths,
+    );
     return { status: 'not-implemented', route: 'stream' };
   }
 
@@ -76,23 +79,17 @@ export default class SignalsController {
       maxSpan: this.config.get('range-max-span'),
     };
     const { paths } = parseRangeRequest(body, limits);
-    await this.authorise(request, 'range', paths, twinOf(body));
+    const twin = twinOf(body);
+    await this.authorise(
+      { subject: subjectOf(request), action: 'range', twin },
+      paths,
+    );
     return { status: 'not-implemented', route: 'range' };
   }
 
   // Nothing the user may read is refused before any work is done.
-  private async authorise(
-    request: AuthenticatedRequest,
-    action: Action,
-    paths: string[],
-    twin?: TwinRef,
-  ): Promise<void> {
-    const decision = await this.access.decide(
-      subjectOf(request),
-      action,
-      paths,
-      twin,
-    );
+  private async authorise(scope: AccessScope, paths: string[]): Promise<void> {
+    const decision = await this.access.decide(scope, paths);
     if (decision.allowed.length === 0) throw new ForbiddenException();
   }
 

@@ -8,6 +8,9 @@ import { signalsOfVisualisation } from './visualisation.js';
 /** A project of the DTaaS group: the repository of one user, its owner. */
 export type GroupProject = { id: number; owner: string };
 
+// One commit of a project, read with one token.
+type ProjectCommit = { project: GroupProject; sha: string; token: string };
+
 const VISUALISATION_FILE = 'visualisation.json';
 
 const branchSchema = z.object({ commit: z.object({ id: z.string().min(1) }) });
@@ -46,18 +49,19 @@ export default class TwinReader {
     sha: string,
     token: string,
   ): Promise<SignalTarget[]> {
-    const twins = await this.twinNames(project, sha, token);
+    const commit = { project, sha, token };
+    const twins = await this.twinNames(commit);
     const lists = await Promise.all(
-      twins.map((twin) => this.signalsOfTwin(project, twin, sha, token)),
+      twins.map((twin) => this.signalsOfTwin(commit, twin)),
     );
     return lists.flat();
   }
 
-  private async twinNames(
-    project: GroupProject,
-    sha: string,
-    token: string,
-  ): Promise<string[]> {
+  private async twinNames({
+    project,
+    sha,
+    token,
+  }: ProjectCommit): Promise<string[]> {
     const folder = encodeURIComponent(this.config.get('twins-folder'));
     const resource = `api/v4/projects/${project.id}/repository/tree?path=${folder}&ref=${encodeURIComponent(sha)}`;
     const entries = await this.gitlab
@@ -72,10 +76,8 @@ export default class TwinReader {
   }
 
   private async signalsOfTwin(
-    project: GroupProject,
+    { project, sha, token }: ProjectCommit,
     twin: string,
-    sha: string,
-    token: string,
   ): Promise<SignalTarget[]> {
     const file = encodeURIComponent(
       `${this.config.get('twins-folder')}/${twin}/${VISUALISATION_FILE}`,
@@ -85,16 +87,19 @@ export default class TwinReader {
       .getText(resource, token)
       .catch(notFoundAs(undefined));
     if (text === undefined) return [];
-    let raw: unknown;
-    try {
-      raw = JSON.parse(text);
-    } catch {
-      this.logger.warn(
-        `Skipped ${project.owner}/${twin}: visualisation.json is not JSON`,
-      );
-      return [];
-    }
+    const raw = this.parseJson(text, `${project.owner}/${twin}`);
+    if (raw === undefined) return [];
     return signalsOfVisualisation(raw, this.contextOf(project.owner, twin));
+  }
+
+  // A file that is not JSON declares nothing, and the twin is skipped.
+  private parseJson(text: string, name: string): unknown {
+    try {
+      return JSON.parse(text) as unknown;
+    } catch {
+      this.logger.warn(`Skipped ${name}: visualisation.json is not JSON`);
+      return undefined;
+    }
   }
 
   private contextOf(owner: string, twin: string) {
