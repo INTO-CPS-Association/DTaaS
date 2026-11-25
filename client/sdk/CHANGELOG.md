@@ -25,6 +25,10 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `examples/hello-kit` and its integration test. The template kit lives in
   `kits/hello-kit` of the `dtaas-extensions` repository, next to the other
   kits and is tested there.
+- `RESERVED_EXTENSION_IDS`. The reserved ids are the first segments of the
+  host's own routes, so the host keeps the list and passes it to
+  `validateExtension` as `reservedIds`. Without that option no id is reserved.
+  The package keeps the rules on the shape of an id.
 
 ### Security
 
