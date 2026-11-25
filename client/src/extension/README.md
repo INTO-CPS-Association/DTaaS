@@ -6,9 +6,10 @@ that adds pages to this client without changing its code. The SDK is the
 contract between the two: the types an extension implements and the
 services the client gives it.
 
-The Buildings page is the first extension, from the `./dtaas` entry of
-`@into-cps-association/bim-kit`. The client must still build and pass its tests
-with the list in `src/extensions.ts` empty.
+The Buildings page is the first extension: `extensions/bim/`, which takes the
+extension of the `./dtaas` entry of `@into-cps-association/bim-kit` and adds the
+`aec` substrate. The client must still build and pass its tests with the list in
+`src/extensions.ts` empty.
 
 ## Where the Contract Lives
 
@@ -50,7 +51,6 @@ in `REACT_APP_EXTENSIONS_DISABLED`, for example `'wind, pump'`.
 | `serviceDirectory.ts`    | Services one extension offers another, by the ids it requires    |
 | `startExtensions.ts`     | Calls `setup` of every extension once                            |
 | `extensionState.ts`      | The Redux slices of the extensions, at `state.ext.<id>`          |
-| `unavailableCore.ts`     | The `signals` and `viz` services while the client has no core    |
 | `contentsClient.ts`      | Files in the user's workspace, through the Jupyter Contents API  |
 | `contentsUpload.ts`      | A write of any size, in pieces and under a temporary name        |
 | `gitClient.ts`           | GitLab under the user's OAuth session                            |
@@ -61,9 +61,8 @@ client layout with its services, `DigitalTwinTabPage.tsx` a tab an extension
 adds to the Digital Twins page and `AssetPreviewPage.tsx` a library file shown
 by the extension that previews its type.
 
-The `signals` and `viz` services come from `unavailableCore.ts` until the common
-visualisation core joins the client: no signal arrives, every connection reads
-`down` and no visualisation is read or saved.
+The `signals` and `viz` services come from the common visualisation core in
+`src/viz/`, which has its own README.
 
 ## Services Between Extensions
 

@@ -6,13 +6,6 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Changed
-
-- The package is named `@into-cps-association/dtaas-extensions`, the name the
-  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
-  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
-  uses the new name.
-
 ### Added
 
 - `DtaasExtension.apiRange`: the range of the extension API an extension works
@@ -32,6 +25,20 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   reaches them through `HostServices.extensions.get(id)` and never imports the
   code of another extension. `validateExtension` checks the names and
   `fakeHostServices` takes a `services` option.
+- API version `1.3.0`: the colour schemes of the encodings (`SCHEMES`,
+  `colourAt` and `position`), so a kit draws a legend in the colours of the
+  core. The same version adds the optional `UiService.Theme`, the host's theme
+  for what a kit draws into a React root of its own.
+
+### Changed
+
+- The package is named `@into-cps-association/dtaas-extensions`, the name the
+  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
+  uses the new name.
+- `aec` is no longer a standard substrate (requirement K5). The bim extension
+  contributes it, so a preset that names `aec` needs an extension that
+  contributes the substrate.
 
 ### Removed
 

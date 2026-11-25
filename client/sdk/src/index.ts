@@ -128,3 +128,4 @@ export type {
   TbEntity,
 } from './visualisation/digitalTwin.types';
 export type { VisualisationAsset } from './visualisation/asset.types';
+export { SCHEMES, colourAt, position } from './visualisation/schemes';

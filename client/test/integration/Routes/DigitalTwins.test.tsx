@@ -27,11 +27,10 @@ describe('Digital Twins', () => {
 
     const mainTablist = tablists[0];
     const mainTabs = within(mainTablist).getAllByRole('tab');
-    expect(mainTabs).toHaveLength(3);
-
-    mainTabs.forEach((tab, tabIndex) => {
-      expect(tab).toHaveTextContent(tabs[tabIndex].label);
-    });
+    // The workspace tabs only. The View tab is on /preview/digitaltwins.
+    expect(mainTabs.map((tab) => tab.textContent)).toEqual(
+      tabs.map((tab) => tab.label),
+    );
 
     const mainParagraph = screen.getByText(tabs[0].body, { normalizer });
     expect(mainParagraph).toBeInTheDocument();

@@ -17,7 +17,15 @@ import {
 } from 'extension/hostServices';
 import createServiceDirectory from 'extension/serviceDirectory';
 import startExtensions from 'extension/startExtensions';
-import unavailableCore from 'extension/unavailableCore';
+import createCore from 'viz/createCore';
+
+// A substrate adapter is built with the services the host shares, under the
+// host's own name in the log. It asks no extension for a service.
+const NO_SERVICES = {
+  get: (id: string): never => {
+    throw new Error(`A substrate gets no service of an extension: ${id}`);
+  },
+};
 
 export const sharedServices: SharedServices = createSharedServices(
   {
@@ -25,7 +33,10 @@ export const sharedServices: SharedServices = createSharedServices(
     notify: (message, severity) =>
       store.dispatch(showSnackbar({ message, severity })),
   },
-  unavailableCore,
+  (contents) =>
+    createCore(env, contents, registry.enabled, () =>
+      servicesFor('host', sharedServices, env, NO_SERVICES),
+    ),
 );
 
 const hosts = new Map<string, HostServices>();
