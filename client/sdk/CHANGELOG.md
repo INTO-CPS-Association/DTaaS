@@ -6,12 +6,16 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+Version 0.2.0, the first under the name
+`@into-cps-association/dtaas-extensions`.
+
 ### Added
 
-- API version `1.5.0`: the optional `unit` of `SignalSample` and `Sampled`, the
-  unit a source gave with a value. A kit compares it with the unit it expects
-  and no longer has to assume one from the name of the quantity. A host that
-  does not know the unit leaves the field out.
+- API version `1.5.0` of the earlier numbering: the optional `unit` of
+  `SignalSample` and `Sampled`, the unit a source gave with a value. A kit
+  compares it with the unit it expects and no longer has to assume one from
+  the name of the quantity. A host that does not know the unit leaves the
+  field out.
 - `react-dom/client` among the shared modules, under `reactDomClient`, so a
   kit that draws the controls of a substrate starts its React root with the
   host's copy. A host fills the key from its own `react-dom/client`.
@@ -19,6 +23,21 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   bundle with the modules the host shares and returns what it registered.
 - `tests/fixtures/kit`, the smallest kit, which `kitBundle.test.ts` builds with
   `kitBuildConfig` and mounts.
+- `./core` and `./react` entries. `./core` holds the constants, the
+  validation, the API range helpers and the types, and imports no React at run
+  time. `./react` holds `HostProvider` and `useHost`. The root entry
+  re-exports both, so every import of 0.1 keeps working.
+- `API_VERSION`, the version of the extension API, which is the version of the
+  package, and `API_MAJOR`, derived from it.
+- `readVisualisationAsset(input, { allowedOrigins })` in `./schema`, the way a
+  host reads a `visualisation.json`. It refuses more than 1 MiB
+  (`MAX_ASSET_BYTES`) before parsing, parses the JSON, checks the schema and
+  refuses a transport whose origin the deployment does not allow.
+- `checkConformance` calls every converter, field kernel and substrate loader
+  and refuses one that does not return a promise.
+- `validateExtension` checks route paths: a path is relative to the
+  extension's mount point and has no `.` or `..` segment, backslash, control
+  character or percent-encoded `.`, `/` or `\`.
 
 ### Changed
 
@@ -28,6 +47,22 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   uses the new name.
 - The `hello-kit` example and `yarn build:kit` leave this folder. Every kit is
   a package of its own in the `kits/` folder of the dtaas-extensions repository.
+- The API is numbered with the package, at `0.2.0`, and `sdk` is `0`. An
+  extension built for 0.1 changes `sdk: 1` to `sdk: 0` and its `apiRange` to
+  `^0.2`. `SDK_VERSION` and `SDK_MAJOR` remain as aliases of `API_VERSION` and
+  `API_MAJOR`.
+- `apiRange` is read by npm's `semver` package, so a range in a manifest and
+  the same range in `peerDependencies` get the same answer. An empty range and
+  a range longer than 256 characters are refused. The client provides
+  `semver`, because a linked folder installs no dependencies of its own.
+- The `./eslint` rules for dynamic imports are built from the same list as the
+  static ones.
+- Internal names are renamed: `describe` is `printable` and `Loose` is
+  `UntypedExtension`. `LibraryService.resolve` documents `workspace://` for
+  workspace files.
+- The fakes of `./testing` return promises without `async` functions,
+  `replayFixture` computes each frame time from its index and
+  `createMemoryContents` strips slashes without a regular expression.
 
 ### Removed
 
@@ -41,6 +76,16 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `colourAt` keeps a position off the scale at the nearer end of the scheme and
   gives the first colour for `NaN`, as `position` does for a domain with no
   width. It threw for a negative position and returned an invalid colour above 1.
+
+### Security
+
+- `./schema` bounds the `substrates` record to 1000 entries and a substrate's
+  `options` to 64 settings, each a scalar, a list of scalars or one level of
+  named scalars.
+- `./schema` refuses a `..` segment, plain or percent-encoded, in a relative
+  path, a `lib:` URL or a `git:` URL.
+- `./schema` refuses an `http` transport that polls more often than once a
+  second.
 
 ## [0.1.1] - 2026-11-09
 

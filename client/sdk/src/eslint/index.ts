@@ -32,6 +32,23 @@ const importPatterns = [
   { group: SOCKET_LIBRARIES, message: USE_SIGNALS },
 ];
 
+/** `pattern` with the characters a regular expression reads as syntax escaped. */
+const escapeRegExp = (pattern: string) =>
+  pattern.replace(/[.*+?^${}()|[\]\\/]/g, String.raw`\$&`);
+
+/** The package names of `SOCKET_LIBRARIES`, without their `/*` subpaths. */
+const socketPackages = [
+  ...new Set(SOCKET_LIBRARIES.map((name) => name.replace(/\/\*$/, ''))),
+];
+
+/**
+ * A pattern for a module source that is `name` or one of its subpaths. It is
+ * built from the package names so that the static and dynamic import rules
+ * read the same list.
+ */
+const packagePattern = (names: readonly string[]) =>
+  String.raw`^(${names.map(escapeRegExp).join('|')})(\/|$)`;
+
 /** esquery selector for `import('<source>')` whose source matches `pattern`. */
 const dynamicImport = (pattern: string, message: string) => ({
   selector: `ImportExpression[source.value=/${pattern}/]`,
@@ -40,16 +57,13 @@ const dynamicImport = (pattern: string, message: string) => ({
 
 // The same boundaries for import(), the idiom this contract uses for lazy code.
 const dynamicImports = [
+  dynamicImport(packagePattern(socketPackages), USE_SIGNALS),
   dynamicImport(
-    '^(mqtt|@stomp\\/stompjs|@influxdata\\/influxdb-client|socket\\.io-client|ws)(\\/|$)',
-    USE_SIGNALS,
-  ),
-  dynamicImport(
-    '^@into-cps-association\\/dtaas-web(\\/|$)',
+    packagePattern([HOST]),
     `Extensions never import the host; use HostServices from ${SDK}.`,
   ),
   dynamicImport(
-    '^@into-cps-association\\/dtaas-visualisation(\\/(?!contribute(\\/|$))|$)',
+    String.raw`^${escapeRegExp(CORE)}(\/(?!contribute(\/|$))|$)`,
     CORE_MESSAGE,
   ),
 ];
@@ -73,7 +87,11 @@ const propertyRestrictions = [
 ];
 
 /**
- * Where an extension may reach (architecture §6.3). Spread it into a kit's
+ * Where an extension may reach (architecture §6.3). These rules catch the
+ * usual mistakes, such as importing a broker client or opening a WebSocket.
+ * They are not a security boundary: extensions are trusted code, and `fetch`,
+ * `XMLHttpRequest`, computed access such as `globalThis['WebSocket']` and
+ * code that runs after mount pass them. Spread it into a kit's
  * `eslint.config.mjs`; it uses core ESLint rules only. A later config that
  * sets the same rules replaces these options and does not merge with them.
  * airbnb-base sets `no-restricted-syntax`, so spread this config after it.

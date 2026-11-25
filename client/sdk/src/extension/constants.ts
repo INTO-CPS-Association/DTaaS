@@ -1,13 +1,30 @@
-/** Major version of the extension contract. Extensions declare it as `sdk`. */
-export const SDK_MAJOR = 1 as const;
-
 /**
  * The version of the extension API this package describes, which a host built
- * on it implements. An extension's `apiRange` is checked against it. A new
- * contribution point or service raises the minor number and a change that an
- * existing extension would notice raises the major number (K10).
+ * on it implements. It is the version of the npm package, so one number names
+ * both. An extension's `apiRange` is checked against it. While the API is at
+ * `0.x`, a change an existing extension would notice raises the minor number
+ * and any other change raises the patch number (K10).
  */
-export const SDK_VERSION = '1.5.0';
+export const API_VERSION = '0.2.0' as const;
+
+/** The leading number of a `major.minor.patch` version, as a literal type. */
+type MajorOf<V extends string> = V extends `${infer M extends number}.${string}`
+  ? M
+  : never;
+
+/**
+ * Major version of the extension API, derived from `API_VERSION` so the two
+ * cannot drift. Extensions declare it as `sdk`.
+ */
+export const API_MAJOR = Number(API_VERSION.split('.')[0]) as MajorOf<
+  typeof API_VERSION
+>;
+
+/** @deprecated Use `API_VERSION`. Kept so that imports of 0.1 still compile. */
+export const SDK_VERSION = API_VERSION;
+
+/** @deprecated Use `API_MAJOR`. Kept so that imports of 0.1 still compile. */
+export const SDK_MAJOR = API_MAJOR;
 
 /** The value channels every signal can carry (R5). */
 export const CHANNELS = [

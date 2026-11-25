@@ -60,3 +60,28 @@ describe('navigation rule', () => {
     );
   });
 });
+
+describe('route rule', () => {
+  const routeErrors = (...paths: string[]) => {
+    const ext = looseExtension() as unknown as Record<string, unknown>;
+    ext.routes = paths.map((path) => ({ path, element: undefined }));
+    return validateExtension(ext).errors.filter((e) => e.includes('.path'));
+  };
+
+  it('accepts paths relative to the mount point', () => {
+    expect(routeErrors('', 'detail', 'models/:model', 'files/*')).toEqual([]);
+  });
+
+  it('refuses an absolute path', () => {
+    expect(routeErrors('/admin')).toEqual([
+      'routes[0].path "/admin" must be relative to the extension\'s mount point',
+    ]);
+  });
+
+  it.each(['../admin', 'a/./b', 'a\\b', 'a/%2e%2e/b'])(
+    'refuses %j, which can leave the mount point',
+    (path) => {
+      expect(routeErrors(path)).toHaveLength(1);
+    },
+  );
+});

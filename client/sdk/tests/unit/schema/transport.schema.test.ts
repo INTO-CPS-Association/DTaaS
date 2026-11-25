@@ -113,4 +113,12 @@ describe('transportSchema', () => {
     const transport = { adapter: 'mqtt', url: 'wss://b/ws', topics };
     expect(transportSchema.safeParse(transport).success).toBe(false);
   });
+
+  it.each([0.0001, 0, 999])(
+    'refuses an http polling interval of %p ms',
+    (intervalMs) => {
+      const transport = { adapter: 'http', url: 'https://l/api', intervalMs };
+      expect(transportSchema.safeParse(transport).success).toBe(false);
+    },
+  );
 });

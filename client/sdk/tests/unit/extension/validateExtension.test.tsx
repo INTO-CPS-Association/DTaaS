@@ -13,7 +13,7 @@ describe('validateExtension', () => {
   });
 
   it('accepts an extension with no contributions at all', () => {
-    const minimal = { id: 'min', name: 'Minimal', version: '1.0.0', sdk: 1 };
+    const minimal = { id: 'min', name: 'Minimal', version: '1.0.0', sdk: 0 };
     expect(errorsOf(minimal)).toEqual([]);
   });
 
@@ -26,7 +26,7 @@ describe('validateExtension', () => {
       'id must be a string matching ^[a-z][a-z0-9-]*$',
       'name must be a non-empty string',
       'version must be a non-empty string',
-      'sdk must be 1',
+      'sdk must be 0',
     ]);
   });
 
@@ -62,7 +62,7 @@ describe('validateExtension', () => {
 
   it('rejects another SDK major', () => {
     expect(errorsOf({ ...looseExtension(), sdk: 2 })).toEqual([
-      'sdk must be 1',
+      'sdk must be 0',
     ]);
   });
 

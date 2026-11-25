@@ -5,7 +5,7 @@ import type {
 import startExtensions from 'extension/startExtensions';
 
 const kit = (id: string, setup?: DtaasExtension['setup']) =>
-  ({ id, name: id, version: '0.1.0', sdk: 1, setup }) as DtaasExtension;
+  ({ id, name: id, version: '0.1.0', sdk: 0, setup }) as DtaasExtension;
 
 describe('startExtensions', () => {
   const warn = jest.fn();

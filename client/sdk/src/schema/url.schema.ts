@@ -56,6 +56,28 @@ const carriesCredentials = (value: string) => {
   }
 };
 
+/** Schemes whose path the host resolves inside the twin or its library. */
+const HOST_RESOLVED_SCHEMES = ['lib', 'git'];
+
+/**
+ * Whether a path the host resolves climbs to a parent folder, as
+ * `../../other-twin/secret.ifc` or `lib:../../x` do. The host joins such a
+ * path to the twin or the library, so a `..` segment, written plainly or
+ * percent-encoded, would reach files of another twin. The part after `?` or
+ * `#` is not a path. An absolute `http` URL is left alone, because the URL
+ * parser resolves its dot segments and it stays on the host it names.
+ */
+const climbsOut = (value: string) => {
+  const scheme = schemeOf(value);
+  if (scheme !== undefined && !HOST_RESOLVED_SCHEMES.includes(scheme)) {
+    return false;
+  }
+  const [pathPart] = value.split(/[?#]/, 1);
+  return pathPart
+    .split(/[\\/:]/)
+    .some((segment) => segment.replace(/%2e/gi, '.') === '..');
+};
+
 const allowedText = (rule: UrlRule) => {
   const schemes = rule.schemes.map((s) => `${s}:`).join(', ');
   return rule.relative ? `${schemes} or a relative path` : schemes;
@@ -74,6 +96,9 @@ export const urlSchema = (rule: UrlRule) =>
     .refine((value) => !carriesCredentials(value), {
       message:
         'A URL must not carry a user name or password. The host keeps credentials',
+    })
+    .refine((value) => !climbsOut(value), {
+      message: 'A path the host resolves must not contain a ".." segment',
     });
 
 export default urlSchema;

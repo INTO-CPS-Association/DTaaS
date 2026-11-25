@@ -1,6 +1,6 @@
 import type { ComponentType, LazyExoticComponent } from 'react';
 import type { ZodType } from 'zod';
-import type { SDK_MAJOR } from './constants';
+import type { API_MAJOR } from './constants';
 import type { HostServices } from '../host/hostServices.types';
 import type { DomainContribution } from '../visualisation/contribution.types';
 import type { DigitalTwinSummary } from '../visualisation/digitalTwin.types';
@@ -81,12 +81,13 @@ export interface DtaasExtension<S = unknown> {
   readonly id: string;
   readonly name: string;
   readonly version: string;
-  /** The contract major this extension was built against. */
-  readonly sdk: typeof SDK_MAJOR;
+  /** The extension API major this extension was built against (`API_MAJOR`). */
+  readonly sdk: typeof API_MAJOR;
   /**
    * The versions of the extension API this extension works with, as a semver
-   * range such as `^1.1`. A host whose `SDK_VERSION` is outside it refuses the
-   * extension. Without it, any version of the `sdk` major is accepted.
+   * range such as `^0.2`, read as npm reads `peerDependencies`. A host whose
+   * `API_VERSION` is outside it refuses the extension. Without it, any version
+   * of the `sdk` major is accepted.
    */
   readonly apiRange?: string;
   readonly routes?: readonly ExtensionRoute[];

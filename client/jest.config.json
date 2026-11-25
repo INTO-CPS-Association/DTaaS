@@ -55,7 +55,7 @@
     "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/styleMock.ts",
     "^uuid$": "<rootDir>/test/__mocks__/uuidMock.ts",
     "^@into-cps-association/dtaas-extensions$": "<rootDir>/sdk/src/index.ts",
-    "^@into-cps-association/dtaas-extensions/(schema|testing|eslint)$": "<rootDir>/sdk/src/$1/index.ts"
+    "^@into-cps-association/dtaas-extensions/(core|react|schema|testing|eslint)$": "<rootDir>/sdk/src/$1/index.ts"
   },
   "maxWorkers": 3,
   "setupFiles": ["<rootDir>/test/setupTests.ts"]

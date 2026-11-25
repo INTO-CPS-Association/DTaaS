@@ -155,7 +155,7 @@ export const extension = defineExtension({
   id: 'automation',
   name: 'Automation',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [
     { path: '', element: lazy(() => import('./pages/AutomationPage')) },
     { path: 'library', element: lazy(() => import('./pages/LibraryPage')) },

@@ -18,7 +18,7 @@ const wind: DtaasExtension = {
   id: 'wind',
   name: 'Wind kit',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [{ path: '', element: WindPage }],
   navigation: [{ label: 'Wind Farms', path: '/wind' }],
 };

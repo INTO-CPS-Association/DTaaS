@@ -1,8 +1,16 @@
-// Shared building blocks
-export { channelSchema, domainSchema, pointSchema } from './common.schema';
+// Shared building blocks and bounds
+export {
+  channelSchema,
+  domainSchema,
+  MAX_ASSET_BYTES,
+  MAX_LIST_LENGTH,
+  MAX_RECORD_ENTRIES,
+  MAX_STRING_LENGTH,
+  pointSchema,
+} from './common.schema';
 
 // Layer 1: transports
-export { transportSchema } from './transport.schema';
+export { MIN_POLL_INTERVAL_MS, transportSchema } from './transport.schema';
 
 // Layer 3: anchors
 export { anchorSchema } from './anchor.schema';
@@ -20,5 +28,7 @@ export {
 // visualisation.json
 export {
   parseVisualisationAsset,
+  readVisualisationAsset,
   visualisationAssetSchema,
 } from './visualisation.schema';
+export type { AssetPolicy } from './visualisation.schema';

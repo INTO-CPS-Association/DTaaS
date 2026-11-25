@@ -147,4 +147,17 @@ describe('exotic input', () => {
     });
     expect(errors).toContain('routes[0] "[object]": path must be a string');
   });
+
+  it.each([
+    [{ a: 1 }, '[object]'],
+    [() => 1, '[function]'],
+    [Symbol('route'), 'route'],
+    [12, '12'],
+    [null, ''],
+  ])('prints the identifier %p as %p', (path, printed) => {
+    const errors = errorsOf((e) => {
+      e.routes[0].path = path;
+    });
+    expect(errors).toContain(`routes[0] "${printed}": path must be a string`);
+  });
 });

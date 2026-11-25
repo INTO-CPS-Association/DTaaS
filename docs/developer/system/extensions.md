@@ -43,12 +43,12 @@ and a test harness with `fakeHostServices`, `fakeSignals` and
 `checkConformance`, so an extension is tested without a running installation.
 Its README describes the package and `yarn test:sdk` runs its tests.
 
-An extension declares the contract revision it was built against (`sdk: 1`),
-which is separate from the npm version of the package, and a host refuses an
-extension built for another revision. An extension may also declare the versions
-of the API it works with as a semver range (`apiRange`, such as `^1.1`). A host
-refuses an extension whose range does not include the API version the host
-implements (`SDK_VERSION`).
+An extension declares the major of the API it was built against (`sdk: 0`),
+and a host refuses an extension built for another major. An extension may also
+declare the versions of the API it works with as a semver range (`apiRange`,
+such as `^0.2`). A host refuses an extension whose range does not include the
+API version the host implements (`API_VERSION`), which is the version of the
+package.
 
 ## The Extension Host
 

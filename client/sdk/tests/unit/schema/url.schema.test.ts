@@ -29,12 +29,44 @@ describe('urlSchema', () => {
     expect(accepts(withPaths, value)).toBe(false);
   });
 
-  it.each(['data/run.csv', './run.csv', '../models/a.ifc', '/lib/a.jpg'])(
+  it.each(['data/run.csv', './run.csv', '/lib/a.jpg', 'data/run.csv?q=..'])(
     'accepts the relative path %j when paths are allowed',
     (value) => {
       expect(accepts(withPaths, value)).toBe(true);
     },
   );
+
+  describe('with the paths the host resolves', () => {
+    const hostPaths = urlSchema({
+      schemes: ['lib', 'git', 'https'],
+      relative: true,
+    });
+
+    it.each([
+      '../models/a.ifc',
+      '../../other-twin/secret.ifc',
+      'models/../../x.ifc',
+      'models\\..\\x.ifc',
+      'models/%2e%2e/x.ifc',
+      'models/.%2E/x.ifc',
+      'lib:../../x',
+      'lib://common/../../x',
+      'git://twins/a/../../b',
+    ])('refuses %j, which climbs out of its folder', (value) => {
+      const result = hostPaths.safeParse(value);
+      expect(result.error?.issues.map((i) => i.message)).toEqual([
+        'A path the host resolves must not contain a ".." segment',
+      ]);
+    });
+
+    it.each([
+      'lib://common/models/a.ifc',
+      'models/a..b.ifc',
+      'https://a.example/x/../y',
+    ])('accepts %j', (value) => {
+      expect(accepts(hostPaths, value)).toBe(true);
+    });
+  });
 
   it('refuses a relative path when paths are not allowed', () => {
     expect(accepts(absoluteOnly, 'data/run.csv')).toBe(false);

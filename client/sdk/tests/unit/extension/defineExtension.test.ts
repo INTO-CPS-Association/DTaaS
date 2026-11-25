@@ -6,7 +6,7 @@ describe('defineExtension', () => {
       id: 'hello',
       name: 'Hello',
       version: '1',
-      sdk: 1 as const,
+      sdk: 0 as const,
     };
     expect(defineExtension(extension)).toBe(extension);
   });

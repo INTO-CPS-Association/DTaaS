@@ -21,7 +21,7 @@ export interface LibraryService {
   /** React hook; `null` until the library URL is known. */
   useBaseUrl(): string | null;
   readonly conventions: LibraryConventions;
-  /** Resolve `lib://` and `ws://` (workspace) URLs to fetchable URLs. */
+  /** Resolve `lib://` (library) and `workspace://` (workspace) URLs to fetchable URLs. */
   resolve(url: string): Promise<string>;
 }
 

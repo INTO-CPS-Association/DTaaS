@@ -19,6 +19,7 @@ import createFakeViz, {
 } from './fakeViz';
 import createMemoryContents, { type MemoryContents } from './memoryContents';
 import createMemoryGit, { type GitRecord } from './memoryGit';
+import settle from './settle';
 
 export interface FakeHostOptions {
   /** Whose `REACT_APP_EXT_<ID>_*` keys `config()` reads. Default `test`. */
@@ -53,15 +54,17 @@ export interface FakeHostServices extends HostServices {
 }
 
 const createLibrary = (baseUrl: string): LibraryService => ({
-  baseUrl: async () => baseUrl,
+  baseUrl: () => settle(() => baseUrl),
   useBaseUrl: () => baseUrl,
   conventions: {
     modelsDirectory: 'common/models',
     digitalTwinsDirectory: 'digital_twins',
     visualisationsDirectory: 'common/visualisations',
   },
-  resolve: async (url) =>
-    url.startsWith('lib://') ? `${baseUrl}/${url.slice(6)}` : url,
+  resolve: (url) =>
+    settle(() =>
+      url.startsWith('lib://') ? `${baseUrl}/${url.slice(6)}` : url,
+    ),
 });
 
 const createLogger = (recorded: Recorded): Logger => {
@@ -89,10 +92,11 @@ const createConfig =
 
 const createAuth = (user: User | null) => ({
   useUser: () => user,
-  user: async () => {
-    if (!user) throw new Error('Not signed in');
-    return user;
-  },
+  user: () =>
+    settle(() => {
+      if (!user) throw new Error('Not signed in');
+      return user;
+    }),
 });
 
 const createRecorded = (): Recorded => ({

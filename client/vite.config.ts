@@ -23,6 +23,8 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       '@into-cps-association/dtaas-extensions',
+      '@into-cps-association/dtaas-extensions/core',
+      '@into-cps-association/dtaas-extensions/react',
       '@into-cps-association/dtaas-extensions/schema',
     ],
   },

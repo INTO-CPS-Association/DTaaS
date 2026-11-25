@@ -9,7 +9,7 @@ export const extension = defineExtension({
   id: 'fixture',
   name: 'Fixture',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [{ path: '', element: lazy(() => import('./pages/FixturePage')) }],
   navigation: [
     { label: 'Fixture', path: '/fixture', icon: ScienceIcon, order: 100 },

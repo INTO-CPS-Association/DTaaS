@@ -15,7 +15,7 @@ const extension: DtaasExtension = {
   id: 'scada',
   name: 'SCADA kit',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [{ path: '', element: lazy(async () => ({ default: () => null })) }],
 };
 

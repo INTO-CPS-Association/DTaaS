@@ -4,7 +4,7 @@ import {
   entryLabel,
   type ListSpec,
   listSpec,
-  type Loose,
+  type UntypedExtension,
   visualisationOf,
 } from './validationUtils';
 
@@ -16,7 +16,7 @@ const LOADER_LISTS = [
 ];
 
 const checkEntries = (
-  ext: Loose,
+  ext: UntypedExtension,
   spec: ListSpec,
   property: string,
   problem: string,
@@ -29,7 +29,7 @@ const checkEntries = (
   );
 };
 
-const checkInspectorPanel = (ext: Loose): string[] => {
+const checkInspectorPanel = (ext: UntypedExtension): string[] => {
   const panel = visualisationOf(ext)?.inspectorPanel;
   return panel === undefined || isLazyComponent(panel)
     ? []
@@ -37,7 +37,7 @@ const checkInspectorPanel = (ext: Loose): string[] => {
 };
 
 /** Heavy code stays out of the host's entry chunk (goal 4). */
-const checkLaziness = (ext: Loose): string[] => [
+const checkLaziness = (ext: UntypedExtension): string[] => [
   ...ELEMENT_LISTS.flatMap((label) =>
     checkEntries(
       ext,

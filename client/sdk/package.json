@@ -1,6 +1,6 @@
 {
   "name": "@into-cps-association/dtaas-extensions",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "description": "Contract for DTaaS web client extensions: extension and host-service types, visualisation schemas, validation helpers, a test harness and a shareable ESLint config.",
   "author": "prasadtalasila <prasad.talasila@gmail.com> (http://prasad.talasila.in/)",
@@ -10,11 +10,17 @@
   "// exports": "The client builds and tests this package from its TypeScript source, so the exports name the source files and there is no build step.",
   "exports": {
     ".": "./src/index.ts",
+    "./core": "./src/core/index.ts",
+    "./react": "./src/react/index.ts",
     "./schema": "./src/schema/index.ts",
     "./testing": "./src/testing/index.ts",
     "./eslint": "./src/eslint/index.ts",
     "./deploy": "./src/deploy/index.ts",
     "./package.json": "./package.json"
+  },
+  "// dependencies": "semver is installed by the client, because yarn installs nothing for a link: dependency.",
+  "dependencies": {
+    "semver": "7.8.6"
   },
   "scripts": {
     "test": "cd .. && yarn test:sdk"

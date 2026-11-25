@@ -4,7 +4,7 @@ import {
   type FieldKind,
   LIST_SPECS,
   type ListSpec,
-  type Loose,
+  type UntypedExtension,
 } from './validationUtils';
 
 const ARTICLE: Record<FieldKind, string> = {
@@ -19,7 +19,7 @@ const IS_KIND: Record<FieldKind, (value: unknown) => boolean> = {
   array: Array.isArray,
 };
 
-const fieldErrors = (ext: Loose, spec: ListSpec): string[] =>
+const fieldErrors = (ext: UntypedExtension, spec: ListSpec): string[] =>
   entries(spec.pick(ext)).flatMap((entry) =>
     Object.entries(spec.fields)
       .filter(([field, kind]) => !IS_KIND[kind](entry.item[field]))
@@ -30,7 +30,7 @@ const fieldErrors = (ext: Loose, spec: ListSpec): string[] =>
   );
 
 /** Every entry has the fields the host will read or call. */
-const checkRequiredFields = (ext: Loose): string[] =>
+const checkRequiredFields = (ext: UntypedExtension): string[] =>
   LIST_SPECS.flatMap((spec) => fieldErrors(ext, spec));
 
 export default checkRequiredFields;

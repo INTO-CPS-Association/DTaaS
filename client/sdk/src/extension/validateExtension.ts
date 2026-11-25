@@ -1,4 +1,4 @@
-import { SDK_VERSION } from './constants';
+import { API_VERSION } from './constants';
 import { checkIdentity, checkShapes } from './validation/identityRules';
 import checkRequiredFields from './validation/fieldRules';
 import checkLaziness from './validation/lazinessRules';
@@ -7,9 +7,13 @@ import {
   checkSubstrates,
   checkUniqueness,
 } from './validation/contributionRules';
-import checkNavigation from './validation/navigationRules';
+import checkNavigation, { checkRoutes } from './validation/navigationRules';
 import checkServices from './validation/serviceRules';
-import { describe, isObject, type Loose } from './validation/validationUtils';
+import {
+  printable,
+  isObject,
+  type UntypedExtension,
+} from './validation/validationUtils';
 
 export interface ValidationResult {
   readonly valid: boolean;
@@ -23,21 +27,25 @@ export interface ValidateOptions {
    * and defaults to no reserved ids.
    */
   readonly reservedIds?: readonly string[];
-  /** The API version the host implements; defaults to `SDK_VERSION`. */
+  /** The API version the host implements; defaults to `API_VERSION`. */
   readonly hostApiVersion?: string;
 }
 
-const runRules = (ext: Loose, options: ValidateOptions): string[] => [
+const runRules = (
+  ext: UntypedExtension,
+  options: ValidateOptions,
+): string[] => [
   ...checkIdentity(
     ext,
     options.reservedIds ?? [],
-    options.hostApiVersion ?? SDK_VERSION,
+    options.hostApiVersion ?? API_VERSION,
   ),
   ...checkShapes(ext),
   ...checkRequiredFields(ext),
   ...checkLaziness(ext),
   ...checkUniqueness(ext),
   ...checkNavigation(ext),
+  ...checkRoutes(ext),
   ...checkSubstrates(ext),
   ...checkServices(ext),
   ...checkDetect(ext),
@@ -60,7 +68,7 @@ const validateExtension = (
     return { valid: errors.length === 0, errors };
   } catch (error) {
     // Getters and proxies can throw; the host must still get a result.
-    const reason = error instanceof Error ? error.message : describe(error);
+    const reason = error instanceof Error ? error.message : printable(error);
     return { valid: false, errors: [`extension could not be read: ${reason}`] };
   }
 };
