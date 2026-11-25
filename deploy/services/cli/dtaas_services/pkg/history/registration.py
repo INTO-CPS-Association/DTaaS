@@ -51,6 +51,31 @@ def _store(twin: Twin, text: str) -> Path:
     return destination
 
 
+class RegistrationError(Exception):
+    """A twin that cannot be registered yet, with the reason to show."""
+
+
+def _prepare(path: Path) -> tuple[Twin, str]:
+    """Load a twin file and render its Telegraf file, checked by Telegraf."""
+    twin = load_twin(path)
+    missing = _missing_secrets(twin.group)
+    if missing:
+        raise RegistrationError(
+            f"Missing {', '.join(missing)}: run user add-history first"
+        )
+    text = render(twin)
+    passed, error_msg = check(text, twin.group)
+    if not passed:
+        raise RegistrationError(error_msg)
+    return twin, text
+
+
+def _store_error(error: Exception) -> str:
+    if isinstance(error, psycopg.Error):
+        return f"PostgreSQL: {type(error).__name__}: {error}"
+    return f"Cannot write the Telegraf file: {type(error).__name__}"
+
+
 def register_twin(path: Path) -> tuple[bool, str]:
     """Register the twin described by a twin file.
 
@@ -58,22 +83,13 @@ def register_twin(path: Path) -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        twin = load_twin(path)
-    except TwinFileError as e:
+        twin, text = _prepare(path)
+    except (TwinFileError, RegistrationError) as e:
         return False, str(e)
-    missing = _missing_secrets(twin.group)
-    if missing:
-        return False, f"Missing {', '.join(missing)}: run user add-history first"
-    text = render(twin)
-    passed, error_msg = check(text, twin.group)
-    if not passed:
-        return False, error_msg
     try:
         destination = _store(twin, text)
-    except psycopg.Error as e:
-        return False, f"PostgreSQL: {type(e).__name__}: {e}"
-    except OSError as e:
-        return False, f"Cannot write the Telegraf file: {type(e).__name__}"
+    except (psycopg.Error, OSError) as e:
+        return False, _store_error(e)
     count = len(twin.devices)
     return True, f"Registered {count} device(s) of {twin.name}, file {destination}"
 

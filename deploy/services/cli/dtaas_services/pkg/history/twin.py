@@ -98,22 +98,31 @@ def _check_names(data: dict) -> None:
             raise TwinFileError(error_msg)
 
 
-def parse_twin(data: dict) -> Twin:
-    """Validate the content of a twin file."""
-    unknown = set(data) - KNOWN_KEYS
-    if unknown:
-        raise TwinFileError(f"Unknown keys in the twin file: {sorted(unknown)}")
-    _check_names(data)
-    prefix = _levels(data.get("topic_prefix", ""))
+def _prefix(topic: str) -> tuple[str, ...]:
+    prefix = _levels(topic)
     if len(prefix) >= DEVICE_LEVELS:
         raise TwinFileError("The topic prefix must have fewer than seven levels")
-    entries = data.get("devices") or []
+    return prefix
+
+
+def _devices(entries: object, prefix: tuple[str, ...]) -> tuple[Device, ...]:
     if not isinstance(entries, list) or not entries:
         raise TwinFileError("A twin needs at least one device")
     devices = tuple(_device(entry, prefix) for entry in entries)
     ids = [device.device_id for device in devices]
     if len(set(ids)) != len(ids):
         raise TwinFileError("A device_id appears twice")
+    return devices
+
+
+def parse_twin(data: dict) -> Twin:
+    """Validate the content of a twin file."""
+    unknown = set(data) - KNOWN_KEYS
+    if unknown:
+        raise TwinFileError(f"Unknown keys in the twin file: {sorted(unknown)}")
+    _check_names(data)
+    prefix = _prefix(data.get("topic_prefix", ""))
+    devices = _devices(data.get("devices") or [], prefix)
     return Twin(data["group"], data["twin"], prefix, devices)
 
 

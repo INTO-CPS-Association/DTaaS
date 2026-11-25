@@ -102,11 +102,15 @@ export default class StreamSession {
     try {
       const gap = await backfill();
       gap.samples.forEach((sample) => this.sendPast(sample));
-      if (!gap.complete && !this.ended)
-        this.sse.event('gap', { from: gap.from, to: gap.to });
+      if (!gap.complete) this.sendGap(gap.from, gap.to);
     } catch {
-      if (!this.ended) this.sse.event('gap', { from: null, to: null });
+      this.sendGap(null, null);
     }
+  }
+
+  // A gap the history could not fill, or null bounds when it was not read.
+  private sendGap(from: number | null, to: number | null): void {
+    if (!this.ended) this.sse.event('gap', { from, to });
   }
 
   private sendPast(sample: PastSample): void {

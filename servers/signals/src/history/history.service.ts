@@ -108,13 +108,19 @@ export default class HistoryService {
     span: Span,
   ): HistorySample[] {
     return rows.flatMap((row) => {
-      const ts = row.time instanceof Date ? row.time.getTime() : Number.NaN;
-      // Number(null) is 0, so a missing value is checked before converting.
-      const value = row.value === null ? Number.NaN : Number(row.value);
-      if (!Number.isFinite(ts) || !Number.isFinite(value)) return [];
-      return [
-        { path: target.path, channel: span.channel, ts, value, quality: null },
-      ];
+      const reading = readingOf(row);
+      if (reading === undefined) return [];
+      const { path } = target;
+      return [{ path, channel: span.channel, ...reading, quality: null }];
     });
   }
+}
+
+// A row without a time or a finite value is left out.
+function readingOf(row: Row): { ts: number; value: number } | undefined {
+  const ts = row.time instanceof Date ? row.time.getTime() : Number.NaN;
+  // Number(null) is 0, so a missing value is checked before converting.
+  const value = row.value === null ? Number.NaN : Number(row.value);
+  if (!Number.isFinite(ts) || !Number.isFinite(value)) return undefined;
+  return { ts, value };
 }
