@@ -38,8 +38,7 @@ describe('Delivery stats', () => {
     const identity = { id: '3', username: 'alice', email: '' };
     const running = new StreamService(testConfig(), broker, stats).run(
       response.asResponse(),
-      identity,
-      { allowed: [FLOW], refused: [] },
+      { identity, decision: { allowed: [FLOW], refused: [] } },
     );
     await new Promise((resolve) => setImmediate(resolve));
     broker.deliver('alice/pump/flow', reading(1));

@@ -15,7 +15,7 @@ from .grafana import write_datasource
 from .kit_hooks import apply_kits
 from .kits import load_kits
 from .names import telegraf_account, validate_name
-from .owners import merge_owners, read_owners, write_owners
+from .owners import GroupGrant, merge_owners, read_owners, write_owners
 from .pg_admin import connect, ensure_database
 from .roles import ensure_roles, grant_history
 from .schema import CORE_MIGRATIONS, apply_migrations
@@ -50,11 +50,11 @@ def setup_broker_account(group: str, projects: list[str]) -> tuple[bool, str]:
     account = telegraf_account(group)
     password = ensure_password("telegraf", "rabbitmq", account)
     success, error_msg = ensure_user(account, password)
-    if not success:
-        return False, error_msg
-    success, error_msg = grant_mqtt_account(
-        account, NOTHING, project_read_pattern(projects)
-    )
+    # Each step runs only when the one before it succeeded.
+    if success:
+        success, error_msg = grant_mqtt_account(
+            account, NOTHING, project_read_pattern(projects)
+        )
     if not success:
         return False, error_msg
     return limit_session_queues(account, max_length)
@@ -97,6 +97,16 @@ def _setup_services(group: str, projects: list[str]) -> tuple[bool, str]:
     return True, f"Group {group} ready. Migrations: {migrations}. Data source: {path}"
 
 
+def _setup_with_owners(
+    group: str, projects: list[str], owners: tuple[str, ...]
+) -> tuple[bool, str]:
+    merged = merge_owners(read_owners(), GroupGrant(group, list(owners), projects))
+    success, message = _setup_services(group, projects)
+    if success and owners:
+        write_owners(merged)
+    return success, message
+
+
 def setup_group_history(
     group: str, projects: list[str], owners: tuple[str, ...] = ()
 ) -> tuple[bool, str]:
@@ -109,10 +119,6 @@ def setup_group_history(
     if not valid:
         return False, error_msg
     try:
-        merged = merge_owners(read_owners(), group, list(owners), projects)
-        success, message = _setup_services(group, projects)
-        if success and owners:
-            write_owners(merged)
+        return _setup_with_owners(group, projects, owners)
     except HANDLED as e:
         return False, describe(e)
-    return success, message

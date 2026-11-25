@@ -154,11 +154,29 @@ def _queue_consumers(queue: str) -> tuple[bool, int | None, str]:
     )
     if not success:
         return False, None, output
-    for line in output.splitlines():
-        name, _, consumers = line.partition("\t")
-        if name == queue:
-            return True, int(consumers or 0), ""
-    return True, None, ""
+    rows = (line.partition("\t") for line in output.splitlines())
+    count = {name: count for name, _, count in rows}.get(queue)
+    return True, None if count is None else int(count or 0), ""
+
+
+def _wait_for_idle(queue: str, wait_seconds: int) -> tuple[bool, int | None, str]:
+    """Poll until the queue has no consumer, is gone or the wait runs out.
+
+    Returns the last answer of _queue_consumers.
+    """
+    deadline = time.monotonic() + wait_seconds
+    success, consumers, error_msg = _queue_consumers(queue)
+    while success and consumers and time.monotonic() <= deadline:
+        time.sleep(2)
+        success, consumers, error_msg = _queue_consumers(queue)
+    return success, consumers, error_msg
+
+
+def _not_idle_answer(queue: str, consumers: int | None) -> tuple[bool, str]:
+    """The answer for a queue that is gone, or that kept its consumer."""
+    if consumers is None:
+        return True, f"No session queue {queue}"
+    return False, f"{queue} still has a consumer, run the command again"
 
 
 def delete_session_queue(client_id: str, wait_seconds: int = 60) -> tuple[bool, str]:
@@ -168,18 +186,11 @@ def delete_session_queue(client_id: str, wait_seconds: int = 60) -> tuple[bool, 
     that a client still reads would only make it subscribe again.
     """
     queue = f"mqtt-subscription-{client_id}qos1"
-    deadline = time.monotonic() + wait_seconds
-    while True:
-        success, consumers, error_msg = _queue_consumers(queue)
-        if not success:
-            return False, error_msg
-        if consumers is None:
-            return True, f"No session queue {queue}"
-        if consumers == 0:
-            break
-        if time.monotonic() > deadline:
-            return False, f"{queue} still has a consumer, run the command again"
-        time.sleep(2)
+    success, consumers, error_msg = _wait_for_idle(queue, wait_seconds)
+    if not success:
+        return False, error_msg
+    if consumers != 0:
+        return _not_idle_answer(queue, consumers)
     success, output = rabbitmqctl(
         ["delete_queue", "-p", MQTT_VHOST, queue, "--if-unused"]
     )

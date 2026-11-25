@@ -1,4 +1,4 @@
-type Entry<V> = { value: V; expiresAt: number };
+export type Entry<V> = { value: V; expiresAt: number };
 
 const DEFAULT_MAX_ENTRIES = 10_000;
 
@@ -19,9 +19,11 @@ export default class TtlCache<V> {
     return entry.value;
   }
 
-  set(key: string, value: V, expiresAt: number, now = Date.now()): void {
+  // The value and its expiry travel together as one entry, the shape the
+  // map stores.
+  set(key: string, entry: Entry<V>, now = Date.now()): void {
     if (this.entries.size >= this.maxEntries) this.prune(now);
-    this.entries.set(key, { value, expiresAt });
+    this.entries.set(key, entry);
   }
 
   get size(): number {

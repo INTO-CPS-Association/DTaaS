@@ -28,21 +28,27 @@ function ownerOfDexGroup(
   return path.slice(prefix.length);
 }
 
+function grantOfAccessPlan(name: string): Grant | undefined {
+  const level = ACCESS_PLAN_LEVEL.exec(name);
+  if (level === null) return undefined;
+  return { owner: level[1], canWrite: level[2] !== 'viewer' };
+}
+
+function grantOfDex(name: string, gitlabGroup: string): Grant | undefined {
+  const role = DEX_ROLE.exec(name);
+  if (role === null) return undefined;
+  const owner = ownerOfDexGroup(role[1], gitlabGroup);
+  return owner === undefined ? undefined : { owner, canWrite: true };
+}
+
 function grantOfGroup(
   name: string,
   format: GroupsFormat,
   gitlabGroup: string,
 ): Grant | undefined {
-  if (format === 'access-plan') {
-    const level = ACCESS_PLAN_LEVEL.exec(name);
-    return level === null
-      ? undefined
-      : { owner: level[1], canWrite: level[2] !== 'viewer' };
-  }
-  const role = DEX_ROLE.exec(name);
-  const owner =
-    role === null ? undefined : ownerOfDexGroup(role[1], gitlabGroup);
-  return owner === undefined ? undefined : { owner, canWrite: true };
+  return format === 'access-plan'
+    ? grantOfAccessPlan(name)
+    : grantOfDex(name, gitlabGroup);
 }
 
 export default function grantsOfGroups(

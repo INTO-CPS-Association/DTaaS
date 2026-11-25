@@ -143,14 +143,10 @@ describe('StreamService', () => {
     const broker = new FakeBroker();
     const response = new FakeResponse();
     response.destroyed = true;
-    await serviceWith(broker).run(
-      response.asResponse(),
-      { id: '1', username: 'a', email: '' },
-      {
-        allowed: [FLOW],
-        refused: [],
-      },
-    );
+    await serviceWith(broker).run(response.asResponse(), {
+      identity: { id: '1', username: 'a', email: '' },
+      decision: { allowed: [FLOW], refused: [] },
+    });
     expect(broker.bindings).toHaveLength(0);
     expect(response.chunks).toEqual([]);
   });
@@ -166,9 +162,9 @@ describe('StreamService', () => {
       email: '',
       expiresAt: Date.now() + 1000,
     };
-    const running = service.run(response.asResponse(), identity, {
-      allowed: [FLOW],
-      refused: [],
+    const running = service.run(response.asResponse(), {
+      identity,
+      decision: { allowed: [FLOW], refused: [] },
     });
     await jest.advanceTimersByTimeAsync(1000);
     await running;
@@ -180,9 +176,9 @@ describe('StreamService', () => {
     const response = new FakeResponse();
     const service = serviceWith();
     const identity = { id: '1', username: 'a', email: '' };
-    const running = service.run(response.asResponse(), identity, {
-      allowed: [FLOW],
-      refused: [],
+    const running = service.run(response.asResponse(), {
+      identity,
+      decision: { allowed: [FLOW], refused: [] },
     });
     await new Promise((resolve) => setImmediate(resolve));
     response.emit('close');

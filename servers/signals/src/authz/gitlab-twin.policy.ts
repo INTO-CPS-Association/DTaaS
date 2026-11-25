@@ -140,11 +140,10 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     const resource = `api/v4/groups/${encodeURIComponent(groupPath)}/projects?min_access_level=${level}&simple=true`;
     const items = await this.gitlab.getPages(resource, subject.token);
     const projects = items.flatMap((item) => projectOf(item, groupPath));
-    this.projects.set(
-      key,
-      projects,
-      Date.now() + this.config.get('projects-cache-ttl'),
-    );
+    this.projects.set(key, {
+      value: projects,
+      expiresAt: Date.now() + this.config.get('projects-cache-ttl'),
+    });
     return projects;
   }
 
@@ -159,7 +158,7 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     if (cached?.sha === sha) return cached.targets;
     const targets = await this.reader.signalsAt(project, sha, token);
     const expiresAt = Date.now() + this.config.get('twin-index-cache-ttl');
-    this.indexes.set(key, { sha, targets }, expiresAt);
+    this.indexes.set(key, { value: { sha, targets }, expiresAt });
     return targets;
   }
 
@@ -173,7 +172,7 @@ export default class GitLabTwinPolicy implements AccessPolicy {
     const sha = await this.reader.branchSha(project, token);
     if (sha !== undefined) {
       const expiresAt = Date.now() + this.config.get('branch-cache-ttl');
-      this.branches.set(key, sha, expiresAt);
+      this.branches.set(key, { value: sha, expiresAt });
     }
     return sha;
   }
