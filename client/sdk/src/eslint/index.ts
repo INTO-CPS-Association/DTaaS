@@ -1,6 +1,6 @@
 import type { Linter } from 'eslint';
 
-const SDK = '@into-cps-association/dtaas-sdk';
+const SDK = '@into-cps-association/dtaas-extensions';
 const HOST = '@into-cps-association/dtaas-web';
 const CORE = '@into-cps-association/dtaas-visualisation';
 

@@ -21,8 +21,8 @@
     "paths": {
       "src/*": ["./src/*"],
       "tests/*": ["./tests/*"],
-      "@into-cps-association/dtaas-sdk": ["./src/index.ts"],
-      "@into-cps-association/dtaas-sdk/*": ["./src/*/index.ts"]
+      "@into-cps-association/dtaas-extensions": ["./src/index.ts"],
+      "@into-cps-association/dtaas-extensions/*": ["./src/*/index.ts"]
     }
   },
   "exclude": ["**/node_modules/*", "dist"]
