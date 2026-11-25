@@ -82,7 +82,7 @@ export default class SignalsController {
       const recheck = async () =>
         (await this.access.decide(scope, allowed)).refused;
       const { identity } = userOf(request);
-      await this.streams.run(response, identity, decision, recheck);
+      await this.streams.run(response, { identity, decision, recheck });
     } finally {
       release();
     }

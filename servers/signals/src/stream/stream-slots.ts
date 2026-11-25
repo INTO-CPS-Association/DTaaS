@@ -16,13 +16,23 @@ export default class StreamSlots {
       throw new HttpException('Too many streams', HttpStatus.TOO_MANY_REQUESTS);
     }
     this.counts.set(userId, open + 1);
+    return this.releaseOnce(userId);
+  }
+
+  // A stream may end through more than one path, close and end of life,
+  // so the slot is given back once however often the function is called.
+  private releaseOnce(userId: string): () => void {
     let released = false;
     return () => {
       if (released) return;
       released = true;
-      const left = (this.counts.get(userId) ?? 1) - 1;
-      if (left > 0) this.counts.set(userId, left);
-      else this.counts.delete(userId);
+      this.release(userId);
     };
+  }
+
+  private release(userId: string): void {
+    const left = (this.counts.get(userId) ?? 1) - 1;
+    if (left > 0) this.counts.set(userId, left);
+    else this.counts.delete(userId);
   }
 }

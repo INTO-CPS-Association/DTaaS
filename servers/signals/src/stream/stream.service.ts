@@ -8,6 +8,13 @@ import DeliveryStats from './delivery-stats.js';
 import SseWriter from './sse-writer.js';
 import StreamSession, { type Recheck } from './stream-session.js';
 
+/** Who opened a stream, what access allowed and how to ask again. */
+export type StreamRequest = {
+  identity: Identity;
+  decision: PathDecision;
+  recheck?: Recheck;
+};
+
 /** Runs a stream until the client leaves, its age runs out or the token expires. */
 @Injectable()
 export default class StreamService {
@@ -20,12 +27,8 @@ export default class StreamService {
     private readonly stats: DeliveryStats,
   ) {} // eslint-disable-line no-empty-function
 
-  async run(
-    response: Response,
-    identity: Identity,
-    decision: PathDecision,
-    recheck?: Recheck,
-  ): Promise<void> {
+  async run(response: Response, request: StreamRequest): Promise<void> {
+    const { identity, decision, recheck } = request;
     // The client may have left while access was decided. A session opened
     // now would hold a slot and a subscription until its age runs out.
     if (response.destroyed || response.writableEnded) return;
@@ -33,9 +36,11 @@ export default class StreamService {
     const session = new StreamSession(
       new SseWriter(response, this.config.get('max-backlog-bytes')),
       this.broker,
-      decision.allowed,
-      this.optionsFor(identity),
-      recheck,
+      {
+        targets: decision.allowed,
+        options: this.optionsFor(identity),
+        recheck,
+      },
     );
     response.on('close', () => session.end());
     await session.start(decision.refused);
