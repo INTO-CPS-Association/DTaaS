@@ -44,20 +44,22 @@ def _check_identifier(kind: str, name: str) -> None:
         raise KitError(f"Invalid {kind} name {name!r}")
 
 
+def _table_columns(table: str, columns: object) -> tuple[str, ...]:
+    """The columns a twin file may fill in one declared table."""
+    _check_identifier("table", table)
+    if table in SHARED_TABLES:
+        raise KitError(f"A kit may not declare the shared table {table}")
+    if not isinstance(columns, list):
+        raise KitError(f"The columns of {table} must be a list")
+    for column in columns:
+        _check_identifier("column", column)
+    return tuple(column for column in columns if column != "device_id")
+
+
 def _tables(raw: object) -> dict[str, tuple[str, ...]]:
     if not isinstance(raw, dict) or not raw:
         raise KitError("A kit declares at least one table")
-    tables = {}
-    for table, columns in raw.items():
-        _check_identifier("table", table)
-        if table in SHARED_TABLES:
-            raise KitError(f"A kit may not declare the shared table {table}")
-        if not isinstance(columns, list):
-            raise KitError(f"The columns of {table} must be a list")
-        for column in columns:
-            _check_identifier("column", column)
-        tables[table] = tuple(column for column in columns if column != "device_id")
-    return tables
+    return {table: _table_columns(table, columns) for table, columns in raw.items()}
 
 
 def _migrations(kit: str, folder: Path) -> tuple[Migration, ...]:
@@ -71,13 +73,19 @@ def _migrations(kit: str, folder: Path) -> tuple[Migration, ...]:
     )
 
 
-def load_kit(folder: Path) -> Kit:
-    """Read and validate one kit folder."""
+def _read_manifest(folder: Path) -> dict:
+    path = folder / "kit.json"
     try:
-        manifest = json.loads((folder / "kit.json").read_text(encoding="utf-8"))
+        manifest = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
-        raise KitError(f"Cannot read {folder / 'kit.json'}: {type(e).__name__}") from e
-    name = manifest.get("name") if isinstance(manifest, dict) else None
+        raise KitError(f"Cannot read {path}: {type(e).__name__}") from e
+    if not isinstance(manifest, dict):
+        raise KitError(f"{path} must give the kit's name as text")
+    return manifest
+
+
+def _kit_name(folder: Path, manifest: dict) -> str:
+    name = manifest.get("name")
     if not isinstance(name, str):
         raise KitError(f"{folder / 'kit.json'} must give the kit's name as text")
     valid, error_msg = validate_name("kit", name)
@@ -85,6 +93,13 @@ def load_kit(folder: Path) -> Kit:
         raise KitError(error_msg)
     if folder.name != name:
         raise KitError(f"The folder of kit {name} must be named {name}")
+    return name
+
+
+def load_kit(folder: Path) -> Kit:
+    """Read and validate one kit folder."""
+    manifest = _read_manifest(folder)
+    name = _kit_name(folder, manifest)
     return Kit(name, _tables(manifest.get("tables")),
                _migrations(name, folder / "migrations"))  # fmt: skip
 
