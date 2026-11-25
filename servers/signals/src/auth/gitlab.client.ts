@@ -51,15 +51,24 @@ export default class GitLabClient {
   /** Every page of a list endpoint, up to a bound that stops a runaway loop. */
   async getPages(resource: string, token: string): Promise<unknown[]> {
     const items: unknown[] = [];
-    const separator = resource.includes('?') ? '&' : '?';
     for (let page = 1; page <= MAX_PAGES; page += 1) {
-      const pageResource = `${resource}${separator}per_page=${PAGE_SIZE}&page=${page}`;
-      const batch = await this.getJson(pageResource, token);
-      if (!Array.isArray(batch)) throw new GitLabError(200, resource);
+      const batch = await this.getPage(resource, page, token);
       items.push(...batch);
       if (batch.length < PAGE_SIZE) break;
     }
     return items;
+  }
+
+  private async getPage(
+    resource: string,
+    page: number,
+    token: string,
+  ): Promise<unknown[]> {
+    const separator = resource.includes('?') ? '&' : '?';
+    const pageResource = `${resource}${separator}per_page=${PAGE_SIZE}&page=${page}`;
+    const batch = await this.getJson(pageResource, token);
+    if (!Array.isArray(batch)) throw new GitLabError(200, resource);
+    return batch;
   }
 
   // Every resource is a path the gateway builds under gitlab-url, so the

@@ -13,6 +13,24 @@ export type PathDecision = {
   refused: string[];
 };
 
+/** Who asks, for which action and, when the request names one, in which twin. */
+export type AccessScope = {
+  subject: Subject;
+  action: Action;
+  twin?: TwinRef;
+};
+
+// Only the targets of the named twin, or every target without one.
+function targetsOfTwin(
+  targets: SignalTarget[],
+  twin: TwinRef | undefined,
+): SignalTarget[] {
+  if (twin === undefined) return targets;
+  return targets.filter(
+    (target) => target.owner === twin.owner && target.twin === twin.name,
+  );
+}
+
 /**
  * Turns the policy's answer into a decision per requested path, and logs
  * each one. Deny by default: a path the policy does not list is refused, and
@@ -31,50 +49,48 @@ export default class AccessService {
    * first twin that declares it.
    */
   async decide(
-    subject: Subject,
-    action: Action,
+    scope: AccessScope,
     paths: readonly string[],
-    twin?: TwinRef,
   ): Promise<PathDecision> {
-    const readable = await this.readableOf(subject, action, twin);
-    const decision: PathDecision = { allowed: [], refused: [] };
-    for (const path of paths) {
-      const target = readable.get(path);
-      if (target === undefined) decision.refused.push(path);
-      else decision.allowed.push(target);
-      this.log(subject, action, path, target === undefined ? 'deny' : 'allow');
-    }
-    return decision;
+    const readable = await this.readableOf(scope);
+    paths.forEach((path) =>
+      this.log(scope, path, readable.has(path) ? 'allow' : 'deny'),
+    );
+    return {
+      allowed: paths.flatMap((path) => readable.get(path) ?? []),
+      refused: paths.filter((path) => !readable.has(path)),
+    };
   }
 
   private async readableOf(
-    subject: Subject,
-    action: Action,
-    twin?: TwinRef,
+    scope: AccessScope,
   ): Promise<Map<string, SignalTarget>> {
     try {
+      const { subject, action, twin } = scope;
       const listed = await this.policy.listResources(subject, action);
-      const targets =
-        twin === undefined
-          ? listed
-          : listed.filter(
-              (target) =>
-                target.owner === twin.owner && target.twin === twin.name,
-            );
-      const readable = new Map<string, SignalTarget>();
-      targets.forEach((target) => {
-        const first = readable.get(target.path);
-        if (first === undefined) readable.set(target.path, target);
-        else if (this.prefers(subject, target, first)) {
-          readable.set(target.path, target);
-        }
-      });
-      return readable;
+      return this.firstDeclarations(subject, targetsOfTwin(listed, twin));
     } catch (error) {
       const reason = error instanceof Error ? error.message : 'unknown error';
-      this.logger.warn(`Refusing every path of ${subject.username}: ${reason}`);
+      this.logger.warn(
+        `Refusing every path of ${scope.subject.username}: ${reason}`,
+      );
       return new Map();
     }
+  }
+
+  // One target per path: the first declaration, unless a later one is
+  // preferred.
+  private firstDeclarations(
+    subject: Subject,
+    targets: SignalTarget[],
+  ): Map<string, SignalTarget> {
+    const readable = new Map<string, SignalTarget>();
+    for (const target of targets) {
+      const first = readable.get(target.path);
+      if (first === undefined || this.prefers(subject, target, first))
+        readable.set(target.path, target);
+    }
+    return readable;
   }
 
   // A request names a path, not an owner. When two owners the user can read
@@ -96,12 +112,8 @@ export default class AccessService {
   }
 
   // One line per decision, with no token: who, what, which signal, outcome.
-  private log(
-    subject: Subject,
-    action: Action,
-    resource: string,
-    decision: string,
-  ): void {
+  private log(scope: AccessScope, resource: string, decision: string): void {
+    const { subject, action } = scope;
     this.logger.log(
       JSON.stringify({ user: subject.username, action, resource, decision }),
     );

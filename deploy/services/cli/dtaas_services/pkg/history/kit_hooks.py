@@ -79,14 +79,16 @@ def apply_kits(
     return applied
 
 
-def _replace_rows(conn: psycopg.Connection, table: str, rows: list[dict],
-                  device_ids: list[str]) -> None:  # fmt: skip
+def _delete_rows(conn: psycopg.Connection, table: str, device_ids: list[str]) -> None:
     conn.execute(
         sql.SQL("DELETE FROM {} WHERE device_id = ANY(%s)").format(
             sql.Identifier(table)
         ),
         (device_ids,),
     )
+
+
+def _insert_rows(conn: psycopg.Connection, table: str, rows: list[dict]) -> None:
     for row in rows:
         columns = sql.SQL(", ").join(sql.Identifier(column) for column in row)
         values = sql.SQL(", ").join(sql.Placeholder() for _ in row)
@@ -108,16 +110,22 @@ def _check_rows(kit: Kit, table: str, rows: list[dict]) -> None:
             raise KitError(f"{table} has no columns {sorted(unknown)} to fill")
 
 
+def _installed_kit(installed: dict[str, Kit], name: str) -> Kit:
+    if name not in installed:
+        raise KitError(f"The kit {name} is not installed")
+    return installed[name]
+
+
 def write_kit_rows(conn: psycopg.Connection, twin: Twin, kits: tuple[Kit, ...]) -> None:
     """Replace the kit rows of the twin's devices, as each kit's own role."""
     installed = {kit.name: kit for kit in kits}
     device_ids = [device.device_id for device in twin.devices]
     for kit_name, tables in twin.kit_rows.items():
-        if kit_name not in installed:
-            raise KitError(f"The kit {kit_name} is not installed")
-        kit = installed[kit_name]
+        kit = _installed_kit(installed, kit_name)
         _run(conn, "SET LOCAL ROLE {role}", role=kit_role(twin.group, kit_name))
         for table, rows in tables.items():
             _check_rows(kit, table, rows)
-            _replace_rows(conn, table, rows, device_ids)
+            # The rows of the file replace the rows of the twin's devices.
+            _delete_rows(conn, table, device_ids)
+            _insert_rows(conn, table, rows)
         conn.execute("RESET ROLE")
