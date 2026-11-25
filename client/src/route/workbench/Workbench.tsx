@@ -10,6 +10,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from 'store/store';
 import { fetchWorkbenchServices } from 'store/workbench.slice';
 import { useEffect } from 'react';
+import {
+  PLATFORM_SERVICES_KEY,
+  platformServices,
+} from 'route/workbench/platformServices';
 
 /**
  * The workbench page.
@@ -74,8 +78,34 @@ function WorkBenchContent() {
             })}
           </Grid>
         )}
+        <PlatformServiceCards />
       </PageShell>
     </Layout>
+  );
+}
+
+/** The platform services the deployment lists, when it lists any. */
+function PlatformServiceCards() {
+  const services = platformServices(globalThis.env[PLATFORM_SERVICES_KEY]);
+  if (services.length === 0) return null;
+  return (
+    <>
+      <Typography variant="h6" component="h2" sx={{ mt: 4, mb: 2 }}>
+        Platform Services
+      </Typography>
+      <Grid container spacing={2}>
+        {services.map((service) => (
+          <Grid key={service.link} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+            <ToolCard
+              name={service.name}
+              link={service.link}
+              description={service.description}
+              icon={service.icon}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 }
 

@@ -14,6 +14,7 @@ version `0.2.0`.
 | `@into-cps-association/dtaas-extensions/schema`  | zod schemas for `visualisation.json`                                              |
 | `@into-cps-association/dtaas-extensions/testing` | `fakeHostServices`, `renderWithHost`, `replayFixture`, `checkConformance`         |
 | `@into-cps-association/dtaas-extensions/eslint`  | Flat-config rules that keep an extension inside its boundary                      |
+| `@into-cps-association/dtaas-extensions/deploy`  | `kitBuildConfig`, the Vite settings that build a deployed extension               |
 
 The client depends on this folder with `link:./sdk`. The package exports
 point to the TypeScript source, so there is no build step: Vite, Jest and

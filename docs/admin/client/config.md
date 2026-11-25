@@ -85,10 +85,31 @@ with and shows no live readings.
 | Key | What it does |
 | :--- | :--- |
 | `REACT_APP_EXTENSIONS_DISABLED` | Ids of compiled-in extensions to hide, separated by commas, for example `'bim'` |
+| `REACT_APP_EXTENSIONS_DEPLOYED` | Bundles of extensions to load at start, separated by commas, each under `extensions/<id>/`, for example `'extensions/soil/index.js'`. An entry may end in `#sha384-<hash>` |
 | `REACT_APP_EXT_<ID>_<NAME>` | A setting of one extension, read only by that extension |
 | `REACT_APP_EXT_BIM_MODELS_DIRECTORY` | The library folder the Buildings page lists, `common/models` when unset |
 | `REACT_APP_VIZ_SIGNALS_URL` | The address of the DTaaS signals gateway, for example `https://foo.com/signals` |
 | `REACT_APP_VIZ_ALLOWED_ORIGINS` | Origins besides this site that a `visualisation.json` may load images and embedded pages from, separated by commas, for example `'https://grafana.foo.com'` |
+
+An extension built as a bundle is installed without rebuilding the client. Copy
+the bundle to `extensions/<id>/index.js` next to `env.js`, which in the Docker
+packages means mounting a folder such as `./extensions` at
+`/dtaas/client/build/extensions`, and list its path in
+`REACT_APP_EXTENSIONS_DEPLOYED`. The client accepts only paths of that shape on
+its own origin. A bundle runs with the rights of the client, so install only
+bundles you trust. A compiled-in extension wins when both have the same id.
+
+To make the browser refuse a bundle that was changed after you installed it, add
+its hash to the entry, for example
+`'extensions/soil/index.js#sha384-<hash>'`. Only SHA-384 is accepted. Compute
+the hash of the installed file with:
+
+```bash
+openssl dgst -sha384 -binary extensions/soil/index.js | openssl base64 -A
+```
+
+Update the hash each time you replace the bundle. A bundle whose content does
+not match is not loaded, and the reason is written to the browser console.
 
 With `REACT_APP_VIZ_SIGNALS_URL` set, the client asks the signals gateway for
 the signals the open pages need and colours the pages with the readings. The
@@ -102,3 +123,19 @@ A `visualisation.json` names the sources of its images and embedded pages. A
 always allowed. An `http` or `https` source on another origin is shown only when
 its origin is listed in `REACT_APP_VIZ_ALLOWED_ORIGINS`. The key is empty by
 default, so another site's page is not framed unless an administrator allows it.
+
+## Platform Services on the Workbench
+
+The Workbench page lists, under Platform Services, the services installed
+next to DTaaS with the `dtaas-services` command, such as Grafana, InfluxDB,
+RabbitMQ and ThingsBoard. The key is optional. Without it the section is not
+shown.
+
+| Key | What it does |
+| :--- | :--- |
+| `REACT_APP_PLATFORM_SERVICES` | The services to list, as `<name>=<url>` entries separated by commas, for example `'grafana=https://foo.com:8088,rabbitmq=https://foo.com:8084'` |
+
+Each entry becomes a card that opens its address in a new tab. The names
+`grafana`, `influxdb`, `rabbitmq` and `thingsboard` get their own title,
+description and icon. Any other name is shown as written. An entry without a
+name, or with an address that is not `http` or `https`, is skipped.
