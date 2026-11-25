@@ -14,6 +14,14 @@ import { commandTopicOf } from '../topic.js';
 
 export type CommandAnswer = { status: 'sent'; topic: string };
 
+/** An authorised command: who sends it, where, what and from which address. */
+export type OutgoingCommand = {
+  subject: Subject;
+  topic: string;
+  request: CommandRequest;
+  clientAddress: string;
+};
+
 /** Sends a command the caller already authorised to the device of a twin. */
 @Injectable()
 export default class CommandService {
@@ -32,12 +40,8 @@ export default class CommandService {
     return topic;
   }
 
-  async send(
-    subject: Subject,
-    topic: string,
-    request: CommandRequest,
-    clientAddress: string,
-  ): Promise<CommandAnswer> {
+  async send(outgoing: OutgoingCommand): Promise<CommandAnswer> {
+    const { subject, topic, request, clientAddress } = outgoing;
     // The payload of the naming convention, with the set point as value.
     const body = JSON.stringify({
       value: request.value,

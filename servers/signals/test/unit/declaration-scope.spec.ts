@@ -159,10 +159,15 @@ describe('A Keycloak or Dex sign-in', () => {
     const tokenFile = path.join(tokenDir, 'gitlab_dtaas_signals_token');
     await writeFile(tokenFile, 'service-token\n', { mode: 0o600 });
     const access = new AccessService(claimsPolicy(groupWithAlice(), tokenFile));
-    const decision = await access.decide(DAVE, 'command', ['alice/pump/flow']);
+    const decision = await access.decide({ subject: DAVE, action: 'command' }, [
+      'alice/pump/flow',
+    ]);
     expect(decision.allowed).toEqual([]);
     const writer = { ...DAVE, writers: ['alice'] };
-    const allowed = await access.decide(writer, 'command', ['alice/pump/flow']);
+    const allowed = await access.decide(
+      { subject: writer, action: 'command' },
+      ['alice/pump/flow'],
+    );
     expect(allowed.allowed).toHaveLength(1);
   });
 

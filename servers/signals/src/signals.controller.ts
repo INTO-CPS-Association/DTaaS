@@ -162,17 +162,22 @@ export default class SignalsController {
     );
     const topic = this.commands.topicOf(command);
     const subject = subjectOf(request);
-    const decision = await this.authorise(subject, 'command', [command.path]);
+    const decision = await this.authorise({ subject, action: 'command' }, [
+      command.path,
+    ]);
     // A twin opens a path to commands by declaring it on the setpoint
     // channel. A path it declares only to be read takes none.
     if (decision.allowed[0].channel !== 'setpoint')
       throw new ForbiddenException();
-    return this.commands.send(
+    return this.commands.send({
       subject,
       topic,
-      command,
-      getClientTracker({ ip: request.ip, socket: request.socket }),
-    );
+      request: command,
+      clientAddress: getClientTracker({
+        ip: request.ip,
+        socket: request.socket,
+      }),
+    });
   }
 
   // The readings of the allowed signals since the last sample the client

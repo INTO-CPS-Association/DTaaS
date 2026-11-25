@@ -22,7 +22,12 @@ describe('CommandService', () => {
     const service = new CommandService(testConfig(), broker);
     const topic = service.topicOf(REQUEST);
     await expect(
-      service.send(ALICE, topic, REQUEST, '203.0.113.7'),
+      service.send({
+        subject: ALICE,
+        topic,
+        request: REQUEST,
+        clientAddress: '203.0.113.7',
+      }),
     ).resolves.toEqual({
       status: 'sent',
       topic: 'SWiM/CTO/plant/01/loop1/A/A-0001/cmd/set',
@@ -55,7 +60,12 @@ describe('CommandService', () => {
     };
     const service = new CommandService(testConfig(), broker);
     await expect(
-      service.send(ALICE, service.topicOf(REQUEST), REQUEST, '203.0.113.7'),
+      service.send({
+        subject: ALICE,
+        topic: service.topicOf(REQUEST),
+        request: REQUEST,
+        clientAddress: '203.0.113.7',
+      }),
     ).rejects.toBeInstanceOf(BadGatewayException);
   });
 
@@ -67,7 +77,12 @@ describe('CommandService', () => {
       broker,
     );
     await expect(
-      service.send(ALICE, service.topicOf(REQUEST), REQUEST, '203.0.113.7'),
+      service.send({
+        subject: ALICE,
+        topic: service.topicOf(REQUEST),
+        request: REQUEST,
+        clientAddress: '203.0.113.7',
+      }),
     ).rejects.toBeInstanceOf(GatewayTimeoutException);
   });
 });
