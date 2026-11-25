@@ -15,9 +15,9 @@ const links: LinkType[] = [
   { text: 'Library', url: './library' },
   { text: 'Digital Twins', url: './digitaltwins' },
   { text: 'Automation', url: './automation' },
-  { text: 'Buildings', url: './bim' },
   { text: 'Workbench', url: './workbench' },
   { text: 'Insights', url: './insights' },
+  { text: 'Buildings', url: './bim' },
 ];
 
 export const workbenchLinks: LinkType[] = [

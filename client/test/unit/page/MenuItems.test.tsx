@@ -8,9 +8,10 @@ const menuEntries = [
   { name: 'Library', link: '/library' },
   { name: 'Digital Twins', link: '/digitaltwins' },
   { name: 'Automation', link: '/automation' },
-  { name: 'Buildings', link: '/bim' },
   { name: 'Workbench', link: '/workbench' },
   { name: 'Insights', link: '/insights' },
+  // From the bim extension, which follows the core items.
+  { name: 'Buildings', link: '/bim' },
 ];
 
 const renderMenu = (open: boolean, pathname = '/') =>

@@ -801,10 +801,10 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/retry/-/retry-0.4.3.tgz"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@into-cps-association/bim-kit@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/@into-cps-association/bim-kit/-/bim-kit-0.1.1.tgz"
-  integrity sha512-zyOdyjPJ8MgykhHdidhAQq+tE944rm0BoGGiQUQtt5r8/WjzcP9UOFqaaoqGJ8NuMbIru2BgDkV8PYrtUc8EHA==
+"@into-cps-association/bim-kit@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@into-cps-association/bim-kit/-/bim-kit-0.2.0.tgz#b69ca375611603b38cb7f829bff63339b0db65b0"
+  integrity sha512-wXgBplKWNYjTle8kqeAPL1HlXuDZqCnEOIf+TRoRdjIB0Hb+MTtuymfT0cdiKOUTIVQ5bYHhqU4wrluQ1VGLOQ==
   dependencies:
     web-ifc "0.0.77"
 

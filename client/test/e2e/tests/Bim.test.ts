@@ -192,9 +192,9 @@ test.describe('Building Models, Drawing a Model', () => {
 test.describe('Building Models Without a Session', () => {
   test('Sends the visitor to sign in', async ({ page, baseURL }) => {
     // The route reads the signed-in user's own library, so it must not be
-    // reachable without a session. The session lives in sessionStorage and is
-    // restored only by openAuthenticatedApp, so a page opened directly has
-    // none, the same way the authentication suite checks the other routes.
+    // reachable without a session. The session lives in the memory of the
+    // page, so a page opened directly has none, the same way the
+    // authentication suite checks the other routes.
     await page.goto('./bim');
 
     await expect(page).toHaveURL(baseURL?.replace(/\/$/, '') ?? './');
