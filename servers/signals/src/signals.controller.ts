@@ -16,14 +16,16 @@ import SignalsAuthGuard, {
   type AuthenticatedRequest,
   userOf,
 } from './auth/auth.guard.js';
-import AccessService, { type PathDecision } from './authz/access.service.js';
-import type { Action, Subject } from './authz/policy.js';
+import AccessService, {
+  type AccessScope,
+  type PathDecision,
+} from './authz/access.service.js';
+import type { Subject } from './authz/policy.js';
 import Config from './config/config.service.js';
 import {
   parseRangeRequest,
   parseStreamRequest,
   twinOf,
-  type TwinRef,
 } from './dto/requests.js';
 import DeliveryStats, { type DeliveryCounts } from './stream/delivery-stats.js';
 import StreamService from './stream/stream.service.js';
@@ -70,11 +72,15 @@ export default class SignalsController {
     const subject = subjectOf(request);
     const release = this.slots.acquire(subject.id);
     try {
-      const twin = twinOf(body);
-      const decision = await this.authorise(subject, 'stream', paths, twin);
+      const scope: AccessScope = {
+        subject,
+        action: 'stream',
+        twin: twinOf(body),
+      };
+      const decision = await this.authorise(scope, paths);
       const allowed = decision.allowed.map((target) => target.path);
       const recheck = async () =>
-        (await this.access.decide(subject, 'stream', allowed, twin)).refused;
+        (await this.access.decide(scope, allowed)).refused;
       const { identity } = userOf(request);
       await this.streams.run(response, identity, decision, recheck);
     } finally {
@@ -101,18 +107,20 @@ export default class SignalsController {
       maxSpan: this.config.get('range-max-span'),
     };
     const { paths } = parseRangeRequest(body, limits);
-    await this.authorise(subjectOf(request), 'range', paths, twinOf(body));
+    const twin = twinOf(body);
+    await this.authorise(
+      { subject: subjectOf(request), action: 'range', twin },
+      paths,
+    );
     return { status: 'not-implemented', route: 'range' };
   }
 
   // Nothing the user may read is refused before any work is done.
   private async authorise(
-    subject: Subject,
-    action: Action,
+    scope: AccessScope,
     paths: string[],
-    twin?: TwinRef,
   ): Promise<PathDecision> {
-    const decision = await this.access.decide(subject, action, paths, twin);
+    const decision = await this.access.decide(scope, paths);
     if (decision.allowed.length === 0) throw new ForbiddenException();
     return decision;
   }

@@ -28,7 +28,10 @@ describe('AccessService', () => {
     const service = new AccessService(
       policyListing([target('a/b'), target('a/c')]),
     );
-    const decision = await service.decide(ALICE, 'stream', ['a/b', 'x/y']);
+    const decision = await service.decide(
+      { subject: ALICE, action: 'stream' },
+      ['a/b', 'x/y'],
+    );
     expect(decision.allowed.map((t) => t.path)).toEqual(['a/b']);
     expect(decision.refused).toEqual(['x/y']);
   });
@@ -37,7 +40,10 @@ describe('AccessService', () => {
     const service = new AccessService(
       policyListing([target('a/b', 'one'), target('a/b', 'two')]),
     );
-    const decision = await service.decide(ALICE, 'stream', ['a/b']);
+    const decision = await service.decide(
+      { subject: ALICE, action: 'stream' },
+      ['a/b'],
+    );
     expect(decision.allowed[0].twin).toBe('one');
   });
 
@@ -53,10 +59,8 @@ describe('AccessService', () => {
     );
     const twin = { owner: 'alice', name: 'two' };
     const decision = await service.decide(
-      ALICE,
-      'stream',
+      { subject: ALICE, action: 'stream', twin },
       ['a/b', 'a/c', 'a/d'],
-      twin,
     );
     expect(decision.allowed).toEqual([
       target('a/b', 'two'),
@@ -68,7 +72,10 @@ describe('AccessService', () => {
   it('refuses every path for a twin the user cannot read', async () => {
     const service = new AccessService(policyListing([target('a/b', 'one')]));
     const twin = { owner: 'bob', name: 'one' };
-    const decision = await service.decide(ALICE, 'stream', ['a/b'], twin);
+    const decision = await service.decide(
+      { subject: ALICE, action: 'stream', twin },
+      ['a/b'],
+    );
     expect(decision).toEqual({ allowed: [], refused: ['a/b'] });
   });
 
@@ -81,7 +88,10 @@ describe('AccessService', () => {
         target('a/b', 'pump', 'carol'),
       ]),
     );
-    const decision = await service.decide(ALICE, 'stream', ['a/b']);
+    const decision = await service.decide(
+      { subject: ALICE, action: 'stream' },
+      ['a/b'],
+    );
     expect(decision.allowed[0]).toMatchObject({ owner: 'alice' });
   });
 
@@ -89,7 +99,9 @@ describe('AccessService', () => {
     const service = new AccessService(
       policyListing(new Error('GitLab answered 502')),
     );
-    const decision = await service.decide(ALICE, 'range', ['a/b']);
+    const decision = await service.decide({ subject: ALICE, action: 'range' }, [
+      'a/b',
+    ]);
     expect(decision).toEqual({ allowed: [], refused: ['a/b'] });
   });
 
@@ -106,13 +118,11 @@ describe('AccessService', () => {
         lines.push(String(message));
       });
     await new AccessService(policyListing([target('a/b')])).decide(
-      ALICE,
-      'stream',
+      { subject: ALICE, action: 'stream' },
       ['a/b', 'c'],
     );
     await new AccessService(policyListing(new Error('down'))).decide(
-      ALICE,
-      'stream',
+      { subject: ALICE, action: 'stream' },
       ['a/b'],
     );
     expect(JSON.parse(lines[0])).toEqual({
