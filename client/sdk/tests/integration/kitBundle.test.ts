@@ -9,8 +9,8 @@ import * as reactDomClient from 'react-dom/client';
 import * as reactRouterDom from 'react-router-dom';
 import * as muiMaterial from '@mui/material';
 import * as zod from 'zod';
-import * as dtaasSdk from '@into-cps-association/dtaas-extensions';
-import * as dtaasSdkSchema from '@into-cps-association/dtaas-extensions/schema';
+import * as dtaasExtensions from '@into-cps-association/dtaas-extensions';
+import * as dtaasExtensionsSchema from '@into-cps-association/dtaas-extensions/schema';
 import {
   checkConformance,
   fakeHostServices,
@@ -30,8 +30,8 @@ const SHARED = {
   reactDomClient,
   reactRouterDom,
   muiMaterial,
-  dtaasSdk,
-  dtaasSdkSchema,
+  dtaasExtensions,
+  dtaasExtensionsSchema,
   zod,
 };
 

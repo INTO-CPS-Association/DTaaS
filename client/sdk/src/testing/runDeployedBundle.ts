@@ -11,7 +11,7 @@ export type DeployedRegistry = Record<string, { extension: DtaasExtension }>;
  * Run the code of a deployed bundle as the browser runs a classic script and
  * return what it registered under `DTAAS_EXTENSIONS`. `shared` holds the
  * modules the host shares, by their keys under `DTAAS_SHARED`, such as
- * `{ react, reactJsxRuntime, dtaasSdk, zod }`. Only the modules the kit
+ * `{ react, reactJsxRuntime, dtaasExtensions, zod }`. Only the modules the kit
  * imports are needed.
  */
 export default function runDeployedBundle(
