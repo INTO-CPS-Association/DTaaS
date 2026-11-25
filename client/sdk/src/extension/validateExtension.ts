@@ -1,4 +1,4 @@
-import { RESERVED_EXTENSION_IDS, SDK_VERSION } from './constants';
+import { SDK_VERSION } from './constants';
 import { checkIdentity, checkShapes } from './validation/identityRules';
 import checkRequiredFields from './validation/fieldRules';
 import checkLaziness from './validation/lazinessRules';
@@ -17,7 +17,11 @@ export interface ValidationResult {
 }
 
 export interface ValidateOptions {
-  /** Ids the host already uses; defaults to the DTaaS core routes. */
+  /**
+   * Ids the host already uses, such as the first segments of its own routes.
+   * The host owns this list, so the package only checks the shape of an id
+   * and defaults to no reserved ids.
+   */
   readonly reservedIds?: readonly string[];
   /** The API version the host implements; defaults to `SDK_VERSION`. */
   readonly hostApiVersion?: string;
@@ -26,7 +30,7 @@ export interface ValidateOptions {
 const runRules = (ext: Loose, options: ValidateOptions): string[] => [
   ...checkIdentity(
     ext,
-    options.reservedIds ?? RESERVED_EXTENSION_IDS,
+    options.reservedIds ?? [],
     options.hostApiVersion ?? SDK_VERSION,
   ),
   ...checkShapes(ext),

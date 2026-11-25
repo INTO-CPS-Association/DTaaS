@@ -10,7 +10,16 @@ export interface MemoryContents extends ContentsService {
   readonly files: Map<string, Uint8Array>;
 }
 
-const normalise = (path: string) => path.replace(/^\/+|\/+$/g, '');
+// Trims leading and trailing slashes by index. A regular expression such as
+// /\/+$/ backtracks on a long run of slashes that does not end the path.
+// The path comes from the caller.
+const normalise = (path: string) => {
+  let start = 0;
+  let end = path.length;
+  while (start < end && path[start] === '/') start += 1;
+  while (end > start && path[end - 1] === '/') end -= 1;
+  return path.slice(start, end);
+};
 
 const childEntry = (
   directory: string,

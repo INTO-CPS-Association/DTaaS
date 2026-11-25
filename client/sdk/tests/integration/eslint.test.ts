@@ -30,7 +30,7 @@ describe('the kit ESLint config', () => {
   it.each([
     "import { definePreset } from '@into-cps-association/dtaas-visualisation/contribute';",
     "import { definePreset } from '@into-cps-association/dtaas-visualisation/contribute/presets';",
-    "import { useHost } from '@into-cps-association/dtaas-sdk';",
+    "import { useHost } from '@into-cps-association/dtaas-extensions';",
     "import { Mesh } from 'three';",
   ])('allows %s', (code) => {
     expect(lint(code)).toEqual([]);
