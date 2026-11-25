@@ -13,7 +13,6 @@
           "paths": {
             "src/*": ["./src/*"],
             "tests/*": ["./tests/*"],
-            "examples/*": ["./examples/*"],
             "@into-cps-association/dtaas-sdk": ["./src/index.ts"],
             "@into-cps-association/dtaas-sdk/*": ["./src/*/index.ts"]
           }
@@ -31,14 +30,13 @@
     "!src/testing/index.ts"
   ],
   "testTimeout": 15000,
-  "modulePathIgnorePatterns": ["dist", "<rootDir>/examples/bim"],
+  "modulePathIgnorePatterns": ["dist"],
   "testRegex": "/tests/.*\\.test\\.tsx?$",
   "moduleDirectories": ["node_modules"],
   "modulePaths": ["<rootDir>"],
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1",
     "^tests/(.*)$": "<rootDir>/tests/$1",
-    "^examples/(.*)$": "<rootDir>/examples/$1",
     "^@into-cps-association/dtaas-sdk$": "<rootDir>/src/index.ts",
     "^@into-cps-association/dtaas-sdk/(.*)$": "<rootDir>/src/$1/index.ts",
     "\\.(css|less|scss)$": "<rootDir>/tests/__mocks__/styleMock.ts"

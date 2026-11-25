@@ -34,5 +34,7 @@ yarn test:sdk
 
 `src/` imports its own files by relative paths, so it compiles inside the
 client. The tests keep the `src/` and `tests/` aliases of
-`jest.config.json`. `examples/hello-kit/` is the minimal extension the
-integration tests mount.
+`jest.config.json`. The template kit, `hello-kit`, lives in `kits/hello-kit`
+of the
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
+repository with its own tests.

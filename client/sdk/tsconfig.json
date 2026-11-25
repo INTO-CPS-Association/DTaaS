@@ -21,7 +21,6 @@
     "paths": {
       "src/*": ["./src/*"],
       "tests/*": ["./tests/*"],
-      "examples/*": ["./examples/*"],
       "@into-cps-association/dtaas-sdk": ["./src/index.ts"],
       "@into-cps-association/dtaas-sdk/*": ["./src/*/index.ts"]
     }

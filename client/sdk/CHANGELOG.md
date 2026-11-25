@@ -20,6 +20,12 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `ValidateOptions.hostApiVersion`, for a host that implements another version
   than the package it was built with.
 
+### Removed
+
+- `examples/hello-kit` and its integration test. The template kit lives in
+  `kits/hello-kit` of the `dtaas-extensions` repository, next to the other
+  kits and is tested there.
+
 ### Security
 
 - `./schema` refuses a transport `url` or a substrate `source` whose scheme is
