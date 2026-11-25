@@ -1,7 +1,7 @@
 import type {
   ContentsService,
   DtaasExtension,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import createVizService from 'viz/vizService';
 
 const dt = { name: 'junction7', path: 'digital_twins/junction7', files: [] };

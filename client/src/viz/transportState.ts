@@ -6,7 +6,7 @@
 import type {
   ConnectionState,
   SignalSink,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 /** The sinks of each path, and whether a change altered the set of paths. */
 export function pathBook() {

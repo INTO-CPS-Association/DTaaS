@@ -1,5 +1,5 @@
-import { fakeHostServices } from '@into-cps-association/dtaas-sdk/testing';
-import { SCHEMES } from '@into-cps-association/dtaas-sdk';
+import { fakeHostServices } from '@into-cps-association/dtaas-extensions/testing';
+import { SCHEMES } from '@into-cps-association/dtaas-extensions';
 import createImageSubstrate, { altText } from 'viz/substrates/imageSubstrate';
 
 const resolved = (properties: Record<string, unknown>) => ({

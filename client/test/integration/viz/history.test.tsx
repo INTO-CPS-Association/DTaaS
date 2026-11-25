@@ -2,8 +2,8 @@ import { act, render } from '@testing-library/react';
 import type {
   SubstrateAdapter,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
-import { createFakeViz } from '@into-cps-association/dtaas-sdk/testing';
+} from '@into-cps-association/dtaas-extensions';
+import { createFakeViz } from '@into-cps-association/dtaas-extensions/testing';
 import TwinViewer from 'viz/components/TwinViewer';
 import createGatewayHistory from 'viz/gatewayHistory';
 import createSignals from 'viz/signals';

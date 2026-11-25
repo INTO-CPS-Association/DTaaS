@@ -13,7 +13,7 @@ import type {
   HostServices,
   SubstrateAdapter,
   SubstrateDescriptor,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { HOUR_MS, isLive } from 'viz/time';
 
 /** The frame address for the playhead at `t`. */

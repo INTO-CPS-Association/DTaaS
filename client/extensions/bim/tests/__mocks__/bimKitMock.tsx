@@ -5,7 +5,7 @@
  */
 
 import { lazy } from 'react';
-import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import type { DtaasExtension } from '@into-cps-association/dtaas-extensions';
 
 const BuildingsPage = lazy(async () => ({
   default: () => <h1>Buildings</h1>,

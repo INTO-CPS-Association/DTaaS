@@ -17,7 +17,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { colourAt } from '@into-cps-association/dtaas-sdk';
+import { colourAt } from '@into-cps-association/dtaas-extensions';
 import type { ClassEntry } from './aecAppearance';
 import type { MarkerColours, Quantity } from './aecColours';
 import { OPTIONS } from './aecShortcuts';

@@ -17,7 +17,7 @@
   },
   "peerDependencies": {
     "@into-cps-association/bim-kit": "0.2.0",
-    "@into-cps-association/dtaas-sdk": "*",
+    "@into-cps-association/dtaas-extensions": "*",
     "@mui/icons-material": ">=9",
     "@mui/material": ">=9",
     "react": ">=19",

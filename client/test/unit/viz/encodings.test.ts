@@ -2,9 +2,9 @@ import type {
   Channel,
   Encoding,
   SignalValue,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import evaluate from 'viz/encodings';
-import { colourAt, position } from '@into-cps-association/dtaas-sdk';
+import { colourAt, position } from '@into-cps-association/dtaas-extensions';
 
 const values =
   (byChannel: Partial<Record<Channel, SignalValue>>) => (channel: Channel) =>

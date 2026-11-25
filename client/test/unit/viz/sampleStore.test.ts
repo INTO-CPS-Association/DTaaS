@@ -1,4 +1,4 @@
-import type { SignalSample } from '@into-cps-association/dtaas-sdk';
+import type { SignalSample } from '@into-cps-association/dtaas-extensions';
 import createSampleStore from 'viz/sampleStore';
 
 const sample = (ts: number, value: number, path = 'room/temp') =>

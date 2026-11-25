@@ -8,7 +8,7 @@
 import type {
   ConnectionState,
   SignalSink,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 /** A source of samples whose connection state the core can watch. */
 export interface LiveTransport {

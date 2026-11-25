@@ -6,7 +6,7 @@
  * none, as the Buildings page cycles its heatmap scopes.
  */
 
-import type { Encoding } from '@into-cps-association/dtaas-sdk';
+import type { Encoding } from '@into-cps-association/dtaas-extensions';
 
 /** One colouring rule of the declaration, as a legend states it. */
 export interface Quantity {

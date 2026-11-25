@@ -16,7 +16,7 @@ import type {
   HostServices,
   SignalsService,
   VizService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { getAccessToken } from 'util/auth/credentials';
 import type { LiveTransport } from 'viz/transport';
 import createGatewayTransport from 'viz/gatewayTransport';

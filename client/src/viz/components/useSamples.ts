@@ -8,7 +8,7 @@ import {
   CHANNELS,
   type SignalsService,
   type VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 export default function useSamples(
   asset: VisualisationAsset,

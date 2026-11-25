@@ -19,8 +19,8 @@ import type {
   SaveOptions,
   VisualisationAsset,
   VizService,
-} from '@into-cps-association/dtaas-sdk';
-import { parseVisualisationAsset } from '@into-cps-association/dtaas-sdk/schema';
+} from '@into-cps-association/dtaas-extensions';
+import { parseVisualisationAsset } from '@into-cps-association/dtaas-extensions/schema';
 import STANDARD from 'viz/substrates';
 
 export const VISUALISATION_FILE = 'visualisation.json';

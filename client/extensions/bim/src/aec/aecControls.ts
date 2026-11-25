@@ -4,7 +4,7 @@
  * overlay that draws the toolbar, the floor picker, the facts and legends.
  */
 
-import type { Encoding } from '@into-cps-association/dtaas-sdk';
+import type { Encoding } from '@into-cps-association/dtaas-extensions';
 import type { MeshBasicMaterial } from 'three';
 import { MarkerColours } from './aecColours';
 import { NO_READING_COLOUR } from './aecMarkers';

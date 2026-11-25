@@ -13,8 +13,8 @@
           "paths": {
             "src/*": ["./src/*"],
             "tests/*": ["./tests/*"],
-            "@into-cps-association/dtaas-sdk": ["../../sdk/src/index.ts"],
-            "@into-cps-association/dtaas-sdk/*": ["../../sdk/src/*/index.ts"]
+            "@into-cps-association/dtaas-extensions": ["../../sdk/src/index.ts"],
+            "@into-cps-association/dtaas-extensions/*": ["../../sdk/src/*/index.ts"]
           }
         }
       }
@@ -28,8 +28,8 @@
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1",
     "^tests/(.*)$": "<rootDir>/tests/$1",
-    "^@into-cps-association/dtaas-sdk$": "<rootDir>/../../sdk/src/index.ts",
-    "^@into-cps-association/dtaas-sdk/(schema|testing)$": "<rootDir>/../../sdk/src/$1/index.ts",
+    "^@into-cps-association/dtaas-extensions$": "<rootDir>/../../sdk/src/index.ts",
+    "^@into-cps-association/dtaas-extensions/(schema|testing)$": "<rootDir>/../../sdk/src/$1/index.ts",
     "^@into-cps-association/bim-kit/dtaas$": "<rootDir>/tests/__mocks__/bimKitMock.tsx",
     "\\.(css|less|scss)$": "<rootDir>/tests/__mocks__/styleMock.ts"
   },

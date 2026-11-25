@@ -1,4 +1,4 @@
-import type { Encoding } from '@into-cps-association/dtaas-sdk';
+import type { Encoding } from '@into-cps-association/dtaas-extensions';
 import { MarkerColours } from 'src/aec/aecColours';
 
 const scale = (scheme: string, domain: [number, number]): Encoding => ({

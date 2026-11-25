@@ -7,7 +7,7 @@
  */
 
 import { useSyncExternalStore } from 'react';
-import type { Playhead } from '@into-cps-association/dtaas-sdk';
+import type { Playhead } from '@into-cps-association/dtaas-extensions';
 
 const LIVE_TICK_MS = 1000;
 

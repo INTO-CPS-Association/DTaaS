@@ -10,7 +10,7 @@ import type {
   SubstrateAdapter,
   VisualisationAsset,
   VizService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 export interface MountedPane {
   readonly adapter: SubstrateAdapter;

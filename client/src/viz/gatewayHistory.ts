@@ -6,7 +6,10 @@
  * the answer keeps so the page can say that older readings are missing.
  */
 
-import type { Channel, SignalSample } from '@into-cps-association/dtaas-sdk';
+import type {
+  Channel,
+  SignalSample,
+} from '@into-cps-association/dtaas-extensions';
 import { isSignalValue, qualityOf } from 'viz/payload';
 import {
   authorization,

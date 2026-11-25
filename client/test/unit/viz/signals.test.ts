@@ -1,9 +1,12 @@
 import { renderHook } from '@testing-library/react';
-import type { SignalSample, SignalSink } from '@into-cps-association/dtaas-sdk';
+import type {
+  SignalSample,
+  SignalSink,
+} from '@into-cps-association/dtaas-extensions';
 import type { LiveTransport } from 'viz/transport';
 import createSampleStore from 'viz/sampleStore';
 import createSignals, { historyOf } from 'viz/signals';
-import { createFakeSignals } from '@into-cps-association/dtaas-sdk/testing';
+import { createFakeSignals } from '@into-cps-association/dtaas-extensions/testing';
 
 function fakeTransport() {
   const sinks = new Map<string, SignalSink>();
