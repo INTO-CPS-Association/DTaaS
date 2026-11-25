@@ -36,28 +36,42 @@ function fieldOf(line: string): [string, string] {
   return [line.slice(0, colon), value.startsWith(' ') ? value.slice(1) : value];
 }
 
+/** What the lines read so far say about the event being built. */
+interface EventDraft {
+  name: string;
+  data: string[];
+  retryMs?: number;
+  id?: string;
+}
+
+/** Record one field line in the draft. Unknown or invalid fields are ignored. */
+function applyField(draft: EventDraft, field: string, value: string) {
+  if (field === 'event') draft.name = value;
+  else if (field === 'data') draft.data.push(value);
+  else if (field === 'retry' && /^\d+$/.test(value))
+    draft.retryMs = Number(value);
+  else if (field === 'id' && !value.includes('\0')) draft.id = value;
+}
+
 /** Turn lines into events, keeping the last `retry:` the server sent. */
 function eventBuilder(onEvent: (event: SseEvent) => void) {
-  let name = '';
-  let data: string[] = [];
-  let retryMs: number | undefined;
-  let id: string | undefined;
-  const line = (text: string) => {
-    if (text === '') {
-      if (data.length > 0)
-        onEvent({ event: name || 'message', data: data.join('\n'), id });
-      name = '';
-      data = [];
-      return;
-    }
-    if (text.startsWith(':')) return;
-    const [field, value] = fieldOf(text);
-    if (field === 'event') name = value;
-    else if (field === 'data') data.push(value);
-    else if (field === 'retry' && /^\d+$/.test(value)) retryMs = Number(value);
-    else if (field === 'id' && !value.includes('\0')) id = value;
+  const draft: EventDraft = { name: '', data: [] };
+  // A blank line ends the event. The id and the retry carry on to the next.
+  const endEvent = () => {
+    if (draft.data.length > 0)
+      onEvent({
+        event: draft.name || 'message',
+        data: draft.data.join('\n'),
+        id: draft.id,
+      });
+    draft.name = '';
+    draft.data = [];
   };
-  return { line, retryMs: () => retryMs };
+  const line = (text: string) => {
+    if (text === '') endEvent();
+    else if (!text.startsWith(':')) applyField(draft, ...fieldOf(text));
+  };
+  return { line, retryMs: () => draft.retryMs };
 }
 
 /**

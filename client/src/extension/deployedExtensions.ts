@@ -48,8 +48,14 @@ const SHARED_IMPORTS: Record<SharedKey, () => Promise<unknown>> = {
   reactDomClient: () => import('react-dom/client'),
   reactRouterDom: () => import('react-router-dom'),
   muiMaterial: () => import('@mui/material'),
-  dtaasSdk: () => import('@into-cps-association/dtaas-extensions'),
-  dtaasSdkSchema: () => import('@into-cps-association/dtaas-extensions/schema'),
+  dtaasExtensions: () => import('@into-cps-association/dtaas-extensions'),
+  // The local copy of the contract has no ./core or ./react entry. Its root
+  // exports everything both of them export, so a kit that imports either one
+  // reads the same names from the root.
+  dtaasExtensionsCore: () => import('@into-cps-association/dtaas-extensions'),
+  dtaasExtensionsReact: () => import('@into-cps-association/dtaas-extensions'),
+  dtaasExtensionsSchema: () =>
+    import('@into-cps-association/dtaas-extensions/schema'),
   zod: () => import('zod'),
 };
 

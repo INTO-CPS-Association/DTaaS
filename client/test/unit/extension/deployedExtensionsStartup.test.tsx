@@ -32,8 +32,10 @@ describe('provideSharedModules', () => {
     const shared = target.DTAAS_SHARED as Record<string, unknown>;
     expect(Object.keys(shared).sort()).toEqual(
       [
-        'dtaasSdk',
-        'dtaasSdkSchema',
+        'dtaasExtensions',
+        'dtaasExtensionsCore',
+        'dtaasExtensionsReact',
+        'dtaasExtensionsSchema',
         'muiMaterial',
         'react',
         'reactDom',
@@ -48,6 +50,23 @@ describe('provideSharedModules', () => {
     );
     expect(shared.reactDomClient).toEqual(
       expect.objectContaining({ createRoot: expect.any(Function) }),
+    );
+  });
+
+  it('gives the core and react keys the names a kit imports from them', async () => {
+    const target: Record<string, unknown> = {};
+
+    await provideSharedModules(target);
+
+    const shared = target.DTAAS_SHARED as Record<string, unknown>;
+    expect(shared.dtaasExtensionsCore).toEqual(
+      expect.objectContaining({ defineExtension: expect.any(Function) }),
+    );
+    expect(shared.dtaasExtensionsReact).toEqual(
+      expect.objectContaining({
+        HostProvider: expect.any(Function),
+        useHost: expect.any(Function),
+      }),
     );
   });
 });
