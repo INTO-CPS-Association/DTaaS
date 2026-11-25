@@ -697,10 +697,10 @@
   resolved "https://registry.npmjs.org/@lukeed/csprng/-/csprng-1.1.0.tgz"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
-"@nestjs/common@12.4.0":
-  version "12.4.0"
-  resolved "https://registry.npmjs.org/@nestjs/common/-/common-12.4.0.tgz"
-  integrity sha512-waVAKCvUJtH9icwnNOxLcx9MDV5hKMpftts3D25SGDIRR5n23jTi53q0lQapc5qmZHLFzNR1jxDsF2g6OdyJIQ==
+"@nestjs/common@12.4.1":
+  version "12.4.1"
+  resolved "https://registry.npmjs.org/@nestjs/common/-/common-12.4.1.tgz"
+  integrity sha512-m5uRB2C6TvDOLYwzqelJiGLY1Px7Z4yDis/v46AnaCqjft6quQUKbFtaQtub3L1GcHYvyeVAri0GJqktCDUHGQ==
   dependencies:
     "@standard-schema/spec" "1.1.0"
     file-type "22.3.0"
@@ -709,10 +709,10 @@
     tslib "2.9.1"
     uid "2.0.2"
 
-"@nestjs/core@12.4.0":
-  version "12.4.0"
-  resolved "https://registry.npmjs.org/@nestjs/core/-/core-12.4.0.tgz"
-  integrity sha512-gUH66sFy9gaZrmwMWC2LfM3R0Tacxautms+NgoIJ05J6YtvBbCyRlNslqtDC2f0wDVduswRWErIrJtIHtKon4w==
+"@nestjs/core@12.4.1":
+  version "12.4.1"
+  resolved "https://registry.npmjs.org/@nestjs/core/-/core-12.4.1.tgz"
+  integrity sha512-EhWlAZW1iy2DOJ/4ewziT0ksN1nG9hvbNfhLjt2oDdy4/d6goW0e5tnNcDwNdNnLKNo9VEQYPbKO1Ahgo+64aw==
   dependencies:
     fast-safe-stringify "2.1.1"
     iterare "1.2.1"
@@ -720,10 +720,10 @@
     tslib "2.9.1"
     uid "2.0.2"
 
-"@nestjs/platform-express@12.4.0":
-  version "12.4.0"
-  resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-12.4.0.tgz"
-  integrity sha512-jclVP5Ncv6SnYF84HOJzIixXrsazn1228OdckJyG2KbeaWEdXS74Xnxi2iaVwqo8jcmVLia1SN6YGyj2nY+FWA==
+"@nestjs/platform-express@12.4.1":
+  version "12.4.1"
+  resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-12.4.1.tgz"
+  integrity sha512-PknXPAkMT3WI6jh8dSvMF6swKZXChFkwaj6Ns+t/1vKNorRhCT/hlLg5kN1/bj01n/OXssRCZmZG9mhqkh7c0A==
   dependencies:
     cors "2.8.6"
     express "5.3.0"
@@ -731,12 +731,17 @@
     path-to-regexp "8.4.2"
     tslib "2.9.1"
 
-"@nestjs/testing@12.4.0":
-  version "12.4.0"
-  resolved "https://registry.npmjs.org/@nestjs/testing/-/testing-12.4.0.tgz"
-  integrity sha512-jRnK2OwXABrhkqrGL+hCxHO5IO1gpz0Zhew/ga3ND4dNqgTUAwLmntbnQo17uKo1V2oj2H5VsYamMqkixTma3g==
+"@nestjs/testing@12.4.1":
+  version "12.4.1"
+  resolved "https://registry.npmjs.org/@nestjs/testing/-/testing-12.4.1.tgz"
+  integrity sha512-OG/UgCpTacBJwLp/Zy8VFemdxHQdqPUCvsdQuepQGEyiVvdlf+AsZDxoUzLIshiRcz1uBeGEAkprQ23wZo+mLQ==
   dependencies:
     tslib "2.9.1"
+
+"@nestjs/throttler@6.7.1":
+  version "6.7.1"
+  resolved "https://registry.npmjs.org/@nestjs/throttler/-/throttler-6.7.1.tgz"
+  integrity sha512-gAyY1AkU+cSK5DCjFOB43xax9oakameH4xZa9kAgqBqSBQZgmv3DZylLV8KyZNzOGhceL3kDVtby+CF8VAdmEA==
 
 "@noble/hashes@^1.1.5":
   version "1.8.0"
@@ -3409,6 +3414,11 @@ jest@30.5.2:
     "@jest/types" "30.5.1"
     import-local "^3.2.0"
     jest-cli "30.5.2"
+
+jose@6.2.16:
+  version "6.2.16"
+  resolved "https://registry.npmjs.org/jose/-/jose-6.2.16.tgz"
+  integrity sha512-4LSJpbuBuPdGrONCdZUy0xnxtLf8eEz+EY0SMXdHQEBU7bgUHDVblU/JAjryv3wID9/LK7/YuwFwq+AQNfMscQ==
 
 js-tokens@^4.0.0:
   version "4.0.0"
