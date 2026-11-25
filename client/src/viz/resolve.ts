@@ -15,7 +15,7 @@ import type {
   ResolvedEncoding,
   Sampled,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import evaluate from 'viz/encodings';
 
 export type ReadAt = (

@@ -1,7 +1,7 @@
 import type {
   EncodingPreset,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { channelsOf } from 'viz/components/useHistory';
 
 const scale = (channel?: 'measured' | 'setpoint') => ({

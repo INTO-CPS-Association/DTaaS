@@ -12,7 +12,7 @@ import type {
   SignalsService,
   VisualisationAsset,
   VizService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import resolveEncodings from 'viz/resolve';
 import usePanes, { type MountedPane } from 'viz/components/usePanes';
 import useSamples from 'viz/components/useSamples';

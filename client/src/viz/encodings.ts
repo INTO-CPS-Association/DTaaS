@@ -10,8 +10,8 @@ import type {
   Channel,
   Encoding,
   SignalValue,
-} from '@into-cps-association/dtaas-sdk';
-import { colourAt, position } from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
+import { colourAt, position } from '@into-cps-association/dtaas-extensions';
 
 /** The value of the bound signal on one channel, at the playhead. */
 export type ValueOn = (channel: Channel) => SignalValue | undefined;

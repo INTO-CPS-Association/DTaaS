@@ -12,7 +12,7 @@ import {
   worstConnectionState,
   type ConnectionState,
   type ConnectionStatus,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import type { LiveTransport } from 'viz/transport';
 
 export default function connectionOf(

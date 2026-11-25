@@ -1,4 +1,4 @@
-import { fakeHostServices } from '@into-cps-association/dtaas-sdk/testing';
+import { fakeHostServices } from '@into-cps-association/dtaas-extensions/testing';
 import createEmbedSubstrate, {
   embedUrl,
   sandboxFor,

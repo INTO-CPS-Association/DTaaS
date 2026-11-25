@@ -15,7 +15,7 @@
 import type {
   Anchor,
   SubstrateDescriptor,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import fitHomography, { type Point } from 'viz/substrates/homography';
 
 export function parsePoints(ref: string): Point[] {

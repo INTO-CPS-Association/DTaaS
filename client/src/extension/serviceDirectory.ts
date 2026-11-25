@@ -11,7 +11,7 @@ import type {
   ExtensionServices,
   HostServices,
   ProvidedService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 export interface ServiceDirectory {
   /** The services `ext` may use, as its `host.extensions`. */

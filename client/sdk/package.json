@@ -1,5 +1,5 @@
 {
-  "name": "@into-cps-association/dtaas-sdk",
+  "name": "@into-cps-association/dtaas-extensions",
   "version": "0.1.0",
   "private": true,
   "description": "Contract for DTaaS web client extensions: extension and host-service types, visualisation schemas, validation helpers, a test harness and a shareable ESLint config.",

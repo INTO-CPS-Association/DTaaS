@@ -821,7 +821,7 @@
   version "0.0.0"
   uid ""
 
-"@into-cps-association/dtaas-sdk@link:./sdk":
+"@into-cps-association/dtaas-extensions@link:./sdk":
   version "0.0.0"
   uid ""
 

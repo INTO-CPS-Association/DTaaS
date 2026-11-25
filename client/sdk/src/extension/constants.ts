@@ -44,20 +44,6 @@ export const STANDARD_ANCHOR_KINDS = [
   'tb-entity',
 ] as const;
 
-/** First path segments of the DTaaS core routes and host-owned state keys. */
-export const RESERVED_EXTENSION_IDS: readonly string[] = [
-  'config',
-  'library',
-  'digitaltwins',
-  'automation',
-  'account',
-  'workbench',
-  'preview',
-  'insights',
-  'ext',
-  'viz',
-];
-
 /** env.js key listing compiled-in extensions a deployment switches off. */
 export const EXTENSIONS_DISABLED_KEY = 'REACT_APP_EXTENSIONS_DISABLED';
 

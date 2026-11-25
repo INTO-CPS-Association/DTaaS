@@ -10,7 +10,7 @@
 import type {
   HostServices,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { GitFileMissing } from 'extension/gitClient';
 import { VISUALISATION_FILE, parseVisualisationFile } from 'viz/vizService';
 

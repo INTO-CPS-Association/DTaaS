@@ -18,7 +18,7 @@ import type {
   ResolvedEncoding,
   SubstrateAdapter,
   SubstrateDescriptor,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import type { Controls, PaneRows } from './aecControls';
 import type { Marker } from './aecMarkers';
 import type { AecScene } from './aecScene';

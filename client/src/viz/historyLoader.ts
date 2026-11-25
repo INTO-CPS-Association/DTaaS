@@ -6,7 +6,7 @@
  */
 
 import { useSyncExternalStore } from 'react';
-import type { Channel } from '@into-cps-association/dtaas-sdk';
+import type { Channel } from '@into-cps-association/dtaas-extensions';
 import type { SignalHistory } from 'viz/gatewayHistory';
 import {
   subtract,

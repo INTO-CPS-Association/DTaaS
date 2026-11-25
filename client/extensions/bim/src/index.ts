@@ -11,7 +11,7 @@
 import {
   defineExtension,
   type LazySubstrateAdapterSpec,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { extension as kit } from '@into-cps-association/bim-kit/dtaas';
 
 export const AEC_SUBSTRATE: LazySubstrateAdapterSpec = {

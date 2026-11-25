@@ -42,9 +42,9 @@ flowchart LR
 - The SDK gives every kit the contract, a template and a fake host for tests. It
   lives in the `dtaas-extensions` repository, named `dtaas-sdk` until
   18 November 2026, next to the example kits `bim` and `soil-kit` and the
-  `hello-kit` template. The npm package keeps the name
-  `@into-cps-association/dtaas-sdk`. #1912 proposes the name
-  `dtaas-extension-api` and decides it.
+  `hello-kit` template. The npm package is named
+  `@into-cps-association/dtaas-extensions` from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk` before.
 
 ## What a Kit Is
 

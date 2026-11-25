@@ -6,7 +6,7 @@ const mockGitReads: string[] = [];
 
 jest.mock('extension/extensionHost', () => {
   const { fakeHostServices } = jest.requireActual(
-    '@into-cps-association/dtaas-sdk/testing',
+    '@into-cps-association/dtaas-extensions/testing',
   );
   const { GitFileMissing } = jest.requireActual('extension/gitClient');
   const GitSignInNeeded = jest.requireActual(

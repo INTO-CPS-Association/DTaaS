@@ -1,5 +1,5 @@
 import { extension as kit } from '@into-cps-association/bim-kit/dtaas';
-import { validateExtension } from '@into-cps-association/dtaas-sdk';
+import { validateExtension } from '@into-cps-association/dtaas-extensions';
 import extension, { AEC_SUBSTRATE } from 'src/index';
 
 describe('the bim extension', () => {

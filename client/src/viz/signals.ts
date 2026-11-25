@@ -19,7 +19,7 @@ import {
   type SignalSample,
   type SignalSink,
   type SignalsService,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import createSampleStore, { type SampleStore } from 'viz/sampleStore';
 import createPlayhead from 'viz/playhead';
 import connectionOf from 'viz/connection';

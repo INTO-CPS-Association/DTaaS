@@ -5,6 +5,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     tsconfigPaths: true,
+    // bim-kit 0.2.0 was published against the contract's former name,
+    // @into-cps-association/dtaas-sdk. The alias hands it the same local copy
+    // the client uses, until a bim-kit release imports the new name.
+    alias: [
+      {
+        find: /^@into-cps-association\/dtaas-sdk(\/.*)?$/,
+        replacement: '@into-cps-association/dtaas-extensions$1',
+      },
+    ],
   },
   // The contract is linked from sdk/, and Vite does not pre-bundle a linked
   // package. bim-kit, which is pre-bundled, would then carry its own copy of
@@ -12,8 +21,8 @@ export default defineConfig({
   // the client never fills. Pre-bundling the contract too gives both one copy.
   optimizeDeps: {
     include: [
-      '@into-cps-association/dtaas-sdk',
-      '@into-cps-association/dtaas-sdk/schema',
+      '@into-cps-association/dtaas-extensions',
+      '@into-cps-association/dtaas-extensions/schema',
     ],
   },
   server: {

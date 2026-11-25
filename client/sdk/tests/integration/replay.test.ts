@@ -1,8 +1,8 @@
 import {
   fakeHostServices,
   replayFixture,
-} from '@into-cps-association/dtaas-sdk/testing';
-import type { SignalSample } from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions/testing';
+import type { SignalSample } from '@into-cps-association/dtaas-extensions';
 import stream from 'tests/fixtures/stream.json';
 
 const samples = stream as SignalSample[];

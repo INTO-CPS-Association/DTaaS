@@ -4,7 +4,7 @@
  */
 
 import { combineReducers, type Reducer } from 'redux';
-import type { ExtensionReducer } from '@into-cps-association/dtaas-sdk';
+import type { ExtensionReducer } from '@into-cps-association/dtaas-extensions';
 
 type ExtensionSlices = Record<string, unknown>;
 
