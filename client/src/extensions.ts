@@ -1,4 +1,4 @@
-import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import type { DtaasExtension } from '@into-cps-association/dtaas-extensions';
 
 /**
  * Every domain extension compiled into this client, in menu order.

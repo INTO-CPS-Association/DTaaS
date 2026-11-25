@@ -24,7 +24,7 @@ import {
   type SignalQuality,
   type SignalSample,
   type SignalValue,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 export interface Decoded {
   readonly value: SignalValue;

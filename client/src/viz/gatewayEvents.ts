@@ -11,7 +11,7 @@ import type {
   Channel,
   ConnectionState,
   SignalSink,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { recordDelivery } from 'viz/deliveryTimings';
 import { channelOf, sampleFrom } from 'viz/payload';
 import type { SseEvent } from 'viz/sseStream';

@@ -12,8 +12,8 @@ import type {
   ResolvedEncoding,
   SubstrateAdapter,
   SubstrateDescriptor,
-} from '@into-cps-association/dtaas-sdk';
-import { SCHEMES } from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
+import { SCHEMES } from '@into-cps-association/dtaas-extensions';
 import { anchorPixels } from 'viz/substrates/imageAnchors';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';

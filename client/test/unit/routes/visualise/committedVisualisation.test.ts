@@ -1,4 +1,4 @@
-import type { HostServices } from '@into-cps-association/dtaas-sdk';
+import type { HostServices } from '@into-cps-association/dtaas-extensions';
 import { GitFileMissing } from 'extension/gitClient';
 import committedReader from 'route/digitaltwins/visualise/committedVisualisation';
 

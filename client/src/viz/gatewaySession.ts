@@ -8,7 +8,7 @@
  */
 
 import { useSyncExternalStore } from 'react';
-import type { SignalsService } from '@into-cps-association/dtaas-sdk';
+import type { SignalsService } from '@into-cps-association/dtaas-extensions';
 
 export interface GatewaySession {
   /** Remember that the gateway refused this token. */

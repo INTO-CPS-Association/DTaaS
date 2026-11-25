@@ -22,8 +22,19 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The package is named `@into-cps-association/dtaas-extensions`, the name the
+  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
+  uses the new name.
 - The `hello-kit` example and `yarn build:kit` leave this folder. Every kit is
   a package of its own in the `kits/` folder of the dtaas-extensions repository.
+
+### Removed
+
+- `RESERVED_EXTENSION_IDS`. The reserved ids are the first segments of the
+  host's own routes, so the host keeps the list and passes it to
+  `validateExtension` as `reservedIds`. Without that option no id is reserved.
+  The package keeps the rules on the shape of an id.
 
 ### Fixed
 

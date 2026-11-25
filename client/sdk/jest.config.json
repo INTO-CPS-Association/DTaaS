@@ -13,8 +13,8 @@
           "paths": {
             "src/*": ["./src/*"],
             "tests/*": ["./tests/*"],
-            "@into-cps-association/dtaas-sdk": ["./src/index.ts"],
-            "@into-cps-association/dtaas-sdk/*": ["./src/*/index.ts"]
+            "@into-cps-association/dtaas-extensions": ["./src/index.ts"],
+            "@into-cps-association/dtaas-extensions/*": ["./src/*/index.ts"]
           }
         }
       }
@@ -37,8 +37,8 @@
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1",
     "^tests/(.*)$": "<rootDir>/tests/$1",
-    "^@into-cps-association/dtaas-sdk$": "<rootDir>/src/index.ts",
-    "^@into-cps-association/dtaas-sdk/(.*)$": "<rootDir>/src/$1/index.ts",
+    "^@into-cps-association/dtaas-extensions$": "<rootDir>/src/index.ts",
+    "^@into-cps-association/dtaas-extensions/(.*)$": "<rootDir>/src/$1/index.ts",
     "\\.(css|less|scss)$": "<rootDir>/tests/__mocks__/styleMock.ts"
   },
   "verbose": true,

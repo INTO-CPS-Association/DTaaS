@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { createFakeSignals } from '@into-cps-association/dtaas-sdk/testing';
+import { createFakeSignals } from '@into-cps-association/dtaas-extensions/testing';
 import Timeline, { localTime } from 'viz/components/Timeline';
 import createSignals from 'viz/signals';
 import createGatewaySession from 'viz/gatewaySession';

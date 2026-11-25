@@ -81,7 +81,7 @@ export interface DtaasExtension<S = unknown> {
   readonly id: string;
   readonly name: string;
   readonly version: string;
-  /** The dtaas-sdk major this extension was built against. */
+  /** The contract major this extension was built against. */
   readonly sdk: typeof SDK_MAJOR;
   /**
    * The versions of the extension API this extension works with, as a semver

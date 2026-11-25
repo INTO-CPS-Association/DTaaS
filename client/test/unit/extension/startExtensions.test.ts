@@ -1,7 +1,7 @@
 import type {
   DtaasExtension,
   HostServices,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import startExtensions from 'extension/startExtensions';
 
 const kit = (id: string, setup?: DtaasExtension['setup']) =>

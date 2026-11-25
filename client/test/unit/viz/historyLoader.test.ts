@@ -1,4 +1,4 @@
-import type { SignalSample } from '@into-cps-association/dtaas-sdk';
+import type { SignalSample } from '@into-cps-association/dtaas-extensions';
 import createHistoryCoverage from 'viz/historyCoverage';
 import createHistoryLoader, { MAX_SPAN_MS } from 'viz/historyLoader';
 import createSampleStore from 'viz/sampleStore';

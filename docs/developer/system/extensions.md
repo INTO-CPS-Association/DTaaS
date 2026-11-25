@@ -8,10 +8,10 @@ pages.
 
 ## Packages Used by the Client
 
-| Package                               | Source                                                         | Role in the client                                                                                                                                                    |
-| :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
-| `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
+| Package                                  | Source                                  | Role in the client                                                                                                                            |
+| :--------------------------------------- | :-------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@into-cps-association/dt-automation`    | `lib/dt-automation/` in this repository | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`). |
+| `@into-cps-association/dtaas-extensions` | `client/sdk/` in this repository        | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`).                                 |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -36,12 +36,12 @@ bundle.
 
 ## The Extension Contract
 
-`client/sdk/` holds `@into-cps-association/dtaas-sdk`, the contract between the
-client and its domain extensions: the `DtaasExtension` type, the `HostServices`
-types, the schema of `visualisation.json`, the validation helpers and a test
-harness with `fakeHostServices`, `fakeSignals` and `checkConformance`, so an
-extension is tested without a running installation. Its README describes the
-package and `yarn test:sdk` runs its tests.
+`client/sdk/` holds `@into-cps-association/dtaas-extensions`, the contract
+between the client and its domain extensions: the `DtaasExtension` type, the
+`HostServices` types, the schema of `visualisation.json`, the validation helpers
+and a test harness with `fakeHostServices`, `fakeSignals` and
+`checkConformance`, so an extension is tested without a running installation.
+Its README describes the package and `yarn test:sdk` runs its tests.
 
 An extension declares the contract revision it was built against (`sdk: 1`),
 which is separate from the npm version of the package, and a host refuses an

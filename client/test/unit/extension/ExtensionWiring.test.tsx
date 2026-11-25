@@ -2,7 +2,10 @@ import '@testing-library/jest-dom';
 import { lazy, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { useHost, type DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import {
+  useHost,
+  type DtaasExtension,
+} from '@into-cps-association/dtaas-extensions';
 
 const WindPage = lazy(async () => ({
   default: function WindHome() {
@@ -51,7 +54,8 @@ jest.mock('extension/extensionHost', () => {
 
 describe('an extension in the client', () => {
   it('renders its page with the services of its own extension', async () => {
-    const { default: ExtensionPage } = await import('extension/ExtensionPage');
+    const { default: ExtensionPage } =
+      await import('route/extension/ExtensionPage');
 
     render(<ExtensionPage extension={wind} page={WindPage} />);
 

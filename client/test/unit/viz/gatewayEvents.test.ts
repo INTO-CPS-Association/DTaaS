@@ -1,4 +1,4 @@
-import type { SignalSample } from '@into-cps-association/dtaas-sdk';
+import type { SignalSample } from '@into-cps-association/dtaas-extensions';
 import eventHandler, { type StreamTarget } from 'viz/gatewayEvents';
 import { clearDeliveryTimings, deliveryTimings } from 'viz/deliveryTimings';
 

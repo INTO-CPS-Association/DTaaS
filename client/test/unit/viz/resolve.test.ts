@@ -7,10 +7,10 @@
 import type {
   SignalSample,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import createSampleStore from 'viz/sampleStore';
 import resolveEncodings from 'viz/resolve';
-import { colourAt, position } from '@into-cps-association/dtaas-sdk';
+import { colourAt, position } from '@into-cps-association/dtaas-extensions';
 
 const QUEUE = 'junction7/armA/queueLen';
 

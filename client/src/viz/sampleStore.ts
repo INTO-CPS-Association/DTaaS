@@ -12,7 +12,7 @@ import type {
   Channel,
   Sampled,
   SignalSample,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 /** How many samples of one signal and channel stay in memory. */
 export const SAMPLES_PER_SIGNAL = 10_000;

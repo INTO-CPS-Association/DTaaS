@@ -3,7 +3,7 @@
  * lists in `REACT_APP_EXTENSIONS_DEPLOYED` in `env.js`, loaded when the client
  * starts, without a rebuild (K9).
  *
- * A bundle is built with `kitBuildConfig` from `@into-cps-association/dtaas-sdk/deploy`.
+ * A bundle is built with `kitBuildConfig` from `@into-cps-association/dtaas-extensions/deploy`.
  * It is a classic script that registers `{ extension }` on `DTAAS_EXTENSIONS`
  * and takes React, the router, MUI, zod and the contract from `DTAAS_SHARED`,
  * which this module fills before the first bundle runs.
@@ -24,7 +24,7 @@ import {
   SHARED_MODULES_GLOBAL,
   type DtaasExtension,
   type EnvRecord,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import type { ExtensionProblem } from 'extension/createExtensionHost';
 
 /**
@@ -48,8 +48,8 @@ const SHARED_IMPORTS: Record<SharedKey, () => Promise<unknown>> = {
   reactDomClient: () => import('react-dom/client'),
   reactRouterDom: () => import('react-router-dom'),
   muiMaterial: () => import('@mui/material'),
-  dtaasSdk: () => import('@into-cps-association/dtaas-sdk'),
-  dtaasSdkSchema: () => import('@into-cps-association/dtaas-sdk/schema'),
+  dtaasSdk: () => import('@into-cps-association/dtaas-extensions'),
+  dtaasSdkSchema: () => import('@into-cps-association/dtaas-extensions/schema'),
   zod: () => import('zod'),
 };
 

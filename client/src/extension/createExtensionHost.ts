@@ -19,7 +19,6 @@
  */
 
 import {
-  RESERVED_EXTENSION_IDS,
   type AssetPreview,
   isExtensionDisabled,
   readExtensionConfig,
@@ -30,10 +29,8 @@ import {
   type ExtensionReducer,
   type ExtensionRoute,
   type NavigationItem,
-} from '@into-cps-association/dtaas-sdk';
-
-/** Core routes of this client. A core route added later joins this list. */
-export const CORE_ROUTE_IDS: readonly string[] = [...RESERVED_EXTENSION_IDS];
+} from '@into-cps-association/dtaas-extensions';
+import RESERVED_EXTENSION_IDS from './reservedExtensionIds';
 
 export interface ExtensionProblem {
   readonly id: string;
@@ -106,7 +103,7 @@ function rejection(
   claimed: Map<string, string>,
 ): string | undefined {
   const { valid, errors } = validateExtension(ext, {
-    reservedIds: CORE_ROUTE_IDS,
+    reservedIds: RESERVED_EXTENSION_IDS,
   });
   if (!valid) return errors.join('; ');
   if (seen.has(ext.id)) return 'another extension already has this id';

@@ -2,11 +2,11 @@ import { act, render, screen } from '@testing-library/react';
 import type {
   SubstrateAdapter,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import {
   createFakeSignals,
   createFakeViz,
-} from '@into-cps-association/dtaas-sdk/testing';
+} from '@into-cps-association/dtaas-extensions/testing';
 import TwinViewer from 'viz/components/TwinViewer';
 import createSignals from 'viz/signals';
 

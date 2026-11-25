@@ -19,7 +19,7 @@ import {
   type HostServices,
   type LibraryService,
   type SnackbarSeverity,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import PageShell from 'components/PageShell';
 import HostTheme from 'theme/HostTheme';
 import {

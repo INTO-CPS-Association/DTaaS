@@ -9,7 +9,7 @@ export default defineConfig({
     // of React. A second copy of the contract brings a second HostProvider
     // context, which the client never fills, so an extension page throws.
     dedupe: [
-      '@into-cps-association/dtaas-sdk',
+      '@into-cps-association/dtaas-extensions',
       'react',
       'react-dom',
       'react-router-dom',
@@ -22,8 +22,8 @@ export default defineConfig({
   // contract too gives both one copy.
   optimizeDeps: {
     include: [
-      '@into-cps-association/dtaas-sdk',
-      '@into-cps-association/dtaas-sdk/schema',
+      '@into-cps-association/dtaas-extensions',
+      '@into-cps-association/dtaas-extensions/schema',
     ],
   },
   server: {

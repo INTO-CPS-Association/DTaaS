@@ -14,7 +14,7 @@ import type {
   EncodingPreset,
   SignalsService,
   VisualisationAsset,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import { encodingsOf, presetsOf } from 'viz/resolve';
 import { HOUR_MS } from 'viz/time';
 

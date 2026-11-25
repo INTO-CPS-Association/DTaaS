@@ -6,7 +6,7 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 
-import type { EnvRecord } from '@into-cps-association/dtaas-sdk';
+import type { EnvRecord } from '@into-cps-association/dtaas-extensions';
 import { prepareDeployedExtensions } from 'extension/deployedExtensions';
 
 /** Say in the page that the client did not start, where it would have drawn. */

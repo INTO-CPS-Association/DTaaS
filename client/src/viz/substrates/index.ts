@@ -4,7 +4,7 @@
  * private copy of one of these.
  */
 
-import type { SubstrateAdapterFactory } from '@into-cps-association/dtaas-sdk';
+import type { SubstrateAdapterFactory } from '@into-cps-association/dtaas-extensions';
 import createEmbedSubstrate from 'viz/substrates/embedSubstrate';
 import createImageSubstrate from 'viz/substrates/imageSubstrate';
 

@@ -1,4 +1,4 @@
-import type { Anchor } from '@into-cps-association/dtaas-sdk';
+import type { Anchor } from '@into-cps-association/dtaas-extensions';
 import { anchorPixels, parsePoints } from 'viz/substrates/imageAnchors';
 
 const picture = { adapter: 'image', source: 'lib://j7.jpg' };

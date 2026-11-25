@@ -15,7 +15,7 @@
  * gateway refused is not opened again with that token.
  */
 
-import type { Channel } from '@into-cps-association/dtaas-sdk';
+import type { Channel } from '@into-cps-association/dtaas-extensions';
 import {
   openSse,
   RefusedError,

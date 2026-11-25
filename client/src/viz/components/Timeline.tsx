@@ -9,7 +9,7 @@ import Chip from '@mui/material/Chip';
 import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { SignalsService } from '@into-cps-association/dtaas-sdk';
+import type { SignalsService } from '@into-cps-association/dtaas-extensions';
 import { HOUR_MS, isLive } from 'viz/time';
 import { historyOf } from 'viz/signals';
 import { sessionOf } from 'viz/gatewaySession';

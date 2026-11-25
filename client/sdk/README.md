@@ -1,19 +1,20 @@
 # DTaaS Extension Contract
 
-`@into-cps-association/dtaas-sdk` is the contract between this client and
-its domain extensions: the extension and host-service types, the
+`@into-cps-association/dtaas-extensions` is the contract between this client
+and its domain extensions: the extension and host-service types, the
 `visualisation.json` schemas, the validation helpers, a test harness and a
 shareable ESLint config. Its code was copied from the `dtaas-extensions`
 repository, then named `dtaas-sdk`, at the commit published as version
-`0.1.0`.
+`0.1.0`. The package was named `@into-cps-association/dtaas-sdk` until
+version `0.2.0`.
 
-| Import                                    | What It Gives                                                                     |
-| :---------------------------------------- | :-------------------------------------------------------------------------------- |
-| `@into-cps-association/dtaas-sdk`         | Contract types, `HostProvider`, `useHost`, `defineExtension`, `validateExtension` |
-| `@into-cps-association/dtaas-sdk/schema`  | zod schemas for `visualisation.json`                                              |
-| `@into-cps-association/dtaas-sdk/testing` | `fakeHostServices`, `renderWithHost`, `replayFixture`, `checkConformance`         |
-| `@into-cps-association/dtaas-sdk/eslint`  | Flat-config rules that keep an extension inside its boundary                      |
-| `@into-cps-association/dtaas-sdk/deploy`  | `kitBuildConfig`, the Vite settings that build a deployed extension               |
+| Import                                           | What It Gives                                                                     |
+| :----------------------------------------------- | :-------------------------------------------------------------------------------- |
+| `@into-cps-association/dtaas-extensions`         | Contract types, `HostProvider`, `useHost`, `defineExtension`, `validateExtension` |
+| `@into-cps-association/dtaas-extensions/schema`  | zod schemas for `visualisation.json`                                              |
+| `@into-cps-association/dtaas-extensions/testing` | `fakeHostServices`, `renderWithHost`, `replayFixture`, `checkConformance`         |
+| `@into-cps-association/dtaas-extensions/eslint`  | Flat-config rules that keep an extension inside its boundary                      |
+| `@into-cps-association/dtaas-extensions/deploy`  | `kitBuildConfig`, the Vite settings that build a deployed extension               |
 
 The client depends on this folder with `link:./sdk`. The package exports
 point to the TypeScript source, so there is no build step: Vite, Jest and

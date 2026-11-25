@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import type { VisualisationAsset } from '@into-cps-association/dtaas-sdk';
+import type { VisualisationAsset } from '@into-cps-association/dtaas-extensions';
 import GitSignInNeeded from 'extension/gitSignInNeeded';
 import { logged } from 'route/digitaltwins/twins/useTwins';
 import type { ReadDeclaration } from 'route/digitaltwins/visualise/committedVisualisation';
