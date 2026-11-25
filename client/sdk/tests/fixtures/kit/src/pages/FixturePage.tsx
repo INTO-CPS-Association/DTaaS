@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useHost } from '@into-cps-association/dtaas-sdk';
+import { useHost } from '@into-cps-association/dtaas-extensions';
 
 /** A page that reads the host, so mounting it proves the host reaches it. */
 export default function FixturePage() {
