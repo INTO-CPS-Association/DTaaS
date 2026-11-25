@@ -14,7 +14,7 @@ export function reading(value: number): string {
   return JSON.stringify({ value, ts: '2026-11-06T10:00:00Z', unit: 'Cel' });
 }
 
-/** A broker in memory: records each subscription and delivers what a test publishes. */
+/** A broker in memory: records each subscription and publication, and delivers what a test sends. */
 export default class FakeBroker implements SignalBroker {
   readonly bindings: Binding[] = [];
   failNext = false;
@@ -37,7 +37,14 @@ export default class FakeBroker implements SignalBroker {
     };
   }
 
-  publish(topic: string, text: string): void {
+  readonly published: Array<{ topic: string; body: string }> = [];
+
+  async publish(topic: string, body: string): Promise<void> {
+    this.published.push({ topic, body });
+  }
+
+  /** Delivers a message to the streams subscribed to its topic. */
+  deliver(topic: string, text: string): void {
     this.bindings
       .filter((b) => b.topics.includes(topic))
       .forEach((b) => b.listener.onMessage({ topic, body: Buffer.from(text) }));
