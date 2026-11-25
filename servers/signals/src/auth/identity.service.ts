@@ -39,6 +39,18 @@ const userSchema = z.object({
   email: z.string().default(''),
 });
 
+// A token without an expiry is valid until GitLab revokes it. One that has
+// already expired is refused.
+function expiresAtOf(
+  tokenInfo: z.infer<typeof tokenInfoSchema>,
+  now: number,
+): number | undefined {
+  const seconds = tokenInfo.expires_in_seconds;
+  if (typeof seconds !== 'number') return undefined;
+  if (seconds <= 0) throw new InvalidTokenError();
+  return now + seconds * 1000;
+}
+
 // The cache key is a hash, so the cache never holds a token itself.
 export function cacheKeyOf(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -67,11 +79,10 @@ export default class IdentityService {
     if (cached !== undefined) return cached;
     const identity = await this.lookUp(token, now);
     const ttlEnd = now + this.config.get('identity-cache-ttl');
-    this.cache.set(
-      key,
-      identity,
-      Math.min(ttlEnd, identity.expiresAt ?? ttlEnd),
-    );
+    this.cache.set(key, {
+      value: identity,
+      expiresAt: Math.min(ttlEnd, identity.expiresAt ?? ttlEnd),
+    });
     return identity;
   }
 
@@ -100,21 +111,25 @@ export default class IdentityService {
       ]);
       const tokenInfo = tokenInfoSchema.parse(info);
       const owner = userSchema.parse(user);
-      if (tokenInfo.resource_owner_id !== owner.id)
-        throw new InvalidTokenError();
-      this.assertApplication(tokenInfo);
-      this.assertScope(tokenInfo);
-      const seconds = tokenInfo.expires_in_seconds;
-      if (typeof seconds === 'number' && seconds <= 0)
-        throw new InvalidTokenError();
-      const expiresAt =
-        typeof seconds === 'number' ? now + seconds * 1000 : undefined;
+      this.assertIssuedTo(tokenInfo, owner.id);
+      const expiresAt = expiresAtOf(tokenInfo, now);
       return { ...owner, id: String(owner.id), expiresAt };
     } catch {
       // Any failure, including GitLab being unreachable, counts as an
       // invalid token: the gateway fails closed.
       throw new InvalidTokenError();
     }
+  }
+
+  // The token belongs to the user GitLab named, was issued to a DTaaS
+  // application and carries an accepted scope.
+  private assertIssuedTo(
+    tokenInfo: z.infer<typeof tokenInfoSchema>,
+    ownerId: number,
+  ): void {
+    if (tokenInfo.resource_owner_id !== ownerId) throw new InvalidTokenError();
+    this.assertApplication(tokenInfo);
+    this.assertScope(tokenInfo);
   }
 
   // A token GitLab issued to another OAuth application of the same user is

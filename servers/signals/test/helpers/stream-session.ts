@@ -26,10 +26,7 @@ export default function sessionWith(
   const session = new StreamSession(
     new SseWriter(response.asResponse(), MAX_BACKLOG),
     broker,
-    [FLOW],
-    OPTIONS,
-    recheck,
-    backfill,
+    { targets: [FLOW], options: OPTIONS, recheck, backfill },
   );
   return { session, response };
 }
