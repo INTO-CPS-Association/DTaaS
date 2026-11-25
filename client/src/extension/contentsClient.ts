@@ -13,7 +13,7 @@ import type {
   ContentsEntry,
   ContentsService,
   PutOptions,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import {
   PARTIAL_SUFFIX,
   checked,

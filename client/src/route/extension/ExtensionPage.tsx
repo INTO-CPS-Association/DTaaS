@@ -13,7 +13,7 @@ import {
   HostProvider,
   type DtaasExtension,
   type LazyPage,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import Layout from 'page/Layout';
 import ErrorBoundary from 'components/ErrorBoundary';
 import { hostFor } from 'extension/extensionHost';

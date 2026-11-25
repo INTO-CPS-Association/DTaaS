@@ -817,7 +817,7 @@
     "@reduxjs/toolkit" "^2.13.0"
     uuid "^14.0.2"
 
-"@into-cps-association/dtaas-sdk@link:./sdk":
+"@into-cps-association/dtaas-extensions@link:./sdk":
   version "0.0.0"
   uid ""
 

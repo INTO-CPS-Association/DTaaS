@@ -8,7 +8,7 @@
 import type {
   DtaasExtension,
   HostServices,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 
 const reasonOf = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);

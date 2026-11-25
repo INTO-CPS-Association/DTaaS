@@ -6,7 +6,7 @@
  * it without importing the services, which read the store.
  */
 
-import type { EnvRecord } from '@into-cps-association/dtaas-sdk';
+import type { EnvRecord } from '@into-cps-association/dtaas-extensions';
 import extensions from 'extensions';
 import createExtensionHost from 'extension/createExtensionHost';
 

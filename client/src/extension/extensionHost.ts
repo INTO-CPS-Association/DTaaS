@@ -6,7 +6,7 @@
 import type {
   DtaasExtension,
   HostServices,
-} from '@into-cps-association/dtaas-sdk';
+} from '@into-cps-association/dtaas-extensions';
 import store from 'store/store';
 import { showSnackbar } from 'store/snackbar.slice';
 import registry, { env } from 'extension/extensionRegistry';

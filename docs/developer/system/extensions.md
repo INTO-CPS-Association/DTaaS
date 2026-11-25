@@ -8,11 +8,11 @@ pages.
 
 ## Packages Used by the Client
 
-| Package                               | Source                                                         | Role in the client                                                                                                                                                    |
-| :------------------------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@into-cps-association/dt-automation` | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                         |
-| `@into-cps-association/bim-kit`       | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
-| `@into-cps-association/dtaas-sdk`     | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`). |
+| Package                                  | Source                                                         | Role in the client                                                                                                                                                                                                         |
+| :--------------------------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@into-cps-association/dt-automation`    | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                                                                              |
+| `@into-cps-association/bim-kit`          | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
+| `@into-cps-association/dtaas-extensions` | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`).                                                                                                              |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -31,12 +31,12 @@ WebAssembly geometry kernel.
 
 ## The Extension Contract
 
-`client/sdk/` holds `@into-cps-association/dtaas-sdk`, the contract between the
-client and its domain extensions: the `DtaasExtension` type, the `HostServices`
-types, the schema of `visualisation.json`, the validation helpers and a test
-harness with `fakeHostServices`, `fakeSignals` and `checkConformance`, so an
-extension is tested without a running installation. Its README describes the
-package and `yarn test:sdk` runs its tests.
+`client/sdk/` holds `@into-cps-association/dtaas-extensions`, the contract
+between the client and its domain extensions: the `DtaasExtension` type, the
+`HostServices` types, the schema of `visualisation.json`, the validation helpers
+and a test harness with `fakeHostServices`, `fakeSignals` and
+`checkConformance`, so an extension is tested without a running installation.
+Its README describes the package and `yarn test:sdk` runs its tests.
 
 An extension declares the contract revision it was built against (`sdk: 1`),
 which is separate from the npm version of the package, and a host refuses an
@@ -72,8 +72,8 @@ the `signals` service delivers nothing and reports every connection as down.
 The rest of the modular architecture described here is a proposal.
 
 The contract itself is the `client/sdk/` package described above. The
-[dtaas-sdk](https://github.com/INTO-CPS-Association/dtaas-sdk) repository
-holds the proposal it came from. In the proposal:
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
+repository holds the proposal it came from. In the proposal:
 
 - A domain extension is an npm package. It declares what it contributes,
   such as pages, navigation entries, digital twin tabs, asset previews,
@@ -104,8 +104,8 @@ page is in the client today, as an extension.
 
 The SDK repository documents the proposal in detail:
 
-- [Modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/dtaas-client-modular-architecture.md)
-- [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/extension-authoring.md)
-- [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/host-integration.md)
-- [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/docs/visualisation-schema.md)
-- [The bim-kit port](https://github.com/INTO-CPS-Association/dtaas-sdk/blob/main/examples/bim/README.md)
+- [Modular architecture proposal](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/dtaas-client-modular-architecture.md)
+- [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/extension-authoring.md)
+- [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/host-integration.md)
+- [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/visualisation-schema.md)
+- [The bim-kit port](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/examples/bim/README.md)

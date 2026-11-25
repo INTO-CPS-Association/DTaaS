@@ -8,7 +8,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { HostProvider } from '@into-cps-association/dtaas-sdk';
+import { HostProvider } from '@into-cps-association/dtaas-extensions';
 import Layout from 'page/Layout';
 import PageShell from 'components/PageShell';
 import ErrorBoundary from 'components/ErrorBoundary';

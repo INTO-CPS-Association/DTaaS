@@ -1,4 +1,4 @@
-import type { DtaasExtension } from '@into-cps-association/dtaas-sdk';
+import type { DtaasExtension } from '@into-cps-association/dtaas-extensions';
 import { extension as bim } from '@into-cps-association/bim-kit/dtaas';
 
 /**

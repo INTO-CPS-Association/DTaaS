@@ -6,6 +6,13 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The package is named `@into-cps-association/dtaas-extensions`, the name the
+  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
+  uses the new name.
+
 ### Added
 
 - `DtaasExtension.apiRange`: the range of the extension API an extension works
@@ -25,6 +32,16 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   reaches them through `HostServices.extensions.get(id)` and never imports the
   code of another extension. `validateExtension` checks the names and
   `fakeHostServices` takes a `services` option.
+
+### Removed
+
+- `examples/hello-kit` and its integration test. The template kit lives in
+  `kits/hello-kit` of the `dtaas-extensions` repository, next to the other
+  kits and is tested there.
+- `RESERVED_EXTENSION_IDS`. The reserved ids are the first segments of the
+  host's own routes, so the host keeps the list and passes it to
+  `validateExtension` as `reservedIds`. Without that option no id is reserved.
+  The package keeps the rules on the shape of an id.
 
 ### Security
 

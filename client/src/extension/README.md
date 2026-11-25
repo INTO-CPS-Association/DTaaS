@@ -1,6 +1,6 @@
 # Domain Extensions
 
-This folder is the host side of `@into-cps-association/dtaas-sdk`. A
+This folder is the host side of `@into-cps-association/dtaas-extensions`. A
 domain extension, such as a building, wind or pump kit, is an npm package
 that adds pages to this client without changing its code. The SDK is the
 contract between the two: the types an extension implements and the
@@ -12,21 +12,16 @@ with the list in `src/extensions.ts` empty.
 
 ## Where the Contract Lives
 
-The code of the contract now lives in the client core, in `client/sdk/`. It
-keeps its package name, `@into-cps-association/dtaas-sdk`. The client links
-it with `link:./sdk`. The name stays so that an extension installed
-from npm, such as `bim-kit`, which imports the published name, resolves to
-the local code. The client builds and tests it from source with its own
-toolchain. `yarn test:sdk` runs its tests.
+The code of the contract lives in the client core, in `client/sdk/`, under
+the package name `@into-cps-association/dtaas-extensions`. The client links it
+with `link:./sdk` and builds and tests it from source with its own toolchain.
+`yarn test:sdk` runs its tests.
 
-The plan is to keep the name `dtaas-sdk`, to move the logic part of the
-contract into the client core and to turn the `dtaas-sdk` repository into a
-tool that generates the skeleton of a new extension for extension
-developers. The first part is what `client/sdk/` does. How an external
-extension gets the contract types from now on is an open decision: either a
-types package published from `client/sdk/`, or the types carried by the
-skeleton generator. Until it is decided, nothing here is published and the
-npm release `0.1.0` stays the version external extensions build against.
+The same package is published from the `dtaas-extensions` repository under
+that name from version 0.2.0 on. It was `@into-cps-association/dtaas-sdk`
+before. Once that version is published, the client depends on it from npm and
+`client/sdk/` is removed. Until then an extension installed from npm that
+imports the package name resolves to the local copy.
 
 ## Adding an Extension
 
@@ -53,12 +48,15 @@ in `REACT_APP_EXTENSIONS_DISABLED`, for example `'wind, pump'`.
 | `startExtensions.ts`     | Calls `setup` of every extension once                            |
 | `extensionState.ts`      | The Redux slices of the extensions, at `state.ext.<id>`          |
 | `unavailableCore.ts`     | The `signals` and `viz` services while the client has no core    |
-| `DigitalTwinTabPage.tsx` | A tab an extension adds to the Digital Twins page                |
-| `AssetPreviewPage.tsx`   | A library file shown by the extension that previews its type     |
 | `contentsClient.ts`      | Files in the user's workspace, through the Jupyter Contents API  |
 | `contentsUpload.ts`      | A write of any size, in pieces and under a temporary name        |
 | `gitClient.ts`           | GitLab under the user's OAuth session                            |
-| `ExtensionPage.tsx`      | One extension page, in the client layout with its services       |
+
+The pages that mount what an extension adds are route components and live in
+`src/route/extension/`: `ExtensionPage.tsx` shows one extension page in the
+client layout with its services, `DigitalTwinTabPage.tsx` a tab an extension
+adds to the Digital Twins page and `AssetPreviewPage.tsx` a library file shown
+by the extension that previews its type.
 
 The `signals` and `viz` services come from `unavailableCore.ts` until the common
 visualisation core joins the client: no signal arrives, every connection reads
@@ -147,9 +145,9 @@ export const extension = defineExtension({
 });
 ```
 
-The contract reserves the id `automation` for the core route
-(`RESERVED_EXTENSION_IDS` in `client/sdk/src/extension/constants.ts`), so the
-same change removes it from that list, together with the core route. The
+The host reserves the id `automation` for the core route
+(`RESERVED_EXTENSION_IDS` in `client/src/extension/reservedExtensionIds.ts`),
+so the same change removes it from that list, together with the core route. The
 pages then live under `/automation/...`, so the old addresses
 `/preview/library`, `/preview/digitaltwins` and `/insights/measure` need a
 redirect in the core for one release. The Digital Twins tabs and the
