@@ -1,17 +1,20 @@
-import { SDK_MAJOR } from '../constants';
+import { API_MAJOR } from '../constants';
 import { isApiRange, satisfiesApiRange } from '../apiRange';
 import {
   ID_PATTERN,
   isObject,
   LIST_SPECS,
-  type Loose,
+  type UntypedExtension,
   visualisationOf,
 } from './validationUtils';
 
 const isNonEmptyString = (value: unknown) =>
   typeof value === 'string' && value !== '';
 
-const checkId = (ext: Loose, reservedIds: readonly string[]): string[] => {
+const checkId = (
+  ext: UntypedExtension,
+  reservedIds: readonly string[],
+): string[] => {
   if (typeof ext.id !== 'string' || !ID_PATTERN.test(ext.id)) {
     return [`id must be a string matching ${ID_PATTERN.source}`];
   }
@@ -21,10 +24,13 @@ const checkId = (ext: Loose, reservedIds: readonly string[]): string[] => {
 };
 
 /** The declared API range, which the host's API version must satisfy. */
-const checkApiRange = (ext: Loose, hostApiVersion: string): string[] => {
+const checkApiRange = (
+  ext: UntypedExtension,
+  hostApiVersion: string,
+): string[] => {
   if (ext.apiRange === undefined) return [];
   if (!isApiRange(ext.apiRange)) {
-    return ['apiRange must be a version range such as "^1.1"'];
+    return ['apiRange must be a version range such as "^0.2"'];
   }
   return satisfiesApiRange(hostApiVersion, ext.apiRange)
     ? []
@@ -35,7 +41,7 @@ const checkApiRange = (ext: Loose, hostApiVersion: string): string[] => {
 
 /** id, name, version, sdk major and API range. */
 export const checkIdentity = (
-  ext: Loose,
+  ext: UntypedExtension,
   reservedIds: readonly string[],
   hostApiVersion: string,
 ): string[] => [
@@ -43,7 +49,7 @@ export const checkIdentity = (
   ...['name', 'version']
     .filter((key) => !isNonEmptyString(ext[key]))
     .map((key) => `${key} must be a non-empty string`),
-  ...(ext.sdk === SDK_MAJOR ? [] : [`sdk must be ${SDK_MAJOR}`]),
+  ...(ext.sdk === API_MAJOR ? [] : [`sdk must be ${API_MAJOR}`]),
   ...checkApiRange(ext, hostApiVersion),
 ];
 
@@ -53,7 +59,7 @@ const nonObjectItems = (label: string, items: unknown[]): string[] =>
   );
 
 /** Contribution containers and their items have the right JavaScript type. */
-export const checkShapes = (ext: Loose): string[] => {
+export const checkShapes = (ext: UntypedExtension): string[] => {
   const errors: string[] = [];
   if (ext.visualisation !== undefined && !visualisationOf(ext)) {
     errors.push('visualisation must be an object');

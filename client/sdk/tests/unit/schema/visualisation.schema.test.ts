@@ -1,7 +1,9 @@
 // These tests feed script URLs to the schema to check that it refuses them.
 /* eslint-disable no-script-url */
+import { MAX_ASSET_BYTES } from 'src/schema/common.schema';
 import {
   parseVisualisationAsset,
+  readVisualisationAsset,
   visualisationAssetSchema,
 } from 'src/schema/visualisation.schema';
 import junction7 from 'tests/fixtures/junction7.visualisation.json';
@@ -92,8 +94,8 @@ describe('visualisationAssetSchema', () => {
 
   it('refuses a javascript: URL on an http transport', () => {
     const asset = clone();
-    asset.transports = [{ adapter: 'http', url: 'javascript:alert(1)' }];
-    expect(issuePaths(asset)).toEqual([['transports', 0, 'url']]);
+    asset.transports.push({ adapter: 'http', url: 'javascript:alert(1)' });
+    expect(issuePaths(asset)).toEqual([['transports', 3, 'url']]);
   });
 
   it('refuses a data: URL as a substrate source', () => {
@@ -114,5 +116,108 @@ describe('visualisationAssetSchema', () => {
     const [first] = asset.anchors;
     asset.anchors = Array.from({ length: 1001 }, () => first);
     expect(issuePaths(asset)).toEqual([['anchors']]);
+  });
+
+  it('refuses more than 1000 substrates', () => {
+    const asset = clone();
+    const [first] = Object.values(asset.substrates);
+    asset.substrates = Object.fromEntries(
+      Array.from({ length: 1001 }, (_, i) => [`s${i}`, first]),
+    );
+    expect(issuePaths(asset)).toContainEqual(['substrates']);
+  });
+});
+
+describe('parseVisualisationAsset with a deployment policy', () => {
+  const messages = (value: unknown, allowedOrigins: string[]) => {
+    const result = parseVisualisationAsset(value, { allowedOrigins });
+    return result.success ? [] : result.error.issues.map((i) => i.message);
+  };
+
+  it('checks no origin without a policy', () => {
+    expect(parseVisualisationAsset(clone()).success).toBe(true);
+  });
+
+  it('accepts a transport whose origin the deployment allows', () => {
+    expect(messages(clone(), ['wss://rabbitmq.example:15676'])).toEqual([]);
+  });
+
+  it('refuses a transport whose origin the deployment does not allow', () => {
+    expect(messages(clone(), ['wss://rabbitmq.example'])).toEqual([
+      'The origin wss://rabbitmq.example:15676 is not one this deployment allows',
+    ]);
+  });
+
+  it('allows no network transport with an empty list', () => {
+    const result = parseVisualisationAsset(clone(), { allowedOrigins: [] });
+    expect(result.error?.issues.map((i) => i.path)).toEqual([
+      ['transports', 0, 'url'],
+    ]);
+  });
+
+  it('compares the origin of an mqtt URL, which URL.origin leaves null', () => {
+    const asset = clone();
+    asset.transports[0].url = 'mqtt://attacker.example:1883';
+    expect(messages(asset, ['mqtt://rabbitmq:1883'])).toEqual([
+      'The origin mqtt://attacker.example:1883 is not one this deployment allows',
+    ]);
+    asset.transports[0].url = 'mqtt://rabbitmq:1883';
+    expect(messages(asset, ['mqtt://rabbitmq:1883'])).toEqual([]);
+  });
+
+  it('refuses a POST target on another origin', () => {
+    const asset = clone();
+    asset.transports.push({
+      adapter: 'http',
+      url: 'https://attacker.example/c',
+      method: 'POST',
+      intervalMs: 1000,
+    });
+    expect(messages(asset, ['wss://rabbitmq.example:15676'])).toHaveLength(1);
+  });
+
+  it('leaves library and relative paths to the host', () => {
+    const asset = clone();
+    asset.transports = [{ adapter: 'file', url: 'lib://data/run.csv' }];
+    asset.encodings = [];
+    expect(messages(asset, [])).toEqual([]);
+  });
+});
+
+describe('readVisualisationAsset', () => {
+  const policy = { allowedOrigins: ['wss://rabbitmq.example:15676'] };
+  const messages = (input: string | Uint8Array) => {
+    const result = readVisualisationAsset(input, policy);
+    return result.success ? [] : result.error.issues.map((i) => i.message);
+  };
+  const tooLarge = `A visualisation asset may hold at most ${MAX_ASSET_BYTES} bytes`;
+
+  it('reads a JSON text and a byte array', () => {
+    const text = JSON.stringify(clone());
+    expect(messages(text)).toEqual([]);
+    expect(messages(new TextEncoder().encode(text))).toEqual([]);
+  });
+
+  it('refuses more bytes than the bound before parsing them', () => {
+    const padding = ' '.repeat(MAX_ASSET_BYTES);
+    expect(messages(`${JSON.stringify(clone())}${padding}`)).toEqual([
+      tooLarge,
+    ]);
+    expect(messages(new Uint8Array(MAX_ASSET_BYTES + 1))).toEqual([tooLarge]);
+  });
+
+  it('counts bytes and not characters', () => {
+    const name = 'é'.repeat(MAX_ASSET_BYTES / 2);
+    expect(messages(JSON.stringify({ ...clone(), name }))).toEqual([tooLarge]);
+  });
+
+  it('refuses a text that is not JSON', () => {
+    expect(messages('{ "name": ')).toEqual(['The asset is not valid JSON']);
+  });
+
+  it('applies the policy', () => {
+    const asset = clone();
+    asset.transports[0].url = 'wss://attacker.example/ws';
+    expect(messages(JSON.stringify(asset))).toHaveLength(1);
   });
 });

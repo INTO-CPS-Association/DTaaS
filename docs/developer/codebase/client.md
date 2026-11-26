@@ -44,16 +44,17 @@ client/
 ```
 
 The `route/` directory holds one folder per page. `extension/` loads the domain
-extensions listed in `extensions.ts`, such as the Building Models page. The
+extensions deployed beside the website, which
+`REACT_APP_EXTENSIONS_DEPLOYED` lists, and holds no domain code itself. The
 Material UI theme and design tokens live in `theme/`.
 
 The shared backend package lives under `lib/dt-automation/` and the
 client consumes it from npm as `@into-cps-association/dt-automation`.
-The Building Models page is the extension of `@into-cps-association/bim-kit`,
-which is maintained in the
-[ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils)
-repository. [Client Extensions](../system/extensions.md) describes both
-packages and the proposed extension architecture.
+Every domain extension, such as bim-kit with the Building Models page or
+soil-kit with the Soil page, is maintained in the
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
+repository and deployed as a bundle. [Client Extensions](../system/extensions.md)
+describes the extension architecture.
 
 ## Backend Integration Layer
 

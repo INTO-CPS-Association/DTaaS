@@ -6,6 +6,21 @@ describe('the colour schemes of the encodings', () => {
     expect(colourAt('viridis', 1)).toBe(SCHEMES.viridis[4]);
   });
 
+  it('keeps a position off the scale at the nearer end', () => {
+    expect(colourAt('viridis', -0.5)).toBe(SCHEMES.viridis[0]);
+    expect(colourAt('viridis', 1.5)).toBe(SCHEMES.viridis[4]);
+    expect(colourAt('viridis', Number.NEGATIVE_INFINITY)).toBe(
+      SCHEMES.viridis[0],
+    );
+    expect(colourAt('viridis', Number.POSITIVE_INFINITY)).toBe(
+      SCHEMES.viridis[4],
+    );
+  });
+
+  it('gives the first stop for a position that is not a number', () => {
+    expect(colourAt('viridis', Number.NaN)).toBe(SCHEMES.viridis[0]);
+  });
+
   it('falls back to heat for a scheme it does not know', () => {
     expect(colourAt('no-such-scheme', 0)).toBe(SCHEMES.heat[0]);
   });

@@ -17,7 +17,6 @@ const links: LinkType[] = [
   { text: 'Automation', url: './automation' },
   { text: 'Workbench', url: './workbench' },
   { text: 'Insights', url: './insights' },
-  { text: 'Buildings', url: './bim' },
 ];
 
 export const workbenchLinks: LinkType[] = [

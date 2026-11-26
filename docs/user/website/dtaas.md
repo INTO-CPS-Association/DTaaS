@@ -112,7 +112,8 @@ The arrow at the top of the expanded sidebar collapses it again.
 
 ![Menu](images/menu.png)
 
-The menu has six items:
+The menu has five items, and one more for each domain extension the
+installation deploys:
 
 **Library**: Manage reusable library assets. You can upload, download,
 create and modify files on this page.
@@ -124,16 +125,23 @@ from which digital twins can be executed.
 Measurement page. These pages show the integration of the DTaaS with
 GitLab CI/CD and are experimental.
 
-**Buildings**: Opens the [Building Models](bim.md) page, which draws the
-IFC building models in your library and colours them by the readings
-their sensors report.
-
 **Workbench**: Not every digital twin can be managed in Jupyter Lab.
-This page links to the other tools in your workspace.
+This page links to the other tools in your workspace and, under
+**Platform Services**, to the services the installation lists, such as
+Grafana, InfluxDB, RabbitMQ and ThingsBoard.
 
 **Insights**: Information the platform can give you about itself: the
 [Logs](logs.md) of this website and the configuration check described
 above.
+
+The installation in the picture deploys two domain extensions:
+
+**Buildings**: Opens the [Building Models](bim.md) page, which draws the
+IFC building models in your library and colours them by the readings
+their sensors report.
+
+**Soil**: Shows the latest reading of each sensor of a soil twin, for
+each soil profile and each site around it.
 
 ## Library Page
 

@@ -7,6 +7,7 @@ import type {
 } from '../visualisation/contribution.types';
 import type { DigitalTwinSummary } from '../visualisation/digitalTwin.types';
 import type { SubstrateAdapter } from '../visualisation/substrate.types';
+import settle from './settle';
 
 export interface FakeVizOptions {
   readonly substrates?: Readonly<Record<string, SubstrateAdapter>>;
@@ -33,11 +34,12 @@ const createSubstrateRegistry = (
   substrates: Readonly<Record<string, SubstrateAdapter>>,
 ) => ({
   list: () => Object.keys(substrates),
-  get: async (id: string) => {
-    const adapter = substrates[id];
-    if (!adapter) throw new Error(`Unknown substrate: ${id}`);
-    return adapter;
-  },
+  get: (id: string) =>
+    settle(() => {
+      const adapter = substrates[id];
+      if (!adapter) throw new Error(`Unknown substrate: ${id}`);
+      return adapter;
+    }),
 });
 
 /** Stores `visualisation.json` assets per twin, validating like the host. */
@@ -50,13 +52,14 @@ const createFakeViz = (
     anchorKinds: options.anchorKinds ?? [],
     presets: options.presets ?? [],
     substrates: createSubstrateRegistry(options.substrates ?? {}),
-    load: async (dt) => assets.get(dt.path) ?? null,
-    save: async (dt, asset, saveOptions) => {
-      const issues = issuesOf(asset);
-      if (issues) throw new Error(`Invalid visualisation asset: ${issues}`);
-      assets.set(dt.path, asset);
-      saved.push({ dt, asset, options: saveOptions });
-    },
+    load: (dt) => settle(() => assets.get(dt.path) ?? null),
+    save: (dt, asset, saveOptions) =>
+      settle(() => {
+        const issues = issuesOf(asset);
+        if (issues) throw new Error(`Invalid visualisation asset: ${issues}`);
+        assets.set(dt.path, asset);
+        saved.push({ dt, asset, options: saveOptions });
+      }),
   };
 };
 

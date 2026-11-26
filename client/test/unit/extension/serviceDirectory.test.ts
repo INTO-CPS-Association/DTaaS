@@ -5,7 +5,7 @@ import type {
 import createServiceDirectory from 'extension/serviceDirectory';
 
 const kit = (id: string, more: Partial<DtaasExtension> = {}) =>
-  ({ id, name: id, version: '0.1.0', sdk: 1, ...more }) as DtaasExtension;
+  ({ id, name: id, version: '0.1.0', sdk: 0, ...more }) as DtaasExtension;
 
 describe('services between extensions', () => {
   const create = jest.fn((host: HostServices) => ({ owner: host.logger }));

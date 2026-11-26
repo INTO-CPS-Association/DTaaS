@@ -17,6 +17,12 @@ export interface SignalSample {
   readonly ts: number;
   readonly value: SignalValue;
   readonly quality?: SignalQuality;
+  /**
+   * The unit the source gave with the value, such as `Cel` or `%`, when it
+   * gave one. A kit compares it with the unit it expects instead of assuming
+   * one from the name of the quantity.
+   */
+  readonly unit?: string;
 }
 
 /** A value read from the temporal store at a playhead position. */
@@ -24,6 +30,8 @@ export interface Sampled {
   readonly value: SignalValue;
   readonly ts: number;
   readonly quality?: SignalQuality;
+  /** The unit the source gave with the value, when it gave one. */
+  readonly unit?: string;
 }
 
 export type SignalSink = (sample: SignalSample) => void;

@@ -10,7 +10,7 @@ import type {
   Channel,
   SignalSample,
 } from '@into-cps-association/dtaas-extensions';
-import { isSignalValue, qualityOf } from 'viz/payload';
+import { isSignalValue, qualityOf, unitOf } from 'viz/payload';
 import {
   authorization,
   endpoint,
@@ -36,7 +36,7 @@ export interface SignalHistory {
 /** One sample of the answer, or undefined when it is not one. */
 function sampleOf(row: unknown, channel: Channel): SignalSample | undefined {
   if (!row || typeof row !== 'object') return undefined;
-  const { path, ts, value, quality } = row as Record<string, unknown>;
+  const { path, ts, value, quality, unit } = row as Record<string, unknown>;
   if (typeof path !== 'string' || typeof ts !== 'number') return undefined;
   if (!Number.isFinite(ts) || !isSignalValue(value)) return undefined;
   // The channel asked for, since the store keys samples by it.
@@ -47,6 +47,7 @@ function sampleOf(row: unknown, channel: Channel): SignalSample | undefined {
     ts,
     value,
     quality: qualityOf(quality),
+    unit: unitOf(unit),
   };
 }
 

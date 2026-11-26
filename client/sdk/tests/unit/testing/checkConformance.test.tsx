@@ -86,6 +86,26 @@ describe('checkConformance', () => {
     expect(report.errors).toEqual(['routes[0] "page": boom']);
   });
 
+  it('reports a loader that builds its module at once', async () => {
+    const ext = looseExtension();
+    // Zero arity passes validateExtension, but nothing is loaded lazily.
+    ext.visualisation.substrates[0].load = () => ({ default: () => ({}) });
+    const report = await checkConformance(ext as DtaasExtension);
+    expect(report.errors).toEqual([
+      'visualisation.substrates[0] "pid": load must return a promise, such as import()',
+    ]);
+  });
+
+  it('does not report a loader whose import rejects', async () => {
+    const ext = looseExtension();
+    ext.visualisation.fieldKernels[0].load = () =>
+      Promise.reject(new Error('needs a browser'));
+    await expect(checkConformance(ext as DtaasExtension)).resolves.toEqual({
+      passed: true,
+      errors: [],
+    });
+  });
+
   it('reports a lazy import that rejects', async () => {
     const broken = lazy(async () => {
       throw new Error('chunk missing');
@@ -100,7 +120,7 @@ describe('checkConformance', () => {
       id: 'slow',
       name: 'Slow',
       version: '1.0.0',
-      sdk: 1,
+      sdk: 0,
       routes: [{ path: 'page', element: never }],
     };
     const report = await checkConformance(minimal, { timeoutMs: 50 });

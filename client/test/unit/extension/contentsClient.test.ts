@@ -44,6 +44,7 @@ describe('the contents service', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(`${BASE}/api/contents/common`, {
       credentials: 'include',
+      cache: 'no-cache',
     });
     expect(entries.map((entry) => entry.type)).toEqual(['directory', 'file']);
     expect(entries[1].size).toBe(12);

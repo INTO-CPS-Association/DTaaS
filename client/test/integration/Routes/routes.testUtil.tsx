@@ -36,8 +36,6 @@ export async function testDrawer() {
   testDrawerItem(/^Digital Twins$/, /PeopleRoundedIcon/);
   testDrawerItem(/^Automation$/, /PrecisionManufacturingRoundedIcon/);
   testDrawerItem(/Workbench/, /HandymanRoundedIcon/);
-  // The Buildings page comes from the bim extension, after the core items.
-  testDrawerItem(/^Buildings$/, /ApartmentIcon/);
 
   await itOpensAndClosesTheDrawer();
 }

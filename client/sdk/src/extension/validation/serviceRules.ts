@@ -1,15 +1,17 @@
-import { describe, entries, type Loose } from './validationUtils';
+import { printable, entries, type UntypedExtension } from './validationUtils';
 
 /** A provided service is named after its extension, as `<id>.<name>`. */
-const foreignServices = (ext: Loose): string[] =>
+const foreignServices = (ext: UntypedExtension): string[] =>
   entries(ext.provides)
-    .filter(({ item }) => !describe(item.id).startsWith(`${describe(ext.id)}.`))
+    .filter(
+      ({ item }) => !printable(item.id).startsWith(`${printable(ext.id)}.`),
+    )
     .map(
       ({ item, index }) =>
-        `provides[${index}] "${describe(item.id)}": id must start with "${describe(ext.id)}."`,
+        `provides[${index}] "${printable(item.id)}": id must start with "${printable(ext.id)}."`,
     );
 
-const badRequirements = (ext: Loose): string[] => {
+const badRequirements = (ext: UntypedExtension): string[] => {
   if (ext.requires === undefined) return [];
   const valid =
     Array.isArray(ext.requires) &&
@@ -18,7 +20,7 @@ const badRequirements = (ext: Loose): string[] => {
 };
 
 /** What an extension offers to the others and what it needs from them. */
-const checkServices = (ext: Loose): string[] => [
+const checkServices = (ext: UntypedExtension): string[] => [
   ...foreignServices(ext),
   ...badRequirements(ext),
 ];

@@ -11,6 +11,7 @@ import type {
 } from '../visualisation/signal.types';
 import createFakeConnection, { type FakeConnection } from './fakeConnection';
 import createFakePlayhead, { type FakePlayhead } from './fakePlayhead';
+import settle from './settle';
 
 export interface FakeSignalsOptions {
   /** Clock used while the playhead is live. Defaults to `Date.now`. */
@@ -35,8 +36,14 @@ interface Subscription {
   readonly sink: SignalSink;
 }
 
-const toSampled = ({ value, ts, quality }: SignalSample): Sampled =>
-  quality === undefined ? { value, ts } : { value, ts, quality };
+// A field the sample does not carry is left out, so a test compares a
+// reading with exactly what it emitted.
+const toSampled = ({ value, ts, quality, unit }: SignalSample): Sampled => ({
+  value,
+  ts,
+  ...(quality === undefined ? {} : { quality }),
+  ...(unit === undefined ? {} : { unit }),
+});
 
 const latestAtOrBefore = (samples: SignalSample[], t: number) =>
   samples
@@ -47,15 +54,20 @@ const latestAtOrBefore = (samples: SignalSample[], t: number) =>
     );
 
 const createRegistry = (entities: readonly TbEntity[]) => ({
-  search: async (query: string) =>
-    entities.filter((e) =>
-      `${e.name} ${e.label ?? ''}`.toLowerCase().includes(query.toLowerCase()),
+  search: (query: string) =>
+    settle(() =>
+      entities.filter((e) =>
+        `${e.name} ${e.label ?? ''}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      ),
     ),
-  get: async (id: string) => {
-    const entity = entities.find((e) => e.id === id);
-    if (!entity) throw new Error(`No such entity: ${id}`);
-    return entity;
-  },
+  get: (id: string) =>
+    settle(() => {
+      const entity = entities.find((e) => e.id === id);
+      if (!entity) throw new Error(`No such entity: ${id}`);
+      return entity;
+    }),
 });
 
 /** Samples in emission order, queried by path, channel and time. */
@@ -114,7 +126,7 @@ const createFakeSignals = (options: FakeSignalsOptions = {}): FakeSignals => {
     },
     subscribe: subscriptions.add,
     valueAt: (path, channel, t = playhead.get()) => store.at(path, channel, t),
-    range: async (...args) => store.between(...args),
+    range: (...args) => settle(() => store.between(...args)),
   };
 };
 

@@ -31,7 +31,7 @@ const mockPump: DtaasExtension = {
   id: 'pump',
   name: 'Pump kit',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   digitalTwinTabs: [
     {
       id: 'pid',

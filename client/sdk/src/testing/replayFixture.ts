@@ -22,10 +22,14 @@ export interface ReplayFrame {
   readonly values: Readonly<Record<string, Sampled | undefined>>;
 }
 
+/**
+ * The frame times from `from` to `to`. Each is computed from its index, so
+ * rounding does not build up over many additions of a fractional `step`.
+ */
 const frameTimes = (from: number, to: number, step: number): number[] => {
-  const times: number[] = [];
-  for (let t = from; t <= to; t += step) times.push(t);
-  return times;
+  if (to < from) return [];
+  const count = Math.floor((to - from) / step) + 1;
+  return Array.from({ length: count }, (_, i) => from + i * step);
 };
 
 /**

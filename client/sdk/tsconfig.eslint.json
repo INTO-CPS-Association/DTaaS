@@ -12,5 +12,5 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "kits"]
 }

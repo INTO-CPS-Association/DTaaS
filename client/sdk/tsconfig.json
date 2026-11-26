@@ -5,7 +5,7 @@
     "esModuleInterop": true, // Interoperate with CommonJS packages in tests.
     "sourceMap": true, // Generate source maps.
     "target": "ES2019",
-    "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error"],
+    "lib": ["ES2019", "DOM", "DOM.Iterable", "ES2022.Error", "ES2022.Object"],
     "jsx": "react-jsx", // Use the React 17+ JSX runtime.
     "types": [], // Keep the package free from test framework globals.
     "module": "esnext", // Emit ES modules.

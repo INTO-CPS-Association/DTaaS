@@ -10,7 +10,7 @@ function kit(id: string, more: Partial<DtaasExtension> = {}): DtaasExtension {
     id,
     name: `${id} kit`,
     version: '0.1.0',
-    sdk: 1,
+    sdk: 0,
     routes: [{ path: '', element: page }],
     navigation: [{ label: id, path: `/${id}` }],
     ...more,
@@ -178,6 +178,15 @@ describe('mountPath', () => {
     expect(host.problems).toEqual([
       { id: 'later', reason: expect.stringMatching(/apiRange "\^99"/) },
     ]);
+  });
+
+  it('runs an extension built against dtaas-extensions 0.2', () => {
+    const soil = kit('soil', { apiRange: '^0.2' });
+
+    const host = createExtensionHost([soil], {});
+
+    expect(host.enabled).toEqual([soil]);
+    expect(host.problems).toEqual([]);
   });
 
   it('runs an extension whose required service another one provides', () => {

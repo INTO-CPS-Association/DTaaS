@@ -8,12 +8,10 @@ pages.
 
 ## Packages Used by the Client
 
-| Package                                  | Source                                                         | Role in the client                                                                                                                                                                                                         |
-| :--------------------------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@into-cps-association/dt-automation`    | `lib/dt-automation/` in this repository                        | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`).                                                                              |
-| `@into-cps-association/bim-kit`          | [ifc-utils](https://github.com/INTO-CPS-Association/ifc-utils) | The `bim` extension: the [Building Models](../../user/website/bim.md) page with its IFC to glTF conversion in the browser, its binding manifest and its viewer, from the `./dtaas` entry. The client pins version `0.2.0`. |
-| `@into-cps-association/dtaas-extensions` | `client/sdk/` in this repository                               | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`).                                                                                                              |
-| `@into-cps-association/dtaas-ext-bim`    | `client/extensions/bim/` in this repository                    | The `bim` extension the client loads: the extension of `bim-kit` with the `aec` substrate. The client links the local package (`link:./extensions/bim`).                                                                   |
+| Package                                  | Source                                  | Role in the client                                                                                                                            |
+| :--------------------------------------- | :-------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@into-cps-association/dt-automation`    | `lib/dt-automation/` in this repository | Data, state and GitLab operations for creating, managing and executing DTs. The client takes it from npm (`^0.2.0` in `client/package.json`). |
+| `@into-cps-association/dtaas-extensions` | `client/sdk/` in this repository        | The contract between the client and its domain extensions. The client links the local package (`link:./sdk`).                                 |
 
 The [client page](../codebase/client.md) describes the classes of
 `dt-automation`, and [Publish Packages](../codebase/publish-packages.md)
@@ -21,15 +19,20 @@ describes how it is released.
 
 ## The Building Models Page
 
-The Building Models page is the first extension. `client/src/extensions.ts`
-imports it from `client/extensions/bim/`, which takes the extension of the
-`./dtaas` entry of `bim-kit` and adds the `aec` substrate. The page, the model
-conversion and the writing of converted models back to the library live in that
-package and its tests run there. A change to the page reaches DTaaS as a new
-version of `bim-kit` and not as a pull request against this repository. The
-client unit tests replace the extension with a stand-in that declares the same
-id, page, menu label and icon, since the real one pulls in a renderer and a
-WebAssembly geometry kernel.
+The Building Models page and the `aec` substrate come from
+`@into-cps-association/bim-kit`, in the `kits/bim-kit` folder of the
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
+repository. The client compiles in no domain extension, so it carries no
+building code that could drift from the kit. A deployment builds the kit as one
+script with `yarn build:kit`, copies it to `extensions/bim/index.js` next to
+`env.js` and lists it in `REACT_APP_EXTENSIONS_DEPLOYED` with its SHA-384 hash.
+The page, the model conversion, the writing of converted models back to the
+library and the `aec` substrate live in that package and its tests run there. A
+change to any of them reaches DTaaS as a new version of `bim-kit` and not as a
+pull request against this repository. The `aec` substrate draws its controls
+with the components of the Buildings page, in a React root of its own started
+with the host's `react-dom/client`, which the client shares with every deployed
+bundle.
 
 ## The Extension Contract
 
@@ -40,12 +43,12 @@ and a test harness with `fakeHostServices`, `fakeSignals` and
 `checkConformance`, so an extension is tested without a running installation.
 Its README describes the package and `yarn test:sdk` runs its tests.
 
-An extension declares the contract revision it was built against (`sdk: 1`),
-which is separate from the npm version of the package, and a host refuses an
-extension built for another revision. An extension may also declare the versions
-of the API it works with as a semver range (`apiRange`, such as `^1.1`). A host
-refuses an extension whose range does not include the API version the host
-implements (`SDK_VERSION`).
+An extension declares the major of the API it was built against (`sdk: 0`),
+and a host refuses an extension built for another major. An extension may also
+declare the versions of the API it works with as a semver range (`apiRange`,
+such as `^0.2`). A host refuses an extension whose range does not include the
+API version the host implements (`API_VERSION`), which is the version of the
+package.
 
 ## The Extension Host
 
@@ -90,8 +93,8 @@ through the `signals` and `viz` services. It keeps every sample in a temporal
 store read by time, holds one playhead for every page, evaluates the encodings
 of a `visualisation.json`, reads and saves that file in the twin's folder and
 draws the standard `image` and `embed` substrates. A domain brings its own
-substrates: the bim extension in `client/extensions/bim/` contributes `aec`, the
-building model in 3D, so the client core holds no building code. The View
+substrates: the deployed bundle of `bim-kit` contributes `aec`, the building
+model in 3D, so the client holds no building code. The View
 tab of the Digital Twins preview page draws a twin from the `visualisation.json`
 committed in its folder.
 
@@ -110,8 +113,8 @@ in the [signals gateway plan](../plans/signals-gateway.md).
 The rest of the modular architecture described here is a proposal.
 
 The contract itself is the `client/sdk/` package described above. The
-[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions)
-repository holds the proposal it came from. In the proposal:
+[dtaas-extensions](https://github.com/INTO-CPS-Association/dtaas-extensions) repository
+holds the proposal it came from. In the proposal:
 
 - A domain extension is an npm package. It declares what it contributes,
   such as pages, navigation entries, digital twin tabs, asset previews,
@@ -129,14 +132,14 @@ repository holds the proposal it came from. In the proposal:
   that do not depend on the domain: live data transport, the temporal
   store, anchor resolution, encoding rules and the standard substrates.
 
-The `examples/bim` folder of the SDK repository ports `bim-kit` 0.1.1 onto the
-contract as a private package.
+The `kits/` folder of the SDK repository holds the kits, each a package of its
+own: `bim-kit`, `soil-kit` and the `hello-kit` template.
 
 The figure shows the direction of this architecture. Domain-specific
 extensions add pages to the web interface, and the common services are
 grouped into a generic set and a set for each domain, such as IFC for
 construction and buildings. Of the two extensions drawn, the Buildings
-page is in the client today, as an extension.
+page runs today, as the deployed bundle of `bim-kit`.
 
 ![Multi-domain digital twins](multi-domain.png#only-light)
 ![Multi-domain digital twins](multi-domain-dark.png#only-dark)
@@ -147,4 +150,4 @@ The SDK repository documents the proposal in detail:
 - [Writing an extension](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/extension-authoring.md)
 - [Integrating the SDK into a host](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/host-integration.md)
 - [The `visualisation.json` schema](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/docs/visualisation-schema.md)
-- [The bim-kit port](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/examples/bim/README.md)
+- [The bim kit](https://github.com/INTO-CPS-Association/dtaas-extensions/blob/main/kits/bim-kit/README.md)

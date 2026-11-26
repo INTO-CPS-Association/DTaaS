@@ -72,4 +72,17 @@ describe('replayFixture', () => {
       'step must be a positive number',
     );
   });
+
+  it('reaches the last frame with a fractional step', () => {
+    const host = fakeHostServices();
+    const frames = replayFixture(host, stream, { step: 0.1, from: 0, to: 1 });
+    expect(frames).toHaveLength(11);
+    expect(frames[10].t).toBe(1);
+  });
+
+  it('returns no frames when the range ends before it starts', () => {
+    expect(
+      replayFixture(fakeHostServices(), stream, { step: 1, from: 5, to: 4 }),
+    ).toEqual([]);
+  });
 });

@@ -70,6 +70,20 @@ describe('createFakeSignals', () => {
       });
     });
 
+    it('carries the unit of a sample, and leaves it out when it had none', () => {
+      const signals = createFakeSignals();
+      signals.emit(sample(10, 40, { unit: '%' }), sample(20, 41));
+      expect(signals.valueAt('j7/queue', 'measured', 10)).toEqual({
+        value: 40,
+        ts: 10,
+        unit: '%',
+      });
+      expect(signals.valueAt('j7/queue', 'measured', 20)).toEqual({
+        value: 41,
+        ts: 20,
+      });
+    });
+
     it('reads at the playhead when t is omitted', () => {
       const signals = createFakeSignals();
       signals.emit(sample(10, 1), sample(20, 2));

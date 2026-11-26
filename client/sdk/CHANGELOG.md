@@ -6,8 +6,98 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+Version 0.2.0, the first under the name
+`@into-cps-association/dtaas-extensions`.
+
 ### Added
 
+- API version `1.5.0` of the earlier numbering: the optional `unit` of
+  `SignalSample` and `Sampled`, the unit a source gave with a value. A kit
+  compares it with the unit it expects and no longer has to assume one from
+  the name of the quantity. A host that does not know the unit leaves the
+  field out.
+- `react-dom/client` among the shared modules, under `reactDomClient`, so a
+  kit that draws the controls of a substrate starts its React root with the
+  host's copy. A host fills the key from its own `react-dom/client`.
+- `./testing` gives `runDeployedBundle`, which runs the code of a deployed
+  bundle with the modules the host shares and returns what it registered.
+- `tests/fixtures/kit`, the smallest kit, which `kitBundle.test.ts` builds with
+  `kitBuildConfig` and mounts.
+- `./core` and `./react` entries. `./core` holds the constants, the
+  validation, the API range helpers and the types, and imports no React at run
+  time. `./react` holds `HostProvider` and `useHost`. The root entry
+  re-exports both, so every import of 0.1 keeps working.
+- `API_VERSION`, the version of the extension API, which is the version of the
+  package, and `API_MAJOR`, derived from it.
+- `readVisualisationAsset(input, { allowedOrigins })` in `./schema`, the way a
+  host reads a `visualisation.json`. It refuses more than 1 MiB
+  (`MAX_ASSET_BYTES`) before parsing, parses the JSON, checks the schema and
+  refuses a transport whose origin the deployment does not allow.
+- `checkConformance` calls every converter, field kernel and substrate loader
+  and refuses one that does not return a promise.
+- `validateExtension` checks route paths: a path is relative to the
+  extension's mount point and has no `.` or `..` segment, backslash, control
+  character or percent-encoded `.`, `/` or `\`.
+
+### Changed
+
+- The package is named `@into-cps-association/dtaas-extensions`, the name the
+  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
+  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
+  uses the new name.
+- The `hello-kit` example and `yarn build:kit` leave this folder. Every kit is
+  a package of its own in the `kits/` folder of the dtaas-extensions repository.
+- The API is numbered with the package, at `0.2.0`, and `sdk` is `0`. An
+  extension built for 0.1 changes `sdk: 1` to `sdk: 0` and its `apiRange` to
+  `^0.2`. `SDK_VERSION` and `SDK_MAJOR` remain as aliases of `API_VERSION` and
+  `API_MAJOR`.
+- `apiRange` is read by npm's `semver` package, so a range in a manifest and
+  the same range in `peerDependencies` get the same answer. An empty range and
+  a range longer than 256 characters are refused. The client provides
+  `semver`, because a linked folder installs no dependencies of its own.
+- The `./eslint` rules for dynamic imports are built from the same list as the
+  static ones.
+- Internal names are renamed: `describe` is `printable` and `Loose` is
+  `UntypedExtension`. `LibraryService.resolve` documents `workspace://` for
+  workspace files.
+- The fakes of `./testing` return promises without `async` functions,
+  `replayFixture` computes each frame time from its index and
+  `createMemoryContents` strips slashes without a regular expression.
+
+### Removed
+
+- `RESERVED_EXTENSION_IDS`. The reserved ids are the first segments of the
+  host's own routes, so the host keeps the list and passes it to
+  `validateExtension` as `reservedIds`. Without that option no id is reserved.
+  The package keeps the rules on the shape of an id.
+
+### Fixed
+
+- `colourAt` keeps a position off the scale at the nearer end of the scheme and
+  gives the first colour for `NaN`, as `position` does for a domain with no
+  width. It threw for a negative position and returned an invalid colour above 1.
+
+### Security
+
+- `./schema` bounds the `substrates` record to 1000 entries and a substrate's
+  `options` to 64 settings, each a scalar, a list of scalars or one level of
+  named scalars.
+- `./schema` refuses a `..` segment, plain or percent-encoded, in a relative
+  path, a `lib:` URL or a `git:` URL.
+- `./schema` refuses an `http` transport that polls more often than once a
+  second.
+
+## [0.1.1] - 2026-11-09
+
+### Added in 0.1.1
+
+- `./schema` checks that every encoding reads a signal some transport provides.
+  An encoding reads its `target` on `measured` or on the `channel` it names, and
+  a `residual` also reads it on its `against` channel. An `mqtt` transport
+  provides the paths its topics match, with MQTT wildcards, and the other
+  adapters provide any path on their channel, which is `measured` when none is
+  named. A binding that reads a signal no transport provides is refused with an
+  issue that names the binding, the signal and the channel.
 - `DtaasExtension.apiRange`: the range of the extension API an extension works
   with, such as `^1.1`. `validateExtension` refuses an extension whose range
   does not include the host's API version, so a host refuses it at start-up
@@ -32,32 +122,35 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - API version `1.4.0`: deployed extensions (requirement K9). A deployment lists
   bundles under `extensions/<id>/` in `REACT_APP_EXTENSIONS_DEPLOYED` and the
   host loads them at start, without a rebuild. The `./deploy` entry gives
-  `kitBuildConfig`, the Vite settings that build such a bundle with React,
-  the router, MUI, zod and this contract taken from the host
-  (`SHARED_MODULES`) instead of bundled.
+  `kitBuildConfig`, the Vite settings that build such a bundle with React, the
+  router, MUI, zod and this contract taken from the host (`SHARED_MODULES`)
+  instead of bundled. Its `muiIconsPlugin` lets a kit import any icon of
+  `@mui/icons-material` and bundle only that icon.
+- `./deploy` is published as compiled JavaScript, so the Vite configuration of a
+  kit outside this repository imports `kitBuildConfig` like any other package.
+- `examples/hello-kit` is the template for a new kit: relative imports, a
+  `package.json` with build and type-check scripts and a `vite.config.ts` that
+  builds the deployed bundle with `./deploy`. `yarn build:kit <kit folder>`
+  builds an example kit inside this repository and
+  `tests/integration/kitBundle.test.ts` mounts the bundle on a fake host.
 
-### Changed
+### Changed in 0.1.1
 
-- The package is named `@into-cps-association/dtaas-extensions`, the name the
-  `dtaas-extensions` repository publishes from version 0.2.0 on. It was
-  `@into-cps-association/dtaas-sdk`. Every import, path alias and lint rule
-  uses the new name.
+- `./schema` makes the `url` of an `mqtt` transport optional. A host with a
+  signals gateway serves the topics itself, so a `visualisation.json` can name
+  the topics it reads and leave the broker to the host. A declaration that gives
+  a URL is still valid and the URL scheme is still checked. The `url` of a
+  `stomp` transport stays required.
 - `aec` is no longer a standard substrate (requirement K5). The bim extension
   contributes it, so a preset that names `aec` needs an extension that
   contributes the substrate.
 
-### Removed
+### Security in 0.1.1
 
-- `examples/hello-kit` and its integration test. The template kit lives in
-  `kits/hello-kit` of the `dtaas-extensions` repository, next to the other
-  kits and is tested there.
-- `RESERVED_EXTENSION_IDS`. The reserved ids are the first segments of the
-  host's own routes, so the host keeps the list and passes it to
-  `validateExtension` as `reservedIds`. Without that option no id is reserved.
-  The package keeps the rules on the shape of an id.
-
-### Security
-
+- `./schema` refuses a transport `url` or a substrate `source` that carries a
+  user name or password, such as `mqtt://user:secret@broker`, so a
+  `visualisation.json` committed to a repository can never hold a broker or
+  database credential.
 - `./schema` refuses a transport `url` or a substrate `source` whose scheme is
   not allowed, so `javascript:`, `data:`, `vbscript:` and `file:` URLs no longer
   pass `parseVisualisationAsset`. MQTT and STOMP transports take `ws`, `wss`,
@@ -65,7 +158,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   InfluxDB and HTTP take `http` and `https`. A file transport takes `http`,
   `https`, `lib` or a relative path. A substrate source takes `lib`, `git`,
   `http`, `https`, `blob` or a relative path. Schemes are read with the
-  browser's URL parser, so case and embedded tabs do not hide a scheme, and a
+  browser's URL parser, so case and embedded tabs do not hide a scheme and a
   relative path that names another host is refused.
 - `./schema` limits every string in a `visualisation.json` to 2048 characters
   and every list to 1000 items, so an oversized asset is refused before a host
@@ -78,7 +171,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Extension contract, revision 1: `DtaasExtension`, `DomainContribution` and
   every contribution type of the architecture proposal (§6.1).
 - Host contract: `HostServices` with `auth`, `library`, `contents`, `git`,
-  `signals`, `viz`, `ui`, `logger`, `settings` and `config` (§6.2);
+  `signals`, `viz`, `ui`, `logger`, `settings` and `config` (§6.2), with
   `HostProvider` and `useHost()`.
 - Visualisation layer types: `SignalSample`, `Channel`, `TransportAdapter`,
   `Anchor`, `AnchorKind`, the encoding vocabulary, `SubstrateAdapter`.
@@ -92,7 +185,7 @@ package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `checkConformance` and a socket guard.
 - `SignalsService.connection` (`ConnectionState`, `ConnectionStatus`) and
   `worstConnectionState`, so a kit can tell a quiet signal from a dead
-  connection; fake `signals.setConnection(state, paths?)` for tests.
+  connection. The fake `signals.setConnection(state, paths?)` is for tests.
 - `./eslint`: flat-config rules enforcing the extension boundary (§6.3).
 - `examples/hello-kit`: the template layout of a domain kit.
 

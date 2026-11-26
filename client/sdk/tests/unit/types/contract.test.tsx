@@ -36,7 +36,7 @@ const fullExtension: DtaasExtension<{ count: number }> = {
   id: 'hello',
   name: 'Hello',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [{ path: '', element: Page }],
   navigation: [{ label: 'Hello', path: '/hello', order: 10 }],
   digitalTwinTabs: [
@@ -82,7 +82,7 @@ const fullExtension: DtaasExtension<{ count: number }> = {
 
 describe('contract types', () => {
   it('accept a fully populated extension', () => {
-    expect(fullExtension.sdk).toBe(1);
+    expect(fullExtension.sdk).toBe(0);
   });
 
   it('accept a Redux Toolkit reducer as an extension reducer', () => {
@@ -94,7 +94,7 @@ describe('contract types', () => {
   });
 
   it('reject an extension built for another SDK major', () => {
-    // @ts-expect-error sdk must be 1
+    // @ts-expect-error sdk must be 0
     const wrong: DtaasExtension = { id: 'x', name: 'x', version: '1', sdk: 2 };
     expect(wrong).toBeDefined();
   });
@@ -104,7 +104,7 @@ describe('contract types', () => {
       id: 'x',
       name: 'x',
       version: '1',
-      sdk: 1,
+      sdk: 0,
       // @ts-expect-error route elements must be React.lazy components
       routes: [{ path: '', element: () => null }],
     };

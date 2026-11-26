@@ -6,10 +6,11 @@ that adds pages to this client without changing its code. The SDK is the
 contract between the two: the types an extension implements and the
 services the client gives it.
 
-The Buildings page is the first extension: `extensions/bim/`, which takes the
-extension of the `./dtaas` entry of `@into-cps-association/bim-kit` and adds the
-`aec` substrate. The client must still build and pass its tests with the list in
-`src/extensions.ts` empty.
+The client compiles in no domain extension: the list in `src/extensions.ts`
+is empty. Each domain comes from its kit as a deployed bundle, so the client
+carries no domain code that could drift from the kit. The Buildings page and
+the `aec` substrate come from `@into-cps-association/bim-kit` and the Soil page
+from `soil-kit`.
 
 ## Where the Contract Lives
 
@@ -22,10 +23,7 @@ The same package is published from the `dtaas-extensions` repository under
 that name from version 0.2.0 on. It was `@into-cps-association/dtaas-sdk`
 before. Once that version is published, the client depends on it from npm and
 `client/sdk/` is removed. Until then an extension installed from npm that
-imports the package name resolves to the local copy. `bim-kit` 0.2.0 still
-imports the former name, so `vite.config.ts` aliases
-`@into-cps-association/dtaas-sdk` to the same local copy until a `bim-kit`
-release imports the new name.
+imports the package name resolves to the local copy.
 
 ## Adding an Extension
 
@@ -39,10 +37,11 @@ To compile one in:
 To deploy one, without a rebuild:
 
 1. Build it with `kitBuildConfig` from `@into-cps-association/dtaas-extensions/deploy`,
-   which writes one script.
+   which writes one script. Every kit of the `kits/` folder of the
+   dtaas-extensions repository does this with its own `yarn build:kit`.
 1. Copy the script to `extensions/<id>/index.js` next to `env.js`.
 1. List the path in `REACT_APP_EXTENSIONS_DEPLOYED`, for example
-   `'extensions/soil/index.js'`.
+   `'extensions/hello/index.js'`.
 
 `index.tsx` loads the listed scripts before the client's own modules, because
 the store and the routes read the registry when they are imported. Before the
@@ -95,7 +94,7 @@ offers it, so no extension imports the code of another.
 
 ## When an Extension Is Left Out
 
-The client starts without an extension that fails a check, and writes the
+The client starts without an extension that fails a check and writes the
 reason to the browser console:
 
 - The SDK's `validateExtension` finds it malformed, for example a page that
@@ -156,7 +155,7 @@ export const extension = defineExtension({
   id: 'automation',
   name: 'Automation',
   version: '0.1.0',
-  sdk: 1,
+  sdk: 0,
   routes: [
     { path: '', element: lazy(() => import('./pages/AutomationPage')) },
     { path: 'library', element: lazy(() => import('./pages/LibraryPage')) },

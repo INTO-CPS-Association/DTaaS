@@ -71,7 +71,6 @@ describe('substrateDescriptorSchema', () => {
     'https://grafana.example/d/abc',
     'blob:https://dtaas.example/0b6e1c4e',
     'models/a.ifc',
-    '../models/a.ifc',
   ])('accepts the source %j', (source) => {
     const descriptor = { adapter: 'image', source };
     expect(substrateDescriptorSchema.safeParse(descriptor).success).toBe(true);
@@ -86,8 +85,44 @@ describe('substrateDescriptorSchema', () => {
     'file:///etc/passwd',
     'ftp://files.example/a.jpg',
     '//evil.example/a.jpg',
+    '../models/a.ifc',
+    'lib:../../x',
   ])('refuses the source %j', (source) => {
     const descriptor = { adapter: 'image', source };
     expect(substrateDescriptorSchema.safeParse(descriptor).success).toBe(false);
+  });
+
+  describe('options', () => {
+    const withOptions = (options: unknown) =>
+      substrateDescriptorSchema.safeParse({ adapter: 'soil-profile', options })
+        .success;
+
+    it('accepts scalars, lists of scalars and one level of named scalars', () => {
+      expect(
+        withOptions({
+          quantity: 'soil_moisture',
+          windowHours: 24,
+          live: true,
+          floor: null,
+          depths: [0.2, 0.4],
+          colours: { dry: '#a0522d', wet: '#1e90ff' },
+        }),
+      ).toBe(true);
+    });
+
+    it('refuses a string longer than 2048 characters', () => {
+      expect(withOptions({ note: 'a'.repeat(5 * 1024 * 1024) })).toBe(false);
+    });
+
+    it('refuses objects nested two levels deep', () => {
+      expect(withOptions({ a: { b: { c: 1 } } })).toBe(false);
+    });
+
+    it('refuses more than 64 settings', () => {
+      const many = Object.fromEntries(
+        Array.from({ length: 65 }, (_, i) => [`k${i}`, i]),
+      );
+      expect(withOptions(many)).toBe(false);
+    });
   });
 });

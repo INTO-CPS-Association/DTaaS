@@ -1,5 +1,6 @@
 import type { FileChange, GitService } from '../host/storage.types';
 import toBytes from './bytes';
+import settle from './settle';
 
 export interface RecordedCommit {
   readonly repo: string;
@@ -42,27 +43,49 @@ const applyChange = (
   }
 };
 
+type Files = Map<string, Uint8Array>;
+
+const readFile = (files: Files, repo: string, path: string, ref: string) => {
+  const bytes = files.get(fileKey(repo, ref, path));
+  if (!bytes) throw new Error(`No such file: ${fileKey(repo, ref, path)}`);
+  return bytes;
+};
+
+const commitChanges = (
+  files: Files,
+  recorded: GitRecord,
+  commit: Omit<RecordedCommit, 'sha'>,
+) => {
+  const key = (path: string) => fileKey(commit.repo, commit.branch, path);
+  commit.changes.forEach((change) => applyChange(files, key, change));
+  const sha = (recorded.commits.length + 1).toString(16).padStart(40, '0');
+  recorded.commits.push({ ...commit, sha });
+  return { sha };
+};
+
+const openMergeRequest = (
+  recorded: GitRecord,
+  request: RecordedMergeRequest,
+) => {
+  recorded.mergeRequests.push(request);
+  const iid = recorded.mergeRequests.length;
+  return {
+    url: `https://gitlab.example/${request.repo}/-/merge_requests/${iid}`,
+  };
+};
+
 /** An in-memory GitLab that records commits and merge requests. */
 const createMemoryGit = (recorded: GitRecord): GitService => {
-  const files = new Map<string, Uint8Array>();
+  const files: Files = new Map();
   return {
-    read: async (repo, path, ref = DEFAULT_REF) => {
-      const bytes = files.get(fileKey(repo, ref, path));
-      if (!bytes) throw new Error(`No such file: ${fileKey(repo, ref, path)}`);
-      return bytes;
-    },
-    commit: async (repo, branch, changes, message) => {
-      const key = (path: string) => fileKey(repo, branch, path);
-      changes.forEach((change) => applyChange(files, key, change));
-      const sha = (recorded.commits.length + 1).toString(16).padStart(40, '0');
-      recorded.commits.push({ repo, branch, changes, message, sha });
-      return { sha };
-    },
-    openMergeRequest: async (repo, source, target, title) => {
-      recorded.mergeRequests.push({ repo, source, target, title });
-      const iid = recorded.mergeRequests.length;
-      return { url: `https://gitlab.example/${repo}/-/merge_requests/${iid}` };
-    },
+    read: (repo, path, ref = DEFAULT_REF) =>
+      settle(() => readFile(files, repo, path, ref)),
+    commit: (repo, branch, changes, message) =>
+      settle(() =>
+        commitChanges(files, recorded, { repo, branch, changes, message }),
+      ),
+    openMergeRequest: (repo, source, target, title) =>
+      settle(() => openMergeRequest(recorded, { repo, source, target, title })),
   };
 };
 

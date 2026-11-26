@@ -44,7 +44,9 @@ export const createDTTab = (props: DTTabProps): TabData[] =>
       loggerContext: { dt: { tab: tab.label.toLowerCase() } },
       body: (
         <>
-          <Typography variant="body1">{tab.body}</Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {tab.body}
+          </Typography>
           {tabContent(tab.label, props)}
         </>
       ),

@@ -15,7 +15,7 @@ function kit(id: string): DtaasExtension {
     id,
     name: `${id} kit`,
     version: '0.1.0',
-    sdk: 1,
+    sdk: 0,
     routes: [{ path: '', element: page }],
   };
 }
@@ -39,6 +39,7 @@ describe('provideSharedModules', () => {
         'muiMaterial',
         'react',
         'reactDom',
+        'reactDomClient',
         'reactJsxRuntime',
         'reactRouterDom',
         'zod',
@@ -46,6 +47,9 @@ describe('provideSharedModules', () => {
     );
     expect(shared.react).toEqual(
       expect.objectContaining({ useState: expect.any(Function) }),
+    );
+    expect(shared.reactDomClient).toEqual(
+      expect.objectContaining({ createRoot: expect.any(Function) }),
     );
   });
 

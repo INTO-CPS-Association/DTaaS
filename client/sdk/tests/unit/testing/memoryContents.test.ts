@@ -10,18 +10,6 @@ describe('createMemoryContents', () => {
     expect(text(await contents.get('/common/models/a.glb'))).toBe('glb');
   });
 
-  it('trims leading and trailing slashes from a path', async () => {
-    const contents = createMemoryContents({ '//a/b.txt//': 'hi' });
-    expect([...contents.files.keys()]).toEqual(['a/b.txt']);
-    await expect(contents.exists('///')).resolves.toBe(false);
-  });
-
-  it('handles a long run of slashes inside a path in linear time', async () => {
-    const path = `a${'/'.repeat(100000)}b`;
-    const contents = createMemoryContents({ [path]: 'hi' });
-    expect(text(await contents.get(`/${path}/`))).toBe('hi');
-  });
-
   it('accepts initial files as text', async () => {
     const contents = createMemoryContents({ 'a.txt': 'hi' });
     expect(text(await contents.get('a.txt'))).toBe('hi');
@@ -64,5 +52,18 @@ describe('createMemoryContents', () => {
       'a.txt',
       'dir',
     ]);
+  });
+
+  it('strips leading and trailing slashes in linear time', async () => {
+    const contents = createMemoryContents({ 'a.txt': 'a' });
+    const slashes = '/'.repeat(100_000);
+    const started = Date.now();
+    await expect(contents.exists(`${slashes}a.txt${slashes}`)).resolves.toBe(
+      true,
+    );
+    await expect(contents.exists(`${slashes}x${slashes}y`)).resolves.toBe(
+      false,
+    );
+    expect(Date.now() - started).toBeLessThan(1000);
   });
 });

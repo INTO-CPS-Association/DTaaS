@@ -16,12 +16,25 @@ describe('the built client', () => {
     expect(files.some((name) => name.endsWith('.js.map'))).toBe(true);
   });
 
-  it('bundles the real bim extension and not its test stand-in', () => {
+  it('carries no building code, which comes from the deployed bim-kit bundle', () => {
     const bundles = builtFiles(buildRoot).filter((f) => f.endsWith('.js'));
     const text = bundles.map((f) => fs.readFileSync(f, 'utf-8')).join('\n');
 
     expect(text).not.toContain('test-stand-in');
-    expect(text).toContain('Building Models');
+    expect(text).not.toContain('Building Models');
+  });
+
+  it('bundles one copy of the extension contract', () => {
+    // Each copy of the contract has its own HostProvider context. With two,
+    // an extension reads the context the client never filled and throws.
+    const bundles = builtFiles(buildRoot).filter((f) => f.endsWith('.js'));
+    const copies =
+      bundles
+        .map((f) => fs.readFileSync(f, 'utf-8'))
+        .join('\n')
+        .split('useHost() must be used inside <HostProvider>').length - 1;
+
+    expect(copies).toBe(1);
   });
 
   it('holds no password, token, URL login or broker setting', () => {

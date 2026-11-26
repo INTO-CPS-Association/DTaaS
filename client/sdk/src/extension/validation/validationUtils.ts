@@ -1,15 +1,18 @@
-/** An extension as untyped data: kits may be plain JavaScript. */
-export type Loose = Record<string, unknown>;
+/**
+ * An extension, or one of its entries, before validation: plain data whose
+ * fields have no known type yet, because kits may be plain JavaScript.
+ */
+export type UntypedExtension = Record<string, unknown>;
 
 /** Valid extension id format: starts with lowercase, lowercase/digits/hyphens. */
 export const ID_PATTERN = /^[a-z][a-z0-9-]*$/;
 
-export const isObject = (value: unknown): value is Loose =>
+export const isObject = (value: unknown): value is UntypedExtension =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /** An object item of a contribution list, with its index in that list. */
 export interface Entry {
-  readonly item: Loose;
+  readonly item: UntypedExtension;
   readonly index: number;
 }
 
@@ -19,16 +22,32 @@ export const entries = (value: unknown): Entry[] =>
     ? value.flatMap((item, index) => (isObject(item) ? [{ item, index }] : []))
     : [];
 
-export const visualisationOf = (ext: Loose): Loose | undefined =>
+export const visualisationOf = (
+  ext: UntypedExtension,
+): UntypedExtension | undefined =>
   isObject(ext.visualisation) ? ext.visualisation : undefined;
 
-/** Printable form of an identifier, even for values without `toString`. */
-export const describe = (value: unknown): string => {
-  if (value === undefined || value === null) return '';
-  try {
-    return String(value);
-  } catch {
-    return '[object]';
+/**
+ * Printable form of an identifier for an error message. Only primitives are
+ * printed. An object or a function prints as a fixed word, because its own
+ * `toString` may throw or print `[object Object]`.
+ */
+export const printable = (value: unknown): string => {
+  switch (typeof value) {
+    case 'string':
+      return value;
+    case 'number':
+    case 'boolean':
+    case 'bigint':
+      return `${value}`;
+    case 'symbol':
+      return value.description ?? 'symbol';
+    case 'undefined':
+      return '';
+    case 'function':
+      return '[function]';
+    default:
+      return value === null ? '' : '[object]';
   }
 };
 
@@ -39,7 +58,7 @@ export interface ListSpec {
   readonly label: string;
   readonly key: string;
   readonly fields: Readonly<Record<string, FieldKind>>;
-  pick(ext: Loose): unknown;
+  pick(ext: UntypedExtension): unknown;
 }
 
 const topLevel = (
@@ -86,4 +105,4 @@ export const listSpec = (label: string): ListSpec =>
 
 /** E.g. `routes[1] "detail"`. */
 export const entryLabel = (spec: ListSpec, { item, index }: Entry) =>
-  `${spec.label}[${index}] "${describe(item[spec.key])}"`;
+  `${spec.label}[${index}] "${printable(item[spec.key])}"`;

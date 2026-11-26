@@ -12,7 +12,7 @@ jest.mock('store/store', () => ({
 }));
 jest.mock('extensions', () => ({
   __esModule: true,
-  default: [{ id: 'Bad Id', name: '', version: '', sdk: 1 }],
+  default: [{ id: 'Bad Id', name: '', version: '', sdk: 0 }],
 }));
 jest.mock('util/envUtil', () => ({
   ...jest.requireActual('util/envUtil'),

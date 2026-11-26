@@ -12,9 +12,10 @@ identity provider signs them in.
 
 ## Writes From the Client, and Jupyter XSRF Protection
 
-The Building Models page writes a converted model back into the user's library
-through the workspace's own Jupyter Contents API. This is the only place where
-the web client writes to a workspace.
+A domain extension can write a file back into the user's library through the
+workspace's own Jupyter Contents API, as the Building Models page of bim-kit
+does with a converted model. This contents service of the client is the only
+place where the web client writes to a workspace.
 
 The Jupyter server can guard writes with a token that it sets as the `_xsrf`
 cookie and expects echoed in an `X-XSRFToken` header. **The workspace image
